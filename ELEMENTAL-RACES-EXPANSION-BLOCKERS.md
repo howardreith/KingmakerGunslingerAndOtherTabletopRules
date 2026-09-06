@@ -6,8 +6,8 @@ None established.
 
 ## Active publication-process blocker
 
-- Local checkpoints through Release B compatibility repair commit
-  `c4b9f8fbc40a21ecc9775deab66a40b2ec9b24f3` cannot currently be pushed.
+- Local checkpoints, including the qualified Release C framework commit
+  `fa7900289286bc326014057c275de97a30b7d1ae`, cannot currently be pushed.
   The mandatory external `Push-KingmakerGunslinger.ps1` wrapper refuses the
   exact required `codex/elemental-races-expansion` branch because it is absent
   from the wrapper's branch allowlist. The historical `codex/elemental-races`
@@ -17,8 +17,9 @@ None established.
 Release B itself has no remaining engineering or qualification blocker. Its
 local PASS is separate from this branch-publication blocker.
 
-Release C has no established hard blocker. Its replacement framework is in
-progress; ray-deflection, typed summon-duration, reactive-healing, and native
+Release C has no established hard blocker. Its replacement framework and
+first eight passive mechanics have incremental proof; ray-deflection,
+typed summon-duration, reactive-healing, and native
 difficult-terrain contracts still require focused engine evidence before the
 corresponding mechanics can be finalized.
 

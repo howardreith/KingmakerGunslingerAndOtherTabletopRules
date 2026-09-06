@@ -6,7 +6,7 @@
   "authoritativeMasterCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
   "interveningMasterCommits": [],
   "startingTreeClean": true,
-  "phase": "release-c-replacement-framework",
+  "phase": "release-c-remaining-mechanics",
   "currentVersion": "0.0.117",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
@@ -17,7 +17,7 @@
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
     "releaseB": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
-    "releaseC": "IN-PROGRESS-REPLACEMENT-FRAMEWORK"
+    "releaseC": "IN-PROGRESS-FIRST-EIGHT-MECHANICS-RUNTIME-PASS"
   },
   "foundationProgress": {
     "spellOnlyAffinity": "IMPLEMENTED-RUNTIME-PASS",
@@ -85,17 +85,46 @@
     "selectionGraph": "IMPLEMENTED-RUNTIME-PASS (race-owned obligatory primary-slot selections; exact overlap exclusions; 180 native retain selections through creation/respec)",
     "reconciler": "IMPLEMENTED-FRAMEWORK-RUNTIME-PASS (69 legal sets, 207 heritage rows, 414 order rows, 21 marker-first cases; exact owned providers; spent-resource orphan regression; trait-specific persistence still pending)",
     "versionTransition": "0.0.117-elemental-traits ACTIVE; active build/runtime/compatibility controls updated; historical release gates preserved",
-    "traitMechanics": "PENDING",
-    "deterministicTests": "PASS (1413/1413); complete reruns accompany each focused runtime correction",
-    "runtime": "FRAMEWORK-PASS (10/10 save-free guarded processes, 17483/17483 assertions; actual trait mechanics pending)",
+    "traitMechanics": "FIRST-EIGHT-IMPLEMENTED-RUNTIME-PASS (Wildfire Heart, Brazen Flame, Forge-Hardened, Granite Skin, Like the Wind, Secretive, Thunderous Resilience, Whispering Wind); trait-bearing persistence and thirteen remaining mechanics pending",
+    "deterministicTests": "PASS (1415/1415); preflight PASS (202/202), with one unexplained snapshot failure followed by two unchanged PASS invocations",
+    "runtime": "FIRST-PASSIVE-SLICE-PASS (8/8 guarded processes, 13397/13397 assertions, zero warnings; includes full framework and inherited Ifrit/Acadamae regressions)",
     "persistence": "FRAMEWORK-PASS (four fresh processes, 43/43 assertions, 24 retain-base fixtures, 180 native selections, 144 exact retain-state observations, module-OFF/ON level/rest/respec and absence; actual trait-bearing persistence pending)",
-    "compatibility": "FRAMEWORK-PASS (KMG-only and highest-risk combined ON/OFF; four exact restorations); final six-profile and generic module-boundary reruns pending",
+    "compatibility": "FRAMEWORK-PASS plus FIRST-PASSIVE-SLICE-PASS (KMG-only ON, highest-risk combined ON/OFF; three new exact restorations); final six-profile and generic module-boundary reruns pending",
     "implementation": "RELEASE C IN PROGRESS; NOT A RELEASE PASS"
+  },
+  "releaseCPassiveMechanicsQualification": {
+    "report": "docs/ELEMENTAL-RACES-0.0.117-PASSIVE-MECHANICS-CHECKPOINT.md",
+    "status": "PASS-INCREMENTAL-MECHANICS-ONLY",
+    "precedingCommit": "fa7900289286bc326014057c275de97a30b7d1ae",
+    "version": "0.0.117-elemental-traits",
+    "implementedTraits": 8,
+    "remainingTraitMechanics": 13,
+    "newManifestIdentities": 0,
+    "domainTests": 1415,
+    "preflightChecks": 202,
+    "guardedProcesses": 8,
+    "runtimeAssertions": 13397,
+    "runtimeWarnings": 0,
+    "compatibilityRestorationTransactions": 3,
+    "sourceStateSha256": "1caa8ad1f0a34cebd653ee1fb24fabe132842b5a7bbc013220089162a0185ed8",
+    "packageBytes": 23176082,
+    "packageEntries": 135,
+    "packageSha256": "97c58a4cabe86a9f7e1cb8f97a90a20c6b13930f670d2754440cb7d135ed7032",
+    "dllBytes": 6043136,
+    "dllSha256": "001c615d39b42b36fd5f3d3482ee34cb626de92b5f46021e8e3a3fbff164d7b2",
+    "dllMvid": "353c4cb1-12a3-453f-a718-dd0ef0efa4c8",
+    "deploymentId": "20260905T2355597364036Z",
+    "settingsSha256BeforeAndAfter": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "originalAndRestoredModManifestSha256": "b3167a2c14b8db9aa8bc3d52adfec465f341d0ff6febdca6cead92805c20988b",
+    "saveStateTouched": false,
+    "remainingGates": "Thirteen mechanics; trait-bearing persistence; active-trait rest/level/respec and lifecycle; direct 0.0.114 receiver migration; final six profiles and generic module boundary; final qualification and documentation."
   },
   "releaseCFrameworkQualification": {
     "report": "docs/ELEMENTAL-RACES-0.0.117-FRAMEWORK-QUALIFICATION.md",
     "status": "PASS-INCREMENTAL-FRAMEWORK-ONLY",
     "precedingCommit": "e2986654246bf0081ba6965ae5fc90318635d059",
+    "checkpointCommit": "fa7900289286bc326014057c275de97a30b7d1ae",
+    "checkpointPush": "BLOCKED-EXTERNAL-ALLOWLIST",
     "version": "0.0.117-elemental-traits",
     "finalFixtureArtifact": {
       "sourceStateSha256": "bc75a7eb42945390728168a2234f00d9d334e2c2ebaed6ba5f339a3672663b23",
@@ -1374,6 +1403,18 @@
       "sha": "d8ad16f7c10670ed5b200214738322195213c392",
       "subject": "Qualify Elemental Feats release",
       "checkpoint": "release-b-qualification",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "e2986654246bf0081ba6965ae5fc90318635d059",
+      "subject": "Record exact Elemental Feats qualification",
+      "checkpoint": "release-b-qualification-record",
+      "push": "BLOCKED-EXTERNAL-ALLOWLIST"
+    },
+    {
+      "sha": "fa7900289286bc326014057c275de97a30b7d1ae",
+      "subject": "Implement and qualify elemental trait replacement framework",
+      "checkpoint": "release-c-replacement-framework",
       "push": "BLOCKED-EXTERNAL-ALLOWLIST"
     }
   ],

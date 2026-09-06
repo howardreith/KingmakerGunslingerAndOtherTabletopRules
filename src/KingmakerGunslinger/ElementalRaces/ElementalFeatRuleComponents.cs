@@ -240,9 +240,14 @@ namespace KingmakerGunslinger.ElementalRaces
         WeaponEnchantmentLogic,
         IInitiatorRulebookHandler<RulePrepareDamage>
     {
-        private static readonly ConditionalWeakTable<RuleDealDamage, object>
-            AppliedRules = new ConditionalWeakTable<RuleDealDamage, object>();
-        private static readonly object AppliedMarker = new object();
+        private sealed class OwnedPacket
+        {
+            internal ItemEnchantment Enchantment;
+            internal EnergyDamage Damage;
+        }
+
+        private static readonly ConditionalWeakTable<RuleDealDamage, OwnedPacket>
+            AppliedRules = new ConditionalWeakTable<RuleDealDamage, OwnedPacket>();
 
         public BlueprintFeature InnerFlame;
 
@@ -272,7 +277,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 caster.Descriptor.HasFact(InnerFlame);
             ElementalFeatDamageAmount amount = ElementalFeatPolicy
                 .ScorchingWeaponsDamage(true, inner, false);
-            if (amount.IsEmpty || !TryClaim(damage)) return;
+            if (amount.IsEmpty) return;
 
             EnergyDamage packet = amount.DiceCount > 0
                 ? new EnergyDamage(new DiceFormula(amount.DiceCount,
@@ -280,15 +285,33 @@ namespace KingmakerGunslinger.ElementalRaces
                 : new EnergyDamage(new DiceFormula(0, DiceType.D6),
                     DamageEnergyType.Fire)
                     { PreRolledValue = amount.FlatBonus };
+            if (!TryClaim(damage, enchantment, packet)) return;
             evt.DamageBundle.Add(packet);
         }
 
-        public void OnEventDidTrigger(RulePrepareDamage evt) { }
+        public void OnEventDidTrigger(RulePrepareDamage evt)
+        {
+            // Native RuleDealDamage finishes all preparation handlers before
+            // constructing RuleCalculateDamage. A later-acquired effect can
+            // therefore add fire after our About handler. Recheck here, and
+            // remove only the exact packet contributed by this enchantment.
+            RuleDealDamage damage = evt == null ? null : evt.ParentRule;
+            if (damage == null || evt.DamageBundle == null) return;
+            OwnedPacket own;
+            lock (AppliedRules)
+                if (!AppliedRules.TryGetValue(damage, out own)) return;
+            if (!ReferenceEquals(own.Enchantment, Fact) || Owner == null ||
+                !ReferenceEquals(evt.DamageBundle.Weapon, Owner) ||
+                !HasOtherFireDamage(evt.DamageBundle, own.Enchantment,
+                    own.Damage)) return;
+            evt.DamageBundle.Remove(value => ReferenceEquals(value, own.Damage));
+        }
 
         private bool HasOtherFireDamage(DamageBundle bundle,
-            ItemEnchantment own)
+            ItemEnchantment own, EnergyDamage ownPacket = null)
         {
             if (bundle.OfType<EnergyDamage>().Any(value =>
+                    !ReferenceEquals(value, ownPacket) &&
                     value.EnergyType == DamageEnergyType.Fire)) return true;
             return Owner.Enchantments.Any(value => value != null &&
                 !ReferenceEquals(value, own) && !value.IsEnded &&
@@ -299,14 +322,18 @@ namespace KingmakerGunslinger.ElementalRaces
                     component.Element == DamageEnergyType.Fire));
         }
 
-        private static bool TryClaim(RuleDealDamage damage)
+        private static bool TryClaim(RuleDealDamage damage,
+            ItemEnchantment enchantment, EnergyDamage packet)
         {
             lock (AppliedRules)
             {
-                object ignored;
+                OwnedPacket ignored;
                 if (AppliedRules.TryGetValue(damage, out ignored))
                     return false;
-                AppliedRules.Add(damage, AppliedMarker);
+                AppliedRules.Add(damage, new OwnedPacket
+                {
+                    Enchantment = enchantment, Damage = packet
+                });
                 return true;
             }
         }

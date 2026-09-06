@@ -3,8 +3,9 @@
 ## Current outcome
 
 **IN PROGRESS - FOUNDATION, RELEASE A, AND RELEASE B PASS ALL LOCAL GATES;
-RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; ALL 21 TRAIT
-MECHANICS AND FINAL RELEASE-WIDE QUALIFICATION REMAIN PENDING. THE
+RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; EIGHT TRAIT
+MECHANICS HAVE FOCUSED RUNTIME PROOF. THIRTEEN MECHANICS, TRAIT-BEARING
+PERSISTENCE, AND FINAL RELEASE-WIDE QUALIFICATION REMAIN PENDING. THE
 REQUIRED BRANCH PUSH REMAINS BLOCKED BY AN EXTERNAL
 ALLOWLIST.**
 
@@ -29,11 +30,23 @@ behavior.
 | Foundation | 0.0.114 baseline | affinity, SLA, movement/maneuver, ownership, runtime organization | PASS |
 | A | 0.0.115-elemental-heritages | twelve heritage choices under four parent races | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
 | B | 0.0.116-elemental-feats | shared, Ifrit, Sylph, and Undine feat catalog | PASS LOCALLY; REQUIRED PUSH BLOCKED EXTERNALLY |
-| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - FRAMEWORK IMPLEMENTED; MECHANICS PENDING |
+| C | 0.0.117-elemental-traits | replacement slots and required alternate traits | IN PROGRESS - FRAMEWORK QUALIFIED; EIGHT MECHANICS RUNTIME PASS; THIRTEEN PENDING |
 
 Favored-class bonuses are out of scope.
 
 ## Release C replacement-framework checkpoint
+
+The subsequent first passive slice implements Wildfire Heart, Brazen Flame,
+Forge-Hardened, Granite Skin, Like the Wind, Secretive, Thunderous Resilience,
+and Whispering Wind. All 1,415 tests, clean build/package, and eight guarded
+processes pass (13,397 assertions, zero warnings, three exact profile
+restorations). Scorching Weapons' later-provider ordering defect is fixed
+narrowly, and Acadamae now supplies its native fatigue reason context.
+No manifest identity was added by this slice. Trait-bearing persistence and
+the final Release C gates remain pending. See the
+[exact passive-mechanics checkpoint](docs/ELEMENTAL-RACES-0.0.117-PASSIVE-MECHANICS-CHECKPOINT.md).
+
+The following remains the historical framework qualification:
 
 - Authoritative Archives of Nethys rules establish the exact three semantic
   replacement slots and confirm that one base racial trait cannot be exchanged

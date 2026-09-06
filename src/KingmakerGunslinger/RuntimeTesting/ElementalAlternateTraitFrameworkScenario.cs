@@ -283,6 +283,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "live BlueprintRoot.Progression.CharacterRaces");
                 ElementalAlternateTraitReconciliationScenario.Exercise(
                     request, assertions, evidenceFiles);
+                ElementalAlternateTraitPassiveScenario.Exercise(
+                    request, assertions, evidenceFiles);
             }
             catch (Exception exception)
             {

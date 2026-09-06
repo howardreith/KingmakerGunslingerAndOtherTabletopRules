@@ -72,7 +72,9 @@ namespace KingmakerGunslinger.ElementalRaces
             var controller = ScriptableObject.CreateInstance<
                 ElementalAlternateTraitProviderController>();
             controller.Trait = (int)definition.Id;
-            result.ComponentsArray = new BlueprintComponent[] { controller };
+            result.ComponentsArray = new BlueprintComponent[] { controller }
+                .Concat(ElementalAlternateTraitPassiveFactory.ComponentsFor(
+                    definition.Id)).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create(Key(definition, "Provider.Name"),
                     definition.Name + " Provider"),

@@ -111,6 +111,10 @@ Unchecked items are pending and must not be inferred from builds or historical
   strict package, full 4,333-assertion live matrix, KMG-only/combined ON/OFF,
   exact restoration, retain-base persistence/respec and fourth-process absence.
   This does not qualify actual trait mechanics or trait-bearing persistence.
+- [x] First eight passive traits pass complete source/build/package and focused
+  native runtime gates: 1,415 tests, eight processes, 13,397 assertions,
+  zero warnings, KMG-only/combined profiles including OFF, exact restoration.
+  This does not complete trait-bearing persistence or the whole release.
 - [ ] Reconciler is idempotent, project-owned-only, resource-preserving,
   duplicate-free, respec-reversible, and correct across save/load, module-OFF,
   level-up, death/resurrection, and polymorph/return.

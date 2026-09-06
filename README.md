@@ -9,7 +9,10 @@ pure policy covers all legal combinations and overlap exclusions independent
 of fact order, while the owned reconciler preserves existing SLA amounts and
 removes only exact project providers. Release C remains in progress; the trait
 mechanics and guarded runtime, persistence, and compatibility gates are not
-yet complete.
+yet complete. The first eight traits now have focused native-mechanics proof:
+Wildfire Heart, Brazen Flame, Forge-Hardened, Granite Skin, Like the Wind,
+Secretive, Thunderous Resilience, and Whispering Wind. Thirteen mechanics
+and trait-bearing save qualification remain pending.
 
 Release B remains locally qualified. It registers eleven stable feat identities plus fourteen supporting ability,
 buff, and weapon-enchantment identities in every module state. When the module

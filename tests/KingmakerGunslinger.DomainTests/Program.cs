@@ -70,6 +70,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-heritages.sla-adaptations", ElementalHeritagePolicyTests.NativeDonorsAndProjectOwnedImplementationsAreExact),
             Case("elemental-feats.native-audit", ElementalFeatPolicyTests.NativeAuditAndReleaseBPoliciesAreExact),
             Case("elemental-traits.catalog-slots", ElementalAlternateTraitPolicyTests.CatalogAndReplacementSlotsAreExact),
+            Case("elemental-traits.passive-save-boundaries", ElementalAlternateTraitPassivePolicyTests.SavesUseOneExactRacialBonus),
+            Case("elemental-traits.brazen-melee-boundaries", ElementalAlternateTraitPassivePolicyTests.BrazenFlameRequiresOneNativeMeleeHit),
             Case("elemental-traits.provider-matrix", ElementalAlternateTraitPolicyTests.ExhaustiveProviderAndLegalityMatrixIsExact),
             Case("elemental-traits.ordering-reconstruction", ElementalAlternateTraitPolicyTests.OrderingRemovalAndReconstructionAreDeterministic),
             Case("elemental-heritages.unerring-formula", ElementalHeritageSlaPolicyTests.UnerringWeaponUsesExactBreakpointAndCap),
