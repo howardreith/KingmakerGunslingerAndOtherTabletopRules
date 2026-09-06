@@ -66,3 +66,12 @@ authoritative rules, and safe reversible alternatives have been exhausted.
 Record a feature-specific blocker and continue independent work. Do not invent
 a compensating benefit or claim a release PASS while any required gate is
 blocked, failed, ambiguous, or not run.
+
+## Current engineering focus
+
+Release C remains at fifteen native-proven mechanics and six implementations
+pending. The [Crystalline native audit](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-NATIVE-AUDIT.md)
+disproves broad ray-category/visual eligibility and identifies native resolution
+boundaries to qualify. Continue exact ray eligibility and actual chosen daily
+deflection, then every independent remaining trait and full release gate.
+The audit is not permission to replace the printed mechanic with a weaker bonus.

@@ -1,5 +1,34 @@
 # Elemental Races expansion journal
 
+## 2026-09-06 UTC - Crystalline Form native delivery audit PASS only
+
+- Revalidated the clean c93aafb4 checkpoint after the preceding status turn;
+  independent engineering remained available. The approval-review usage limit
+  interrupted collection while the existing build ran; after the user reset
+  the limit, the same live session was resumed and confirmed successful.
+- Added one dedicated read-only projectile/attack-result audit and dispatch
+  from the feature-specific trait scenario. No gameplay provider, native donor,
+  global patch, or manifest identity changed. Complete validation, 1,421 tests,
+  clean Release and strict 135-entry package gates pass.
+- Both KMG-only and highest-risk combined guarded Steam processes pass 4,908
+  assertions each, including ten new audit checks per profile. They inventory
+  308/1,004 projectile deliveries and 63/194 Ray-category deliveries. Native
+  Acid Splash, Snowball and Battering Blast disprove a Ray-category-only
+  predicate. Shared native projectile identities also disprove a visual-only
+  predicate. An exact semantic source catalog still needs implementation.
+- Public native SetFake(AttackResult) changes the stored result, but native
+  ForceAlwaysHit can overwrite an early change. The native projectile-hit
+  callback is a candidate local owner-filtered boundary, not deflection proof.
+- The first invocation failed before launch because an external PowerShell
+  -File call could not bind the Confirm switch. Its profile restored exactly;
+  the corrected direct script invocation reused the same artifact. Both final
+  968-entry snapshots independently equal the restored live mod tree.
+- Exact candidate, run, evidence, settings and restoration hashes are in
+  releaseCCrystallineAudit and the dedicated audit report. Zero result warnings
+  do not erase the combined log's four KeyNotFoundException occurrences.
+  No save was opened/written. Crystalline Form and the other five remaining
+  mechanics are still unimplemented; all full Release C gates remain intact.
+
 ## 2026-09-06 UTC - Efreeti native, combined-slot saves and legacy regression PASS
 
 - The corrected immutable candidate passes repository validation, all 1,421

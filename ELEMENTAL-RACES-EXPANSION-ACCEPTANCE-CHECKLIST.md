@@ -104,6 +104,10 @@ Unchecked items are pending and must not be inferred from builds or historical
 
 ## Release C / 0.0.117 alternate racial traits
 
+- [x] Dedicated read-only Crystalline native audit: actual ray/non-ray delivery
+  inventory, public attack-result API, KMG-only/combined process qualification
+  (9,816 assertions), zero save access and independently exact restoration.
+  This explicitly does not qualify Crystalline Form's actual mechanic.
 - [x] Efreeti Magic native slice passes all three Ifrit heritages, both exact
   commands, total-level/Charisma parameters, temporary stats, shared use,
   cancellation, zero/rest/level/removal/reactivation, KMG-only/combined and

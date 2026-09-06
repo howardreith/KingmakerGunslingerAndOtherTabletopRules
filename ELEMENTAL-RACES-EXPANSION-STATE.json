@@ -19,6 +19,159 @@
     "releaseB": "PASS-LOCAL-CHECKPOINT-PUSH-BLOCKED",
     "releaseC": "IN-PROGRESS-FIFTEEN-MECHANICS-NATIVE-PROOF-SIX-REMAIN; SEVEN-TRAIT-PERSISTENCE-AND-RENEWED-LEGACY-PASS"
   },
+  "releaseCCrystallineAudit": {
+    "postDocumentationValidation": {
+      "status": "PASS",
+      "sourceStateSha256": "1d51d092323e3c2b83c02ff8de806c20b0170b889f520643f6c275d7c242cf35",
+      "domainTests": 1421,
+      "packageAndDllByteIdenticalToRuntimeCandidate": true,
+      "archiveDirectory": "artifacts/qualification/0.0.117/crystalline-native-audit",
+      "scope": "Documentation-only refresh; complete validation/tests/clean build/package pass. Not an additional game run."
+    },
+    "status": "PASS-NATIVE-DELIVERY-AUDIT-ONLY; CRYSTALLINE-MECHANIC-NOT-IMPLEMENTED",
+    "report": "docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-NATIVE-AUDIT.md",
+    "basedOnCommit": "c93aafb4ab7ed5c8977797787553ade9ab6504ec",
+    "sourceStateSha256": "177219881a0985a7f72f57811a97b746721cbca91828da3add812e585ea9cd3d",
+    "packageVersion": "0.0.117-elemental-traits",
+    "packageBytes": 23212363,
+    "packageEntries": 135,
+    "packageSha256": "7fdcc4ddfb9aee38ca1e5f6fd94524401d5b8bf2c1b65dd982f9be6885512ca0",
+    "dllBytes": 6135296,
+    "dllSha256": "6d9e821a5bd8cbd00a11182ee203f11d7801e2414b4568953578a6268e7e9653",
+    "dllMvid": "36cc8ae6-2415-489d-8de6-95da77b1606b",
+    "deploymentId": "20260906T1228517785330Z",
+    "deploymentSha256": "312901a5f01dc647c475a43d770c90ec806da16dffb9445c002888a7f17cd402",
+    "nativeAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "repositoryValidation": "PASS",
+    "domainTests": 1421,
+    "domainFailures": 0,
+    "cleanReleaseBuild": "PASS",
+    "strictPackageValidation": "PASS",
+    "newSaveBearingIdentities": 0,
+    "manifest": {
+      "total": 1853,
+      "active": 1851,
+      "reserved": 2,
+      "elementalTotal": 216,
+      "elementalActive": 215,
+      "releaseC": 69
+    },
+    "saveAccess": false,
+    "saveWrites": 0,
+    "runtimeProcesses": 2,
+    "runtimeAssertions": 9816,
+    "runtimeResultWarnings": 0,
+    "findings": [
+      "WeaponCategory.Ray also labels native Acid Splash, Snowball, Battering Blast, Acid Arrow, spit and other non-ray attacks; it is not a sufficient semantic predicate.",
+      "Ray of Frost and WaterDomainBaseAbility share a projectile identity; ScorchingRayAcid and AcidArrow also share one. Projectile identity alone is not sufficient.",
+      "Native RuleAttackRoll.SetFake(AttackResult) is public and writes the stored result. Native AbilityDeliverProjectile itself calls it for ForceAlwaysHit after the rule resolves.",
+      "Projectile.OnHit raises the native IProjectileHitHandler before callbacks; a narrowly owner-filtered fact component is a candidate boundary, not yet proven deflection.",
+      "Native TryDeflectArrow requires IsFromWeapon and cannot simply be enabled for spell rays. Late AutoMiss alone cannot replace the already stored result."
+    ],
+    "nextAction": "Build and test exact semantic ray eligibility, then qualify the owned provider's native +2 racial ray AC, chosen one-use deflection, no-action cost, awareness/equipment conditions, single-ray delivery, resource persistence and cleanup. Do not infer success from this audit.",
+    "notRun": [
+      "Crystalline Form actual mechanic and persistence",
+      "remaining five other trait mechanics",
+      "other fourteen traits' actual persistence and full lifecycle",
+      "final Release C compatibility/module/package gates",
+      "Visual Adjustments absent"
+    ],
+    "prelaunchFailure": {
+      "profileRunId": "crystalline-audit-20260906T122937Z-only",
+      "reason": "Native powershell.exe -File argument binding rejected -Confirm:$false before invoking the runtime script. Corrected by invoking the same script directly in PowerShell; unchanged artifact and authority.",
+      "gameLaunched": false,
+      "saveAccess": false,
+      "profileRestored": true,
+      "profileManifestEntries": 968,
+      "profileTransactionSha256": "3fb01b5dd8213507c0d9654535f6cfd81095f26b52088c97bd22de3701cb58da"
+    },
+    "runtimeRuns": [
+      {
+        "runId": "20260906T1231315440718Z-ea5c7afa110d42c082fea0064d9590a8",
+        "directory": "20260906T1231315270723Z-observe-elemental-alternate-trait-framework",
+        "status": "PASS",
+        "assertions": 4908,
+        "failedAssertions": 0,
+        "warnings": 0,
+        "projectileDeliveries": 308,
+        "rayWeaponDeliveries": 63,
+        "catalogUnchanged": true,
+        "keyNotFoundExceptions": 0,
+        "factPostLoadSignatures": 0,
+        "profileId": "gunslinger-only",
+        "profileRunId": "crystalline-audit-20260906T123110Z-only",
+        "profileStatus": "Restored",
+        "restorationVerified": true,
+        "profileManifestEntries": 968,
+        "actualRestorationMatch": true,
+        "originalManifestSha256": "69d7a7cb41d83fe8be5917324cff9febc7c83c3eb1c1e5390e4e147bd31d730f",
+        "profileTransactionSha256": "e8c1278e1672ccca221d592948941fc757f9833ef6dff696d1453e00c500e155",
+        "settings": [
+          {
+            "path": "CallOfTheWild\\settings.json",
+            "sha256": "24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8"
+          },
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          },
+          {
+            "path": "ZFavoredClass\\settings.json",
+            "sha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
+          }
+        ],
+        "hashes": {
+          "runtime-result.json": "95894558ba6c1dd39bb7e59fb5dcb79a137560d22dc7ef0e1497b518af186f16",
+          "runtime-evidence.json": "40a6fb5ecaf54ca88c4c6aa8231aacdc822fd18528373515a29b023baa47a0c9",
+          "elemental-crystalline-form-native-audit.json": "46fd0f016e601d9c0fb25634d3ea428763c48526e782258ad1ef3985f973db51",
+          "output_log-crystalline-audit-20260906T123110Z-only.txt": "1928e93af29bbf0ac9b6c22d21cf431b3de9a6fe455b13a7857b29b82a7bd458",
+          "compatibility-attribution-log-crystalline-audit-20260906T123110Z-only.json": "8636a0bccda317540e14b03a6c99c6deffa8d583c77758a778529e941d892c35"
+        }
+      },
+      {
+        "runId": "20260906T1236449844113Z-29da5e3f08af43f6857e55ace3e37fe0",
+        "directory": "20260906T1236449693736Z-observe-elemental-alternate-trait-framework",
+        "status": "PASS",
+        "assertions": 4908,
+        "failedAssertions": 0,
+        "warnings": 0,
+        "projectileDeliveries": 1004,
+        "rayWeaponDeliveries": 194,
+        "catalogUnchanged": true,
+        "keyNotFoundExceptions": 4,
+        "factPostLoadSignatures": 0,
+        "profileId": "gunslinger-high-risk-combined-favored-class",
+        "profileRunId": "crystalline-audit-20260906T123612Z-combined",
+        "profileStatus": "Restored",
+        "restorationVerified": true,
+        "profileManifestEntries": 968,
+        "actualRestorationMatch": true,
+        "originalManifestSha256": "69d7a7cb41d83fe8be5917324cff9febc7c83c3eb1c1e5390e4e147bd31d730f",
+        "profileTransactionSha256": "ef2f9fcc0c234e66c0abd3fe391f1f2f7c54f1de84c1829c332319849ab0d41a",
+        "settings": [
+          {
+            "path": "CallOfTheWild\\settings.json",
+            "sha256": "24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8"
+          },
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          },
+          {
+            "path": "ZFavoredClass\\settings.json",
+            "sha256": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
+          }
+        ],
+        "hashes": {
+          "runtime-result.json": "9d70a25fe654e14ab4a74f81d704313650bd78f8ff4e64f1f1bb9faa65db297c",
+          "runtime-evidence.json": "fd4e739bdf7ebb4f2ff764783390470bcd5932d662b64bc103c402e08b87cb95",
+          "elemental-crystalline-form-native-audit.json": "b1274ec6f65c2f2ed733c2ddc4db18aaf7d5c247b3f6fa85a2d7fb8516c4fa82",
+          "output_log-crystalline-audit-20260906T123612Z-combined.txt": "c3e534f4cd6f714752e1c28d0e3b001728b42b41a7abd123f934fe611cebabbb",
+          "compatibility-attribution-log-crystalline-audit-20260906T123612Z-combined.json": "7c4854ff322951dc04d37b2792ea44d30914fc7d3ee1dca81285c0c6445b6ddc"
+        }
+      }
+    ]
+  },
   "releaseCEfreetiQualification": {
     "postDocumentationBuild": {
       "status": "PASS",
