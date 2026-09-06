@@ -2,7 +2,7 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.114-elemental-races` targets:
+Kingmaker Gunslinger `0.0.115-share-transmutation-instant` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
 - Unity Mod Manager 0.32.4 in the supported 0.32.x line;
@@ -72,6 +72,17 @@ validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
 ## Guarded GitHub release publisher
+
+The owner authorized the paired 0.0.115 Share Transmutation release, including
+the version/default-script roll-forward. Save-backed gameplay remains NOT RUN;
+the published 0.0.114 compatibility evidence stays pinned to that exact package.
+
+Where installed UMM targets a newer framework, pass `-ReferenceBundleDir` to
+the publisher to use the existing provenance-checked `Build-Local.ps1` path
+for both clean deterministic builds. It runs the same source, full domain,
+output, SoundBank, and strict package gates. No installed UMM/Harmony files
+are changed. If the legacy external Unity output is absent, Build-Local uses
+the tracked bundle only after the existing manifest hash check succeeds.
 
 The 0.0.114 release preserves the 0.0.113 ammunition, CMI, paper-mode,
 item-copy, and notification repairs while adding the default-ON Elemental

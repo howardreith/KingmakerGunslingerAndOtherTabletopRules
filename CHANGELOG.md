@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.0.115-share-transmutation-instant
+
+- Adds a versioned, provider-owned Brown-Fur direct-cast transaction API for
+  callers that already own spell-source spending. The API validates and binds
+  the exact `AbilityData`, recipient, Share/Powerful selection, spellbook, and
+  reservoir reservation before the effect-producing `RuleCastSpell` runs.
+- Reuses the native Brown-Fur targeting, modifier, commit, Supremacy, and
+  cleanup machinery without creating or queuing a synthetic
+  `UnitUseAbility`. Arcane Reservoir debit remains provider-owned.
+- Retains each direct transaction until its native execution process is
+  terminal, isolates rejection and cleanup to that transaction, and adds
+  delayed-process, four sequential cast, and AbilityData-reuse regressions.
+- Exposes `BrownFurDirectCastApi.ContractVersion = 1` as an optional boundary;
+  this assembly does not depend on Kingmaker Buff Planner.
+
 ## 0.0.114-elemental-races
 
 - Adds one restart-bound, default-ON Elemental Races module containing stable

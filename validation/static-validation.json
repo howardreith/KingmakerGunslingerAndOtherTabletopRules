@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.114-elemental-races",
-  "version": "0.0.114",
+  "milestone": "0.0.115-share-transmutation-instant",
+  "version": "0.0.115",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -786,6 +786,26 @@
     "cmiSyntheticToggleProhibited": true,
     "cmiTargetedBridgeIdempotent": true,
     "saveCompatibilityPreserved": true
+  },
+  "shareTransmutationInstant115": {
+    "deterministicTestCount": 1393,
+    "paperToggleAuthoritative": "activatable-is-on",
+    "paperModeReadOnly": true,
+    "paperModePostLoadMutation": false,
+    "paperSetterPersistentFactMutation": false,
+    "staleMarkerIgnoredMechanically": true,
+    "toggleOffLooseReloadPreserved": true,
+    "cmiSyntheticToggleProhibited": true,
+    "cmiTargetedBridgeIdempotent": true,
+    "saveCompatibilityPreserved": true,
+    "contractVersion": 1,
+    "exactAbilityAndTargetBinding": true,
+    "providerOwnsReservoirDebit": true,
+    "delayedProcessRetained": true,
+    "sequentialCastCount": 4,
+    "plannerCompileDependency": false,
+    "runtimeQualificationPending": true,
+    "publicReleaseAuthorized": true
   },
   "elementalRaces114": {
     "deterministicTestCount": 1390,
