@@ -1,5 +1,17 @@
 # Elemental Races expansion acceptance checklist
 
+## Owner-directed manual-test handoff (not full release acceptance)
+
+- [x] Conclude implementation at pushed code checkpoint
+  efc9d54ec29dbdd84ffe328183139f517c2f3350; no partial persistence extension.
+- [x] Install the identical tested 117 candidate via backup-first deployment.
+  All 135 packaged files independently match; UMM/Elemental Races enabled;
+  exact module settings preserved; no save access or remaining game.
+- [x] List the two unimplemented scaffolds, nine implemented traits awaiting
+  save qualification, broader gates and intentional omissions in the handoff.
+- [ ] Owner manual acceptance, any subsequent authorized merge, and the next
+  implementation session. Full Release C acceptance remains unchecked.
+
 Unchecked items are pending and must not be inferred from builds or historical
 0.0.114 evidence.
 

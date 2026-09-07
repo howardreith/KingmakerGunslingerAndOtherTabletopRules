@@ -1,5 +1,29 @@
 # Elemental Races expansion journal
 
+## 2026-09-07 UTC - Owner-requested manual-test handoff
+
+- The owner requests a conclusion to this segment and local UMM installation,
+  followed by manual testing before any merge or later implementation session.
+  Stop new work. The nineteen-trait persistence extension was inspected only:
+  no source change, fixture or save was created for it.
+- Code checkpoint efc9d54ec29dbdd84ffe328183139f517c2f3350 is committed and
+  pushed. Redeploy the identical tested candidate 08 through the backup-first
+  local installer. Independently compare all 135 packaged files against the
+  archive: every file matches. UMM and Elemental Races are already enabled;
+  settings are byte-exact. Deployment 20260907T0212038949733Z is in STATE.
+- The prior live mod folder is recoverable from the named backup; no save
+  access, game launch or remaining process occurs during this handoff.
+  The initial read-only UMM query used child Id rather than the observed Id
+  attribute; corrected exact matching proves one enabled entry, with no UMM
+  setting changed.
+- Required unimplemented mechanics: Treacherous Earth and Nereid Fascination.
+  Their selection scaffolds do not supply gameplay effects and must not be
+  chosen. Nineteen traits have native core proof, ten have save-backed proof;
+  the handoff separates nine implemented-but-unpersisted traits from these
+  two future implementations. Full Release C is not PASS.
+- Finish documentation validation and the exact required branch push.
+  No feature-to-master merge, tag, public release, PR or committed package.
+
 ## 2026-09-07 UTC - Breeze-Kissed native core checkpoint passes
 
 - Candidate 08 passes repository validation, all 1,432 domain/reflection cases,

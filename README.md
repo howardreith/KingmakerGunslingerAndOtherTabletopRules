@@ -1,5 +1,11 @@
 # Kingmaker Gunslinger
 
+The owner has concluded this segment for local manual testing. The tested
+117 candidate is installed/enabled in UMM; Release C remains incomplete.
+See the [handoff and remaining-material list](ELEMENTAL-RACES-EXPANSION-HANDOFF.md).
+Do not choose the unimplemented Treacherous Earth or Nereid Fascination
+selection scaffolds for gameplay.
+
 Version `0.0.117-elemental-traits` is the in-progress Release C expansion of the
 existing **Elemental Races: Ifrit, Oread, Sylph, and Undine** feature module.
 It also retains the published 0.0.115 Brown-Fur direct-cast compatibility fix.

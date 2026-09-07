@@ -1,5 +1,15 @@
 # Elemental Races expansion mission
 
+## Owner-directed segment conclusion (2026-09-07 UTC)
+
+The owner superseded continuous autonomous execution with a manual-test
+handoff: conclude this segment, install the tested build in UMM, push the
+feature branch and list remaining material. Do not begin more implementation
+or merge into master in this session. Await the owner's testing and a new
+instruction. The original mission below remains unfinished, not achieved.
+See [the handoff](ELEMENTAL-RACES-EXPANSION-HANDOFF.md) for the exact installed
+artifact, limitations and next-session backlog.
+
 Implement and fully qualify three gated releases on
 `codex/elemental-races-expansion` without stopping between milestones:
 
@@ -78,14 +88,17 @@ blocked, failed, ambiguous, or not run.
 
 ## Current engineering focus
 
-Release C now has eighteen traits with incremental native proof, including
+Release C now has nineteen traits with incremental native proof, including
 [Acid Breath and Ooze Breath](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md).
 The [action/save continuation](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md)
 passes RTWP commitment, ten-trait persistence and renewed legacy migration.
 Complete breath-specific turn-based action proof, the Crystalline semantic
-catalog, eleven other traits' save coverage and every lifecycle boundary. Implement Treacherous Earth,
-Breeze-Kissed and Nereid Fascination, then every final release gate. Continue independent work; no
-hard stop is established. The earlier native audit is retained historically.
+catalog, eleven other traits' save coverage and every lifecycle boundary.
+Breeze-Kissed now has incremental native core proof; its broader source,
+turn-based and fresh-save boundaries remain open. Implement Treacherous Earth
+and Nereid Fascination, then every final release gate, only after the owner's
+manual-test pause ends. No feature hard stop is established.
+The earlier native audit is retained historically.
 
 2026-09-06 continuation: the final Crystalline core candidate passes 1,423 tests,
 clean Release/package and two native profiles with 10,168 assertions. Three
