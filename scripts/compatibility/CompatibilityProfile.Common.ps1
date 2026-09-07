@@ -65,6 +65,26 @@ function Get-KmgCompatibilityAssemblyRecord([string]$Path) {
     }
 }
 
+function Get-KmgCompatibilityPackageVersion([string]$PackagePath) {
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [IO.Compression.ZipFile]::OpenRead([IO.Path]::GetFullPath($PackagePath))
+    try {
+        $entries = @($archive.Entries | Where-Object { $_.FullName.Replace('\', '/') -ceq 'KingmakerGunslinger/Info.json' })
+        if ($entries.Count -ne 1) { throw 'Compatibility package must contain exactly one KingmakerGunslinger/Info.json.' }
+        $reader = New-Object IO.StreamReader($entries[0].Open())
+        try { $info = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
+        if ($info.Id -cne 'KingmakerGunslinger' -or $info.Version -cnotmatch '^0\.0\.[0-9]+$') {
+            throw 'Compatibility package has an invalid mod identity or version.'
+        }
+        return [string]$info.Version
+    } finally { $archive.Dispose() }
+}
+
+function Get-KmgCompatibilityDefaultPackage([string]$RepositoryRoot) {
+    $version = [string](Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'Info.json')).Version
+    return Join-Path $RepositoryRoot ("artifacts\local-runtime\{0}\KingmakerGunslinger-{0}-local-runtime.zip" -f $version)
+}
+
 function Resolve-KmgCompatibilityProfile {
     param(
         [Parameter(Mandatory = $true)][string]$ProfileId,
@@ -78,9 +98,10 @@ function Resolve-KmgCompatibilityProfile {
     $profileMatches = @($profiles.profiles | Where-Object id -ceq $ProfileId)
     if ($profileMatches.Count -ne 1) { throw "Profile ID must resolve exactly once: $ProfileId" }
     $profile = $profileMatches[0]
-    $reference = (Resolve-Path -LiteralPath $ReferenceRoot).Path
+    $reference = if (@($profile.modKeys).Count -eq 0) { [IO.Path]::GetFullPath($ReferenceRoot) } else { (Resolve-Path -LiteralPath $ReferenceRoot).Path }
     $package = (Resolve-Path -LiteralPath $PackagePath).Path
     $packageHash = Get-KmgCompatibilitySha256 $package
+    $packageVersion = Get-KmgCompatibilityPackageVersion $package
     $runtimeMods = @()
     $staticOnly = @()
     $unavailable = @()
@@ -142,7 +163,7 @@ function Resolve-KmgCompatibilityProfile {
         profileId = $ProfileId
         description = $profile.description
         runtimeCapable = [bool]$profile.runtimeLoadableRequired -and $unavailable.Count -eq 0 -and $staticOnly.Count -eq 0
-        gunslinger = [ordered]@{ packagePath = $package; version = '0.0.114'; packageSha256 = $packageHash; ummId = 'KingmakerGunslinger' }
+        gunslinger = [ordered]@{ packagePath = $package; version = $packageVersion; packageSha256 = $packageHash; ummId = 'KingmakerGunslinger' }
         runtimeMods = $runtimeMods
         staticOnlyReferences = $staticOnly
         unavailableReferences = $unavailable
