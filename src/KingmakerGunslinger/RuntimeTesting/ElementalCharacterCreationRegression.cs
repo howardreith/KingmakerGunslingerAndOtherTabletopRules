@@ -62,6 +62,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _playerInventoryBefore = player.Inventory.Items.Cast<object>().ToArray();
             _playerInventoryCountsBefore = player.Inventory.Items.Select(item => item.Count).ToArray();
             _playerMoneyBefore = player.Money;
+            _creatorPauseBefore = Game.Instance.IsPaused;
         }
 
         private void CommitOwnedCreator()
@@ -84,7 +85,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void PollCommittedCreatorCleanup()
         {
-            if (_unit.Descriptor.IsCustomCompanion() &&
+            if (!(_nativeRespec && _respecOriginal != null) && _unit.Descriptor.IsCustomCompanion() &&
                 !ReferenceEquals(_unit.HoldingState, Game.Instance.Player.CrossSceneState))
             {
                 // Native AddEntity queues registration until EntityCreator.Tick.
@@ -168,7 +169,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["partyCharactersExact"] = CharacterCreationObservationIdentity.SameOrderedReferences(_partyCharactersBefore, player.PartyCharacters.Select(value => value.Value).ToArray()),
                 ["inventoryReferencesExact"] = CharacterCreationObservationIdentity.SameOrderedReferences(_playerInventoryBefore, player.Inventory.Items.Cast<object>().ToArray()),
                 ["inventoryCountsExact"] = _playerInventoryCountsBefore.SequenceEqual(player.Inventory.Items.Select(item => item.Count)),
-                ["moneyExact"] = _playerMoneyBefore == player.Money };
+                ["moneyExact"] = _playerMoneyBefore == player.Money,
+                ["respecPauseExact"] = !_nativeRespec || _creatorPauseBefore == Game.Instance.IsPaused };
             return _creatorCleanupEvidence.Properties().All(value => (bool)value.Value);
         }
 
@@ -180,7 +182,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _racialCheckPending = false; _commitCleanupPending = false; _commitRegistrationWait = 0; _revisionViewWait = 0; _revising = false; _revision = 0; _revisionOperations = 0;
             _revisionChoices.Clear(); _allocatedBases = null; _allocatedDistribution = null;
             if (!_regression) return;
-            _revisionRoute = ElementalCharacterCreationRegressionPlan.Route(_raceIndex);
+            _revisionRoute = _nativeRespec ? new[] { ElementalCharacterCreationRegressionPlan.NativeRespecChoice(_raceIndex) } :
+                ElementalCharacterCreationRegressionPlan.Route(_raceIndex);
             _character["heritageRevisionRoute"] = new JArray(_revisionRoute);
             _character["racialGraphs"] = new JArray();
             _character["nativeFinalReviews"] = new JArray();
@@ -379,8 +382,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             Action<BlueprintAbilityResource, int> resource = (blueprint, expected) => {
                 int count = owner.Resources.PersistantResources.Count(value => value != null && ReferenceEquals(value.Blueprint, blueprint));
                 int amount = owner.Resources.GetResourceAmount(blueprint);
-                resources.Add(new JObject { ["guid"] = blueprint.AssetGuid, ["expectedCount"] = expected, ["count"] = count, ["amount"] = amount });
-                exact &= count == expected && (expected == 0 || amount == 1);
+                resources.Add(new JObject { ["guid"] = blueprint.AssetGuid, ["expectedCount"] = expected, ["count"] = count, ["amount"] = amount,
+                    ["expectedAmount"] = expected == 0 ? 0 : _nativeRespec && _respecSpent.ContainsKey(blueprint.AssetGuid)
+                        ? _respecSpent[blueprint.AssetGuid] : 1 });
+                exact &= count == expected && (_nativeRespec
+                    ? ObserveRespecResourceAmount(checkpoint, blueprint, expected, amount, committedOwner != null)
+                    : expected == 0 || amount == 1);
             };
             Action<BlueprintAbility, int> ability = (blueprint, expected) => {
                 int count = owner.Abilities.Enumerable.Count(value => ReferenceEquals(value.Blueprint, blueprint));

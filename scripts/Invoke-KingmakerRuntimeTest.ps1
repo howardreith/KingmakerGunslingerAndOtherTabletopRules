@@ -65,7 +65,7 @@ if ($scenarioMetadata.RequiresSaveName) {
     if ([string]::IsNullOrWhiteSpace($SaveName)) {
         throw "$Scenario requires explicit -SaveName $($scenarioMetadata.PermittedSaveName)."
     }
-    if ($Scenario -ceq 'working-save-elemental-character-creation-regression') {
+    if ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')) {
         if ($Parameters.Count -ne 3 -or $Parameters.ContainsKey('saveName')) {
             throw 'Use typed -SaveName plus exactly race, class, and allocation in -Parameters.'
         }

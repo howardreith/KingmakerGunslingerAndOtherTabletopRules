@@ -89,10 +89,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase &&
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl &&
                 request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation &&
-                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression))
+                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression &&
+                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
                 throw new InvalidOperationException("Exact guarded creator-baseline request required.");
             _disabledControl = request.Scenario == RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl;
-            _regression = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression;
+            _nativeRespec = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec;
+            _regression = _nativeRespec || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression;
             _canCommit = _regression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation;
             if (_canCommit && (request.Parameters == null || (string)request.Parameters["saveName"] != WorkingSaveSmokeScenario.ExpectedName ||
                 loaded == null || !loaded.CompletionCallbackObserved || !loaded.DescriptorReferenceCorrelated ||
@@ -115,7 +117,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _useRoll = (string)request.Parameters["allocation"] == "roll";
                 if ((string)request.Parameters["class"] == "Gunslinger")
                     _classGuid = "abca4797366d4df0831a418eee39069a";
-                if (_regression) _races = Enumerable.Repeat(_races[0], 3).ToArray();
+                if (_regression) _races = Enumerable.Repeat(_races[0], _nativeRespec ? ElementalCharacterCreationRegressionPlan.NativeRespecVisits : 3).ToArray();
             }
         }
 
@@ -231,10 +233,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _committed = true;
                         _character["nativeCommitPerformed"] = true;
                         _character["nativeCommitCallback"] = _successCallback;
-                        _character["finalLevel"] = _unit.Descriptor.Progression.CharacterLevel;
-                        _character["finalRaceGuid"] = _unit.Descriptor.Progression.Race.AssetGuid;
-                        _character["completed"] = _successCallback && _unit.Descriptor.Progression.CharacterLevel == 1;
-                        if (_regression) VerifySelectedRacialGraph("committed-unit", _unit.Descriptor);
+                        _character["finalLevel"] = CommittedCreatorOwner.Progression.CharacterLevel;
+                        _character["finalRaceGuid"] = CommittedCreatorOwner.Progression.Race.AssetGuid;
+                        _character["completed"] = _successCallback && CommittedCreatorOwner.Progression.CharacterLevel == 1;
+                        if (_regression) VerifySelectedRacialGraph("committed-unit", CommittedCreatorOwner);
+                        QualifyNativeRespecCallback();
                         _commitCleanupPending = true; _settle = 12;
                         break;
                     default: RejectCharacter("unhandled native phase " + phase.Value); break;
@@ -366,15 +369,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["race"] = _races[_raceIndex].name, ["completed"] = false,
                 ["acceptance"] = "NOT-RUN", ["acceptanceFailures"] = new JArray(), ["steps"] = new JArray() };
             _characters.Add(_character);
-            _unit = new ChargenUnit(_canCommit && _useRoll ? BlueprintRoot.Instance.CustomCompanion :
-                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            _unit = _nativeRespec && _respecOriginal != null ? _respecOriginal :
+                new ChargenUnit(_canCommit && (_useRoll || _nativeRespec) ? BlueprintRoot.Instance.CustomCompanion :
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
             _character["nativeMercenaryFixture"] = _unit.Descriptor.IsCustomCompanion();
             if (ReferenceEquals(_unit, _mainBefore)) throw new InvalidOperationException("Fixture cannot own the campaign character.");
             _character["fixtureId"] = _unit.UniqueId;
             _spentSkills.Clear();
             BeginRegressionCharacter();
             _operations = 0; _lastCaptureKey = null; _viewWait = 0; _advancePending = false; _classChosen = false; _rollRequested = false; _rollApplied = false; _committed = false; _successCallback = false;
-            _build.HandleLevelUpStart(_unit.Descriptor, null, () => _successCallback = true, LevelUpState.CharBuildMode.CharGen);
+            if (_nativeRespec && _respecOriginal != null) BeginNativeRespec();
+            else _build.HandleLevelUpStart(_unit.Descriptor, null, () => _successCallback = true, LevelUpState.CharBuildMode.CharGen);
             _controller = _build.LevelUpController;
             if (_controller == null || _controller.State.NextLevel != 1 || !_build.IsShow)
                 throw new InvalidOperationException("Real first-level full-screen creator did not open.");
@@ -398,7 +403,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             foreach (JObject selection in racial)
             {
-                if (!((JArray)selection["consumedByActualPhases"]).Any(value => ((string)value).StartsWith("Determinator:")))
+                if (((JArray)selection["consumedByActualPhases"]).Count != 1 ||
+                    !((JArray)selection["consumedByActualPhases"]).All(value => ((string)value).StartsWith("Determinator:")))
                     AcceptanceFailure("racial selection consumed outside Heritage: " + (string)selection["selectionGuid"]);
             }
             if (racial.Length != (ReferenceEquals(_races[_raceIndex], BlueprintBootstrap.ElementalRaces.Undine.Race) ? 2 : 4)) AcceptanceFailure("missing elemental racial selections");
@@ -455,6 +461,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             _viewWait = 0;
             Capture("rendered-selection-ready:" + guid);
             BlueprintFeature preferred = PreferredRegressionChoice(blueprint);
+            if (_nativeRespec && preferred == null)
+                preferred = legal.Select(item => item.Feature).FirstOrDefault(feature => ReferenceEquals(feature,
+                    BlueprintBootstrap.ElementalFeats.RequireFeature(ElementalRaces.ElementalFeatId.ElementalStrike)));
             IFeatureSelectionItem chosen = preferred == null ? legal.OrderBy(item => ChoicePriority(item.Feature)).ThenBy(item => item.Feature.AssetGuid,
                 StringComparer.Ordinal).First() : legal.SingleOrDefault(item => ReferenceEquals(item.Feature, preferred));
             if (chosen == null) throw new InvalidOperationException("Planned racial choice is not legal and visibly rendered: " + preferred.AssetGuid);
@@ -663,13 +672,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         { Capture("rejected:" + failure); AcceptanceFailure(failure); EndCharacter(); }
         private void EndCharacter()
         {
-            CleanupCharacter();
+            if (_nativeRespec && (bool?)_character["completed"] == true) EndNativeRespecVisit();
+            else CleanupCharacter();
             _character["acceptance"] = (!_canCommit ? (bool?)_character["selectionContractComplete"] == true :
                 (bool)_character["completed"]) &&
                 ((JArray)_character["acceptanceFailures"]).Count == 0 ? "PASS" : "FAIL";
             _raceIndex++; _settle = 12; Write();
         }
         private void CleanupCharacter()
+        {
+            CloseOwnedCreatorController();
+            if (_nativeRespec) { CleanupNativeRespecActors(); return; }
+            if (_unit != null) { CleanupCreatorMembership(); _unit = null; }
+        }
+        private void CloseOwnedCreatorController()
         {
             if (_controller != null)
             {
@@ -691,7 +707,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _build.Unit = _buildUnitBefore;
                 _controller = null;
             }
-            if (_unit != null) { CleanupCreatorMembership(); _unit = null; }
         }
         private void ArmSaveGuard()
         {
@@ -773,16 +788,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             Result.Assertions.Add(new RuntimeTestAssertion { Name = "request-local-creator-cleanup",
                 Expected = "no instrumentation failures; exact restoration", Observed = string.Join("|", _failures),
                 Status = _failures.Count == 0 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
-            if (_regression) Result.Assertions.Add(new RuntimeTestAssertion { Name = "native-elemental-roundtrip-commits",
-                Expected = "three complete native commits after exact racial round trips",
+            if (_regression) Result.Assertions.Add(new RuntimeTestAssertion { Name = _nativeRespec ? "native-elemental-player-respec-callbacks" : "native-elemental-roundtrip-commits",
+                Expected = _nativeRespec ? "eight complete original-identity commits with exact spent resources" : "three complete native commits after exact racial round trips",
                 Observed = string.Join("|", _characters.OfType<JObject>().Select(row => (string)row["acceptance"])),
-                Status = _characters.Count == 3 && _characters.OfType<JObject>().All(row =>
+                Status = _characters.Count == _races.Length && _characters.OfType<JObject>().All(row =>
                     (string)row["acceptance"] == "PASS" && (bool?)row["completed"] == true)
                     ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
             Result.Status = Result.Assertions.All(value => value.Status == RuntimeTestStatuses.Pass)
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail;
             Result.ExceptionSummary = string.Join("|", _failures);
-            Result.Diagnostics.Add("Per-character acceptance is recorded independently; baseline observation PASS does not qualify the broken candidate.");
+            Result.Diagnostics.Add(_regression ? "Actual native creator acceptance is asserted separately from human UI acceptance, which remains NOT-RUN." :
+                "Per-character acceptance is recorded independently; baseline observation PASS does not qualify the broken candidate.");
             Result.EvidenceFiles.Add(Path.Combine(_request.EvidenceDirectory, EvidenceFileName));
             Result.WorkingSaveSmoke = _loaded;
             Result.GameVersion = Kingmaker.GameVersion.GetVersion();

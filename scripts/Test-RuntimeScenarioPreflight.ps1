@@ -58,6 +58,7 @@ $expected = @(
     'disposable-global-traits-kmg-disabled-control',
     'working-save-elemental-character-creation',
     'working-save-elemental-character-creation-regression',
+    'working-save-elemental-native-respec',
     'observe-elemental-alternate-trait-framework',
     'disposable-elemental-heritage-mechanics',
     'disposable-elemental-heritage-slas',
@@ -968,6 +969,28 @@ foreach ($invalid in @(
     @{saveName='KMG_AUTOMATION_WORKING'})) {
     $creatorArgs.Parameters = $invalid
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } 'creator-regression-rejects-unscoped-request'
+}
+
+$creatorArgs.Scenario = 'working-save-elemental-native-respec'
+foreach ($race in @('Ifrit', 'Oread', 'Sylph', 'Undine')) {
+    $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';race=$race;class='Fighter';allocation='point-buy'}
+    $request = New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-native-respec-request-test')
+    $serialized = $request | ConvertTo-Json -Depth 8 | ConvertFrom-Json
+    Assert-True (@($serialized.parameters.PSObject.Properties).Count -eq 4 -and
+        $serialized.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING' -and
+        $serialized.parameters.race -ceq $race -and $serialized.parameters.class -ceq 'Fighter' -and
+        $serialized.parameters.allocation -ceq 'point-buy') "native-respec-exact-json-$race"
+}
+foreach ($invalid in @(
+    @{saveName='KMG_AUTOMATION_BASELINE';race='Ifrit';class='Fighter';allocation='point-buy'},
+    @{saveName='KMG_AUTOMATION_WORKING';race='Human';class='Fighter';allocation='point-buy'},
+    @{saveName='KMG_AUTOMATION_WORKING';race='Ifrit';class='Gunslinger';allocation='point-buy'},
+    @{saveName='KMG_AUTOMATION_WORKING';race='Ifrit';class='Fighter';allocation='roll'},
+    @{saveName='KMG_AUTOMATION_WORKING';race='Ifrit';class='Fighter';allocation='point-buy';extra=$true},
+    @{saveName='KMG_AUTOMATION_WORKING'})) {
+    $creatorArgs.Parameters = $invalid
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } 'native-respec-rejects-unscoped-request'
 }
 
 if ($failures.Count -ne 0) {

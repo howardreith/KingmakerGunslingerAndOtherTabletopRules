@@ -25,6 +25,11 @@ namespace KingmakerGunslinger.ElementalRaces
             EnsureStorage()[resourceGuid] = Math.Max(0, amount);
         }
 
+        internal Dictionary<string, int> CopyResourceAmounts()
+        {
+            return new Dictionary<string, int>(EnsureStorage(), StringComparer.Ordinal);
+        }
+
         internal bool TryRecall(string resourceGuid, out int amount)
         {
             amount = 0;
