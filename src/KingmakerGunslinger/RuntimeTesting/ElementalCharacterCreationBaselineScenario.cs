@@ -21,6 +21,7 @@ using Kingmaker.Visual.CharacterSystem;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.AidAnotherCompatibility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -40,6 +41,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<MethodBase> _saveMethods = new List<MethodBase>();
         private readonly List<MethodBase> _observedAssetMethods = new List<MethodBase>();
         private readonly JArray _assetUnloads = new JArray();
+        private readonly JArray _compatibilityRechecks = new JArray();
+        private readonly List<KeyValuePair<UnityEngine.Object, JObject>> _initialInnerAssets =
+            new List<KeyValuePair<UnityEngine.Object, JObject>>();
         private readonly ModContext _context;
         private readonly RuntimeTestRequest _request;
         private readonly WorkingSaveSmokeEvidence _loaded;
@@ -120,6 +124,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_elapsed.Elapsed.TotalSeconds > _request.TimeoutSeconds - 10)
                     throw new TimeoutException("Creator baseline timed out at " + _stage);
                 if (_settle-- > 0) return;
+                if (_started) VerifyVisualIntegrity();
                 if (!_started) { Start(); return; }
                 if (_controller == null)
                 {
@@ -252,10 +257,66 @@ namespace KingmakerGunslinger.RuntimeTesting
             _build = Game.Instance.UI.CharacterBuildController;
             if (Game.Instance.UI.LevelUpController != null || _build.LevelUpController != null || _build.IsShow)
                 throw new InvalidOperationException("An existing creator cannot be used by this diagnostic.");
+            CaptureInitialInnerAssets();
             ArmSaveGuard();
             _worldBefore = Game.Instance.State.Units.All.ToArray();
+            VerifyRepeatedHelpfulReconciliation();
             _started = true;
             _settle = 15;
+        }
+
+        private void CaptureInitialInnerAssets()
+        {
+            if (BlueprintBootstrap.ElementalRaces == null) return;
+            foreach (var resource in BlueprintBootstrap.ElementalRaces.Visuals.Ordered().SelectMany(value => value.Resources))
+                foreach (var asset in resource.Resource.GetInnerAssets().Where(value => !ReferenceEquals(value, null)))
+                {
+                    if (asset == null) throw new InvalidOperationException("Visual inner asset was already dead before creator start: " + resource.AssetId);
+                    if (_initialInnerAssets.Any(value => ReferenceEquals(value.Key, asset))) continue;
+                    _initialInnerAssets.Add(new KeyValuePair<UnityEngine.Object, JObject>(asset, new JObject {
+                        ["firstOwnerGuid"] = resource.AssetId, ["name"] = asset.name,
+                        ["type"] = asset.GetType().FullName, ["instanceId"] = asset.GetInstanceID() }));
+                }
+        }
+
+        private void VerifyVisualIntegrity()
+        {
+            var dead = _initialInnerAssets.Where(value => value.Key == null).Select(value => value.Value).ToArray();
+            if (dead.Length != 0)
+                throw new InvalidOperationException("Registered visual inner assets destroyed during creator: " + new JArray(dead));
+        }
+
+        private void VerifyRepeatedHelpfulReconciliation()
+        {
+            if (_disabledControl) return;
+            var favored = AidAnotherOptionalExtensionCoordinator.FavoredClassContract;
+            if (favored == null) return;
+            var selections = new[] { favored.CombatTraits, favored.RaceTraits, favored.EquipmentTraits,
+                favored.FirstTrait, favored.SecondTrait, favored.Adopted };
+            var features = selections.Select(value => value.Features).ToArray();
+            var all = selections.Select(value => value.AllFeatures).ToArray();
+            var entries = all.Select(value => value.ToArray()).ToArray();
+            MethodInfo reconcile = typeof(AidAnotherOptionalExtensionCoordinator).GetMethod("TryReconcile",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            for (int pass = 0; pass < 3; pass++)
+            {
+                int before = AidAnotherOptionalExtensionCoordinator.SuccessfulReconciliations;
+                reconcile.Invoke(null, new object[] { "guarded-creator-repeat-" + pass });
+                bool exact = AidAnotherOptionalExtensionCoordinator.SuccessfulReconciliations == before + 1 &&
+                    selections.Select((value, index) => ReferenceEquals(value.Features, features[index]) &&
+                        ReferenceEquals(value.AllFeatures, all[index]) &&
+                        CharacterCreationObservationIdentity.SameOrderedReferences(entries[index], value.AllFeatures)).All(value => value);
+                int helpful = favored.CombatTraits.AllFeatures.Count(value =>
+                    ReferenceEquals(value, BlueprintBootstrap.BodyguardFeats.HelpfulCombat));
+                bool expected = favored.CombatTraits.Features.Length == 0 &&
+                    helpful == (favored.TraitsEnabled && _context.FeatureModules.Active.BodyguardFeats ? 1 : 0);
+                _compatibilityRechecks.Add(new JObject { ["pass"] = pass, ["exactReferencesAndOrder"] = exact,
+                    ["featuresCount"] = favored.CombatTraits.Features.Length,
+                    ["allFeaturesCount"] = favored.CombatTraits.AllFeatures.Length, ["helpfulCount"] = helpful,
+                    ["publicationExpected"] = expected });
+                if (!exact || !expected) throw new InvalidOperationException("Repeated Helpful callback damaged the exact foreign trait contract.");
+            }
+            ElementalCharacterCreationRoutingObserver.CaptureActiveCheckpoint("after-three-guarded-compatibility-rechecks");
         }
 
         private void BeginCharacter()
@@ -462,6 +523,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var resources = BlueprintBootstrap.ElementalRaces?.Visuals.Ordered().SelectMany(value => value.Resources).ToArray();
             return new JObject { ["instanceId"] = room.GetInstanceID(),
                 ["initialIdsCount"] = ids?.Count, ["initialAssetsCount"] = assets?.Count,
+                ["nativeDependencies"] = new JArray((BlueprintBootstrap.ElementalRaces?.Visuals.NativeDependencyIds ?? new string[0])
+                    .Select(id => new JObject { ["guid"] = id, ["initialIdProtected"] = ids != null && ids.Contains(id) })),
                 ["registeredProxyIds"] = resources == null ? new JArray() : new JArray(resources.Select(value => new JObject {
                     ["guid"] = value.AssetId, ["nativeAlive"] = value.Resource != null,
                     ["initialIdProtected"] = ids != null && ids.Contains(value.AssetId),
@@ -479,8 +542,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var owned = BlueprintBootstrap.ElementalRaces.Visuals.Ordered().SelectMany(value => value.Resources)
                     .SingleOrDefault(value => ReferenceEquals(value.Resource, __instance));
-                if (owned == null) return;
-                __state = new JObject { ["stage"] = _saveGuardOwner._stage, ["guid"] = owned.AssetId,
+                var shared = _saveGuardOwner._initialInnerAssets.Where(value => __instance.GetInnerAssets()
+                    .Any(asset => ReferenceEquals(value.Key, asset))).ToArray();
+                if (owned == null && shared.Length == 0) return;
+                __state = new JObject { ["stage"] = _saveGuardOwner._stage, ["guid"] = owned?.AssetId,
+                    ["sharedAssets"] = new JArray(shared.Select(value => {
+                        var item = (JObject)value.Value.DeepClone();
+                        item["excepted"] = exceptedAssets.Contains(value.Key);
+                        item["aliveBefore"] = value.Key != null;
+                        return item;
+                    })),
                     ["proxy"] = __instance.name, ["caller"] = Environment.StackTrace,
                     ["skinBefore"] = new JArray(__instance.PrimaryRamps.Select(texture => new JObject {
                         ["name"] = texture == null ? null : texture.name, ["nativeAlive"] = texture != null,
@@ -493,6 +564,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void AfterInnerAssetUnload(EquipmentEntity __instance, JObject __state)
         {
             if (__state == null) return;
+            __state["sharedAssetsAliveAfter"] = new JArray(_saveGuardOwner._initialInnerAssets.Where(value =>
+                ((JArray)__state["sharedAssets"]).Any(item => (int)item["instanceId"] == value.Key.GetInstanceID()))
+                .Select(value => value.Key != null));
             __state["skinAliveAfter"] = new JArray(__instance.PrimaryRamps.Select(texture => texture != null));
         }
 
@@ -599,6 +673,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory, EvidenceFileName),
                 new JObject { ["schemaVersion"] = 1, ["runId"] = _request.RunId,
                     ["purpose"] = "diagnostic native creator baseline", ["humanAcceptance"] = "NOT-RUN",
+                    ["initialInnerAssets"] = new JArray(_initialInnerAssets.Select(value => value.Value)),
+                    ["compatibilityRechecks"] = _compatibilityRechecks.DeepClone(),
                     ["characters"] = _characters.DeepClone(), ["assetUnloads"] = _assetUnloads.DeepClone(), ["instrumentationFailures"] = new JArray(_failures) }.ToString(Formatting.Indented));
         }
         private void Finish()
