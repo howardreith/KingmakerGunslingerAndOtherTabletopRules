@@ -11,6 +11,16 @@ configuration successfully loads the exact same working descriptor.
 
 ## Active hard blockers
 
+The owner-requested published-master integration is qualified in the
+[integration checkpoint](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md):
+1,431 tests, clean build/package, 30 compiled API checks and six qualifying
+Steam processes pass. The initial whole-ZIP save check was an invalid
+assumption about native LoadedTimes bookkeeping; the strict fresh-process
+payload/header repeat passes without changing production or save data.
+Its failed outer result remains recorded. Direct Buff Planner Instant gameplay
+is still NOT-RUN, not inferred from the native-command regression. This does
+not close any unfinished Release C gate.
+
 None established.
 
 Acid Breath and Ooze Breath now also pass native RTWP cooldown commitment

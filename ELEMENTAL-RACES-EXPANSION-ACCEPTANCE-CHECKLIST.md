@@ -5,6 +5,12 @@ Unchecked items are pending and must not be inferred from builds or historical
 
 ## Baseline and foundation
 
+- [x] Owner-authorized latest-master integration preserves the published
+  Brown-Fur API fix, both test sets and current 117 identity; 1,431 tests,
+  build/package, 30 compiled signatures, six guarded processes and exact
+  profile/payload restoration pass. See the
+  [separately scoped checkpoint](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md).
+
 - [x] Read repository policy and current Elemental Races, release,
   compatibility, runtime, manifest, and architecture records.
 - [x] Fetch authoritative master and record the exact starting SHA.

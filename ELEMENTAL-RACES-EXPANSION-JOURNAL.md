@@ -1,5 +1,44 @@
 # Elemental Races expansion journal
 
+## 2026-09-07 UTC - Published master fix integrated and requalified
+
+- Preserved exact upstream Brown-Fur implementation/tests from dfd55108 and
+  current elemental production/manifest from 14dea621. Version remains 117;
+  both distinct public/heritage 115 records remain intact. Zero new identities.
+- All 1,431 tests, clean exact-reference Release/package and 30 compiled API
+  checks pass. Six qualifying Steam processes pass 11,033 assertions; all six
+  profile restorations independently match the actual original 968-entry tree.
+  No game remains. Exact hashes and scope are in STATE and the integration report.
+- The first working-save pair's outer whole-ZIP equality check failed despite
+  its 21 native assertions passing. Local engine IL proves ordinary load
+  increments header LoadedTimes and writes only that header. A separate fresh
+  pair passes all 11 payload-entry hashes, every other header byte, exact
+  counter increments 3 -> 4 -> 5, and unchanged protected baseline bytes.
+  The failed outer check remains diagnostic; no save or engine code was edited.
+- Retain native diagnostics and NOT-RUN direct-consumer Instant gameplay,
+  Visual Adjustments and full Release C gates. Corrected read-only collection
+  and patch-format mistakes changed no runtime evidence or saves.
+- Next: commit and mandated push of the qualified owner-authorized integration,
+  then restore the named 22-file Breeze-Kissed stash and continue Release C.
+
+## 2026-09-06 UTC - Owner-authorized integration of published master 0.0.115
+
+- Fetched authoritative master dfd551080a1aad38cdd0b19714fbcb12c81ca4ca,
+  containing the Brown-Fur direct-cast API and its separately authorized public
+  release. The original mission starting SHA remains unchanged.
+- Preserved all 22 unqualified Breeze-Kissed files in named stash
+  b1c5e1a7d45205b968443bce711088a5e87aaafb, verified a clean tree, and began
+  an explicit no-commit merge into codex/elemental-races-expansion. No feature
+  branch merge into master, tag, release or package publication is authorized.
+- Provider source merged without conflict. Retained current 0.0.117 package
+  identity and the strict 0.0.114 legacy-producer exception, both branches'
+  tests, the new reference-bundle publisher option and hash-checked bundle
+  fallback. Separate 0.0.115 public and unpublished heritage records remain
+  clearly distinguished. Combined tests/build/package/runtime are pending.
+- The prior Breeze retry build completed with validated metadata, but was not
+  launched: the upstream integration takes precedence. Failed Breeze candidate
+  01 and its correction remain in the preserved work, not in this checkpoint.
+
 ## 2026-09-06 UTC - Breath RTWP and ten-trait save checkpoint qualified
 
 - Candidate undine-breath-persistence-05 passes repository validation, all

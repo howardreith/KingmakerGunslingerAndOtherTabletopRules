@@ -7,6 +7,14 @@ Proposed local package:
 
 ## Status
 
+The owner-requested integration of public master 0.0.115's Brown-Fur direct-cast
+fix passes 1,431 tests, clean build/package, 30 compiled API checks and six
+guarded regression processes (11,033 assertions). Current version and all
+elemental identities remain unchanged. Both distinct 0.0.115 historical
+records are retained. See the
+[integration checkpoint](ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md);
+direct-consumer Instant gameplay and complete Release C remain unqualified.
+
 Release C remains in progress. This checkpoint includes the deterministic
 replacement framework, the first eight passive mechanics, three typed summon
 Insights and three blood-healing traits with incremental native and save-backed

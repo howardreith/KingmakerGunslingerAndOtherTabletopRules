@@ -4,6 +4,8 @@ param(
 
     [string]$MSBuildPath,
 
+    [string]$ReferenceBundleDir,
+
     [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.117.md',
 
     [string]$ReleaseBranch = 'master',
@@ -98,7 +100,8 @@ function Invoke-QualifiedBuildAndPackage {
     param(
         [Parameter(Mandatory = $true)][string]$RepositoryRoot,
         [string]$ConfiguredKingmakerInstallDir,
-        [string]$ConfiguredMSBuildPath
+        [string]$ConfiguredMSBuildPath,
+        [string]$ConfiguredReferenceBundleDir
     )
 
     $buildArguments = @{
@@ -112,8 +115,21 @@ function Invoke-QualifiedBuildAndPackage {
         $buildArguments.MSBuildPath = $ConfiguredMSBuildPath
     }
 
-    & (Join-Path $PSScriptRoot 'build.ps1') @buildArguments |
-        ForEach-Object { Write-Host ([string]$_) }
+    if ([string]::IsNullOrWhiteSpace($ConfiguredReferenceBundleDir)) {
+        & (Join-Path $PSScriptRoot 'build.ps1') @buildArguments |
+            ForEach-Object { Write-Host ([string]$_) }
+    }
+    else {
+        # The existing provenance-checked builder retains net47/Harmony12
+        # without replacing the owner's newer installed UMM dependencies.
+        $exactArguments = @{ ReferenceBundleDir = $ConfiguredReferenceBundleDir }
+        if ($ConfiguredKingmakerInstallDir) {
+            $exactArguments.KingmakerInstallDir = $ConfiguredKingmakerInstallDir
+        }
+        if ($ConfiguredMSBuildPath) { $exactArguments.MSBuildPath = $ConfiguredMSBuildPath }
+        & (Join-Path $PSScriptRoot 'Build-Local.ps1') @exactArguments |
+            ForEach-Object { Write-Host ([string]$_) }
+    }
 
     $packageOutput = @(
         & (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release
@@ -275,7 +291,8 @@ try {
     $first = Invoke-QualifiedBuildAndPackage `
         -RepositoryRoot $root `
         -ConfiguredKingmakerInstallDir $KingmakerInstallDir `
-        -ConfiguredMSBuildPath $MSBuildPath
+        -ConfiguredMSBuildPath $MSBuildPath `
+        -ConfiguredReferenceBundleDir $ReferenceBundleDir
     $firstPackageCopy = Join-Path $root `
         "artifacts\release-work\$version\first\$([IO.Path]::GetFileName($first.PackagePath))"
     New-Item -ItemType Directory -Path (Split-Path -Parent $firstPackageCopy) -Force | Out-Null
@@ -284,7 +301,8 @@ try {
     $second = Invoke-QualifiedBuildAndPackage `
         -RepositoryRoot $root `
         -ConfiguredKingmakerInstallDir $KingmakerInstallDir `
-        -ConfiguredMSBuildPath $MSBuildPath
+        -ConfiguredMSBuildPath $MSBuildPath `
+        -ConfiguredReferenceBundleDir $ReferenceBundleDir
     if ($first.PackageSha256 -cne $second.PackageSha256 -or
         $first.DllSha256 -cne $second.DllSha256) {
         throw "Deterministic release build failed: package $($first.PackageSha256)/$($second.PackageSha256), DLL $($first.DllSha256)/$($second.DllSha256)."

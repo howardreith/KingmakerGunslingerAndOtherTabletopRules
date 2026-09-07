@@ -1,5 +1,28 @@
 # Brown-Fur Transmuter human acceptance checklist
 
+## 0.0.115 Share Transmutation direct-cast addendum
+
+Status: **AUTOMATED CANDIDATE; LIVE ACCEPTANCE NOT RUN**.
+
+- [x] Contract version 1 binds the exact ability, recipient, transaction, and
+  effect-producing rule without constructing a `UnitUseAbility`.
+- [x] Provider coordinator tests cover delayed effect completion, exact
+  reservoir ownership, four sequential recipients, and safe AbilityData reuse.
+- [x] Rejection cannot fall through to an unenhanced cast or leave a later
+  spend-suppression marker.
+- [x] Version-aware source validation and the full domain suite pass 1393/1393;
+  the exact compiled API passes the consumer's 87/87 binary contract checks.
+- [x] Exact-reference Release build output and the strict standalone package
+  validate; two deterministic packages have SHA-256
+  `2490193efc17e6a27b07beaddba71fd149bfe62ef29c4ca167698e52032316f6`.
+- [ ] In a guarded live run, cast Resinous Skin from Felix on four willing
+  party members in a compatible planner's Instant mode and verify effects,
+  spell uses, reservoir uses, and no ordinary animation delay.
+- [ ] Repeat in explicit Animated mode and with an ordinary manual cast to
+  confirm both remain native and animated.
+
+This addendum does not alter the immutable 0.0.82 acceptance record below.
+
 Status: **HUMAN ACCEPTED / FINAL QUALIFICATION COMPLETE**.
 
 This checklist applies only to the immutable `0.0.82` repair candidate below.

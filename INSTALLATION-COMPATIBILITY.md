@@ -47,6 +47,27 @@ its supported Unity Mod Manager installation, and the Harmony compatibility
 assembly supplied by that environment. Do not copy game, Unity, UMM, Harmony,
 or compiler assemblies into this mod folder.
 
+## Share Transmutation automation compatibility
+
+The in-progress 117 expansion integrates authoritative public master 0.0.115;
+its native-command, optional-absence and elemental regressions pass on one
+immutable candidate. Six original mod/settings transactions restore exactly.
+The strict working-save repeat permits only native header LoadedTimes changes
+and proves all gameplay payloads unchanged. This is not direct-consumer
+Instant-mode acceptance or final Release C compatibility qualification.
+See the [integration report](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md).
+
+Version 0.0.115 exposes Brown-Fur direct-cast contract version 1 for optional
+consumers such as Kingmaker Buff Planner. A compatible consumer may use it only
+after validating the exact public signature. The provider retains authority
+over Share eligibility, target legality, Powerful Change, Transmutation
+Supremacy, Arcane Reservoir reservation/debit, and transaction cleanup.
+
+Older provider versions remain safe: a consumer must use ordinary native
+animated casting rather than silently sharing a spell, omitting an enhancement,
+or granting a free reservoir use. The 0.0.114 compatibility profiles below are
+published historical evidence and are not relabeled as 0.0.115 qualification.
+
 ## In Harm's Way immediate-action adaptation
 
 Kingmaker 2.1.7b has a native shared swift-action cooldown but no complete

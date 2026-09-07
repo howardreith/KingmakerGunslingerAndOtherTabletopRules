@@ -22,6 +22,18 @@ namespace KingmakerGunslinger.BrownFur
     /// </summary>
     internal static class BrownFurCastIntentRuntime
     {
+        private sealed class PreparedCast
+        {
+            internal bool Accepted;
+            internal bool RejectNativeCommand;
+            internal string Failure;
+            internal CotwArcanistContract Contract;
+            internal BrownFurSpellInventoryRecord Record;
+            internal BrownFurPlayerIntentDecision PlayerIntent;
+            internal BrownFurCastDecision Decision;
+            internal BrownFurBonusAdapterPlan BonusPlan;
+        }
+
         private const double MetersPerFoot = 0.3048d;
         private static readonly object Gate = new object();
         private static CotwArcanistContract _inventoryContract;
@@ -38,83 +50,107 @@ namespace KingmakerGunslinger.BrownFur
         {
             if (command == null || ability == null || ability.Caster == null)
                 return;
-            CotwArcanistResolution resolution =
-                BrownFurOptionalExtensionCoordinator.Current;
-            BrownFurBlueprintSet blueprints =
-                BrownFurOptionalExtensionCoordinator.Blueprints;
-            if (resolution == null || !resolution.Decision.IsCompatible ||
-                resolution.Contract == null || blueprints == null)
-                return;
-
-            UnitDescriptor owner = ability.Caster;
-            BrownFurPlayerIntentDecision playerIntent = null;
             try
             {
-                playerIntent = BrownFurPlayerIntentRuntime.Observe(owner,
-                    blueprints);
-                if (!playerIntent.Valid)
+                PreparedCast prepared = Prepare(ability, target);
+                if (!prepared.Accepted)
                 {
-                    Reject(command, playerIntent.Failure);
+                    if (prepared.RejectNativeCommand)
+                        Reject(command, prepared.Failure);
                     return;
                 }
-                if (!playerIntent.CasterOwnsBrownFur) return;
-
-                BlueprintAbility selected = ability.Blueprint;
-                BrownFurSpellInventoryRecord record = FindRecord(
-                    resolution.Contract, ability);
-                bool requested = playerIntent.PowerfulChangeRequested ||
-                    playerIntent.ShareTransmutationRequested;
-                bool transmutation = selected != null &&
-                    selected.School == SpellSchool.Transmutation;
-                if (record == null && transmutation && (requested ||
-                    (playerIntent.HasTransmutationSupremacy && transmutation)))
-                {
-                    Reject(command, "spell-inventory-unqualified:" +
-                        GuidOf(selected));
-                    return;
-                }
-
-                BrownFurBonusAdapterPlan bonusPlan = record == null ? null :
-                    BrownFurBonusAdapterPlanPolicy.Create(
-                        record.AbilityScoreBonuses,
-                        record.AppliedBuffs);
-                BrownFurCastRequest request = BuildRequest(
-                    resolution.Contract, playerIntent, ability, target,
-                    record, bonusPlan);
-                BrownFurCastDecision decision =
-                    BrownFurCastPolicy.Decide(request);
-                if (!decision.Eligible)
-                {
-                    if (requested) Reject(command, decision.Failure);
-                    return;
-                }
-                if (!decision.PowerfulChange &&
-                    !decision.ShareTransmutation &&
-                    !decision.TransmutationSupremacy)
-                    return;
-
                 BrownFurCastIntent intent = BuildIntent(command, ability,
-                    target, record, playerIntent, decision, bonusPlan);
+                    target, prepared.Record, prepared.PlayerIntent,
+                    prepared.Decision, prepared.BonusPlan);
                 var transaction = new BrownFurCastTransaction(intent);
-                if (!transaction.Validate(decision) ||
-                    !BrownFurCastExecutionRuntime.Begin(resolution.Contract,
-                        command, ability, target, transaction, bonusPlan))
+                if (!transaction.Validate(prepared.Decision) ||
+                    !BrownFurCastExecutionRuntime.Begin(prepared.Contract,
+                        command, ability, target, transaction,
+                        prepared.BonusPlan))
                 {
                     Reject(command, "cast-reservation-rejected");
                     return;
                 }
                 Outcome("armed:" + intent.TransactionIdentity + ";cost=" +
-                    decision.ReservoirCost);
+                    prepared.Decision.ReservoirCost);
             }
             catch (Exception exception)
             {
-                if (playerIntent != null &&
-                    playerIntent.CasterOwnsBrownFur)
-                    Reject(command, "intent-exception:" +
-                        exception.GetType().FullName);
+                try
+                {
+                    BrownFurBlueprintSet blueprints =
+                        BrownFurOptionalExtensionCoordinator.Blueprints;
+                    BrownFurPlayerIntentDecision player =
+                        blueprints == null ? null :
+                            BrownFurPlayerIntentRuntime.Observe(
+                                ability.Caster, blueprints);
+                    if (player != null && player.CasterOwnsBrownFur)
+                        Reject(command, "intent-exception:" +
+                            exception.GetType().FullName);
+                }
+                catch (Exception) { }
                 BrownFurCastExecutionRuntime.RecordPatchFailure(
                     "intent-arm", exception);
             }
+        }
+
+        internal static BrownFurDirectCastStatus ValidateDirect(
+            AbilityData ability, TargetWrapper target)
+        {
+            try
+            {
+                PreparedCast prepared = Prepare(ability, target);
+                return prepared.Accepted
+                    ? BrownFurDirectCastStatus.PreflightAccepted(
+                        prepared.Decision.ReservoirCost)
+                    : BrownFurDirectCastStatus.Rejected(prepared.Failure);
+            }
+            catch (Exception exception)
+            {
+                BrownFurCastExecutionRuntime.RecordPatchFailure(
+                    "direct-preflight", exception);
+                return BrownFurDirectCastStatus.Rejected(
+                    "direct-preflight-exception:" +
+                    exception.GetType().FullName);
+            }
+        }
+
+        internal static BrownFurDirectCastHandle BeginDirect(
+            AbilityData ability, TargetWrapper target)
+        {
+            PreparedCast prepared;
+            try { prepared = Prepare(ability, target); }
+            catch (Exception exception)
+            {
+                BrownFurCastExecutionRuntime.RecordPatchFailure(
+                    "direct-intent", exception);
+                return BrownFurDirectCastHandle.Rejected(
+                    "direct-intent-exception:" +
+                    exception.GetType().FullName);
+            }
+            if (!prepared.Accepted)
+                return BrownFurDirectCastHandle.Rejected(prepared.Failure);
+            BrownFurCastIntent intent = BuildIntent(ability, ability, target,
+                prepared.Record, prepared.PlayerIntent, prepared.Decision,
+                prepared.BonusPlan);
+            var transaction = new BrownFurCastTransaction(intent);
+            if (!transaction.Validate(prepared.Decision))
+                return BrownFurDirectCastHandle.Rejected(
+                    "direct-transaction-validation-rejected");
+            BrownFurDirectCastHandle handle =
+                BrownFurDirectCastHandle.CreateAccepted(ability, target,
+                    intent.TransactionIdentity,
+                    prepared.Decision.ReservoirCost);
+            if (!BrownFurCastExecutionRuntime.BeginDirect(prepared.Contract,
+                    ability, target, transaction, prepared.BonusPlan, handle))
+            {
+                handle.MarkBeginRejected(
+                    "direct-cast-reservation-rejected");
+                return handle;
+            }
+            Outcome("direct-armed:" + intent.TransactionIdentity + ";cost=" +
+                prepared.Decision.ReservoirCost);
+            return handle;
         }
 
         internal static void Clear()
@@ -210,7 +246,7 @@ namespace KingmakerGunslinger.BrownFur
             };
         }
 
-        private static BrownFurCastIntent BuildIntent(UnitUseAbility command,
+        private static BrownFurCastIntent BuildIntent(object identityAnchor,
             AbilityData ability, TargetWrapper target,
             BrownFurSpellInventoryRecord record,
             BrownFurPlayerIntentDecision player,
@@ -225,7 +261,7 @@ namespace KingmakerGunslinger.BrownFur
             UnitEntityData targetUnit = target == null ? null : target.Unit;
             long sequence = Interlocked.Increment(ref _nextIdentity);
             string identity = "brown-fur-" + sequence.ToString("x16") + "-" +
-                RuntimeHelpers.GetHashCode(command).ToString("x8");
+                RuntimeHelpers.GetHashCode(identityAnchor).ToString("x8");
             return new BrownFurCastIntent(identity,
                 UnitIdentity(ability.Caster == null ? null :
                     ability.Caster.Unit), canonical, GuidOf(selected),
@@ -242,6 +278,85 @@ namespace KingmakerGunslinger.BrownFur
                     string.Join("+", bonusPlan.CarrierFamilies) : "none",
                 decision.TransmutationSupremacy && record != null ?
                     record.RequiredAdapter : "none");
+        }
+
+        private static PreparedCast Prepare(AbilityData ability,
+            TargetWrapper target)
+        {
+            var prepared = new PreparedCast {
+                Failure = "brown-fur-direct-cast-unavailable"
+            };
+            if (ability == null || ability.Caster == null)
+            {
+                prepared.Failure = "direct-ability-or-caster-missing";
+                prepared.RejectNativeCommand = true;
+                return prepared;
+            }
+            CotwArcanistResolution resolution =
+                BrownFurOptionalExtensionCoordinator.Current;
+            BrownFurBlueprintSet blueprints =
+                BrownFurOptionalExtensionCoordinator.Blueprints;
+            if (resolution == null || !resolution.Decision.IsCompatible ||
+                resolution.Contract == null || blueprints == null)
+            {
+                prepared.Failure = "brown-fur-contract-unavailable";
+                return prepared;
+            }
+            UnitDescriptor owner = ability.Caster;
+            BrownFurPlayerIntentDecision playerIntent =
+                BrownFurPlayerIntentRuntime.Observe(owner, blueprints);
+            if (!playerIntent.Valid)
+            {
+                prepared.Failure = playerIntent.Failure;
+                prepared.RejectNativeCommand = true;
+                return prepared;
+            }
+            if (!playerIntent.CasterOwnsBrownFur)
+            {
+                prepared.Failure = "caster-does-not-own-brown-fur";
+                return prepared;
+            }
+            BlueprintAbility selected = ability.Blueprint;
+            BrownFurSpellInventoryRecord record = FindRecord(
+                resolution.Contract, ability);
+            bool requested = playerIntent.PowerfulChangeRequested ||
+                playerIntent.ShareTransmutationRequested;
+            bool transmutation = selected != null &&
+                selected.School == SpellSchool.Transmutation;
+            if (record == null && transmutation && (requested ||
+                playerIntent.HasTransmutationSupremacy))
+            {
+                prepared.Failure = "spell-inventory-unqualified:" +
+                    GuidOf(selected);
+                prepared.RejectNativeCommand = true;
+                return prepared;
+            }
+            BrownFurBonusAdapterPlan bonusPlan = record == null ? null :
+                BrownFurBonusAdapterPlanPolicy.Create(
+                    record.AbilityScoreBonuses, record.AppliedBuffs);
+            BrownFurCastDecision decision = BrownFurCastPolicy.Decide(
+                BuildRequest(resolution.Contract, playerIntent, ability,
+                    target, record, bonusPlan));
+            if (!decision.Eligible)
+            {
+                prepared.Failure = decision.Failure;
+                prepared.RejectNativeCommand = requested;
+                return prepared;
+            }
+            if (!decision.PowerfulChange && !decision.ShareTransmutation &&
+                !decision.TransmutationSupremacy)
+            {
+                prepared.Failure = "brown-fur-direct-intent-not-applicable";
+                return prepared;
+            }
+            prepared.Accepted = true;
+            prepared.Contract = resolution.Contract;
+            prepared.Record = record;
+            prepared.PlayerIntent = playerIntent;
+            prepared.Decision = decision;
+            prepared.BonusPlan = bonusPlan;
+            prepared.Failure = string.Empty;
+            return prepared;
         }
 
         internal static BrownFurSpellInventoryRecord FindRecord(

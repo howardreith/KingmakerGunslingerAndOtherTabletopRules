@@ -1,6 +1,6 @@
 # Autonomous Working-Save Smoke
 
-`working-save-smoke` is the guarded, autonomous, non-mutating qualification
+`working-save-smoke` is the guarded, autonomous, gameplay-state-preserving qualification
 scenario for `KMG_AUTOMATION_WORKING`. It requires the caller's exact active
 mod version and launches through Steam App ID 640820. The receiver-bound
 mechanism was introduced and first qualified in 0.0.30; the 0.0.113 hotfix
@@ -72,6 +72,15 @@ deliberately invokes no save-writing or migration method. Unexpected native
 write activity is recorded and prevents PASS. It sends no UI input and performs
 no gameplay action.
 
+Ordinary native `SaveManager.LoadRoutine` nevertheless increments the exact
+loaded save's `header.json.LoadedTimes` and rewrites that header. Therefore
+whole-ZIP SHA-256 equality is not a valid non-mutation assertion for a loaded
+working save. The 117
+[integration repeat](ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md)
+proves every non-header entry unchanged, every other header byte unchanged,
+and exactly one counter increment per load. This narrow native bookkeeping
+does not authorize gameplay SaveRoutine calls or any protected-baseline change.
+
 Results are `PASS`, `FAIL`, `AMBIGUOUS`, `ERROR`, or `TIMEOUT`. Timeout evidence
 names the stage. Atomic structured evidence covers readiness, UI action,
 catalog, descriptor resolution, ordered events, load lifecycle, fingerprint,
@@ -83,7 +92,7 @@ Canonical unattended command:
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 `
   -Scenario working-save-smoke `
-  -ExpectedVersion 0.0.114 `
+  -ExpectedVersion 0.0.117 `
   -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$true `
   -Confirm:$false

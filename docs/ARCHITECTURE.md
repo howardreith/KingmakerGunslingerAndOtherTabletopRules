@@ -1,5 +1,15 @@
 # Current architecture
 
+## Retained public Brown-Fur direct-cast contract
+
+The 0.0.117 expansion integrates authoritative master 0.0.115 without altering
+its five Brown-Fur production files. Contract version 1 validates exact native
+AbilityData/target objects and keeps provider-owned reservoir reservation,
+debit, Share/Powerful/Supremacy scopes and delayed-process cleanup. The API is
+optional and adds no consumer assembly dependency or save-bearing identity.
+The [integration checkpoint](ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md)
+separates compiled API/native-command proof from NOT-RUN Instant-client gameplay.
+
 ## Elemental alternate racial traits 0.0.117 layer
 
 Release C adds a pure three-slot replacement policy over the existing exact

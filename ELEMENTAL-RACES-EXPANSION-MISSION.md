@@ -48,6 +48,15 @@ direct `Kingmaker.exe` launch is mechanical evidence.
 
 ## Git and publication contract
 
+On 2026-09-06 the owner explicitly authorized merging latest master into this
+feature branch to retain the published 0.0.115 Brown-Fur/Buff Planner fix.
+Authoritative master is now dfd551080a1aad38cdd0b19714fbcb12c81ca4ca; the
+original starting SHA remains recorded separately. This narrow direction-only
+authorization does not permit merging the expansion into master or publishing
+it. The two independently numbered 0.0.115 records remain distinct; current
+development stays 0.0.117-elemental-traits. See the
+[integration checkpoint](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md).
+
 Create coherent foundation, implementation, and qualification commits. After
 every coherent commit, and before any pause or handoff, run exactly:
 
@@ -55,7 +64,7 @@ every coherent commit, and before any pause or handoff, run exactly:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1
 ```
 
-Do not merge, tag, force-push, rewrite history, publish a GitHub release, or
+Apart from that explicit integration, do not merge, tag, force-push, rewrite history, publish a GitHub release, or
 commit generated packages, saves, proprietary assemblies, machine-local
 configuration, or raw runtime artifacts.
 

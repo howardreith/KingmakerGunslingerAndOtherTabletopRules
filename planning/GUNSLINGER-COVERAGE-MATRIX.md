@@ -1,5 +1,21 @@
 # Gunslinger mandatory coverage matrix
 
+## 2026-09-06 Share Transmutation direct-cast compatibility
+
+| Surface | Current coverage | Status |
+|---|---|---|
+| Native/manual Brown-Fur command | Existing `UnitUseAbility` enrollment, eligibility, commit, debit, modifier, and cleanup retained | 1393/1393 regression suite PASS; live NOT RUN |
+| Optional direct enrollment | Version-1 API reuses live intent/policy and exact reservoir reservation before rule construction | source/exact compile/87 binary assertions PASS |
+| Exact binding | Same `AbilityData`, target unit, rule, context, and delayed process required | focused coordinator and contract PASS |
+| Rejection/failure | Rule blocked before effect; exact rollback/cleanup; no direct spend-suppression residue | focused PASS |
+| Repeated recipients | Four direct transactions release independently; same ability identity can be used afterward | focused PASS including third/fourth |
+| Standalone package | Strict output/package validators and two deterministic packages | PASS; runtime/publication NOT RUN |
+
+The change is isolated in provider API commit
+`a788d2269fcc4aaa24f8c49f820257ceb9cf7403`, based on
+`6874dc15a27ded132456dbdd480f47c794543a05`. The 0.0.115 release/default
+roll-forward remains uncommitted pending explicit scope authorization.
+
 ## 2026-08-20 Acadamae priority continuation
 
 | Surface | Current coverage | Status |

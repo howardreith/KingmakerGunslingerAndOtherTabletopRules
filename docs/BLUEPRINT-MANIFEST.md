@@ -1,5 +1,11 @@
 # Blueprint manifest and registration contract
 
+The owner-authorized public-master 0.0.115 integration into the 117 expansion
+adds no blueprint identities and changes no elemental manifest entry. Its
+Brown-Fur direct-cast handles are transient transactions, not saved facts.
+Exact artifact and runtime evidence is in the
+[integration checkpoint](ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md).
+
 ## Sprint 55 status
 
 The append-only contract contains 233 stable identifiers: 232 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility; the latest identities append the native Pistolero/Musket Master archetypes, truthful archetype deed summaries, Steady Aim and Up Close and Deadly action/marker pairs, Twin Shot Knockdown's targeted action, four archetype-aware True Grit choices, and supporting scoped features without changing any established GUID.

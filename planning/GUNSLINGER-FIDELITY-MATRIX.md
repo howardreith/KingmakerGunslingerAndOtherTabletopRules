@@ -1,5 +1,16 @@
 # Base Gunslinger fidelity matrix
 
+## 2026-09-06 Share Transmutation direct-cast fidelity
+
+This optional integration changes no tabletop rule, eligibility, target range,
+resource cost, spell-source cost, Powerful Change amount, or Transmutation
+Supremacy behavior. It exposes the already implemented Brown-Fur transaction
+before a direct `RuleCastSpell`, binds it to exact native objects, and retains
+the native effect process until terminal cleanup. Brown-Fur remains the sole
+Arcane Reservoir authority; the caller remains the spell-source spend owner.
+Older clients/providers retain native animated commands. Deterministic and
+binary contract evidence passes; live Felix/Resinous Skin behavior is NOT RUN.
+
 ## 2026-08-20 Acadamae priority continuation
 
 The exact human-run `0.0.88` evidence supersedes both prior automated completion conclusions. Ordinary selection uses a detached canonical prepared-spell node, so object-reference-only slot recovery was not faithful to the installed player path. The replacement resolves the available memorized slot by exact canonical blueprint and spellbook identity, evaluates canonical spell rules while preserving the outer targeting variant, and mutates only the command-bound outer slot. Source gates pass; runtime and ordinary human acceptance remain open.
