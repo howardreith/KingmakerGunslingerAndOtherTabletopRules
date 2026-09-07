@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Root;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.ElementalRaces;
@@ -33,6 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             public string MarkerGuid { get; set; }
             public string ProviderGuid { get; set; }
             public int ReplacedSlots { get; set; }
+            public bool Published { get; set; }
             public int ExclusionCount { get; set; }
             public bool MetadataComplete { get; set; }
         }
@@ -139,7 +141,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 new BlueprintFeature[0]).Count(value =>
                                     ReferenceEquals(value,
                                         selection.Selection)),
-                            Exact = selection.Selection.Obligatory &&
+                            Exact = selection.Selection.Group == FeatureGroup.AasimarHeritage &&
+                                selection.Selection.Group2 == FeatureGroup.None &&
+                                selection.Selection.Groups.SequenceEqual(new[] { FeatureGroup.AasimarHeritage }) &&
+                                !selection.Selection.IsClassFeature && !selection.Selection.HideInUI &&
+                                !selection.Selection.HideInCharacterSheetAndLevelUp &&
+                                selection.Selection.Obligatory &&
                                 !selection.Selection.IgnorePrerequisites &&
                                 selection.Selection.Features != null &&
                                 selection.Selection.AllFeatures != null &&
@@ -190,7 +197,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 new BlueprintComponent[0]).OfType<
                                     PrerequisiteNoFeature>().ToArray();
                         BlueprintFeature[] expectedExclusions = traits.Where(
-                            value => value.Definition.Id !=
+                            value => trait.Definition.IsPublished && value.Definition.IsPublished &&
+                                value.Definition.Id !=
                                 trait.Definition.Id &&
                                 (value.Definition.ReplacedSlots &
                                     trait.Definition.ReplacedSlots) != 0)
@@ -208,16 +216,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                             MarkerGuid = trait.Marker.AssetGuid,
                             ProviderGuid = trait.Provider.AssetGuid,
                             ReplacedSlots = (int)trait.Definition.ReplacedSlots,
+                            Published = trait.Definition.IsPublished,
                             ExclusionCount = exclusions.Length,
                             MetadataComplete = trait.Marker.Icon != null &&
                                 trait.Provider.Icon != null &&
-                                !trait.Marker.HideInUI &&
+                                trait.Marker.HideInUI == !trait.Definition.IsPublished &&
+                                trait.Marker.HideInCharacterSheetAndLevelUp == !trait.Definition.IsPublished &&
                                 trait.Provider.HideInUI &&
                                 !string.IsNullOrWhiteSpace(trait.Marker.Name) &&
                                 !string.IsNullOrWhiteSpace(
                                     trait.Marker.Description)
                         };
                         row.Traits.Add(traitEvidence);
+                        if (trait.Definition.IsPublished)
+                            Add(assertions, "published-trait-specific-mechanic-" + trait.Definition.Id,
+                                "nonempty exact trait-specific mechanical provider",
+                                string.Join("|", trait.Provider.ComponentsArray.Select(value => value.GetType().Name)),
+                                ElementalAlternateTraitBlueprintFactory.HasTraitSpecificMechanic(trait),
+                                "live constructed provider components and exact owned mechanic references");
                         Add(assertions, "elemental-trait-provider-" +
                             trait.Definition.Id.ToString().ToLowerInvariant(),
                             "distinct marker/provider with exact overlap exclusions",
@@ -249,6 +265,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                             row.Selections.Count == expectedSelections &&
                             row.TopLevelOccurrences == expectedTopLevel,
                         "live parent race and policy inventory");
+                }
+
+                string[] deferredMarkerGuids = {
+                    "e117e1e0a17a4acec001000000000031", // Treacherous Earth
+                    "e117e1e0a17a4acec001000000000040"  // Nereid Fascination
+                };
+                foreach (string guid in deferredMarkerGuids)
+                {
+                    var marker = library.BlueprintsByAssetId[guid] as BlueprintFeature;
+                    var leaking = library.BlueprintsByAssetId.Values.OfType<BlueprintFeatureSelection>()
+                        .Where(selection => (selection.Features ?? new BlueprintFeature[0])
+                            .Concat(selection.AllFeatures ?? new BlueprintFeature[0])
+                            .Any(choice => choice != null && choice.AssetGuid == guid)).ToArray();
+                    Add(assertions, "deferred-marker-registered-unpublished-" + guid,
+                        "exact registered hidden marker; absent from every selection array",
+                        "leakingSelectors=" + string.Join("|", leaking.Select(value => value.AssetGuid)),
+                        marker != null && marker.HideInUI && marker.HideInCharacterSheetAndLevelUp && leaking.Length == 0,
+                        "all live Features and AllFeatures arrays by exact marker GUID");
                 }
 
                 evidence.FrameworkIdentityCount = owned.Count;

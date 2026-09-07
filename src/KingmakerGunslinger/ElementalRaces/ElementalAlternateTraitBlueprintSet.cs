@@ -59,8 +59,8 @@ namespace KingmakerGunslinger.ElementalRaces
             BlueprintFeature[] expected = new[] { RetainMarker }.Concat(
                 Choices == null ? Enumerable.Empty<BlueprintFeature>() :
                 Choices.Select(value => value.Marker)).ToArray();
-            if (Choices == null || Choices.Length == 0 ||
-                Choices.Any(value => value == null ||
+            if (Choices == null || Choices.Length != definition.PublishedChoices.Count ||
+                Choices.Any(value => value == null || !value.Definition.IsPublished ||
                     value.Definition.ParentRace != definition.Race ||
                     value.Definition.PrimarySlot != definition.Slot) ||
                 Selection.Features == null ||
@@ -104,7 +104,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 m_Selections.Any(value => value == null ||
                     value.Definition.Race != race) ||
                 m_Selections.SelectMany(value => value.Choices).Select(value =>
-                    value.Definition.Id).Distinct().Count() != m_Traits.Length)
+                    value.Definition.Id).Distinct().Count() != m_Traits.Count(value => value.Definition.IsPublished))
                 throw new InvalidOperationException(
                     "The parent-race alternate-trait graph is incomplete.");
         }

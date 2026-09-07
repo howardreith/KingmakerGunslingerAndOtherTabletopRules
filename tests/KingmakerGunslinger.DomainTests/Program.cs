@@ -25,6 +25,8 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("elemental-chargen.alternate-racial-route", ElementalCharacterCreationRoutingTests.AlternateTraitFactoryUsesRacialRouteAndPublishedChoices),
+            Case("elemental-traits.deferred-identities-unpublished", ElementalAlternateTraitPolicyTests.DeferredMarkersRemainRegisteredWithoutReplacingSlots),
             Case("elemental-chargen.heritage-native-route", ElementalCharacterCreationRoutingTests.HeritageFactoryUsesObservedNativeHeritageRoute),
             Case("elemental-chargen.native-creator-fixture", ElementalCharacterCreationRoutingTests.NativeCreatorFixtureIsScopedAndReportsAcceptanceSeparately),
             Case("elemental-chargen.disabled-control-boundary", ElementalCharacterCreationRoutingTests.DisabledControlCannotBootstrapProductionOrCommitCampaign),

@@ -6,6 +6,11 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Enums;
+using Kingmaker.Enums.Damage;
+using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Designers.Mechanics.Facts;
+using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using UnityEngine;
@@ -61,7 +66,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 ElementalAlternateTraitPolicy.SelectionsForRace(race))
             {
                 ElementalAlternateTraitBlueprints[] choices = definition
-                    .Choices.Select(choice => traits.Single(value =>
+                    .PublishedChoices.Select(choice => traits.Single(value =>
                         value.Definition.Id == choice.Id)).ToArray();
                 BlueprintFeature retain = registry.Register<BlueprintFeature>(
                     definition.RetainMarkerSymbol,
@@ -120,7 +125,8 @@ namespace KingmakerGunslinger.ElementalRaces
             ElementalAlternateTraitDefinition definition, Sprite icon)
         {
             BlueprintFeature result = BaseFeature(definition.MarkerSymbol,
-                false);
+                !definition.IsPublished);
+            result.HideInCharacterSheetAndLevelUp = !definition.IsPublished;
             var controller = ScriptableObject.CreateInstance<
                 ElementalAlternateTraitMarkerController>();
             controller.Trait = (int)definition.Id;
@@ -129,9 +135,9 @@ namespace KingmakerGunslinger.ElementalRaces
                 LocalizationService.Create(Key(definition, "Marker.Name"),
                     definition.Name),
                 LocalizationService.Create(Key(definition,
-                    "Marker.Description"), definition.Description +
-                    " Replaces: " + SlotText(definition.ReplacedSlots) +
-                    "."), icon);
+                    "Marker.Description"), definition.IsPublished ? definition.Description +
+                    " Replaces: " + SlotText(definition.ReplacedSlots) + "." :
+                    "Deferred. This retained development identity is unavailable for selection and does not replace a racial trait."), icon);
             return result;
         }
 
@@ -165,10 +171,10 @@ namespace KingmakerGunslinger.ElementalRaces
             BlueprintFeature[] choices, Sprite icon)
         {
             if (choices == null || choices.Length !=
-                    definition.Choices.Count + 1 ||
+                    definition.PublishedChoices.Count + 1 ||
                 choices.Any(value => value == null))
                 throw new InvalidOperationException(
-                    "An alternate-trait selection requires retain-base plus every primary-slot option.");
+                    "An alternate-trait selection requires retain-base plus every published primary-slot option.");
             var result = ScriptableObject.CreateInstance<
                 BlueprintFeatureSelection>();
             result.name = InternalName(definition.SelectionSymbol);
@@ -177,8 +183,10 @@ namespace KingmakerGunslinger.ElementalRaces
             result.HideInUI = false;
             result.IgnorePrerequisites = false;
             result.Obligatory = true;
-            result.Group = FeatureGroup.None;
+            // Installed Races Unleashed alternate-racial-trait contract.
+            result.Group = FeatureGroup.AasimarHeritage;
             result.Group2 = FeatureGroup.None;
+            result.Groups = new[] { FeatureGroup.AasimarHeritage };
             result.Features = (BlueprintFeature[])choices.Clone();
             result.AllFeatures = (BlueprintFeature[])choices.Clone();
             result.ComponentsArray = new BlueprintComponent[0];
@@ -197,7 +205,8 @@ namespace KingmakerGunslinger.ElementalRaces
             var components = new List<BlueprintComponent>(
                 target.Marker.ComponentsArray ?? new BlueprintComponent[0]);
             foreach (ElementalAlternateTraitBlueprints conflict in all.Where(
-                value => value.Definition.Id != target.Definition.Id &&
+                value => target.Definition.IsPublished && value.Definition.IsPublished &&
+                    value.Definition.Id != target.Definition.Id &&
                     (value.Definition.ReplacedSlots &
                         target.Definition.ReplacedSlots) != 0))
             {
@@ -230,12 +239,21 @@ namespace KingmakerGunslinger.ElementalRaces
                     result.Traits().Sum(value => value.Mechanics().Count) ||
                 result.Traits().Any(value => value.Marker.Icon == null ||
                     value.Provider.Icon == null ||
-                    value.Marker.HideInUI || !value.Provider.HideInUI ||
+                    value.Marker.HideInUI == value.Definition.IsPublished || !value.Provider.HideInUI ||
+                    value.Marker.HideInCharacterSheetAndLevelUp == value.Definition.IsPublished ||
+                    (value.Definition.IsPublished && !HasTraitSpecificMechanic(value)) ||
                     value.Marker.ComponentsArray.OfType<
                         ElementalAlternateTraitMarkerController>().Count() != 1 ||
                     value.Provider.ComponentsArray.OfType<
                         ElementalAlternateTraitProviderController>().Count() != 1) ||
                 result.Selections().Any(value =>
+                    value.Selection.Group != FeatureGroup.AasimarHeritage ||
+                    value.Selection.Group2 != FeatureGroup.None ||
+                    value.Selection.Groups == null ||
+                    !value.Selection.Groups.SequenceEqual(new[] { FeatureGroup.AasimarHeritage }) ||
+                    value.Selection.IsClassFeature || value.Selection.HideInUI ||
+                    value.Selection.HideInCharacterSheetAndLevelUp ||
+                    value.RetainMarker.ComponentsArray.OfType<Prerequisite>().Any() ||
                     !value.Selection.Obligatory ||
                     value.Selection.IgnorePrerequisites ||
                     value.Selection.Icon == null ||
@@ -248,6 +266,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 result.Traits())
             {
                 int expected = result.Traits().Count(value =>
+                    trait.Definition.IsPublished && value.Definition.IsPublished &&
                     value.Definition.Id != trait.Definition.Id &&
                     (value.Definition.ReplacedSlots &
                         trait.Definition.ReplacedSlots) != 0);
@@ -256,6 +275,62 @@ namespace KingmakerGunslinger.ElementalRaces
                     throw new InvalidOperationException(
                         trait.Definition.Name +
                         " does not carry every exact overlap exclusion.");
+            }
+        }
+
+        internal static bool HasTraitSpecificMechanic(ElementalAlternateTraitBlueprints trait)
+        {
+            var components = trait.Provider.ComponentsArray ?? new BlueprintComponent[0];
+            Func<StatType, int, ModifierDescriptor, bool> stat = (type, amount, descriptor) =>
+                components.OfType<AddStatBonus>().Any(value => value.Stat == type &&
+                    value.Value == amount && value.Descriptor == descriptor);
+            switch (trait.Definition.Id)
+            {
+                case ElementalAlternateTraitId.WildfireHeart:
+                    return stat(StatType.Initiative, 4, ModifierDescriptor.Racial);
+                case ElementalAlternateTraitId.GraniteSkin:
+                    return stat(StatType.AC, 1, ModifierDescriptor.NaturalArmor);
+                case ElementalAlternateTraitId.LikeTheWind:
+                    return stat(StatType.Speed, 5, ModifierDescriptor.Racial);
+                case ElementalAlternateTraitId.WhisperingWind:
+                    return stat(StatType.SkillStealth, 4, ModifierDescriptor.Racial);
+                case ElementalAlternateTraitId.ThunderousResilience:
+                    return components.OfType<AddDamageResistanceEnergy>().Any(value =>
+                        value.Type == DamageEnergyType.Sonic && value.Value.Value == 5);
+                case ElementalAlternateTraitId.BrazenFlame:
+                    return components.OfType<ElementalBrazenFlameDamage>().Any();
+                case ElementalAlternateTraitId.ForgeHardened:
+                case ElementalAlternateTraitId.Secretive:
+                    return components.OfType<ElementalAlternateTraitSaveBonus>().Any(value =>
+                        value.Trait == (int)trait.Definition.Id);
+                case ElementalAlternateTraitId.FireInsight:
+                case ElementalAlternateTraitId.EarthInsight:
+                case ElementalAlternateTraitId.AirInsight:
+                    return components.OfType<ElementalSummonInsight>().Any(value =>
+                        value.Trait == (int)trait.Definition.Id);
+                case ElementalAlternateTraitId.FireInTheBlood:
+                case ElementalAlternateTraitId.StoneInTheBlood:
+                case ElementalAlternateTraitId.StormInTheBlood:
+                    return components.OfType<ElementalBloodDamageTrigger>().Any(value =>
+                        value.Trait == (int)trait.Definition.Id);
+                case ElementalAlternateTraitId.EfreetiMagic:
+                case ElementalAlternateTraitId.AcidBreath:
+                case ElementalAlternateTraitId.OozeBreath:
+                    return components.OfType<AddFacts>().Any(value => value.Facts != null &&
+                        value.Facts.OfType<BlueprintAbility>().Any(ability =>
+                            trait.Mechanics().Any(owned => ReferenceEquals(owned, ability)) &&
+                            ability.ComponentsArray != null && ability.ComponentsArray.Length > 0)) &&
+                        components.OfType<AddAbilityResources>().Any(value =>
+                            trait.Mechanics().Any(owned => ReferenceEquals(owned, value.Resource)));
+                case ElementalAlternateTraitId.CrystallineForm:
+                    return components.OfType<ElementalCrystallineRayArmorClass>().Any() &&
+                        components.OfType<ElementalCrystallineRayDeflection>().Any();
+                case ElementalAlternateTraitId.BreezeKissed:
+                    return components.OfType<ElementalBreezeKissedArmorClass>().Any() &&
+                        components.OfType<AddFacts>().Any(value => value.Facts != null &&
+                            value.Facts.OfType<BlueprintAbility>().Count() == 3);
+                default:
+                    return false;
             }
         }
 
