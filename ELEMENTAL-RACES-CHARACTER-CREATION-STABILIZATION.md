@@ -662,3 +662,81 @@ four full-stack characters. Both transactions restored the exact Mods tree and
 UMM bytes; independent save audits passed with zero save-load increments.
 These eight creators canceled after final review: real committed disposable
 characters, changed choices, respec and owner UI acceptance remain pending.
+
+
+### P0 D: preserve the observed ZFavoredClass array contract (in qualification)
+
+Controlled B/C/D/E/F creators reached both global Trait roots. The owner's
+empty-list failure remains an open acceptance defect, not a proven Helpful
+causation. Native selection IL reads AllFeatures for extraction/legality; the
+installed ZFavoredClass catalog intentionally has an empty Features array.
+Observed lifecycle snapshots showed no later replacement of either Combat array.
+
+Helpful now appends only to the authoritative AllFeatures array through the
+existing reversible transaction. The helper accepts no Features writer, and
+resolution rejects an uninspected nonempty/null Features contract. Exact-GUID
+conflict detection, original ordering, repeat idempotence and exact rollback
+remain. Bodyguard OFF leaves both Combat arrays unchanged. The source tests
+exercise empty-array identity retention, repeated publication, rollback and
+rejection before mutation for changed contracts. No unrelated ZFavoredClass
+exceptions or data are changed. Qualification remains pending.
+
+
+Profile C `20260907T0728150548273Z-disposable-elemental-character-creation-case`
+reached Ifrit final review with both global Traits and three exact repeated
+compatibility callbacks: Combat Features remained the same empty reference,
+AllFeatures remained the same 14-choice reference, and Helpful stayed absent.
+The profile restored exact Mods/UMM bytes and the save audit passed. However,
+its game log contains repeated KMG visual-retention InvalidOperationExceptions:
+an inner asset of Ifrit male body proxy `2b436bad4d4f480db61e5c16bc4f7e50`
+was destroyed after the initial retention snapshot. The runner did not yet
+monitor every shared inner asset, so its diagnostic PASS is overridden by this
+log failure. This candidate is NOT qualified. Narrow instrumentation now checks
+all initially live inner assets and observes foreign equipment unloads that
+share any of them, to identify the missing lifecycle boundary.
+
+
+The narrower Profile C probe
+`20260907T0738386678192Z-disposable-elemental-character-creation-case` failed
+on the exact missing boundary: eleven shared materials/textures from native
+Tiefling male body/head/horns donors died after their inner-asset unload calls.
+Every observed shared asset was excepted and alive immediately after
+UnloadInnerAssetsExceptGiven. Native LoadedResource.Unload then calls
+AssetBundle.Unload(true), destroying donor-bundle materials irrespective of the
+inner-asset exception set. Preserving proxy IDs alone cannot protect that bundle.
+The retention plan now also includes the exact native donor and palette-source
+IDs resolved during construction (including actual fallback sources). It
+verifies their original live cache references before extending the native ID
+collection. It does not retain unrelated loaded equipment or alter the unload
+algorithm. Every initial inner asset is now monitored throughout creator runs.
+
+`shared-visual-c-01` never launched: an offline optional-assembly reader held
+Mods open while the transaction tried to rename it. After the reader exited,
+the complete original Mods manifest, SoundBank and original UMM hash were
+verified exact; no backup/quarantine/sentinel had been created. The failed-entry
+state was preserved and closed as an explicitly verified no-op restoration.
+`shared-visual-c-02` then ran and restored exact Mods/UMM bytes and passed the
+independent save audit. Failed runtime evidence is retained above.
+
+
+Donor-retention validation: `donor-retention-build-01.log` passed repository
+validation, all **1,443** domain/reflection tests, clean Release compilation,
+deterministic packaging and strict 135-entry validation. The qualified artifact
+attests source `79ca6301c12d980f08a626d307625798fd71cf2f` plus fingerprint
+`1e1b2282a8ef19a55c0cdf938d144e6080a1839fe37de2181f895fb9d1abfb74`.
+ZIP SHA-256 `c74752cab22316ddef0265a662b8ff586658ee641a92baecb4b7cb233855a8da`;
+DLL SHA-256 `53b62944750c34923f54f782dc7c669f691fa3691d1e7f2bf0ca7ddbf3ee6d2c`;
+MVID `aa7eea2b-9b0a-4fd3-89f2-9ea89339a08d`.
+
+Profile C `20260907T0746464105055Z-disposable-elemental-character-creation-baseline`
+and Profile F `20260907T0801288315432Z-disposable-elemental-character-creation-baseline`
+each passed all four full-screen creators through final review, with no
+per-character acceptance failures, no instrumentation failures and zero owned
+or shared equipment unload observations. Every initial inner asset (220) stayed
+alive. All 28 proxy IDs plus 29 exact donor/palette IDs were retained in the
+native creator's existing collection (57 IDs total). There were no KMG ERROR
+headers or visual-retention exceptions in these qualified logs. Profile D
+`20260907T0752220713262Z-disposable-elemental-character-creation-case` also passed
+Ifrit through final review. C/D/F restored exact Mods and UMM bytes and passed
+save audits with zero load increments. These are save-free review/cancel routes;
+actual committed characters and respec remain pending.

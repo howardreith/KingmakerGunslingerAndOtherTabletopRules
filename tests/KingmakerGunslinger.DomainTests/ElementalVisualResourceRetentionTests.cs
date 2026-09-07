@@ -22,10 +22,11 @@ namespace KingmakerGunslinger.DomainTests
             var assets = new List<EqualAssets> { foreign };
             var plan = new[] {
                 new KeyValuePair<string, EqualAssets[]>("owned-body", new[] { shared, second }),
-                new KeyValuePair<string, EqualAssets[]>("owned-head", new[] { shared }) };
-            Assertions.Equal(4, ElementalVisualResourceRetentionPolicy.Append(ids, assets, plan),
-                "Both owned proxy identities and both distinct inner-asset references must be retained.");
-            Assertions.True(ids.SetEquals(new[] { "native", "foreign", "owned-body", "owned-head" }) &&
+                new KeyValuePair<string, EqualAssets[]>("owned-head", new[] { shared }),
+                new KeyValuePair<string, EqualAssets[]>("exact-native-donor", new EqualAssets[0]) };
+            Assertions.Equal(5, ElementalVisualResourceRetentionPolicy.Append(ids, assets, plan),
+                "Owned proxies, their exact donor bundle identity, and both distinct inner-asset references must be retained.");
+            Assertions.True(ids.SetEquals(new[] { "native", "foreign", "owned-body", "owned-head", "exact-native-donor" }) &&
                 assets.Count == 3 && ReferenceEquals(assets[0], foreign) &&
                 ReferenceEquals(assets[1], shared) && ReferenceEquals(assets[2], second),
                 "Foreign identities, ordered references, and equality-colliding assets must be preserved.");

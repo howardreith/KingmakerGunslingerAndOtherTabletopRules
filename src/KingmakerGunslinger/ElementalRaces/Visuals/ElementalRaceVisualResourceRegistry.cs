@@ -47,6 +47,29 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
         private readonly Dictionary<string,
             ElementalRaceVisualResourceRegistration> _bySymbol;
         private readonly List<ElementalRaceVisualResourceRegistration> _order;
+        private readonly Dictionary<string, EquipmentEntity> _nativeDependencies =
+            new Dictionary<string, EquipmentEntity>(StringComparer.Ordinal);
+
+        internal string[] NativeDependencyIds { get { return _nativeDependencies.Keys.OrderBy(value => value, StringComparer.Ordinal).ToArray(); } }
+
+        internal void BindNativeDependencies(IEnumerable<KeyValuePair<string, EquipmentEntity>> dependencies)
+        {
+            if (_order.Count != 0 || _nativeDependencies.Count != 0)
+                throw new InvalidOperationException("Visual donors must be bound once before proxy registration.");
+            IDictionary cache = RequireCache();
+            var plan = new Dictionary<string, EquipmentEntity>(StringComparer.Ordinal);
+            foreach (var dependency in dependencies)
+            {
+                EquipmentEntity existing;
+                if (dependency.Value == null || !cache.Contains(dependency.Key) ||
+                    !ReferenceEquals(CurrentResource(cache[dependency.Key]), dependency.Value) ||
+                    (plan.TryGetValue(dependency.Key, out existing) && !ReferenceEquals(existing, dependency.Value)))
+                    throw new InvalidOperationException("Native visual donor identity is missing or ambiguous: " + dependency.Key);
+                plan[dependency.Key] = dependency.Value;
+            }
+            if (plan.Count == 0) throw new InvalidOperationException("Native visual donor plan is empty.");
+            foreach (var dependency in plan) _nativeDependencies.Add(dependency.Key, dependency.Value);
+        }
 
         internal ElementalRaceVisualResourceRegistry(BlueprintManifest manifest,
             ModLogger logger)
@@ -189,6 +212,16 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 if (inner.Any(value => value == null))
                     throw new InvalidOperationException("Owned character creator inner asset was destroyed: " + registration.AssetId);
                 plan.Add(new KeyValuePair<string, UnityEngine.Object[]>(registration.AssetId, inner));
+            }
+            // LoadedResource.Unload uses AssetBundle.Unload(true), which destroys
+            // shared donor materials even when inner-asset exceptions retain them.
+            // Keep the exact construction/palette donors in the native ID set too.
+            foreach (var dependency in _nativeDependencies)
+            {
+                if (dependency.Value == null || !cache.Contains(dependency.Key) ||
+                    !ReferenceEquals(CurrentResource(cache[dependency.Key]), dependency.Value))
+                    throw new InvalidOperationException("Native visual donor was unloaded: " + dependency.Key);
+                plan.Add(new KeyValuePair<string, UnityEngine.Object[]>(dependency.Key, new UnityEngine.Object[0]));
             }
             int additions = ElementalVisualResourceRetentionPolicy.Append(ids, assets, plan);
             if (additions != 0)
