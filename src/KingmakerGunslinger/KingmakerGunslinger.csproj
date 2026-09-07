@@ -425,6 +425,7 @@
     <Compile Include="BrownFur\BrownFurPlayerIntentPolicy.cs" />
     <Compile Include="BrownFur\BrownFurPlayerIntentRuntime.cs" />
     <Compile Include="BrownFur\BrownFurCastIntentRuntime.cs" />
+    <Compile Include="BrownFur\BrownFurDirectCastApi.cs" />
     <Compile Include="BrownFur\BrownFurIdentityCatalog.cs" />
     <Compile Include="BrownFur\BrownFurArchetypePlan.cs" />
     <Compile Include="BrownFur\BrownFurPowerfulChangeSelectionLogic.cs" />

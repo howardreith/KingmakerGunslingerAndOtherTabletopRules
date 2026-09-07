@@ -77,6 +77,11 @@ Copy-Item -Path (Join-Path $root 'assets\game\icons\*.png') -Destination (Join-P
 Copy-Item -Path (Join-Path $root 'assets\game\icons\expanded-summoning\*') -Destination (Join-Path $buildOutput 'assets\icons\expanded-summoning') -Force
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
+if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {
+    # Use the unchanged checked-in artifact only when the same qualified hash
+    # below proves it is identical; no Unity asset rebuild or installation.
+    $bundleSource = Join-Path $root 'assets\bundles\kingmakergunslinger.firearms'
+}
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) { throw "Qualified firearm AssetBundle is missing: $bundleSource" }
 if ((Get-KmgSha256 -Path $bundleSource) -ne $bundleManifest.sha256) { throw 'Firearm AssetBundle hash does not match the qualified manifest.' }
 Copy-Item -LiteralPath $bundleSource -Destination (Join-Path $buildOutput 'assets\bundles\kingmakergunslinger.firearms') -Force

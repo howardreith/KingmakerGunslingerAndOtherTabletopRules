@@ -3,8 +3,696 @@
   "mission": "elemental-races-expansion",
   "branch": "codex/elemental-races-expansion",
   "startingCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
-  "authoritativeMasterCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
-  "interveningMasterCommits": [],
+  "authoritativeMasterCommit": "dfd551080a1aad38cdd0b19714fbcb12c81ca4ca",
+  "interveningMasterCommits": [
+    "a788d2269fcc4aaa24f8c49f820257ceb9cf7403",
+    "e985aad7671992885210df448deca18d05081096",
+    "636d70bfd64db922a7d42070144302723002553c",
+    "473f83bd901602ebe610cfdf291f11ce4a3faa57",
+    "dfd551080a1aad38cdd0b19714fbcb12c81ca4ca"
+  ],
+  "masterIntegration": {
+    "status": "PASS-FOCUSED-INTEGRATION; NOT-FULL-RELEASE-C",
+    "authorization": "Owner explicitly requested latest 0.0.115 master be merged into this feature branch.",
+    "featureParent": "14dea6215927517a9cb7c91e6553fa5592abe44a",
+    "masterParent": "dfd551080a1aad38cdd0b19714fbcb12c81ca4ca",
+    "unqualifiedBreezeWorkStash": "b1c5e1a7d45205b968443bce711088a5e87aaafb",
+    "preservedWorkFiles": 22,
+    "cleanBeforeMerge": true,
+    "providerSourceResolution": "All five upstream Brown-Fur source files preserved unchanged.",
+    "versionResolution": "Current candidate remains 0.0.117-elemental-traits; both distinct 0.0.115 release-note records retained with explicit provenance.",
+    "publishedProviderGameplay": "NOT-RUN upstream; this merge does not relabel it as gameplay PASS.",
+    "mergeBackToMasterAuthorized": false,
+    "publicReleaseAuthorized": false
+  },
+  "masterIntegrationQualification": {
+    "status": "PASS-FOCUSED-INTEGRATION; NOT-FULL-RELEASE-C; NOT-DIRECT-CONSUMER-GAMEPLAY",
+    "report": "docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md",
+    "archive": "artifacts/qualification/0.0.117/master-integration-01",
+    "featureParent": "14dea6215927517a9cb7c91e6553fa5592abe44a",
+    "masterParent": "dfd551080a1aad38cdd0b19714fbcb12c81ca4ca",
+    "version": "0.0.117-elemental-traits",
+    "sourceStateSha256": "afa4544373627ef783606760555ba7e9bf190e92be2728ee7cbdec88746a449f",
+    "packageSha256": "55b7c03c66b63207d4bcdd069e03d89b98e9e6b323dae1988bc72a26ce73c50b",
+    "packageBytes": 23251812,
+    "packageEntries": 135,
+    "dllSha256": "bf671d1ae024fa6a7b1c387f7988ee0a8c03ffef6cd5ba2fec4a5e855bbef0c2",
+    "dllBytes": 6238720,
+    "dllMvid": "22d0f7ce-2243-49ec-9898-0c6a7805d075",
+    "deployment": "20260906T2348075275844Z",
+    "deploymentSha256": "e9715f98d22abba26da0abc1690c737b108c05af98be6eec68a99f4c57b5e99a",
+    "repositoryValidation": "PASS",
+    "domainReflectionTests": 1431,
+    "compiledApiAssertions": 30,
+    "compiledApiChecks": [
+      "public-static-api",
+      "contract-constant-one",
+      "exact-signature-Validate",
+      "exact-signature-Begin",
+      "public-sealed-handle",
+      "handle-IDisposable",
+      "public-sealed-status",
+      "exact-handle-signature-Inspect",
+      "exact-handle-signature-Cleanup",
+      "exact-handle-signature-CompleteRule",
+      "exact-handle-signature-Dispose",
+      "status-type-Accepted",
+      "read-only-public-status-Accepted",
+      "status-type-Committed",
+      "read-only-public-status-Committed",
+      "status-type-Complete",
+      "read-only-public-status-Complete",
+      "status-type-ResidualState",
+      "read-only-public-status-ResidualState",
+      "status-type-State",
+      "read-only-public-status-State",
+      "status-type-Failure",
+      "read-only-public-status-Failure",
+      "status-type-Detail",
+      "read-only-public-status-Detail",
+      "status-type-TransactionIdentity",
+      "read-only-public-status-TransactionIdentity",
+      "status-type-ReservoirCost",
+      "read-only-public-status-ReservoirCost",
+      "no-optional-assembly-link"
+    ],
+    "cleanRelease": "PASS",
+    "strictPackage": "PASS",
+    "manifest": {
+      "total": 1860,
+      "active": 1858,
+      "reserved": 2,
+      "elementalActive": 222,
+      "elementalBlueprints": 194,
+      "elementalVisualProxies": 28,
+      "releaseC": 76,
+      "addedByIntegration": 0
+    },
+    "elementalProductionAndManifestDiffFromFeatureParent": "EMPTY",
+    "upstreamBrownFurSourceAndRegressionsDiffFromMasterParent": "EMPTY",
+    "qualifyingProcesses": 6,
+    "qualifyingAssertions": 11033,
+    "qualifyingRunIds": [
+      "20260906T2348380469624Z-6e86c034b32c4b8693627e50c26b4abb",
+      "20260906T2351188334353Z-c11bad1904254a7b96a21c4c45bbc0c1",
+      "20260906T2355019827849Z-1d8c11bf53044631a7dbc725efdcef8b",
+      "20260906T2357425204034Z-9e07bb1ca618488b8e013f8bdc63b423",
+      "20260907T0012379786712Z-effcb93c78224a0abc289eeea5fcf125",
+      "20260907T0015038544685Z-27ec29f0975f4c7a948bba6728b635f8"
+    ],
+    "resultWarnings": 0,
+    "transactions": [
+      {
+        "profile": "gunslinger-only",
+        "suffix": "only",
+        "transactionSha256": "56a2dbdaa9ad8f262967a655bba2989b01fd994eedfbbf14da3c759d0886acdc",
+        "restorationVerified": true,
+        "independentManifestEqual": true,
+        "manifestEntries": 968,
+        "restoredManifestSha256": "9501ebfb600fc98f89e2c6212d0bbcc2026353689033110be384c282ec05bafe",
+        "settings": [
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-high-risk-combined-favored-class",
+        "suffix": "combined",
+        "transactionSha256": "ebab820e1f7870cef496085fa3d95a098cb53ca876749f892ae7d6ca5f93a75f",
+        "restorationVerified": true,
+        "independentManifestEqual": true,
+        "manifestEntries": 968,
+        "restoredManifestSha256": "9501ebfb600fc98f89e2c6212d0bbcc2026353689033110be384c282ec05bafe",
+        "settings": [
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-high-risk-combined-favored-class",
+        "suffix": "brown-fur-execution",
+        "transactionSha256": "f069eaed6dd4aec0a8cb6a46e18d94a6508d99bc6e08c1bac332437b463dc268",
+        "restorationVerified": true,
+        "independentManifestEqual": true,
+        "manifestEntries": 968,
+        "restoredManifestSha256": "9501ebfb600fc98f89e2c6212d0bbcc2026353689033110be384c282ec05bafe",
+        "settings": [
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-only",
+        "suffix": "brown-fur-absent",
+        "transactionSha256": "90f92d68700856bb08da56218dd65ed1ace5810490f1431c308320371cf940f4",
+        "restorationVerified": true,
+        "independentManifestEqual": true,
+        "manifestEntries": 968,
+        "restoredManifestSha256": "9501ebfb600fc98f89e2c6212d0bbcc2026353689033110be384c282ec05bafe",
+        "settings": [
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-exact-installed-copy",
+        "suffix": "working",
+        "transactionSha256": "c64556891d6a799e177ebe14a512af58ded3cf07dd232e1d2d631479cb62f474",
+        "restorationVerified": true,
+        "independentManifestEqual": true,
+        "manifestEntries": 968,
+        "restoredManifestSha256": "9501ebfb600fc98f89e2c6212d0bbcc2026353689033110be384c282ec05bafe",
+        "settings": [
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-exact-installed-copy",
+        "suffix": "repeat-working",
+        "transactionSha256": "15fd390feb6a8c9122033453ee4b198c7d502b8faa9c4401adcccddbcca31003",
+        "restorationVerified": true,
+        "independentManifestEqual": true,
+        "manifestEntries": 968,
+        "restoredManifestSha256": "9501ebfb600fc98f89e2c6212d0bbcc2026353689033110be384c282ec05bafe",
+        "settings": [
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          }
+        ]
+      }
+    ],
+    "remainingKingmakerProcesses": 0,
+    "legacyMigration": "NOT-RERUN for this integration; 0.0.114 proof remains pinned to earlier checkpoints.",
+    "directBuffPlannerGameplay": "NOT-RUN; existing native-command regression is not a direct-consumer Instant-mode test.",
+    "visualAdjustments": "NOT-RUN; absent",
+    "remainingReleaseCGates": "UNCHANGED; Breeze-Kissed work preserved separately; no final release claim",
+    "failedOuterCheck": {
+      "transaction": "master-integration-01-working",
+      "status": "FAIL-WHOLE-ZIP-EQUALITY-ASSUMPTION",
+      "runtimeRunIds": [
+        "20260907T0000209731439Z-d3f4c59eb55b440689a211ce5fcec4e7",
+        "20260907T0002540431785Z-e3f24aaf03534fcb893dfff1b9b12521"
+      ],
+      "beforeWorkingZipSha256": "95094cae88f8f4fbb624d2ae05dfc7f3352545595ad15dbeb1413b0055aab3f3",
+      "afterWorkingZipSha256": "6303c014f1d2823fc50f2abefaa40ac180294992a6fccdcf4d8a46f554aac11e",
+      "baselineUnchanged": true,
+      "qualification": "Retained diagnostic only; no pre-run per-entry snapshot exists for that pair. Separate fresh-process repeat supplies strict payload proof.",
+      "nativeFinding": "SaveManager+<LoadRoutine>d__50.MoveNext 0x0600BF00 increments LoadedTimes at IL_0198..01A3 and serializes only header via ISaver.SaveJson/Save at IL_01CC..01EC.",
+      "nativeAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb"
+    },
+    "toolingDiagnostics": [
+      "Conflict marker precheck initially matched historical equals-sign separators; narrowed to actual conflict markers before building.",
+      "Read-only reflection collector corrected empty Type[] and generic-list serialization; compiled API assertions then passed 30/30.",
+      "Oversized collection output was recollected compactly; no evidence file or save was edited."
+    ]
+  },
+  "masterIntegrationRuntimeEvidence": [
+    {
+      "directory": "20260906T2348380239628Z-observe-elemental-alternate-trait-framework",
+      "runId": "20260906T2348380469624Z-6e86c034b32c4b8693627e50c26b4abb",
+      "scenario": "observe-elemental-alternate-trait-framework",
+      "status": "PASS",
+      "scope": "QUALIFIED-INTEGRATION",
+      "assertions": 5498,
+      "failures": 0,
+      "resultWarnings": 0,
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 4,
+        "unsupportedShaderFallback": 4,
+        "unsupportedShaderGpuError": 4,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 4,
+        "lightmapModeMismatch": 1,
+        "zeroSurfaceArea": 0,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "keyNotFoundSignatures": 0,
+      "elementalErrorSignatures": 0,
+      "brownFurErrorSignatures": 0,
+      "postLoadSignatures": 0,
+      "hashes": {
+        "compatibility-attribution-log-master-integration-01-only.json": "610cb9153d813a5c16da5138aadcb336c7be8eee9957a853a7ec4aa998035883",
+        "elemental-alternate-trait-framework.json": "115e1318137a84099dae058798051f61f884ab63571ced3a04a647dccf65f018",
+        "elemental-alternate-trait-passives.json": "825ac6d48c3be78e70d18ecadf2a9de189e3d8087f75c71c8c522f571bcad34c",
+        "elemental-alternate-trait-reconciliation.json": "e11b726dff65eecd174efddb530a2ee7ccb2e78b40f77f5ac867601ca04c7810",
+        "elemental-blood-traits.json": "ec0524ab802275109ea9e969c9b9edc8c45960cfba85123e7d2ecdaa43e983e6",
+        "elemental-component-identities.json": "c21249c83fa29b9974ba75c42c30bf094b7dab687269da3aeba8d3b040e22f16",
+        "elemental-crystalline-form.json": "21f54fb3bebbade39f03b956d28f192373be19f48d748530aa060cf7770db953",
+        "elemental-crystalline-form-native-audit.json": "c09cd30ad4e79c95c151ca399f0d09f6cb8731ab1a7054a6ed737350db959ce1",
+        "elemental-efreeti-magic.json": "3e4cea408f92d58b09cd26f837849410c94bf1f9b3d98e2af9d7f67a262cef53",
+        "elemental-feat-transient-preview.json": "c202a2664978c2e79adc01198840dfa5dd89bd37abf07b7c6144544e7e5361d7",
+        "elemental-remaining-trait-native-audit.json": "d311fd31774f846b86b79ceaca05b6a657d22c1c53b88bd2f63afcfc365c43b3",
+        "elemental-summon-insight.json": "5fb04c721aa8f5edde86cd18d4133d4bbf1bc5658dc82da1bacecc30bd75a750",
+        "elemental-undine-breaths.json": "e7c0802ee64dc2c62c0ad58f74e6cddef8a5763f55b17d1b026f2b5859283083",
+        "orchestration.json": "6575267b3ec1ac827a9efdc1099b5e14fe524c183c3f3b0dd2fe6524cf656015",
+        "output_log-master-integration-01-only.txt": "a76b99a5fbf7e3f972d75886db7223a5e24bf36e81103a926235702585887354",
+        "runtime-evidence.json": "29dfd968cb13063ec0595f6148a77a52aa86760f4731add1b56e4051a7b13161",
+        "runtime-loaded-build-identity.json": "964179113304f6d1ded37eaa391da9dfed0d278cc279d73014c451160eb08039",
+        "runtime-result.json": "60eea15354df9715ef0542a6521f649960a2d0737011b61ed2d6dba3fa5a41f4"
+      }
+    },
+    {
+      "directory": "20260906T2351188304165Z-observe-elemental-alternate-trait-framework",
+      "runId": "20260906T2351188334353Z-c11bad1904254a7b96a21c4c45bbc0c1",
+      "scenario": "observe-elemental-alternate-trait-framework",
+      "status": "PASS",
+      "scope": "QUALIFIED-INTEGRATION",
+      "assertions": 5498,
+      "failures": 0,
+      "resultWarnings": 0,
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 4,
+        "unsupportedShaderFallback": 4,
+        "unsupportedShaderGpuError": 4,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 4,
+        "lightmapModeMismatch": 1,
+        "zeroSurfaceArea": 0,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "keyNotFoundSignatures": 4,
+      "elementalErrorSignatures": 0,
+      "brownFurErrorSignatures": 0,
+      "postLoadSignatures": 0,
+      "hashes": {
+        "compatibility-attribution-log-master-integration-01-combined.json": "079d43a35443c85f65f3120f18cdbbf4e91a3a03e12dbbb36bf039c981ed15c5",
+        "elemental-alternate-trait-framework.json": "115e1318137a84099dae058798051f61f884ab63571ced3a04a647dccf65f018",
+        "elemental-alternate-trait-passives.json": "825ac6d48c3be78e70d18ecadf2a9de189e3d8087f75c71c8c522f571bcad34c",
+        "elemental-alternate-trait-reconciliation.json": "e11b726dff65eecd174efddb530a2ee7ccb2e78b40f77f5ac867601ca04c7810",
+        "elemental-blood-traits.json": "9ee8c53faa75c495bbdac67309e774a79705d1537d6dc7f129543e515fc5cf46",
+        "elemental-component-identities.json": "c21249c83fa29b9974ba75c42c30bf094b7dab687269da3aeba8d3b040e22f16",
+        "elemental-crystalline-form.json": "3fbbbf7552a09e4a6f4a59e22a9d38830b67eb2bff23b96aa483ff6337ddfbb7",
+        "elemental-crystalline-form-native-audit.json": "99baa386b50bc5a8deea6ff582a5696206e26bcedc7eabce0b3ce14694e4a865",
+        "elemental-efreeti-magic.json": "09a6f763a37d72e223b9a8e17e8d769b8432a98665dc8518b11286f4f1b112cf",
+        "elemental-feat-transient-preview.json": "abfbd4388f5f601e56ae83c1da21de23c3a2ba48342579f277ab8bf6dd648473",
+        "elemental-remaining-trait-native-audit.json": "f7f8cdef8c887b2350751cfdee6bea351dda010b73214edd2e0cb6607c20f962",
+        "elemental-summon-insight.json": "2133e82ed62123ad0be23e58f15fe8ad5c2b3b0f1c2170d72a3c2b24cc6e06f2",
+        "elemental-undine-breaths.json": "c0c73bc38a0585db90791e476cd528880e67a6c59046b5381aae52c2c0c1fdcf",
+        "orchestration.json": "b1f8307cee0ff4bca242ce4902d1bf7228c045e93a793d2cb091d2a5e559adb2",
+        "output_log-master-integration-01-combined.txt": "ad0a2f13c201fb7636aa4f7b8a71a691bc3365fb0913862989d7d75f39052375",
+        "runtime-evidence.json": "e7521afa1694f1f54f07a4270c62d250c25ed536231c5869f55067e3fa2cd52e",
+        "runtime-loaded-build-identity.json": "ea57135328ab0929af12f854299672ad5b3041c7f8f369cce376f810f5921171",
+        "runtime-result.json": "c16f3924623075b0161212331edfca4a6ebae88819bf0a5f994ce1d90ea6ad7d"
+      }
+    },
+    {
+      "directory": "20260906T2355019727845Z-disposable-brown-fur-cast-execution",
+      "runId": "20260906T2355019827849Z-1d8c11bf53044631a7dbc725efdcef8b",
+      "scenario": "disposable-brown-fur-cast-execution",
+      "status": "PASS",
+      "scope": "QUALIFIED-INTEGRATION",
+      "assertions": 9,
+      "failures": 0,
+      "resultWarnings": 0,
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 2,
+        "unsupportedShaderFallback": 2,
+        "unsupportedShaderGpuError": 2,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 4,
+        "lightmapModeMismatch": 1,
+        "zeroSurfaceArea": 0,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "keyNotFoundSignatures": 4,
+      "elementalErrorSignatures": 0,
+      "brownFurErrorSignatures": 0,
+      "postLoadSignatures": 0,
+      "hashes": {
+        "brown-fur-cast-execution.json": "2c14a55b7a33aec5cbd2972f79df37f397e611e6aabf4a59ac60fc94f0d07882",
+        "compatibility-attribution-log-master-integration-01-brown-fur-execution.json": "edd5dca3a74f78fbe5b4bf12d3b5df0cfc59c77b379fbe7418c20b736a530b36",
+        "orchestration.json": "6fbc60ff828963541925cea14df9e86fa87f79d1592e0fb70b20471342e34c1a",
+        "output_log-master-integration-01-brown-fur-execution.txt": "6be0853a4f7bee266928b495b5f887c344646c526c037dd1751d15712846fc4b",
+        "runtime-evidence.json": "e6756ce3e5b973bbaecd26c837453db9610262c5fb7fc8b06dafdf557e6d37c0",
+        "runtime-loaded-build-identity.json": "87de1c85776a8e3aa7df8e85420049e4816339705595307f14da570ffa9801e2",
+        "runtime-result.json": "63f13b548b5515a4efcd7235977a008b358ac13f516fcd3a515917731fb4a4bb"
+      }
+    },
+    {
+      "directory": "20260906T2357425184019Z-observe-brown-fur-cotw-absent-isolation",
+      "runId": "20260906T2357425204034Z-9e07bb1ca618488b8e013f8bdc63b423",
+      "scenario": "observe-brown-fur-cotw-absent-isolation",
+      "status": "PASS",
+      "scope": "QUALIFIED-INTEGRATION",
+      "assertions": 7,
+      "failures": 0,
+      "resultWarnings": 0,
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 2,
+        "unsupportedShaderFallback": 2,
+        "unsupportedShaderGpuError": 2,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 4,
+        "lightmapModeMismatch": 1,
+        "zeroSurfaceArea": 0,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "keyNotFoundSignatures": 0,
+      "elementalErrorSignatures": 0,
+      "brownFurErrorSignatures": 0,
+      "postLoadSignatures": 0,
+      "hashes": {
+        "compatibility-attribution-log-master-integration-01-brown-fur-absent.json": "b6d785c032aaa81f1d4146454f0699aa5619aff26825b1ceae776f2afc81c4b8",
+        "orchestration.json": "1e47d4f5db3b4681402b17f84e21f7cc4cd26f5d6d30aba4b74b5fff589b36c5",
+        "output_log-master-integration-01-brown-fur-absent.txt": "80e3a3ca5ee12ed5af84cd8231d7b2200bd1b9c65dafc01d986203317fdf0fa0",
+        "runtime-evidence.json": "598ec98d2d230b6593246c466b48bcc76e2eea84966dabbff2da0776eb0c4f83",
+        "runtime-loaded-build-identity.json": "3a5e2d8cfbeddb7fec8b2684126125413e71c432f8b8df54af723cf1b4f4cf72",
+        "runtime-result.json": "131d5408ff5bdd766cd7ddb5354bf945d3964d927f29f12eef5d563c5e6df8ab"
+      }
+    },
+    {
+      "directory": "20260907T0000209491844Z-working-save-smoke",
+      "runId": "20260907T0000209731439Z-d3f4c59eb55b440689a211ce5fcec4e7",
+      "scenario": "working-save-smoke",
+      "status": "PASS",
+      "scope": "EARLIER-DIAGNOSTIC; OUTER-SAVE-CHECK-FAILED",
+      "assertions": 11,
+      "failures": 0,
+      "resultWarnings": 0,
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 5,
+        "unsupportedShaderFallback": 5,
+        "unsupportedShaderGpuError": 5,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 7,
+        "lightmapModeMismatch": 1,
+        "zeroSurfaceArea": 0,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "keyNotFoundSignatures": 4,
+      "elementalErrorSignatures": 0,
+      "brownFurErrorSignatures": 0,
+      "postLoadSignatures": 0,
+      "hashes": {
+        "compatibility-attribution-log-master-integration-01-working.json": "6d0c6e8a4246d696644e48e761683fe4b1b4a5d45df14c5bb633a3178de2feef",
+        "orchestration.json": "bb3e0117bc1b157e716536146a302c00f0f131319ae2f615a55c5567b204ec33",
+        "output_log-master-integration-01-working.txt": "88d04958659c636eff8e2708db5da51c4e2cd475fa9d87b2bcea331006ebabb4",
+        "runtime-evidence.json": "df26a2bf06d44e7f0b51dd438b869f77a1ece9bf18c27be240fa2194a227b552",
+        "runtime-loaded-build-identity.json": "36ee46a317c6933426a719355a1e478c8314a3466283400ecc2fd5a6cb64849e",
+        "runtime-ready.json": "1fe0aaec0912d4b1d47fe23320b8fb73d1a8ce46086e1838dcd9d609166795a2",
+        "runtime-result.json": "b26b5e8f63c80128b35a0f3daef31963fbb8d784772679b828d4a7c4a16df07a"
+      }
+    },
+    {
+      "directory": "20260907T0002540411412Z-disposable-brown-fur-native-cast",
+      "runId": "20260907T0002540431785Z-e3f24aaf03534fcb893dfff1b9b12521",
+      "scenario": "disposable-brown-fur-native-cast",
+      "status": "PASS",
+      "scope": "EARLIER-DIAGNOSTIC; OUTER-SAVE-CHECK-FAILED",
+      "assertions": 10,
+      "failures": 0,
+      "resultWarnings": 0,
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 5,
+        "unsupportedShaderFallback": 5,
+        "unsupportedShaderGpuError": 5,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 7,
+        "lightmapModeMismatch": 1,
+        "zeroSurfaceArea": 0,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "keyNotFoundSignatures": 4,
+      "elementalErrorSignatures": 0,
+      "brownFurErrorSignatures": 0,
+      "postLoadSignatures": 0,
+      "hashes": {
+        "brown-fur-native-cast.json": "fc2c08407bd384a277b9103cf9f5012260bd4a318d0ad1f7598d8b277870c1ee",
+        "compatibility-attribution-log-master-integration-01-working.json": "e7b959f64a64720dde59616dd79eb694c0e6d9705347650ec353c1dff4a3ff6d",
+        "orchestration.json": "78ce275289228a1dde74efb095e8ef6e0f250718e317a03ceb7295921983974b",
+        "output_log-master-integration-01-working.txt": "48140c7f52e30594e344ff25df0c71ea3d51ba59ee01730a67f37ed276739fe3",
+        "runtime-evidence.json": "35d7fa2e6e0368497d53228c9e4887371e0f50150c32663d6280b5ea06976c46",
+        "runtime-loaded-build-identity.json": "532b733e7ef93d0556ddd77dc0a43dd685bc3d93ebd0b993fd94a01708cdd0f2",
+        "runtime-ready.json": "1f99cb69e7e279eb7ca4126d5ac468ce4260fa5b35581b48212744bd0bf34349",
+        "runtime-result.json": "10ad6b537e66c4b5e4aa959ab91bf6b7f576f3e9d5e11150376f6ae145fcbb6b"
+      }
+    },
+    {
+      "directory": "20260907T0012379626373Z-working-save-smoke",
+      "runId": "20260907T0012379786712Z-effcb93c78224a0abc289eeea5fcf125",
+      "scenario": "working-save-smoke",
+      "status": "PASS",
+      "scope": "QUALIFIED-INTEGRATION",
+      "assertions": 11,
+      "failures": 0,
+      "resultWarnings": 0,
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 5,
+        "unsupportedShaderFallback": 5,
+        "unsupportedShaderGpuError": 5,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 7,
+        "lightmapModeMismatch": 1,
+        "zeroSurfaceArea": 0,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "keyNotFoundSignatures": 4,
+      "elementalErrorSignatures": 0,
+      "brownFurErrorSignatures": 0,
+      "postLoadSignatures": 0,
+      "hashes": {
+        "compatibility-attribution-log-master-integration-02-working.json": "0143379c01515580873b5358146733259deefc6bc7a334a69c4da14b9f71598c",
+        "orchestration.json": "3436a2e0dff711087a71cab636b72aa4a5957f2251c6daff795bab600adc491c",
+        "output_log-master-integration-02-working.txt": "05320a73dfa73090645bfe1bcace7b54094b2a22855a2bbdd7c2cca870b8478c",
+        "runtime-evidence.json": "11a33cbf58b460d288df34e166e8f43caaf78faef5d747d01738d8c3c5d11075",
+        "runtime-loaded-build-identity.json": "069f599e116012ab76848b959b1c3cd9eb390a9ef8083ce99dcf302170d10531",
+        "runtime-ready.json": "4ed4f294e9a78c1bb1c037a0fd3ac66776f050db6f746abc8078109793ce0859",
+        "runtime-result.json": "c83114dba498c9e468a1d958a77efe54b185b11fcfb8e7db18016831fdc2280d"
+      }
+    },
+    {
+      "directory": "20260907T0015038524323Z-disposable-brown-fur-native-cast",
+      "runId": "20260907T0015038544685Z-27ec29f0975f4c7a948bba6728b635f8",
+      "scenario": "disposable-brown-fur-native-cast",
+      "status": "PASS",
+      "scope": "QUALIFIED-INTEGRATION",
+      "assertions": 10,
+      "failures": 0,
+      "resultWarnings": 0,
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "nativeCounts": {
+        "unsupportedShaderAllPassesRemoved": 5,
+        "unsupportedShaderFallback": 5,
+        "unsupportedShaderGpuError": 5,
+        "invalidParticleMeshReadWrite": 0,
+        "missingSerializedScript": 7,
+        "lightmapModeMismatch": 1,
+        "zeroSurfaceArea": 0,
+        "missingMainTexProperty": 0,
+        "favoredClassComponentAppliedOnceOnLevelUp": 0,
+        "polymorphTransition": 0,
+        "polymorphTryReplaceView": 0,
+        "polymorphRestoreView": 0,
+        "polymorphOnFactActivate": 0,
+        "polymorphOnFactDeactivate": 0,
+        "unitDescriptorDispose": 0,
+        "unitFxVisibilityManagerUpdate": 0
+      },
+      "keyNotFoundSignatures": 4,
+      "elementalErrorSignatures": 0,
+      "brownFurErrorSignatures": 0,
+      "postLoadSignatures": 0,
+      "hashes": {
+        "brown-fur-native-cast.json": "8113c18d505f1ddbda963986f67be8a9bce33162f95bf96aa170e29c7a9aa5c6",
+        "compatibility-attribution-log-master-integration-02-working.json": "c879872300e76122b01671f2e90bd323116520af2b4dfe09c273a62029b9e60b",
+        "orchestration.json": "00b26beb563b55a0882934863662a1cd6cd9e459138545664ef210ea8685a4cd",
+        "output_log-master-integration-02-working.txt": "f8f5c09b09461ba3f3e21a35f0d7fda55cb9e46c43cd0d37e1b63603929fca82",
+        "runtime-evidence.json": "8cfd0ecd910570bb9f548ef3023a4ccfedc75cf2482467b2930b4d7b4b9f2917",
+        "runtime-loaded-build-identity.json": "2140ec9075026b2db305f6e9121d66c00a7a32d7c996564f90a3923fec71b050",
+        "runtime-ready.json": "0926bb2af91fe19d40496eb2a39c54bb836db6289d061475054c52ce7f2c7fea",
+        "runtime-result.json": "e6026351e128cb5e90d7cf3e6a08b9dd0105b0fb03cf53fa6ff8d92755ad8a46"
+      }
+    }
+  ],
+  "masterIntegrationWorkingPayload": {
+    "baselineAfter": {
+      "name": "Manual_298_KMG_AUTOMATION_BASELINE.zks",
+      "sha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07"
+    },
+    "phases": [
+      {
+        "afterZipSha256": "6a9483ce7921b6ca2f5f5a50671c154ac8e54524211567e3e0a0834f16e5d764",
+        "payloadExact": true,
+        "afterLoadedTimes": 4,
+        "runId": "20260907T0012379786712Z-effcb93c78224a0abc289eeea5fcf125",
+        "scenario": "working-save-smoke",
+        "beforeLoadedTimes": 3,
+        "beforeZipSha256": "6303c014f1d2823fc50f2abefaa40ac180294992a6fccdcf4d8a46f554aac11e",
+        "baselineExact": true
+      },
+      {
+        "afterZipSha256": "2d0450d52b32ebe09276689cada68870b4537b4a439b2b71c6454f16e8bdd94f",
+        "payloadExact": true,
+        "afterLoadedTimes": 5,
+        "runId": "20260907T0015038544685Z-27ec29f0975f4c7a948bba6728b635f8",
+        "scenario": "disposable-brown-fur-native-cast",
+        "beforeLoadedTimes": 4,
+        "beforeZipSha256": "6a9483ce7921b6ca2f5f5a50671c154ac8e54524211567e3e0a0834f16e5d764",
+        "baselineExact": true
+      }
+    ],
+    "after": {
+      "zipSha256": "2d0450d52b32ebe09276689cada68870b4537b4a439b2b71c6454f16e8bdd94f",
+      "zipBytes": 4376594,
+      "entryCount": 12,
+      "loadedTimes": 5,
+      "headerExceptLoadedTimesSha256": "a655ee6fbe4c99d7859c0135a96b28ac037ea70de7a4647878640e9fae6b02fb"
+    },
+    "before": {
+      "zipSha256": "6303c014f1d2823fc50f2abefaa40ac180294992a6fccdcf4d8a46f554aac11e",
+      "zipBytes": 4376594,
+      "entryCount": 12,
+      "loadedTimes": 3,
+      "headerExceptLoadedTimesSha256": "a655ee6fbe4c99d7859c0135a96b28ac037ea70de7a4647878640e9fae6b02fb",
+      "payload": [
+        {
+          "name": "0a89ba823d7eab045949d98cf22dcd2c.fog.png",
+          "length": 26010,
+          "sha256": "492e0cf78e549783669de401f8a594f504a62f2c387ab545fe6f839567ca8883"
+        },
+        {
+          "name": "0a89ba823d7eab045949d98cf22dcd2c.json",
+          "length": 50034,
+          "sha256": "af97b84d1f68acafc295d123fa05f55d9b545a06d172d21d5d2e5dde6bd76417"
+        },
+        {
+          "name": "0a89ba823d7eab045949d98cf22dcd2cjamandismansionthroneroom_startprologue.json",
+          "length": 274985,
+          "sha256": "cf6167c9174694e6d61ab65c9121a32ab7fce940f7d65ffb51af86c29bc29027"
+        },
+        {
+          "name": "2849fdde28fe50f4d935bf2cf3405051.fog.png",
+          "length": 25543,
+          "sha256": "a16f1a1196d4764c39eb7aaea81ab7a8b982cddf3f020181c4d2df5ceff717de"
+        },
+        {
+          "name": "2849fdde28fe50f4d935bf2cf3405051.json",
+          "length": 28273044,
+          "sha256": "12ded8e3314064ecec834b2f99ec722203a3f37cde377db531e36d3cf9f1f447"
+        },
+        {
+          "name": "2849fdde28fe50f4d935bf2cf3405051jamandismansion_mechanics_dlc2mimics.json",
+          "length": 55979,
+          "sha256": "b368192280533182f81c8b15306ad07177c62fc31091cdae10e1eddae26bdccd"
+        },
+        {
+          "name": "header.png",
+          "length": 249292,
+          "sha256": "421d0dfbacf44a5560d56c981873d69e727957db670b94662ef72ad05c89c1bd"
+        },
+        {
+          "name": "history",
+          "length": 1032428,
+          "sha256": "d4682e041578c0f1562102c5d0a51b08bc20bcff31042a11afe1b8ec44aac032"
+        },
+        {
+          "name": "party.json",
+          "length": 311886,
+          "sha256": "948fb9483a2a383f9e1d8468fcd2d388a20a0879cd15f1cb2254d2d9c5ca1f0f"
+        },
+        {
+          "name": "player.json",
+          "length": 50370,
+          "sha256": "b03c3217baf04ef3d11da177c5c8a98f2820bbff76ff1c21096f220889c12856"
+        },
+        {
+          "name": "statistic.json",
+          "length": 481,
+          "sha256": "70fe0fe8e70317a23e76daab8950d6c7f7197092c766004252e8223c98e09823"
+        }
+      ]
+    },
+    "baselineBefore": {
+      "name": "Manual_298_KMG_AUTOMATION_BASELINE.zks",
+      "sha256": "cc7cbb0d08581873ed0ad2a6ac8ebd16a95333b5665cd74dcd0c538e16119c07"
+    },
+    "status": "PASS",
+    "restorationVerified": true,
+    "sha256": "ba877821a24440e56bf6be7509f92658ccff78951035e4ab0e269d8e8429f4b4"
+  },
   "startingTreeClean": true,
   "phase": "release-c-remaining-mechanics",
   "currentVersion": "0.0.117",

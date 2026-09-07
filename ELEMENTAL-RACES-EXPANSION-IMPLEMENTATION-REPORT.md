@@ -2,6 +2,15 @@
 
 ## Current outcome
 
+The owner-requested master integration now includes the public 0.0.115
+Brown-Fur direct-cast fix from dfd551080a1aad38cdd0b19714fbcb12c81ca4ca.
+All 1,431 tests, clean build/package, 30 compiled API checks and six qualifying
+guarded processes (11,033 assertions) pass. The exact working-save payload and
+all other header bytes survive ordinary native LoadedTimes increments; the
+protected baseline and six mod/settings restorations remain exact. See the
+[integration report](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md).
+This does not qualify direct Buff Planner Instant gameplay or complete Release C.
+
 **IN PROGRESS - FOUNDATION, RELEASE A, AND RELEASE B PASS ALL LOCAL GATES;
 RELEASE C REPLACEMENT FRAMEWORK PASSES ITS INCREMENTAL GATES; EIGHT TRAITS
 HAVE CHECKPOINT PROOF AND THREE SUMMON INSIGHTS PLUS THREE BLOOD TRAITS HAVE

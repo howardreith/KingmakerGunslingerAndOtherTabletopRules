@@ -2,6 +2,10 @@
 
 Version `0.0.117-elemental-traits` is the in-progress Release C expansion of the
 existing **Elemental Races: Ifrit, Oread, Sylph, and Undine** feature module.
+It also retains the published 0.0.115 Brown-Fur direct-cast compatibility fix.
+The [master integration](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md)
+passes 1,431 tests, clean build/package and guarded native regressions; this
+does not claim direct Buff Planner Instant-mode live acceptance.
 It now registers the fixed replacement-slot framework for 21 required
 alternate racial traits: ten explicit slot selections, ten retain-base
 markers, 21 visible choice markers, and 21 separate hidden providers. The
@@ -72,6 +76,17 @@ are Firebelly for Burning Sands, Flare Burst for Sun Metal, Expeditious Retreat
 for Blurred Movement, and Blur for Obscuring Mist. Player-facing names describe
 the abilities actually granted. Unerring Weapon and Chill Touch use narrow
 project-owned implementations where no complete safe Kingmaker donor exists.
+
+The expansion branch also incorporates the published
+`0.0.115-share-transmutation-instant` fix, including the versioned
+`BrownFurDirectCastApi` contract used by compatible automation clients to run
+Share Transmutation through Brown-Fur's native transaction without queuing an
+animated casting command. The provider still validates the real ability,
+spellbook, selected enhancements, recipient, and reservoir, owns the reservoir
+debit, and retains delayed execution state through terminal cleanup. Consumers
+that cannot validate contract version 1 must use the safe animated fallback.
+This remains an optional public API: Kingmaker Gunslinger has no compile-time
+or package dependency on Kingmaker Buff Planner.
 
 All four races are Medium and have distinct, stable project identities.
 Ifrits receive +2 Dexterity, +2 Charisma, -2 Wisdom, fire resistance 5, Fire

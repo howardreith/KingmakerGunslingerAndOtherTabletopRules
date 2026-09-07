@@ -73,6 +73,17 @@ package validation.
 
 ## Guarded GitHub release publisher
 
+The public master 0.0.115 Share Transmutation fix is incorporated into this
+branch. Its authorized publication and its NOT-RUN save-backed gameplay
+record remain distinct from this mission's unpublished release checkpoints.
+
+Where installed UMM targets a newer framework, pass `-ReferenceBundleDir` to
+the publisher to use the existing provenance-checked `Build-Local.ps1` path
+for both clean deterministic builds. It runs the same source, full domain,
+output, SoundBank, and strict package gates. No installed UMM/Harmony files
+are changed. If the legacy external Unity output is absent, Build-Local uses
+the tracked bundle only after the existing manifest hash check succeeds.
+
 The in-progress 0.0.117 candidate preserves the qualified 0.0.116 Elemental
 Races and feat identities and adds alternate racial traits within the existing
 module. It may be

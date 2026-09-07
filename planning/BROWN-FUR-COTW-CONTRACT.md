@@ -6,6 +6,46 @@ boundary qualification pass for the installed immutable candidate. Human
 acceptance was granted on 2026-08-16. The authoritative 16-state runtime
 boundary is complete; exhaustive game-launch enumeration is not required.
 
+## 0.0.115 direct-cast integration addendum
+
+Contract version 1 adds an optional provider-owned path for a caller that
+already owns source-spell spending. `Validate(AbilityData, TargetWrapper)` and
+`Begin(AbilityData, TargetWrapper)` re-run the live caster, spellbook, selected
+variant, Share/Powerful intent, recipient, range/relationship, and reservoir
+checks. The returned handle accepts only the exact `RuleCastSpell`, source
+`AbilityData`, and recipient. Brown-Fur alone reserves and debits Arcane
+Reservoir and applies Share, Powerful Change, and passive Transmutation
+Supremacy through the existing transaction machinery.
+
+The handle is not terminal merely because `Rulebook.Trigger` returned. It
+retains the exact transaction until the associated execution process ends;
+rejection, cancellation, and cleanup affect only that identity. There is no
+synthetic `UnitUseAbility`, global command acceleration, dependency on Buff
+Planner, or spell-name/GUID special case. Clients that do not validate
+`ContractVersion = 1` must retain native-command behavior. Automated source and
+coordinator coverage exists; live 0.0.115 runtime qualification is pending.
+
+Mechanical candidate checkpoint, 2026-09-06: branch
+`codex/share-transmutation-instant` remains based on uncommitted HEAD
+`6874dc15a27ded132456dbdd480f47c794543a05`. Version-aware/focused validation
+passed; the complete dependency-free suite passed 1393/1393; exact-reference
+.NET 4.7 Release compilation passed; Buff Planner's binary inspector passed
+87/87 against the resulting DLL. Strict build-output and standalone UMM package
+validation passed, and two deterministic package creations agreed. Candidate
+ZIP is 23,048,983 bytes with SHA-256
+`2490193efc17e6a27b07beaddba71fd149bfe62ef29c4ca167698e52032316f6`;
+DLL SHA-256/MVID are
+`090e6478844bcac7825ef04f43099ff41139e26aaf3b490ef327c991cd281dc6` /
+`98c59878-ac0b-4b3b-9716-132a7e409450`.
+
+The all-in-one local builder's legacy external Unity-build path was absent. Its
+manifest-identical tracked firearm bundle (SHA-256
+`b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb`)
+was verified first and copied only into generated workspace build output; the
+unchanged provider validators then accepted the output and package. No external
+Unity tree, live Mods tree, game, or save was modified. Save-backed Share
+execution remains NOT RUN, and public release remains unauthorized.
+
 ## Engineering authority
 
 - Verified engineering base: `a8b19fe39285da44ac443b7bcbd217870ec6ffb6`

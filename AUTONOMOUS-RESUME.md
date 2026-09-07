@@ -1,5 +1,95 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-09-06 0.0.115 public release verification
+
+Owner-authorized master merge/tag commit:
+`473f83bd901602ebe610cfdf291f11ce4a3faa57`; annotated `v0.0.115` object:
+`f3e9a5a216417ef1280a18b698ba48c988e7d325`. Feature branch
+`codex/share-transmutation-instant` at
+`636d70bfd64db922a7d42070144302723002553c` was guarded-pushed first.
+Public release (draft=false, prerelease=false), `2026-09-06T16:19:32Z):
+https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.115
+
+`scripts/Publish-Release.ps1 -ReferenceBundleDir C:/Dev/KingmakerGunslingerLab/private/extracted-references/KingmakerGunslinger-private-build-references -Publish -ConfirmReleaseReady`
+PASSed the complete pipeline twice: source/dispatch validation, domain
+1393/1393 each time, clean exact-reference Release compilation, supply icons,
+strict output, SoundBank, 135-file package, byte-identical ZIP/DLL, and public
+tag/upload. Log: `artifacts/share-release-publish.log`.
+Planner's exact release-DLL contract inspector PASS=87 FAIL=0.
+Independent `gh release download`, API digest, checksum, and strict package
+validation agree. Published asset:
+`artifacts/release/0.0.115/KingmakerGunslinger-0.0.115-share-transmutation-instant.zip`,
+23,048,955 bytes; ZIP
+`b79aea789fadcf849b69700d3c63462b5f1041354ff36b26c10ba4f56f034555`;
+DLL `f93ddb0375fa37f266855579eee948fc35d1987d0ddf63247f0bbe31cf0dfa65`;
+MVID `88a6a42a-8648-4a7a-a0fa-4dd567701986`.
+Independent download: `artifacts/release-verification/0.0.115`.
+
+Paired Planner 0.0.19 release commit:
+`583b1e984f8e02720b09362f41082bfbd077a186`.
+No live gameplay, installation, dependency replacement, or save mutation
+occurred. Save-backed gameplay is NOT RUN: the final protected resolver reports
+`The exact Kingmaker save root is unavailable.` Historical generic installed
+net48-reference build and stale 0.0.58 dispatch-test failures remain disclosed;
+neither was weakened. The actual provenance-checked release gates PASS.
+
+Exact next action: commit/guarded-push this documentation-only record, then
+fast-forward/push master under owner authority. Published tags/assets must not
+move. Only approved protected-save manual Share acceptance remains.
+
+## 2026-09-06 paired release authorization
+
+The owner explicitly authorized all task commits, the master merge, remote
+push, and public 0.0.115 release paired with Buff Planner 0.0.19. This resolves
+the prior release-plumbing scope blocker. Current branch/HEAD:
+`codex/share-transmutation-instant` /
+`e985aad7671992885210df448deca18d05081096`; core API commit:
+`a788d2269fcc4aaa24f8c49f820257ceb9cf7403`.
+The complete worktree and artifacts were preserved at
+`C:/Dev/KingmakerGunslingerLab/worktrees/share-transmutation-instant`.
+
+`scripts/Build-Local.ps1 -ReferenceBundleDir <qualified-private-references>`
+passes focused source validation, 1393/1393 domain tests, clean exact-reference
+Release compilation, supply icons, strict output, SoundBank, and 135-file
+package validation. Log: `artifacts/share-release-precommit-build.log`.
+The publisher now accepts this existing provenance-checked build route for
+both deterministic builds without changing installed UMM/Harmony. The
+legacy absent Unity output falls back only to the identical tracked bundle
+after the original manifest hash check; no asset content changed.
+The historical `tools/test_validation_dispatch.py` remains FAIL because it
+expects active 0.0.58; it is not the current dispatcher/source gate and was
+not weakened or relabeled. Current 0.0.115 source dispatch passes.
+
+The required local push guard was restored with clean-tree, exact-origin,
+branch, protected-file/credential, fast-forward, and remote-hash guards.
+Exact next action: commit, test guard WhatIf, run the mandated guarded push,
+merge to master under owner authority, repeat deterministic release gates,
+publish via the guarded publisher, and verify downloaded asset hashes.
+Save-backed Share gameplay: NOT RUN; the protected Buff Planner save pair is
+absent. No ordinary campaign save, live Mods, or installed dependency changed.
+
+## 2026-09-06 Share Transmutation direct-cast checkpoint
+
+- Branch/base/core HEAD: `codex/share-transmutation-instant` /
+  `6874dc15a27ded132456dbdd480f47c794543a05` /
+  `a788d2269fcc4aaa24f8c49f820257ceb9cf7403`.
+- Core provider API and regressions are committed. Version-aware validation and
+  1393/1393 full domain tests pass; exact Release compile, 87/87 compiled
+  consumer contract, strict output/package validation, and two deterministic
+  packages pass.
+- Package/DLL/MVID:
+  `2490193efc17e6a27b07beaddba71fd149bfe62ef29c4ca167698e52032316f6` /
+  `090e6478844bcac7825ef04f43099ff41139e26aaf3b490ef327c991cd281dc6` /
+  `98c59878-ac0b-4b3b-9716-132a7e409450`.
+- Uncommitted state is the proposed 0.0.115 identity, one-line active runtime
+  defaults, focused validator/static record, and compatibility/release docs.
+  Commit it only after explicit scope authorization; otherwise reverse those
+  known task-created changes without touching the core commit.
+- The documented guarded push helper is absent. Runtime/manual Share evidence
+  is NOT RUN. Exact next action is resolve release-plumbing scope, finalize the
+  provider worktree, then let the primary Planner run its clean deterministic
+  release build.
+
 ## 2026-08-20 Acadamae priority continuation checkpoint
 
 - Branch/intake: `codex/gunslinger-overnight-bugfixes` at published `270d02630d32d32d80d128ab7bb9312a37c736a1`; local/ref/remote equality and clean state proved before work.
