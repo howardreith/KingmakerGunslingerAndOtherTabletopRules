@@ -778,3 +778,83 @@ restored exact Mods/UMM bytes and passed the save audit (one load, no content
 changes). It is not a character-creation completion PASS. The fixture will be
 narrowed to preserve a proven idle native warmup controller without operating
 on any existing character or claiming an interactive creator.
+
+
+### Native creator fixture ownership and allocation (in qualification)
+
+The working-save fixture now records dormant creator fields. It accepts an
+existing global controller only when the exact inspected native warmup contract
+holds: AutoCommit, Preview equals Unit, no Doll, LevelUp mode, the hidden native
+build surface still references that same Unit, no visible controller, and warmup
+has ended. It preserves/restores that exact controller reference without
+canceling, committing, or operating on its unit. Interactive/ambiguous ownership
+still fails closed. A failure before fixture entry no longer incorrectly claims
+that an uncaptured world snapshot failed restoration.
+
+The request-local allocator now refunds a negative skill budget through native
+CharacterBuildController.SpendSkillPoint(stat,false). It uses only a skill
+recorded by this request, requires exactly one matching native action, and
+verifies that exactly that action was removed. It never writes skill budgets or
+stats directly. This addresses the observed Gunslinger/Roll fixture convergence
+failure without altering production Gunslinger, Dice Roller or allocation rules.
+Focused source safety checks cover both ownership and refund boundaries.
+
+
+`20260907T0812592512664Z-working-save-elemental-character-creation` again
+stopped before creating a unit and restored exact Mods/UMM bytes; the save audit
+passed with one load and no content changes. Its newly captured fields narrow
+the mismatch: the native window is hidden, warmup false, visible controller
+absent, global AutoCommit true, Preview is the same Unit, Doll absent, actions
+empty, and State.Mode=CharGen. The current build surface does not reference that
+global Unit. Thus the first proposed warmup signature was too specific; the
+runtime facts establish an idle automatic global alias, not the exact Warmup
+call provenance. The fixture now preserves only this action-free automatic
+contract (CharGen/LevelUp), records its blueprint identity, and still refuses
+an interactive, action-bearing, preview-owning, visible or ambiguous controller.
+It never operates on the preserved automatic controller or its unit.
+
+### Native committed creators and rolled Gunslinger checkpoint
+
+- `scripts/Build-Local.ps1` (`creator-ownership-build-02.log`) passed repository
+  validation, all 1,443 domain/reflection tests, clean exact-reference Release
+  compilation, deterministic packaging, and strict standalone package validation.
+  Source was `977e0a123bf16758ea4c0b0061c85611f31c8f8a` plus source fingerprint
+  `0927ac28ce511f0f6196eed5a4b99962b0899d18da729ddee7a1da43ef914651`.
+  ZIP SHA-256 `0ffbc3a2f99c33ccfb0cd77d2ee09b9c22e94f3446a2bb0905897906a204cc5c`;
+  DLL SHA-256 `0a5458fba172c069686a103a570ab0dd493f469910059fc4a0690baf00793370`;
+  MVID `d74be144-1c1f-4fb5-b2cd-0b199352baa6`.
+- Full-stack guarded `working-save-elemental-character-creation` run
+  `20260907T0827266891992Z-working-save-elemental-character-creation` PASS 11/11.
+  All four independently owned level-0 disposable characters reached native
+  final review, `CharacterBuildController.Commit`, its success callback, final
+  level 1 and the exact chosen race, with zero unresolved selections. All four
+  per-character acceptance results PASS. These were General/retain-base builds;
+  alternate-choice and back-navigation completion remain pending.
+- Every heritage exposed 3/3 choices in native Determinator/Heritage. The ten
+  replacement slots exposed retain plus published choices there (Oread SLA 1/1).
+  Both ordinary global Trait roots were later consumed in Abilities with eight
+  categories, 8 then 7 legal; the chosen nested Combat and Faith routes completed.
+  No racial selection reappeared in generic Abilities. No owned/shared asset
+  unload occurred; all 220 retained shared inner assets remained alive.
+- The observed initial global controller was automatic, action-free, mode CharGen,
+  Preview identical to Unit, Doll absent, with no visible creator/controller.
+  Its blueprint was `4391e8b9afbb0cf43aeba700c089f56d`. The fixture preserved and
+  restored its exact reference and the independent original build.Unit reference;
+  it neither reused nor cancelled/committed that controller or its unit.
+- Full-stack `disposable-elemental-character-creation-case` (Ifrit, Gunslinger,
+  roll) run `20260907T0833492894852Z-disposable-elemental-character-creation-case`
+  reached native final review, both global Trait roots and zero unresolved
+  selections; save-free cancel and exact cleanup PASS. Dice Roller 0.1.2 verified
+  generation 11 with assigned/base scores `[15,15,12,12,12,13]`, exact preview
+  ownership, and no contaminated baseline. This roll needed no skill refund:
+  the negative-budget branch is not yet runtime-qualified and will be exercised
+  by a native back-navigation heritage change that reduces Intelligence.
+- Both profile transactions restored the complete original mod tree/settings and
+  UMM bytes exactly. Save audit PASS: baseline and all non-header working data
+  exact; working load deltas respectively 1 and 0. No save-writing API was
+  reached. Existing ZFavoredClass custom JSON KeyNotFound errors, shader,
+  missing-script, lightmap and Buff Planner HUD-overlay warnings remain separate
+  from KMG acceptance; no new KMG visual-retention exception occurred.
+- Human full-screen UI acceptance remains **NOT-RUN**. This checkpoint is real
+  automated creator completion evidence, not owner-reported acceptance and not
+  final stabilization qualification.
