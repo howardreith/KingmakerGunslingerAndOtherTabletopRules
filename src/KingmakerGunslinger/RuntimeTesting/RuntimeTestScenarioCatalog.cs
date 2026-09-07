@@ -218,6 +218,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-rare-firearm-acquisition";
         internal const string ObserveRareFirearmBlueprintContracts =
             "observe-rare-firearm-blueprint-contracts";
+        internal const string DisposableMidgameFirearms = "disposable-midgame-firearms";
         internal const string MagicFirearmNativeProperties =
             "magic-firearm-native-properties";
         internal const string ReliableFirearmMisfireMatrix =
@@ -365,6 +366,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-save-catalog-provider";
         internal const string ObserveLoadGameButtonAction =
             "observe-load-game-button-action";
+        internal const string WorkingSaveMidgamePrepare = "working-save-midgame-prepare";
+        internal const string WorkingSaveMidgameVerifyCleanup = "working-save-midgame-verify-cleanup";
+        internal const string WorkingSaveMidgameVerifyAbsent = "working-save-midgame-verify-absent";
+        internal static bool IsMidgameWorkingScenario(string scenario)
+        {
+            return scenario == WorkingSaveMidgamePrepare || scenario == WorkingSaveMidgameVerifyCleanup ||
+                scenario == WorkingSaveMidgameVerifyAbsent;
+        }
         internal const string WorkingSaveSmoke = "working-save-smoke";
         internal const string P0AffectedFocusedAimSaveLoad =
             "p0-affected-focused-aim-save-load";
@@ -507,6 +516,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveRareFirearmAcquisition,
                 ObserveRareFirearmBlueprintContracts,
                 MagicFirearmNativeProperties,
+                DisposableMidgameFirearms,
                 ReliableFirearmMisfireMatrix,
                 BlunderbussThunderingScatter,
                 ObserveProductionFirearmFallbacks,
@@ -582,6 +592,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveSaveCatalogProvider,
                 ObserveLoadGameButtonAction,
                 WorkingSaveSmoke,
+                WorkingSaveMidgamePrepare,
+                WorkingSaveMidgameVerifyCleanup,
+                WorkingSaveMidgameVerifyAbsent,
                 P0AffectedFocusedAimSaveLoad,
                 DisposableInHarmsWayHumanRepro,
                 DisposableInHarmsWayOffTurnEconomy,

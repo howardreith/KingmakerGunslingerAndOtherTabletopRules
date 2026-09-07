@@ -86,7 +86,9 @@ namespace KingmakerGunslinger.Assets
                 { "KMG.Firearms.RiverKingsMeasureItem", MusketService },
                 { "KMG.Firearms.IrovettisOvationItem", BlunderbussService },
                 { "KMG.Firearms.TheLastWordItem", PistolLastWord },
-                { "KMG.Firearms.WatchAtTheWorldsEndItem", MusketService }
+                { "KMG.Firearms.WatchAtTheWorldsEndItem", MusketService },
+                { "KMG.Firearms.RoadwardenItem", MusketService },
+                { "KMG.Firearms.DeadReckoningItem", PistolService }
             };
 
         internal static string Require(string blueprintSymbol)

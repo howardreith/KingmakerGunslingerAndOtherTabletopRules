@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.115-share-transmutation-instant",
-  "version": "0.0.115",
+  "milestone": "0.0.116-midgame-firearms-and-protection",
+  "version": "0.0.116",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -836,5 +836,16 @@
     "humanVisualReviewRequired": false,
     "ownerReleaseAuthorized": true,
     "individualHumanChecklistEvidenceProvided": false
+  },
+  "midgameFirearms116": {
+    "deterministicTestCount": 1398,
+    "newNamedFirearms": 2,
+    "magicalFirearmCount": 10,
+    "fixedLootFirearmCount": 5,
+    "actualEnhancement": 3,
+    "equivalentPricingBonus": 4,
+    "merchantStockVariants": 4,
+    "controlMechanicsUnchanged": true,
+    "publicReleaseAuthorized": false
   }
 }
