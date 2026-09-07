@@ -25,6 +25,7 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("elemental-chargen.heritage-native-route", ElementalCharacterCreationRoutingTests.HeritageFactoryUsesObservedNativeHeritageRoute),
             Case("elemental-chargen.native-creator-fixture", ElementalCharacterCreationRoutingTests.NativeCreatorFixtureIsScopedAndReportsAcceptanceSeparately),
             Case("elemental-chargen.disabled-control-boundary", ElementalCharacterCreationRoutingTests.DisabledControlCannotBootstrapProductionOrCommitCampaign),
             Case("elemental-chargen.observation-identity", ElementalCharacterCreationRoutingTests.ObservationIdentityUsesReferences),

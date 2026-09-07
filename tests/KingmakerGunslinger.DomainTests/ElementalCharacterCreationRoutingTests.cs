@@ -89,6 +89,29 @@ namespace KingmakerGunslinger.DomainTests
                 "BlueprintBootstrap.TryInitialize", ".SetValue(", ".LoadGame(", ".SaveGame(" })
                 Assertions.False(source.Contains(forbidden), "Profile B must leave production disabled: " + forbidden);
         }
+        internal static void HeritageFactoryUsesObservedNativeHeritageRoute()
+        {
+            string source = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalHeritageBlueprintFactory.cs"));
+            int start = source.IndexOf("private static BlueprintFeatureSelection CreateSelection(", StringComparison.Ordinal);
+            int end = source.IndexOf("private static void Validate(", start, StringComparison.Ordinal);
+            string factory = source.Substring(start, end - start);
+            // Native 2.1.7b DefineAvailibleData routes group 42 to Determinator;
+            // groups 0 and 11 both route to Abilities. This pins that inspected contract.
+            Assertions.True(factory.Contains("result.Group = FeatureGroup.AasimarHeritage;") &&
+                factory.Contains("result.Group2 = FeatureGroup.None;") &&
+                factory.Contains("result.Groups = new[] { FeatureGroup.Racial };"),
+                "Heritage must match the native Aasimar/Races Unleashed racial route.");
+            Assertions.False(factory.Contains("result.Group = FeatureGroup.None;") ||
+                factory.Contains("result.Group = FeatureGroup.Racial;"),
+                "Generic Abilities routing cannot qualify as Heritage.");
+            Assertions.True(factory.Contains("result.Obligatory = true;") &&
+                factory.Contains("result.IgnorePrerequisites = false;") &&
+                factory.Contains("ElementalHeritagePolicy.ChoicesPerRace") &&
+                factory.Contains("ElementalHeritageSelectionController"),
+                "Moving the phase must retain the existing three-choice selection lifecycle.");
+        }
+
         private static string FindRoot()
         {
             var directory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);

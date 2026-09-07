@@ -168,8 +168,11 @@ namespace KingmakerGunslinger.ElementalRaces
             result.HideInUI = false;
             result.IgnorePrerequisites = false;
             result.Obligatory = true;
-            result.Group = FeatureGroup.None;
+            // The native desktop creator routes AasimarHeritage to its
+            // Heritage phase. Racial itself routes to generic Abilities.
+            result.Group = FeatureGroup.AasimarHeritage;
             result.Group2 = FeatureGroup.None;
+            result.Groups = new[] { FeatureGroup.Racial };
             result.Features = (BlueprintFeature[])choices.Clone();
             result.AllFeatures = (BlueprintFeature[])choices.Clone();
             result.ComponentsArray = new BlueprintComponent[]
@@ -198,7 +201,13 @@ namespace KingmakerGunslinger.ElementalRaces
         {
             ElementalHeritageBlueprints[] choices = result.Choices().ToArray();
             ElementalHeritageBlueprints general = result.General;
-            if (!result.Selection.Obligatory ||
+            if (result.Selection.Group != FeatureGroup.AasimarHeritage ||
+                result.Selection.Group2 != FeatureGroup.None ||
+                result.Selection.Groups == null ||
+                !result.Selection.Groups.SequenceEqual(new[] { FeatureGroup.Racial }) ||
+                result.Selection.IsClassFeature || result.Selection.HideInUI ||
+                result.Selection.HideInCharacterSheetAndLevelUp ||
+                !result.Selection.Obligatory ||
                 result.Selection.IgnorePrerequisites ||
                 result.Selection.Features == null ||
                 !result.Selection.Features.SequenceEqual(
