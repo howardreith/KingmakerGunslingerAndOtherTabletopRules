@@ -13,4 +13,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("8668dd56-63f3-4868-8978-5e8f00120fc3")]
 [assembly: AssemblyVersion("0.0.117")]
 [assembly: AssemblyFileVersion("0.0.117")]
-[assembly: AssemblyInformationalVersion("0.0.117-elemental-traits")]
+[assembly: AssemblyInformationalVersion("0.0.117-elemental-char-gen-stabilization")]

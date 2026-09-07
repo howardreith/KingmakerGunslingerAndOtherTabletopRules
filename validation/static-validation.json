@@ -1,5 +1,5 @@
 {
-  "milestone": "0.0.117-elemental-traits",
+  "milestone": "0.0.117-elemental-char-gen-stabilization",
   "version": "0.0.117",
   "requiredFiles": {
     "Info.json": true,

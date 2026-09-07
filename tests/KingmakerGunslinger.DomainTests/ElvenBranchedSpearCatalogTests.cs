@@ -58,15 +58,15 @@ namespace KingmakerGunslinger.DomainTests
 
             Assertions.True(info.Contains("\"Version\": \"0.0.117\"") &&
                 props.Contains("<KmgVersion>0.0.117</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.117-elemental-traits</KmgInformationalVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.117-elemental-char-gen-stabilization</KmgInformationalVersion>") &&
                 assembly.Contains("AssemblyVersion(\"0.0.117\")") &&
                 assembly.Contains("AssemblyFileVersion(\"0.0.117\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.117-elemental-traits\")"),
-                "Release and assembly identity are not transactionally pinned to Elemental Traits.");
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.117-elemental-char-gen-stabilization\")"),
+                "Release and assembly identity are not transactionally pinned to the character-creation stabilization candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-elemental-traits.zip") &&
+                "$($info.Id)-$($info.Version)-elemental-char-gen-stabilization.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Elemental Traits archive.");
+                "Package identity is not pinned to the character-creation stabilization archive.");
             Assertions.True(runtime.Contains("active version 0.0.117") &&
                 localBuild.Contains("active version 0.0.117") &&
                 localBuild.Contains("local-runtime\\0.0.117"),
