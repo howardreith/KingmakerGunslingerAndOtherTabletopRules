@@ -248,6 +248,31 @@ namespace KingmakerGunslinger.DomainTests
                 "Ordinary rest or schema identity changed while preserving native respec expenditure.");
         }
 
+        internal static void NativeTraitTurnFixtureOwnsActionsAndRestoration()
+        {
+            string folder = Path.Combine(FindRoot(), "src", "KingmakerGunslinger", "RuntimeTesting");
+            string scope = File.ReadAllText(Path.Combine(folder, "ElementalNativeTurnScope.cs"));
+            string fixture = File.ReadAllText(Path.Combine(folder, "ElementalTraitNativeTurnScenario.cs"));
+            foreach (string required in new[] { "controller.CurrentTurn", "ReferenceEquals(turn.Unit, _caster)", "base.TickOnUnit(unit)", ".Invoke(turn, null)",
+                "AddComponent<SelectionManager>()", "_selectionProperty.SetValue(null, _selectionBefore, null)",
+                "RoundNumber != 1", "IsSurprised(caster)", "IsSurprised(enemy)",
+                "CombatController.IsInTurnBasedCombat()", "command.Cutscene || command.IsIgnoreCooldown",
+                "Game.Instance.Player.IsInCombat", "modes.Pop()", "SameOrderedReferences(before, modes.ToArray())",
+                "EventBus.Unsubscribe", "EnableTurnBasedMode.CurrentValue = _turnBasedBefore", "if (scope == null) return true",
+                "ReferenceEquals(Active, this)", "ReferenceEquals(__instance, Game.Instance.TurnBasedCombatController)" })
+                Assertions.True(scope.Contains(required), "Native turn ownership/restoration boundary absent: " + required);
+            foreach (string required in new[] { "new UnitUseAbility(data, target)", "caster.Commands.Run(command)",
+                "expected[swift ? 2 : 0] += 6", "Costs(caster).SequenceEqual(committed)", "turns.EndCurrentTurn()",
+                "swift-already-spent", "command.ExecutionProcess.IsEnded", "ElementalAlternateTraitId.AcidBreath",
+                "ElementalAlternateTraitId.OozeBreath", "ElementalAlternateTraitId.BreezeKissed", "-cancel" })
+                Assertions.True(fixture.Contains(required), "Native turn cost or daily-use assertion absent: " + required);
+            foreach (string forbidden in new[] { "Cooldown.StandardAction =", "Cooldown.MoveAction =", "Cooldown.SwiftAction =",
+                "Resources.Spend(", "IsIgnoreCooldown =", "Cutscene =", ".SaveGame(", ".LoadGame(" })
+                Assertions.False((scope + fixture).Contains(forbidden), "Turn-cost fixture fabricates the outcome: " + forbidden);
+            Assertions.True(File.ReadAllText(Path.Combine(folder, "RuntimeTestScenarioCatalog.cs")).Contains(
+                "disposable-elemental-trait-turn-costs"), "Guarded native turn scenario is unregistered.");
+        }
+
         private static string FindRoot()
         {
             var directory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);

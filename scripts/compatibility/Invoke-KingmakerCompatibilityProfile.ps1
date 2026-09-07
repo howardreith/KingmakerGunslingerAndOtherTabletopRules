@@ -56,6 +56,7 @@ param(
         'disposable-elemental-sylph-feats',
         'disposable-elemental-undine-feats',
         'observe-elemental-heritage-blueprints',
+        'disposable-elemental-trait-turn-costs',
         'observe-elemental-alternate-trait-framework',
         'disposable-elemental-heritage-mechanics',
         'disposable-elemental-heritage-slas',
