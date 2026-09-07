@@ -1712,3 +1712,156 @@ ignored `artifacts/qualification/0.0.117/character-creation-stabilization/` as
 `breeze-boundary-candidate-05.*`; no raw evidence is committed. The original
 installed candidate remains restored. This is a qualified mechanic slice, not
 final human UI acceptance or the stable acceptance installation.
+
+
+### Nineteen-trait native physical lifecycle instrumentation (pending)
+
+The restored-ON phase now captures each of the 24 exact source persistence states
+once before real native lethal damage, death, ResurrectAndFullRestore, Beast
+Shape II, form removal, native heavy armor equip/remove and doll rebuild. It
+compares owned marker/provider/ability/resource inventories and blood expenditure
+at every transition, then exact post-resurrection stats and original item/slot/
+inventory references after return. Native removal of transient buffs is recorded;
+those effects are not recreated. Only the exact disposable actor is ticked by the
+native life controller while the loaded world remains paused. Shared blueprints
+and life-state flags are not assigned. Existing fixed-shell respec and cleanup
+follow the completed physical sequence. Qualification is pending.
+
+Physical build 01 stopped in the domain source guard before clean Release
+compilation: the pre-respec feat check moved into the new lifecycle helper. The
+guard now inspects that helper too, preserves the old check, and rejects direct
+life-state or shared-blueprint assignment and direct KMG reconciliation. Normal
+cleanup also avoids touching an already retired, completed source actor.
+
+Physical build 02 exposed a test matcher that mistook `IsDead == expected` for
+an assignment. The guard now distinguishes assignment from equality; the
+prohibition is unchanged. No failed-build artifact was installed.
+
+Physical build 03 passes all 1,453 tests but fails exact Release compilation
+because the new helper was absent from the explicit project source inventory.
+The helper is now included in that inventory; qualification remains pending.
+
+Physical build 04 identified the missing native stats namespace import in the
+new helper. That import is added; no production mechanic changed.
+
+
+Physical candidate 05 F `visible-physical-f-01` preserves a failed acceptance
+result. Fresh absence `20260907T1745063735770Z` passes 8, prepare
+`20260907T1747400956148Z` passes 66, and module OFF
+`20260907T1751244004876Z` passes 173. Restored ON
+`20260907T1754451806056Z` fails while waiting after the first native resurrection;
+its before-death and native-dead observations preserve every exact marker,
+provider, ability, resource amount and blood expenditure. No physical PASS is
+inferred. Existing failure cleanup saves a fixture-free working state; a fresh
+absence check is still required. The complete original Mods tree and UMM bytes/
+timestamp restore exactly; baseline and other-save audits pass.
+
+Inspected native Resurrect clears wounds and death conditions and raises its
+native event; UnitLifeController owns the ensuing life-state change. The paused
+fixture ticked that controller during lethal death but omitted it while waiting
+for resurrection. The new helper now ticks the same exact owned actor through
+resurrection as well, with no life-state assignment, KMG reconciliation or
+production mechanic change. Detailed native HP/death/view diagnostics and the
+complete returned appearance observation are retained for any further mismatch.
+Requalification is pending.
+
+
+Physical candidate 06 F `visible-physical-f-02` also remains an overall FAIL.
+Its fresh absence passes 8 and independently confirms candidate 05 cleanup;
+prepare `20260907T1805004834696Z` passes 66 and OFF
+`20260907T1808434006194Z` passes 173. ON
+`20260907T1811593182858Z` passes all 168 physical observations (24 actors, all
+19 visible traits), native respec, and exact cleanup. One of 253 final assertions
+fails: the unchanged capture inventory expects 73 files, but the newly required
+physical JSON report makes 74. Counts remain 24 sidecars, 48 PNGs and 120 views.
+No exception summary is reported; normalPathComplete and structuralCleaned are
+true, feat cleanup is exact, and the one authorized cleanup save completes.
+The full original mod tree and UMM bytes/timestamp restore exactly, with baseline
+and other-save audits passing. Fresh-process absence still must be repeated.
+
+The capture guard now permits exactly one additional file only in restored ON,
+and additionally requires that exact physical report, seven ordered successful
+transitions per fixture, and the exact complete published trait inventory. Other
+phase file counts remain unchanged. This strengthens the new evidence contract;
+it does not waive the failed run. Native IsDead IL also confirms it reads the
+controller-owned LifeState (2 for dead), supporting the earlier paused-controller
+correction. Clean build and full fresh-process requalification are pending.
+
+
+### Nineteen-trait physical lifecycle qualified
+
+Candidate 07 passes repository validation, all **1,453** domain/reflection tests,
+clean exact-reference Release compilation, deterministic packaging and strict
+135-entry package validation. Manifest remains 1,867 identities (1,865 active,
+two reserved); this slice changes guarded instrumentation only.
+
+| Exact candidate identity | Value |
+| --- | --- |
+| Source parent | `cf5c2aa4733a1688cc2283949a0018d33898dbee` |
+| Qualified source state | `a232699d5b073c36fd9c73b5396fb14452ea185af1afb95d064fffa22d2f42a9` |
+| ZIP SHA-256 | `73f529e5991ccff802df6f94d3ba643754a1fae47375aaeadcc4ff6b9d589f9a` |
+| DLL SHA-256 | `396009c961f5c03095b07c9f3b52f6fd1c53b4e61fa3776432f55bff5fb5897f` |
+| DLL MVID | `81b77040-3e41-4869-a5d1-d17548b45170` |
+
+Full-stack transaction `visible-physical-f-03` passes **508 assertions**:
+
+| Fresh guarded Steam process | Assertions | Result |
+| --- | ---: | --- |
+| `20260907T1829125170896Z` initial absence | 8 | PASS |
+| `20260907T1831397285381Z` prepare | 66 | PASS |
+| `20260907T1835255385971Z` module OFF | 173 | PASS |
+| `20260907T1838490780489Z` restored ON | 253 | PASS |
+| `20260907T1847164220376Z` final absence | 8 | PASS |
+
+All 24 loaded actors and all 19 published traits pass seven ordered native
+physical states, **168 observations**: before death, dead, resurrected,
+polymorphed, form return, armor equipped, original equipment/doll restored.
+Every transition preserves the exact owned feature ranks, ability/resource
+counts, spent resource amounts and blood expenditure. The 72 returned states
+also verify native racial/passive mechanics and appearance. Native transient
+buff removal is recorded and never reversed by instrumentation. Native life
+controller ticks own the life-state transitions; the world clock stays paused.
+
+The same cycle retains 168 trait-persistence records, 48 fixed-shell respecs,
+72 native racial-selection records, all 11 Release B feats and their 25
+identities, module-OFF level-up before rest, rest and re-spending, module-ON
+restoration, exact cleanup and an independent fresh-process absence check.
+Actual Player.RespecCompanion copyback is separately qualified above; these
+fixed-shell records do not replace that evidence. The initial absence also
+independently confirms candidate 06's cleanup after its metadata assertion
+failure. Both earlier failed physical runs remain FAIL in the historical record.
+
+The complete original Mods tree and UMM bytes/timestamp restore exactly;
+protected baseline and other-save metadata audits pass. Only the named working
+save receives authorized persistence/cleanup writes. Its archive intentionally
+changes; final functional absence is proved by the native guarded load.
+
+The standalone ledger initially assumed equal settings bytes before and after
+each phase. Inspection proves the profile's PowerShell JSON is normalized by
+KMG's existing settings serializer, with identical values: ON hashes
+`0ca3c98bb0d791169a262f2b53649eff72e58acd1a37f0954172e66b4c2960d2`
+to `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`;
+OFF hashes `b9a0f19d70085ef4fbda6ee4aeff87de89ee0e8efc0760edb7ca6989d5835fa8`
+to `d07a06e1b67d35107ffd84da0e02453bfa0adcfaac59bcb68a4353444c7ec52e`.
+The audit now derives and verifies both exact serialization forms and all
+12 settings fields, as well as exact original restoration.
+
+No KMG ERROR or exception summary occurs. Each process retains the native
+BugReportCanvas startup exception and four known ZFavoredClass custom JSON
+exceptions. Prepare retains the previously documented native shutdown
+ObstaclesHelper offset `0x51`; restored ON records offset `0x6d` after
+`scenario.complete` and manager destruction. The latter offset first appears
+in candidate 06 and is not claimed to have an exact pre-mission stack match.
+Read-only inspection of native method token `0x060017DD` proves `0x51` and
+`0x6d` are the same unguarded EntityData.Descriptor dereference for the first
+and second movement-group argument, respectively. Both have the unchanged
+RemoveFromGroup `0xa0` / OnDisable `0x0c` shutdown stack. This is recorded as
+a symmetric branch of the existing native teardown condition; no native code,
+exception handler, foreign mod or production mechanic is patched or suppressed.
+The ledger rejects other exception locations and any gameplay occurrence.
+
+Immutable `visible-physical-candidate-07.*`, its full ledger, exact settings
+serialization proofs and `native-obstacles-connect-units-il.txt` remain in the
+ignored stabilization evidence directory. The original installation is restored;
+final candidate identity, final profile attestation and owner UI acceptance
+remain pending.

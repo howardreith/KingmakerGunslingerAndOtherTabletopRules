@@ -318,9 +318,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_phase == 2)
                     {
                         if (!PollCurrentReady()) return;
-                        if (_prepare || _moduleRestored)
+                        if (_moduleRestored)
                         {
-                            PerformNativeElementalRespec(_moduleRestored);
+                            _phase = 4;
+                            _settleUpdates = 0;
+                            return;
+                        }
+                        if (_prepare)
+                        {
+                            PerformNativeElementalRespec(false);
                             _phase = 3;
                             _settleUpdates = 0;
                             return;
@@ -353,6 +359,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _normalPathComplete = true;
                             StartExactWorkingSave();
                         }
+                    }
+                    if (_phase == 4)
+                    {
+                        if (!PollVisibleTraitPhysicalLifecycle()) return;
+                        if (!_physicalComplete) throw new InvalidOperationException("Physical lifecycle did not complete before respec.");
+                        PerformNativeElementalRespec(true);
+                        ResetPhysicalLifecycle();
+                        _phase = 3;
+                        _settleUpdates = 0;
+                        return;
                     }
                     if (_phase == 3)
                     {
@@ -1059,7 +1075,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int sourceLevel = restoredPhase ? 2 : 1;
                 int sourceResource = restoredPhase ? 0 : 1;
                 _stage = "native-respec-" + fixture.Label;
-                ElementalPersistenceObservation sourceObservation =
+                ElementalPersistenceObservation sourceObservation = restoredPhase
+                    ? CaptureRestoredPhysicalSource(fixture) :
                     ObserveFixture(fixture, _currentUnit,
                         _currentExpectedDoll, sourceHeritage,
                         sourceResource, sourceLevel,
@@ -1069,12 +1086,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " native Respec source was not an exact elemental Gunslinger: " +
                         sourceObservation.Evidence.ToString(
                             Newtonsoft.Json.Formatting.None) + ".");
-                if (restoredPhase)
-                    RecordTraitPersistence(fixture, _currentUnit, 2, 1, false,
-                        "module-restored-source-before-respec");
-                if (restoredPhase)
-                    CaptureRestoredSourceFeatPersistence(fixture,
-                        _currentUnit);
 
                 UnitEntityData sourceUnit = _currentUnit;
                 UnitDescriptor sourceDescriptor = sourceUnit.Descriptor;
@@ -2976,6 +2987,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _stage = "elemental-persistence-cleanup";
                 try
                 {
+                    ResetPhysicalLifecycle();
                     if (!RestorePrepareFeatPersistencePause())
                         throw new InvalidOperationException(
                             "The transient persistence save pause was not restored during cleanup.");
@@ -3384,6 +3396,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "preparedFeatTransientState",
                         _preparedFeatTransientState.DeepClone() },
                     { "traitPersistenceRecords", _traitPersistenceRecords.DeepClone() },
+                    { "physicalLifecycleRecords", _physicalLifecycleRecords.DeepClone() },
                     { "efreetiPersistenceRecords", _efreetiPersistenceRecords.DeepClone() },
                     { "breathPersistenceRecords", _breathPersistenceRecords.DeepClone() },
                     { "featIdentityCount",
@@ -4049,7 +4062,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _imageCount == expectedFixtureCount * 2 &&
                     _viewCount == expectedFixtureCount * 5 &&
                     _indexWritten && _evidenceFiles.Count ==
-                        expectedFixtureCount * 3 + 1 &&
+                        expectedFixtureCount * 3 + 1 + (_moduleRestored ? 1 : 0) &&
+                    PhysicalLifecycleEvidenceExact() &&
                     _evidenceFiles.All(File.Exists) &&
                     records.All(value =>
                         value["preview"] != null &&

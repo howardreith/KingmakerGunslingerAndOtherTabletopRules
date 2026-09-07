@@ -961,6 +961,7 @@
     <Compile Include="RuntimeTesting\ElementalBloodPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalPersistenceSlaSnapshot.cs" />
     <Compile Include="RuntimeTesting\ElementalVisibleTraitPersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalVisibleTraitLifecycleScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalCrystallinePersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRemainingTraitNativeAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalFeatTransientPreviewScenario.cs" />

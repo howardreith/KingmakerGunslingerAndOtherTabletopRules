@@ -1089,7 +1089,21 @@ namespace KingmakerGunslinger.DomainTests
         {
             string source = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "ElementalRacePersistenceScenario.cs") +
-                Read("src", "KingmakerGunslinger", "RuntimeTesting", "ElementalPersistenceSlaSnapshot.cs");
+                Read("src", "KingmakerGunslinger", "RuntimeTesting", "ElementalPersistenceSlaSnapshot.cs") +
+                Read("src", "KingmakerGunslinger", "RuntimeTesting", "ElementalVisibleTraitLifecycleScenario.cs");
+            string physical = Read("src", "KingmakerGunslinger", "RuntimeTesting", "ElementalVisibleTraitLifecycleScenario.cs");
+            foreach (string token in new[] { "IsFixtureUnit(_currentUnit, fixture)", "!Game.Instance.IsPaused",
+                "new RuleDealDamage(", "ResurrectAndFullRestore()", "typeof(UnitLifeController)",
+                "5d4028eb28a106d4691ed1b92bbb1915", "8dc6510d31614345a8c718208fbac1f8",
+                "_physicalActor.Body.Armor.InsertItem(_physicalArmor)", "CurrentAvatar().RebuildOutfit()",
+                "JToken.DeepEquals(stable, _physicalStableBefore)", "blood.Spent(value)",
+                "_physicalInventory.SequenceEqual(Snapshot(_inventory))", "_physicalComplete",
+                "PhysicalLifecycleEvidenceExact()", "rows.Length == _fixtures.Length * phases.Length",
+                ".Where(ElementalAlternateTraitPolicy.IsPublished)", "SequenceEqual(phases)" })
+                Assertions.True(physical.Contains(token), "Physical lifecycle lost its native transition or exact ownership guard: " + token);
+            Assertions.False(Regex.IsMatch(physical, @"\.(?:IsCheater|IsDead)\s*=(?!=)") ||
+                physical.Contains("SetLifeState(") || physical.Contains("ElementalHeritageRuntime.Reconcile("),
+                "The physical test must not fabricate life state, mutate a shared blueprint or reconcile away a failure.");
             string featSource = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "ElementalFeatPersistenceScenario.cs");
             string transientRuntime = Read("src", "KingmakerGunslinger",
