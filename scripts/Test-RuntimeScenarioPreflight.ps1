@@ -57,6 +57,7 @@ $expected = @(
     'disposable-elemental-character-creation-case',
     'disposable-global-traits-kmg-disabled-control',
     'working-save-elemental-character-creation',
+    'working-save-elemental-character-creation-regression',
     'observe-elemental-alternate-trait-framework',
     'disposable-elemental-heritage-mechanics',
     'disposable-elemental-heritage-slas',
@@ -938,6 +939,35 @@ foreach ($invalid in @(
         Assert-KmgRuntimeScenarioPreflight -Scenario 'disposable-elemental-character-creation-case' `
             -ExpectedVersion '0.0.117' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 -Parameters $invalid
     } 'creator-case-rejects-unscoped-parameters'
+}
+
+$creatorArgs = $valid.Clone()
+$creatorArgs.Scenario = 'working-save-elemental-character-creation-regression'
+$creatorArgs.Remove('EnforceManualInteraction')
+$creatorArgs.Remove('ManualInteractionRequired')
+foreach ($race in @('Ifrit', 'Oread', 'Sylph', 'Undine')) {
+    foreach ($allocation in @('point-buy', 'roll')) {
+        foreach ($characterClass in @('Fighter', 'Gunslinger')) {
+            $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';race=$race;class=$characterClass;allocation=$allocation}
+            $request = New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $true `
+                -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-creator-regression-request-test')
+            $serialized = $request | ConvertTo-Json -Depth 8 | ConvertFrom-Json
+            Assert-True (@($serialized.parameters.PSObject.Properties).Count -eq 4 -and
+                $serialized.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING' -and
+                $serialized.parameters.race -ceq $race -and $serialized.parameters.class -ceq $characterClass -and
+                $serialized.parameters.allocation -ceq $allocation) "creator-regression-exact-json-$race-$characterClass-$allocation"
+        }
+    }
+}
+foreach ($invalid in @(
+    @{saveName='KMG_AUTOMATION_BASELINE';race='Ifrit';class='Fighter';allocation='roll'},
+    @{saveName='KMG_AUTOMATION_WORKING';race='Human';class='Fighter';allocation='roll'},
+    @{saveName='KMG_AUTOMATION_WORKING';race='Ifrit';class='Wizard';allocation='roll'},
+    @{saveName='KMG_AUTOMATION_WORKING';race='Ifrit';class='Fighter';allocation='guess'},
+    @{saveName='KMG_AUTOMATION_WORKING';race='Ifrit';class='Fighter';allocation='roll';extra=$true},
+    @{saveName='KMG_AUTOMATION_WORKING'})) {
+    $creatorArgs.Parameters = $invalid
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } 'creator-regression-rejects-unscoped-request'
 }
 
 if ($failures.Count -ne 0) {

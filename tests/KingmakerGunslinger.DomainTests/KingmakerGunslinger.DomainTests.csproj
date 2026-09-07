@@ -52,6 +52,7 @@
     <Compile Include="ElementalFeatPolicyTests.cs" />
     <Compile Include="ElementalHeritagePolicyTests.cs" />
     <Compile Include="ElementalCharacterCreationRoutingTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ElementalCharacterCreationRegressionPlan.cs"><Link>RuntimeTesting\ElementalCharacterCreationRegressionPlan.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\CharacterCreationObservationIdentity.cs"><Link>RuntimeTesting\CharacterCreationObservationIdentity.cs</Link></Compile>
     <Compile Include="ElementalAlternateTraitPolicyTests.cs" />
     <Compile Include="ElementalAlternateTraitPassivePolicyTests.cs" />

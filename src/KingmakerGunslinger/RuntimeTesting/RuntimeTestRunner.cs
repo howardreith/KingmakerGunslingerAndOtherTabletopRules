@@ -838,11 +838,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase ||
-                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation)
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression)
                 {
                     if (_elementalCharacterCreationBaseline == null)
                     {
-                        if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation)
+                        if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression)
                         { RunWorkingSaveSmoke(); return; }
                         if (ResourcesLibrary.Preloading) return;
                         _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(_context, _request);
@@ -2235,7 +2237,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
-                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation)
+                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression)
                 {
                     WorkingSaveSmokeEvidence loaded = _workingSaveSmoke.Stop();
                     _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(

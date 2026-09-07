@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.RuntimeTesting;
 
 namespace KingmakerGunslinger.DomainTests
@@ -69,7 +71,7 @@ namespace KingmakerGunslinger.DomainTests
                 "_build.SetFeature(", "Actions.SelectAlignment(value)", "_build.Character.IsSelected()", "_build.SetRacialBonus(", "nativeOperationException", "nativeAlive", "ApplyNativeRoll", "read(\"Controller\")", "assigned.SequenceEqual(actual)", "ObserveInnerAssetUnload", "VerifyVisualIntegrity", "CaptureInitialInnerAssets", "global.AutoCommit", "ReferenceEquals(global.Preview, global.Unit)",
                 "ReferenceEquals(_build.Unit, global.Unit)", "global.Doll == null", "!_build.WarmUp", "provenIdleAutomaticController", "global.LevelUpActions.Count == 0",
                 "ReferenceEquals(Game.Instance.UI.LevelUpController, _globalControllerBefore)", "_build.SpendSkillPoint(stat, false)",
-                "after != before - 1", "refund-owned-skill", "sharedAssetsAliveAfter", "NativeDependencyIds", "m_InitiallyLoadedEquipmentEntityInnerAssets", "_build.BuyAttribute(", "_build.SpendSkillPoint(", "_controller.State.IsComplete()", "NextEnabled()", "_build.Commit()",
+                "after != before - 1", "refund-owned-skill", "sharedAssetsAliveAfter", "NativeDependencyIds", "m_InitiallyLoadedEquipmentEntityInnerAssets", "_build.BuyAttribute(", "_build.SpendSkillPoint(", "_controller.State.IsComplete()", "NextEnabled()", "CommitOwnedCreator()",
                 "ReferenceEquals(_controller.Unit, _unit.Descriptor)", "ArmSaveGuard()", "DisarmSaveGuard()",
                 "BlockSaveRoutine", "BlockSaveMutation", "loaded.DescriptorReferenceCorrelated", "loaded.StableFingerprint",
                 "ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore)", "_areaBefore == null", "global != null && !ReferenceEquals(global, _controller)",
@@ -132,6 +134,40 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("e117e1e0a17a4acec001000000000040") &&
                 runtime.Contains("HasTraitSpecificMechanic(trait)") && runtime.Contains("leaking.Length == 0"),
                 "Live qualification must reject both exact no-op GUIDs in every player-facing selection array.");
+        }
+
+        internal static void NativeRevisionPlansCoverLegalTransitionsAndAllHeritages()
+        {
+            var routes = Enumerable.Range(0, 3).Select(ElementalCharacterCreationRegressionPlan.Route).ToArray();
+            Assertions.True(routes.Select(route => route.Last()).OrderBy(value => value).SequenceEqual(new[] { 0, 1, 2 }),
+                "All three heritages must reach actual final commits.");
+            Assertions.True(routes.Any(route => route.SequenceEqual(new[] { 0, 1, 0 })) &&
+                routes.Any(route => route.SequenceEqual(new[] { 1, 2 })), "Back-navigation must cover retain/alternate and alternate/alternate transitions.");
+            foreach (ElementalHeritageRace race in Enum.GetValues(typeof(ElementalHeritageRace)))
+                foreach (int choice in Enumerable.Range(0, 3))
+                {
+                    var traits = ElementalCharacterCreationRegressionPlan.Traits(race, choice);
+                    var heritage = ElementalHeritagePolicy.Ordered().Where(value => value.ParentRace == race).ToArray()[choice];
+                    var state = ElementalAlternateTraitPolicy.Resolve(race, heritage.Id, traits);
+                    Assertions.Equal(traits.Length, state.TraitProviderSymbols().Length, "Fixture plan silently discarded a trait.");
+                    Assertions.True(traits.All(ElementalAlternateTraitPolicy.IsPublished), "Fixture plan includes a deferred no-op.");
+                    if (choice == 0) Assertions.Equal(0, traits.Length, "General route must exercise unconditional retain choices.");
+                }
+            Assertions.False(ElementalCharacterCreationRegressionPlan.IsAllowedCase("Human", "Fighter", "roll"), "Foreign race is outside regression scope.");
+            Assertions.False(ElementalCharacterCreationRegressionPlan.IsAllowedCase("Ifrit", "Wizard", "roll"), "Spellbook fixture is not qualified here.");
+            Assertions.False(ElementalCharacterCreationRegressionPlan.IsAllowedCase("Ifrit", "Fighter", "guess"), "Unknown allocation must fail closed.");
+            string source = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger", "RuntimeTesting", "ElementalCharacterCreationRegression.cs"));
+            foreach (string required in new[] { "_build.Back()", "tabs[0].Toggle.isOn = true", "RenderedNativeAction(renderedItems[0]).Invoke()", "MatchesNativeSelectionIdentity", "value.Index == view.Index",
+                "ExactOwnedSelection", "RejectDeferredChoices", "allocationBaselineExact", "VerifyCurrentRollOwner", "native-racial-reselection",
+                "owner.Progression.Features.Enumerable.Count", "owner.Resources.PersistantResources.Count", "expectedOverlay", "_revisionChoices.Enqueue",
+                "CaptureCreatorMembership", "CreatorMembershipRestored", "CleanupCreatorItems();", "_commitCountsBefore.SequenceEqual",
+                "inventory.Remove(item, excess).Dispose()", "_commitMoneyRestored ? _commitMoneyBefore : _commitMoneyAfter", "player.GainMoney(_commitMoneyBefore - _commitMoneyAfter)", "PollCommittedCreatorCleanup", "_commitRegistrationWait > 90",
+                "_revisionViewWait < 90", "native-revision-choice-readiness", "_playerInventoryCountsBefore.SequenceEqual", "ReferenceEquals(player.RemoteCompanions[index].Value, _unit)",
+                "committedBases.SequenceEqual(_allocatedBases)", "_playerMoneyBefore == player.Money" })
+                Assertions.True(source.Contains(required), "Native roundtrip boundary absent: " + required);
+            foreach (string forbidden in new[] { ".AddFact(", ".RemoveFact(", ".AddSelection(", ".Reconcile(",
+                "BaseValue =", "SkillPointsRemaining =", "StatsDistribution.Points =", ".SaveGame(", ".LoadGame(" })
+                Assertions.False(source.Contains(forbidden), "Regression fixture repairs the state it must observe: " + forbidden);
         }
 
         private static string FindRoot()

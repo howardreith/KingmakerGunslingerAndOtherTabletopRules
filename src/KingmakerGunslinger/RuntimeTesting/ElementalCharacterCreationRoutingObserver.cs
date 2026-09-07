@@ -58,7 +58,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline &&
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase &&
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl &&
-                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation))
+                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation &&
+                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression))
                 return;
             if (_request != null) throw new InvalidOperationException(
                 "Only one guarded character-creation observation may be armed.");

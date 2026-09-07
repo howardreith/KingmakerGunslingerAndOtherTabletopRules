@@ -65,10 +65,18 @@ if ($scenarioMetadata.RequiresSaveName) {
     if ([string]::IsNullOrWhiteSpace($SaveName)) {
         throw "$Scenario requires explicit -SaveName $($scenarioMetadata.PermittedSaveName)."
     }
-    if ($Parameters.Count -ne 0) {
-        throw 'Use the strictly typed -SaveName parameter, not -Parameters.'
+    if ($Scenario -ceq 'working-save-elemental-character-creation-regression') {
+        if ($Parameters.Count -ne 3 -or $Parameters.ContainsKey('saveName')) {
+            throw 'Use typed -SaveName plus exactly race, class, and allocation in -Parameters.'
+        }
+        $Parameters = $Parameters.Clone()
+        $Parameters.saveName = $SaveName
+    } else {
+        if ($Parameters.Count -ne 0) {
+            throw 'Use the strictly typed -SaveName parameter, not -Parameters.'
+        }
+        $Parameters = @{ saveName = $SaveName }
     }
-    $Parameters = @{ saveName = $SaveName }
 }
 elseif ($PSBoundParameters.ContainsKey('SaveName')) {
     throw "-SaveName is not valid for scenario '$Scenario'."

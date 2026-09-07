@@ -858,3 +858,190 @@ It never operates on the preserved automatic controller or its unit.
 - Human full-screen UI acceptance remains **NOT-RUN**. This checkpoint is real
   automated creator completion evidence, not owner-reported acceptance and not
   final stabilization qualification.
+
+### Native racial round-trip regression work in progress
+
+A new strict guarded working-save regression request covers three disposable
+native creators per named elemental race. Route plans are General -> alternate A
+-> General, alternate A -> alternate B, and alternate B -> General -> alternate A.
+Every visit must reach native final review; final commits cover all three markers.
+Representative plans include Brazen Flame and Secretive multi-slot choices,
+independent combinations, Crystalline Form/Breeze-Kissed resources and both
+Undine breaths. All replacement slots are first reset through native retain-base
+choices before another combination; no facts or stat/skill budgets are written.
+The fixture compares exact selected marker/provider/resource/ability graphs and
+racial overlays after native choices, unchanged point-buy/rolled allocation
+baselines at every review, exact rendered choices and actual native commit
+completion. Publication of either deferred exact GUID now fails the actual
+choice-list check rather than being filtered out by the fixture. Runtime results
+and any failed hypotheses will be appended after the full source qualification.
+
+#### First native round-trip runs and fixture corrections
+
+- `native-revision-build-03.log`: validation, 1,444 domain/reflection tests,
+  clean Release, deterministic package and strict package validation PASS.
+  The first two build attempts stopped on the newly incremented test-count pins;
+  the current validator and static source contracts now consistently specify 1,444.
+  Request-preflight PASS 245. Its first run observed artifact-directory metadata
+  changes during its no-staging check; repeating without a log inside the observed
+  artifact tree passed. No guard was relaxed.
+- Artifact source `d05383b3d2d06888f51f47a064c8a070cf66d041` plus fingerprint
+  `bc618cd3be4cdf28f8c6aa4044384f6b6ab3fbcf40de751fa876521e2b01d3f5`;
+  ZIP `e88bf97a2fc1a4e8466a314b49c7d3e036c12b88f8915e4e7a573184032bf8f9`;
+  DLL `ba79a03a4de0375f5fc80b1f61171da66049b43e466cfc044b582628b07b50f8`;
+  MVID `44303cd7-9e18-4d4d-b129-eb2b6e833793`.
+- Ifrit run `20260907T0856319936696Z-working-save-elemental-character-creation-regression`
+  FAIL: the second creator's atomic evidence-file replacement met a Windows
+  sharing violation while the external observer was reading the large JSON.
+  First creator had completed General -> Lavasoul -> General with exact graphs,
+  unchanged point-buy bases and native skill refund -1 -> 0. The run remains FAIL.
+  External reads now explicitly permit FILE_SHARE_READ|WRITE|DELETE and close the
+  handle before JSON parsing; no game/writer exception is suppressed.
+- Same-artifact repeat `20260907T0904331433506Z-working-save-elemental-character-creation-regression`
+  PASS: three native Ifrit commits (General, Sunsoul, Lavasoul), eight complete
+  final-review visits, exact graphs/baselines, and two native one-point skill
+  refunds. Brazen Flame plus Fire in the Blood and the independent Wildfire Heart,
+  Fire Insight, Forge-Hardened combination both complete and replace cleanly.
+- Oread `20260907T0911127592196Z-working-save-elemental-character-creation-regression`
+  PASS: three native commits (General, Ironsoul, Gemsoul), eight complete review
+  visits and 48 exact graph observations. Granite Skin, Crystalline Form and
+  Earth Insight switch through native retain routes. Crystalline resource count
+  is exactly one while present and zero when replaced. All allocation baselines
+  remain exact; Oread SLA's retain-only selection completes normally.
+- Sylph/Gunslinger/roll run
+  `20260907T0918238178513Z-working-save-elemental-character-creation-regression`
+  FAIL before allocation: the fixture dereferenced an absent Dice Roller session.
+  Dice Roller explicitly rejected a controller-owned non-mercenary candidate
+  while Player.MainCharacter resolved to the different existing campaign actor;
+  `mercenaryStateEmployee=false`, `mercenaryStableOwnerCustom=false`. This fixture
+  had used DefaultPlayerCharacter in a loaded campaign. It is not a reproduced
+  elemental mechanic defect. Rolled loaded-game fixtures now use the exact native
+  CustomCompanion blueprint, with explicit remote/cross-scene/party/inventory/money
+  restoration checks and final committed base-score comparison. No Dice Roller
+  production code, eligibility rule, main-character identity or existing actor is
+  changed. This correction is not yet runtime-qualified.
+- Every listed profile restored the exact original Mods/UMM state; every save
+  audit PASS with baseline/non-header working data unchanged and load delta 1.
+  Human UI acceptance remains NOT-RUN; no failed run is relabelled PASS.
+
+- Rolled Sylph retry `20260907T0930227612534Z-working-save-elemental-character-creation-regression`
+  FAIL: the first real CustomCompanion completed and retained its exact Dice Roller
+  assignment through all three native reviews. The second creator reached its
+  final review, then native starting-item publication found the first disposed
+  fixture's orphaned battered-firearm origin token in party inventory. The probe
+  had removed the companion without rolling back its native starting items.
+  Cleanup now captures the synchronous Commit's exact item references and stack
+  deltas (also on failure), removes only those additions before disposing their
+  owner, and checks original ordered references/counts. Production firearm
+  ownership and Dice Roller behavior are unchanged. Profile restoration and save
+  audit passed; this failed run remains failed.
+
+- Sylph retry `20260907T0942544671888Z-working-save-elemental-character-creation-regression`
+  FAIL after two exact rolled commits and seven complete reviews. Item rollback
+  restored original references and counts for both commits, including two existing
+  ammunition stacks. Third character's final heritage revision failed the combined
+  legal/rendered guard; the old evidence did not distinguish those predicates.
+  Revision readiness now records each predicate and actual rendered item state;
+  legal choices may await bounded native rendering, matching initial selection.
+  No missing or illegal choice is tolerated. Cleanup also exposed that native
+  AddEntity queues registration for EntityCreator.Tick: synchronous disposal had
+  preceded actual cross-scene ownership. The probe now waits for exact native
+  registration before retirement and reports each restoration field separately.
+  This is fixture timing instrumentation, not a production routing change. Exact
+  external mod restoration/save audit passed; failed acceptance is retained.
+
+- Sylph retry `20260907T0953569835351Z-working-save-elemental-character-creation-regression`
+  FAIL with exact cross-scene, remote, party and inventory restoration; money alone
+  differed. Native registration timing is now proved. The failed racial boundary
+  had all three exact heritage choices active, interactable and mechanically legal.
+  Their cached FeatureSelectionState objects differed from reconstructed state
+  references. Native SelectFeature.GetSelectionState resolves Selection object plus
+  Index, rather than state-object reference; FeatureSelectionState equality also
+  compares value fields. The probe now requires a unique exact native identity,
+  matching source/level, and a legal active choice, then invokes that rendered
+  item's actual native Action. It records reference equality separately. No game
+  or mod UI state is refreshed or repaired by the probe. Money is now captured
+  across the synchronous owned Commit and only that exact delta is reversed;
+  changes outside the boundary fail. External restoration/save audit passed.
+
+## Qualified native creator round trips: candidate 08
+
+All four fresh-process owner-stack profiles PASS (12/12 guarded assertions each):
+
+| Race / class / allocation | Run ID | Real commits | Final reviews | Exact graphs | Native skill refunds |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Sylph / Gunslinger / Dice Roller | `20260907T1010547202824Z-working-save-elemental-character-creation-regression` | 3 | 8 | 50 | 2 |
+| Undine / Fighter / Dice Roller | `20260907T1016551190289Z-working-save-elemental-character-creation-regression` | 3 | 8 | 36 | 1 |
+| Ifrit / Fighter / point-buy | `20260907T1022352171465Z-working-save-elemental-character-creation-regression` | 3 | 8 | 50 | 2 |
+| Oread / Fighter / point-buy | `20260907T1028514852316Z-working-save-elemental-character-creation-regression` | 3 | 8 | 48 | 0 |
+
+The twelve commits cover all twelve existing heritage markers. All 32 final
+reviews have a complete native state, zero remaining selections and an enabled
+Complete button. All 184 observed racial graphs have exact markers, providers,
+ability/resource identities and racial overlays. Each character reaches both
+ordinary global Trait roots, their populated Combat/Faith catalogs, and the normal
+feat selector. Elemental choices remain in Determinator before the native Skills
+phase that owns allocation and skills. All retain/alternate and multi-slot/independent
+round trips complete through the real native creator. This checkpoint does not
+qualify full Player.RespecCompanion, fresh-process visible-trait persistence or
+human UI acceptance.
+
+All rolled reviews retain the exact Dice Roller controller/state/preview, applied
+assignment and uncontaminated baseline; committed base values equal the verified
+assignment. All point-buy reviews retain their exact allocation. Five native skill
+refunds remove exactly one request-owned allocation action and resolve -1 to 0
+remaining skill points. No base-stat or budget field is repaired by the probe.
+
+All twelve native commit cleanups restore exact ordered world/cross-scene/remote/
+party membership, inventory references and stack counts, controller ownership,
+main actor and money. Native mercenaries finish queued cross-scene registration
+before retirement. Sylph/Gunslinger commits each changed money 4 -> 415; the exact
+synchronous delta was reversed to 4. One Sylph revision used a distinct cached
+view-state object with native value equality and exact selection/index/source/level;
+its actual rendered Action completed successfully. The probe records this object
+reference distinction rather than replacing native UI state.
+
+All four full Mods/UMM transactions restore exactly. Each save audit PASS: protected
+baseline exact, personal-save metadata exact, working non-header data exact, working
+header unchanged except the native load counter (delta 1). No save write occurred.
+All 220 retained visual inner assets remain alive through the creator operations.
+
+Build-Local candidate 08 passed repository validation, all 1,444 domain/reflection
+cases, clean Release compilation, deterministic packaging and strict validation.
+Candidate 07 failed compilation because the inspected native view Action is private;
+candidate 08 obtains that exact field through reflection. No native or foreign
+production class was modified for this access.
+
+- Source commit: `d05383b3d2d06888f51f47a064c8a070cf66d041` plus qualified source
+  fingerprint `f035aa133e37f0f16b09180a6e4e2b571bcd16c407c544c5adaa9ec49f193551`.
+- Numeric version `0.0.117`; informational version still `0.0.117-elemental-traits`
+  for this instrumentation checkpoint, not the final acceptance installation.
+- Preserved ignored ZIP: `artifacts/qualification/0.0.117/character-creation-stabilization/native-creator-roundtrip-candidate-08.zip`.
+- ZIP SHA-256 `84f6abadfc01a19fdc316652a56ed65094e05840e498974975bcc08224dc7ad1`.
+- DLL SHA-256 `371bd1411b1e4e1b73567f0423e6e8339e923e40e111d870152547d2e06eb401`;
+  MVID `65024647-d522-4beb-8094-862325f3e862`.
+- Manifest 1,867 identities (1,865 active, two reserved); package 135 entries.
+
+Curated result/creator evidence hashes (raw artifacts remain uncommitted):
+
+| Race | runtime-result.json SHA-256 | Creator evidence SHA-256 |
+| --- | --- | --- |
+| Sylph | `a40264bbdc993fad262c434cb94473c426f253bacb55be47b53a320d09d53c9e` | `10b69e3bc5be61eb661c2ab665852b1e55b2b2d93dea61f5b9428f03024dbf6e` |
+| Undine | `c2064be9880feb1a994b2777cb0d5fd4f7db3785ff474792cdd2a1f99a454b3a` | `f004c131ae12597481b4bae4a0ba7479b652408499449d0d476035a191032d9c` |
+| Ifrit | `640661b883abd7d47efa401485c989bf6ec525d2968bcc4a48286fcc3d5afaa6` | `010fb58572634e7d327a2f865860d180a54b51e9ae91661d4124d2d2cc7969cc` |
+| Oread | `0a8e4081797a4f6b5b9c1fee981f5b4b4b1c9c5e118c846b9cb1c1c7b2eb5bf9` | `a6c1e14626a27f7726d906c975c6709862e453a6bca55e296f3f5fbdac5a08ac` |
+
+Logs contain zero KMG ERROR lines. Each preserves the four preexisting
+ZFavoredClass custom JSON KeyNotFound exceptions and a native
+`Kingmaker.UI.BugReportCanvas.OnEnable` NullReferenceException during startup.
+The same exact native BugReportCanvas stack is present in the preserved owner
+log from before this mission (SHA-256
+`948d59a90bc88669e53a1c9ca4bfe2b700527403a4ed80f55a752047d795d5e8`).
+These startup failures are separate from KMG creator acceptance and remain
+unsuppressed. Native shader/missing-script/lightmap warnings also remain. No new
+KMG mechanical or creator exception was observed in these four qualified runs.
+
+Next: full native Player respec callback qualification, then all currently visible
+Release C lifecycle/TB and migration/compatibility gates. Human UI acceptance is
+NOT-RUN. The prior installation was restored after every profile; the final
+acceptance candidate is not installed yet. No merge, tag or release occurred.

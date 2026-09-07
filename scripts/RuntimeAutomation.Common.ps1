@@ -74,6 +74,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'working-save-elemental-character-creation-regression' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'working-save-elemental-character-creation' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -1379,11 +1385,22 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     if ($metadata.RequiresSaveName) {
-        if ($Parameters.Count -ne 1 -or
+        $creatorRegression = $Scenario -ceq 'working-save-elemental-character-creation-regression'
+        $requiredParameterCount = if ($creatorRegression) { 4 } else { 1 }
+        if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
             $Parameters.saveName -cne $metadata.PermittedSaveName) {
-            throw "$Scenario requires exactly saveName=$($metadata.PermittedSaveName)."
+            throw "$Scenario requires its exact working save and allowlisted parameters."
+        }
+        if ($creatorRegression -and (-not $Parameters.ContainsKey('race') -or
+            -not $Parameters.ContainsKey('class') -or -not $Parameters.ContainsKey('allocation') -or
+            $Parameters.race -isnot [string] -or $Parameters.class -isnot [string] -or
+            $Parameters.allocation -isnot [string] -or
+            $Parameters.race -cnotin @('Ifrit', 'Oread', 'Sylph', 'Undine') -or
+            $Parameters.class -cnotin @('Fighter', 'Gunslinger') -or
+            $Parameters.allocation -cnotin @('point-buy', 'roll'))) {
+            throw 'The working creator regression requires exact allowlisted race, class, and allocation parameters.'
         }
     }
     elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {
@@ -1550,7 +1567,10 @@ function New-KmgRuntimeRequest {
         descriptorResolutionTimeoutSeconds = $DescriptorResolutionTimeoutSeconds
         loadEntryTimeoutSeconds = $LoadEntryTimeoutSeconds
         fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
-        parameters = if ($metadata.RequiresSaveName) {
+        parameters = if ($Scenario -ceq 'working-save-elemental-character-creation-regression') {
+            [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
+                class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
+        } elseif ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
         } elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {
             [ordered]@{

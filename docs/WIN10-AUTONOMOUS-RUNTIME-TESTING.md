@@ -241,3 +241,38 @@ After validating the atomic in-game ready marker, the orchestrator instructs
 the human to open Load Game and explicitly forbids selection or loading. The
 probe never invokes a provider or sends input. See
 `SAVE-CATALOG-PROVIDER-OBSERVATION.md`.
+
+### Elemental character-creation back-navigation regression
+
+`working-save-elemental-character-creation-regression` requires the exact guarded
+working-save load, Elemental Races enabled, and three additional strict parameters:
+`race` (Ifrit/Oread/Sylph/Undine), `class` (Fighter/Gunslinger), and `allocation`
+(point-buy/roll). Roll additionally requires the installed active Dice Roller
+0.1.2 contract. Use typed `-SaveName KMG_AUTOMATION_WORKING` and
+`-Parameters @{race='Ifrit';class='Fighter';allocation='point-buy'}` with the
+normal Steam runtime orchestrator. Unknown or extra parameters fail preflight.
+
+The fixture owns three new level-0 characters. Each goes through the native
+full-screen creator, then revisits unlocked Heritage using native Back and exact
+selection-tab toggles. It resets replacement slots through retain-base before
+selecting the next legal combination. It never adds/removes facts, rewrites
+ability or skill budgets, or calls the replacement reconciler to fix evidence.
+The three committed final heritages cover General and both alternates. Exact
+facts, providers, abilities, resource identities/counts, stat overlays, unchanged
+allocation baselines, rendered legal choices, complete native states and commit
+callbacks are required. An exact deferred marker in an extracted choice list is
+FAIL. Negative skill budgets can refund only a request-owned native skill action.
+
+Native save writes remain blocked. The working-save contents are not saved and
+all request-owned characters/controllers are disposed after observation. The
+preexisting world membership, main character, area, idle global controller and
+build-unit references must be restored exactly. A failed per-character result
+makes this regression request FAIL. Human UI acceptance remains a separate gate.
+
+Loaded-game rolled creator regressions use the native `CustomCompanion` blueprint,
+because Dice Roller excludes an unrelated non-mercenary player candidate when a
+campaign main character already exists. Native mercenary completion may enroll
+that exact request-owned unit in cross-scene/remote-companion collections. Cleanup
+removes only that exact actor and verifies original ordered cross-scene, remote,
+party and player-inventory references plus money. The existing main character is
+never reassigned. Save-free new-player roll controls retain their original route.
