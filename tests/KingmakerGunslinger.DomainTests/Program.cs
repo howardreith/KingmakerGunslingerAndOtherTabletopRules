@@ -376,6 +376,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("aid-another.grant-matrix", AidAnotherCompatibilityTests.GrantMatrixIsExact),
             Case("aid-another.grant-validation", AidAnotherCompatibilityTests.GrantValidationFailsClosed),
             Case("aid-another.publication-idempotent", AidAnotherCompatibilityTests.PublicationIsIdempotentAndExact),
+            Case("aid-another.foreign-trait-array-contract", AidAnotherCompatibilityTests.ForeignTraitCatalogPreservesEmptyFeatures),
             Case("aid-another.publication-rollback", AidAnotherCompatibilityTests.PublicationFailureRestoresEveryArray),
             Case("aid-another.helpful-blueprint", AidAnotherCompatibilityTests.HelpfulBlueprintAndIdentityAreExact),
             Case("aid-another.cotw-contract", AidAnotherCompatibilityTests.CotwStructuralContractIsExact),

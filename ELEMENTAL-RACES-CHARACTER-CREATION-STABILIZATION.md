@@ -740,3 +740,41 @@ headers or visual-retention exceptions in these qualified logs. Profile D
 Ifrit through final review. C/D/F restored exact Mods and UMM bytes and passed
 save audits with zero load increments. These are save-free review/cancel routes;
 actual committed characters and respec remain pending.
+
+
+P0 D contract-preservation qualification uses the same exact donor-retention
+artifact above. Bodyguard OFF (C): three reconciliation callbacks preserve the
+original empty Features reference, original 14-choice AllFeatures reference and
+zero Helpful entries; all four creators complete their two legal global Trait
+choices. Bodyguard ON (D): Combat object `ref-7`, Features `ref-5151` stays empty;
+AllFeatures changes `ref-5152`/14 to `ref-9243`/15. Full stack (F): Combat object
+`ref-46`, Features `ref-3141` stays empty; AllFeatures changes `ref-3142`/14 to
+`ref-10185`/15. All 14 original ordered (reference, GUID) pairs are exact in each
+published prefix. The sole final entry is Helpful
+`e4b29a7c8d5f4c1796ab03e1f72d8456`. Three repeated callbacks, actual first-level
+Trait consumption and runtime-ready snapshots retain those exact resulting
+references. Both global Trait roots expose 8 categories (8 legal first, 7 legal
+second); D Combat has 15 extracted/13 legal choices. No foreign trait is lost.
+
+These results qualify the narrow foreign-array repair, but do not establish it
+as the cause of the owner's empty lists: B and the earlier KMG-enabled native
+control routes also completed both Traits. The owner-specific reproduction and
+human UI acceptance remain open. An offline field-reader scan found no Features
+read in ZFavoredClass or native selection consumption; CotW reads found were in
+construction/balance methods. Three unrelated optional methods could not be
+inspected because their requested assembly versions were absent from the offline
+reflection context; that limitation is recorded, not treated as a runtime error.
+The preexisting ZFavoredClass custom-data KeyNotFound warnings remain separate
+and unsuppressed.
+
+The first actual-commit request, full-stack
+`20260907T0756184646606Z-working-save-elemental-character-creation`, loaded the
+exact working save successfully, then failed the fixture's occupied-creator
+precondition before creating any unit. The read-only snapshot found no visible
+active controller. Native Warmup leaves a global automatic controller after
+clearing the visible controller, which is a candidate for this readiness
+mismatch; exact dormant-state fields still need runtime correlation. The run
+restored exact Mods/UMM bytes and passed the save audit (one load, no content
+changes). It is not a character-creation completion PASS. The fixture will be
+narrowed to preserve a proven idle native warmup controller without operating
+on any existing character or claiming an interactive creator.
