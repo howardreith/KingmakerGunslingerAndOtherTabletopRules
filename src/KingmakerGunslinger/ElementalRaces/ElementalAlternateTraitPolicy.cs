@@ -75,6 +75,8 @@ namespace KingmakerGunslinger.ElementalRaces
         internal string ProviderSymbol { get; private set; }
         internal ElementalRacialTraitSlot PrimarySlot { get; private set; }
 
+        internal bool IsPublished { get { return ElementalAlternateTraitPolicy.IsPublished(Id); } }
+
         internal bool Replaces(ElementalRacialTraitSlot slot)
         {
             return slot != ElementalRacialTraitSlot.None &&
@@ -132,6 +134,9 @@ namespace KingmakerGunslinger.ElementalRaces
                     m_Choices.Clone());
             }
         }
+
+        internal IReadOnlyList<ElementalAlternateTraitDefinition> PublishedChoices
+        { get { return m_Choices.Where(value => value.IsPublished).ToArray(); } }
 
         private static string SlotName(ElementalRacialTraitSlot slot)
         {
@@ -419,6 +424,36 @@ namespace KingmakerGunslinger.ElementalRaces
             return result;
         }
 
+        internal static bool IsPublished(ElementalAlternateTraitId id)
+        {
+            switch (id)
+            {
+                case ElementalAlternateTraitId.WildfireHeart:
+                case ElementalAlternateTraitId.BrazenFlame:
+                case ElementalAlternateTraitId.FireInTheBlood:
+                case ElementalAlternateTraitId.EfreetiMagic:
+                case ElementalAlternateTraitId.ForgeHardened:
+                case ElementalAlternateTraitId.FireInsight:
+                case ElementalAlternateTraitId.CrystallineForm:
+                case ElementalAlternateTraitId.EarthInsight:
+                case ElementalAlternateTraitId.GraniteSkin:
+                case ElementalAlternateTraitId.StoneInTheBlood:
+                case ElementalAlternateTraitId.AirInsight:
+                case ElementalAlternateTraitId.BreezeKissed:
+                case ElementalAlternateTraitId.LikeTheWind:
+                case ElementalAlternateTraitId.Secretive:
+                case ElementalAlternateTraitId.StormInTheBlood:
+                case ElementalAlternateTraitId.ThunderousResilience:
+                case ElementalAlternateTraitId.WhisperingWind:
+                case ElementalAlternateTraitId.AcidBreath:
+                case ElementalAlternateTraitId.OozeBreath:
+                    return true;
+                default:
+                    // Deferred identities remain registered for development saves.
+                    return false;
+            }
+        }
+
         internal static bool IsLegal(ElementalHeritageRace race,
             IEnumerable<ElementalAlternateTraitId> activeTraits)
         {
@@ -511,7 +546,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 if (definition.ParentRace != race)
                     throw new InvalidOperationException(
                         "An observed alternate-trait marker belongs to another race.");
-                if (!deactivating.HasValue || id != deactivating.Value)
+                if (definition.IsPublished && (!deactivating.HasValue || id != deactivating.Value))
                     effective.Add(id);
             }
             if (activating.HasValue)
@@ -521,9 +556,11 @@ namespace KingmakerGunslinger.ElementalRaces
                 if (next.ParentRace != race)
                     throw new InvalidOperationException(
                         "An activating alternate-trait marker belongs to another race.");
-                effective.RemoveAll(id => Find(id).PrimarySlot ==
-                    next.PrimarySlot);
-                effective.Add(next.Id);
+                if (next.IsPublished)
+                {
+                    effective.RemoveAll(id => Find(id).PrimarySlot == next.PrimarySlot);
+                    effective.Add(next.Id);
+                }
             }
             return Normalize(race, effective).Select(value => value.Id)
                 .ToArray();
@@ -544,6 +581,9 @@ namespace KingmakerGunslinger.ElementalRaces
             if (definitions.Any(value => value.ParentRace != race))
                 throw new InvalidOperationException(
                     "An alternate racial trait does not belong to the exact parent race.");
+            // Validate retained identities, then ignore deferred markers before
+            // overlap/provider resolution. They must not consume any base slot.
+            definitions = definitions.Where(value => value.IsPublished).ToArray();
             ElementalRacialTraitSlot consumed =
                 ElementalRacialTraitSlot.None;
             foreach (ElementalAlternateTraitDefinition definition in

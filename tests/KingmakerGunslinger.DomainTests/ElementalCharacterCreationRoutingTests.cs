@@ -112,6 +112,25 @@ namespace KingmakerGunslinger.DomainTests
                 "Moving the phase must retain the existing three-choice selection lifecycle.");
         }
 
+        internal static void AlternateTraitFactoryUsesRacialRouteAndPublishedChoices()
+        {
+            string source = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalAlternateTraitBlueprintFactory.cs"));
+            Assertions.True(source.Contains("result.Group = FeatureGroup.AasimarHeritage;") &&
+                source.Contains("result.Group2 = FeatureGroup.None;") &&
+                source.Contains("result.Groups = new[] { FeatureGroup.AasimarHeritage };") &&
+                source.Contains(".PublishedChoices.Select(") && source.Contains("definition.PublishedChoices.Count + 1"),
+                "Alternate traits require the installed racial presentation contract and retain plus published choices.");
+            Assertions.False(source.Contains("result.Group = FeatureGroup.None;") ||
+                source.Contains("result.Group = FeatureGroup.Racial;"), "Racial traits cannot enter generic Abilities.");
+            string runtime = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalAlternateTraitFrameworkScenario.cs"));
+            Assertions.True(runtime.Contains("e117e1e0a17a4acec001000000000031") &&
+                runtime.Contains("e117e1e0a17a4acec001000000000040") &&
+                runtime.Contains("HasTraitSpecificMechanic(trait)") && runtime.Contains("leaking.Length == 0"),
+                "Live qualification must reject both exact no-op GUIDs in every player-facing selection array.");
+        }
+
         private static string FindRoot()
         {
             var directory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);

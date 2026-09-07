@@ -544,3 +544,78 @@ advance rather than refunding the excess through the native control. Native
 SpendSkillPoint(stat,false) calls UnspendSkillPoint, refreshes the preview, and
 rebuilds the UI. A request-owned refund path is needed in regression coverage;
 this evidence does not establish a production Gunslinger or global-Trait defect.
+
+
+### P0 B/C: racial alternate-trait route and deferred choices (in qualification)
+
+All ten replacement-slot selections now follow installed Races Unleashed's
+alternate-racial-trait contract: Group=AasimarHeritage, Group2=None,
+Groups=[AasimarHeritage]. Ordered retain-base choices remain unconditional and
+obligatory. Their existing feature-array contract and stable identities remain.
+Publication is now explicit for the 19 implemented candidates. Oread's existing
+SLA selector retains its identity and offers only retain-base until a later
+mission implements another legal choice.
+
+Treacherous Earth marker `e117e1e0a17a4acec001000000000031` and Nereid Fascination
+marker `e117e1e0a17a4acec001000000000040` remain registered, with their providers
+and reservations unchanged. They are hidden and omitted from all player-facing
+selection arrays. Retained development markers are validated as known identities,
+then ignored before overlap/provider resolution: they cannot consume the SLA slot,
+evict an implemented choice, or attach an inert provider. This is a narrow
+conservative reconciliation of the two development identities, without save edits.
+
+The factory verifies a concrete trait-specific provider for each published choice.
+The live framework scenario asserts those mechanics and scans every constructed
+Features/AllFeatures array for the two forbidden marker GUIDs. Its native matrix
+now covers 60 published legal combinations across 180 heritage rows and both
+activation orders (360 rows), while keeping 21 marker-first rows to exercise both
+retained deferred identities. Every combination explicitly checks native retain-base
+legality. Deferred-marker rows also spend the active heritage SLA and require
+reconciliation/removal to preserve zero uses. These source changes are awaiting
+complete source, build, package and guarded runtime qualification.
+
+
+P0 B/C checkpoint validation: `alternate-routing-build-02.log` passed repository
+validation, all **1,440** domain/reflection tests, clean Release compilation,
+deterministic packaging and strict 135-entry package validation. The first
+compilation caught a missing namespace import in the new provider validator;
+that failed artifact was never deployed. A direct ordered manifest comparison
+against mission-start `c7df5de2` verified all 1,867 symbols/GUIDs/types/statuses
+unchanged. Only four deferred-identity notes changed in the manifest.
+
+Qualified artifact: ZIP SHA-256
+`1ca887bde2a64e0b8f1264d74f67a55c54f2f66644f4a2f6adef55be8e1cf501`;
+DLL SHA-256
+`6312f7995ef0582bec920f279e39a77190b5a812f87512c19e8e5ec3037c2343`;
+MVID `13ed52b2-a108-4752-9a55-afcb914050b9`. Source attestation:
+`23dffdc58fad63f6a674cda8513d44b8a683a1c0` plus fingerprint
+`dd237ff3b56273f4baade9cbab60dd04ea7af4e08be322499f23c327ebadedfe`.
+
+Profile A `20260907T0653109609068Z-observe-elemental-alternate-trait-framework`
+passed **6,202/6,202** native assertions without exceptions. This includes all
+19 exact trait-specific mechanic assertions, both exact deferred marker GUID
+publication checks, 60 legal sets/180 heritage rows/360 activation-order rows,
+21 marker-first rows including both inert retained identities, and native
+retain-base legality throughout the combination matrix. Existing passive,
+Insight, blood, daily-ability, breath, Crystalline and Breeze core probes also
+passed in this process. This does not substitute for pending fresh-process
+persistence, turn-based action costs or complete creator/respec qualification.
+
+Profile F `20260907T0656438275743Z-disposable-elemental-character-creation-case`
+completed Oread/Fighter's full native selection contract through Total with
+zero unresolved selections and no per-character acceptance failures. Heritage
+had 3 extracted/3 legal choices. Energy, Affinity and SLA replacement slots had
+2/2, 4/4 and 1/1 respectively; every racial choice was selected in Determinator
+before Skills, with no repeated racial choice in Abilities. Global Trait roots
+had 8/8 and 8/7 categories; feats remained populated. This save-free fixture
+canceled at final review (`completed=false`); actual commit and owner UI
+acceptance remain pending. Both transactions restored exact original Mods and
+UMM bytes, and independent save audits passed with zero load increments.
+
+Current visible alternate-trait inventory (19 candidates, lifecycle qualification
+still in progress): Ifrit -- Wildfire Heart, Brazen Flame, Fire in the Blood,
+Efreeti Magic, Forge-Hardened, Fire Insight; Oread -- Crystalline Form, Earth
+Insight, Granite Skin, Stone in the Blood; Sylph -- Air Insight, Breeze-Kissed,
+Like the Wind, Secretive, Storm in the Blood, Thunderous Resilience, Whispering
+Wind; Undine -- Acid Breath, Ooze Breath. Treacherous Earth and Nereid Fascination
+are registered, hidden, unpublished and inert. No new trait or mechanic was added.

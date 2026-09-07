@@ -65,7 +65,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     ElementalAlternateTraitBlueprints[][] legal =
                         LegalCombinations(race.AlternateTraits.Traits()
-                            .ToArray()).ToArray();
+                            .Where(value => value.Definition.IsPublished).ToArray()).ToArray();
                     evidence.LegalCombinations += legal.Length;
                     foreach (ElementalHeritageBlueprints heritage in
                         race.Heritages.Choices())
@@ -157,23 +157,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Add(owner, heritage.Marker);
                         ApplyRace(owner, race);
                         Fact nativeFact = owner.GetFact(keen);
-                        Verify(owner, race, heritage, new[] { trait }, 1,
-                            nativeFact, keen, "marker-first", evidence,
-                            assertions);
+                        Verify(owner, race, heritage, trait.Definition.IsPublished ? new[] { trait } :
+                            new ElementalAlternateTraitBlueprints[0], 1,
+                            nativeFact, keen, "marker-first", evidence, assertions);
+                        int remaining = 1;
+                        if (!trait.Definition.IsPublished)
+                        {
+                            owner.Resources.Spend(heritage.SlaResource, 1);
+                            remaining = 0;
+                            Check(assertions, "deferred-marker-reconcile-" + trait.Definition.Id,
+                                ElementalHeritageRuntime.Reconcile(owner, null, null),
+                                "retained deferred marker reconciles without consuming the SLA slot");
+                            Verify(owner, race, heritage, new ElementalAlternateTraitBlueprints[0], 0,
+                                nativeFact, keen, "deferred-marker-spent-sla-preserved", evidence, assertions);
+                        }
                         owner.RemoveFact(trait.Marker);
                         Verify(owner, race, heritage,
-                            new ElementalAlternateTraitBlueprints[0], 1,
+                            new ElementalAlternateTraitBlueprints[0], remaining,
                             nativeFact, keen, "marker-first-remove",
                             evidence, assertions);
                         evidence.MarkerFirstRows++;
                     }
                 }
                 Check(assertions, "trait-matrix-completeness",
-                    evidence.LegalCombinations == 69 &&
-                    evidence.HeritageCombinationRows == 207 &&
-                    evidence.ActivationOrderRows == 414 &&
+                    evidence.LegalCombinations == 60 &&
+                    evidence.HeritageCombinationRows == 180 &&
+                    evidence.ActivationOrderRows == 360 &&
                     evidence.MarkerFirstRows == 21,
-                    "69 legal sets, 207 heritage rows, 414 order rows, 21 marker-first rows");
+                    "60 published legal sets, 180 heritage rows, 360 order rows, 21 retained marker-first rows");
             }
             finally
             {
@@ -225,8 +236,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             ICollection<RuntimeTestAssertion> assertions)
         {
             ElementalAlternateTraitBlueprints trait = race.AlternateTraits
-                .Traits().First(value => value.Definition.Replaces(
+                .Traits().FirstOrDefault(value => value.Definition.IsPublished && value.Definition.Replaces(
                     ElementalRacialTraitSlot.RacialSpellLikeAbility));
+            // Oread currently retains its SLA in every published combination.
+            // Its deferred marker and spent SLA are covered by marker-first rows.
+            if (trait == null) return;
             ElementalHeritageBlueprints next = race.Heritages.Choices().First(
                 value => !ReferenceEquals(value, original));
             Add(owner, trait.Marker);
@@ -255,7 +269,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // ordering. The newly activating option controls the providers.
             ElementalAlternateTraitBlueprints replacement = race
                 .AlternateTraits.Traits().FirstOrDefault(value =>
-                    value.Definition.Id != trait.Definition.Id &&
+                    value.Definition.IsPublished && value.Definition.Id != trait.Definition.Id &&
                     value.Definition.PrimarySlot ==
                         trait.Definition.PrimarySlot);
             if (replacement == null) return;
@@ -368,9 +382,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             ElementalAlternateTraitBlueprints[] selected,
             ICollection<RuntimeTestAssertion> assertions)
         {
+            foreach (var slot in race.AlternateTraits.Selections())
+            {
+                var retain = slot.Selection.ExtractSelectionItems(owner, owner).Single(value =>
+                    ReferenceEquals(value.Feature, slot.RetainMarker));
+                var state = new FeatureSelectionState(null, slot.Selection, slot.Selection, 0, 0);
+                Check(assertions, "retain-base-remains-legal-" + slot.Selection.AssetGuid,
+                    slot.Selection.CanSelect(owner, null, state, retain),
+                    "every published combination retains a native legal completion route");
+            }
             foreach (ElementalAlternateTraitBlueprints candidate in
                 race.AlternateTraits.Traits().Where(value =>
-                    !selected.Contains(value)))
+                    value.Definition.IsPublished && !selected.Contains(value)))
             {
                 bool conflict = selected.Any(value =>
                     (value.Definition.ReplacedSlots &

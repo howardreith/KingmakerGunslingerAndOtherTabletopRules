@@ -13331,7 +13331,7 @@
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth", "guid": "e117e1e0a17a4acec001000000000031",
-      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Deferred registered development identity; unpublished and inert until separately implemented and qualified. GUID retained; no racial slot is consumed."
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.AirInsight", "guid": "e117e1e0a17a4acec001000000000032",
@@ -13367,7 +13367,7 @@
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination", "guid": "e117e1e0a17a4acec001000000000040",
-      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Save-bearing visible alternate racial trait marker and reconciliation input."
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Deferred registered development identity; unpublished and inert until separately implemented and qualified. GUID retained; no racial slot is consumed."
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath", "guid": "e117e1e0a17a4acec001000000000041",
@@ -13415,7 +13415,7 @@
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth.Provider", "guid": "e117e1e0a17a4acec001000000000052",
-      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Deferred registered development identity; unpublished and inert until separately implemented and qualified. GUID retained; no racial slot is consumed."
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.AirInsight.Provider", "guid": "e117e1e0a17a4acec001000000000053",
@@ -13451,7 +13451,7 @@
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.Provider", "guid": "e117e1e0a17a4acec001000000000061",
-      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Hidden project-owned alternate racial trait mechanic provider reconciled from its exact marker."
+      "plannedType": "BlueprintFeature", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Deferred registered development identity; unpublished and inert until separately implemented and qualified. GUID retained; no racial slot is consumed."
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath.Provider", "guid": "e117e1e0a17a4acec001000000000062",

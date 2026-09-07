@@ -12,7 +12,7 @@ namespace KingmakerGunslinger.DomainTests
             ElementalAlternateTraitDefinition[] all =
                 ElementalAlternateTraitPolicy.Ordered().ToArray();
             Assertions.Equal(21, all.Length,
-                "Release C must expose exactly the required 21 alternate racial traits.");
+                "Release C must retain all 21 registered alternate racial trait identities.");
             Assertions.Equal(21, all.Select(value => value.Id).Distinct()
                 .Count(), "Every alternate racial trait needs one semantic identity.");
             Assertions.Equal(21, all.Select(value => value.MarkerSymbol)
@@ -98,7 +98,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Every visible slot selection needs an explicit retain-base choice.");
             Assertions.Equal(21, selections.SelectMany(value => value.Choices)
                 .Select(value => value.Id).Distinct().Count(),
-                "Every alternate trait must appear in exactly one primary-slot selection.");
+                "Every registered identity must retain its primary-slot association independently of publication.");
             Assertions.Equal(3, ElementalAlternateTraitPolicy
                 .SelectionsForRace(ElementalHeritageRace.Ifrit).Count,
                 "Ifrit needs energy, affinity, and SLA selections.");
@@ -122,16 +122,16 @@ namespace KingmakerGunslinger.DomainTests
                 ElementalHeritageRace, int>
             {
                 { ElementalHeritageRace.Ifrit, 21 },
-                { ElementalHeritageRace.Oread, 16 },
+                { ElementalHeritageRace.Oread, 8 },
                 { ElementalHeritageRace.Sylph, 28 },
-                { ElementalHeritageRace.Undine, 4 }
+                { ElementalHeritageRace.Undine, 3 }
             };
 
             foreach (ElementalHeritageRace race in Enum.GetValues(
                 typeof(ElementalHeritageRace)))
             {
                 ElementalAlternateTraitDefinition[] traits =
-                    ElementalAlternateTraitPolicy.ForRace(race).ToArray();
+                    ElementalAlternateTraitPolicy.ForRace(race).Where(value => value.IsPublished).ToArray();
                 ElementalAlternateTraitId[][] sets = PowerSet(traits);
                 ElementalAlternateTraitId[][] legal = sets.Where(value =>
                     ExpectedLegal(value)).ToArray();
@@ -193,7 +193,7 @@ namespace KingmakerGunslinger.DomainTests
                 typeof(ElementalHeritageRace)))
             {
                 ElementalAlternateTraitDefinition[] definitions =
-                    ElementalAlternateTraitPolicy.ForRace(race).ToArray();
+                    ElementalAlternateTraitPolicy.ForRace(race).Where(value => value.IsPublished).ToArray();
                 ElementalAlternateTraitId[][] legal = PowerSet(definitions)
                     .Where(ExpectedLegal).ToArray();
                 foreach (ElementalHeritageDefinition heritage in
@@ -258,16 +258,16 @@ namespace KingmakerGunslinger.DomainTests
 
                 foreach (ElementalAlternateTraitSelectionDefinition selection
                     in ElementalAlternateTraitPolicy.SelectionsForRace(race))
-                    for (int oldIndex = 0; oldIndex < selection.Choices.Count;
+                    for (int oldIndex = 0; oldIndex < selection.PublishedChoices.Count;
                         oldIndex++)
                         for (int newIndex = 0;
-                            newIndex < selection.Choices.Count; newIndex++)
+                            newIndex < selection.PublishedChoices.Count; newIndex++)
                         {
                             if (oldIndex == newIndex) continue;
                             ElementalAlternateTraitId oldId =
-                                selection.Choices[oldIndex].Id;
+                                selection.PublishedChoices[oldIndex].Id;
                             ElementalAlternateTraitId newId =
-                                selection.Choices[newIndex].Id;
+                                selection.PublishedChoices[newIndex].Id;
                             Assertions.True(ElementalAlternateTraitPolicy
                                     .TransitionMarkers(race,
                                         new[] { oldId }, newId, null)
@@ -301,6 +301,46 @@ namespace KingmakerGunslinger.DomainTests
                     new[] { ElementalAlternateTraitId.EfreetiMagic },
                     ElementalAlternateTraitId.BrazenFlame, null),
                 "A cross-selection multi-slot conflict must remain fail-closed during activation.");
+        }
+
+        internal static void DeferredMarkersRemainRegisteredWithoutReplacingSlots()
+        {
+            Assertions.Equal(19, ElementalAlternateTraitPolicy.Ordered().Count(value => value.IsPublished),
+                "Only the 19 implemented candidates may be published.");
+            Assertions.Equal(19, ElementalAlternateTraitPolicy.OrderedSelections()
+                .SelectMany(value => value.PublishedChoices).Select(value => value.Id).Distinct().Count(),
+                "Every implemented marker must be published exactly once.");
+            foreach (var id in new[] { ElementalAlternateTraitId.TreacherousEarth, ElementalAlternateTraitId.NereidFascination })
+            {
+                var definition = ElementalAlternateTraitPolicy.Find(id);
+                Assertions.False(definition.IsPublished, "Deferred identity must stay registered but unpublished.");
+                foreach (var heritage in ElementalHeritagePolicy.ForRace(definition.ParentRace))
+                {
+                    var baseline = ElementalAlternateTraitPolicy.Resolve(definition.ParentRace, heritage.Id,
+                        new ElementalAlternateTraitId[0]);
+                    var restored = ElementalAlternateTraitPolicy.ResolveMarkers(definition.ParentRace, heritage.Id,
+                        new[] { definition.MarkerSymbol });
+                    Assertions.Equal(baseline.Fingerprint, restored.Fingerprint,
+                        "Retained deferred markers must not consume a slot or add an inert provider.");
+                    foreach (var implemented in ElementalAlternateTraitPolicy.ForRace(definition.ParentRace)
+                        .Where(value => value.IsPublished))
+                    {
+                        var expected = ElementalAlternateTraitPolicy.Resolve(definition.ParentRace, heritage.Id,
+                            new[] { implemented.Id });
+                        var observed = ElementalAlternateTraitPolicy.Resolve(definition.ParentRace, heritage.Id,
+                            new[] { id, implemented.Id });
+                        Assertions.Equal(expected.Fingerprint, observed.Fingerprint,
+                            "A deferred marker must not exclude an implemented alternative.");
+                        Assertions.True(ElementalAlternateTraitPolicy.TransitionMarkers(definition.ParentRace,
+                            new[] { implemented.Id }, id, null).SequenceEqual(new[] { implemented.Id }),
+                            "Deferred-marker activation must not evict an implemented same-slot choice.");
+                    }
+                }
+            }
+            var oreadSla = ElementalAlternateTraitPolicy.SelectionsForRace(ElementalHeritageRace.Oread)
+                .Single(value => value.Slot == ElementalRacialTraitSlot.RacialSpellLikeAbility);
+            Assertions.Equal(0, oreadSla.PublishedChoices.Count,
+                "The stable Oread SLA selector must retain only its unconditional retain-base choice.");
         }
 
         private static void AssertState(ElementalAlternateTraitState state,
