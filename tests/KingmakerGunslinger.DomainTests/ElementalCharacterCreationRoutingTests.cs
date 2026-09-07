@@ -66,14 +66,17 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTesting", "ElementalCharacterCreationBaselineScenario.cs"));
             foreach (string required in new[] { "request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline",
                 "new ChargenUnit(", ".HandleLevelUpStart(", "State.NextLevel != 1", "GetProperty(\"CurrentFeatureCollection\"", "GetComponentsInChildren<CharBuildSelectorItem>", "view.Feature.Feature",
-                "_build.SetFeature(", "Actions.SelectAlignment(value)", "_build.Character.IsSelected()", "_build.SetRacialBonus(", "nativeOperationException", "nativeAlive", "ApplyNativeRoll", "read(\"Controller\")", "assigned.SequenceEqual(actual)", "ObserveInnerAssetUnload", "VerifyVisualIntegrity", "CaptureInitialInnerAssets", "sharedAssetsAliveAfter", "NativeDependencyIds", "m_InitiallyLoadedEquipmentEntityInnerAssets", "_build.BuyAttribute(", "_build.SpendSkillPoint(", "_controller.State.IsComplete()", "NextEnabled()", "_build.Commit()",
+                "_build.SetFeature(", "Actions.SelectAlignment(value)", "_build.Character.IsSelected()", "_build.SetRacialBonus(", "nativeOperationException", "nativeAlive", "ApplyNativeRoll", "read(\"Controller\")", "assigned.SequenceEqual(actual)", "ObserveInnerAssetUnload", "VerifyVisualIntegrity", "CaptureInitialInnerAssets", "global.AutoCommit", "ReferenceEquals(global.Preview, global.Unit)",
+                "ReferenceEquals(_build.Unit, global.Unit)", "global.Doll == null", "!_build.WarmUp", "provenIdleAutomaticController", "global.LevelUpActions.Count == 0",
+                "ReferenceEquals(Game.Instance.UI.LevelUpController, _globalControllerBefore)", "_build.SpendSkillPoint(stat, false)",
+                "after != before - 1", "refund-owned-skill", "sharedAssetsAliveAfter", "NativeDependencyIds", "m_InitiallyLoadedEquipmentEntityInnerAssets", "_build.BuyAttribute(", "_build.SpendSkillPoint(", "_controller.State.IsComplete()", "NextEnabled()", "_build.Commit()",
                 "ReferenceEquals(_controller.Unit, _unit.Descriptor)", "ArmSaveGuard()", "DisarmSaveGuard()",
                 "BlockSaveRoutine", "BlockSaveMutation", "loaded.DescriptorReferenceCorrelated", "loaded.StableFingerprint",
                 "ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore)", "_areaBefore == null", "global != null && !ReferenceEquals(global, _controller)",
                 "visible != null && !ReferenceEquals(visible, _controller)", "(!_committed && (global == null || visible == null))", "acceptanceFailures", "baseline observation PASS does not qualify" })
                 Assertions.True(source.Contains(required), "Native creator contract is absent: " + required);
             foreach (string forbidden in new[] { "StartWithoutAssigningStaticInstance", ".AddSelection(",
-                ".SaveGame(", ".LoadGame(", "_controller.AddStatPoint(", "_controller.SpendSkillPoint(", "KMG_AUTOMATION_BASELINE", "Obligatory =", "IgnorePrerequisites =" })
+                ".SaveGame(", ".LoadGame(", "_controller.AddStatPoint(", "_controller.SpendSkillPoint(", "KMG_AUTOMATION_BASELINE", "Obligatory =", "IgnorePrerequisites =", "_globalControllerBefore.Cancel(", "_globalControllerBefore.Commit(", "SkillPointsRemaining =", "SpentSkillPoints =" })
                 Assertions.False(source.Contains(forbidden), "Fixture bypasses native selection or save scope: " + forbidden);
         }
         internal static void DisabledControlCannotBootstrapProductionOrCommitCampaign()

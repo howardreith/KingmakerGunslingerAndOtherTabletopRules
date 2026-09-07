@@ -61,6 +61,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly BlueprintRace[] _races;
         private CharacterBuildController _build;
         private LevelUpController _controller;
+        private LevelUpController _globalControllerBefore;
+        private UnitDescriptor _buildUnitBefore;
+        private JObject _initialCreatorOwnership;
+        private int _readinessWait;
+        private readonly List<StatType> _spentSkills = new List<StatType>();
         private UnitEntityData _unit;
         private UnitEntityData[] _worldBefore;
         private JObject _character;
@@ -255,8 +260,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_canCommit && (_mainBefore == null || _areaBefore == null))
                 throw new InvalidOperationException("Creator fixture requires a loaded campaign, never the main-menu scene.");
             _build = Game.Instance.UI.CharacterBuildController;
-            if (Game.Instance.UI.LevelUpController != null || _build.LevelUpController != null || _build.IsShow)
-                throw new InvalidOperationException("An existing creator cannot be used by this diagnostic.");
+            LevelUpController global = Game.Instance.UI.LevelUpController;
+            _initialCreatorOwnership = new JObject {
+                ["windowShown"] = _build.IsShow, ["warmUp"] = _build.WarmUp,
+                ["visibleControllerPresent"] = _build.LevelUpController != null,
+                ["globalControllerPresent"] = global != null, ["globalAutoCommit"] = global?.AutoCommit,
+                ["globalPreviewIsUnit"] = global != null && ReferenceEquals(global.Preview, global.Unit),
+                ["globalDollAbsent"] = global != null && global.Doll == null,
+                ["globalMode"] = global?.State?.Mode.ToString(), ["actionCount"] = global?.LevelUpActions.Count,
+                ["globalUnitId"] = global?.Unit?.Unit?.UniqueId,
+                ["globalUnitBlueprint"] = global?.Unit?.Blueprint?.AssetGuid,
+                ["buildUnitMatchesGlobal"] = global != null && ReferenceEquals(_build.Unit, global.Unit) };
+            // An automatic Start can remain in the global slot after its UI
+            // closes or the area changes. The captured loaded-game contract has
+            // no actions, preview copy, doll or active window. Preserve the exact
+            // alias; never cancel, commit, or reuse its unit.
+            bool idleAutomatic = _canCommit && global != null && global.AutoCommit &&
+                ReferenceEquals(global.Preview, global.Unit) && global.Doll == null &&
+                global.LevelUpActions.Count == 0 && global.State != null &&
+                (global.State.Mode == LevelUpState.CharBuildMode.LevelUp ||
+                    global.State.Mode == LevelUpState.CharBuildMode.CharGen) && !_build.WarmUp &&
+                _build.LevelUpController == null && !_build.IsShow;
+            _initialCreatorOwnership["provenIdleAutomaticController"] = idleAutomatic;
+            if (_canCommit && global == null && _build.LevelUpController == null && _build.IsShow && ++_readinessWait <= 60)
+            { _settle = 4; return; }
+            if ((global != null && !idleAutomatic) || _build.LevelUpController != null || _build.IsShow)
+                throw new InvalidOperationException("An existing creator cannot be used by this diagnostic: " + _initialCreatorOwnership);
+            _globalControllerBefore = global;
+            _buildUnitBefore = _build.Unit;
             CaptureInitialInnerAssets();
             ArmSaveGuard();
             _worldBefore = Game.Instance.State.Units.All.ToArray();
@@ -328,6 +359,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _unit = new ChargenUnit(BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
             if (ReferenceEquals(_unit, _mainBefore)) throw new InvalidOperationException("Fixture cannot own the campaign character.");
             _character["fixtureId"] = _unit.UniqueId;
+            _spentSkills.Clear();
             _operations = 0; _lastCaptureKey = null; _viewWait = 0; _advancePending = false; _classChosen = false; _rollRequested = false; _rollApplied = false; _committed = false; _successCallback = false;
             _build.HandleLevelUpStart(_unit.Descriptor, null, () => _successCallback = true, LevelUpState.CharBuildMode.CharGen);
             _controller = _build.LevelUpController;
@@ -444,12 +476,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 RejectCharacter("point-buy has remaining points but no native add operation"); return;
             }
+            if (state.SkillPointsRemaining < 0)
+            {
+                if (_spentSkills.Count == 0) { RejectCharacter("excess skills are not owned by this request"); return; }
+                StatType stat = _spentSkills[_spentSkills.Count - 1];
+                int before = _controller.LevelUpActions.OfType<Kingmaker.UnitLogic.Class.LevelUp.Actions.SpendSkillPoint>()
+                    .Count(value => value.Skill == stat);
+                if (before != 1) { RejectCharacter("owned skill refund action is absent or ambiguous"); return; }
+                int pointsBefore = state.SkillPointsRemaining;
+                _build.SpendSkillPoint(stat, false);
+                int after = _controller.LevelUpActions.OfType<Kingmaker.UnitLogic.Class.LevelUp.Actions.SpendSkillPoint>()
+                    .Count(value => value.Skill == stat);
+                if (after != before - 1) throw new InvalidOperationException("Native skill refund did not remove exactly one owned action.");
+                _spentSkills.RemoveAt(_spentSkills.Count - 1);
+                ((JArray)_character["steps"]).Add(new JObject { ["action"] = "refund-owned-skill",
+                    ["skill"] = stat.ToString(), ["pointsBefore"] = pointsBefore,
+                    ["pointsAfter"] = _controller.State.SkillPointsRemaining,
+                    ["ownedActionsBefore"] = before, ["ownedActionsAfter"] = after });
+                _settle = 8; return;
+            }
             if (state.SkillPointsRemaining > 0)
             {
                 foreach (StatType stat in Enum.GetValues(typeof(StatType)).Cast<StatType>().Where(value => value.ToString().StartsWith("Skill")))
                     if (new Kingmaker.UnitLogic.Class.LevelUp.Actions.SpendSkillPoint(stat).Check(state, _controller.Preview))
                     {
                         _build.SpendSkillPoint(stat, true);
+                        _spentSkills.Add(stat);
                         _settle = 5; return;
                     }
                 RejectCharacter("skill allocation has remaining points but no native spend operation"); return;
@@ -614,9 +666,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["visibleAlreadyCleared"] = visible == null };
                 if (!_committed) _controller.Cancel();
                 if (_build.IsShow) _build.Show(false);
-                Game.Instance.UI.LevelUpController = null;
+                Game.Instance.UI.LevelUpController = _globalControllerBefore;
                 typeof(CharacterBuildController).GetProperty("LevelUpController", Members).SetValue(_build, null, null);
-                _build.Unit = null;
+                _build.Unit = _buildUnitBefore;
                 _controller = null;
             }
             if (_unit != null) { _unit.Dispose(); _unit = null; }
@@ -673,6 +725,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory, EvidenceFileName),
                 new JObject { ["schemaVersion"] = 1, ["runId"] = _request.RunId,
                     ["purpose"] = "diagnostic native creator baseline", ["humanAcceptance"] = "NOT-RUN",
+                    ["initialCreatorOwnership"] = _initialCreatorOwnership,
                     ["initialInnerAssets"] = new JArray(_initialInnerAssets.Select(value => value.Value)),
                     ["compatibilityRechecks"] = _compatibilityRechecks.DeepClone(),
                     ["characters"] = _characters.DeepClone(), ["assetUnloads"] = _assetUnloads.DeepClone(), ["instrumentationFailures"] = new JArray(_failures) }.ToString(Formatting.Indented));
@@ -681,10 +734,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             try { CleanupCharacter(); }
             catch (Exception error) { _failures.Add("cleanup: " + error); }
-            bool restored = _worldBefore != null && CharacterCreationObservationIdentity.SameOrderedReferences(
-                _worldBefore, Game.Instance.State.Units.All.ToArray()) && Game.Instance.UI.LevelUpController == null &&
-                _build.LevelUpController == null && ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore) &&
-                ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore);
+            bool restored = !_started && _unit == null && _controller == null ||
+                (_worldBefore != null && CharacterCreationObservationIdentity.SameOrderedReferences(
+                _worldBefore, Game.Instance.State.Units.All.ToArray()) &&
+                ReferenceEquals(Game.Instance.UI.LevelUpController, _globalControllerBefore) &&
+                ReferenceEquals(_build.Unit, _buildUnitBefore) && _build.LevelUpController == null &&
+                ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore) &&
+                ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore));
             if (!restored) _failures.Add("Original world unit membership or controller ownership was not restored.");
             try { DisarmSaveGuard(); }
             catch (Exception error) { _failures.Add("save guard cleanup: " + error); }
