@@ -145,14 +145,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     evidence.Races.Add(row);
 
-                    bool selectionExact = graph.Selection.Obligatory &&
+                    var nativeHeritage = library.BlueprintsByAssetId["67aabcbce8f8ae643a9d08a6ca67cabd"] as BlueprintFeatureSelection;
+                    bool routingExact = nativeHeritage != null &&
+                        graph.Selection.Group == nativeHeritage.Group &&
+                        graph.Selection.Group == FeatureGroup.AasimarHeritage &&
+                        graph.Selection.Group2 == nativeHeritage.Group2 &&
+                        graph.Selection.Groups.SequenceEqual(nativeHeritage.Groups) &&
+                        !graph.Selection.IsClassFeature && !graph.Selection.HideInUI &&
+                        !graph.Selection.HideInCharacterSheetAndLevelUp;
+                    bool selectionExact = routingExact && graph.Selection.Obligatory &&
                         !graph.Selection.IgnorePrerequisites &&
                         graph.Selection.AllFeatures != null &&
                         graph.Selection.AllFeatures.SequenceEqual(
                             choices.Select(value => value.Marker));
                     Add(assertions, "elemental-heritage-selection-" +
                         race.Definition.DisplayName.ToLowerInvariant(),
-                        "one obligatory ordered three-choice selection",
+                        "native racial Heritage route; one obligatory ordered three-choice selection",
                         graph.Selection.AssetGuid + ";choices=" +
                             choices.Length + ";top=" +
                             row.TopLevelOccurrences + ";raceFeature=" +

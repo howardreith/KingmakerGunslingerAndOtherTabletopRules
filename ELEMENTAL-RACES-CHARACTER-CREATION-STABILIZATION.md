@@ -492,3 +492,55 @@ production checkpoint changes only heritage routing using the observed native
 AasimarHeritage group (42); native Racial (11) also routes to Abilities and is
 therefore not a valid repair. No production factory or Helpful publication has
 changed in this instrumentation checkpoint.
+
+
+### P0 A: native heritage routing repair (qualification in progress)
+
+The heritage factory now uses Group=AasimarHeritage (42), Group2=None and
+Groups=[Racial], matching the native Aasimar and installed Races Unleashed
+heritage contract. This changes presentation only: all four race memberships,
+twelve marker identities, three ordered choices, obligatory status, provider
+reconciler, stat-overlay components, and resource identities are preserved.
+The factory validates the complete presentation contract; the live heritage
+scenario compares the constructed object with the exact native Aasimar object.
+A focused regression pins the inspected route and rejects both generic routes
+(None and Racial as primary Group). Alternate-trait routing and no-op publication
+remain pending the next separate production checkpoint.
+
+
+P0 A checkpoint evidence: `heritage-routing-build-02.log` passed repository
+validation, all **1,438** domain/reflection tests, clean Release compilation,
+deterministic packaging and strict 135-entry validation. The first build attempt
+stopped at the static expected-test-count mismatch (1437 versus the new 1438),
+which was corrected before compilation or deployment. ZIP SHA-256:
+`eb77c3104203f9f7f6162c41d446d5e53680acde1c07af338384373213b3456d`;
+DLL SHA-256:
+`be963f06be80a74bae3d28bac85e386cc7c4cfa284c696aa4ec5b10f93766246`;
+MVID `40c6b671-df8c-46e2-873d-c783e344d6f9`. Source attestation:
+`3b3c80d477b496929612641f1965ba1658487047` plus fingerprint
+`6967a922d3acac621c06bfd68a70ab87fea79ce52f82e2f2e00c5dc6831bb8b5`.
+
+Profile A live blueprint comparison
+`20260907T0638185669774Z-observe-elemental-heritage-blueprints`: **19/19 PASS**,
+including all four exact native racial routing contracts and three choices each.
+Profile F actual rolled Ifrit/Fighter
+`20260907T0635008810797Z-disposable-elemental-character-creation-case`: diagnostic
+**11/11 PASS**. Heritage marker selection occurred on Determinator/Choose heritage
+before Skills, exactly once, with 3 extracted/3 legal rendered choices. It was
+absent from the Abilities route. Dice Roller assignment `14,16,11,10,16,4` matched
+live BaseValues at verified generation 8. Both global Traits and feats remained
+populated, and the native creator reached Total with zero unresolved selections.
+The three alternate-trait selectors still in Abilities correctly keep overall
+character acceptance FAIL. This is the narrowly qualified heritage checkpoint;
+all-race completion, back-navigation and owner acceptance remain pending.
+Both transactions restored exact original Mods and UMM bytes, with independent
+save audits PASS and zero load increments.
+
+Correction to the preceding Gunslinger control summary: its last snapshot was
+Skills, not Character. After completing character details, native preview
+reconstruction returned to Skills with SkillPointsRemaining=-1. The fixture's
+allocator only handled positive remaining points, so it repeatedly attempted to
+advance rather than refunding the excess through the native control. Native
+SpendSkillPoint(stat,false) calls UnspendSkillPoint, refreshes the preview, and
+rebuilds the UI. A request-owned refund path is needed in regression coverage;
+this evidence does not establish a production Gunslinger or global-Trait defect.
