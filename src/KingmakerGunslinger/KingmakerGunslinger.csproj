@@ -1028,6 +1028,8 @@
     <Compile Include="ElementalRaces\ElementalRaceBlueprintFactory.cs" />
     <Compile Include="ElementalRaces\ElementalRacePublication.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRollbackPolicy.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRetentionPolicy.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalCharGenVisualRetentionPatch.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualDefinition.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualCatalog.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualResourceRegistry.cs" />

@@ -175,6 +175,27 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             return value;
         }
 
+        internal void RetainCharacterCreatorResources(ISet<string> ids, IList<UnityEngine.Object> assets)
+        {
+            IDictionary cache = RequireCache();
+            var plan = new List<KeyValuePair<string, UnityEngine.Object[]>>();
+            foreach (var registration in _order)
+            {
+                if (registration.Resource == null || !cache.Contains(registration.AssetId) ||
+                    !ReferenceEquals(CurrentResource(cache[registration.AssetId]), registration.Resource))
+                    throw new InvalidOperationException("Owned character creator visual resource was lost: " + registration.AssetId);
+                UnityEngine.Object[] inner = registration.Resource.GetInnerAssets()
+                    .Where(value => !ReferenceEquals(value, null)).ToArray();
+                if (inner.Any(value => value == null))
+                    throw new InvalidOperationException("Owned character creator inner asset was destroyed: " + registration.AssetId);
+                plan.Add(new KeyValuePair<string, UnityEngine.Object[]>(registration.AssetId, inner));
+            }
+            int additions = ElementalVisualResourceRetentionPolicy.Append(ids, assets, plan);
+            if (additions != 0)
+                _logger.Info("elemental-races", "character-creator.visual-retained",
+                    "Extended native initial retention with exact owned proxies and shared inner assets; additions=" + additions + ".");
+        }
+
         internal void RollbackAll()
         {
             if (_order.Count == 0) return;

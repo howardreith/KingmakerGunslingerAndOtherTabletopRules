@@ -619,3 +619,46 @@ Insight, Granite Skin, Stone in the Blood; Sylph -- Air Insight, Breeze-Kissed,
 Like the Wind, Secretive, Storm in the Blood, Thunderous Resilience, Whispering
 Wind; Undine -- Acid Breath, Ooze Breath. Treacherous Earth and Nereid Fascination
 are registered, hidden, unpublished and inert. No new trait or mechanic was added.
+
+
+### Native preview visual retention repair (in qualification)
+
+The demonstrated A07 inner-asset destruction is repaired at native
+CharGenDollRoom.DollStateUpdated, before its unload plan is constructed. KMG
+extends the creator's existing initial-retention collections with only the 28
+exact registered proxy IDs and their live inner-asset references. It verifies
+ownership against the existing native cache before any mutation, preserves all
+native/foreign entries and ordering, and deduplicates shared assets by reference.
+Repeated doll updates are idempotent. The hook also applies while the module is
+OFF because the registered visual identities remain necessary for legacy loads.
+No model, color, mesh, GUID or native unload algorithm changes.
+
+Focused tests cover foreign-entry preservation, shared and equality-colliding
+asset identities, repeated callbacks, and all-or-nothing invalid-plan rejection.
+The existing read-only native unload probe and four consecutive actual creators
+will validate that every registered proxy and skin ramp stays alive and retained.
+Source, package and runtime qualification are pending for this checkpoint.
+
+
+Visual-retention checkpoint: `visual-retention-build-01.log` passed repository
+validation, all **1,442** domain/reflection tests, clean Release compilation,
+deterministic packaging and strict 135-entry validation. ZIP SHA-256
+`23db25807efb466a2227a62e5ce8dc0d72be18dd3523b9f476cfda1a6169579d`;
+DLL SHA-256 `a0f6a8976ad4660ecd443b2d92beee26dbe03b6f0ef2d2d8b663ca5199d75d69`;
+MVID `b9b8cf78-e82a-4b1f-b328-484ba9404c1f`. Source attestation:
+`b83c7cdfb3d2beaedfc176f427b75ac4aac2b805` plus fingerprint
+`1f2a3976b55316c75d71a46653b0dc920230e90bd405ad21c395692cb6831a54`.
+
+Profile A `20260907T0707199636019Z-disposable-elemental-character-creation-baseline`
+and full-stack Profile F
+`20260907T0711441896542Z-disposable-elemental-character-creation-baseline`
+both passed all four consecutive full-screen creator selection contracts
+(Ifrit, Oread, Undine, Sylph). All four reached native final review with zero
+unresolved selections, racial choices confined to Determinator before Skills,
+and no per-character acceptance failures. Every snapshot retained all 28 live
+registered visual proxies; neither process observed an owned inner-asset unload
+or instrumentation failure. Both global Trait selections were observed for all
+four full-stack characters. Both transactions restored the exact Mods tree and
+UMM bytes; independent save audits passed with zero save-load increments.
+These eight creators canceled after final review: real committed disposable
+characters, changed choices, respec and owner UI acceptance remain pending.
