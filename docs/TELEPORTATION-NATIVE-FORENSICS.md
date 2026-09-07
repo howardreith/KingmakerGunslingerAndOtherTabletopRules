@@ -1,0 +1,160 @@
+# Contextual world-map teleportation native forensics
+
+Status: initial exact-assembly audit; no casting or relocation runtime qualification yet.
+
+The clean base is `58d9511082af30f1a4ec88c1238ae7ae2b3651c2`, verified against
+freshly fetched `origin/master` on 2026-09-07 before creating
+`codex/contextual-world-map-teleportation`. Expected `6874dc15` is an ancestor.
+
+Intervening commits are retained: `a788d22` adds the Brown-Fur direct-cast
+provider; `e985aad` documents its contract; `636d70b`, `473f83b`, and `dfd5510`
+prepare, merge, and record 0.0.115. `1f6e000` adds Salesman firearms and
+Protection descriptions; `46a7936` records qualification; `9a8b2f2`, `4e10b64`,
+`cae9f79`, and `58d9511` prepare, merge, and record 0.0.116 and its evidence.
+The feature retains Salesman publication/rollback, Brown-Fur transactions,
+prior blueprint identities, and the newer validation gates. Requested release
+0.0.115 is already published; metadata remains 0.0.116 while release-number
+reconciliation and feature qualification are pending.
+
+Installed Assembly-CSharp SHA-256:
+`3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`.
+The existing ignored native IL disassembly reports MVID
+`07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`; the guarded inventory rechecks the
+executing assembly and records relevant method bodies. Proprietary IL and
+raw runtime inventories remain uncommitted. Installed UMM was independently
+read as 0.33.0.0; the mission's 0.32.4 environment is not yet qualified.
+
+## Destination interactions
+
+`Kingmaker.Globalmap.GlobalMapLocation.HandleClick` raises
+`ILocationSelectionHandler.OnLocationSelect(BlueprintLocation, bool)` after
+native movement, reveal, cutscene, and selection checks. It is an observation
+target, not a proposed raw-input patch.
+
+Desktop `Kingmaker.UI.GlobalMap.GlobalMapMessageBox.OnLocationSelect` resolves
+the exact `GlobalMapLocation` and calls `FillDialogInfoLocation(bool)` or its
+resource variant. This is a native destination panel, not an extensible action
+collection. It already preserves Travel, Enter, resource actions, Close/OK,
+and settlement-circle controls. `FillDialogInfoLocation` owns native route
+preview and button states. Augmentation belongs after native composition.
+
+`GlobalMapMessageBox.Accept()` calls `GlobalMapRules.GoToLocationRevealed`
+when the target differs from the party point; otherwise it claims the resource
+or calls `EnterLocation`. `Hide()` removes the native Esc subscription and
+hides the panel. Native Accept and its listeners should remain untouched.
+The no-spell path must create no view and perform no extra route calculation.
+UI hierarchy and layout still require guarded live observation.
+
+## Relocation and revelation
+
+`Kingmaker.UI.GlobalMap.Teleport.TeleportModel.Go()` checks settlement circles
+and calls `GlobalMapRules.TeleportParty(BlueprintLocation)`. `TeleportParty`
+finishes/clears travel, raises pawn events, calls
+`GlobalMapLocation.OpenOutgoingEdges(null)`, then `UpdatePawnPosition()`.
+
+`OpenOutgoingEdges` unconditionally sets `EdgesOpened`, can explore outgoing
+edge segments, and calls `RevealLocation`; it also sets current position when
+`StopWhenRevealingNewEdges` is true. Reusing that wrapper would not establish
+the mission's no-revelation contract.
+
+The narrower native candidates are `GlobalMapRules.SetCurrentPosition(new
+MapPosition(destination))` followed by `UpdatePawnPosition()`. The former
+sets canonical `GlobalMapState.PartyPosition`, updates highlights and
+`LastLocation`; the latter positions the canonical pawn, scrolls the camera,
+and updates party UV state. No mod transform assignment is needed. These
+remain candidate contracts pending structured in-game invariant evidence.
+
+## Real spell resources
+
+`AbilityData.SpendFromSpellbook()` follows `ConvertedFrom`, then calls
+`Spellbook.Spend(AbilityData, false)`, discarding its Boolean result.
+`Spellbook.Spend` calls `SpendInternal` with `doSpend=true`.
+
+`SpendInternal` validates spell level, maximum level and casting attribute.
+For spontaneous books it decrements `m_SpontaneousSlots[level]` once.
+For prepared books it scans memorized slots in reverse order, matches an
+available `SpellSlot.Spell` through native `AbilityData.Equals`, and calls
+`SpellSlot.Spend()`. The adapter must verify the exact resource delta.
+Items and converted sources must be rejected.
+
+`RestoreSpontaneousSlots(level, count)` adds and clamps to `GetSpellsPerDay`.
+Compensation requires a captured exact original count, an unchanged resource
+pool, and verified restoration. Prepared-slot linked/opposition behavior and
+exact restoration still require further inspection.
+
+## Ordinary arrival and persistence
+
+`LocationData` persists `IsExplored`, `IsSeen`, `EdgesOpened`, `LastVisited`,
+`IsClosed`, `IsFake`, and reveal state. There is no ordinary-arrival counter.
+`LastVisited` changes during local-area entry/reconstruction and cannot
+implement familiarity.
+
+`MapMovementController.MoveAlongEdge` calls `OpenOutgoingEdges` at ordinary
+intermediate-point arrivals and the final destination. A narrowly matched
+call seam can observe real movement without counting clicks, loading,
+map reconstruction, local-area reentry, or magical relocation. Deduplication
+and save/load behavior remain live qualification work.
+
+`UnitPartControlledRageSelection` establishes the save-owned serialized-string
+pattern. The new familiarity policy has a versioned deterministic stable-ID
+encoding, one-time idempotent legacy migration, and malformed-state rejection.
+
+## Pending inventory and reflection seams
+
+Guarded `observe-teleportation-native-contracts` emits blueprint point inventory,
+enum kinds, components, candidate native spell lists, icon donors, and method
+IL. Its PASS can prove inventory observation only.
+
+Known native kinds are Location, Landmark, HiddenLocation, Waypoint, and
+SystemWaypoint. Kind alone does not prove safe placement: current scene anchors
+and campaign restrictions must also pass. `LocationRestriction` supplies native
+condition and required-companion checks. The deny catalog must be populated
+only after the stable-ID inventory audit.
+
+Candidate reflection seams are the panel's private control references, the
+private movement method for an exact Harmony call-site match, and native
+spell-list cache invalidation. No reflection writes to slot pools or world-map
+transforms follow from these findings.
+
+## Build-host reconciliation
+
+The required clean MSBuild build initially rejected UMM because its private
+Harmony 2 dependency targets .NET 4.8. The UMM reference now carries MSBuild's
+ExternallyResolved metadata: UMM owns that host dependency, while the mod retains
+its explicit Harmony 1.2 reference, .NET 4.7 and warnings-as-errors. Both the
+standard clean Release/package build and the provenance-checked exact-reference
+build pass. The preflight regression script also contained stale positive
+0.0.115 requests against the active 0.0.116 guard; those requests now match
+the actual base without relaxing the runtime version check.
+
+
+## Initial guarded observation
+
+Run `20260907T2322166014106Z-3837017401a84cdca40cdffddc59a7f6` passed
+three assertions, including round-trip verification of all 706 point rows.
+Evidence directory: `20260907T2322165933939Z-observe-teleportation-native-contracts`
+under the configured runtime-evidence root. This observed the installed optional
+mod profile, not standalone eligibility or contextual casting. No save loaded.
+
+The earlier run `20260907T2315465500907Z-871a1527392f473ebe21ef0c842b786d`
+is rejected as evidence: PowerShell 7.6.5 wraps `Write-Output -NoEnumerate` in a
+list that fails the launch-result type guard, and the first probe's anonymous
+payload was omitted by Kingmaker's default JSON resolver. The probe now uses
+an explicit default contract resolver and verifies the persisted point array.
+Windows PowerShell 5.1 preserves the launch helper's typed scalar result;
+subsequent guarded commands use that host. Neither guard was weakened.
+
+## Foundation checkpoint validation
+
+The initial policy/observer slice passes repository validation, all 1,405 domain
+tests, the clean Release build, and strict installable-package validation.
+The package is still 0.0.116; no release promotion or gameplay qualification is
+claimed. The focused runtime preflight passes 193 checks under PowerShell 7.
+Raw build logs and runtime inventories remain outside version control.
+
+Standalone inventory is still pending. Its first profile attempt stopped
+before changing the installed mod profile because the compatibility runner's
+legacy `examples` directory is absent. The runner also embeds stale 0.0.114
+package/version assumptions. These prerequisites require a narrow repair and
+separate verification; the installed-profile observation cannot substitute for
+standalone or feature compatibility qualification.

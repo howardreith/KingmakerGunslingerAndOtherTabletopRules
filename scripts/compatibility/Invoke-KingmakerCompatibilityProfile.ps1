@@ -56,6 +56,7 @@ param(
         'working-save-eastern-weapons-prepare',
         'working-save-eastern-weapons-verify-cleanup',
         'working-save-eastern-weapons-verify-absent',
+        'observe-teleportation-native-contracts',
         'observe-expanded-summoning-inventory',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
