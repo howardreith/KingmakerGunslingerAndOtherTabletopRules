@@ -151,7 +151,7 @@ Protection from Alignment, Communal lets the caster choose evil, good, law, or c
 
 The package was built and frozen before committing, following the commit-after-checks rule. All final runtime results below belong to the exact pre-commit artifact. Its Git metadata records the starting commit plus the attested task source state; it is not described as a build from the later checkpoint commit. This final report adds documentation after qualification. The tested ZIP is retained unchanged.
 
-Implementation checkpoint: recorded in the final commit addendum.
+Implementation checkpoint: 1f6e00012d37aa754e009cea81c39fcd7f41eef7 (Add mid-game Salesman firearms and clarify Protection descriptions). The approved DATA checkpoint helper pushed and verified this commit on codex/midgame-firearms-and-protection-copy. This final documentation addendum records that completed commit; it changes no implementation or package input.
 
 - Candidate: 0.0.116 / 0.0.116-midgame-firearms-and-protection.
 - Installable ZIP: C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/artifacts/local-runtime/0.0.116/KingmakerGunslinger-0.0.116-local-runtime.zip.
