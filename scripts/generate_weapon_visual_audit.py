@@ -20,6 +20,8 @@ DISPLAY_NAMES = {
     "KMG.Firearms.AdvancedRifleItem": "Advanced Rifle",
     "KMG.Firearms.AdvancedRevolverItem": "Advanced Revolver",
     "KMG.Firearms.PistolPlus1Item": "Pistol +1",
+    "KMG.Firearms.RoadwardenItem": "Roadwarden",
+    "KMG.Firearms.DeadReckoningItem": "Dead Reckoning",
     "KMG.Firearms.MusketPlus1Item": "Musket +1",
     "KMG.Firearms.BlunderbussPlus1Item": "Blunderbuss +1",
     "KMG.Firearms.DuelistsRebuttalItem": "Duelist's Rebuttal",
@@ -115,6 +117,10 @@ ARTIFACTS = {
 def firearm_kind(symbol: str) -> str:
     if symbol == "KMG.Test.TestMusketItem":
         return "Musket"
+    if symbol == "KMG.Firearms.RoadwardenItem":
+        return "Musket"
+    if symbol == "KMG.Firearms.DeadReckoningItem":
+        return "Pistol"
     for kind in FIREARM_DATA:
         if kind in symbol or (kind == "Musket" and "RiverKings" in symbol) or \
                 (kind == "Blunderbuss" and "Irovettis" in symbol) or \
@@ -390,8 +396,8 @@ def generate() -> None:
     for record in records:
         record["weaponTypeAssetGuid"] = identity_by_symbol.get(
             record["weaponType"], "native-runtime-donor")
-    if len(records) != 68:
-        raise RuntimeError(f"Expected all 68 active custom weapon items, got {len(records)}")
+    if len(records) != 70:
+        raise RuntimeError(f"Expected all 70 active custom weapon items, got {len(records)}")
     symbols = [record["symbolicIdentity"] for record in records]
     guids = [record["assetGuid"] for record in records]
     if len(set(symbols)) != len(symbols) or len(set(guids)) != len(guids):

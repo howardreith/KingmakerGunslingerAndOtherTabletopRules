@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.115\"") &&
-                props.Contains("<KmgVersion>0.0.115</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.115-share-transmutation-instant</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.115\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.115\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.115-share-transmutation-instant\")"),
-                "Release and assembly identity are not transactionally pinned to the Share Transmutation fix.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.116\"") &&
+                props.Contains("<KmgVersion>0.0.116</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.116-midgame-firearms-and-protection</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.116\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.116\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.116-midgame-firearms-and-protection\")"),
+                "Release and assembly identity are not transactionally pinned to the mid-game firearms content patch.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-share-transmutation-instant.zip") &&
+                "$($info.Id)-$($info.Version)-midgame-firearms-and-protection.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Share Transmutation archive.");
-            Assertions.True(runtime.Contains("active version 0.0.115") &&
-                localBuild.Contains("active version 0.0.115") &&
-                localBuild.Contains("local-runtime\\0.0.115"),
+                "Package identity is not pinned to the mid-game firearms archive.");
+            Assertions.True(runtime.Contains("active version 0.0.116") &&
+                localBuild.Contains("active version 0.0.116") &&
+                localBuild.Contains("local-runtime\\0.0.116"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

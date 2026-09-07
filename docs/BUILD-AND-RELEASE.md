@@ -2,10 +2,10 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.115-share-transmutation-instant` targets:
+Kingmaker Gunslinger `0.0.116-midgame-firearms-and-protection` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
-- Unity Mod Manager 0.32.4 in the supported 0.32.x line;
+- Unity Mod Manager 0.33.0 on the qualified DATA installation;
 - Harmony 1.2 through `0Harmony12.dll`;
 - .NET Framework 4.7;
 - C# 7.3;
@@ -73,9 +73,14 @@ package validation.
 
 ## Guarded GitHub release publisher
 
-The owner authorized the paired 0.0.115 Share Transmutation release, including
-the version/default-script roll-forward. Save-backed gameplay remains NOT RUN;
-the published 0.0.114 compatibility evidence stays pinned to that exact package.
+The owner explicitly authorized finalizing, merging, pushing, and publishing
+0.0.116. The accepted content candidate passed the complete domain suite,
+24-state module boundary matrix, and guarded shop, firearm, and purchase
+save/load scenarios. Release sealing reuses that unchanged-source evidence and
+checks the rebuilt release artifact through the guarded runtime workflow.
+Exact fingerprints and results belong in the task report. Historical 0.0.114
+compatibility evidence stays pinned to that package; 0.0.115's separate
+save-backed API qualification is not inferred from these content scenarios.
 
 Where installed UMM targets a newer framework, pass `-ReferenceBundleDir` to
 the publisher to use the existing provenance-checked `Build-Local.ps1` path
@@ -136,10 +141,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.114 `
+gh release download v0.0.116 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.114-elemental-races.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.114"
+  --pattern 'KingmakerGunslinger-0.0.116-midgame-firearms-and-protection.zip' `
+  --dir "artifacts\release-download\0.0.116"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The
