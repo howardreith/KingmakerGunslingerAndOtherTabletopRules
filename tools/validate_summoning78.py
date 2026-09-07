@@ -108,13 +108,17 @@ def validate(root: Path) -> None:
         if entry["status"] == "active"]
     elemental_races_reserved = [entry for entry in elemental_races_entries
         if entry["status"] == "reserved"]
-    if (len(manifest["entries"]) != 1439 + len(spear_entries) +
+    midgame_entries = [entry for entry in manifest["entries"]
+        if entry["symbol"] in {"KMG.Firearms.RoadwardenItem",
+            "KMG.Firearms.DeadReckoningItem"}]
+    midgame_active = [entry for entry in midgame_entries if entry["status"] == "active"]
+    if (len(manifest["entries"]) != 1439 + len(midgame_entries) + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
             len(martial_performance_entries) + len(brown_fur_entries) +
             len(urban_barbarian_entries) + len(bodyguard_entries) +
             len(helpful_entries) + len(heirloom_entries) +
             len(elemental_races_entries)
-            or len(active) != 1438 + len(spear_entries) +
+            or len(active) != 1438 + len(midgame_active) + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
             len(martial_performance_active) +
             len(brown_fur_active) + len(urban_barbarian_active) +

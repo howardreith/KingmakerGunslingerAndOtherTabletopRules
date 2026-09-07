@@ -109,6 +109,20 @@ an unpublished disposable stabilization candidate; no content expansion occurs.
   complete Crystalline, all-trait persistence/lifecycle and final release-wide
   gates are pending. Earlier incremental results retain their historical scope.
 
+## 0.0.116-midgame-firearms-and-protection
+
+- Adds Roadwarden (+3 Reliable musket, 33,800 gp) and Dead Reckoning
+  (+3 Seeking pistol, 33,300 gp) to all four native Skeletal Salesman C3/C4
+  stock variants, one copy each, with natural weapon ordering.
+- Uses native saved-stock reconciliation and purchase tracking. Preserves the
+  existing five fixed-loot firearms and named-item crafting upgrade policy.
+- Rewrites all 15 Protection from Alignment descriptions without changing
+  control immunity, bonuses, spell identities, durations, or setting behavior.
+- Qualifies the content candidate with 1,398 domain tests, all 24 module
+  boundary states, native shop transactions, firearm rules, and fresh-process
+  purchase/save/load/cleanup checks. The owner authorized final integration
+  and public release.
+
 ## 0.0.116-elemental-feats
 
 - Adds 25 fixed manifest identities for eleven elemental racial feats and

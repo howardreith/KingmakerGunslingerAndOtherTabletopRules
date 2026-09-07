@@ -221,6 +221,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
                 (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec) ||
+                RuntimeTestScenarioCatalog.IsMidgameWorkingScenario(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitCandidateRender ||
                 request.Scenario == RuntimeTestScenarioCatalog

@@ -2,10 +2,11 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.117-elemental-traits` targets:
+Kingmaker Gunslinger `0.0.117-elemental-char-gen-stabilization` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
-- Unity Mod Manager 0.32.4 in the supported 0.32.x line;
+- Unity Mod Manager 0.32.4 on the stabilization installation
+  (the separately released 0.0.116 used 0.33.0 on DATA);
 - Harmony 1.2 through `0Harmony12.dll`;
 - .NET Framework 4.7;
 - C# 7.3;
@@ -77,6 +78,18 @@ The public master 0.0.115 Share Transmutation fix is incorporated into this
 branch. Its authorized publication and its NOT-RUN save-backed gameplay
 record remain distinct from this mission's unpublished release checkpoints.
 
+The owner explicitly authorized finalizing, merging, pushing, and publishing
+0.0.116. The accepted content candidate passed the complete domain suite,
+24-state module boundary matrix, and guarded shop, firearm, and purchase
+save/load scenarios. Release sealing reuses that unchanged-source evidence and
+checks the rebuilt release artifact through the guarded runtime workflow.
+Exact fingerprints and results belong in the task report. Historical 0.0.114
+compatibility evidence stays pinned to that package; 0.0.115's separate
+save-backed API qualification is not inferred from these content scenarios.
+
+The owner authorized merging that released master into this stabilization branch
+on 2026-09-07. This does not authorize publishing the 0.0.117 candidate.
+
 Where installed UMM targets a newer framework, pass `-ReferenceBundleDir` to
 the publisher to use the existing provenance-checked `Build-Local.ps1` path
 for both clean deterministic builds. It runs the same source, full domain,
@@ -137,10 +150,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.117 `
+gh release download v0.0.116 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.117-elemental-traits.zip' `
-  --dir "$env:USERPROFILE\Downloads\KingmakerGunslinger-0.0.117"
+  --pattern 'KingmakerGunslinger-0.0.116-midgame-firearms-and-protection.zip' `
+  --dir "artifacts\release-download\0.0.116"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The

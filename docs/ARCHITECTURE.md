@@ -591,7 +591,8 @@ plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
 Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
-identities extend the append-only ledger to 1867 stable IDs: 1865 active and 2 reserved. The
+identities, plus the released Roadwarden and Dead Reckoning firearms, extend
+the append-only ledger to 1869 stable IDs: 1867 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native

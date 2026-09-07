@@ -13540,6 +13540,8 @@
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.RenewWinds", "guid": "e117e1e0a17a4acec001000000000083",
       "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native swift-action renewal while daily capacity remains; never refills a resource."
-    }
+    },
+    {"symbol": "KMG.Firearms.RoadwardenItem", "guid": "66d2f8c4d6aa43e0be72ac18ed9fcd81", "plannedType": "BlueprintItemWeapon", "status": "active", "milestone": "Mid-game merchant firearms", "notes": "Named +3 Reliable musket; Skeletal Salesman C3/C4; named upgrade-only crafting policy."},
+    {"symbol": "KMG.Firearms.DeadReckoningItem", "guid": "b8db89aba5364c27b1626896664a1913", "plannedType": "BlueprintItemWeapon", "status": "active", "milestone": "Mid-game merchant firearms", "notes": "Named +3 Seeking pistol; Skeletal Salesman C3/C4; named upgrade-only crafting policy."}
   ]
 }

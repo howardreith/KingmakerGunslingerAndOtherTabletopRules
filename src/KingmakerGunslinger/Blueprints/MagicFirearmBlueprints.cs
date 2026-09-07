@@ -6,6 +6,7 @@ using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Designers.Mechanics.Facts;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
 
@@ -41,6 +42,14 @@ namespace KingmakerGunslinger.Blueprints
                 throw new ArgumentNullException("Magic firearm registration inputs are incomplete.");
             BlueprintWeaponEnchantment plus1 = Native(library, Enhancement1Guid, "+1");
             BlueprintWeaponEnchantment plus2 = Native(library, Enhancement2Guid, "+2");
+            BlueprintWeaponEnchantment plus3 = Native(library,
+                MidgameFirearmCatalog.EnhancementThreeGuid, "+3");
+            WeaponEnhancementBonus[] plus3Components = plus3.ComponentsArray
+                .OfType<WeaponEnhancementBonus>().ToArray();
+            if (plus3.name != "Enhancement3" || plus3.EnchantmentCost != 3 ||
+                plus3Components.Length != 1 || plus3Components[0].EnhancementBonus != 3 ||
+                plus3Components[0].Stack)
+                throw new InvalidOperationException("Native +3 enhancement identity/component mismatch.");
             BlueprintWeaponEnchantment plus4 = Native(library, Enhancement4Guid, "+4");
             BlueprintWeaponEnchantment plus5 = Native(library, Enhancement5Guid, "+5");
             BlueprintWeaponEnchantment feyBane = Native(library, FeyBaneGuid, "Fey Bane");
@@ -77,6 +86,12 @@ namespace KingmakerGunslinger.Blueprints
                     "Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses.",
                     "Its first bearer kept vigil at a place where the world grew thin. The watch ended. The weapon remained.", plus5, reliable, feyBane)
             };
+            // Append: preserve every existing catalog position and identity.
+            specs = specs.Concat(MidgameFirearmCatalog.Entries.Select(spec =>
+                new MagicFirearmItemSpec(spec.Symbol, spec.InternalName, spec.DisplayName,
+                    spec.Kind, spec.Cost, MidgameFirearmCatalog.EquivalentBonus, true,
+                    spec.Description, spec.Flavor, spec.Reliable ?
+                        new[] { plus3, reliable } : new[] { plus3, seeking }))).ToArray();
             var entries = new List<MagicFirearmBlueprintEntry>();
             foreach (MagicFirearmItemSpec spec in specs)
             {
@@ -108,14 +123,14 @@ namespace KingmakerGunslinger.Blueprints
             var result = new MagicFirearmBlueprintCatalog(entries.ToArray(), reliable, seeking);
             Validate(result);
             logger.Info("firearms", "magic-catalog.ready",
-                "Registered Reliable plus eight isolated early-firearm magic item blueprints using exact canonical family types and native magic properties.");
+                "Registered Reliable plus ten isolated early-firearm magic item blueprints using exact canonical family types and native magic properties.");
             return result;
         }
 
         internal static void Validate(MagicFirearmBlueprintCatalog catalog)
         {
-            if (catalog == null || catalog.Entries.Length != 8 ||
-                catalog.Entries.Select(value => value.Item).Distinct().Count() != 8)
+            if (catalog == null || catalog.Entries.Length != 10 ||
+                catalog.Entries.Select(value => value.Item).Distinct().Count() != 10)
                 throw new InvalidOperationException("Magic firearm catalog identity/count mismatch.");
             foreach (MagicFirearmBlueprintEntry entry in catalog.Entries)
             {

@@ -1908,3 +1908,73 @@ string includes an MVID; the guarded exact identity contract is unchanged.
 Package documentation now points to the handoff for final installation status,
 so the build snapshot does not claim owner acceptance. The next build will be
 from the committed source and will receive the final profile/migration matrix.
+
+
+## Owner-authorized released-master integration - 2026-09-07
+
+After the owner explicitly requested pulling and merging their new copy and
+Skeletal Salesman firearms release, fetched origin and merged
+`58d9511082af30f1a4ec88c1238ae7ae2b3651c2` into the clean feature head
+`314438f44b50e85d7f9b7936ab062facf59d796d`. This authorization permits
+master into the feature branch; this mission still does not publish, tag,
+or merge the elemental candidate back into master.
+
+The incoming public release is `0.0.116-midgame-firearms-and-protection`.
+Its Roadwarden and Dead Reckoning source, two fixed item identities, native
+Skeletal Salesman stock publication, and Protection descriptions are retained.
+All entries from both parents preserve their complete original metadata.
+The combined ledger contains **1869 entries: 1867 active and 2 reserved**.
+The candidate remains `0.0.117-elemental-char-gen-stabilization`. Both public
+116 notes and historical unpublished elemental-feat 116 notes are preserved;
+the new release does not rename or reuse any elemental GUID.
+
+Nineteen textual merge conflicts were resolved around version metadata,
+append-only manifests, cumulative tests, guarded scenario dispatch, and
+historical documentation. The inherited validator now includes the two exact
+released firearm entries and checks the owner's revised Protection wording.
+The released content validator is retained alongside the elemental and
+Brown-Fur provider contracts. Existing release evidence remains attributed to
+its original DATA artifact and environment.
+
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Build-Local.ps1`
+passes repository validation, **1458/1458 domain/reflection tests**, clean
+exact-reference Release compilation, deterministic packaging, and strict
+135-entry package validation (integration build08). Qualified dirty merge
+artifact before this evidence-only journal update:
+
+- Parent commit: `314438f44b50e85d7f9b7936ab062facf59d796d`
+- Source fingerprint: `5d0d14b51c4fa0d803c471cf42eac06ea480ad6ca55803c947022083879d9116`
+- ZIP SHA-256: `0676cea2775b9dc93ded1406f623d3ecf10662ff9bcbef9b6d37a6659f18a336`
+- DLL SHA-256: `26a07cdcf32c563829e5aee6e919a98eafd965bdb601a473d51855783adff947`
+- DLL MVID: `1a9b60a4-e330-4862-934c-609420ac0d34`
+
+Guarded full eleven-mod profile F runs used the backup-first installer and
+Steam App ID 640820 with exact artifact attestation:
+
+| Run | Result | Scope |
+|---|---|---|
+| `20260907T2231077396456Z-disposable-midgame-firearms` | PASS, 92 assertions | Native merchant stock, prices, purchases, fixed properties, Protection text; all 12 attempted native combat messages captured exactly |
+| `20260907T2235392028913Z-disposable-elemental-character-creation-baseline` | PASS, 11 assertions | Four actual native first-level creator routes through complete final review, racial Determinator before Skills/Abilities, both global Traits populated; no character committed in this review-only profile |
+
+Both profiles restore the original Mods tree and UMM/settings exactly. Save
+scope audits pass with zero loads/writes. Independent native routing and
+foreign-selector audits pass; no new KMG ERROR occurs. Native startup and
+ZFavoredClass custom-data warnings remain attributed separately.
+
+The first imported firearm fixture run
+`20260907T2225162076031Z-disposable-midgame-firearms` passed 91 mechanics
+assertions but failed this mission's zero-KMG-error gate because the unloaded
+main menu has no BattleLogView. The fixture now reuses the existing bounded
+final-UI-sink capture and asserts messages equal native publication attempts,
+with no new publication fault. Native message validation, attack rules,
+production logging and personal saves are unchanged. The failed log gate is
+retained as evidence, not relabeled a clean pass.
+
+The earlier exact314 artifact's final Sylph/Oread native respec checks passed
+16 commits, 14 real Player respec callbacks and 128 exact racial graphs;
+Elemental OFF/full-stack also passed. However, the subsequent KMG-alone
+framework run `20260907T2159441652088Z` failed Stormsoul's Cold Moon paired
+attack control (AC delta -1), then the Calm native command did not act and no
+Calm buff appeared. It restored exactly. The cause remains under investigation;
+this integration checkpoint does not waive that failure, install a final
+candidate, or claim stabilization/human UI acceptance complete.
