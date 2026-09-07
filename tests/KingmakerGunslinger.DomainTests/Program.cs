@@ -98,6 +98,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-traits.passive-sla-save-matrix", ElementalVisibleTraitPersistenceTests.PassiveSlaReplacementsAreExplicitlyRepresented),
             Case("elemental-traits.visible-matrix-isolation", ElementalVisibleTraitPersistenceTests.MatrixRequestsAreIndependentAndFailClosed),
             Case("elemental-traits.breeze-defense-boundary", ElementalBreezeKissedPolicyTests.ExactDefenseBoundary),
+            Case("elemental-traits.breeze-mundane-ability-sources", ElementalBreezeKissedPolicyTests.ExactMundaneAbilitySources),
             Case("elemental-traits.daily-resource-reconstruction", ElementalTraitDailyResourcePolicyTests.ActivationNeverRefillsSpentUses),
             Case("elemental-traits.breath-damage-breakpoints", ElementalBreathPolicyTests.DamageBreakpointsAndCapAreExact),
             Case("elemental-traits.breath-dc-current-stat", ElementalBreathPolicyTests.DifficultyUsesCurrentConstitutionAndUncappedHalfLevel),

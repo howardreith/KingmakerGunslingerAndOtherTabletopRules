@@ -7,6 +7,8 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
@@ -69,14 +71,25 @@ namespace KingmakerGunslinger.ElementalRaces
                 attack.Weapon.Blueprint.Category != WeaponCategory.Ray &&
                 (roll.AttackType == AttackType.Ranged || roll.AttackType == AttackType.RangedTouch);
             return ElementalBreezeKissedPolicy.ArmorClassBonus(available, calmed, exact, ranged,
-                roll != null && (HasAbilitySource(roll.Reason) || (attack != null && HasAbilitySource(attack.Reason))),
+                roll != null && (HasUnqualifiedAbilitySource(roll.Reason) || (attack != null && HasUnqualifiedAbilitySource(attack.Reason))),
                 known, known ? physical.Physical.EnhancementTotal : -1);
         }
 
-        private static bool HasAbilitySource(RuleReason reason)
+        private static bool HasUnqualifiedAbilitySource(RuleReason reason)
         {
-            return reason != null && (reason.Ability != null ||
-                (reason.Context != null && reason.Context.SourceAbility != null));
+            return reason != null &&
+                ((reason.Ability != null && !IsExactMundaneAbility(reason.Ability.Blueprint)) ||
+                (reason.Context != null && reason.Context.SourceAbility != null &&
+                    !IsExactMundaneAbility(reason.Context.SourceAbility)));
+        }
+
+        private static bool IsExactMundaneAbility(BlueprintAbility ability)
+        {
+            BlueprintScriptableObject registered;
+            return ability != null && ElementalBreezeKissedPolicy.IsMundaneWeaponAbility(
+                ability.AssetGuid, ability.Type == AbilityType.Special) && BlueprintBootstrap.Library != null &&
+                BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(ability.AssetGuid, out registered) &&
+                ReferenceEquals(registered, ability);
         }
 
         internal static void RemoveInactive(UnitDescriptor owner, ElementalAlternateTraitBlueprints trait)

@@ -10,6 +10,22 @@ namespace KingmakerGunslinger.ElementalRaces
             "The attempt exhausts the winds and their AC bonus until ordinary rest, whether it succeeds or fails. " +
             "Renewing calmed winds never restores an exhausted daily use. Magical attacks receive no AC bonus.";
 
+        // Exact native feat actions and the inspected optional Pinpoint action.
+        // Special alone is insufficient: Bow Spirit uses it for a magical attack.
+        internal static bool IsMundaneWeaponAbility(string guid, bool special)
+        {
+            if (!special) return false;
+            switch (guid)
+            {
+                case "efc60c91b8e64f244b95c66b270dbd7c": // Vital Strike
+                case "c714cd636700ac24a91ca3df43326b00": // Improved Vital Strike
+                case "11f971b6453f74d4594c538e3c88d499": // Greater Vital Strike
+                case "a6210acb28054f568ead7366bda31fee": // CotW Pinpoint Targeting
+                    return true;
+                default: return false;
+            }
+        }
+
         internal static int ArmorClassBonus(bool useAvailable, bool calmed,
             bool exactWeaponAttack, bool ranged, bool abilitySource,
             bool physicalDescriptionKnown, int nativeEnhancementTotal)

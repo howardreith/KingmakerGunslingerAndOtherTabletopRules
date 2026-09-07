@@ -1619,3 +1619,96 @@ ability reason. Cold Moon is the native energy-damage longbow; F adds the
 Ray-category Produce Flame weapon. These are concrete inputs for the still-pending
 Breeze boundary regression. No production Breeze change or native boundary PASS
 is claimed from the catalog alone.
+
+
+### Breeze native ranged-boundary regression (qualification pending)
+
+The runtime suite now compares real Pinpoint Targeting commands with and without
+Breeze-Kissed, recording native attack/roll ability reasons and weapon-stat
+identity. It also compares actual Cold Moon attacks while enchanted and after
+removing enchantments from only the disposable item instance, preserving its
+native energy damage and registered blueprint. The regression expects the racial
+bonus for the mundane ability and a native unenchanted weapon, and none for the
+magical energy weapon. Production Breeze behavior is unchanged until a guarded
+run proves whether those expectations expose a real mismatch.
+
+
+Breeze boundary build 01 failed at compilation because the new runtime assertion
+qualified DamageType in the energy-enum namespace instead of the native damage-rule
+namespace. The reference is corrected; no failed-build package was installed and
+no runtime result is inferred from it.
+
+
+Breeze regression F `20260907T1710472981872Z` failed six assertions out of
+6,388, with exact cleanup/restoration and no runtime exception summary. The
+three actual Pinpoint commands retained the exact ability in both native attack
+and roll contexts, nonmagical crossbow enhancement 0, and AC delta 0 instead of
+2. This directly proves the all-ability-source rejection is too broad. The
+other three failures exposed an invalid test precondition: native Cold Moon
+fixed enchantments survive RemoveEnchantment and enhancement stays 4. Those
+rows now assert the observed magical negative contract; no production energy
+classification change is justified by them. The initial failure is preserved.
+
+The narrow repair recognizes four exact registered Special feat actions
+(Pinpoint and native Vital Strike ranks), retaining all other magic/unknown
+source, geometry, identity and enhancement guards. The runtime regression
+adds all three actual ranged Vital Strike commands in the CotW profile and
+paired temporary +1 weapon controls. Bow Spirit is explicitly excluded even
+though its type is Special. Qualification is pending.
+
+Build 03 stopped at the exact test inventory guard after one focused test was
+added. The inventory is now 1,453; no test was removed or skipped.
+
+Build 04 identified the same current-suite count in 13 inherited static validation
+records; those current inventory fields are updated to 1,453 without changing
+version, GUID or historical qualification evidence.
+
+
+### Breeze native weapon-source boundary qualified
+
+Clean candidate 05 passes repository validation, all **1,453** domain/reflection
+tests, clean Release compilation, deterministic packaging and strict 135-entry
+package validation. Manifest remains 1,867 identities (1,865 active, two reserved).
+No GUID or selector changes occur in this slice.
+
+| Exact candidate identity | Value |
+| --- | --- |
+| Source parent | `018ad6b556b2c19e7d9454c6a1e9960f3b9527b9` |
+| Qualified source state | `775c8cb173e369b7785190f0222e8773e30990f7337896136136a0d6ca154e90` |
+| ZIP SHA-256 | `26017b7b3ce72507b377763fbc2def97045656bde37918a71007fba179a75237` |
+| DLL SHA-256 | `9be96e6471bf9047141bd4972406c052fca1362e212f70998c13fdfa7efacdc6` |
+| DLL MVID | `ff965e1e-7c82-4de3-9503-0c5627a00667` |
+
+| Guarded Steam profile | Result | Assertions | Breeze observations |
+| --- | --- | ---: | ---: |
+| A `20260907T1727003973176Z-observe-elemental-alternate-trait-framework` | PASS | 6,217 | 199 |
+| F `20260907T1722526350540Z-observe-elemental-alternate-trait-framework` | PASS | 6,409 | 220 |
+
+F proves 24 paired native-command comparisons: four exact mundane feat abilities
+across three Sylph heritages with ordinary and temporarily enchanted crossbows.
+The real attack/roll reasons, exact weapon/stat objects, actual target AC and
+completed native command are recorded. Ordinary attacks receive +2; enchanted
+attacks receive zero. Pinpoint's pre-repair +0 failure remains preserved. Native
+Vital Strike ranks use CotW's actual ranged delivery. A accurately records that
+the optional Pinpoint surface is absent and does not claim those optional command
+comparisons ran there.
+
+Cold Moon's native Energy damage remains enhancement 4 in both observed item
+states, receives no bonus, and retains the registered component-array reference.
+The installed ranged catalog contains no demonstrated ordinary nonmagical energy
+weapon: the other full-stack energy entry is Produce Flame's Ray weapon. Unknown
+or nonphysical metadata still fails closed; no artificial unenchanted energy
+weapon or blanket Special-ability exemption is introduced. The four catalogued
+feat sources require exact registered object identity and Special type; all other
+ability/context sources remain excluded, including Special Bow Spirit. Existing
+crossbow/firearm/melee/masterwork/temporary-enhancement controls still pass.
+
+Both profiles restore the exact mod tree and UMM bytes/timestamp, preserve all
+save audit checks, and perform zero save loads/writes. No KMG ERROR or new exception
+signature appears. Each retains the separately documented startup exception and
+18 historical Pixel8bits shader exceptions; F retains four ZFavoredClass custom
+JSON exceptions. The immutable candidate and detailed ledger are retained under
+ignored `artifacts/qualification/0.0.117/character-creation-stabilization/` as
+`breeze-boundary-candidate-05.*`; no raw evidence is committed. The original
+installed candidate remains restored. This is a qualified mechanic slice, not
+final human UI acceptance or the stable acceptance installation.

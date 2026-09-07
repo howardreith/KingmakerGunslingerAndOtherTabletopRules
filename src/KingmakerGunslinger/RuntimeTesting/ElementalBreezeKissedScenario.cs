@@ -221,6 +221,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try { Armor(attacker, defender, crossbow, rangedBase, 0, prefix + "temporary-plus-one", assertions, rows); }
                 finally { crossbow.RemoveEnchantment(magic); }
                 Armor(attacker, defender, crossbow, rangedBase, 2, prefix + "temporary-magic-removed", assertions, rows);
+                ExerciseRangedAttackBoundaries(attacker, defender, trait, crossbow, prefix, assertions, rows);
 
                 Cast(defender, Data(owner, calm), new TargetWrapper(defender), resource, 1, assertions, rows, prefix + "calm");
                 Buff originalCalm = owner.Buffs.GetBuff(calmBuff);
@@ -354,6 +355,175 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 attacker.Body.PrimaryHand.RemoveItem(false);
                 crossbow.Dispose(); sword.Dispose(); firearm.Dispose();
+            }
+        }
+
+        private sealed class WeaponAttackProbe : IGlobalRulebookHandler<RuleAttackWithWeapon>
+        {
+            internal UnitEntityData Caster, Target;
+            internal readonly List<RuleAttackWithWeapon> Rules = new List<RuleAttackWithWeapon>();
+            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+            public void OnEventDidTrigger(RuleAttackWithWeapon evt)
+            {
+                if (ReferenceEquals(evt.Initiator, Caster) && ReferenceEquals(evt.Target, Target)) Rules.Add(evt);
+            }
+        }
+
+        private static void ExerciseRangedAttackBoundaries(UnitEntityData attacker, UnitEntityData defender,
+            ElementalAlternateTraitBlueprints trait, ItemEntityWeapon crossbow, string prefix,
+            ICollection<RuntimeTestAssertion> assertions, JArray rows)
+        {
+            const string pinpointGuid = "a6210acb28054f568ead7366bda31fee";
+            BlueprintScriptableObject optional;
+            if (BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(pinpointGuid, out optional))
+            {
+                foreach (string sourceGuid in new[] { pinpointGuid, "efc60c91b8e64f244b95c66b270dbd7c",
+                    "c714cd636700ac24a91ca3df43326b00", "11f971b6453f74d4594c538e3c88d499" })
+                {
+                    BlueprintAbility ability = Exact<BlueprintAbility>(sourceGuid);
+                    if (ability.Type != AbilityType.Special || attacker.Descriptor.HasFact(ability))
+                        throw new InvalidOperationException("The qualified mundane Pinpoint source contract is not exact.");
+                    attacker.Body.PrimaryHand.RemoveItem(false);
+                    attacker.Body.PrimaryHand.InsertItem(crossbow);
+                    attacker.Descriptor.AddFact(ability);
+                    try
+                    {
+                        defender.Descriptor.RemoveFact(trait.Marker);
+                        var baseline = AttackAbility(attacker, defender, ability);
+                        defender.Descriptor.AddFact(trait.Marker);
+                        var active = AttackAbility(attacker, defender, ability);
+                        int delta = active.AttackRoll.TargetAC - baseline.AttackRoll.TargetAC;
+                        var record = DescribeBoundaryAttack(active);
+                        record["baselineAC"] = baseline.AttackRoll.TargetAC;
+                        record["actualBonus"] = delta; record["expectedBonus"] = 2;
+                        Check(assertions, rows, prefix + "mundane-weapon-ability-" + sourceGuid, delta == 2 &&
+                            ReferenceEquals(active.Weapon, crossbow),
+                            record.ToString(Formatting.None));
+                        var context = new MechanicsContext(attacker, attacker.Descriptor, crossbow.Blueprint, null, new TargetWrapper(defender));
+                        var magicEffect = crossbow.AddEnchantment(Exact<BlueprintWeaponEnchantment>(
+                            EasternWeaponBlueprints.NativeEnhancementOneGuid), context, new Rounds(10));
+                        try
+                        {
+                            defender.Descriptor.RemoveFact(trait.Marker);
+                            baseline = AttackAbility(attacker, defender, ability);
+                            defender.Descriptor.AddFact(trait.Marker);
+                            active = AttackAbility(attacker, defender, ability);
+                            delta = active.AttackRoll.TargetAC - baseline.AttackRoll.TargetAC;
+                            record = DescribeBoundaryAttack(active); record["actualBonus"] = delta;
+                            Check(assertions, rows, prefix + "magic-weapon-ability-" + sourceGuid, delta == 0 &&
+                                active.WeaponStats.DamageDescription[0].TypeDescription.Physical.EnhancementTotal > 0,
+                                record.ToString(Formatting.None));
+                        }
+                        finally { crossbow.RemoveEnchantment(magicEffect); }
+                    }
+                    finally
+                    {
+                        attacker.Descriptor.RemoveFact(ability);
+                        if (!defender.Descriptor.HasFact(trait.Marker)) defender.Descriptor.AddFact(trait.Marker);
+                    }
+                }
+            }
+            else rows.Add(new JObject { ["name"] = prefix + "optional-pinpoint-absent", ["pass"] = true,
+                ["guid"] = pinpointGuid, ["mechanicQualified"] = false });
+
+            var coldMoon = new ItemEntityWeapon(Exact<BlueprintItemWeapon>("65d29ca8c81c124418417bff73f8eaae"));
+            var blueprintComponents = coldMoon.Blueprint.ComponentsArray;
+            try
+            {
+                defender.Descriptor.RemoveFact(trait.Marker);
+                var baseline = Attack(attacker, defender, coldMoon);
+                defender.Descriptor.AddFact(trait.Marker);
+                var active = Attack(attacker, defender, coldMoon);
+                var magic = DescribeBoundaryAttack(active.RuleAttackWithWeapon);
+                int delta = active.TargetAC - baseline.TargetAC;
+                magic["actualBonus"] = delta; magic["expectedBonus"] = 0;
+                Check(assertions, rows, prefix + "native-energy-magic-weapon", delta == 0 &&
+                    active.WeaponStats.DamageDescription[0].TypeDescription.Type == Kingmaker.RuleSystem.Rules.Damage.DamageType.Energy &&
+                    active.WeaponStats.DamageDescription[0].TypeDescription.Physical.EnhancementTotal > 0,
+                    magic.ToString(Formatting.None));
+
+                // Native fixed blueprint enchantments survive RemoveEnchantment.
+                // This is an observed magical negative control, not a fabricated
+                // nonmagical energy weapon. No registered blueprint is edited.
+                foreach (ItemEnchantment effect in coldMoon.Enchantments.ToArray()) coldMoon.RemoveEnchantment(effect);
+                defender.Descriptor.RemoveFact(trait.Marker);
+                baseline = Attack(attacker, defender, coldMoon);
+                defender.Descriptor.AddFact(trait.Marker);
+                active = Attack(attacker, defender, coldMoon);
+                var ordinary = DescribeBoundaryAttack(active.RuleAttackWithWeapon);
+                delta = active.TargetAC - baseline.TargetAC;
+                ordinary["actualBonus"] = delta; ordinary["expectedBonus"] = 0;
+                bool nativeUnenchanted = active.WeaponStats.DamageDescription[0].TypeDescription.Physical.EnhancementTotal == 0 &&
+                    !coldMoon.Enchantments.Any();
+                ordinary["nativeUnenchanted"] = nativeUnenchanted;
+                Check(assertions, rows, prefix + "native-energy-base-enchantment-retained", !nativeUnenchanted && delta == 0 &&
+                    active.WeaponStats.DamageDescription[0].TypeDescription.Physical.EnhancementTotal > 0 &&
+                    ReferenceEquals(blueprintComponents, coldMoon.Blueprint.ComponentsArray), ordinary.ToString(Formatting.None));
+            }
+            finally
+            {
+                if (!defender.Descriptor.HasFact(trait.Marker)) defender.Descriptor.AddFact(trait.Marker);
+                attacker.Body.PrimaryHand.RemoveItem(false); coldMoon.Dispose();
+                attacker.Body.PrimaryHand.InsertItem(crossbow);
+            }
+        }
+
+        private static JObject DescribeBoundaryAttack(RuleAttackWithWeapon attack)
+        {
+            var roll = attack.AttackRoll;
+            var stats = roll.WeaponStats;
+            var description = stats.DamageDescription[0].TypeDescription;
+            return new JObject { ["weaponGuid"] = attack.Weapon.Blueprint.AssetGuid,
+                ["category"] = attack.Weapon.Blueprint.Category.ToString(), ["damageType"] = description.Type.ToString(),
+                ["nativeEnhancementTotal"] = description.Physical == null ? -1 : description.Physical.EnhancementTotal,
+                ["exactWeaponStats"] = ReferenceEquals(stats, attack.WeaponStats) && ReferenceEquals(stats.Weapon, attack.Weapon),
+                ["attackAbilityGuid"] = attack.Reason == null || attack.Reason.Ability == null ? null : attack.Reason.Ability.Blueprint.AssetGuid,
+                ["attackContextAbilityGuid"] = attack.Reason == null || attack.Reason.Context == null || attack.Reason.Context.SourceAbility == null ? null : attack.Reason.Context.SourceAbility.AssetGuid,
+                ["rollAbilityGuid"] = roll.Reason == null || roll.Reason.Ability == null ? null : roll.Reason.Ability.Blueprint.AssetGuid,
+                ["rollContextAbilityGuid"] = roll.Reason == null || roll.Reason.Context == null || roll.Reason.Context.SourceAbility == null ? null : roll.Reason.Context.SourceAbility.AssetGuid,
+                ["nativeAC"] = roll.TargetAC };
+        }
+
+        private static RuleAttackWithWeapon AttackAbility(UnitEntityData attacker, UnitEntityData defender, BlueprintAbility ability)
+        {
+            var data = Data(attacker.Descriptor, ability);
+            var target = new TargetWrapper(defender);
+            if (!data.IsAvailable || !data.CanTarget(target)) throw new InvalidOperationException("The exact mundane ranged ability is unavailable: " + ability.AssetGuid);
+            attacker.Commands.InterruptAll(true); attacker.Commands.RemoveFinishedAndUpdateQueue();
+            attacker.CombatState.Cooldown.StandardAction = 0;
+            attacker.CombatState.Cooldown.MoveAction = 0;
+            attacker.CombatState.Cooldown.SwiftAction = 0;
+            var probe = new WeaponAttackProbe { Caster = attacker, Target = defender };
+            int wounds = defender.Damage;
+            var buffs = defender.Buffs.Enumerable.ToArray();
+            var command = new UnitUseAbility(data, target);
+            EventBus.Subscribe(probe);
+            try
+            {
+                attacker.Commands.Run(command);
+                var controller = new UnitActionController();
+                for (int tick = 0; !command.IsActed && !command.IsFinished && tick < 20; tick++)
+                {
+                    Game.Instance.HandsEquipmentController.Tick();
+                    if (command.Animation != null) command.Animation.IsActed = true;
+                    ElementalBreathScenario.TickCommand(controller, command);
+                }
+                for (int tick = 0; command.ExecutionProcess != null && !command.ExecutionProcess.IsEnded && tick < 100; tick++)
+                    command.ExecutionProcess.Tick();
+                if (!command.IsStarted || !command.IsActed || command.Cutscene || command.IsIgnoreCooldown ||
+                    command.ExecutionProcess == null || !command.ExecutionProcess.IsEnded || probe.Rules.Count != 1 ||
+                    probe.Rules[0].AttackRoll == null || probe.Rules[0].AttackRoll.ACRule == null ||
+                    !buffs.SequenceEqual(defender.Buffs.Enumerable))
+                    throw new InvalidOperationException("Native mundane weapon command/attack did not complete exactly; ability=" + ability.AssetGuid + ";started=" + command.IsStarted +
+                        ";acted=" + command.IsActed + ";rules=" + probe.Rules.Count + ";process=" + (command.ExecutionProcess != null));
+                return probe.Rules[0];
+            }
+            finally
+            {
+                EventBus.Unsubscribe(probe);
+                if (command.ExecutionProcess != null && !command.ExecutionProcess.IsEnded) command.ExecutionProcess.Detach();
+                attacker.Commands.InterruptAll(true); attacker.Commands.RemoveFinishedAndUpdateQueue();
+                defender.Damage = wounds; ClearProjectiles();
             }
         }
 
