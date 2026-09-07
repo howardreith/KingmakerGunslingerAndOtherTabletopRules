@@ -10,7 +10,8 @@ from pathlib import Path
 
 VERSION = "0.0.116"
 INFORMATIONAL_VERSION = "0.0.116-midgame-firearms-and-protection"
-DETERMINISTIC_TEST_COUNT = 1398
+# Includes seven contextual-teleportation foundation tests; historical release evidence below remains 1398.
+DETERMINISTIC_TEST_COUNT = 1405
 STATIC_KEY = "midgameFirearms116"
 
 

@@ -261,6 +261,8 @@
     </Reference>
     <Reference Include="UnityModManager">
       <HintPath>$(UnityModManagerDir)\UnityModManager.dll</HintPath>
+      <!-- UMM owns its private Harmony 2 dependency; this plugin uses the explicit Harmony 1.2 reference. -->
+      <ExternallyResolved>true</ExternallyResolved>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -866,6 +868,11 @@
     <Compile Include="Persistence\PersistenceRuntimePreflightProbeData.cs" />
     <Compile Include="Persistence\PersistenceRuntimePreflightReport.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Spells\Teleportation\TeleportSpellKind.cs" />
+    <Compile Include="Spells\Teleportation\TeleportRollTable.cs" />
+    <Compile Include="Spells\Teleportation\TeleportFailureSeverityPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportFamiliarityState.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInventory.cs" />
     <Compile Include="Compatibility\EasternWeaponArmsArmorCompatibility.cs" />
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />

@@ -25,6 +25,13 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("teleportation.ExactD100Tables", TeleportationPolicyTests.ExactD100Tables),
+            Case("teleportation.InvalidRollsFailClosed", TeleportationPolicyTests.InvalidRollsFailClosed),
+            Case("teleportation.SeverityIsMonotonic", TeleportationPolicyTests.SeverityIsMonotonic),
+            Case("teleportation.BucketsPartitionAllRanks", TeleportationPolicyTests.BucketsPartitionAllRanks),
+            Case("teleportation.FamiliarityUsesOnlyRecordedArrivals", TeleportationPolicyTests.FamiliarityUsesOnlyRecordedArrivals),
+            Case("teleportation.MigrationIsIdempotentAndRoundTrips", TeleportationPolicyTests.MigrationIsIdempotentAndRoundTrips),
+            Case("teleportation.CorruptLedgerFailsClosed", TeleportationPolicyTests.CorruptLedgerFailsClosed),
             Case("martial-performance.identity", MartialPerformanceCompatibilityTests.ExactOptionalIdentityContract),
             Case("martial-performance.absent", MartialPerformanceCompatibilityTests.AbsentProviderIsInert),
             Case("martial-performance.wrong-contract", MartialPerformanceCompatibilityTests.WrongProviderContractFailsClosed),

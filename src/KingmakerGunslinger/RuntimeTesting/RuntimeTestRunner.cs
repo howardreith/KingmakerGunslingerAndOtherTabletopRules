@@ -1124,6 +1124,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunRareFirearmBlueprintContracts());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationNativeContracts)
+                {
+                    Complete(RunTeleportationNativeInventory());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMidgameFirearms)
                 {
                     Complete(RunDisposableMidgameFirearms());
