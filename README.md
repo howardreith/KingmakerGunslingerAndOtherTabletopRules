@@ -42,7 +42,12 @@ Their [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-C
 also passes native RTWP cooldown controls, a ten-trait OFF/ON save/rest/level/
 respec matrix, exact active Sickened persistence and renewed 0.0.114 migration.
 Breath-specific turn-based action proof remains pending.
-Remaining semantic catalog work, three other required mechanics, the complete
+Breeze-Kissed's [native core checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md)
+passes actual ranged defense, swift calm/renew, daily Bull Rush/Trip with
+ordinary native CMB, cancellation and spent-use/rest/level controls for all
+three Sylph heritages. Seven fixed identities append. Broader attack-source
+coverage, turn-based actions and fresh-save/lifecycle proof remain pending.
+Remaining semantic catalog work, two other required mechanics, the complete
 trait persistence/lifecycle matrix and final qualification remain.
 This is not a finished Release C package.
 

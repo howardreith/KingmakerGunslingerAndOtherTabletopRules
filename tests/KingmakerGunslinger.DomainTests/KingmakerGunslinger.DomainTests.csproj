@@ -57,6 +57,8 @@
     <Compile Include="ElementalBloodPolicyTests.cs" />
     <Compile Include="ElementalTraitDailyResourcePolicyTests.cs" />
     <Compile Include="ElementalBreathPolicyTests.cs" />
+    <Compile Include="ElementalBreezeKissedPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalBreezeKissedPolicy.cs"><Link>ElementalRaces\ElementalBreezeKissedPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalBreathPolicy.cs"><Link>ElementalRaces\ElementalBreathPolicy.cs</Link></Compile>
     <Compile Include="ElementalCrystallineFormPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalCrystallineFormPolicy.cs"><Link>ElementalRaces\ElementalCrystallineFormPolicy.cs</Link></Compile>

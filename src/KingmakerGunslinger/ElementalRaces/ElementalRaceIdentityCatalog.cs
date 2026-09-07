@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.ElementalRaces
         internal const int HeritageIdentityCount = 53;
         internal const int FeatIdentityCount = 25;
         internal const int TraitFrameworkIdentityCount = 62;
-        internal const int TraitMechanicIdentityCount = 14;
+        internal const int TraitMechanicIdentityCount = 21;
         internal const int MechanicIdentityCount = LegacyMechanicIdentityCount +
             HeritageIdentityCount + FeatIdentityCount +
             TraitFrameworkIdentityCount + TraitMechanicIdentityCount;
@@ -235,7 +235,14 @@ namespace KingmakerGunslinger.ElementalRaces
                 "KMG.ElementalRaces.Traits.Undine.AcidBreath.Resource",
                 "KMG.ElementalRaces.Traits.Undine.AcidBreath.Ability",
                 "KMG.ElementalRaces.Traits.Undine.OozeBreath.Resource",
-                "KMG.ElementalRaces.Traits.Undine.OozeBreath.Ability"
+                "KMG.ElementalRaces.Traits.Undine.OozeBreath.Ability",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Resource",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Gust",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.BullRush",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Trip",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmedBuff",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmWinds",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.RenewWinds"
             };
         }
 

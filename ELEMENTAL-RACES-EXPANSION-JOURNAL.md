@@ -1,5 +1,127 @@
 # Elemental Races expansion journal
 
+## 2026-09-07 UTC - Breeze-Kissed native core checkpoint passes
+
+- Candidate 08 passes repository validation, all 1,432 domain/reflection cases,
+  clean exact Release build and strict 135-entry package validation. Two
+  guarded Steam processes pass 11,376 assertions, including 380 Breeze rows.
+  All three Sylph heritages pass native AC, swift calm/renew, ordinary CMB
+  Bull Rush/Trip, action/resource cancellation, rest, level and removal checks.
+- Both complete 968-entry mod/settings restorations independently match.
+  No save access or game remains. Zero scenario warnings/exceptions do not
+  erase inherited shader/script/lightmap diagnostics or four combined-profile
+  ZFavoredClass KeyNotFound signatures. Exact hashes are in STATE and the
+  dedicated Breeze core checkpoint report.
+- Seven fixed identities append; total 1,867 / active 1,865, with 229 active
+  elemental identities (83 Release C). No existing identity, schema, optional
+  dependency or master integration changes. Seven earlier diagnostic
+  candidates retain their mixed/failing results.
+- This is not full Breeze or Release C qualification. Broader attack-source
+  boundaries, native turn-based action proof, eleven remaining traits' saves,
+  full lifecycle, Treacherous Earth/Nereid implementations and final release
+  gates remain. Continue automatically after the coherent checkpoint push.
+
+## 2026-09-07 UTC - Breeze candidate 07 mixed; exact misfire UI boundary
+
+- KMG-only passes 5,688 assertions, including 190 Breeze observations. The
+  combined profile fails after 746 passing assertions when a genuine natural
+  1 commits Normal-to-Broken and its condition message reaches the unavailable
+  main-menu BattleLogView. The fixture captured only AC messages, not all
+  validated publications belonging to the same synchronous disposable attack.
+- Isolate the final UI sink for that exact attack scope, including ordinary
+  misfire feedback. Retain the normal message validator, attempt/fault
+  correlation, exact sink restoration, ammunition spend and random native
+  misfire behavior. Do not suppress a production error or alter attack rules.
+- Both profiles independently restore all 968 original mod entries. No save
+  access or game remains. Preserve both results and hashes in STATE; candidate
+  07 is not an overall PASS. Candidate 08 requires a fresh complete build and
+  both guarded profiles before a native-core checkpoint.
+
+## 2026-09-07 UTC - Breeze firearm presentation correlation narrowed
+
+- Candidate 06's standing firearm baseline stops on an over-specific combined
+  annotation assertion, after 620 passing assertions. Native ammunition INFO
+  shows zero rounds remaining; the fixture omitted the relevant log counts.
+- Correlate captured final-sink calls exactly with the normal publication
+  service's attempt delta and require zero new faults. Do not require one UI
+  annotation for an entire attack, which may have more than one native AC
+  event. Add granular count/state failures; never suppress ammunition or AC
+  correctness. Candidate 06 remains FAIL; 07 is pending.
+- Independent 968-entry restoration and cleanup pass; no save or game remains.
+
+## 2026-09-07 UTC - Breeze maneuvers pass; standing baseline corrected
+
+- Candidate 05 completes 5,688 assertions; 21 AC comparisons fail. Native
+  Bull Rush and Trip success/failure/immunity, exact CMB, pending prone,
+  commitment/cancellation and all resource/lifetime checks now pass.
+- The original time-zero baseline also included native get-up's +4 ranged
+  defense. The later standing state correctly lacks it. Establish standing
+  native preconditions for both actors before capturing any AC baseline; do
+  not alter AC, animation eligibility or the actual trait effect.
+- All 968 original mod entries independently match; no game or save access.
+  Retain candidate 05 as FAIL. Candidate 06 is pending.
+
+## 2026-09-07 UTC - Breeze complete native diagnostic and fixture boundaries
+
+- Candidate 04 completes all 5,676 assertions; 12 fail. Native Calm/Renew,
+  spent resource, rest, level-up and removal now pass for all three heritages.
+  Fixture errors/exceptions and firearm annotation errors are zero. Separate
+  racial modifiers use the native stacking set; the fixture's expected +4
+  total was wrong for a +4 foreign racial source plus this trait's +2.
+- The nine Trip observations encountered native IsGetUp at fixture time zero:
+  GameTime minus a new view's zero start time is under half a second. The
+  native action correctly exits before creating a maneuver. Advance only the
+  disposable clock, assert native readiness, and test actual pending prone
+  after success/failure/immunity. Do not patch Trip or the get-up predicate.
+- All 968 original mod entries independently match after restoration; no game
+  or save mutation. Retain failure hashes in STATE. Candidate 05 is pending.
+
+## 2026-09-07 UTC - Native Calm Winds defect found before release
+
+- Candidate 03 passes 1,432 tests/build/package, but its native KMG-only run
+  20260907T0051428731478Z-4e20f667bed44e01a2a2c2c42df23f6a fails three of
+  633 assertions. The accepted swift command did not produce the calm buff.
+  Native ApplyBuff calculates DurationValue before Permanent; initialize that
+  data. Actual buff, availability and AC assertions remain the acceptance proof.
+- Native masterwork/temporary +1/removal controls pass. Two additional firearm
+  log errors are the absent main-menu BattleLogView, not attack failures. Scope
+  a spy to only the final UI sink during each disposable firearm attack and
+  require one validated annotation plus exact sink restoration. Production
+  logging, AC and discharge mechanics remain unchanged.
+- Failed result/evidence hashes remain in STATE; all 968 original mod entries
+  independently match after restoration. No save access or game remains.
+  Candidate 04 is pending; no trait/release PASS is claimed.
+- One patch hunk failed after the factory edit; its build passed but was not
+  archived/launched. Finish the remaining fixture/evidence edits and rebuild
+  before native qualification. No runtime evidence is reused for that build.
+
+## 2026-09-07 UTC - Breeze candidate 02 fixture diagnostic
+
+- All 1,432 tests and clean build/package pass. Native KMG-only run
+  20260907T0042553947046Z-573aee761eb74cbab3ffa8963afc4ff1 is FAIL after
+  624 passing assertions: the enchantment fixture supplied a null context
+  blueprint. Use the exact disposable crossbow blueprint. Loaded-pistol
+  discharge and the three initial attack/AC controls now pass.
+- Cleanup and the actual original 968-entry mod tree independently match;
+  no save interaction or remaining game process. Combined was not run.
+- Local native RuleCombatManeuver IL also shows immunity exits before CMB,
+  CMD and dice. Its Success getter compares default zeros, so it is not an
+  immunity-outcome witness. Compare against an actual native immune control
+  plus unchanged target position/prone state, not an invented AutoFailure flag.
+- Retain exact candidate 02 hashes in STATE. Candidate 03 is pending.
+
+## 2026-09-07 UTC - Breeze-Kissed resumed on integrated master
+
+- Integration checkpoint 0d9cd38144132a94acac997b82409f84c54d2b94 is pushed;
+  authoritative master dfd55108 is an ancestor. The tree was clean after push.
+- Applied, but retained, named stash b1c5e1a7d45205b968443bce711088a5e87aaafb.
+  Resolved only journal/validator counter conflicts, preserving both histories
+  and the upstream provider validator. All five new source files match their
+  pre-stash hashes. No unrelated changes or unmerged paths remain.
+- Candidate 02 will combine the qualified master integration with the corrected
+  loaded-pistol fixture. Combined domain/reflection count is 1,432. No new
+  native Breeze PASS or full Release C qualification is claimed before the run.
+
 ## 2026-09-07 UTC - Published master fix integrated and requalified
 
 - Preserved exact upstream Brown-Fur implementation/tests from dfd55108 and
@@ -38,6 +160,43 @@
 - The prior Breeze retry build completed with validated metadata, but was not
   launched: the upstream integration takes precedence. Failed Breeze candidate
   01 and its correction remain in the preserved work, not in this checkpoint.
+
+## 2026-09-06 UTC - Breeze first native diagnostic retained as FAIL
+
+- Clean build/package and all 1,429 tests pass. KMG-only run
+  20260906T2322334626326Z-440cf849339848caa54541a3dd47755a fails before installing
+  Breeze-Kissed: the third baseline attack is a newly created empty pistol.
+  Exact INFO evidence records Empty, zero consumed rounds and forced AutoMiss.
+  Native AutoMiss returns before AC calculation. This is not Breeze rule proof.
+- All 620 completed assertions and three cleanup observations pass, with zero
+  result warnings. The 968-entry restoration independently matches; no game
+  remains. Combined was not run. Hashes and artifact identity are in STATE.
+- Seed only the exact disposable pistol's loaded pre-state through the existing
+  item-state service, then require native discharge to consume the round.
+  Do not bypass firearm readiness or force an AC result. Add granular native
+  attack diagnostics for any subsequent early exit.
+
+## 2026-09-06 UTC - Breeze-Kissed implementation in progress
+
+- The breath RTWP/ten-trait save checkpoint is committed and pushed as
+  14dea6215927517a9cb7c91e6553fa5592abe44a. Clean tree observed after push.
+- Authoritative Sylph rules plus PRD supernatural-action/CMB rules require
+  swift calm/renew, a Standard daily gust, and ordinary native maneuver CMB.
+  No Hydraulic Push level/mental substitution is used. Local native weapon
+  stats provide the completed physical EnhancementTotal /magic witness;
+  blueprint-only magic flags miss temporary enchantments.
+- Add seven append-only identities for resource, root/variants, calmed state
+  and explicit swift controls. Native resource memory and exact marker-loss
+  cleanup own persistence; no global patch, donor edit or optional dependency.
+  Source and focused tests are unqualified until the next guarded run passes.
+- Preflight stopped at stale current architecture/manifest counters before
+  compilation or a game launch. A documentation patch's reversed hunk order
+  was rejected atomically; the unchanged validation failure repeated. Reorder
+  the hunks and update only current counts to 1,867 total / 1,865 active,
+  229 elemental and 83 Release C. Historical artifact records stay unchanged.
+- Repository validation and all 1,429 tests then pass. Clean compilation found
+  one missing native SavingThrowType namespace import in the new factory.
+  Added that exact import; no game process was launched for the failed build.
 
 ## 2026-09-06 UTC - Breath RTWP and ten-trait save checkpoint qualified
 

@@ -2,6 +2,16 @@
 
 ## Current outcome
 
+Breeze-Kissed's [native core checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md)
+passes 1,432 tests, clean Release/package and two guarded profiles with 11,376
+assertions (380 Breeze observations), plus two independently exact 968-entry
+restorations. Seven identities append: current ledger 1,867 total / 1,865
+active, 229 active elemental identities (201 blueprints, 28 proxies), 83
+Release C. Nineteen trait mechanics have incremental native proof; ten have
+save-backed proof. Breeze's broader attack-source boundary, turn-based and
+fresh-save/lifecycle gates remain. Treacherous Earth and Nereid Fascination
+are the two remaining implementations. This is not full Release C PASS.
+
 The owner-requested master integration now includes the public 0.0.115
 Brown-Fur direct-cast fix from dfd551080a1aad38cdd0b19714fbcb12c81ca4ca.
 All 1,431 tests, clean build/package, 30 compiled API checks and six qualifying
@@ -17,7 +27,8 @@ HAVE CHECKPOINT PROOF AND THREE SUMMON INSIGHTS PLUS THREE BLOOD TRAITS HAVE
 NATIVE AND INCREMENTAL SAVE-BACKED EVIDENCE. EFREETI MAGIC ALSO PASSES NATIVE,
 MULTI-TRAIT SAVE AND RENEWED LEGACY MIGRATION GATES. CRYSTALLINE CORE NOW HAS
 NATIVE AND INCREMENTAL SAVE PROOF. ACID/OOZE BREATH NOW HAVE NATIVE RTWP AND
-TEN-TRAIT SAVE PROOF; BREATH TURN-BASED ACTIONS, THREE UNIMPLEMENTED MECHANICS, THE OTHER ELEVEN
+TEN-TRAIT SAVE PROOF; BREEZE CORE HAS NATIVE PROOF. BREEZE/BREATH TURN-BASED
+ACTIONS, TWO UNIMPLEMENTED MECHANICS, THE OTHER ELEVEN
 TRAITS' PERSISTENCE, FULL LIFECYCLE, AND FINAL RELEASE-WIDE
 QUALIFICATION REMAIN PENDING. THE FACT-COMPONENT NAME REPAIR NOW PASSES
 PINNED 0.0.114 MIGRATION MECHANICS; SUBJECTIVE VISUAL REVIEW REMAINS.
@@ -49,7 +60,7 @@ adds two owned Standard-action acid cones with exact half-level/current-CON
 parameters, Reflex halving and failed-save non-poison Sickened for Ooze.
 All 1,427 tests, clean build/package and two native profiles pass 10,936
 assertions, including 652 breath observations. Four fixed identities append;
-the current ledger is 1,860 total / 1,858 active, with 222 active elemental
+that checkpoint ledger is 1,860 total / 1,858 active, with 222 active elemental
 identities (76 Release C). Both 968-entry restorations independently pass.
 The subsequent [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md)
 passes all 1,428 tests, clean build/package and nine guarded processes with
@@ -84,10 +95,10 @@ The eight-trait matrix, native rest/level/respec, OFF/ON load and renewed pinned
 60 result warnings and four pre-existing transient reconciliation ERROR lines
 remain explicit; this is not full Release C PASS.
 
-The current [Crystalline core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md)
+The earlier [Crystalline core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md)
 passes 1,423 tests, clean build/package and two fresh guarded native profiles
 (10,168 assertions). It appends exactly three resource/consent identities;
-the manifest is now 1,856 total / 1,854 active, with 218 active Elemental
+its manifest is 1,856 total / 1,854 active, with 218 active Elemental
 identities. Ray-only native AC, opted-in deflection, action/resource/rest,
 equipment and awareness boundaries pass. Complete ray/catalog, save and
 lifecycle gates remain open. Exact hashes and failed attempts are in STATE.
