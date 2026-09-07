@@ -16,7 +16,7 @@ namespace KingmakerGunslinger.ElementalRaces
     // The native respec replacement begins without the original's UnitParts,
     // and SetupNewCharacher applies a rest before its success callback copies
     // that replacement back. This bridge preserves only exact owned daily
-    // resource identities through those seams. It never changes selections,
+    // resource identities and blood healing expenditure through those seams. It never changes selections,
     // facts, stats, resource maxima, or another mod's resources.
     internal static class ElementalNativeRespecResourceRuntime
     {
@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.ElementalRaces
             internal UnitDescriptor Replacement;
             internal BlueprintAbilityResource[] Catalog;
             internal Dictionary<string, int> Amounts;
+            internal int[] BloodSpent;
             internal bool Active = true;
 
             internal void Preserve(UnitDescriptor target, bool original = false)
@@ -44,6 +45,8 @@ namespace KingmakerGunslinger.ElementalRaces
                     target.Unit.UniqueId != Original.UniqueId ||
                     (original ? !ReferenceEquals(target, Original.Descriptor) : ReferenceEquals(target, Original.Descriptor)))
                     throw new InvalidOperationException("Elemental respec resource target lost its native owner correlation.");
+                if (BloodSpent != null)
+                    target.Ensure<UnitPartElementalBloodCapacity>().PreserveRespecExpenditure(BloodSpent[0], BloodSpent[1], BloodSpent[2]);
                 var ledger = target.Ensure<UnitPartElementalHeritageState>();
                 foreach (var resource in Catalog)
                 {
@@ -86,6 +89,14 @@ namespace KingmakerGunslinger.ElementalRaces
             }
             var snapshot = new Snapshot { Original = original, Catalog = catalog,
                 Amounts = ElementalRespecResourcePolicy.Capture(catalog.Select(value => value.AssetGuid), remembered, present) };
+            var blood = original.Descriptor.Get<UnitPartElementalBloodCapacity>();
+            if (blood != null)
+            {
+                snapshot.BloodSpent = new[] { blood.Spent(ElementalAlternateTraitId.FireInTheBlood),
+                    blood.Spent(ElementalAlternateTraitId.StoneInTheBlood), blood.Spent(ElementalAlternateTraitId.StormInTheBlood) };
+                if (snapshot.BloodSpent.Any(value => value < 0))
+                    throw new InvalidOperationException("Cannot capture unknown elemental blood expenditure during respec.");
+            }
             scope.Captured = snapshot;
             Action next = continuation;
             continuation = () => {

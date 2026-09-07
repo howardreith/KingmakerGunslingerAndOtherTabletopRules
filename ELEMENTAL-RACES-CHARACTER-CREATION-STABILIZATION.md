@@ -1187,3 +1187,109 @@ turn-based action costs and the expanded visible-trait persistence matrix are
 still pending. Human full-screen acceptance is NOT-RUN. The prior installation
 is restored; the final acceptance candidate is not installed. Nothing was merged,
 tagged or released.
+
+
+### Native respec blood-capacity observation, pending
+
+The next source candidate extends the existing guarded eight-visit native respec
+fixture to spend the three existing blood-healing counters through real damage
+and native buff healing. Its request-local Oread/Sylph alternate-B combinations
+use Stone/Storm in the Blood. Creator regression plans and production content
+remain unchanged. Every native preview and original after callback is compared
+against independently observed expenditure, including while providers are absent.
+An ordinary rest after the final successful callback must reset the counters and
+restore the currently active owned daily resources. No blood production repair
+has been made; a runtime failure is required before diagnosing that lifecycle.
+
+
+### Native blood-capacity respec reproduction and repair, 2026-09-07
+
+Full-stack run `20260907T1246020293930Z-working-save-elemental-native-respec`
+is FAIL. The first three real commits passed. Before visit 3, native matching
+Fire damage armed the existing buff; its real tick healed two wounds, changed
+Fire in the Blood Spent 0 -> 2, left Remaining 0, and removed the exhausted buff.
+Every subsequent preview and the original after the real native callback showed
+Spent 0 instead of 2, including with the provider absent. All recorded racial
+stats, facts, provider/resource/ability identities and counts still matched.
+
+The existing exact-respec bridge now snapshots the three known blood counters
+when their original UnitPart exists, and preserves maximum(current,captured)
+at the already qualified replacement/preview/setup/copy-back boundaries. It
+never clamps expenditure down to a replacement's lower level. Existing UnitPart,
+JSON schema/fields, rest handler and all GUIDs remain unchanged. No general rest
+patch or foreign state mutation is added. Fresh-process qualification is pending.
+
+Failed candidate: source baca3de8d4be464c03617f73d5cf7b690bf9d5f1 plus fingerprint
+b3936239eb4a02588a4e05f590f831891e6f8b99d95eee329f11f172f476f3e8;
+ZIP c0adb2728dd6447a43f5d90dbeb0ecea1e9f523d58a71d787e0a7727de94620b;
+DLL 8b8312bcf4b1848a3a7c637461ec1ef2af83a5f619193b72c12159dfebdadf07;
+MVID 8f813664-0384-4b8a-b925-7c0f6422fdac. All 1,447 domain/reflection cases,
+repository validation, clean Release and deterministic/strict packaging passed
+before this reproduction. Runtime-result SHA-256
+330c247a88d389a220abbbf5c60f42d0f69a591bef3919ca0bad915ddd01cbe7;
+creator-evidence SHA-256
+786389d53b7b4cdfc3704b259aced8257470ee1694100c9094d08e5af046ca34.
+The combined creator completion/cleanup assertion is FAIL because the planned
+route did not complete. Its recorded membership/inventory/money/pause cleanup
+fields are all exact, and external Mods/UMM restoration and all save audits PASS.
+The failed run is preserved without overriding its outcome.
+
+
+### Native blood-capacity respec qualification checkpoint, 2026-09-07
+
+The focused repair passes all three fresh-process full-stack runs below. Each
+performs eight real native commits and seven Player.RespecCompanion callbacks,
+with 64 racial graph and blood-expenditure observations. Totals: 24 commits,
+21 native callbacks, 192 exact graph observations, 192 exact blood observations,
+zero resource or blood mismatches, and all 36 final runtime assertions PASS.
+
+| Race | Guarded runtime run | runtime-result.json SHA-256 |
+| --- | --- | --- |
+| Ifrit | `20260907T1258375682479Z-working-save-elemental-native-respec` | `26e48e8c78f9569194948b383d0c5ba81e140b7b76bf4f22a54bbbece46aefc4` |
+| Oread | `20260907T1310434810059Z-working-save-elemental-native-respec` | `f4f6cdf881905e254bd7c31fa348fbbffcdd0425c93c10ef4e0a121330946573` |
+| Sylph | `20260907T1322554158268Z-working-save-elemental-native-respec` | `c6c8588b3cabe415261d7eedebe3a1d9e61a912286c8eddd7e8e4fae112d4432` |
+
+Each corresponding Fire/Stone/Storm in the Blood provider was spent 0 -> 2 by
+real matching damage followed by the native buff healing tick. It retained
+Spent 2 through removal, preview reconstruction, reselection and final native
+copy-back. The fixture never writes remembered blood expenditure. After the
+last successful respec, native ordinary rest resets the observed counter to 0
+and restores the currently present racial SLA resource to 1. Existing daily
+AbilityResource preservation remains exact throughout all visits.
+
+All final fixture cleanup fields, external Mods/UMM restoration, and save audits
+pass. The protected baseline is unchanged; the working save differs only by its
+native load counter, delta 1; other save metadata is unchanged. Each run records
+zero KMG ERROR lines and the same four ZFavoredClass custom JSON KeyNotFound
+errors and previously captured native BugReportCanvas startup exception. These
+unrelated warnings remain unsuppressed.
+
+Qualification used scripts/Build-Local.ps1: repository validation, the complete
+1,448-case domain/reflection suite, clean exact-reference Release compilation,
+deterministic package creation and strict 135-entry validation all PASS. Guarded
+working-save-elemental-native-respec requests used Steam 640820, expected version
+0.0.117, explicit KMG_AUTOMATION_WORKING, Fighter, point-buy, 1,200-second deadline,
+and automatic exit inside independently restored full-stack transactions.
+
+Candidate 03 identity:
+
+- Source baca3de8d4be464c03617f73d5cf7b690bf9d5f1 plus source fingerprint
+  91c6780e9164109feeb82ea796bf80f2be7b570d327b7a846abc7d654e01b05d.
+- Informational version 0.0.117-elemental-traits; numeric version 0.0.117.
+- Preserved ignored ZIP: artifacts/qualification/0.0.117/character-creation-stabilization/native-blood-respec-candidate-03.zip.
+- ZIP SHA-256 3e5a33a1300a2327b986ce9ca5a373258cd0d8d3026cbcd1e5ee96548b1dca86.
+- DLL SHA-256 575a41a0cf88779f8a40c4ab52614feb3c04734974a6e73dffc5ba000099336b.
+- DLL MVID 9e2e063e-d7a5-45cf-b404-a6e7319adefa.
+- Manifest 1,867 identities: 1,865 active and two reserved; 135 package entries.
+
+Candidate 02 failed local validation because a new test registration used Run
+instead of the existing Case initializer. It was corrected before candidate 03;
+no failed-build artifact was installed. The earlier reproduced runtime failure
+remains FAIL and is not superseded in the historical record.
+
+Blood expenditure and ordinary rest after native respec are now qualified for
+these three counters. Native turn-based action costs, expanded visible-trait
+fresh-process lifecycle coverage and final compatibility/migration remain open.
+Human full-screen acceptance is NOT-RUN. The prior installation is restored;
+the final acceptance candidate is not yet installed. Nothing was merged, tagged
+or released.

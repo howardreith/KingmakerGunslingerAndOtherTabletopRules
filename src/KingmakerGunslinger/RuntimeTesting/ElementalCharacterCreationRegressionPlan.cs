@@ -25,6 +25,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new[] { 0, 0, 1, 2, 0, 2, 1, 0 }[visit];
         }
 
+        internal static ElementalAlternateTraitId[] NativeRespecTraits(ElementalHeritageRace race, int choice)
+        {
+            var traits = Traits(race, choice);
+            if (choice != 2) return traits;
+            return traits.Select(id => id == ElementalAlternateTraitId.EarthInsight ? ElementalAlternateTraitId.StoneInTheBlood :
+                id == ElementalAlternateTraitId.AirInsight ? ElementalAlternateTraitId.StormInTheBlood : id).ToArray();
+        }
+
         internal static int[] Route(int character)
         {
             switch (character)

@@ -8,6 +8,10 @@ using KingmakerGunslinger.ElementalRaces;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic;
 using Kingmaker.Items;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.Controllers.Rest;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using Newtonsoft.Json.Linq;
@@ -25,6 +29,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly Dictionary<string, int> _respecSpent = new Dictionary<string, int>(StringComparer.Ordinal);
         private readonly JArray _respecPreviewMismatches = new JArray();
         private int _respecCallbacks;
+        private readonly Dictionary<ElementalAlternateTraitId, int> _respecBloodSpent = new Dictionary<ElementalAlternateTraitId, int>();
 
         private UnitDescriptor CommittedCreatorOwner => _nativeRespec && _respecOriginal != null
             ? _respecOriginal.Descriptor : _unit.Descriptor;
@@ -53,6 +58,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (after != 0) throw new InvalidOperationException("Native owned-resource spend did not reach zero.");
             }
             _character["spentBeforeNativeRespec"] = spent;
+            SpendNativeRespecBlood();
             Game.Instance.Player.RespecCompanion(_respecOriginal, () => {
                 ++_respecCallbacks; _successCallback = true;
                 _character["nativeRespecCallback"] = new JObject {
@@ -160,6 +166,108 @@ namespace KingmakerGunslinger.RuntimeTesting
             return !committed || exact;
         }
 
+
+        private void SpendNativeRespecBlood()
+        {
+            UnitEntityData owner = _respecOriginal;
+            var rows = new JArray();
+            _character["bloodBeforeNativeRespec"] = rows;
+            foreach (var trait in RegressionRace.AlternateTraits.Traits().Where(value =>
+                value.Provider.ComponentsArray.OfType<ElementalBloodDamageTrigger>().Any()))
+            {
+                if (!owner.Descriptor.HasFact(trait.Provider)) continue;
+                var trigger = trait.Provider.ComponentsArray.OfType<ElementalBloodDamageTrigger>().Single();
+                var capacity = owner.Descriptor.Get<UnitPartElementalBloodCapacity>();
+                if (capacity == null || owner.Descriptor.Progression.CharacterLevel != 1 || owner.Descriptor.State.IsDead)
+                    throw new InvalidOperationException("The owned first-level blood fixture is not ready.");
+                int before = capacity.Spent(trait.Definition.Id);
+                int expected;
+                if (!_respecBloodSpent.TryGetValue(trait.Definition.Id, out expected)) expected = 0;
+                if (before != expected) throw new InvalidOperationException("Native respec lost the previously observed blood expenditure.");
+                if (before == 2)
+                {
+                    rows.Add(new JObject { ["trait"] = trait.Definition.Id.ToString(), ["before"] = before, ["after"] = before });
+                    continue;
+                }
+                if (before != 0 || owner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, trigger.HealingBuff)))
+                    throw new InvalidOperationException("The native blood spend has an ambiguous initial capacity or buff.");
+                TimeSpan clock = Game.Instance.TimeController.GameTime;
+                bool paused = Game.Instance.IsPaused;
+                int wounds = owner.Damage;
+                var random = UnityEngine.Random.state;
+                try
+                {
+                    Game.Instance.IsPaused = true;
+                    var damage = Rulebook.Trigger(new RuleDealDamage(owner, owner,
+                        new DamageBundle(new EnergyDamage(new DiceFormula(0, DiceType.D6), trigger.Energy)
+                            { PreRolledValue = 3 })) { IsFake = false });
+                    Buff buff = owner.Buffs.Enumerable.Single(value => ReferenceEquals(value.Blueprint, trigger.HealingBuff));
+                    TimeSpan tick = (TimeSpan)typeof(Buff).GetProperty("NextTickTime", Members).GetValue(buff, null);
+                    if (tick < clock || tick > buff.EndTime || damage.ResultDamage == null ||
+                        !damage.ResultDamage.Any(value => value.ValueWithoutReduction == 3))
+                        throw new InvalidOperationException("The real matching damage rule did not schedule the owned blood heal.");
+                    owner.Damage = 2;
+                    Game.Instance.Player.GameTime = tick;
+                    owner.Buffs.Tick();
+                    int after = capacity.Spent(trait.Definition.Id);
+                    bool absent = !owner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, trigger.HealingBuff));
+                    rows.Add(new JObject { ["trait"] = trait.Definition.Id.ToString(), ["before"] = before,
+                        ["after"] = after, ["remaining"] = capacity.Remaining(trait.Definition.Id),
+                        ["woundsAfterHeal"] = owner.Damage, ["nativeBuffRemoved"] = absent,
+                        ["damageBeforeResistance"] = damage.DamageWithoutReduction });
+                    Write();
+                    if (after != 2 || capacity.Remaining(trait.Definition.Id) != 0 || owner.Damage != 0 || !absent)
+                        throw new InvalidOperationException("The native blood tick did not exhaust exactly two points and retire its buff.");
+                    _respecBloodSpent[trait.Definition.Id] = after;
+                }
+                finally
+                {
+                    owner.Damage = wounds;
+                    Game.Instance.Player.GameTime = clock;
+                    Game.Instance.IsPaused = paused;
+                    UnityEngine.Random.state = random;
+                }
+            }
+        }
+
+        private bool ObserveNativeRespecBlood(string checkpoint, UnitDescriptor owner, bool committed)
+        {
+            if (!_nativeRespec) return true;
+            var rows = new JArray();
+            bool exact = true;
+            var capacity = owner.Get<UnitPartElementalBloodCapacity>();
+            foreach (var id in new[] { ElementalAlternateTraitId.FireInTheBlood,
+                ElementalAlternateTraitId.StoneInTheBlood, ElementalAlternateTraitId.StormInTheBlood })
+            {
+                int expected;
+                if (!_respecBloodSpent.TryGetValue(id, out expected)) expected = 0;
+                int spent = capacity == null ? 0 : capacity.Spent(id);
+                exact &= spent == expected;
+                rows.Add(new JObject { ["trait"] = id.ToString(), ["spent"] = spent, ["expectedSpent"] = expected });
+            }
+            if (_character["nativeBloodCapacity"] == null) _character["nativeBloodCapacity"] = new JArray();
+            ((JArray)_character["nativeBloodCapacity"]).Add(new JObject { ["checkpoint"] = checkpoint,
+                ["committed"] = committed, ["exact"] = exact, ["counters"] = rows });
+            if (!exact && !committed)
+                _respecPreviewMismatches.Add(new JObject { ["checkpoint"] = checkpoint, ["bloodCounters"] = rows.DeepClone() });
+            return !committed || exact;
+        }
+
+        private void QualifyOrdinaryRestAfterNativeRespec(UnitDescriptor owner)
+        {
+            if (_raceIndex != ElementalCharacterCreationRegressionPlan.NativeRespecVisits - 1) return;
+            var resources = OwnedRacialResources().Where(resource => owner.Resources.PersistantResources.Any(value =>
+                value != null && ReferenceEquals(value.Blueprint, resource))).ToArray();
+            RestController.ApplyRest(owner);
+            var capacity = owner.Get<UnitPartElementalBloodCapacity>();
+            bool exact = resources.All(resource => owner.Resources.GetResourceAmount(resource) == 1) &&
+                _respecBloodSpent.Keys.All(id => capacity != null && capacity.Spent(id) == 0);
+            _character["ordinaryRestAfterNativeRespec"] = new JObject { ["exact"] = exact,
+                ["restoredResources"] = new JArray(resources.Select(resource => resource.AssetGuid)),
+                ["resetBloodCounters"] = new JArray(_respecBloodSpent.Keys.Select(id => id.ToString())) };
+            if (!exact) throw new InvalidOperationException("Ordinary rest after native respec failed to restore the owned daily budgets.");
+        }
+
         private void QualifyNativeRespecCallback()
         {
             if (!_nativeRespec) return;
@@ -185,6 +293,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _character["nativeRespecPreviewMismatches"] = _respecPreviewMismatches.DeepClone();
             if (_respecPreviewMismatches.Count != 0)
                 throw new InvalidOperationException("The native respec preview changed an exact spent elemental resource.");
+            QualifyOrdinaryRestAfterNativeRespec(owner);
             if (_respecOriginal == null) return;
             if (_respecCallbacks != 1 || _respecOriginal.UniqueId != _respecOriginalId ||
                 _respecOriginal.Descriptor.Progression.CharacterLevel != 1 || _respecPreviewMismatches.Count != 0)

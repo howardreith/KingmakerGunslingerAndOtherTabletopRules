@@ -62,6 +62,15 @@ namespace KingmakerGunslinger.ElementalRaces
             }
         }
 
+        internal void PreserveRespecExpenditure(int fire, int stone, int storm)
+        {
+            if (_schemaVersion != ElementalBloodPolicy.SchemaVersion)
+                throw new InvalidOperationException("Cannot reinterpret an unknown elemental blood capacity schema during respec.");
+            _fireHealingReceived = ElementalRespecResourcePolicy.Expenditure(_fireHealingReceived, fire);
+            _stoneHealingReceived = ElementalRespecResourcePolicy.Expenditure(_stoneHealingReceived, stone);
+            _stormHealingReceived = ElementalRespecResourcePolicy.Expenditure(_stormHealingReceived, storm);
+        }
+
         internal bool BeginHealing(ElementalAlternateTraitId trait)
         {
             if (_healing || Remaining(trait) <= 0) return false;
