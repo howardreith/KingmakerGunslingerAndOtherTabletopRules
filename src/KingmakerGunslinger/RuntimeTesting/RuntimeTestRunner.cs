@@ -96,7 +96,7 @@ using Harmony12;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
-    internal sealed class RuntimeTestRunner
+    internal sealed partial class RuntimeTestRunner
     {
         private readonly RuntimeTestRequest _request;
         private readonly ModContext _context;
@@ -618,6 +618,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveSaveCatalogProvider &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveLoadGameButtonAction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveSmoke &&
+                    !IsMidgameWorkingScenario() &&
                     _request.Scenario != RuntimeTestScenarioCatalog
                         .DisposableInHarmsWayHumanRepro &&
                     _request.Scenario != RuntimeTestScenarioCatalog
@@ -1123,6 +1124,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunRareFirearmBlueprintContracts());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMidgameFirearms)
+                {
+                    Complete(RunDisposableMidgameFirearms());
+                    return;
+                }
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.MagicFirearmNativeProperties)
                 {
@@ -1558,6 +1564,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    IsMidgameWorkingScenario() ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
                     _request.Scenario ==
@@ -1633,6 +1640,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 if ((_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    IsMidgameWorkingScenario() ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.WeaponPresentationEvidence ||
                     _request.Scenario ==
@@ -1784,6 +1792,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (_midgameSaveStarted) { PollWorkingMidgameFirearms(); return; }
             if (_craftMagicItemsPersistenceSaveStarted)
             {
                 if (_workingSaveSmoke.WriteObserved)
@@ -2103,7 +2112,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
-                if (IsExpandedSummoningPersistenceScenario())
+                if (IsMidgameWorkingScenario()) { PollWorkingMidgameFirearms(); }
+                else if (IsExpandedSummoningPersistenceScenario())
                 {
                     StartExpandedSummoningPersistence();
                 }
@@ -4767,6 +4777,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction;
             bool receiverBoundPath = receiverBoundObservation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                    IsMidgameWorkingScenario() ||
                 _request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                 _request.Scenario == RuntimeTestScenarioCatalog
@@ -13133,6 +13144,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            MidgamePublicationContracts(assertions, expectedGunslinger);
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
         }

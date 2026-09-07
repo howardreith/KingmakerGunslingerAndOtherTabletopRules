@@ -239,6 +239,14 @@ namespace KingmakerGunslinger.DomainTests
                         value.Name +
                         " player text does not describe the exact protection and existing-effect limit.");
                 }
+                foreach (string text in new[] { individual, communal, buff })
+                {
+                    AssertRulesLanguage(text);
+                    Assertions.True(text.Contains("under the control of " +
+                        (value.Alignment == ProtectionAlignment.Evil ? "an " : "a ") +
+                        value.Adjective + " creature"),
+                        "The controller's alignment must define the protection.");
+                }
                 Assertions.True(communal.Contains("Each affected ally"),
                     value.Name + " communal text must identify every recipient.");
             }
@@ -246,10 +254,12 @@ namespace KingmakerGunslinger.DomainTests
             string generic = ProtectionFromAlignmentDescriptions.GenericSpell(false);
             string genericCommunal = ProtectionFromAlignmentDescriptions
                 .GenericSpell(true);
+            AssertRulesLanguage(generic);
+            AssertRulesLanguage(genericCommunal);
             Assertions.True(generic.StartsWith("Protection from Alignment ",
                     StringComparison.Ordinal) &&
                 generic.Contains("choose evil, good, law, or chaos") &&
-                generic.Contains("recognized by this mod") &&
+                generic.Contains("under the control of a creature of the selected alignment") &&
                 generic.EndsWith(ProtectionFromAlignmentDescriptions
                     .ExistingControlLimitation, StringComparison.Ordinal),
                 "Generic protection text does not expose the selectable alignment and scoped immunity.");
@@ -258,6 +268,24 @@ namespace KingmakerGunslinger.DomainTests
                     StringComparison.Ordinal) &&
                 genericCommunal.Contains("Each affected ally"),
                 "Generic communal protection text does not expose its recipients.");
+        }
+
+        private static void AssertRulesLanguage(string text)
+        {
+            foreach (string term in new[] { "mod", "computer", "game", "engine",
+                "implementation", "supported", "recognized", "registered",
+                "system", "catalog", "registry", "fear", "confusion",
+                "sleep", "possession", "summoned", "mind-affecting" })
+                Assertions.False(System.Text.RegularExpressions.Regex.IsMatch(
+                    text, @"\b" + term + @"\b",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase),
+                    "Player rules text contains an excluded claim or implementation term: " + term);
+            Assertions.True(text.Contains("+2 deflection bonus to Armor Class") &&
+                text.Contains("+2 resistance bonus on saving throws") &&
+                text.Contains("attacks and effects created by") &&
+                text.Contains("prevents new charm, domination, and similar effects") &&
+                text.EndsWith(ProtectionFromAlignmentDescriptions.ExistingControlLimitation,
+                    StringComparison.Ordinal), "Rules wording lost an existing benefit or limitation.");
         }
 
         internal static void DescriptionPublicationIsExactAndIdempotent()

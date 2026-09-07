@@ -33,7 +33,7 @@ namespace KingmakerGunslinger.Bootstrap
     /// </summary>
     internal static class BlueprintBootstrap
     {
-        internal const int ExpectedRegisteredBlueprintCount = 341 + 1 + 5 +
+        internal const int ExpectedRegisteredBlueprintCount = 341 + 1 + 5 + 2 +
             ExpandedSummoningIdentityCatalog.FoundationIdentityCount +
             UrbanBarbarianIdentityCatalog.IdentityCount +
             ElementalRaceIdentityCatalog.IdentityCount;
@@ -694,6 +694,7 @@ namespace KingmakerGunslinger.Bootstrap
             BokkenVendorPublication bokkenSupplyPublication = null;
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
             RareFirearmCampaignLootPublication rareFirearmLootPublication = null;
+            SkeletalSalesmanPublication skeletalSalesmanPublication = null;
             FirearmFeatCatalogPublication featPublication = null;
             AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;
             BodyguardFeatCatalogPublication bodyguardFeatPublication = null;
@@ -1031,6 +1032,9 @@ namespace KingmakerGunslinger.Bootstrap
                     btslVendorPublication = BeneathStolenLandsVendorBlueprints.Publish(
                         library, productionFirearms, magicFirearms, basicAmmunition,
                         firearmRepairKit, gunsmithingSupplies, context.Logger);
+                if (publicationPlan.SkeletalSalesmanStock)
+                    skeletalSalesmanPublication = SkeletalSalesmanBlueprints.Publish(
+                        library, magicFirearms, context.Logger);
                 if (publicationPlan.RareFirearmLoot)
                     rareFirearmLootPublication = RareFirearmCampaignLootBlueprints.Publish(
                         library, magicFirearms, context.Logger);
@@ -1188,6 +1192,16 @@ namespace KingmakerGunslinger.Bootstrap
                         context.Logger.Failure("blueprints",
                             "btsl-vendors.rollback-failed",
                             "Blueprint initialization failed and BTSL vendor rollback was refused.",
+                            vendorRollbackException);
+                    }
+                }
+                if (skeletalSalesmanPublication != null)
+                {
+                    try { skeletalSalesmanPublication.Rollback(); }
+                    catch (Exception vendorRollbackException)
+                    {
+                        context.Logger.Failure("blueprints", "skeletal-salesman.rollback-failed",
+                            "Blueprint initialization failed and Skeletal Salesman rollback was refused.",
                             vendorRollbackException);
                     }
                 }

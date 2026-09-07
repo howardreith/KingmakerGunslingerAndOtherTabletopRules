@@ -6,7 +6,7 @@ Do not hand-edit either generated output.
 
 ## Coverage and policy
 
-The blueprint manifest contains exactly **68** active
+The blueprint manifest contains exactly **70** active
 `BlueprintItemWeapon` identities and every one is represented below.
 The audit includes equipped player/development weapons, mechanics-only
 Pistol-Whip items, and Expanded Summoning creature weapons. Cosmetic
@@ -21,7 +21,7 @@ identity, character identity, and time are forbidden.
 
 | Scope | Count |
 |---|---:|
-| equipped project weapon | 56 |
+| equipped project weapon | 58 |
 | mechanics-only exclusion | 2 |
 | summoning-only exclusion | 10 |
 
@@ -195,3 +195,12 @@ vocabulary is bounded and communicates family, origin, named importance,
 or artifact status without inventing one mesh per enhancement increment.
 The Musket and Blunderbuss proposed mappings remain candidates until the
 required graybox geometry decision gates and human side-by-side review.
+
+## Mid-game merchant additions (0.0.116)
+
+Two additional identities reuse the approved family Service mappings; no bundle or asset change.
+
+| Identity | GUID | Display name | Family | Variant |
+|---|---|---|---|---|
+| KMG.Firearms.RoadwardenItem | 66d2f8c4d6aa43e0be72ac18ed9fcd81 | Roadwarden | Musket | Musket.Service |
+| KMG.Firearms.DeadReckoningItem | b8db89aba5364c27b1626896664a1913 | Dead Reckoning | Pistol | Pistol.Service |
