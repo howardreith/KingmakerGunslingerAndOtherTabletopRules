@@ -158,3 +158,34 @@ legacy `examples` directory is absent. The runner also embeds stale 0.0.114
 package/version assumptions. These prerequisites require a narrow repair and
 separate verification; the installed-profile observation cannot substitute for
 standalone or feature compatibility qualification.
+
+## Standalone inventory and compatibility runner repair
+
+Standalone run `20260907T2336260492141Z-78c2851fd60a41468e664a68683e50a8`
+passed with 706 persisted point rows and exact game MVID agreement. Result
+folder: `20260907T2336260376893Z-observe-teleportation-native-contracts`.
+Profile transaction `compat-20260907T233547Z-878395056426` verified restoration
+of the original Mods tree, SoundBank and exact settings bytes.
+
+Counts: Location 117; HiddenLocation 102; Landmark 23; Waypoint 321;
+SystemWaypoint 143. This proves the inventory, not safe campaign placement.
+Oleg's exact ID is `758559f44d15fc844bf30a10a83154d5`; the capital point ID is
+`f83de5c382e087b4ab6ce0b7397a2a13`. Native spell lists are Wizard
+`ba0401fdeb4062f40a7aa95b6f07fe89`, Travel domain
+`ab90308db82342f47bf0d636fe941434`, Cleric
+`8443ce803d2d31347897a3d85cc32f53`, and Druid
+`bad8638d40639d04fa2f80a1cac67d6b`.
+
+The profile runner now reads version identity from the supplied package and
+current repository metadata, passes the exact package to profile entry, and
+accepts an explicit local reference root. Standalone requires no optional-mod
+reference directory. Wrong or missing package identities fail before entry.
+Disposable filesystem tests cover package identity and exact restoration;
+AST binding checks verify entry/restore arguments against the actual scripts.
+The required clean Release/package build again passed all 1,405 domain tests.
+
+An intermediate standalone run passed observation but failed automatic cleanup
+because the initial runner edit passed entry-only arguments to restoration.
+Transaction `compat-20260907T233119Z-678d60cfc67c` was restored explicitly with
+`restorationVerified=true`; the corrected complete run above supersedes it.
+No gameplay qualification is inferred from any inventory observation.

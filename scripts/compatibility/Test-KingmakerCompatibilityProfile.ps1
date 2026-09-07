@@ -49,6 +49,15 @@ function New-Fixture([string]$Name, [bool]$OriginalExists = $true, [bool]$BankEx
     return [pscustomobject]@{ Root = $root; Install = $install; State = (Join-Path $root 'state'); Resolution = $resolution; Bank = $bank }
 }
 
+$fixture = New-Fixture 'package-identity'
+Assert-True ((Get-KmgCompatibilityPackageVersion $fixture.Resolution.gunslinger.packagePath) -ceq '0.0.114') 'package identity is read, not inferred from current release'
+$standalone = Resolve-KmgCompatibilityProfile -ProfileId 'gunslinger-only' -ReferenceRoot (Join-Path $fixture.Root 'absent-references') -PackagePath $fixture.Resolution.gunslinger.packagePath -KingmakerInstallDir $fixture.Install -RepositoryRoot $repo
+Assert-True ($standalone.gunslinger.version -ceq '0.0.114' -and $standalone.runtimeMods.Count -eq 0) 'standalone needs no optional-mod reference directory'
+$badZip = Join-Path $fixture.Root 'no-info.zip'
+Compress-Archive -LiteralPath (Join-Path $fixture.Root 'package-source\KingmakerGunslinger\KingmakerGunslinger.dll') -DestinationPath $badZip
+Assert-Throws { Get-KmgCompatibilityPackageVersion $badZip } 'exactly one' 'missing package identity rejected'
+Assert-True ((Get-KmgCompatibilityDefaultPackage $repo) -like ('*' + (Read-KmgCompatibilityJson (Join-Path $repo 'Info.json')).Version + '-local-runtime.zip')) 'default package follows repository metadata'
+
 $fixture = New-Fixture 'success'
 $before = @(Get-KmgCompatibilityDirectoryManifest (Join-Path $fixture.Install 'Mods'))
 $bankHash = Get-KmgCompatibilitySha256 $fixture.Bank
@@ -128,3 +137,17 @@ Assert-True (Test-Path -LiteralPath (Join-Path $fixture.Install 'Mods')) 'sentin
 Assert-True (Test-Path -LiteralPath (Join-Path $fixture.Install 'Mods.kmg-compat-sentinel-mismatch.original')) 'sentinel mismatch preserves original backup'
 
 Write-Host 'Kingmaker compatibility transaction filesystem integration tests passed.'
+
+$parseTokens = $null
+$parseErrors = $null
+$runnerAst = [Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'Invoke-KingmakerCompatibilityProfile.ps1'), [ref]$parseTokens, [ref]$parseErrors)
+Assert-True ($parseErrors.Count -eq 0) 'profile runner parses'
+foreach ($scriptName in @('Enter-KingmakerCompatibilityProfile.ps1', 'Restore-KingmakerCompatibilityProfile.ps1')) {
+    $calls = @($runnerAst.FindAll({ param($node) $node -is [Management.Automation.Language.CommandAst] -and $node.CommandElements.Count -gt 0 -and $node.CommandElements[0].Extent.Text.Contains($scriptName) }, $true))
+    Assert-True ($calls.Count -eq 1) ("one exact profile transaction call: " + $scriptName)
+    $accepted = (Get-Command (Join-Path $PSScriptRoot $scriptName)).Parameters.Keys
+    foreach ($argument in @($calls[0].CommandElements | Where-Object { $_ -is [Management.Automation.Language.CommandParameterAst] })) {
+        Assert-True ($argument.ParameterName -in $accepted) ("valid transaction parameter: " + $scriptName + '/' + $argument.ParameterName)
+    }
+}
+Write-Host 'Compatibility runner transaction binding checks passed.'

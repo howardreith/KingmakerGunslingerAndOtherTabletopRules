@@ -78,6 +78,7 @@ param(
     [switch]$ReuseInstalledArtifact,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
+    [string]$ReferenceRoot = 'C:\Dev\KingmakerGunslingerLab\examples',
     [string]$KingmakerInstallDir =
         'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     [string]$StateRoot = 'C:\Dev\KingmakerGunslingerLab\compatibility-state'
@@ -85,6 +86,12 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
+. (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
+$expectedVersion = [string](Read-KmgCompatibilityJson (Join-Path $root 'Info.json')).Version
+if (-not $PackagePath) { $PackagePath = Get-KmgCompatibilityDefaultPackage $root }
+if ((Get-KmgCompatibilityPackageVersion $PackagePath) -cne $expectedVersion) {
+    throw 'Compatibility package version does not match the current repository; no profile was entered.'
+}
 $runId = 'compat-' + [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ') + '-' +
     [Guid]::NewGuid().ToString('N').Substring(0, 12)
 $entered = $false
@@ -192,7 +199,7 @@ if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
 try {
     & (Join-Path $PSScriptRoot 'Enter-KingmakerCompatibilityProfile.ps1') `
         -ProfileId $ProfileId -RunId $runId -KingmakerInstallDir $KingmakerInstallDir `
-        -StateRoot $StateRoot -Confirm:$false | Out-Host
+        -StateRoot $StateRoot -ReferenceRoot $ReferenceRoot -PackagePath $PackagePath -Confirm:$false | Out-Host
     $entered = $true
     if ($CotwProgressionMode -cne 'unchanged') {
         if (-not (Test-Path -LiteralPath $cotwSettingsPath -PathType Leaf)) {
@@ -289,7 +296,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.114'
+            ExpectedVersion = $expectedVersion
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
