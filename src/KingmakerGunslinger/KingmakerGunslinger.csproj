@@ -959,6 +959,8 @@
     <Compile Include="RuntimeTesting\ElementalCrystallineFormNativeAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalCrystallineFormScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalBloodPersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalPersistenceSlaSnapshot.cs" />
+    <Compile Include="RuntimeTesting\ElementalVisibleTraitPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalCrystallinePersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRemainingTraitNativeAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalFeatTransientPreviewScenario.cs" />
@@ -1000,6 +1002,7 @@
     <Compile Include="ElementalRaces\ElementalCrystallineFormMechanics.cs" />
     <Compile Include="ElementalRaces\ElementalCrystallineFormFactory.cs" />
     <Compile Include="ElementalRaces\ElementalBloodInsightPersistencePolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalVisibleTraitPersistencePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalBloodRuntime.cs" />
     <Compile Include="ElementalRaces\ElementalBloodBlueprintFactory.cs" />
     <Compile Include="ElementalRaces\ElementalComponentIdentityPolicy.cs" />

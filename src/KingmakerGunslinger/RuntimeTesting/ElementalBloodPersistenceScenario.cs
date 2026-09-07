@@ -34,6 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitEntityData unit = _createdUnits.Single(value => IsFixtureUnit(value, fixture));
                     ArmBloodPersistence(fixture, unit);
                     PrepareCrystallinePersistence(fixture, unit);
+                    PrepareBreezePersistence(fixture, unit);
                     RecordTraitPersistence(fixture, unit, 1, 1, true, "prepare-immediately-before-save");
                     if (!EfreetiPersistenceBuffExact(fixture, unit,
                         ExpectedPersistenceTraits(fixture, fixture.Heritage).Any(value =>
@@ -41,15 +42,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(fixture.Label + " lost its native Efreeti effect before save.");
                 }
                 int traitFixtures = _fixtures.Count(value => ExpectedPersistenceTraits(value, value.Heritage).Length != 0);
-                int combinedFixtures = _fixtures.Count(value => ExpectedPersistenceTraits(value, value.Heritage).Length == 2);
+                int combinedFixtures = _fixtures.Count(value => ExpectedPersistenceTraits(value, value.Heritage).Length > 1);
                 int bloodFixtures = _fixtures.Count(value => PersistenceBloodTrigger(value) != null);
-                Add(_assertions, "elemental-traits-ten-trait-save-inventory",
-                    "24 native-selected trait fixtures, six legal two-trait Ifrits, eight partially spent blood buffs, ten distinct traits",
+                Add(_assertions, "elemental-traits-nineteen-trait-save-inventory",
+                    "24 native-selected trait fixtures, 17 legal combined rows, seven partially spent blood buffs, 19 published traits",
                     "traitFixtures=" + traitFixtures + ";combinedFixtures=" + combinedFixtures + ";bloodFixtures=" + bloodFixtures,
-                    traitFixtures == 24 && combinedFixtures == 6 && bloodFixtures == 8 && _fixtures
+                    traitFixtures == 24 && combinedFixtures == 17 && bloodFixtures == 7 && _fixtures
                         .SelectMany(value => ExpectedPersistenceTraits(value, value.Heritage))
-                        .Select(value => value.Definition.Id).Distinct().Count() == 10,
-                    "pure ten-trait matrix, native selections/commands and blood ticks; native consent and command-created breath conditions");
+                        .Select(value => value.Definition.Id).Distinct().Count() == 19,
+                    "pure nineteen-trait matrix, native selections/commands and blood ticks; native consent and command-created breath conditions");
             }
 
             private ElementalBloodDamageTrigger PersistenceBloodTrigger(ElementalPersistenceFixture fixture)
@@ -71,14 +72,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, trigger.HealingBuff)))
                     throw new InvalidOperationException(fixture.Label + " must begin blood setup with unspent capacity and no active blood buff.");
                 TimeSpan gameTime = Game.Instance.TimeController.GameTime;
-                unit.Damage = 1;
+                if (unit.HPLeft <= 3) throw new InvalidOperationException("The blood fixture cannot safely receive a three-point matching hit.");
                 RuleDealDamage damage = Rulebook.Trigger(new RuleDealDamage(unit, unit,
                     new DamageBundle(new EnergyDamage(new DiceFormula(0, DiceType.D6), trigger.Energy)
                         { PreRolledValue = 3 })));
                 Buff buff = unit.Buffs.Enumerable.SingleOrDefault(value => ReferenceEquals(value.Blueprint, trigger.HealingBuff));
-                if (damage.Damage != 0 || buff == null || !damage.ResultDamage.Any(value => value.ValueWithoutReduction == 3))
-                    throw new InvalidOperationException(fixture.Label + " did not trigger its native blood buff from resisted matching damage.");
+                bool resistanceRetained = !ExpectedPersistenceTraits(fixture, fixture.Heritage).Any(value =>
+                    value.Definition.Replaces(ElementalRacialTraitSlot.EnergyResistance));
+                int expectedDamage = resistanceRetained ? 0 : 3;
+                if (damage.Damage != expectedDamage || buff == null || !damage.ResultDamage.Any(value => value.ValueWithoutReduction == 3))
+                    throw new InvalidOperationException(fixture.Label + " did not trigger its native blood buff from the exact matching damage contract.");
 
+                // Set this disposable fixture's one-point wound after the real hit,
+                // including rows that have legally replaced their energy resistance.
+                unit.Damage = 1;
                 // Isolate only this fixture's scheduler boundary. Never advance
                 // the campaign clock or invoke the production effect component.
                 PropertyInfo nextTick = typeof(Buff).GetProperty("NextTickTime",
@@ -117,6 +124,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 RecordTraitPersistence(fixture, unit, 2, 0, false, "module-off-after-rest");
                 PrepareCrystallinePersistence(fixture, unit);
+                PrepareBreezePersistence(fixture, unit);
                 ArmBloodPersistence(fixture, unit);
                 RemoveBloodPersistenceBuff(fixture, unit);
                 RecordTraitPersistence(fixture, unit, 2, 1, false, "module-off-respent-before-save");
@@ -145,13 +153,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (id == (ElementalAlternateTraitId)trigger.Trait ? spent : 0)) &&
                         capacity.Remaining((ElementalAlternateTraitId)trigger.Trait) == level * 2 - spent
                         : capacity == null);
+                var breeze = RecordBreezePersistence(fixture, unit, traits, phase);
+                var visibleStats = RecordVisibleStatPersistence(fixture, unit, traits, phase);
                 var resource = PersistenceSlaResource(fixture, heritage);
                 Buff[] sizeBuffs = EfreetiPersistenceBuffs(fixture, unit);
-                int resourceBefore = unit.Descriptor.Resources.GetResourceAmount(resource);
+                int resourceBefore = resource == null ? 0 : unit.Descriptor.Resources.GetResourceAmount(resource);
                 bool reconciled = ElementalHeritageRuntime.Reconcile(unit.Descriptor, null, null);
                 UnitPartElementalBloodCapacity after = unit.Descriptor.Get<UnitPartElementalBloodCapacity>();
                 exact &= reconciled && ReferenceEquals(capacity, after) &&
-                    unit.Descriptor.Resources.GetResourceAmount(resource) == resourceBefore &&
+                    (resource == null ? PersistenceSlaAbsentExact(fixture, unit.Descriptor, heritage) :
+                        unit.Descriptor.Resources.GetResourceAmount(resource) == resourceBefore) &&
                     AlternateTraitsExact(unit.Descriptor, fixture, traits) &&
                     sizeBuffs.SequenceEqual(EfreetiPersistenceBuffs(fixture, unit)) &&
                     active.All(value => unit.Buffs.Enumerable.Any(current => ReferenceEquals(value, current))) &&
@@ -159,6 +170,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var record = new JObject
                 {
                     { "crystalline", RecordCrystallinePersistence(fixture, unit, traits, phase) },
+                    { "breeze", breeze }, { "visibleStats", visibleStats },
                     { "fixture", fixture.Label }, { "phase", phase },
                     { "traits", new JArray(traits.Select(trait => trait.Definition.Id.ToString())) },
                     { "level", level }, { "bloodLedgerPresent", capacity != null },
@@ -169,7 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "activeBuffs", new JArray(active.Select(value => new JObject
                         { { "guid", value.Blueprint.AssetGuid }, { "round", value.RoundNumber },
                           { "endTimeTicks", value.EndTime.Ticks } })) },
-                    { "reconcileAccepted", reconciled }, { "racialResourceGuid", resource.AssetGuid },
+                    { "reconcileAccepted", reconciled }, { "racialResourceGuid", resource == null ? null : resource.AssetGuid },
                     { "racialResourceAmount", resourceBefore }, { "exact", exact }
                 };
                 _traitPersistenceRecords.Add(record);

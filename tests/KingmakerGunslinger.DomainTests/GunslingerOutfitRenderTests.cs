@@ -1088,7 +1088,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ElementalRacePersistenceIsGuardedAndExact()
         {
             string source = Read("src", "KingmakerGunslinger",
-                "RuntimeTesting", "ElementalRacePersistenceScenario.cs");
+                "RuntimeTesting", "ElementalRacePersistenceScenario.cs") +
+                Read("src", "KingmakerGunslinger", "RuntimeTesting", "ElementalPersistenceSlaSnapshot.cs");
             string featSource = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "ElementalFeatPersistenceScenario.cs");
             string transientRuntime = Read("src", "KingmakerGunslinger",
@@ -1241,7 +1242,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ResourcesLibrary.TryGetBlueprint<",
                 "Progression.Race", "race.Features.All",
                 "_currentBlueprint.IsCheater = false",
-                "!unit.Blueprint.IsCheater",
+                "!owner.Unit.Blueprint.IsCheater",
                 "Descriptor.CustomGender = fixture.Gender",
                 "owner.CustomGender.HasValue",
                 "foreach (ElementalHeritageStat stat in Enum.GetValues(",
@@ -1251,8 +1252,8 @@ namespace KingmakerGunslinger.DomainTests
                 "StatType.SkillPerception",
                 "owner.Stats.Speed.ModifiedValue",
                 "owner.Resources.GetResourceAmount(",
-                "AbilityType.SpellLike", "ability.Spellbook == null",
-                "!ability.IsAffectedByArcaneSpellFailure",
+                "AbilityType.SpellLike", "result.Data.Spellbook == null",
+                "!result.Data.IsAffectedByArcaneSpellFailure",
                 "PerformNativeElementalRespec",
                 "LevelUpState.CharBuildMode.Respec",
                 "controller.State.FindSelection(",
@@ -1284,8 +1285,14 @@ namespace KingmakerGunslinger.DomainTests
                 "selectedSlaResourceBeforeCommit",
                 "ResolveExecutableAbility",
                 "new AbilityData(root, child)",
-                "executableAbilityExact",
+                "ReferenceEquals(result.Executable.Blueprint, result.Ability)",
                 "selectedSlaAvailableBeforeCommit",
+                "selectedSlaContractExact", "IsPassiveSlaReplacement(trait)",
+                "PersistenceSlaAbsentExact(fixture, owner, heritage)",
+                "result.AvailableCount == expectedAmount",
+                "result.Available == (expectedAmount > 0)",
+                "result.Maximum == 1", "result.Amount == expectedAmount",
+                "slaAbsenceExact", "slaCastApplicable",
                 "\"racePreserved\", previewRaceExact",
                 "controller.SelectClass(_gunslingerClass, false)",
                 "ConfigureExpectedDollState(controller.Doll, fixture)",
@@ -1300,8 +1307,8 @@ namespace KingmakerGunslinger.DomainTests
                 "nativeRespecRecords",
                 "InvokeAbilitySpend(", "AbilityResourceLogic",
                 "costs[0].Spend(executable)",
-                "executable.GetAvailableForCastCount() == 0",
-                "executableAfterRest.GetAvailableForCastCount() == 0",
+                "slaAfter.Exact && before == 1 && after == 0",
+                "slaRespent.CastApplicable && slaRespent.Exact && resourceAfterRespend == 0",
                 "RestController.ApplyRest(",
                 "LevelUpState.CharBuildMode.CharGen",
                 "ApplyLevelup", "Progression.CharacterLevel",
@@ -1448,11 +1455,11 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(transientRuntime.Contains(token),
                     "Transient feat hydration lacks its ordering-safe reconciliation boundary: " +
                     token);
-            Assertions.True(runner.Contains(
-                    "pauseOnLoadCompletion: _request.Scenario ==") &&
-                runner.Contains(
-                    ".ElementalRaceModuleDisabledPersistence"),
-                "Only the module-OFF persistence load should request the early guarded time pause.");
+            string loadPause = runner.Substring(runner.IndexOf("pauseOnLoadCompletion: _request.Scenario ==", StringComparison.Ordinal));
+            loadPause = loadPause.Substring(0, loadPause.IndexOf(");", StringComparison.Ordinal));
+            Assertions.True(loadPause.Contains(".ElementalRaceModuleDisabledPersistence ||") &&
+                loadPause.Contains(".ElementalRaceModuleRestoredPersistence"),
+                "Both OFF and restored-ON persistence loads must pause before observing saved transient mechanics.");
             Assertions.False(source.Contains(
                     "controller.State.AddSelection(null,"),
                 "Elemental Respec must use the native replayable SelectRace " +

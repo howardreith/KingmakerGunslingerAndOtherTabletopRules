@@ -1405,3 +1405,117 @@ Evidence A: `runtime-result.json` SHA-256 `fed32e245e29944611d3a7ca102bd39181975
 Evidence F: `runtime-result.json` SHA-256 `41d93cd317b382397a90947a2d9591c501f0bc1663a67c80cd4cb6cc39e41ae6`; `elemental-trait-native-turn-costs.json` SHA-256 `528b9b6a5034ed9ecb699dfef0e5d2797ba4781871a7e68beaec9ae6e59f9c17`.
 
 Remaining: all nineteen visible-trait fresh-process persistence, semantic ray catalog and ranged-attack boundary completion, physical lifecycle, legacy migration reruns, final compatibility, final development identity/build/install and owner handoff. Human full-screen UI acceptance remains NOT-RUN.
+
+### Visible-trait persistence matrix v5 (qualification pending)
+
+The guarded persistence fixture now targets all nineteen published traits across the same 24 fixed race/sex/heritage identities. Historical v1-v4 policy functions and evidence remain unchanged. V5 has seventeen combined replacement rows, seven blood fixtures, two Breeze-Kissed fixtures, and ten passive SLA-replacement rows. Three pure tests require complete published coverage, legal provider reconstruction independent of marker order, unchanged heritage modifiers, explicit passive SLA absence and independent fail-closed fixture requests.
+
+The existing fresh-process preparation/OFF/ON/cleanup suite retains its real selection, native ability, save, level-up, ordinary-rest, respec and fresh-absence checks. Its evidence now explicitly separates successful SLA spending from intentional SLA absence; absent casting is never recorded as a successful cast. Live checks include provider-owned passive modifiers, Forge-Hardened/Secretive saving-throw contexts, Thunderous Resilience sonic damage, Brazen Flame native unarmed damage packets, Breeze spent-use/voluntary-Calm persistence and exact inactive cleanup. The trait-specific observation occurs before the existing reconciliation idempotence probe. Blood setup uses actual matching damage followed by an owned one-point wound and native buff ticking; replaced resistance is accounted for. Breeze's spent state is seeded through the native resource API for save reconstruction, independently of the already qualified native turn-cost scenario. No production trait, GUID, provider or mechanic is added or changed by this matrix extension.
+
+These expanded checks remain NOT-RUN until their guarded fresh-process sequence completes. The older synchronous persistence respec fixture remains distinct from the already qualified actual Player.RespecCompanion callback suite.
+
+
+Candidate 04 passed all 1,452 domain/reflection tests, repository validation,
+clean Release build and deterministic/strict package checks. The first v5 full-stack
+transaction (`visible-trait-persistence-f-01`) passed initial fresh absence (8),
+preparation (66), and fresh module-OFF load/level/rest/respend/save (173 assertions).
+Module-ON run `20260907T1544500346461Z-elemental-race-module-restored-persistence`
+remains FAIL at the new pre-respec conditional-mechanics pause guard. The existing
+runner acquired a load-completion pause only for module-OFF. The instrumentation
+now acquires that same native, exactly restored pause for module-ON, protecting
+saved transient states throughout loaded observation and respec. No mechanic or
+acceptance check was disabled. The failure cleanup saved the exact three-character
+baseline; independent fresh absence is still required. Original mod-tree and UMM
+restoration passed. Candidate 04: source parent 90994196f37d45689a5f251be9040189da33e02b,
+fingerprint ad23a759ae975d843383ef301cb90158ebce2108ac9537b4b4e5bded6d65c66d,
+ZIP 79836ba610213e873590ce550914071df6c206ea38d0e87f173068b8ca6ef1a4,
+DLL baa818057bd47a36c8176de0bff1057a67db094cd4204f3a4eb5f317942e9790,
+MVID d904e9a8-6cab-4d45-b62e-dc3ee1c760bd. Earlier build-only failures were strict
+current test-count metadata and two source-guard locations moved into the shared
+SLA snapshot helper; their original safety conditions remain asserted.
+
+
+### All nineteen visible traits: fresh-process persistence qualified (candidate 05)
+
+The full eleven-mod Profile F transaction `visible-trait-persistence-f-02` passed
+all five guarded Steam launches and **340 assertions**. Every source trait remains
+registered and nineteen remain published. No new trait, mechanic, provider, save
+identity or production GUID was introduced by this coverage change.
+
+| Phase | Guarded run | Assertions |
+| --- | --- | ---: |
+| elemental-race-persistence-verify-absent | `20260907T1602074073761Z-elemental-race-persistence-verify-absent` | 8 PASS |
+| elemental-race-persistence-prepare | `20260907T1604361516786Z-elemental-race-persistence-prepare` | 66 PASS |
+| elemental-race-module-disabled-persistence | `20260907T1608297702214Z-elemental-race-module-disabled-persistence` | 173 PASS |
+| elemental-race-module-restored-persistence | `20260907T1611593595463Z-elemental-race-module-restored-persistence` | 85 PASS |
+| elemental-race-persistence-verify-absent | `20260907T1616049663690Z-elemental-race-persistence-verify-absent` | 8 PASS |
+
+The same 24 fixed race/sex/heritage fixtures cover all nineteen traits, seventeen
+combined replacement rows, seven partially spent blood ledgers, spent and
+voluntarily calmed Breeze states, and ten passive SLA replacements with explicitly
+absent abilities/resources. There are 168 exact trait observations: 24 immediately
+before preparation save, 96 across OFF load/level-before-rest/rest/respend, and 48
+across ON source observation/respec cleanup. All eleven Release B feats and their
+25 persistence identities remain included. Both preparation and restoration
+performed 24 native fixed-race shell respec commits, with 72 native heritage/slot
+selection records in total. These remain distinct from the earlier actual
+Player.RespecCompanion copyback qualification.
+
+Source observations run before the reconciler idempotence probe. Native evidence
+includes the exact provider-owned Initiative/AC/Speed/Stealth modifiers; conditional
+Forge-Hardened and Secretive saves with no leaked modifiers; Thunderous Resilience
+sonic damage; Brazen Flame actual unarmed attacks with once-only fire packets;
+Crystalline consent/use state; and Breeze ability/resource/Calm identities. Loaded
+resources remain spent through level-up before ordinary rest. Rest replenishes
+only according to the existing contract, followed by exact re-expenditure and a
+new save. Respec removes the old trait/provider/mechanic graph. The final fresh
+process proves all fixture facts, units, owned equipment and saved breath effects
+absent and the original three-character working-party shape restored.
+
+Candidate 05 passed `scripts/Build-Local.ps1`: repository validation, **1,452**
+domain/reflection tests, clean Release compilation, deterministic packaging and
+strict standalone package validation. Source parent
+`90994196f37d45689a5f251be9040189da33e02b`; pre-curation source fingerprint
+`ec9bc8fecf55400fbfc4f3e2640a53b83eccaad5148bb8ea440d76d512db50c9`.
+Numeric `0.0.117`, informational `0.0.117-elemental-traits`; 1,867 manifest entries
+(1,865 active + 2 reserved), 135 package entries. ZIP SHA-256
+`e61a01099bae39b37395509b4d2e623b2d4a19ab5854afa7b1943c3e57d61670`;
+DLL SHA-256 `e7b7a9f103711bf4d08c2ae31f9bbb373f370a96b8bcb999efc32c1ad638b096`;
+MVID `52b8b41e-4c39-4e65-ac95-0cadddd16e14`. The package and complete machine-local
+ledgers remain ignored. This is a temporary qualification candidate, not the final
+owner acceptance installation.
+
+The transaction restored exact starting Mods contents and UMM bytes/timestamp.
+UMM SHA-256 before/after:
+`516869f3cb0822d11dfe4aa84431620e0eaf59af56cd8489ea537c818af7257f`.
+Protected baseline archive and every other save's metadata remained exact. Only
+KMG_AUTOMATION_WORKING writes were authorized. Its final archive naturally differs
+after native saves; functional cleanup is proven by the final guarded fresh load,
+not by treating archive differences as evidence of cleanliness. Settings hashes
+before/after each launch are retained in the per-phase ledger, including native
+JSON formatting normalization and the intentional temporary OFF state.
+
+Zero KMG ERROR lines and no new exception signature. Every process retained the
+four preexisting ZFavoredClass custom-data KeyNotFound reports and native
+BugReportCanvas.OnEnable startup exception. Preparation and ON also reported a
+native exit-time ObstaclesHelper.TryConnectUnits [0x00051] -> RemoveFromGroup
+[0x000a0] -> UnitMovementAgent.OnDisable [0x0000c] exception after scenario.complete.
+This exact stack predates the mission: run
+`20260906T2202268447372Z-elemental-race-module-restored-persistence`, source
+`cf2426ac092b6bed33ff721fca722be9486f5e89` (verified ancestor of mission start),
+retained log SHA-256 `4cd4cd9ba730f2513a55b572faea1021c032bfe4df90d6b9800691982e57cd21`.
+The same stack also occurs in the earlier 20260906T1840506762664Z run. It is
+recorded separately and neither suppressed nor attributed to this stabilization.
+
+| Phase evidence | Persistence index SHA-256 |
+| --- | --- |
+| `20260907T1602074073761Z-elemental-race-persistence-verify-absent` | `4474514fdce7cb5dba6a7b53943a86a8b7b8091c9e30285edf2dec08880896bb` |
+| `20260907T1604361516786Z-elemental-race-persistence-prepare` | `a5c63690b27e570a420c2d1009ee04130c5786017d2f55271797b6a1a0ca2c3a` |
+| `20260907T1608297702214Z-elemental-race-module-disabled-persistence` | `ae5115945bb41ded052bf10bf347fb51783fcbedbd17ee70589e9b1072e87b98` |
+| `20260907T1611593595463Z-elemental-race-module-restored-persistence` | `6ef3c48bd351fc8660dd7c6dd45d92ff88b96a7491e279941360b8bbc8654b72` |
+| `20260907T1616049663690Z-elemental-race-persistence-verify-absent` | `22a1a6865fd6fca4f1d1a1e5d69e66bdbf4edae07006aa2eb4e0330be67473a8` |
+
+Remaining qualification: Crystalline's optional semantic ray catalog, Breeze's
+ability-sourced/nonphysical ranged-attack boundary, physical transitions,
+pinned 0.0.114 migration rerun, final compatibility and development-version
+build/install. Human full-screen character-creator acceptance remains NOT-RUN.

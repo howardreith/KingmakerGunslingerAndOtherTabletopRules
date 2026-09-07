@@ -89,6 +89,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var resource = PersistenceSlaResource(fixture, fixture.Heritage);
                 ElementalAlternateTraitBlueprints trait = PersistenceSlaTrait(fixture, fixture.Heritage);
+                if (root == null)
+                {
+                    bool absent = IsFixtureUnit(unit, fixture) && Game.Instance.IsPaused && resource == null &&
+                        PersistenceSlaAbsentExact(fixture, unit.Descriptor, fixture.Heritage);
+                    _efreetiPersistenceRecords.Add(new JObject { ["fixture"] = fixture.Label, ["phase"] = phase,
+                        ["kind"] = "passive-sla-replacement-no-cast", ["castApplicable"] = false, ["absenceExact"] = absent });
+                    if (!absent) throw new InvalidOperationException("An expected persistence SLA is missing; no cast can be substituted.");
+                    return;
+                }
                 if (trait == null)
                 {
                     InvokeAbilitySpend(root, resource);

@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ReferenceEquals(heritage, fixture.Heritage)) return new ElementalAlternateTraitBlueprints[0];
                 int heritageIndex = Array.IndexOf(fixture.Blueprints.Heritages
                     .Choices().ToArray(), heritage);
-                ElementalAlternateTraitId[] ids = ElementalBloodInsightPersistencePolicy.BreathTraits(
+                ElementalAlternateTraitId[] ids = ElementalVisibleTraitPersistencePolicy.Traits(
                     fixture.Blueprints.AlternateTraits.Race,
                     fixture.Gender == Gender.Male ? 0 : 1, heritageIndex);
                 return ids.Select(fixture.Blueprints.AlternateTraits.Require).ToArray();
@@ -42,7 +42,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 ElementalAlternateTraitBlueprints trait = PersistenceSlaTrait(fixture, heritage);
                 return trait == null ? heritage.SlaAbility : trait.Mechanics()
-                    .OfType<BlueprintAbility>().Single(value => value.Parent == null);
+                    .OfType<BlueprintAbility>().SingleOrDefault(value => value.Parent == null);
             }
 
             private BlueprintAbilityResource PersistenceSlaResource(ElementalPersistenceFixture fixture,
@@ -50,7 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 ElementalAlternateTraitBlueprints trait = PersistenceSlaTrait(fixture, heritage);
                 return trait == null ? heritage.SlaResource : trait.Mechanics()
-                    .OfType<BlueprintAbilityResource>().Single();
+                    .OfType<BlueprintAbilityResource>().SingleOrDefault();
             }
 
             private static bool TraitProvidersExact(UnitDescriptor owner,
@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             // Use the real level-up controller for all slot choices. Source
             // creation and restored respec retain base traits; the persisted
-            // target uses the explicit ten-trait, disjoint-slot matrix.
+            // target uses the explicit nineteen-trait, disjoint-slot matrix.
             private static JArray SelectAlternateTraits(
                 LevelUpController controller,
                 ElementalPersistenceFixture fixture, string phase,
