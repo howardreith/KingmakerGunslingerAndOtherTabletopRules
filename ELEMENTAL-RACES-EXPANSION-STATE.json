@@ -12,6 +12,10 @@
     "dfd551080a1aad38cdd0b19714fbcb12c81ca4ca"
   ],
   "masterIntegration": {
+    "mergeCommit": "0d9cd38144132a94acac997b82409f84c54d2b94",
+    "mergePushed": true,
+    "authoritativeMasterAncestorVerified": true,
+    "cleanTreeAfterMergePush": true,
     "status": "PASS-FOCUSED-INTEGRATION; NOT-FULL-RELEASE-C",
     "authorization": "Owner explicitly requested latest 0.0.115 master be merged into this feature branch.",
     "featureParent": "14dea6215927517a9cb7c91e6553fa5592abe44a",
@@ -694,7 +698,7 @@
     "sha256": "ba877821a24440e56bf6be7509f92658ccff78951035e4ab0e269d8e8429f4b4"
   },
   "startingTreeClean": true,
-  "phase": "release-c-remaining-mechanics",
+  "phase": "release-c-breeze-native-qualification",
   "currentVersion": "0.0.117",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
@@ -705,7 +709,7 @@
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSHED",
     "releaseB": "PASS-LOCAL-CHECKPOINT-PUSHED",
-    "releaseC": "IN-PROGRESS; EIGHTEEN-TRAITS-WITH-INCREMENTAL-NATIVE-PROOF; TEN-TRAIT-SAVES-AND-RTWP-BREATH-ACTIONS-PASS; THREE-UNIMPLEMENTED; TB-BREATH-ACTIONS-AND-FULL-RELEASE-GATES-PENDING"
+    "releaseC": "IN-PROGRESS; EIGHTEEN-TRAITS-WITH-INCREMENTAL-NATIVE-PROOF; TEN-TRAIT-SAVES-PASS; BREEZE-KISSED-SOURCE-UNQUALIFIED; TWO-UNIMPLEMENTED; TB-BREATH-ACTIONS-AND-FULL-RELEASE-GATES-PENDING"
   },
   "publicationRecovery": {
     "status": "PASS",
@@ -724,6 +728,760 @@
     "pullRequestCreated": false,
     "historicalAttemptPolicy": "Earlier push-blocked fields preserve attempt-time evidence. This recovery supersedes them as current publication status; no earlier gameplay qualification is broadened."
   },
+  "releaseCBreezeKissedNativeQualification": {
+    "status": "INCREMENTAL-NATIVE-CORE-PASS; NOT RELEASE C PASS",
+    "checkpointParent": "0d9cd38144132a94acac997b82409f84c54d2b94",
+    "authoritativeMaster": "dfd551080a1aad38cdd0b19714fbcb12c81ca4ca",
+    "candidate": "breeze-kissed-08",
+    "domainReflectionTests": 1432,
+    "repositoryValidation": "PASS",
+    "cleanReleaseBuild": "PASS",
+    "strictPackageValidation": "PASS",
+    "package": {
+      "metadata": {
+        "schemaVersion": 1,
+        "generatedAtUtc": "2026-09-07T01:48:45.8097623Z",
+        "generator": "scripts/Build-Local.ps1",
+        "repositoryRoot": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger",
+        "commit": "0d9cd38144132a94acac997b82409f84c54d2b94",
+        "branch": "codex/elemental-races-expansion",
+        "sourceStateSha256": "955ab659e3cad5f4aa414614c6d65bab89e970b311f87eaedf2655d422f560ed",
+        "version": "0.0.117",
+        "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\artifacts\\local-runtime\\0.0.117\\KingmakerGunslinger-0.0.117-local-runtime.zip",
+        "packageSha256": "acc04aa24697170f00336198d67f0ef4aa98dedc5a7884acf263d0d713de3fe4",
+        "dllSha256": "b3839a63fb83a5894169fa7ea2cbc1ef6e15f01229081b51d0f74b0d88984f05",
+        "dllMvid": "0a84af89-794b-46b5-b55e-13bf9959bcd6",
+        "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+        "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+        "validated": true
+      },
+      "bytes": 23259329,
+      "entries": 135,
+      "dllBytes": 6264320
+    },
+    "deployment": {
+      "id": "20260907T0149447114593Z",
+      "sha256": "b019f345e29654a73931788bad2c57d66920208b6915a422788a273c83135c38"
+    },
+    "runs": [
+      {
+        "directory": "20260907T0150165143557Z-observe-elemental-alternate-trait-framework",
+        "profile": "breeze-kissed-08-only",
+        "runId": "20260907T0150166123561Z-4c2126abd9594fd5818b03ca95f9189a",
+        "status": "PASS",
+        "assertions": 5688,
+        "failures": 0,
+        "warnings": [],
+        "exception": "",
+        "steamAppId": 640820,
+        "guardedRequestAccepted": true,
+        "saveStateTouched": false,
+        "breezeObservations": 190,
+        "breezeFailures": 0,
+        "cleanupExact": true,
+        "fixtureLifetimes": [
+          {
+            "name": "GeneralSylph-native-fixture-lifetime",
+            "pass": true,
+            "observed": "errors=0;exceptions=0"
+          },
+          {
+            "name": "Smokesoul-native-fixture-lifetime",
+            "pass": true,
+            "observed": "errors=0;exceptions=0"
+          },
+          {
+            "name": "Stormsoul-native-fixture-lifetime",
+            "pass": true,
+            "observed": "errors=0;exceptions=0"
+          }
+        ],
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 4,
+          "unsupportedShaderFallback": 4,
+          "unsupportedShaderGpuError": 4,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 4,
+          "lightmapModeMismatch": 1,
+          "zeroSurfaceArea": 0,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "keyNotFoundSignatures": 0,
+        "elementalErrorSignatures": 0,
+        "firearmAnnotationErrors": 0,
+        "postLoadSignatures": 0,
+        "hashes": [
+          {
+            "file": "compatibility-attribution-log-breeze-kissed-08-only.json",
+            "sha256": "2fc4518943936a7ecea475db1e106fa8a929577b90d2082d678bbbe2ddeef4c1"
+          },
+          {
+            "file": "elemental-alternate-trait-framework.json",
+            "sha256": "115e1318137a84099dae058798051f61f884ab63571ced3a04a647dccf65f018"
+          },
+          {
+            "file": "elemental-alternate-trait-passives.json",
+            "sha256": "825ac6d48c3be78e70d18ecadf2a9de189e3d8087f75c71c8c522f571bcad34c"
+          },
+          {
+            "file": "elemental-alternate-trait-reconciliation.json",
+            "sha256": "e11b726dff65eecd174efddb530a2ee7ccb2e78b40f77f5ac867601ca04c7810"
+          },
+          {
+            "file": "elemental-blood-traits.json",
+            "sha256": "3e78eb87c68cf9b66a0752d7012157d35afdf8ee01bbeec0db67528674a7f5eb"
+          },
+          {
+            "file": "elemental-breeze-kissed.json",
+            "sha256": "060eadfbdb1681737a7a194fb6b46f0a1770c4e82a2bf73b8ded3a6427b6ccbe"
+          },
+          {
+            "file": "elemental-component-identities.json",
+            "sha256": "8714a779c15827aef245cf317068ad51fdb7ee0a904e4767d79d222eee45f95f"
+          },
+          {
+            "file": "elemental-crystalline-form.json",
+            "sha256": "aae73c3795806cea4f48d72142e3f21acef2b4f8993a60d65dd27702da9d9c1d"
+          },
+          {
+            "file": "elemental-crystalline-form-native-audit.json",
+            "sha256": "f284376d40627544b7a3f772dbdc3bbdfa36251e23f1488ecb73d0ceb12d50a1"
+          },
+          {
+            "file": "elemental-efreeti-magic.json",
+            "sha256": "8f8fd18f9ec6536468c3ce56869fe0910dfdfbcc54f18f9c1f380b6e2589f477"
+          },
+          {
+            "file": "elemental-feat-transient-preview.json",
+            "sha256": "d645a0535f854b158d925e442fae4cc08fa7f0ef552cee25fd10b1eedea630a9"
+          },
+          {
+            "file": "elemental-remaining-trait-native-audit.json",
+            "sha256": "d311fd31774f846b86b79ceaca05b6a657d22c1c53b88bd2f63afcfc365c43b3"
+          },
+          {
+            "file": "elemental-summon-insight.json",
+            "sha256": "52d3ed6dfa4199b216e379c44a7ace6abfa26dc7761e45356457179e88a3b6af"
+          },
+          {
+            "file": "elemental-undine-breaths.json",
+            "sha256": "cba90a9a0359e54e2c10e6223607c936f95485ef91c9c3f8a9575aad1517e9c0"
+          },
+          {
+            "file": "orchestration.json",
+            "sha256": "40c52f681272d10e1af6e7eef13d0d12f5f51fabc92cfa683c298b4867cf624c"
+          },
+          {
+            "file": "output_log-breeze-kissed-08-only.txt",
+            "sha256": "f1eae5fc3593fd3afb9dd4f07298a7910a07bd7e36664fdfa2b1785fb45a9edb"
+          },
+          {
+            "file": "runtime-events.json",
+            "sha256": "e3566b3a06430868d71e9287dfd6c6c520a3da027aabea01951d407ee131dc2f"
+          },
+          {
+            "file": "runtime-evidence.json",
+            "sha256": "66e792a02460fb683087e31205191fdc5678ace9c3039586219b11a83fe037d7"
+          },
+          {
+            "file": "runtime-loaded-build-identity.json",
+            "sha256": "c3dd09369fb7ecf44d03fb412b28d22832745f717d23a04575808c22b061c484"
+          },
+          {
+            "file": "runtime-request.json",
+            "sha256": "e4ac645125b06916fe2c785ae83df6abfa97c5182660de7542f3e410b5d779b4"
+          },
+          {
+            "file": "runtime-result.json",
+            "sha256": "b26fe7c9e1ca4e7cb399b4b0551b0b0dde5958e17484379e515ad6197e194db1"
+          },
+          {
+            "file": "runtime-summary.txt",
+            "sha256": "8a09af91c4f7f77c8572f25fce086800a1033758a4fb3a2f6e4cc648732bd2f6"
+          }
+        ]
+      },
+      {
+        "directory": "20260907T0152582849108Z-observe-elemental-alternate-trait-framework",
+        "profile": "breeze-kissed-08-combined",
+        "runId": "20260907T0152582879337Z-716236caed0c4b7d92682033ba4e440a",
+        "status": "PASS",
+        "assertions": 5688,
+        "failures": 0,
+        "warnings": [],
+        "exception": "",
+        "steamAppId": 640820,
+        "guardedRequestAccepted": true,
+        "saveStateTouched": false,
+        "breezeObservations": 190,
+        "breezeFailures": 0,
+        "cleanupExact": true,
+        "fixtureLifetimes": [
+          {
+            "name": "GeneralSylph-native-fixture-lifetime",
+            "pass": true,
+            "observed": "errors=0;exceptions=0"
+          },
+          {
+            "name": "Smokesoul-native-fixture-lifetime",
+            "pass": true,
+            "observed": "errors=0;exceptions=0"
+          },
+          {
+            "name": "Stormsoul-native-fixture-lifetime",
+            "pass": true,
+            "observed": "errors=0;exceptions=0"
+          }
+        ],
+        "nativeCounts": {
+          "unsupportedShaderAllPassesRemoved": 4,
+          "unsupportedShaderFallback": 4,
+          "unsupportedShaderGpuError": 4,
+          "invalidParticleMeshReadWrite": 0,
+          "missingSerializedScript": 4,
+          "lightmapModeMismatch": 1,
+          "zeroSurfaceArea": 0,
+          "missingMainTexProperty": 0,
+          "favoredClassComponentAppliedOnceOnLevelUp": 0,
+          "polymorphTransition": 0,
+          "polymorphTryReplaceView": 0,
+          "polymorphRestoreView": 0,
+          "polymorphOnFactActivate": 0,
+          "polymorphOnFactDeactivate": 0,
+          "unitDescriptorDispose": 0,
+          "unitFxVisibilityManagerUpdate": 0
+        },
+        "keyNotFoundSignatures": 4,
+        "elementalErrorSignatures": 0,
+        "firearmAnnotationErrors": 0,
+        "postLoadSignatures": 0,
+        "hashes": [
+          {
+            "file": "compatibility-attribution-log-breeze-kissed-08-combined.json",
+            "sha256": "55df64360c3a49b665ad26a175f43b8108c8b15032bf29312e4476ecb06148b0"
+          },
+          {
+            "file": "elemental-alternate-trait-framework.json",
+            "sha256": "115e1318137a84099dae058798051f61f884ab63571ced3a04a647dccf65f018"
+          },
+          {
+            "file": "elemental-alternate-trait-passives.json",
+            "sha256": "825ac6d48c3be78e70d18ecadf2a9de189e3d8087f75c71c8c522f571bcad34c"
+          },
+          {
+            "file": "elemental-alternate-trait-reconciliation.json",
+            "sha256": "e11b726dff65eecd174efddb530a2ee7ccb2e78b40f77f5ac867601ca04c7810"
+          },
+          {
+            "file": "elemental-blood-traits.json",
+            "sha256": "da3c7ac2efaa27f8633127245322a2e860509b1d80ed72eab91cb4fb7c0e7f4f"
+          },
+          {
+            "file": "elemental-breeze-kissed.json",
+            "sha256": "8f825bb93ba68bd14caece6b35bc958515a5fc806d773e61ee4828b98948fe3e"
+          },
+          {
+            "file": "elemental-component-identities.json",
+            "sha256": "8714a779c15827aef245cf317068ad51fdb7ee0a904e4767d79d222eee45f95f"
+          },
+          {
+            "file": "elemental-crystalline-form.json",
+            "sha256": "3c276c8c74665a1990587e711856c6ff1214079be700d5436485ebc2b9c10ecc"
+          },
+          {
+            "file": "elemental-crystalline-form-native-audit.json",
+            "sha256": "40583b5224a79e0377a50bd8583ac03657ea422aef08e17dab0e53575754ca7b"
+          },
+          {
+            "file": "elemental-efreeti-magic.json",
+            "sha256": "c7cb221ea81f9537f5ddbd8cb8f421f4640e3ab549819f7ecac8f02e68ea3ef8"
+          },
+          {
+            "file": "elemental-feat-transient-preview.json",
+            "sha256": "1cb7859e88d2f405793d1881fcf05d617c4fd999c85719dbcfb47bb1f0f770db"
+          },
+          {
+            "file": "elemental-remaining-trait-native-audit.json",
+            "sha256": "f7f8cdef8c887b2350751cfdee6bea351dda010b73214edd2e0cb6607c20f962"
+          },
+          {
+            "file": "elemental-summon-insight.json",
+            "sha256": "5868e306c1540d461fba534f2d935327ee3df7ad0c5819683bb66815d08d2867"
+          },
+          {
+            "file": "elemental-undine-breaths.json",
+            "sha256": "ca188bda7d443d270c9214002984bb2d842152d2a93102515d70b4e6ebe719ed"
+          },
+          {
+            "file": "orchestration.json",
+            "sha256": "0ff83ac7e054d7bc943dad4d037ef6493fc20f256bba0d0730cb07c6bc80d9fd"
+          },
+          {
+            "file": "output_log-breeze-kissed-08-combined.txt",
+            "sha256": "85df781dbff160febf662f80fab219032ba90c48cdf9848028a250bef4904593"
+          },
+          {
+            "file": "runtime-events.json",
+            "sha256": "e3566b3a06430868d71e9287dfd6c6c520a3da027aabea01951d407ee131dc2f"
+          },
+          {
+            "file": "runtime-evidence.json",
+            "sha256": "90d60607bb01a5c42dab93a9cf9813e1d70bd6b76e1b4208cab6e584ffa67e95"
+          },
+          {
+            "file": "runtime-loaded-build-identity.json",
+            "sha256": "374c1d20155a43ebcabe8c6b44b1f268b74b1e808e495d2493f35f332e35f9f2"
+          },
+          {
+            "file": "runtime-request.json",
+            "sha256": "19823388f9ee6f6c2ccb47b5074e063e03520bf43492e3989ada1fd3c9c0b079"
+          },
+          {
+            "file": "runtime-result.json",
+            "sha256": "a3bbe63cbdb35c0a3d925facb6269ee8fbbf62558dd11f261e042894f6bc9787"
+          },
+          {
+            "file": "runtime-summary.txt",
+            "sha256": "682ebd86e2d655dd9820477ba4114aa41efbf46544f308a36d21b9c4b58e1f37"
+          }
+        ]
+      }
+    ],
+    "transactions": [
+      {
+        "profile": "gunslinger-only",
+        "suffix": "only",
+        "transactionSha256": "b0a9a0c944137f8876590919ad5e7a114b3702f84b56db141c30c794b4ad7852",
+        "restorationVerified": true,
+        "independentManifestEqual": true,
+        "manifestEntries": 968,
+        "restoredManifestSha256": "27c5bb398be48d92c3b98bf03d9747ca192b553e803a9e396805b4f697d455c7",
+        "settings": [
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          }
+        ]
+      },
+      {
+        "profile": "gunslinger-high-risk-combined-favored-class",
+        "suffix": "combined",
+        "transactionSha256": "c838a699e58a8543f90f180d4c63b0eee3a1660b6821153cf0a2e8d5a9bcf60e",
+        "restorationVerified": true,
+        "independentManifestEqual": true,
+        "manifestEntries": 968,
+        "restoredManifestSha256": "27c5bb398be48d92c3b98bf03d9747ca192b553e803a9e396805b4f697d455c7",
+        "settings": [
+          {
+            "path": "KingmakerGunslinger\\FeatureModules.json",
+            "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+          }
+        ]
+      }
+    ],
+    "assertions": 11376,
+    "breezeObservations": 380,
+    "saveStateTouched": false,
+    "processesAfterCompletion": 0,
+    "newIdentities": 7,
+    "releaseCIdentities": 83,
+    "remaining": "Broader ability-source/nonphysical ranged-attack classification, native turn-based action proof, Breeze save/OFF/ON and all remaining trait persistence/lifecycle, Treacherous Earth and Nereid Fascination implementations, full release-wide profile/module gates. Visual Adjustments absent/NOT-RUN; direct Buff Planner Instant consumer gameplay remains NOT-RUN.",
+    "evidencePolicy": "The archived candidate contains pre-outcome mission documentation. The subsequent checkpoint updates evidence text only; its final commit is the child checkpoint, not the embedded parent. Prior failed attempts and ten-trait/0.0.114 save proof retain their original scope."
+  },
+  "releaseCBreezeKissedDevelopment": {
+    "status": "INCREMENTAL-NATIVE-CORE-PASS; full Breeze qualification pending",
+    "baseCommit": "0d9cd38144132a94acac997b82409f84c54d2b94",
+    "stashAppliedAndRetained": "b1c5e1a7d45205b968443bce711088a5e87aaafb",
+    "preservedNewSourceHashesVerified": true,
+    "domainReflectionTestsExpected": 1432,
+    "newIdentities": 7,
+    "candidate": "breeze-kissed-08",
+    "remainingRequiredImplementations": ["Treacherous Earth", "Nereid Fascination"],
+    "remainingQualification": "Breeze broader attack-source boundary, save/OFF/ON/lifecycle; all remaining trait persistence, turn-based action checks, complete compatibility and Release C gates"
+  },
+  "releaseCBreezeKissedFailedAttempts": [
+    {
+      "candidate": "breeze-kissed-07",
+      "status": "MIXED-NOT-QUALIFIED",
+      "sourceStateSha256": "34de8f9377b6f6d164b98dab8bc4fbd6bb9c61e348f1c679c85d5a9286271bcf",
+      "packageSha256": "afdf761dd3e7c35fd60bc0d9959e509ea42ab5bc05ed7c291d38955173d0b15c",
+      "dllSha256": "4c410e673014c82d7830b39dd2ae86af7f8aede1d629b44b1af07cfd689211b5",
+      "dllMvid": "781fd31b-d559-4f40-af0a-cb24bd80aafb",
+      "runs": [
+        {
+          "profile": "breeze-kissed-07-only",
+          "runId": "20260907T0131273136466Z-d1c4d2b335d44a83936362eb3fa1efa4",
+          "status": "PASS",
+          "assertions": 5688,
+          "failures": 0,
+          "warnings": [],
+          "exception": "",
+          "breezeObservations": 190,
+          "breezeFailures": 0,
+          "cleanupExact": true,
+          "hashes": [
+            {
+              "file": "elemental-breeze-kissed.json",
+              "sha256": "9f8966496bdb973f46363a4941d136780c47d9eebb6450172558a21e7462749d"
+            },
+            {
+              "file": "output_log-breeze-kissed-07-only.txt",
+              "sha256": "434e6568dac9e9ac8bc58c2ad96e8be29c0aa22b998eb6168c082bc2c8953d0d"
+            },
+            {
+              "file": "runtime-evidence.json",
+              "sha256": "33c794ec888c1177b354298b0e772ac494111d6d224d962c2126d7e0dbeb7576"
+            },
+            {
+              "file": "runtime-result.json",
+              "sha256": "b663b272c3252bbfdd68c74dc957087199a3573b330f3367ec1e8303c880b7e2"
+            }
+          ]
+        },
+        {
+          "profile": "breeze-kissed-07-combined",
+          "runId": "20260907T0133481421370Z-3c79cbb9df9b49c3bdd10b04623ec717",
+          "status": "FAIL",
+          "assertions": 746,
+          "failures": 0,
+          "warnings": [],
+          "exception": "System.InvalidOperationException: Native firearm control: state=True;rounds=0;annotations=1;nativeAttempts=2;newFaults=1\r\n  at KingmakerGunslinger.RuntimeTesting.ElementalBreezeKissedScenario.Attack (Kingmaker.EntitySystem.Entities.UnitEntityData attacker, Kingmaker.EntitySystem.Entities.UnitEntityData target, Kingmaker.Items.ItemEntityWeapon weapon) [0x00264] in <781fd31bd5594f40af0acb24bd80aafb>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.ElementalBreezeKissedScenario.Run (Kingmaker.EntitySystem.Entities.UnitEntityData defender, Kingmaker.EntitySystem.Entities.UnitEntityData attacker, KingmakerGunslinger.ElementalRaces.ElementalRaceBlueprints race, KingmakerGunslinger.ElementalRaces.ElementalHeritageBlueprints heritage, Newtonsoft.Json.Linq.JArray rows, System.Collections.Generic.ICollection`1[T] assertions) [0x001db] in <781fd31bd5594f40af0acb24bd80aafb>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.ElementalBreezeKissedScenario.Exercise (KingmakerGunslinger.RuntimeTesting.RuntimeTestRequest request, System.Collections.Generic.ICollection`1[T] assertions, System.Collections.Generic.ICollection`1[T] files) [0x00262] in <781fd31bd5594f40af0acb24bd80aafb>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.ElementalAlternateTraitFrameworkScenario.Run (KingmakerGunslinger.Bootstrap.ModContext context, KingmakerGunslinger.RuntimeTesting.RuntimeTestRequest request) [0x00c21] in <781fd31bd5594f40af0acb24bd80aafb>:0 ",
+          "breezeObservations": 129,
+          "breezeFailures": 0,
+          "cleanupExact": true,
+          "hashes": [
+            {
+              "file": "elemental-breeze-kissed.json",
+              "sha256": "2e1a1a3032081a8c96582a51584f75cdf4b610119bcb9a5806ed99650b5769bd"
+            },
+            {
+              "file": "output_log-breeze-kissed-07-combined.txt",
+              "sha256": "b2ecf9ec0112fbae3f3e8484039499dbd9e0b3797377ff29b8fa48c335e358c0"
+            },
+            {
+              "file": "runtime-evidence.json",
+              "sha256": "37bf9077d4a7ac17a83bb0be19557265c238abfeb676cf13391266a35a76f141"
+            },
+            {
+              "file": "runtime-result.json",
+              "sha256": "946ed44d453493722df0b97d626215af16081b2fe9f86b334773fb484a49d551"
+            }
+          ]
+        }
+      ],
+      "transactions": [
+        {
+          "profile": "gunslinger-only",
+          "suffix": "only",
+          "transactionSha256": "150781a22b541c1057ac95ba47f7b790cbab4c0b0b912426448c7054e0125363",
+          "restorationVerified": true,
+          "independentManifestEqual": true,
+          "manifestEntries": 968,
+          "restoredManifestSha256": "12c48747089b9b81f85f6f957e144b87c197bc0ccc64db24380e265e602840df",
+          "settings": [
+            {
+              "path": "KingmakerGunslinger\\FeatureModules.json",
+              "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+            }
+          ]
+        },
+        {
+          "profile": "gunslinger-high-risk-combined-favored-class",
+          "suffix": "combined",
+          "transactionSha256": "52a67ba7d81b04761fc729a18163c9a2dee4f4b6c3dee1beb585a41bea095eb8",
+          "restorationVerified": true,
+          "independentManifestEqual": true,
+          "manifestEntries": 968,
+          "restoredManifestSha256": "12c48747089b9b81f85f6f957e144b87c197bc0ccc64db24380e265e602840df",
+          "settings": [
+            {
+              "path": "KingmakerGunslinger\\FeatureModules.json",
+              "sha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+            }
+          ]
+        }
+      ],
+      "cause": "The combined run's real natural d20=1 correctly commits NormalToBroken and spends the loaded round. The fixture captures AC messages but forwards condition feedback to the absent main-menu BattleLogView. Capture all validated publications solely during the exact synchronous disposable firearm attack; preserve native randomness, ammunition, misfire, publication service and exact sink restoration.",
+      "saveStateTouched": false,
+      "processes": 0
+    },
+    {
+      "candidate": "breeze-kissed-06",
+      "runId": "20260907T0123070983830Z-64b59b84ef7f4f7ca7645a6d967d4577",
+      "status": "FAIL",
+      "assertions": 620,
+      "failureCount": 0,
+      "warnings": 0,
+      "cleanupExact": true,
+      "independentlyRestored": true,
+      "manifestEntries": 968,
+      "restoredManifestSha256": "fcab496b6ccf6505b15559becb316921c0f1a7a96e0fbc8715c78ae21e7e1c5f",
+      "transactionSha256": "3d882f8d9e915486cec74c83ad71691d6900d790693d0162adadee6325b2a746",
+      "sourceStateSha256": "982b9011454f1d75066cba315a47dccd859e61e345aba3beeae5ef18ffbfa01f",
+      "packageSha256": "bbe3134663e44cc868bcbbd6dabc8da6ef89907a7a980d614c8ae58139297815",
+      "dllSha256": "a10bbaa7a2afb647af4265e6de583309c53653713519ba9681ed3e69366cd597",
+      "dllMvid": "86e25b7d-36dc-455e-ba0e-2b554a470196",
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "saveStateTouched": false,
+      "processes": 0,
+      "hashes": [
+        {
+          "file": "compatibility-attribution-log-breeze-kissed-06-only.json",
+          "sha256": "a52d60cbf53012656941de0271bf65a6791522c80239b53a7412b10719e7dd3d"
+        },
+        {
+          "file": "elemental-breeze-kissed.json",
+          "sha256": "69e577dfc4330164c2b59012698b0aac926b4615afb45c0d0cf4d5df0ab9325e"
+        },
+        {
+          "file": "output_log-breeze-kissed-06-only.txt",
+          "sha256": "7d0aca40455e29a7276cd597adfe01c2b0201bde2532e6d40d484f8e390f7987"
+        },
+        {
+          "file": "runtime-evidence.json",
+          "sha256": "4cb466865ba546f61725c7928a1be63119ba47534360cfb17087d6563a7825c2"
+        },
+        {
+          "file": "runtime-result.json",
+          "sha256": "35b232c37ad451f624cf20a37d0085def33d6fde9214efba8e534ea2ee72d6ab"
+        }
+      ],
+      "cause": "Fixture stopped at the standing firearm baseline because it required one UI annotation for the whole attack. Native ammunition INFO confirms zero remaining rounds; the assertion did not record annotation/event counts. Replace that unrelated cardinality assumption with exact NativeCombatLog attempt/capture correlation and zero new faults, retaining granular amounts/counts in evidence.",
+      "combinedProfile": "NOT-RUN"
+    },
+    {
+      "candidate": "breeze-kissed-05",
+      "runId": "20260907T0115229229822Z-1f9da0d0ef224fab871554f51f6cad03",
+      "status": "FAIL",
+      "assertions": 5688,
+      "failureCount": 21,
+      "warnings": 0,
+      "exception": "",
+      "cleanupExact": true,
+      "independentlyRestored": true,
+      "manifestEntries": 968,
+      "restoredManifestSha256": "f82ccfb131aab36322a9b86793c22cb9c3a18842ebb351e00817f164577122ae",
+      "transactionSha256": "055147a950ace1926cf588d1bfb54e56ae375b061e5c04c361e6a32488d350da",
+      "sourceStateSha256": "670f7480f02f0fe9cb359fa3e55dd2b98e458d02d05a6bcee91b5c2da05b348c",
+      "packageSha256": "f10451ea25307bad45b192b710d819c19721b6abca5f807028ca9ae7ce812e68",
+      "dllSha256": "41ed70f55c5aed3ecd964802d1463db74018e6e18862d83fe04a767120481048",
+      "dllMvid": "e234ca1a-200e-412f-b893-9ef585aceebb",
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "saveStateTouched": false,
+      "processes": 0,
+      "hashes": [
+        {
+          "file": "compatibility-attribution-log-breeze-kissed-05-only.json",
+          "sha256": "d8bb8303b3a8953358364511e3cffc5f959fedc7fc35341ab32274fd1d7fa7ed"
+        },
+        {
+          "file": "elemental-breeze-kissed.json",
+          "sha256": "f354548f216af081b8a2fb04b9e10d74e9b55bf44e447c9cb6172e9448d418e2"
+        },
+        {
+          "file": "output_log-breeze-kissed-05-only.txt",
+          "sha256": "2c4e4ae162ee264e7f382c2735e1b749d2279466c7483aae98738d274caf2c2a"
+        },
+        {
+          "file": "runtime-evidence.json",
+          "sha256": "1da9c87c2dfb16cf58ce0e0cf52123b42728ac2ea8233e91b67f824dc9376b9d"
+        },
+        {
+          "file": "runtime-result.json",
+          "sha256": "5a378a7d91938ac5d6ffa0794033b5462e4529acca29bc17d7f8c849e128367a"
+        }
+      ],
+      "cause": "All native maneuvers, exact CMB, immunity, resources and Trip pending-prone checks now pass. Twenty-one later AC comparisons used the earlier time-zero baseline, which included the same native +4 ranged get-up defense. Once the clock advanced, that unrelated native defense ended. Establish both actors' non-getting-up state before taking any baseline, retaining native AC behavior.",
+      "combinedProfile": "NOT-RUN"
+    },
+    {
+      "candidate": "breeze-kissed-04",
+      "runId": "20260907T0105234724229Z-acefc7ec3e7e4b88b4cad580d0af71ae",
+      "status": "FAIL",
+      "assertions": 5676,
+      "failureCount": 12,
+      "warnings": 0,
+      "exception": "",
+      "cleanupExact": true,
+      "independentlyRestored": true,
+      "manifestEntries": 968,
+      "restoredManifestSha256": "32831980d1b52fcbea30154006d37dcb17c33c6f652cfb82153a711f9d3964d0",
+      "transactionSha256": "98efa5dc1ef20ea67a466ed814e59688485106245c89e66209f276c93faf25d0",
+      "sourceStateSha256": "35b8f25b326959de0b7400b5a58b40a489449a7c065864593eb5ac9482637e90",
+      "packageSha256": "1a62185283c7f94fe35697107e33c7cfa09d2ae13f74bb68041483ac5af3bdd5",
+      "dllSha256": "30f91cdd22eaa71e7b5f18dd0ffa5716381fca8101e795a28c81bc1c26c19166",
+      "dllMvid": "29ea4ec2-c9b5-48f4-ac7b-72f825df4dc5",
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "saveStateTouched": false,
+      "processes": 0,
+      "hashes": [
+        {
+          "file": "compatibility-attribution-log-breeze-kissed-04-only.json",
+          "sha256": "bf3c8bd51c623e309e45a47c1575e629ba3958e09bde01138ebd8afdccce22a7"
+        },
+        {
+          "file": "elemental-breeze-kissed.json",
+          "sha256": "e1155dce6fa9259dd78975680e488a309e12c69956e7ea8406d3c3e07215e055"
+        },
+        {
+          "file": "output_log-breeze-kissed-04-only.txt",
+          "sha256": "dbc4b87c687046f7fa4880795e0bb31a13b967d13887f98121da4341086588db"
+        },
+        {
+          "file": "runtime-evidence.json",
+          "sha256": "f718e0e95a631935bd68fdc38c4c6bb9e1c5bae2c9e08c715c765a02968b12cc"
+        },
+        {
+          "file": "runtime-result.json",
+          "sha256": "c81273a1d316d820675b44f40e8f3928d231745a87cdf8fdb33cdcc842dd900b"
+        }
+      ],
+      "cause": "Completed 5,676 assertions with 12 failures: three fixture expectations incorrectly assumed separate racial bonuses do not stack; nine Trip attempts encountered native IsGetUp's first-half-second clock guard and correctly exited before creating a maneuver. Calm/renew, resources, rest, level-up, respec cleanup and zero fixture native errors/exceptions now pass. Preserve native stacking and advance only the disposable fixture clock past the audited get-up window.",
+      "combinedProfile": "NOT-RUN"
+    },
+    {
+      "candidate": "breeze-kissed-03",
+      "runId": "20260907T0051428731478Z-4e20f667bed44e01a2a2c2c42df23f6a",
+      "status": "FAIL",
+      "assertions": 633,
+      "failureCount": 3,
+      "warnings": 0,
+      "cleanupExact": true,
+      "independentlyRestored": true,
+      "manifestEntries": 968,
+      "restoredManifestSha256": "7d02451510d9644fc2569ad699cd81e2be04c98a7b35b3df9857fcfe428bcf21",
+      "transactionSha256": "500dfcaf18015f522cf8e0d563bb33a178adc7eaae2a9eeb07c501407ae9c69b",
+      "sourceStateSha256": "629c33b9cc0c0c0bb67cd0f328111b1a92589bb3d42cd8e62366c975f316f2fe",
+      "packageSha256": "cf004794690996651d56a36056bcb75c8a0316f7e6b3229b3e27dd68436fd137",
+      "dllSha256": "0669751a0eee0ad74682271a3962669d48baeaca1d87c54a14c48877f21aac88",
+      "dllMvid": "c6f38539-a532-43c1-ae76-e8a54e6ce5e2",
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "saveStateTouched": false,
+      "processes": 0,
+      "hashes": [
+        {
+          "file": "compatibility-attribution-log-breeze-kissed-03-only.json",
+          "sha256": "126f953489ffd53cfa70f95c2b3485a70acbe33d87547a832899cae9a282f1d3"
+        },
+        {
+          "file": "elemental-breeze-kissed.json",
+          "sha256": "c3a7269666ae468a371fae433fa8b8a46e13706d982a61215ee91e92696c996b"
+        },
+        {
+          "file": "output_log-breeze-kissed-03-only.txt",
+          "sha256": "c923fff4ca8b343fbb10eb55f3ea13a7ffdeab16ea40cc9d61a80cf3a88c6ba6"
+        },
+        {
+          "file": "runtime-evidence.json",
+          "sha256": "0aea8f8dd4cb48ffcd906e58802d581eeace4d9984ad915fd94f9e8828fa1355"
+        },
+        {
+          "file": "runtime-result.json",
+          "sha256": "f5c61458d5be376b531206491b18cdd202910320c79c5d36b4ba8d17d779ec5c"
+        }
+      ],
+      "cause": "Calm Winds accepted a native swift command but ContextActionApplyBuff dereferenced uninitialized DurationValue before checking Permanent (native IL_002E/0052). Actual calm/AC and fixture-lifetime assertions failed. Initialize native duration data; do not infer buff success from command.Success.",
+      "combinedProfile": "NOT-RUN",
+      "additionalDiagnostics": "Two presentation-only ac-player-log.failed entries from absent main-menu BattleLogView. Next fixture isolates only final IPlayerCombatLogSink during each exact disposable firearm attack; no mechanic or production logger bypass."
+    },
+    {
+      "candidate": "breeze-kissed-02",
+      "runId": "20260907T0042553947046Z-573aee761eb74cbab3ffa8963afc4ff1",
+      "status": "FAIL",
+      "assertions": 624,
+      "failureCount": 0,
+      "warnings": 0,
+      "cleanupExact": true,
+      "independentlyRestored": true,
+      "manifestEntries": 968,
+      "restoredManifestSha256": "885741db64f1f5f7d68934ee9cf5dc8edf21f6ecd5fda23fd650f5701bc326d1",
+      "transactionSha256": "2be6dc2048d9e06de83495a7d4a652902764cae908acbf5e3d6d0a0a8ab969e3",
+      "sourceStateSha256": "b6bfb6b1399b1f26fa057a53f24f05202ed93e49cc7e04fc458d952fbe70a75c",
+      "packageSha256": "114c8f44c59d9d22c80438e102e6480f26fcf7e8a0cc68607239b8db514d69f7",
+      "dllSha256": "f279afd3388850264f1980801596dcd684c3e7adba352176fc9a9404b0ff6785",
+      "dllMvid": "0fd9dc7c-9eda-436d-9c9a-d6b177e4ee85",
+      "steamAppId": 640820,
+      "guardedRequestAccepted": true,
+      "saveStateTouched": false,
+      "processes": 0,
+      "hashes": [
+        {
+          "file": "compatibility-attribution-log-breeze-kissed-02-only.json",
+          "sha256": "9fe1d2bc91438b32ab1d890abdf38f518cf88d3bc8c0dcd8bc86c8ddf18116ea"
+        },
+        {
+          "file": "elemental-breeze-kissed.json",
+          "sha256": "07a4f77bdf60f002046e2d448413fe781365b5666d0fcac84223affae7d2c513"
+        },
+        {
+          "file": "output_log-breeze-kissed-02-only.txt",
+          "sha256": "0b78dd4f7f8e3834157f5ea7ba032473010cd78a5e5d717e77b937f4a2b8516b"
+        },
+        {
+          "file": "runtime-evidence.json",
+          "sha256": "003801bcdf1a91443e17cdc2589c9e8e6994002d7da1413f69e12f8d68665046"
+        },
+        {
+          "file": "runtime-result.json",
+          "sha256": "1a25b9d6f5b2b34e0668c6f98313ed2f7a15a230f27d1aa3bc6e21ff954e2051"
+        }
+      ],
+      "cause": "Fixture-only ArgumentNullException: temporary weapon enchantment MechanicsContext supplied a null blueprint. Corrected to the exact disposable crossbow blueprint. Completed native crossbow, melee exclusion and loaded-firearm controls pass; overall FAIL.",
+      "combinedProfile": "NOT-RUN"
+    },
+    {
+      "candidate": "breeze-kissed-01",
+      "runId": "20260906T2322334626326Z-440cf849339848caa54541a3dd47755a",
+      "status": "FAIL",
+      "assertions": 620,
+      "warnings": 0,
+      "resultSha256": "d0a32003b63657a7692aacfec8ae0336832aaecc2c0fdd0f8733fe3b703e9e08",
+      "evidenceSha256": "a40173ea9bbf400546ef7c383d07d97f9ffdbeef7027e384a2cb25b1e1b05c8b",
+      "mechanicSha256": "164a1c1ded3326527a241e677b8829afcf8e99998289a0a9b7622a32cec7ed89",
+      "logSha256": "dce7e6726d1c19f3c72b391392eab4a3a5749dc573cf6d590990b4685b089d99",
+      "summarySha256": "7e9066160e4cf5120609d8bf928c43e2f7a2b84ead030287585e9d1ba2c3710c",
+      "transactionSha256": "70901047066b0986c8ee8e660cf55ebd5bc91f6e534cb04b7253715e308b76b3",
+      "independentlyRestored": true,
+      "manifestEntries": 968,
+      "observations": [
+        {
+          "name": "GeneralSylph-hostility",
+          "pass": true,
+          "observed": "native request-local hostile factions"
+        },
+        {
+          "name": "GeneralSylph-native-fixture-lifetime",
+          "pass": true,
+          "observed": "errors=0;exceptions=0"
+        },
+        {
+          "name": "fixture-cleanup",
+          "pass": true,
+          "observed": "exact original units, clock, random, projectiles and controller"
+        }
+      ],
+      "cleanupExact": true,
+      "sourceStateSha256": "473474779bb605b324ccde1749f138cf9c14e2e36cd6ad89b34c82c3f05ee90e",
+      "packageSha256": "182f81624a452606dbc151cf243877851c02da6863cb38956ed97d5a6eae75fa",
+      "dllSha256": "56e95dfe38d3a5cd4aba0a32faa69515d62e12f0b18fdd5f532a756aaece5261",
+      "dllMvid": "3268838a-53fd-4e37-aea0-0153d8703721",
+      "cause": "The third baseline was an empty project firearm. Exact native/project discharge INFO shows Empty, zero rounds, AutoMiss; native AutoMiss exits before AC. No Breeze provider had yet been installed.",
+      "combinedProfile": "NOT-RUN",
+      "saveStateTouched": false
+    }
+  ],
   "releaseCUndineBreathPersistenceQualification": {
     "status": "PASS-FOCUSED-RTWP-AND-TEN-TRAIT-PERSISTENCE; NOT-FULL-RELEASE-C",
     "basedOnCommit": "cf2426ac092b6bed33ff721fca722be9486f5e89",
@@ -4120,16 +4878,16 @@
   "releaseCProgress": {
     "authoritativeRules": "AUDITED (Archives of Nethys race pages and alternate-racial-trait replacement rule)",
     "replacementPolicy": "IMPLEMENTED-TESTED (3 semantic slots; 21 traits; all legal powersets, invalid overlaps, heritage matrices, activation orders, remove/re-add, and marker reconstruction)",
-    "stableIdentities": "IMPLEMENTED-TESTED (72 fixed manifest identities: 62 framework, 3 blood buffs, 4 Efreeti identities, 3 Crystalline resource/buff/mode identities)",
+    "stableIdentities": "IMPLEMENTED-TESTED (83 fixed manifest identities: 62 framework, 3 blood buffs, 4 Efreeti, 3 Crystalline, 4 Undine breath and 7 Breeze-Kissed identities)",
     "selectionGraph": "IMPLEMENTED-RUNTIME-PASS (race-owned obligatory primary-slot selections; exact overlap exclusions; 180 native retain selections through creation/respec)",
     "reconciler": "IMPLEMENTED-FRAMEWORK-RUNTIME-PASS (69 legal sets, 207 heritage rows, 414 order rows, 21 marker-first cases; exact owned providers; spent-resource orphan regression; trait-specific persistence still pending)",
     "versionTransition": "0.0.117-elemental-traits ACTIVE; active build/runtime/compatibility controls updated; historical release gates preserved",
-    "traitMechanics": "Fifteen prior native-proven mechanics, including seven-trait persistence and Efreeti migration; Crystalline core now passes two guarded native profiles (10168 assertions) but complete ray/lifecycle/persistence boundaries remain; five other mechanics unimplemented; not a Release C PASS",
+    "traitMechanics": "Nineteen mechanics have incremental native proof, including Breeze core (11376 assertions in two profiles). Treacherous Earth and Nereid Fascination remain unimplemented. Broader semantic boundaries and full lifecycle remain; not a Release C PASS.",
     "summonInsights": "IMPLEMENTED-INCREMENTAL-NATIVE-AND-PERSISTENCE-PASS (both spell families, typed duration/exclusions/count/pool/cleanup; native observer lifetime, pinned legacy migration mechanics and six-trait OFF/ON native-selection save cycle pass; full lifecycle remains)",
     "bloodTraits": "IMPLEMENTED-INCREMENTAL-NATIVE-AND-PERSISTENCE-PASS (native damage/healing/cap/rest/exclusions; save-deactivation cleanup defect fixed; nine active buffs and spent capacity survive OFF load and level-up; rest/re-spend/ON/respec/absence pass; complete lifecycle remains)",
-    "deterministicTests": "PASS (1423/1423 Crystalline core candidate; complete repository validation, clean Release build and strict 135-entry package). Earlier candidate results retain their original scope.",
+    "deterministicTests": "PASS (1432/1432 Breeze core candidate; complete repository validation, clean Release build and strict 135-entry package). Earlier candidate results retain their original scope.",
     "runtime": "FIRST-PASSIVE-SLICE-PASS (8/8 guarded processes, 13397/13397 assertions, zero warnings; includes full framework and inherited Ifrit/Acadamae regressions)",
-    "persistence": "FRAMEWORK-PASS plus SEVEN-TRAIT-INCREMENTAL-PASS (Efreeti/Blood/Insight native selections, OFF/ON load, spent uses/healing and active buffs, level/rest/respec/absence); exact ledger in releaseCEfreetiQualification. Other fourteen traits including Crystalline and full lifecycle remain unqualified.",
+    "persistence": "FRAMEWORK-PASS plus TEN-TRAIT-INCREMENTAL-PASS (Efreeti/Blood/Insight/Crystalline/Undine breath native selections, OFF/ON, spent uses/capacity and active buffs, level/rest/respec/absence); exact ledger in releaseCUndineBreathPersistenceQualification. Eleven other traits including Breeze and full lifecycle remain unqualified.",
     "compatibility": "FRAMEWORK-PASS plus FIRST-PASSIVE-SLICE-PASS (including combined OFF); subsequent Insights/blood candidate passes KMG-only and highest-risk combined ON (four processes, 9680 assertions, zero warnings, two exact restorations); final six-profile and generic module-boundary reruns pending",
     "implementation": "RELEASE C IN PROGRESS; NOT A RELEASE PASS"
   },
@@ -5769,13 +6527,13 @@
     "elementalActive": 68
   },
   "currentManifest": {
-    "total": 1856,
-    "active": 1854,
+    "total": 1867,
+    "active": 1865,
     "reserved": 2,
-    "elementalTotal": 219,
-    "elementalActive": 218,
+    "elementalTotal": 230,
+    "elementalActive": 229,
     "elementalReserved": 1,
-    "elementalBlueprints": 190,
+    "elementalBlueprints": 201,
     "elementalVisualResources": 28
   },
   "newIdentities": [
@@ -5819,6 +6577,20 @@
       "count": 3,
       "guidPrefix": "e117e1e0a17a4acec001",
       "range": "e117e1e0a17a4acec001000000000070..e117e1e0a17a4acec001000000000072",
+      "authority": "blueprints/blueprints.json and ElementalRaceIdentityCatalog.TraitMechanicSymbols()"
+    },
+    {
+      "release": "C-undine-breath-mechanics",
+      "count": 4,
+      "guidPrefix": "e117e1e0a17a4acec001",
+      "range": "e117e1e0a17a4acec001000000000073..e117e1e0a17a4acec001000000000076",
+      "authority": "blueprints/blueprints.json and ElementalRaceIdentityCatalog.TraitMechanicSymbols()"
+    },
+    {
+      "release": "C-breeze-kissed-mechanics",
+      "count": 7,
+      "guidPrefix": "e117e1e0a17a4acec001",
+      "range": "e117e1e0a17a4acec001000000000077..e117e1e0a17a4acec001000000000083",
       "authority": "blueprints/blueprints.json and ElementalRaceIdentityCatalog.TraitMechanicSymbols()"
     }
   ],

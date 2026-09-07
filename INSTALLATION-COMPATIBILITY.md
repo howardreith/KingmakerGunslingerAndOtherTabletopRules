@@ -23,6 +23,14 @@ retained visual warnings.
 
 ## Supported baseline
 
+The [Breeze-Kissed native core checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md)
+passes KMG-only and highest-risk combined with the same archived candidate:
+11,376 assertions, independently exact 968-entry mod/settings restorations,
+no save access and no remaining game. Four pre-existing combined Favored
+Class diagnostic signatures remain; no FCB behavior or optional dependency
+is added. This does not replace the pending final six-profile/module matrix,
+Breeze persistence, or absent/NOT-RUN Visual Adjustments coverage.
+
 The later [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md)
 adds actual ten-trait installed-copy OFF/ON persistence and renewed pinned
 0.0.114 migration alongside both native profiles. Nine processes pass 11,325

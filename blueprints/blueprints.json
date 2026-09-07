@@ -13512,6 +13512,34 @@
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath.Ability", "guid": "e117e1e0a17a4acec001000000000076",
       "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Owned five-foot native acid cone with non-poison Sickened for three rounds on a failed Reflex save."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Resource", "guid": "e117e1e0a17a4acec001000000000077",
+      "plannedType": "BlueprintAbilityResource", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "One independent persisted daily gust; zero suppresses wind defense until ordinary rest."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Gust", "guid": "e117e1e0a17a4acec001000000000078",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native Standard-action Bull Rush or Trip choice at thirty feet."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.BullRush", "guid": "e117e1e0a17a4acec001000000000079",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native ordinary Bull Rush formula; shared Breeze-Kissed use only."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Trip", "guid": "e117e1e0a17a4acec001000000000080",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native ordinary Trip formula; shared Breeze-Kissed use only."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmedBuff", "guid": "e117e1e0a17a4acec001000000000081",
+      "plannedType": "BlueprintBuff", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native permanent voluntary calm state; no VFX or mechanical modifier."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmWinds", "guid": "e117e1e0a17a4acec001000000000082",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native swift-action voluntary calm, no daily use spent."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.RenewWinds", "guid": "e117e1e0a17a4acec001000000000083",
+      "plannedType": "BlueprintAbility", "status": "active", "milestone": "Elemental Traits 0.0.117", "notes": "Native swift-action renewal while daily capacity remains; never refills a resource."
     }
   ]
 }

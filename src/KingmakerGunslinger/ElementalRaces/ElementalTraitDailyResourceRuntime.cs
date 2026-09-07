@@ -49,6 +49,7 @@ namespace KingmakerGunslinger.ElementalRaces
         internal static void RemoveInactive(UnitDescriptor owner,
             ElementalAlternateTraitBlueprints trait, UnitPartElementalHeritageState state)
         {
+            ElementalBreezeKissedRuntime.RemoveInactive(owner, trait);
             foreach (BlueprintActivatableAbility mode in trait.Mechanics().OfType<BlueprintActivatableAbility>())
             {
                 foreach (ActivatableAbility fact in owner.ActivatableAbilities.Enumerable.Where(value =>
@@ -85,6 +86,7 @@ namespace KingmakerGunslinger.ElementalRaces
             foreach (ElementalAlternateTraitBlueprints trait in race.Traits())
             {
                 bool active = owner.HasFact(trait.Provider);
+                if (!ElementalBreezeKissedRuntime.IsExact(owner, trait, active)) return false;
                 foreach (BlueprintActivatableAbility mode in trait.Mechanics().OfType<BlueprintActivatableAbility>())
                     if (owner.ActivatableAbilities.Enumerable.Count(value => value != null &&
                             ReferenceEquals(value.Blueprint, mode)) != (active ? 1 : 0) ||

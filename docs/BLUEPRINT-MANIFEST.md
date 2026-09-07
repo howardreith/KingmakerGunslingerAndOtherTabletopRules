@@ -14,7 +14,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1860 stable identifiers: 1858 active and 2 reserved.
+Validator contract: 1867 stable identifiers: 1865 active and 2 reserved.
 
 The second reservation, `KMG.ElementalRaces.Diagnostics.ProbeRace`
 (`57005fca40ab4775ae2fea5613214054`), is development-only. Ordinary bootstrap
@@ -22,7 +22,7 @@ does not register it. The guarded Elemental Races probe temporarily registers
 the exact identity without publishing it to `CharacterRaces`, then removes the
 owned dictionary/list entries before completion.
 
-Elemental Races owns 222 active manifest identities. The 0.0.114 foundation
+Elemental Races owns 229 active manifest identities. The 0.0.114 foundation
 contains 24 mechanical race, feature, resource, and SLA blueprints; 16
 Human-compatible body-wrapper and visual-preset blueprints; and 28
 `EquipmentEntity` body, head, and optional horn recolor proxies. Release A
@@ -39,7 +39,7 @@ and activatable mode. Acid Breath and Ooze Breath each add an ability and
 independent daily resource. The later RTWP and ten-trait save checkpoint adds
 no identities; native action commitment, saved effects and spent amounts pass.
 Turn-based actions, full lifecycle and release-wide gates remain pending.
-All 194 elemental blueprint identities and all
+All 201 elemental blueprint identities and all
 28 resource proxies register on every startup so saved race, heritage,
 provider, resource, feat, trait, active-effect, and doll references continue to
 resolve while selector publication is disabled. The resource proxies reuse
@@ -86,6 +86,21 @@ Undine breath additions under `KMG.ElementalRaces.Traits.Undine`:
 | `AcidBreath.Ability` | `e117e1e0a17a4acec001000000000074` |
 | `OozeBreath.Resource` | `e117e1e0a17a4acec001000000000075` |
 | `OozeBreath.Ability` | `e117e1e0a17a4acec001000000000076` |
+
+Breeze-Kissed's incremental native core appends seven identities under
+`KMG.ElementalRaces.Traits.Sylph.BreezeKissed`; no previous GUID changes:
+both native profiles pass; broader attack-source, turn-based and fresh-save
+gates remain. The current Release C graph has 83 active identities.
+
+| Suffix | Stable GUID |
+| --- | --- |
+| `.Resource` | `e117e1e0a17a4acec001000000000077` |
+| `.Gust` | `e117e1e0a17a4acec001000000000078` |
+| `.BullRush` | `e117e1e0a17a4acec001000000000079` |
+| `.Trip` | `e117e1e0a17a4acec001000000000080` |
+| `.CalmedBuff` | `e117e1e0a17a4acec001000000000081` |
+| `.CalmWinds` | `e117e1e0a17a4acec001000000000082` |
+| `.RenewWinds` | `e117e1e0a17a4acec001000000000083` |
 
 Each blood-buff symbol is its visible trait marker symbol plus `.FastHealingBuff`.
 Daily actual-healing expenditure is saved in `UnitPartElementalBloodCapacity`;

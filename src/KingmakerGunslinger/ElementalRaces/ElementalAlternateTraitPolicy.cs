@@ -314,7 +314,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     ElementalRacialTraitSlot.ElementalAffinity),
                 T(ElementalAlternateTraitId.BreezeKissed,
                     ElementalHeritageRace.Sylph, "Breeze-Kissed",
-                    "+2 racial AC against nonmagical ranged attacks while winds remain, with one daily Bull Rush or Trip gust.",
+                    ElementalBreezeKissedPolicy.Description,
                     ElementalRacialTraitSlot.ElementalAffinity),
                 T(ElementalAlternateTraitId.LikeTheWind,
                     ElementalHeritageRace.Sylph, "Like the Wind",

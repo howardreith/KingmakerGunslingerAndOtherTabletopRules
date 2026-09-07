@@ -23,11 +23,20 @@ not close any unfinished Release C gate.
 
 None established.
 
+Breeze-Kissed's [native core](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md)
+now passes all 1,432 tests, clean build/package and two profiles with 11,376
+assertions. Both 968-entry restorations independently pass. The real Calm
+duration initialization defect and narrowly scoped fixture issues were fixed;
+all prior failures/mixed results remain in STATE. Broader attack-source
+classification, native turn-based and fresh-save/lifecycle proof remain open,
+not a release PASS or a hard stop. Only Treacherous Earth and Nereid
+Fascination remain unimplemented.
+
 Acid Breath and Ooze Breath now also pass native RTWP cooldown commitment
 and ten-trait save/OFF/ON/rest/level/respec/fresh-absence qualification.
 All 1,428 tests and nine processes pass 11,325 assertions, with three exact
 968-entry restorations. Breath-specific turn-based actions, eleven other
-traits' saves, Treacherous Earth, Breeze-Kissed, Nereid Fascination and final
+traits' saves, Treacherous Earth, Breeze-Kissed's remaining gates, Nereid Fascination and final
 release gates remain open.
 This is incomplete qualification, not a feature-specific hard stop. See the
 [action/save report](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md).

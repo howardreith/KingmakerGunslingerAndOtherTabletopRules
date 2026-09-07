@@ -122,11 +122,11 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG.ElementalRaces.", StringComparison.Ordinal) &&
                 string.Equals((string)value["status"], "active",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(222, elemental.Length,
+            Assertions.Equal(229, elemental.Length,
                 "Production elemental identity count changed.");
-            Assertions.Equal(1860, all.Length,
-                "Manifest total must include 222 production elemental identities.");
-            Assertions.Equal(1858, all.Count(value => string.Equals(
+            Assertions.Equal(1867, all.Length,
+                "Manifest total must include 229 production elemental identities.");
+            Assertions.Equal(1865, all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
             Assertions.Equal(all.Length, all.Select(value =>
@@ -190,22 +190,29 @@ namespace KingmakerGunslinger.DomainTests
                 "KMG.ElementalRaces.Traits.Undine.AcidBreath.Resource",
                 "KMG.ElementalRaces.Traits.Undine.AcidBreath.Ability",
                 "KMG.ElementalRaces.Traits.Undine.OozeBreath.Resource",
-                "KMG.ElementalRaces.Traits.Undine.OozeBreath.Ability"
+                "KMG.ElementalRaces.Traits.Undine.OozeBreath.Ability",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Resource",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Gust",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.BullRush",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Trip",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmedBuff",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmWinds",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.RenewWinds"
             }).ToArray();
             Assertions.Equal(expected.Length, release.Length,
                 "Release C framework and mechanic manifest count drifted.");
-            Assertions.Equal(4, release.Count(value => string.Equals(
+            Assertions.Equal(5, release.Count(value => string.Equals(
                 (string)value["plannedType"], "BlueprintBuff", StringComparison.Ordinal)),
-                "The three blood effects and opt-in ray marker require stable buff identities.");
-            Assertions.Equal(4, release.Count(value => string.Equals(
+                "Blood, ray consent and voluntarily calmed winds require stable buff identities.");
+            Assertions.Equal(5, release.Count(value => string.Equals(
                 (string)value["plannedType"], "BlueprintAbilityResource", StringComparison.Ordinal)),
-                "Efreeti Magic, Crystalline Form and both breaths have independent fixed resources.");
+                "Efreeti Magic, Crystalline Form, both breaths and Breeze-Kissed have independent fixed resources.");
             Assertions.Equal(1, release.Count(value => string.Equals(
                 (string)value["plannedType"], "BlueprintActivatableAbility", StringComparison.Ordinal)),
                 "Crystalline Form has one save-stable consent toggle.");
-            Assertions.Equal(5, release.Count(value => string.Equals(
+            Assertions.Equal(10, release.Count(value => string.Equals(
                 (string)value["plannedType"], "BlueprintAbility", StringComparison.Ordinal)),
-                "Efreeti Magic needs its parent/variants and each breath needs one stable ability.");
+                "Daily traits include exact parents/variants and both swift wind controls.");
             Assertions.Equal(10, release.Count(value => string.Equals(
                 (string)value["plannedType"], "BlueprintFeatureSelection",
                 StringComparison.Ordinal)),

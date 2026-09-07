@@ -591,7 +591,7 @@ plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
 Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
-identities extend the append-only ledger to 1860 stable IDs: 1858 active and 2 reserved. The
+identities extend the append-only ledger to 1867 stable IDs: 1865 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native
@@ -632,6 +632,15 @@ Native UnitState owns the audited Sickened system companion; the harness
 checks it without directly creating/removing it. Older matrices and all
 production identities remain unchanged. Breath-specific turn-based actions,
 eleven other traits' persistence and full lifecycle remain separate gates.
+Breeze-Kissed's incremental native core adds seven fixed identities and a local
+native AC subscriber. Completed physical weapon metadata supplies the /magic
+boundary. Gusts use ordinary native CMB; explicit swift calm/renew and daily
+resource memory own the wind state. Two guarded profiles pass native commands,
+cooldowns, maneuvers, AC and exact fixture/restoration controls. Broader
+ability-source/nonphysical ranged attacks, turn-based actions and fresh-save
+lifecycle are separate open gates. Its dedicated scenario isolates only
+request-local animation/controller timing and the final firearm UI sink;
+native publication validation, ammunition and misfire remain active.
 Crystalline Form has incremental native core proof: its owned provider
 uses native racial AC modifiers and a local projectile-hit subscriber, with
 an exact semantic ray catalog instead of the overbroad Ray weapon category.
@@ -654,7 +663,7 @@ between-ray clock scheduling are isolated; finally restores the exact clock.
 Its remaining-trait read-only audit uses complete explicit DTO serialization
 and proves unchanged catalog/component references, not mechanic correctness.
 `elemental-races` setting gates race, feat, and trait-selector publication; no
-module identity or schema member was added. All 222 active elemental identities
+module identity or schema member was added. All 229 active elemental identities
 remain registered while selector publication is disabled. Exact 0.0.114
 markerless-General migration and the
 24-fixture ON/OFF/ON reconstruction transaction prove that reconciliation

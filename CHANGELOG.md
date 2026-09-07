@@ -2,6 +2,13 @@
 
 ## 0.0.117-elemental-traits
 
+- Adds Breeze-Kissed's owned native core with seven fixed identities: ranged
+  defense, swift calm/renew and a daily Standard Bull Rush/Trip using ordinary
+  native CMB. All 1,432 tests, clean build/package and two guarded profiles
+  pass 11,376 assertions with exact restoration. Broader attack-source,
+  turn-based and fresh-save/lifecycle gates remain; not full Release C PASS.
+  See the [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md).
+
 - Integrates the separately published 0.0.115 Brown-Fur direct-cast fix from
   authoritative master without changing elemental identities or mechanics.
   All 1,431 tests, clean build/package, 30 compiled API checks and six guarded

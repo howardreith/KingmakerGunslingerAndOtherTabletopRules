@@ -206,7 +206,8 @@ Unchecked items are pending and must not be inferred from builds or historical
   every test/build/package/runtime/compatibility/persistence result and hash,
   blockers/NOT-RUN limitations, commits, and PR URL if created.
 - [ ] No generated release ZIP is committed.
-- [ ] Nothing is merged, tagged, or publicly released.
+- [ ] Nothing is merged to master/main, tagged, or publicly released. The
+  owner's explicit master-to-feature integration is recorded separately.
 
 ### Crystalline Form development checkpoint (not release acceptance)
 
@@ -234,3 +235,21 @@ Unchecked items are pending and must not be inferred from builds or historical
   Zero exact transient errors; all 60 visual/DollData warnings retained.
   The retained 116 artifact is unchanged, not retroactively preview-qualified.
 - [ ] Complete native catalog and full trait lifecycle.
+
+### Breeze-Kissed native core checkpoint (not release acceptance)
+
+- [x] Seven stable mechanic identities; existing affinity-slot marker/provider
+  unchanged; pure 256-state AC policy and compiled graph coverage.
+- [x] Complete validation, all 1,432 tests, clean exact Release and strict
+  135-entry package checks pass.
+- [x] Native KMG-only/combined: 11,376 assertions, 380 Breeze observations,
+  all three Sylph heritages. Actual ranged/melee/masterwork/enhancement AC,
+  Swift Calm/Renew, Standard Bull Rush/Trip, ordinary CMB/current Strength,
+  cancellation/commit, success/failure/immunity and Trip prone controls pass.
+- [x] Native resource exhaustion/rest, level-up, provider removal/re-add,
+  affinity restoration and exact fixture cleanup. Two independent complete
+  968-entry mod/settings restorations; no save access or remaining game.
+- [ ] Broader ability-source and nonphysical nonmagical ranged-attack controls.
+- [ ] Native turn-based action economy and full lifecycle.
+- [ ] Breeze fresh-process save/OFF/ON/rest/level/respec and exact cleanup.
+- [ ] Complete remaining-trait and release-wide compatibility/module gates.

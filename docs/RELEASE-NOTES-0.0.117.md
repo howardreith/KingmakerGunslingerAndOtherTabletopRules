@@ -45,6 +45,14 @@ transient diagnostic errors remain explicit. This is not full Release C PASS.
 
 ## Implemented in this checkpoint
 
+The [Breeze-Kissed native core](ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md)
+adds seven fixed identities and passes all 1,432 tests, clean build/package
+and two guarded profiles (11,376 assertions; exact 968-entry restorations).
+Native ranged AC, swift calm/renew, ordinary CMB gust variants and daily
+resource/action controls pass. Broader attack-source classification,
+turn-based actions and fresh-save/lifecycle proof remain open. The current
+manifest is 1,867 total / 1,865 active; 229 active elemental, 83 Release C.
+
 The [Undine breath checkpoint](ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md)
 adds Acid Breath and Ooze Breath with independent daily resources and native
 five-foot acid-cone resolution. Current Constitution and half total level set
@@ -116,7 +124,7 @@ save-backed processes (230 assertions, 46 retained visual/DollData warnings).
 Native selections, nine partially spent active blood buffs, OFF/ON load,
 level-up, rest, respec and fresh absence pass. Native provider deactivation no
 longer incorrectly removes a saved buff; exact marker loss still cleans it up.
-Three unimplemented mechanics, breath turn-based action controls, complete Crystalline qualification, the other
+Two unimplemented mechanics, Breeze/breath turn-based action controls, complete Crystalline qualification, the other
 eleven traits' persistence, full lifecycle, final
 compatibility/module matrices, full release qualification, and final
 documentation remain pending.
