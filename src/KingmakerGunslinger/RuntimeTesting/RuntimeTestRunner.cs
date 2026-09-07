@@ -495,6 +495,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return;
             }
 
+            ElementalCharacterCreationRoutingObserver.Arm(decision.Request);
             var runner = new RuntimeTestRunner(decision.Request, context);
             context.ModEntry.OnUpdate += runner.OnUpdate;
             context.Logger.Info(
@@ -831,6 +832,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (ResourcesLibrary.Preloading) return;
                     Complete(ElementalHeritageBlueprintScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveElementalCharacterCreationRouting)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalCharacterCreationRoutingObserver.Run(
                         _context, _request));
                     return;
                 }

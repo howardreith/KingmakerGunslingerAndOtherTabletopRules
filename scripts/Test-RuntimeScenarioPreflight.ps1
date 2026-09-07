@@ -52,6 +52,7 @@ $expected = @(
     'disposable-elemental-sylph-feats',
     'disposable-elemental-undine-feats',
     'observe-elemental-heritage-blueprints',
+    'observe-elemental-character-creation-routing',
     'observe-elemental-alternate-trait-framework',
     'disposable-elemental-heritage-mechanics',
     'disposable-elemental-heritage-slas',

@@ -25,6 +25,9 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("elemental-chargen.observation-identity", ElementalCharacterCreationRoutingTests.ObservationIdentityUsesReferences),
+            Case("elemental-chargen.array-contract", ElementalCharacterCreationRoutingTests.ArraysDistinguishIdentityOrderAndNull),
+            Case("elemental-chargen.observer-read-only", ElementalCharacterCreationRoutingTests.ObserverCannotOperateCharacterCreator),
             Case("martial-performance.identity", MartialPerformanceCompatibilityTests.ExactOptionalIdentityContract),
             Case("martial-performance.absent", MartialPerformanceCompatibilityTests.AbsentProviderIsInert),
             Case("martial-performance.wrong-contract", MartialPerformanceCompatibilityTests.WrongProviderContractFailsClosed),

@@ -51,6 +51,8 @@
     <Compile Include="ElementalFeatNativeAuditTests.cs" />
     <Compile Include="ElementalFeatPolicyTests.cs" />
     <Compile Include="ElementalHeritagePolicyTests.cs" />
+    <Compile Include="ElementalCharacterCreationRoutingTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\CharacterCreationObservationIdentity.cs"><Link>RuntimeTesting\CharacterCreationObservationIdentity.cs</Link></Compile>
     <Compile Include="ElementalAlternateTraitPolicyTests.cs" />
     <Compile Include="ElementalAlternateTraitPassivePolicyTests.cs" />
     <Compile Include="ElementalSummonInsightPolicyTests.cs" />
