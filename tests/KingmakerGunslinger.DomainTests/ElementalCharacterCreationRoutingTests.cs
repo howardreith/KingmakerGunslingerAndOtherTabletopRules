@@ -60,6 +60,35 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("onChargenApply") && source.Contains("callbackInvoked"),
                 "Actual routing and unavailable-state evidence must remain explicit.");
         }
+        internal static void NativeCreatorFixtureIsScopedAndReportsAcceptanceSeparately()
+        {
+            string source = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalCharacterCreationBaselineScenario.cs"));
+            foreach (string required in new[] { "request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline",
+                "new ChargenUnit(", ".HandleLevelUpStart(", "State.NextLevel != 1", "GetProperty(\"CurrentFeatureCollection\"", "GetComponentsInChildren<CharBuildSelectorItem>", "view.Feature.Feature",
+                "_build.SetFeature(", "Actions.SelectAlignment(value)", "_build.Character.IsSelected()", "_build.SetRacialBonus(", "nativeOperationException", "nativeAlive", "ApplyNativeRoll", "read(\"Controller\")", "assigned.SequenceEqual(actual)", "ObserveInnerAssetUnload", "m_InitiallyLoadedEquipmentEntityInnerAssets", "_build.BuyAttribute(", "_build.SpendSkillPoint(", "_controller.State.IsComplete()", "NextEnabled()", "_build.Commit()",
+                "ReferenceEquals(_controller.Unit, _unit.Descriptor)", "ArmSaveGuard()", "DisarmSaveGuard()",
+                "BlockSaveRoutine", "BlockSaveMutation", "loaded.DescriptorReferenceCorrelated", "loaded.StableFingerprint",
+                "ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore)", "_areaBefore == null", "global != null && !ReferenceEquals(global, _controller)",
+                "visible != null && !ReferenceEquals(visible, _controller)", "(!_committed && (global == null || visible == null))", "acceptanceFailures", "baseline observation PASS does not qualify" })
+                Assertions.True(source.Contains(required), "Native creator contract is absent: " + required);
+            foreach (string forbidden in new[] { "StartWithoutAssigningStaticInstance", ".AddSelection(",
+                ".SaveGame(", ".LoadGame(", "_controller.AddStatPoint(", "_controller.SpendSkillPoint(", "KMG_AUTOMATION_BASELINE", "Obligatory =", "IgnorePrerequisites =" })
+                Assertions.False(source.Contains(forbidden), "Fixture bypasses native selection or save scope: " + forbidden);
+        }
+        internal static void DisabledControlCannotBootstrapProductionOrCommitCampaign()
+        {
+            string source = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger",
+                "RuntimeTesting", "DisabledKmgCharacterCreationProbe.cs"));
+            foreach (string required in new[] { "entry.Info.Id != ProbeId", "RuntimeTestRequestParser.TryActivate",
+                "FileMode.CreateNew", "EnsureProductionDisabled", "entry.Loaded || entry.Active", "ModContext.TryGet",
+                "BlueprintBootstrap.Library != null", "loader != \"NotStarted\"", "patch.owner == \"KingmakerGunslinger\"",
+                "ArmDisabledControl", "VerifyUnmodifiedLibrary", "RuntimeTestResultWriter.Write(result" })
+                Assertions.True(source.Contains(required), "Disabled control proof is missing: " + required);
+            foreach (string forbidden in new[] { "Main.Load(", "ModContext.Publish(", ".InstallPatches(", ".PatchAll(",
+                "BlueprintBootstrap.TryInitialize", ".SetValue(", ".LoadGame(", ".SaveGame(" })
+                Assertions.False(source.Contains(forbidden), "Profile B must leave production disabled: " + forbidden);
+        }
         private static string FindRoot()
         {
             var directory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);

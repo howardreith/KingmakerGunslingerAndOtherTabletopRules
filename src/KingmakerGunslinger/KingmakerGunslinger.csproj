@@ -945,6 +945,8 @@
     <Compile Include="RuntimeTesting\ElementalUndineFeatScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageBlueprintScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationRoutingObserver.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterCreationBaselineScenario.cs" />
+    <Compile Include="RuntimeTesting\DisabledKmgCharacterCreationProbe.cs" />
     <Compile Include="RuntimeTesting\CharacterCreationObservationIdentity.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitFrameworkScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitPassiveScenario.cs" />

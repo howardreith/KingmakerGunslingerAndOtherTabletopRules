@@ -74,6 +74,30 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'working-save-elemental-character-creation' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'disposable-elemental-character-creation-baseline' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-character-creation-case' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-global-traits-kmg-disabled-control' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-elemental-character-creation-routing' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1362,6 +1386,17 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw "$Scenario requires exactly saveName=$($metadata.PermittedSaveName)."
         }
     }
+    elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {
+        if ($Parameters.Count -ne 3 -or -not $Parameters.ContainsKey('race') -or
+            -not $Parameters.ContainsKey('class') -or -not $Parameters.ContainsKey('allocation') -or
+            $Parameters.race -isnot [string] -or $Parameters.class -isnot [string] -or
+            $Parameters.allocation -isnot [string] -or
+            $Parameters.race -cnotin @('Ifrit', 'Oread', 'Sylph', 'Undine') -or
+            $Parameters.class -cnotin @('Fighter', 'Gunslinger') -or
+            $Parameters.allocation -cnotin @('point-buy', 'roll')) {
+            throw 'The disposable creator case requires exact allowlisted race, class, and allocation parameters.'
+        }
+    }
     elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
         $allowedProfiles = @(
             'gunslinger-only',
@@ -1517,6 +1552,12 @@ function New-KmgRuntimeRequest {
         fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
         parameters = if ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
+        } elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {
+            [ordered]@{
+                race = [string]$Parameters.race
+                class = [string]$Parameters.class
+                allocation = [string]$Parameters.allocation
+            }
         } elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
             [ordered]@{ profileId = [string]$Parameters.profileId }
         } elseif ($Scenario -ceq 'observe-feature-module-settings') {

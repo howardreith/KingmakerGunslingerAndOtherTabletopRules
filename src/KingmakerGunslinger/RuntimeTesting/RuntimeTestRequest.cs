@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using KingmakerGunslinger.Compatibility;
@@ -218,6 +219,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "startup-timeout-invalid";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
                 request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitCandidateRender ||
                 request.Scenario == RuntimeTestScenarioCatalog
@@ -337,6 +339,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return string.Equals(saveName, ManualSaveLoadObservation.BaselineSave,
                         StringComparison.Ordinal)
                         ? "baseline-save-forbidden" : "save-name-not-allowed";
+            }
+            else if (request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase)
+            {
+                if (request.MainMenuTimeoutSeconds != 0 || request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 || request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 || request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                if (request.Parameters == null || request.Parameters.Count != 3 ||
+                    request.Parameters["race"]?.Type != JTokenType.String ||
+                    request.Parameters["class"]?.Type != JTokenType.String ||
+                    request.Parameters["allocation"]?.Type != JTokenType.String ||
+                    !new[] { "Ifrit", "Oread", "Sylph", "Undine" }.Contains((string)request.Parameters["race"]) ||
+                    !new[] { "Fighter", "Gunslinger" }.Contains((string)request.Parameters["class"]) ||
+                    !new[] { "point-buy", "roll" }.Contains((string)request.Parameters["allocation"]))
+                    return "character-creation-case-not-allowed";
             }
             else if (request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)

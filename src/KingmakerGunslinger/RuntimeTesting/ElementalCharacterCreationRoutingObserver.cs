@@ -46,18 +46,33 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly JArray Failures = new JArray();
         private static RuntimeTestRequest _request;
         private static bool _capturing;
+        private static LibraryScriptableObject _controlLibrary;
         private static int _readOnlyChecks;
         private static bool _beforeCaptured;
         private static bool _afterCaptured;
 
         internal static void Arm(RuntimeTestRequest request)
         {
-            if (request == null || request.Scenario !=
-                RuntimeTestScenarioCatalog.ObserveElementalCharacterCreationRouting)
+            if (request == null || (request.Scenario !=
+                RuntimeTestScenarioCatalog.ObserveElementalCharacterCreationRouting &&
+                request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline &&
+                request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase &&
+                request.Scenario != RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl &&
+                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation))
                 return;
             if (_request != null) throw new InvalidOperationException(
                 "Only one guarded character-creation observation may be armed.");
             _request = request;
+        }
+
+        internal static void ArmDisabledControl(RuntimeTestRequest request, LibraryScriptableObject library)
+        {
+            if (request == null || request.Scenario != RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl ||
+                library == null || BlueprintBootstrap.Library != null)
+                throw new InvalidOperationException("Disabled-control observation requires an unmodified native library.");
+            Arm(request);
+            _controlLibrary = library;
+            Capture("zfavoredclass-constructed-kmg-disabled");
         }
 
         internal static void BeforeOptionalReconciliation(string checkpoint)
@@ -76,13 +91,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _afterCaptured = true;
         }
 
+        internal static void CaptureActiveCheckpoint(string checkpoint) { Capture(checkpoint); }
+
         private static bool Capture(string checkpoint)
         {
             if (_request == null || _capturing) return false;
             _capturing = true;
             try
             {
-                LibraryScriptableObject library = BlueprintBootstrap.Library;
+                LibraryScriptableObject library = _controlLibrary ?? BlueprintBootstrap.Library;
                 if (library == null) return false;
                 BlueprintScriptableObject[] all = library.GetAllBlueprints().ToArray();
                 var selections = new Dictionary<BlueprintFeatureSelection, HashSet<string>>(
@@ -280,6 +297,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["groups"] = new JArray((feature.Groups ?? new FeatureGroup[0]).Select(value => value.ToString())),
                 ["isClassFeature"] = feature.IsClassFeature,
                 ["hideInUI"] = feature.HideInUI,
+                ["hideNotAvailableInUI"] = feature.HideNotAvailibleInUI,
                 ["hideInCharacterSheetAndLevelUp"] = feature.HideInCharacterSheetAndLevelUp,
                 ["ranks"] = feature.Ranks,
                 ["isDlcAvailable"] = feature.IsDlcAvailable(),
@@ -381,6 +399,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["nextPhase"] = build.NextPhase.ToString(),
                 ["nextOrCompleteButtonInteractable"] = button == null ? (JToken)JValue.CreateNull() : button.interactable,
                 ["complete"] = state.IsComplete(),
+                ["allocation"] = new JObject { ["available"] = state.StatsDistribution.Available,
+                    ["canSelectRaceStat"] = state.CanSelectRaceStat,
+                    ["selectedRaceStat"] = state.SelectedRaceStat.HasValue ? state.SelectedRaceStat.Value.ToString() : null,
+                    ["points"] = state.StatsDistribution.Points, ["totalPoints"] = state.StatsDistribution.TotalPoints,
+                    ["skillPointsRemaining"] = state.SkillPointsRemaining,
+                    ["distributionValues"] = JToken.FromObject(state.StatsDistribution.StatValues) },
                 ["remainingSelections"] = state.RemainingSelections(),
                 ["phaseOrder"] = new JArray((build.CharacterBuildPhaseStates ?? new List<CharBPhase>())
                     .Select(value => new JObject { ["reference"] = Id(value), ["phase"] = value.Phase.ToString(),
@@ -400,6 +424,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 ["reference"] = Id(layer), ["active"] = layer.gameObject.activeInHierarchy,
                 ["selectionStateReference"] = Id(selection),
+                ["renderedRows"] = new JArray(layer.GetComponentsInChildren<CharBuildSelectorItem>(true)
+                    .Select(item => new JObject { ["reference"] = Id(item),
+                        ["active"] = item.gameObject.activeInHierarchy,
+                        ["interactable"] = item.Toggle != null && item.Toggle.interactable,
+                        ["selectionStateReference"] = Id(item.FeatureSelection),
+                        ["featureGuid"] = item.Feature?.Feature?.AssetGuid })),
                 ["itemsReference"] = Id(rawItems),
                 ["visibleChoiceCount"] = items == null ? (JToken)JValue.CreateNull() : items.Count(),
                 ["visibleChoiceGuids"] = items == null ? new JArray() :
@@ -431,8 +461,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>();
             Add(assertions, "observation-captured", Snapshots.Count > 0, "snapshots=" + Snapshots.Count);
             Add(assertions, "observation-complete-without-errors", Failures.Count == 0, Failures.ToString());
-            Add(assertions, "pre-reconciliation-observed", _beforeCaptured, _beforeCaptured.ToString());
-            Add(assertions, "post-reconciliation-observed", _afterCaptured, _afterCaptured.ToString());
+            if (_controlLibrary == null)
+            {
+                Add(assertions, "pre-reconciliation-observed", _beforeCaptured, _beforeCaptured.ToString());
+                Add(assertions, "post-reconciliation-observed", _afterCaptured, _afterCaptured.ToString());
+            }
+            else Add(assertions, "disabled-control-no-kmg-reconciliation", !_beforeCaptured && !_afterCaptured,
+                "KMG production reconciliation was never entered.");
             Add(assertions, "observer-preserved-blueprint-arrays", _readOnlyChecks > 0 && Failures.Count == 0,
                 "checks=" + _readOnlyChecks);
             JObject final = Snapshots.Last as JObject;
@@ -450,7 +485,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ((JArray)final["selections"]).OfType<JObject>().Any(row => (string)row["guid"] == (string)guid)));
             Add(assertions, "races-unleashed-callback-selection-coverage", ruSelectionsExact,
                 "Installed registered callbacks inspected without invoking them.");
-            if (final != null && context.FeatureModules.Active.ElementalRaces)
+            if (_controlLibrary == null && final != null && context.FeatureModules.Active.ElementalRaces)
             {
                 JObject[] rows = ((JArray)final["selections"]).OfType<JObject>().ToArray();
                 Add(assertions, "all-four-elemental-heritage-selections", rows.Count(row =>
