@@ -138,6 +138,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-elemental-character-creation-baseline";
         internal const string ObserveElementalCharacterCreationRouting =
             "observe-elemental-character-creation-routing";
+        internal const string DisposableElementalTraitTurnCosts =
+            "disposable-elemental-trait-turn-costs";
         internal const string ObserveElementalAlternateTraitFramework =
             "observe-elemental-alternate-trait-framework";
         internal const string DisposableElementalHeritageMechanics =
@@ -508,6 +510,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveElementalCharacterCreation,
                 WorkingSaveElementalCharacterCreationRegression,
                 WorkingSaveElementalNativeRespec,
+                DisposableElementalTraitTurnCosts,
                 ObserveElementalAlternateTraitFramework,
                 DisposableElementalHeritageMechanics,
                 DisposableElementalHeritageSlas,

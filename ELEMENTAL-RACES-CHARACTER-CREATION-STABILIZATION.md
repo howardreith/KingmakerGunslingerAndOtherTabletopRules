@@ -1293,3 +1293,115 @@ fresh-process lifecycle coverage and final compatibility/migration remain open.
 Human full-screen acceptance is NOT-RUN. The prior installation is restored;
 the final acceptance candidate is not yet installed. Nothing was merged, tagged
 or released.
+
+
+### Native turn-cost instrumentation, pending
+
+The separate guarded disposable-elemental-trait-turn-costs scenario now tests
+Breeze-Kissed Calm/Renew Swift costs, both Gust Standard costs, and Acid/Ooze
+Breath Standard costs in the actual native turn-based controller. It covers all
+three heritages per race, ordinary queued cancellation, blocked same-turn Swift
+reuse, execution completion, daily resources and exact cleanup. No production
+mechanic changes are included. Earlier real-time casts remain distinct evidence;
+this new scenario is pending build and guarded runtime qualification.
+
+
+Native-turn candidate 02 run 20260907T1355390881259Z-disposable-elemental-trait-turn-costs
+is FAIL before any command: native CombatController.Clear invokes
+UpdateNavigationGridTags, which dereferences the absent save-free Astar graph.
+Inspected native IL shows only FlushGraphUpdates and GridGraph.ErodeWalkableArea.
+The fixture now uses the existing guarded summoning precedent: skip only that
+method for the synchronous lifetime of these exact two disposable actors.
+Normal play always executes the native method. Native turns, enrollment,
+commands, cooldowns and resources remain authoritative and unmodified.
+Fixture cleanup and external Mods/UMM restoration were exact on the failed run;
+no save was loaded or written. This is a fixture initialization failure, not an
+ability-cost result. Candidate 02 source fingerprint 118153469eba799991be52fea82044600a933c0dee1305b59d40c53ee22bba18;
+ZIP 11adbfbabb36417d7b7473e1def26a91b0737dae4ee4f3ac8ed3d1c3f4457a10;
+DLL a2486b5e977ee534f1180c8dc55e0c1670c28a4d41268b88a747441ec4835043;
+MVID 12ca3493-93c5-4eff-9c41-39b71ddac1f3. Full 1,449 tests and build/package checks
+passed. Preflight passes 255 checks when run without concurrent artifact writes;
+two redirected attempts retained artifact-tree fingerprint failures. The first
+ran alongside packaging and the second wrote its own output inside that tree.
+No preflight production check was weakened or removed.
+
+
+Candidate 04 run 20260907T1405490013369Z-disposable-elemental-trait-turn-costs
+remains FAIL before an ability command. Native StartTurn offset 0x142 calls
+AstarPath.active.UpdateGraphs for another actor's obstacle bounds. This is
+another absent-grid fixture boundary, not a UI exception. The existing summoning
+fixture sets AvoidanceDisabled on each exact disposable actor; the turn fixture
+now follows that precedent and restores both previous values before disposal.
+Native cooldown/buff TickOnUnit calls also follow that established fixture.
+Both failed runs restore all external folders/settings and save audits exactly.
+Build 03 failed compilation from an incorrect Harmony namespace; build 04 uses
+the repository's Harmony12 reference and passed all 1,449 tests and package gates.
+Candidate 04 fingerprint a84a0b86c720bed100078de5f880aa5e73ce1f3d278aa908a0bada1d1676ff54;
+ZIP 8ed63113f311bb0616cc2feb98dae43f45b64102a457cfd3fd0a65653a43b717;
+DLL 8780d6159cdba6aae1d15d385b80b326a938fcc8246d0c19d4fda4ba81da9210;
+MVID 6c398fb1-53f5-41a8-9e0e-7e9843d4824f. Qualification remains pending.
+
+
+Candidate 05 run 20260907T1412550777926Z-disposable-elemental-trait-turn-costs
+remains FAIL: the native caster turn and cancellation passed, but Calm did not
+start. Native TickCommandTurnBased requires Acting/Ending. Native TurnController.Tick
+returns before advancing Preparing when both selection services are absent.
+The fixture now creates and destroys a native SelectionManager component during
+its exact synchronous lifetime and ticks the native turn after queueing. It does
+not assign TurnStatus, bypass native command gates, or manually apply cooldowns.
+Native Awake/SelectUnit and the empty service boundary were inspected before the
+change. The previous exact static instance is restored and asserted on cleanup.
+Candidate 05 source fingerprint afa19e623cde0733ae1518c2ea911f29e70b9314f56dc3948785d0f6935e362d;
+ZIP 3ca7fcc515eb8ea9879d763beb07bf5571a0044ef80916662e49d82ed9106173;
+DLL 7787704ecca7d380506b9df662b55431411d9cf60fcbfbe5525efee9eab88894;
+MVID 82e17e16-2422-4a44-b92a-bd9e1456ee75. All 1,449 tests/build/package gates
+passed; external restoration and save audits were exact. No ability-cost PASS
+is claimed from that failed attempt.
+
+
+Native-turn candidate 07 run 20260907T1426043590480Z-disposable-elemental-trait-turn-costs
+is FAIL at bounded caster-turn readiness; candidate 08 run
+20260907T1435309557520Z-disposable-elemental-trait-turn-costs reaches a real Acting
+caster turn with valid target, combat readiness, no UI wait and zero cooldown,
+but Calm has not started. Both preserve exact cleanup and external restoration.
+Candidate 08 adds retained constructor/turn traces, including failures before a
+scope constructor returns. Native CanStart for these non-Kineticist abilities
+unconditionally returns true; inspected ShouldStartCommand also requires an
+unscheduled, nonbusy native hand-equipment state. The next instrumentation ticks
+the native hand controller and records each remaining gate instead of bypassing
+startup. No mechanical cost PASS is inferred from either failed run.
+Build 06 exposed two private native methods; build 07 uses their exact inspected
+reflection signatures. Builds 07/08 each pass all 1,449 tests and strict packaging.
+Their exact artifact identities and raw evidence remain in ignored candidate
+ledgers; final curated qualification will retain failed and passing outcomes.
+
+### Native turn fixture: ordinary combat entry (candidate 10)
+
+Candidate 09 remained FAIL in guarded A run `20260907T1446065390171Z-disposable-elemental-trait-turn-costs`: no ability executed. The next enemy retained six seconds of initiative while native combat time advanced. All fixture, mod-tree, UMM and save audits restored exactly. Native 2.1.7b IL identifies the main-menu zero clock / zero LastSurpriseActionTime opening-surprise inference; ChooseNextUnit could select the final skipped, surprised actor when neither actor had an opening offensive command. This is a fixture prerequisite failure, not a qualified action-cost result.
+
+The narrowed fixture now enrolls the two owned actors in combat before invoking the native turn-based setting activation, whose Enable callback calls Reset(true, false). It requires native round 1 and neither actor surprised. Initiative, turn state and all ability action/resource costs remain native; no cooldown assignment or command-gate bypass is introduced. The prior candidate hash identities remain in the ignored build and profile ledgers.
+
+Candidate 10 / A run `20260907T1506514500088Z-disposable-elemental-trait-turn-costs` reached native round 1 and Calm Winds: normal queued command started/acted successfully, costs `[0,0,0] -> [0,0,6]`, exact Calm buff present, completed execution and daily resource still 1. Overall FAIL remains: the second swift command was rejected before start with no execution process, but the old assertion mistook its terminal IsActed flag for execution. Two native SoundState.UnitIsCloseToCamera exceptions arose from raising a new-party-combat notification in the camera-less menu fixture. Candidate 11 restores the prior fixture's explicit native Player.UpdateIsInCombat-before-join-tick enrollment ordering and asserts rejection using command start/process, unchanged Calm fact, daily resource and cooldowns. No sound exception is suppressed. It also guards and exactly retires any borrowed empty hand-update queue. Mod/UMM/save restoration remained exact.
+
+### Native turn-based action costs qualified (candidate 11)
+
+`scripts/Build-Local.ps1` passed repository validation, all **1,449** domain/reflection tests, clean Release compilation, deterministic packaging, exact-reference icon checks and strict standalone validation. The standalone runtime-scenario preflight passed **255** checks; it ran alone without writing its output into the fingerprinted artifact tree. No preflight or runtime acceptance condition was disabled.
+
+Qualified source parent `5408cea6e6f38aec1dd642af869f5f794d783682`, exact pre-curation source fingerprint `b827a04ae432216d6e1990776b9b605f3a0e54ac54b3fa7ac8598808fc4bdb32`; numeric version `0.0.117`, informational `0.0.117-elemental-traits`; 1,867 manifest entries (1,865 active + 2 reserved), 135 package entries. Temporary candidate ZIP SHA-256 `9bbea04ddd89fc7016023139859d6cf75df6682686391ecb838219a28826e80d`; DLL SHA-256 `d8aee780a0c0efcc0aa257ccca79e37daa19cbf3cd096f8dea70012f80d0fd0f`; MVID `5d2e233b-4980-45fd-bdbc-8fc5635d97a0`. This is an instrumentation checkpoint, not the final installed acceptance candidate.
+
+| Profile | Guarded Steam run | Assertions | Native accepted commands | Same-turn swift rejection |
+| --- | --- | ---: | ---: | ---: |
+| A | `20260907T1514233615749Z-disposable-elemental-trait-turn-costs` | 103 PASS | 24 | 6 |
+| F | `20260907T1517582352085Z-disposable-elemental-trait-turn-costs` | 103 PASS | 24 | 6 |
+
+Each profile covered all three Sylph heritages with both gust variants and all three Undine heritages with both breaths: twelve owned two-actor combat fixtures. Calm and Renew each charged exactly +6 on native SwiftAction only. Bull Rush gust, Trip gust, Acid Breath and Ooze Breath each charged exactly +6 on StandardAction only. Queued cancellation consumed nothing; second swift commands had no start or execution process and could not remove Calm or spend a resource. Native turn end and initiative progression restored the next turn, permitting Renew plus a standard-action gust. Completed execution and repeated command ticks preserved exact once-only resource use: gust/breath daily 1 -> 0; Calm/Renew left it at 1.
+
+All 24 native commands per profile traversed ordinary UnitCommands.Run / UnitActionController and the native execution process; no cutscene, ignore-cooldown, direct cost assignment, direct resource spending, forced turn status or command-start bypass. Explicit test boundaries: native turn mode was toggled on after owned combat enrollment; only missing save-free navigation-grid flush/erosion was skipped within the exact two-actor scope, and owned animation/projectile completion cues were supplied. These are mechanical turn-cost tests, not human UI acceptance.
+
+Both profiles restored exact world, combat, selection service, hands controller/queue, camera, clock, random state, turn setting, original mod tree and UMM bytes/timestamp. Baseline archive, working-save non-header content and other-save metadata remained exact; working load delta 0. Zero KMG ERROR lines and zero fixture native exceptions/errors. Full F retained the four preexisting ZFavoredClass custom-data KeyNotFound exceptions; both logs retained only the captured native BugReportCanvas.OnEnable startup NullReferenceException at offset 0x17.
+
+Evidence A: `runtime-result.json` SHA-256 `fed32e245e29944611d3a7ca102bd391819750d9895392b63ad9391bf2ccb60f`; `elemental-trait-native-turn-costs.json` SHA-256 `2ed381b822e263452e1a6cf8cfbdfe4bc2bb9ef7a1589c86629d790d8773cc2d`.
+
+Evidence F: `runtime-result.json` SHA-256 `41d93cd317b382397a90947a2d9591c501f0bc1663a67c80cd4cb6cc39e41ae6`; `elemental-trait-native-turn-costs.json` SHA-256 `528b9b6a5034ed9ecb699dfef0e5d2797ba4781871a7e68beaec9ae6e59f9c17`.
+
+Remaining: all nineteen visible-trait fresh-process persistence, semantic ray catalog and ranged-attack boundary completion, physical lifecycle, legacy migration reruns, final compatibility, final development identity/build/install and owner handoff. Human full-screen UI acceptance remains NOT-RUN.

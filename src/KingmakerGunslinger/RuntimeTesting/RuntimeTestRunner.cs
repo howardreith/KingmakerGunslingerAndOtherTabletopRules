@@ -864,6 +864,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalTraitTurnCosts)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalTraitNativeTurnScenario.Run(_context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
                     .ObserveElementalAlternateTraitFramework)
                 {
                     if (ResourcesLibrary.Preloading) return;

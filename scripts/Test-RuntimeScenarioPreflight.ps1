@@ -59,6 +59,7 @@ $expected = @(
     'working-save-elemental-character-creation',
     'working-save-elemental-character-creation-regression',
     'working-save-elemental-native-respec',
+    'disposable-elemental-trait-turn-costs',
     'observe-elemental-alternate-trait-framework',
     'disposable-elemental-heritage-mechanics',
     'disposable-elemental-heritage-slas',

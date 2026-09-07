@@ -35,6 +35,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-chargen.respec-owned-snapshot", ElementalCharacterCreationRoutingTests.RespecCapturePreservesOnlyObservedOwnedIdentities),
             Case("elemental-chargen.respec-never-refills", ElementalCharacterCreationRoutingTests.RespecPreservationNeverRefillsOrExceedsCurrentCapacity),
             Case("elemental-chargen.native-respec-blood-spent", ElementalCharacterCreationRoutingTests.NativeRespecBloodExpenditureSurvivesRemovalAndLowerLevel),
+            Case("elemental-traits.native-turn-owned-action-costs", ElementalCharacterCreationRoutingTests.NativeTraitTurnFixtureOwnsActionsAndRestoration),
             Case("elemental-chargen.native-creator-fixture", ElementalCharacterCreationRoutingTests.NativeCreatorFixtureIsScopedAndReportsAcceptanceSeparately),
             Case("elemental-chargen.disabled-control-boundary", ElementalCharacterCreationRoutingTests.DisabledControlCannotBootstrapProductionOrCommitCampaign),
             Case("elemental-chargen.observation-identity", ElementalCharacterCreationRoutingTests.ObservationIdentityUsesReferences),

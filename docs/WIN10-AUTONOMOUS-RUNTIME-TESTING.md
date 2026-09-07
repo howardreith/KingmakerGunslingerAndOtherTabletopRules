@@ -323,3 +323,21 @@ spends two points. The synchronous clock/pause/random scope is restored exactly.
 No ledger writer, fact grant or reconciliation seeds the measured expenditure.
 Every preview and final native callback compares the independent spent counters;
 ordinary rest is tested only after the last successful respec callback.
+
+
+The guarded save-free `disposable-elemental-trait-turn-costs` scenario owns two
+native scene actors at a time and enters the actual turn-based controller. It
+queues ordinary UnitUseAbility commands for all Sylph/Undine heritages: Calm and
+Renew spend one Swift action, both Gust variants and Acid/Ooze Breath spend one
+Standard action. Same-turn repeated Swift use must remain blocked. Cancellation
+spends nothing; native execution and repeated ticks must charge exactly once.
+The fixture never writes cooldown or resource amounts. Scoped native ticks and
+owned animation/projectile completion cues do not supply mechanical outcomes.
+It restores mode stack, combat, settings, pause, clock, camera, projectiles,
+controller and actor state; no save is opened or written. Native mode is toggled
+on after owned combat enrollment; only absent save-free navigation-grid
+flush/erosion is skipped inside the exact two-actor scope. KMG-only and the
+owner's eleven-mod stack each passed 103 assertions on candidate 11; exact
+artifact and restoration evidence is in
+[ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md](../ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md).
+This does not establish human full-screen character-creator acceptance.
