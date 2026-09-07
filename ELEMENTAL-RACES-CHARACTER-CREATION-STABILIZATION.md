@@ -1978,3 +1978,64 @@ attack control (AC delta -1), then the Calm native command did not act and no
 Calm buff appeared. It restored exactly. The cause remains under investigation;
 this integration checkpoint does not waive that failure, install a final
 candidate, or claim stabilization/human UI acceptance complete.
+
+
+## Native Cold Moon control contamination resolved - 2026-09-07
+
+The failed exact314 framework attempt remains FAIL. A narrowly instrumented
+reproduction, `20260907T2243476180515Z-observe-elemental-alternate-trait-framework`,
+failed 3 of 662 assertions and captured the precise cause: native Longbow of
+Cold Moon (`65d29ca8c81c124418417bff73f8eaae`) landed a real critical hit. Its
+registered enchantment (`9007910ac92ac624b9e67827104b9d77`) applied native
+Paralysis (`af1e2d232ebbb334aaf25e2a46a92591`) for one round. CanAct changed
+from true to false; all six attributes, including Dexterity, were unchanged.
+The following AC lost its Dexterity contribution and the next Calm command
+could not act. This is contamination between native fixture controls, not a
+reason to change Breeze-Kissed's gameplay command or defense rules. The
+instrumented failure restored the exact original profile and touched no save.
+
+The disposable fixture now records the exact donor/enchantment contract and
+before/after/native-restored unit state. It requires a buff-free active owned
+target and the exact Cold Moon item. Any critical condition must be a single
+finite native Paralyzed/Staggered effect from the actual attacker with the
+recorded one-round deadline. It must remain immediately before EndTime and
+expire immediately after EndTime through native Buffs.Tick. The clock then
+returns exactly, and all buffs, conditions and six attributes must match the
+original baseline before the next comparison. No direct buff removal,
+condition rewrite, EndTime override, fabricated hit/save or weapon mutation is
+used. An actual native critical witness is required for each Sylph heritage;
+seeded ordinary dice are bounded and the prior random state is restored.
+
+This also records every subsequent native Breeze command's pre-state; all
+60 A/F command pre-states are active with no inhibiting native condition.
+Calm/Renew, gust success/failure/immunity, spent use/rest, attack-source and
+semantic-ray framework controls all pass. No Breeze production mechanic or
+GUID changed. The focused current source gate requires the expiry witnesses
+and exact-restoration assertions.
+
+`Build-Local.ps1` passes repository validation, **1458/1458 full tests**, clean
+exact-reference Release, deterministic 135-file package and strict validation
+(`calm-native-expiry-build-01.log`). Artifact before this journal-only update:
+
+- Parent commit: `a3d7288b5930af1ba476e6ccef1d7abe9b680e4a`
+- Source fingerprint: `386fd86a2c943930363a21108e4bc8d6ecaa0b4df8123b4c6037f6c631e8da86`
+- ZIP SHA-256: `27e54044d13ec2657a93a474c0076778f2dfea519cb00887685abe4e6e5c123f`
+- DLL SHA-256: `3682c8dbfd5885d35b5062d1355d9f3f3230f990d1ab63696a3a5ff8070381d0`
+- DLL MVID: `b6132974-4d7d-4159-b216-f834c650f2fe`
+
+| Profile | Guarded native run | Assertions | Exact attack restorations | Actual critical conditions expired | Later command pre-states |
+|---|---|---:|---:|---:|---:|
+| A | `20260907T2252366139270Z-observe-elemental-alternate-trait-framework` | 6325 | 105 | 5 | 30 |
+| F | `20260907T2255142065106Z-observe-elemental-alternate-trait-framework` | 6517 | 105 | 3 | 30 |
+
+All **12842** assertions pass. Both profiles use guarded Steam 640820 launches,
+attest exact commit/fingerprint/ZIP/DLL/MVID, have zero KMG ERROR, preserve
+baseline/other saves, and restore Mods, settings and UMM exactly. Native
+startup/Pixel8bits and four F ZFavoredClass custom-JSON warnings remain separate.
+The failed reproduction is retained, not reclassified as PASS. The latest
+master was fetched again and remains `58d9511082af30f1a4ec88c1238ae7ae2b3651c2`.
+
+Final combined-artifact compatibility, migration, persistence, creator,
+Player respec, turn-cost, installation and owner handoff gates follow this
+checkpoint. Human full-screen acceptance remains NOT-RUN. No feature merge
+back to master, new tag or public release is performed.
