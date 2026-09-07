@@ -10,7 +10,13 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ExactSemanticRayBoundaries()
         {
             IReadOnlyList<string> rays = ElementalCrystallineFormPolicy.RayAbilityGuids;
-            Assertions.Equal(34, rays.Count, "Audited native/project ray inventory must be explicit.");
+            Assertions.Equal(37, ElementalCrystallineFormPolicy.NativeRayAbilityGuids.Count, "The original 34 rays plus three exact native story rays must remain explicit.");
+            Assertions.Equal(56, ElementalCrystallineFormPolicy.OptionalRayAbilityGuids.Count, "Every reviewed optional ray and copied spell needs its exact identity.");
+            Assertions.Equal(93, rays.Count, "The combined semantic ray inventory must be explicit.");
+            Assertions.True(rays.SequenceEqual(ElementalCrystallineFormPolicy.NativeRayAbilityGuids
+                .Concat(ElementalCrystallineFormPolicy.OptionalRayAbilityGuids)), "Native ordering must be preserved when adding optional identities.");
+            Assertions.True(((IList<string>)ElementalCrystallineFormPolicy.NativeRayAbilityGuids).IsReadOnly &&
+                ((IList<string>)ElementalCrystallineFormPolicy.OptionalRayAbilityGuids).IsReadOnly, "Callers cannot mutate either provenance catalog.");
             Assertions.Equal(rays.Count, rays.Distinct(StringComparer.Ordinal).Count(), "No duplicate ray identities.");
             Assertions.True(((IList<string>)rays).IsReadOnly, "Callers cannot extend the shared ray catalog.");
             foreach (string ray in rays)
@@ -30,7 +36,9 @@ namespace KingmakerGunslinger.DomainTests
                 "5e1db2ef80ff361448549beeb7785791", // Icicle shares Ray of Frost art
                 "4ac47ddb9fa1eaf43a1b6809980cfbd2", // Magic Missile
                 "9779c8578acd919419f563c33d7b2af5", // Spit Venom
-                "unknown", "", null
+                "31acd268039966940872c916782ae018", // Moonfire is described as a blast, not a ray
+                "4ba9818b263827049adc102196c65522", // Opaque Prismatic Surge
+                "RayOfExhaustionAbility", "ScorchingRay", "unknown", "", null
             };
             foreach (string nonray in excluded)
                 Assertions.True(!ElementalCrystallineFormPolicy.IsRay(new[] { nonray }, true, true, true, false),

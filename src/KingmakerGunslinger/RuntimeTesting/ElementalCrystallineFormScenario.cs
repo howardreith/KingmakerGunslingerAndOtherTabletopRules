@@ -132,9 +132,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalTraitDailyResourceRuntime.IsExact(owner, race.AlternateTraits),
                 "affinity replaced, resistance/SLA retained; independent use and off-by-default mode");
 
-            // Every cataloged native/project ray traverses actual RuleAttackRoll
-            // and nested native touch AC, including racial stacking and cleanup.
-            foreach (string guid in ElementalCrystallineFormPolicy.RayAbilityGuids.Concat(new[] {
+            // Require every native identity. Optional identities are exercised
+            // when registered, preserving an absent-mod profile with no dependency.
+            string[] optional = ElementalCrystallineFormPolicy.OptionalRayAbilityGuids.Where(guid =>
+                BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(guid)).ToArray();
+            var optionalCatalog = new JArray(optional.Select(guid => {
+                BlueprintAbility ability = Require(guid);
+                return new JObject { ["guid"] = guid, ["internalName"] = ability.name,
+                    ["displayName"] = ability.Name, ["description"] = ability.Description,
+                    ["componentTypes"] = new JArray(ability.ComponentsArray.Select(value => value.GetType().FullName)) };
+            }));
+            rows.Add(new JObject { ["name"] = prefix + "optional-ray-catalog", ["pass"] = true,
+                ["nativeCount"] = ElementalCrystallineFormPolicy.NativeRayAbilityGuids.Count,
+                ["optionalRegisteredCount"] = optional.Length, ["optionalRegistered"] = optionalCatalog,
+                ["optionalAbsentGuids"] = new JArray(ElementalCrystallineFormPolicy.OptionalRayAbilityGuids.Except(optional)) });
+            // Every present cataloged ray traverses actual RuleAttackRoll and
+            // nested native touch AC, including racial stacking and cleanup.
+            foreach (string guid in ElementalCrystallineFormPolicy.NativeRayAbilityGuids.Concat(optional).Concat(new[] {
                 Snowball, "0c852a2405dd9f14a8bbcfaf245ff823", "9a46dfd390f943647ab4395fc997936d",
                 "0a2f7c6aa81bc6548ac7780d8b70bcbc", "5e1db2ef80ff361448549beeb7785791" }))
             {

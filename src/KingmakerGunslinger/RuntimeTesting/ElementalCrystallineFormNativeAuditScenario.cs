@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.ElementsSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
@@ -102,6 +104,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "deliveries", rows }
             }.ToString(Formatting.Indented));
             files.Add(path);
+            WriteRangedAttackBoundaryCatalog(request, before, abilities, files);
+        }
+
+        private static void WriteRangedAttackBoundaryCatalog(RuntimeTestRequest request,
+            BlueprintScriptableObject[] blueprints, BlueprintAbility[] abilities, ICollection<string> files)
+        {
+            var weapons = new JArray();
+            foreach (var weapon in blueprints.OfType<BlueprintItemWeapon>().Where(value => value.IsRanged)
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal))
+            {
+                var damage = weapon.DamageType;
+                weapons.Add(new JObject { ["guid"] = weapon.AssetGuid, ["internalName"] = weapon.name,
+                    ["displayName"] = weapon.Name, ["category"] = weapon.Category.ToString(),
+                    ["damageType"] = damage == null ? null : damage.Type.ToString(),
+                    ["physicalMetadataPresent"] = damage != null && damage.Physical != null,
+                    ["componentTypes"] = new JArray(weapon.ComponentsArray.Select(value => value.GetType().FullName)) });
+            }
+            var attacks = new JArray();
+            foreach (var ability in abilities)
+            {
+                var custom = ability.GetComponent<AbilityCustomMeleeAttack>();
+                var actions = new List<GameAction>();
+                foreach (var effect in ability.ComponentsArray.OfType<AbilityEffectRunAction>())
+                    CollectBoundaryActions(effect.Actions, actions, 0);
+                var attackActions = actions.Where(value => value.GetType().Name.IndexOf("Attack", StringComparison.Ordinal) >= 0)
+                    .Select(value => value.GetType().FullName).Distinct().ToArray();
+                if (custom == null && attackActions.Length == 0) continue;
+                attacks.Add(new JObject { ["guid"] = ability.AssetGuid, ["internalName"] = ability.name,
+                    ["displayName"] = ability.Name, ["description"] = ability.Description,
+                    ["abilityType"] = ability.Type.ToString(), ["actionType"] = ability.ActionType.ToString(),
+                    ["nativeVitalStrike"] = custom != null && custom.IsVitalStrike,
+                    ["nativeVitalStrikeMultiplier"] = custom == null ? 0 : custom.VitalStrikeMod,
+                    ["attackActions"] = new JArray(attackActions),
+                    ["componentTypes"] = new JArray(ability.ComponentsArray.Select(value => value.GetType().FullName)) });
+            }
+            string path = Path.Combine(request.EvidenceDirectory, "elemental-ranged-attack-boundary-native-audit.json");
+            File.WriteAllText(path, new JObject { ["schemaVersion"] = 1, ["readOnly"] = true,
+                ["mechanicQualified"] = false, ["rangedWeapons"] = weapons, ["abilityWeaponAttacks"] = attacks
+            }.ToString(Formatting.Indented));
+            files.Add(path);
+        }
+
+        private static void CollectBoundaryActions(ActionList list, ICollection<GameAction> actions, int depth)
+        {
+            if (list == null || list.Actions == null) return;
+            if (depth > 24) throw new InvalidOperationException("Read-only action catalog exceeded its bounded tree depth.");
+            foreach (var action in list.Actions.Where(value => value != null))
+            {
+                if (actions.Contains(action)) continue;
+                actions.Add(action);
+                foreach (var field in action.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                    if (field.FieldType == typeof(ActionList))
+                        CollectBoundaryActions((ActionList)field.GetValue(action), actions, depth + 1);
+            }
         }
 
         private static void Check(ICollection<RuntimeTestAssertion> assertions,

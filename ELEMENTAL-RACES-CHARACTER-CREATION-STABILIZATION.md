@@ -1519,3 +1519,103 @@ Remaining qualification: Crystalline's optional semantic ray catalog, Breeze's
 ability-sourced/nonphysical ranged-attack boundary, physical transitions,
 pinned 0.0.114 migration rerun, final compatibility and development-version
 build/install. Human full-screen character-creator acceptance remains NOT-RUN.
+
+
+### Crystalline semantic catalog continuation (qualification pending)
+
+The preserved combined live projectile audit identifies 56 additional exact
+optional ray/spell-copy GUIDs whose descriptions explicitly describe rays and
+whose live delivery is a simple attack-roll Ray weapon projectile. The production
+catalog now preserves all original 34 native/project GUIDs and adds those 56
+optional identities without loading an optional assembly or creating a blueprint.
+Names and descriptions are review evidence, never runtime eligibility predicates.
+The inherited exact source/parent, projectile geometry, attack-roll, weapon and
+Hand of the Apprentice gates remain. Every present optional identity receives the
+same live native attack/AC comparison as the original catalog; absent optional
+mods are recorded explicitly. Full-stack presence will be checked against all 56
+reviewed identities. Existing non-ray controls and opaque story/beam effects
+remain excluded rather than guessed.
+
+The native read-only audit also records ranged weapon damage metadata and actual
+ability weapon-attack/Vital Strike components for the remaining Breeze boundary
+qualification. It never casts an ability, changes a blueprint, or substitutes
+names for exact production identities. No Breeze production change has been made.
+
+
+Candidate 01 passed all 1,452 tests/build/package gates and KMG-only run
+`20260907T1629590649279Z-observe-elemental-alternate-trait-framework`, with exact
+profile/save restoration. Review of the abbreviated native story entries also
+establishes three explicit game ray identities: Artifact_StarGauntletRay / Laser
+Beam, NyrissaRay / Ray of Annihilation, and RaySpellLanternKingStar / Immolation
+Curse. Their exact GUIDs, simple projectile attack-roll delivery and native Ray
+weapon contract are captured in the preserved audit. They are now appended after
+the original 34, bringing the proposed catalog to 37 native/project + 56 optional
+identities. This is fixed-identity curation, not a runtime name heuristic or a new
+story mechanic. The unlabelled Prismatic Surge and described blast/orb/arrow
+controls remain excluded. The expanded 93-identity candidate requires new runtime
+qualification before commit.
+
+
+### Semantic ray catalog qualified (candidate 02)
+
+All **1,452** domain/reflection tests, repository validation, clean Release build,
+deterministic package creation and strict standalone validation passed. The exact
+same candidate passed the complete alternate-trait framework/mechanics scenario
+in isolated A and full eleven-mod F, with no failed assertion.
+
+| Profile | Guarded run | Assertions | Native ray/non-ray AC pairs | Optional rays present |
+| --- | --- | ---: | ---: | ---: |
+| A | `20260907T1644230237202Z-observe-elemental-alternate-trait-framework` | 6211 PASS | 126 | 0 |
+| F | `20260907T1637150575830Z-observe-elemental-alternate-trait-framework` | 6379 PASS | 294 | 56 |
+
+All three Oread heritages exercised every present catalog identity through native
+RuleAttackRoll and nested touch AC with exact modifier cleanup. F contains all 56
+reviewed optional GUIDs; A explicitly records their absence. The catalog is now
+37 native/project + 56 optional identities. The original 34 remain in their prior
+order; three native story rays are appended. No optional assembly reference or
+new blueprint identity is created. Existing parent recognition, projectile/roll/
+weapon boundaries, once-only deflection, awareness, free hands, opt-in, native
+suspend/reactivate, ordinary rest and transient cleanup checks remain passing.
+Multiple native rays spend only one deflection use; a deflected non-damage ray
+does not apply its effect. Shared projectile art does not classify a blast, orb,
+arrow, cone or area as a ray. The foreign rewrite of Shadow Elemental Assessor
+that lacks native delivery remains an explicit negative transport control; its
+removed native spell is never reconstructed.
+
+Source parent `31cdc018850c64c50aba691eecc540cf33162d51`; pre-curation fingerprint
+`5c11ef34bd355440d4cfb7a7b8353b7c97f4618eb5b49111274ccd14f57d4605`.
+ZIP SHA-256 `dad996a3cd84f92e5902b0a19022f5ae2e2dd664c1df7c030de0a8f9b4ea235c`;
+DLL SHA-256 `0da5d87b7e5c57ebeae9ee02d0bca97e2fb2824ef9e3a82b634403cbc3f52229`;
+MVID `ccd1f582-de6a-4c5c-9701-86fe6131fc31`. Temporary informational version remains
+`0.0.117-elemental-traits`; manifest/package counts remain 1,867 / 135. Final
+acceptance version and installation are pending.
+
+Both profiles restored exact starting Mods and UMM bytes/timestamp. Protected
+baseline, working-save content and other-save metadata remained exact; working
+load delta 0. Zero KMG ERROR lines. Both logs contain one known native
+BugReportCanvas startup exception and eighteen native missing-shader
+ArgumentNullException reports from _2dxFX_Pixel8bitsBW.OnEnable [0x00076]. Those
+same eighteen reports occur in pre-mission full-framework run
+`20260906T1755326591359Z-observe-elemental-alternate-trait-framework`, retained log
+SHA-256 `f5bd892e8a564980cdfae084944afc71976b17207f392048aceef91c071cd8e1`, and in
+both the earlier routing-framework A and 90-ray candidate A. No new signature or
+count increase occurred; these shader failures are neither suppressed nor
+attributed to the catalog repair. F retains its four known ZFavoredClass custom
+data exceptions. No shutdown obstacle exception occurred in these save-free runs.
+Crystalline physical death/resurrection and polymorph qualification remains part
+of the pending visible-trait physical lifecycle and is not inferred from catalog
+or native suspend/reactivate checks.
+
+| Evidence | Crystalline result SHA-256 |
+| --- | --- |
+| `20260907T1644230237202Z-observe-elemental-alternate-trait-framework` | `e7b27824a1a80955d2bd7ebd9fc3bad3fb81bc1a5ae09c3e6c561bed2e80614b` |
+| `20260907T1637150575830Z-observe-elemental-alternate-trait-framework` | `8b56780b3bd38e686afb7dabcbb1345f9d9cb1e27b18f64e5554e625fece4707` |
+
+The new read-only ranged-attack catalog records native/foreign ranged weapon base
+damage types and real weapon-attack ability components without casting or changing
+them. Native Vital Strike is Special; F also provides Special PinpointTargetingAbility
+(`a6210acb28054f568ead7366bda31fee`) with foreign ContextActionAttack preserving its
+ability reason. Cold Moon is the native energy-damage longbow; F adds the
+Ray-category Produce Flame weapon. These are concrete inputs for the still-pending
+Breeze boundary regression. No production Breeze change or native boundary PASS
+is claimed from the catalog alone.
