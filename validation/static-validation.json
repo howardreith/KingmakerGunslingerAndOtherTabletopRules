@@ -846,6 +846,6 @@
     "equivalentPricingBonus": 4,
     "merchantStockVariants": 4,
     "controlMechanicsUnchanged": true,
-    "publicReleaseAuthorized": false
+    "publicReleaseAuthorized": true
   }
 }

@@ -256,3 +256,35 @@ No unresolved acceptance blocker remains. Native reconciliation timing and null 
 
 
 Integration hotspots are the append-only blueprint ledger, bootstrap publication/rollback and expected count, magic catalog counts, shared registration/project includes, presentation mapping counts, current-version validators, and runtime scenario dispatch/allowlists. The only edits in ElementalRaceProductionTests and BodyguardBlueprintContractTests update the shared aggregate ledger count for the two additions. No elemental-race implementation, assets, worktree, or task report changed. Version 0.0.116 is this task's candidate identity; public integration must coordinate any concurrent version allocation without importing unmerged work.
+
+## Authorized public release follow-up
+
+The owner's subsequent instruction explicitly authorizes finalization, merge
+to master, push to origin, and a new public release. This supersedes the
+candidate-only publication boundary above. Release preparation starts from
+clean task commit 46a7936cd11ea4509a40b5bd5c930d3ac242aaf3; both local and
+origin master remain dfd551080a1aad38cdd0b19714fbcb12c81ca4ca after fetch.
+Version 0.0.116 has no existing public tag or release.
+
+Release preparation changes documentation, publisher defaults, and the
+release-authorization validation contract only. Production source, assets,
+blueprints, version identity, and domain behavior remain exactly those of the
+accepted candidate. No concurrent elemental work is imported.
+
+The accepted candidate was copied before rebuilding to
+artifacts/midgame/qualified-candidate/KingmakerGunslinger-0.0.116-local-runtime.zip
+with its adjacent build-local manifest; SHA-256 remains
+aa1e5bd56e48b95124b74b937f9fca0851b69eba53588baba7659bc0d8351d48.
+Historical runtime evidence above refers to that frozen artifact. The normal
+local-runtime path may now contain a later release build and is not the
+archived qualification artifact.
+
+Release-preparation validation passed with the same Build-Local command:
+repository validation, 1,398/1,398 domain tests, clean Release compilation,
+supply icons, SoundBank, and strict package validation. Transcript:
+artifacts/midgame/release-prep-build.log. The comparison against all 2,641
+frozen inputs used the original text-extension normalization and confirmed
+that only the six expected release documentation/metadata/validator files
+changed (release-source-comparison.txt). New release notes and this report
+are documentation additions. This preparation build is not the final
+merged-commit release artifact.
