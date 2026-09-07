@@ -56,6 +56,11 @@ def validate(root: Path) -> None:
     # relabelling that release's version, manifest or historical evidence.
     share_transmutation.validate_provider_contract(root)
     midgame_firearms.validate_content_contract(root)
+    require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/ElementalBreezeKissedScenario.cs",
+        "native-energy-critical-expiry-witness", "native-energy-control-restored",
+        "Game.Instance.Player.GameTime = effects[0].EndTime - TimeSpan.FromSeconds(0.1)",
+        "Game.Instance.Player.GameTime = effects[0].EndTime + TimeSpan.FromSeconds(0.1)",
+        "JToken.DeepEquals(before, restored)", "finally { UnityEngine.Random.state = priorRandom; }")
 
     manifest = json.loads((root / "blueprints/blueprints.json").read_text(
         encoding="utf-8"))

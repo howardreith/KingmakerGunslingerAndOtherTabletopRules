@@ -428,12 +428,18 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             var coldMoon = new ItemEntityWeapon(Exact<BlueprintItemWeapon>("65d29ca8c81c124418417bff73f8eaae"));
             var blueprintComponents = coldMoon.Blueprint.ComponentsArray;
+            rows.Add(new JObject { ["name"] = prefix + "native-energy-weapon-contract",
+                ["readOnly"] = true, ["weaponGuid"] = coldMoon.Blueprint.AssetGuid,
+                ["description"] = coldMoon.Blueprint.Description,
+                ["enchantments"] = new JArray(coldMoon.Enchantments.Select(value =>
+                    JObject.FromObject(ElementalFeatNativeAuditScenario.SnapshotContract(value.Blueprint),
+                        new JsonSerializer { ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver() }))) });
             try
             {
                 defender.Descriptor.RemoveFact(trait.Marker);
-                var baseline = Attack(attacker, defender, coldMoon);
+                var baseline = BoundaryAttack(attacker, defender, coldMoon, rows, assertions, prefix);
                 defender.Descriptor.AddFact(trait.Marker);
-                var active = Attack(attacker, defender, coldMoon);
+                var active = BoundaryAttack(attacker, defender, coldMoon, rows, assertions, prefix);
                 var magic = DescribeBoundaryAttack(active.RuleAttackWithWeapon);
                 int delta = active.TargetAC - baseline.TargetAC;
                 magic["actualBonus"] = delta; magic["expectedBonus"] = 0;
@@ -447,9 +453,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // nonmagical energy weapon. No registered blueprint is edited.
                 foreach (ItemEnchantment effect in coldMoon.Enchantments.ToArray()) coldMoon.RemoveEnchantment(effect);
                 defender.Descriptor.RemoveFact(trait.Marker);
-                baseline = Attack(attacker, defender, coldMoon);
+                baseline = BoundaryAttack(attacker, defender, coldMoon, rows, assertions, prefix);
                 defender.Descriptor.AddFact(trait.Marker);
-                active = Attack(attacker, defender, coldMoon);
+                active = BoundaryAttack(attacker, defender, coldMoon, rows, assertions, prefix);
                 var ordinary = DescribeBoundaryAttack(active.RuleAttackWithWeapon);
                 delta = active.TargetAC - baseline.TargetAC;
                 ordinary["actualBonus"] = delta; ordinary["expectedBonus"] = 0;
@@ -459,6 +465,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Check(assertions, rows, prefix + "native-energy-base-enchantment-retained", !nativeUnenchanted && delta == 0 &&
                     active.WeaponStats.DamageDescription[0].TypeDescription.Physical.EnhancementTotal > 0 &&
                     ReferenceEquals(blueprintComponents, coldMoon.Blueprint.ComponentsArray), ordinary.ToString(Formatting.None));
+
+                // Require an actual critical-effect expiry witness. Each seed
+                // drives ordinary native dice; no hit, save, condition or
+                // command result is overridden. The original random state is
+                // restored before the subsequent Breeze commands.
+                UnityEngine.Random.State priorRandom = UnityEngine.Random.state;
+                bool witnessed = false;
+                int seed = 0;
+                try
+                {
+                    for (; seed < 256 && !witnessed; seed++)
+                    {
+                        UnityEngine.Random.InitState(seed);
+                        witnessed = BoundaryAttack(attacker, defender, coldMoon, rows, assertions,
+                            prefix + "critical-control-").IsCriticalConfirmed;
+                    }
+                }
+                finally { UnityEngine.Random.state = priorRandom; }
+                Check(assertions, rows, prefix + "native-energy-critical-expiry-witness", witnessed,
+                    "native critical condition expired through its own EndTime and Buffs.Tick; attempts=" + seed);
             }
             finally
             {
@@ -466,6 +492,69 @@ namespace KingmakerGunslinger.RuntimeTesting
                 attacker.Body.PrimaryHand.RemoveItem(false); coldMoon.Dispose();
                 attacker.Body.PrimaryHand.InsertItem(crossbow);
             }
+        }
+
+        private static JObject BoundaryActor(UnitEntityData unit)
+        {
+            var stats = new[] { unit.Stats.Strength, unit.Stats.Dexterity, unit.Stats.Constitution,
+                unit.Stats.Intelligence, unit.Stats.Wisdom, unit.Stats.Charisma };
+            return new JObject { ["canAct"] = unit.Descriptor.State.CanAct,
+                ["lifeState"] = unit.Descriptor.State.LifeState.ToString(),
+                ["conditions"] = new JArray(Enum.GetValues(typeof(UnitCondition)).Cast<UnitCondition>()
+                    .Where(value => unit.Descriptor.State.HasCondition(value)).Select(value => value.ToString())),
+                ["attributes"] = new JArray(stats.Select(value => new JObject { ["base"] = value.BaseValue,
+                    ["modified"] = value.ModifiedValue, ["damage"] = value.Damage, ["drain"] = value.Drain })),
+                ["buffs"] = new JArray(unit.Buffs.Enumerable.Select(value => new JObject {
+                    ["guid"] = value.Blueprint.AssetGuid, ["name"] = value.Blueprint.name,
+                    ["contract"] = JObject.FromObject(ElementalFeatNativeAuditScenario.SnapshotContract(value.Blueprint),
+                        new JsonSerializer { ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver() }) })) };
+        }
+
+        private static RuleAttackRoll BoundaryAttack(UnitEntityData attacker, UnitEntityData defender,
+            ItemEntityWeapon weapon, JArray rows, ICollection<RuntimeTestAssertion> assertions, string prefix)
+        {
+            if (weapon.Blueprint.AssetGuid != "65d29ca8c81c124418417bff73f8eaae" ||
+                defender.Buffs.Enumerable.Any() || !defender.Descriptor.State.CanAct)
+                throw new InvalidOperationException("Cold Moon control requires its exact weapon and an active, buff-free disposable target.");
+            JObject before = BoundaryActor(defender);
+            TimeSpan clock = Game.Instance.TimeController.GameTime;
+            RuleAttackRoll roll = Attack(attacker, defender, weapon);
+            Buff[] effects = defender.Buffs.Enumerable.ToArray();
+            JObject afterAttack = BoundaryActor(defender);
+            try
+            {
+                if (effects.Length != (roll.IsCriticalConfirmed ? 1 : 0) || effects.Any(value =>
+                    value.IsPermanent || value.Context == null || !ReferenceEquals(value.Context.MaybeCaster, attacker) ||
+                    value.EndTime <= clock || value.EndTime > clock + TimeSpan.FromSeconds(6.01) ||
+                    !ReferenceEquals(Exact<BlueprintBuff>(value.Blueprint.AssetGuid), value.Blueprint) ||
+                    value.Blueprint.GetComponent<Kingmaker.Designers.Mechanics.Buffs.BuffStatusCondition>() == null ||
+                    (value.Blueprint.GetComponent<Kingmaker.Designers.Mechanics.Buffs.BuffStatusCondition>().Condition != UnitCondition.Paralyzed &&
+                     value.Blueprint.GetComponent<Kingmaker.Designers.Mechanics.Buffs.BuffStatusCondition>().Condition != UnitCondition.Staggered)))
+                    throw new InvalidOperationException("Cold Moon produced an unexpected native critical-condition graph: " + afterAttack);
+                if (effects.Length == 1)
+                {
+                    Game.Instance.Player.GameTime = effects[0].EndTime - TimeSpan.FromSeconds(0.1);
+                    defender.Buffs.Tick();
+                    if (!ReferenceEquals(defender.Buffs.Enumerable.SingleOrDefault(), effects[0]))
+                        throw new InvalidOperationException("Native Cold Moon condition expired before its recorded deadline.");
+                    Game.Instance.Player.GameTime = effects[0].EndTime + TimeSpan.FromSeconds(0.1);
+                    defender.Buffs.Tick();
+                }
+            }
+            finally { Game.Instance.Player.GameTime = clock; }
+            JObject restored = BoundaryActor(defender);
+            bool exact = JToken.DeepEquals(before, restored);
+            rows.Add(new JObject { ["name"] = prefix + "native-energy-attack-state", ["readOnly"] = false,
+                ["before"] = before, ["after"] = afterAttack, ["restored"] = restored,
+                ["nativeExpiredEffects"] = effects.Length, ["restoredExact"] = exact,
+                ["clockRestored"] = Game.Instance.TimeController.GameTime == clock,
+                ["hit"] = roll.IsHit, ["critical"] = roll.IsCriticalConfirmed,
+                ["nativeAC"] = roll.TargetAC });
+            Check(assertions, rows, prefix + "native-energy-control-restored", exact,
+                "native critical=" + roll.IsCriticalConfirmed + ";nativeExpiredEffects=" + effects.Length +
+                ";exact original buffs, conditions, attributes and clock; no direct removal or condition rewrite");
+            if (!exact) throw new InvalidOperationException("Native Cold Moon control did not restore the exact defender baseline.");
+            return roll;
         }
 
         private static JObject DescribeBoundaryAttack(RuleAttackWithWeapon attack)
@@ -540,6 +629,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void Cast(UnitEntityData caster, AbilityData data, TargetWrapper target, BlueprintAbilityResource resource,
             int expectedResource, ICollection<RuntimeTestAssertion> assertions, JArray rows, string label)
         {
+            rows.Add(new JObject { ["name"] = label + "-native-precommand-state",
+                ["readOnly"] = true, ["actor"] = BoundaryActor(caster) });
             caster.Commands.InterruptAll(true);
             caster.Commands.RemoveFinishedAndUpdateQueue();
             caster.CombatState.Cooldown.StandardAction = 0;
