@@ -73,11 +73,14 @@ def validate(root: Path, test_count: int = 865) -> None:
     elemental_races_active_count = sum(1 for entry in manifest["entries"]
         if entry.get("symbol", "").startswith("KMG.ElementalRaces.")
         and entry.get("status") == "active")
-    active_count, ledger_count = ((1438 + elven_branched_spear_count +
+    midgame_count = sum(1 for entry in manifest["entries"]
+        if entry.get("symbol") in {"KMG.Firearms.RoadwardenItem",
+            "KMG.Firearms.DeadReckoningItem"})
+    active_count, ledger_count = ((1438 + midgame_count + elven_branched_spear_count +
         eastern_weapons_count + focused_weapon_count + brown_fur_active_count +
         martial_performance_active_count + urban_barbarian_active_count +
         bodyguard_active_count + elemental_races_active_count,
-        1439 + elven_branched_spear_count + eastern_weapons_count +
+        1439 + midgame_count + elven_branched_spear_count + eastern_weapons_count +
         focused_weapon_count + martial_performance_count + brown_fur_count +
         urban_barbarian_count + bodyguard_count + elemental_races_count)
         if has_expanded_summoning_reservations else

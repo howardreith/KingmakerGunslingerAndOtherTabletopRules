@@ -474,7 +474,8 @@ namespace KingmakerGunslinger.DomainTests
                     plan.FirearmParameters == gunslinger &&
                     plan.CapitalGunslingerStock == gunslinger &&
                     plan.BeneathStolenLandsStock == gunslinger &&
-                    plan.RareFirearmLoot == gunslinger,
+                    plan.RareFirearmLoot == gunslinger &&
+                    plan.SkeletalSalesmanStock == gunslinger,
                     "A Gunslinger publication surface escaped its module gate.");
                 Assertions.True(plan.AcadamaeFeat == acadamae &&
                     plan.CordCampaignLoot == acadamae,

@@ -94,7 +94,7 @@ VALIDATORS = {
     "0.0.113": "validate_save_load_hotfix113.py",
     "0.0.114": "validate_elemental_races114.py",
     "0.0.115": "validate_share_transmutation115.py",
-    "0.0.116": "validate_elemental_feats116.py",
+    "0.0.116": "validate_midgame_firearms116.py",
     "0.0.117": "validate_elemental_traits117.py",
 }
 

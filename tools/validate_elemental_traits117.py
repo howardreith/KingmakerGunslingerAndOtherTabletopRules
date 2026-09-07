@@ -11,16 +11,17 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 import validate_elemental_feats116 as baseline
 import validate_share_transmutation115 as share_transmutation
+import validate_midgame_firearms116 as midgame_firearms
 
 VERSION = "0.0.117"
 INFORMATIONAL_VERSION = "0.0.117-elemental-char-gen-stabilization"
 PACKAGE = "KingmakerGunslinger-0.0.117-local-runtime.zip"
 PACKAGE_SUFFIX = "elemental-char-gen-stabilization"
-DETERMINISTIC_TEST_COUNT = 1453
+DETERMINISTIC_TEST_COUNT = 1458
 STATIC_KEY = "elementalTraits117"
 TRAIT_GUID_PREFIX = "e117e1e0a17a4acec001"
-MANIFEST_TOTAL = 1867
-MANIFEST_ACTIVE = 1865
+MANIFEST_TOTAL = 1869
+MANIFEST_ACTIVE = 1867
 MANIFEST_RESERVED = 2
 ELEMENTAL_TOTAL = 230
 ELEMENTAL_ACTIVE = 229
@@ -54,6 +55,7 @@ def validate(root: Path) -> None:
     # Preserve the separately published 0.0.115 provider contract without
     # relabelling that release's version, manifest or historical evidence.
     share_transmutation.validate_provider_contract(root)
+    midgame_firearms.validate_content_contract(root)
 
     manifest = json.loads((root / "blueprints/blueprints.json").read_text(
         encoding="utf-8"))

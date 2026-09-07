@@ -44,7 +44,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // The main menu has no BattleLogView. Replace only the final UI sink
         // during one exact disposable firearm attack; keep message validation,
         // AC calculation, ammunition commitment and all rule handlers native.
-        private sealed class FirearmLogCapture : IPlayerCombatLogSink, IDisposable
+        internal sealed class FirearmLogCapture : IPlayerCombatLogSink, IDisposable
         {
             private readonly object _service;
             private readonly FieldInfo _field;

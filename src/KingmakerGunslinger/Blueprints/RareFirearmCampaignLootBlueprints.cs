@@ -55,11 +55,8 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (library == null || catalog == null || logger == null)
                 throw new ArgumentNullException("Campaign loot publication inputs are incomplete.");
-            BlueprintItem[] owned = catalog.Entries.Where(value =>
-                value.Spec.Symbol != MagicFirearmBlueprints.PistolPlus1Symbol &&
-                value.Spec.Symbol != MagicFirearmBlueprints.MusketPlus1Symbol &&
-                value.Spec.Symbol != MagicFirearmBlueprints.BlunderbussPlus1Symbol)
-                .Select(value => (BlueprintItem)value.Item).ToArray();
+            BlueprintItem[] owned = Targets.Select(target =>
+                (BlueprintItem)catalog.Require(target.ItemSymbol).Item).ToArray();
             var mutations = new List<RareFirearmLootMutation>();
             var cleanupMutations = new List<RareFirearmLootCleanupMutation>();
             try

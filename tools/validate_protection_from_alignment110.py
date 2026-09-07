@@ -44,8 +44,10 @@ def validate(root: Path) -> None:
         "GenericSpell(bool communal)",
         "Buff(ProtectionAlignment alignment)",
         "+2 deflection bonus", "+2 resistance bonus",
-        "domination, charm, or comparable mental-control effect",
-        "recognized by this mod", "already active",
+        ("prevents new charm, domination, and similar effects" if VERSION == "0.0.117"
+            else "domination, charm, or comparable mental-control effect"),
+        ("under the control of" if VERSION == "0.0.117"
+            else "recognized by this mod"), "already active",
         "Protection from \" + ProtectionName(alignment)")
     for token in ("return \"Evil\"", "return \"Good\"",
             "return \"Law\"", "return \"Chaos\"", "return \"lawful\"",

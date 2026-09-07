@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "blueprints/blueprints.json plus repository source contracts",
   "generator": "scripts/generate_weapon_visual_audit.py",
-  "activeBlueprintItemWeaponCount": 68,
+  "activeBlueprintItemWeaponCount": 70,
   "mappingPolicy": "exact deterministic blueprint identity; no runtime randomness or transient state",
   "items": [
     {
@@ -1672,6 +1672,54 @@
       "clippingOrientationConcerns": "preserve family length ordering, blade edge orientation, hand contact, and no cross-family substitution",
       "mappingScope": "equipped project weapon",
       "weaponTypeAssetGuid": "41c269cc820ee734f437ab3fa20de198"
+    },
+    {
+      "symbolicIdentity": "KMG.Firearms.RoadwardenItem",
+      "assetGuid": "66d2f8c4d6aa43e0be72ac18ed9fcd81",
+      "displayedName": "Roadwarden",
+      "tier": "named",
+      "familyOrFirearmKind": "Musket",
+      "weaponType": "KMG.Firearms.EarlyMusketWeaponType",
+      "currentItemLevelVisual": "Musket",
+      "currentTypeLevelVisual": "Musket",
+      "effectiveEquippedPrefab": "Musket",
+      "sourceFbx": "assets-source/third-party/models/firearm-long-gun-derivatives/musket-normalized.fbx",
+      "sourceBlend": "none; preserved licensed source imported directly",
+      "deterministicGenerator": "assets-source/third-party/models/firearm-long-gun-derivatives/generate_long_gun_derivatives.py plus tools/unity/BuildFirearmBundles.cs",
+      "animationDonorStyle": "Crossbow; inherited native attachment slots",
+      "gripHandednessContract": "two-handed; identity equipment root; canonical source frame converted to measured Heavy Crossbow held basis; SupportHandTarget follows the same semantic solve; independent BackMount",
+      "currentMaterial": "opaque Unity Standard; generated Musket_* material assets",
+      "currentBundle": "kingmakergunslinger.firearms",
+      "sourceLicenseProvenance": "Modified Mesh Masters Flintlock Rifle, CC-BY-4.0; original FBX preserved; deterministic derivative recorded",
+      "currentManyToOneVisualGroup": "Musket.Service",
+      "proposedVisualVariant": "Musket.Service",
+      "clippingOrientationConcerns": "runtime-qualified default Medium male held/stored/ready/fire; reload, locomotion, and body matrix open",
+      "mappingScope": "equipped project weapon",
+      "weaponTypeAssetGuid": "71d97f61a13543429eabc0aa20001dc2"
+    },
+    {
+      "symbolicIdentity": "KMG.Firearms.DeadReckoningItem",
+      "assetGuid": "b8db89aba5364c27b1626896664a1913",
+      "displayedName": "Dead Reckoning",
+      "tier": "named",
+      "familyOrFirearmKind": "Pistol",
+      "weaponType": "KMG.Firearms.EarlyPistolWeaponType",
+      "currentItemLevelVisual": "Pistol",
+      "currentTypeLevelVisual": "Pistol",
+      "effectiveEquippedPrefab": "Pistol",
+      "sourceFbx": "assets-source/third-party/models/cyril43-flintlock-pistol/source/pistol.zip!/model/model.dae",
+      "sourceBlend": "none; preserved licensed source imported directly",
+      "deterministicGenerator": "tools/unity/BuildFirearmBundles.cs imports the preserved licensed source",
+      "animationDonorStyle": "PiercingOneHanded; inherited native attachment slots",
+      "gripHandednessContract": "one-handed firing grip; no support-hand IK; +Z muzzle",
+      "currentMaterial": "opaque Unity Standard; generated Pistol_* material assets",
+      "currentBundle": "kingmakergunslinger.firearms",
+      "sourceLicenseProvenance": "Cyril43, Flintlock pistol, CC-BY-4.0; original archive preserved",
+      "currentManyToOneVisualGroup": "Pistol.Service",
+      "proposedVisualVariant": "Pistol.Service",
+      "clippingOrientationConcerns": "human inventory/world readability and hand fit remain required",
+      "mappingScope": "equipped project weapon",
+      "weaponTypeAssetGuid": "1b1eede8ce3a459fa7d766e481b633ee"
     }
   ]
 }
