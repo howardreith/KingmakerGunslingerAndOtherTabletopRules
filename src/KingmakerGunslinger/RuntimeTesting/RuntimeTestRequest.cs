@@ -220,6 +220,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression ||
                 request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitCandidateRender ||
                 request.Scenario == RuntimeTestScenarioCatalog
@@ -319,10 +320,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ValidStageTimeout(request.LoadEntryTimeoutSeconds) ||
                     !ValidStageTimeout(request.FingerprintTimeoutSeconds))
                     return "scenario-timeout-invalid";
-                if (request.Parameters == null || request.Parameters.Count != 1 ||
+                bool creatorRegression = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression;
+                if (request.Parameters == null || request.Parameters.Count != (creatorRegression ? 4 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
+                if (creatorRegression && (request.Parameters["race"]?.Type != JTokenType.String ||
+                    request.Parameters["class"]?.Type != JTokenType.String ||
+                    request.Parameters["allocation"]?.Type != JTokenType.String ||
+                    !ElementalCharacterCreationRegressionPlan.IsAllowedCase((string)request.Parameters["race"],
+                        (string)request.Parameters["class"], (string)request.Parameters["allocation"])))
+                    return "character-creation-case-not-allowed";
                 string saveName = (string)request.Parameters["saveName"];
                 string expectedSaveName = request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad

@@ -29,7 +29,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     // Operates only request-created ChargenUnits through the real native creator.
     // A diagnostic observation PASS never overrides the per-character acceptance result.
-    internal sealed class ElementalCharacterCreationBaselineScenario
+    internal sealed partial class ElementalCharacterCreationBaselineScenario
     {
         internal const string EvidenceFileName = "elemental-character-creation-baseline.json";
         private const string FirstTrait = "34e2812e0f8241bb9e1bee5240c9eb2e";
@@ -88,10 +88,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (request == null || (request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline &&
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase &&
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl &&
-                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation))
+                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation &&
+                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression))
                 throw new InvalidOperationException("Exact guarded creator-baseline request required.");
             _disabledControl = request.Scenario == RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl;
-            _canCommit = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation;
+            _regression = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression;
+            _canCommit = _regression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation;
             if (_canCommit && (request.Parameters == null || (string)request.Parameters["saveName"] != WorkingSaveSmokeScenario.ExpectedName ||
                 loaded == null || !loaded.CompletionCallbackObserved || !loaded.DescriptorReferenceCorrelated ||
                 string.IsNullOrEmpty(loaded.StableFingerprint) || loaded.SaveWritingApiObserved || !loaded.HooksRemoved))
@@ -106,13 +108,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 : BlueprintBootstrap.ElementalRaces.OrderedRaces().OrderBy(race =>
                     ReferenceEquals(race, BlueprintBootstrap.ElementalRaces.Sylph.Race) ? 1 : 0).ToArray();
             _classGuid = "48ac8db94d5de7645906c7d0ad3bcfbd";
-            if (request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase)
+            if (_regression || request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase)
             {
                 _races = new[] { BlueprintBootstrap.ElementalRaces.OrderedBlueprints().Single(value =>
                     value.Definition.Kind.ToString() == (string)request.Parameters["race"]).Race };
                 _useRoll = (string)request.Parameters["allocation"] == "roll";
                 if ((string)request.Parameters["class"] == "Gunslinger")
                     _classGuid = "abca4797366d4df0831a418eee39069a";
+                if (_regression) _races = Enumerable.Repeat(_races[0], 3).ToArray();
             }
         }
 
@@ -131,6 +134,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_settle-- > 0) return;
                 if (_started) VerifyVisualIntegrity();
                 if (!_started) { Start(); return; }
+                if (_commitCleanupPending) { PollCommittedCreatorCleanup(); return; }
                 if (_controller == null)
                 {
                     if (_raceIndex == _races.Length) { Finish(); return; }
@@ -140,6 +144,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ReferenceEquals(_controller, Game.Instance.UI.LevelUpController) ||
                     !ReferenceEquals(_controller.Unit, _unit.Descriptor))
                     throw new InvalidOperationException("Actual creator lost request-local controller ownership.");
+                if (_racialCheckPending)
+                { _racialCheckPending = false; VerifySelectedRacialGraph("after-native-choice"); }
+                if (_regression && _revising) { DriveRacialRevision(); return; }
                 if (_advancePending)
                 {
                     _advancePending = false;
@@ -147,7 +154,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!NextEnabled()) { RejectCharacter("native Next/Complete button is disabled at " + _stage); return; }
                     _build.ToNextPhase(); _settle = 12; return;
                 }
-                if (++_operations > 240) { RejectCharacter("native creator did not converge within 240 operations"); return; }
+                if (++_operations > (_regression ? 700 : 240)) { RejectCharacter("native creator did not converge within its operation budget"); return; }
                 CharBPhase.Type? phase = _build.CurrentPhase;
                 if (!phase.HasValue) throw new InvalidOperationException("Native creator has no active phase.");
                 _stage = _races[_raceIndex].name + ":" + phase.Value;
@@ -207,6 +214,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     case CharBPhase.Type.TotalInChargen:
                         if (!_controller.State.IsComplete() || !NextEnabled())
                         { RejectCharacter("native final state is incomplete"); break; }
+                        if (_regression && RevisitOrQualifyFinalReview()) break;
                         _character["unresolvedSelectionsBeforeCommit"] = _controller.State.RemainingSelections();
                         if (!_canCommit)
                         {
@@ -219,14 +227,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!traits) AcceptanceFailure("Both ordinary Trait selections were not observed.");
                             EndCharacter(); break;
                         }
-                        _build.Commit();
+                        CommitOwnedCreator();
                         _committed = true;
                         _character["nativeCommitPerformed"] = true;
                         _character["nativeCommitCallback"] = _successCallback;
                         _character["finalLevel"] = _unit.Descriptor.Progression.CharacterLevel;
                         _character["finalRaceGuid"] = _unit.Descriptor.Progression.Race.AssetGuid;
                         _character["completed"] = _successCallback && _unit.Descriptor.Progression.CharacterLevel == 1;
-                        EndCharacter();
+                        if (_regression) VerifySelectedRacialGraph("committed-unit", _unit.Descriptor);
+                        _commitCleanupPending = true; _settle = 12;
                         break;
                     default: RejectCharacter("unhandled native phase " + phase.Value); break;
                 }
@@ -291,6 +300,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             CaptureInitialInnerAssets();
             ArmSaveGuard();
             _worldBefore = Game.Instance.State.Units.All.ToArray();
+            CaptureCreatorMembership();
             VerifyRepeatedHelpfulReconciliation();
             _started = true;
             _settle = 15;
@@ -356,10 +366,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["race"] = _races[_raceIndex].name, ["completed"] = false,
                 ["acceptance"] = "NOT-RUN", ["acceptanceFailures"] = new JArray(), ["steps"] = new JArray() };
             _characters.Add(_character);
-            _unit = new ChargenUnit(BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            _unit = new ChargenUnit(_canCommit && _useRoll ? BlueprintRoot.Instance.CustomCompanion :
+                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            _character["nativeMercenaryFixture"] = _unit.Descriptor.IsCustomCompanion();
             if (ReferenceEquals(_unit, _mainBefore)) throw new InvalidOperationException("Fixture cannot own the campaign character.");
             _character["fixtureId"] = _unit.UniqueId;
             _spentSkills.Clear();
+            BeginRegressionCharacter();
             _operations = 0; _lastCaptureKey = null; _viewWait = 0; _advancePending = false; _classChosen = false; _rollRequested = false; _rollApplied = false; _committed = false; _successCallback = false;
             _build.HandleLevelUpStart(_unit.Descriptor, null, () => _successCallback = true, LevelUpState.CharBuildMode.CharGen);
             _controller = _build.LevelUpController;
@@ -393,7 +406,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void SelectCurrentFeature(CharBPhaseFeatures phase)
         {
-            if (phase.IsSelected()) { Advance(); return; }
+            if (phase.IsSelected())
+            {
+                if (_regression && ReferenceEquals(phase, _build.Determinators)) VerifySelectedRacialGraph("heritage-phase-complete");
+                Advance(); return;
+            }
             FeatureSelectionState selection = (FeatureSelectionState)typeof(CharBPhaseFeatures)
                 .GetProperty("CurrentFeatureCollection", Members).GetValue(phase, null);
             if (selection == null) { RejectCharacter("active feature phase has no selection"); return; }
@@ -422,10 +439,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             var items = selection.Selection.ExtractSelectionItems(_controller.Unit, _controller.Preview).ToArray();
-            var legal = items.Where(item => selection.Selection.CanSelect(_controller.Preview,
-                _controller.State, selection, item)).Where(item =>
-                    item.Feature != null && !item.Feature.name.Contains("TreacherousEarth") &&
-                    !item.Feature.name.Contains("NereidFascination")).ToArray();
+            RejectDeferredChoices(items);
+            var legal = items.Where(item => item.Feature != null && selection.Selection.CanSelect(_controller.Preview,
+                _controller.State, selection, item)).ToArray();
             if (legal.Length == 0) { RejectCharacter("zero legal choices: " + guid); return; }
             var rendered = _build.GetComponentsInChildren<CharBuildSelectorItem>(true)
                 .Where(item => item.gameObject.activeInHierarchy && item.Toggle != null && item.Toggle.interactable &&
@@ -438,12 +454,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             _viewWait = 0;
             Capture("rendered-selection-ready:" + guid);
-            IFeatureSelectionItem chosen = legal.OrderBy(item => ChoicePriority(item.Feature)).ThenBy(item => item.Feature.AssetGuid,
-                StringComparer.Ordinal).First();
+            BlueprintFeature preferred = PreferredRegressionChoice(blueprint);
+            IFeatureSelectionItem chosen = preferred == null ? legal.OrderBy(item => ChoicePriority(item.Feature)).ThenBy(item => item.Feature.AssetGuid,
+                StringComparer.Ordinal).First() : legal.SingleOrDefault(item => ReferenceEquals(item.Feature, preferred));
+            if (chosen == null) throw new InvalidOperationException("Planned racial choice is not legal and visibly rendered: " + preferred.AssetGuid);
             ((JArray)_character["steps"]).Add(new JObject { ["action"] = "select-feature", ["selectionGuid"] = guid,
                 ["choiceGuid"] = chosen.Feature.AssetGuid, ["extractedCount"] = items.Length, ["legalCount"] = legal.Length,
                 ["phase"] = _build.CurrentPhase.ToString() });
             _build.SetFeature(selection, chosen);
+            _racialCheckPending = _regression && preferred != null;
             _settle = 8;
         }
 
@@ -519,6 +538,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             object panel = bridge.GetField("panel", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
             object commands = panel.GetType().GetField("commands", Members).GetValue(panel);
             object session = commands.GetType().GetProperty("ActiveSession", Members).GetValue(commands, null);
+            if (session == null) throw new InvalidOperationException("Dice Roller has no accepted session for this exact native creator; inspect its eligibility log.");
             Func<string, object> read = name => session.GetType().GetProperty(name, Members).GetValue(session, null);
             if (!ReferenceEquals(read("Controller"), _controller) || !ReferenceEquals(read("State"), _controller.State) ||
                 !ReferenceEquals(read("Unit"), _controller.Preview))
@@ -671,7 +691,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _build.Unit = _buildUnitBefore;
                 _controller = null;
             }
-            if (_unit != null) { _unit.Dispose(); _unit = null; }
+            if (_unit != null) { CleanupCreatorMembership(); _unit = null; }
         }
         private void ArmSaveGuard()
         {
@@ -728,19 +748,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["initialCreatorOwnership"] = _initialCreatorOwnership,
                     ["initialInnerAssets"] = new JArray(_initialInnerAssets.Select(value => value.Value)),
                     ["compatibilityRechecks"] = _compatibilityRechecks.DeepClone(),
-                    ["characters"] = _characters.DeepClone(), ["assetUnloads"] = _assetUnloads.DeepClone(), ["instrumentationFailures"] = new JArray(_failures) }.ToString(Formatting.Indented));
+                    ["characters"] = _characters.DeepClone(), ["assetUnloads"] = _assetUnloads.DeepClone(), ["creatorCleanup"] = _creatorCleanupEvidence?.DeepClone(), ["instrumentationFailures"] = new JArray(_failures) }.ToString(Formatting.Indented));
         }
         private void Finish()
         {
             try { CleanupCharacter(); }
             catch (Exception error) { _failures.Add("cleanup: " + error); }
+            bool membershipRestored = CreatorMembershipRestored();
             bool restored = !_started && _unit == null && _controller == null ||
                 (_worldBefore != null && CharacterCreationObservationIdentity.SameOrderedReferences(
                 _worldBefore, Game.Instance.State.Units.All.ToArray()) &&
                 ReferenceEquals(Game.Instance.UI.LevelUpController, _globalControllerBefore) &&
                 ReferenceEquals(_build.Unit, _buildUnitBefore) && _build.LevelUpController == null &&
                 ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore) &&
-                ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore));
+                ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore) && membershipRestored);
             if (!restored) _failures.Add("Original world unit membership or controller ownership was not restored.");
             try { DisarmSaveGuard(); }
             catch (Exception error) { _failures.Add("save guard cleanup: " + error); }
@@ -752,6 +773,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             Result.Assertions.Add(new RuntimeTestAssertion { Name = "request-local-creator-cleanup",
                 Expected = "no instrumentation failures; exact restoration", Observed = string.Join("|", _failures),
                 Status = _failures.Count == 0 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
+            if (_regression) Result.Assertions.Add(new RuntimeTestAssertion { Name = "native-elemental-roundtrip-commits",
+                Expected = "three complete native commits after exact racial round trips",
+                Observed = string.Join("|", _characters.OfType<JObject>().Select(row => (string)row["acceptance"])),
+                Status = _characters.Count == 3 && _characters.OfType<JObject>().All(row =>
+                    (string)row["acceptance"] == "PASS" && (bool?)row["completed"] == true)
+                    ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
             Result.Status = Result.Assertions.All(value => value.Status == RuntimeTestStatuses.Pass)
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail;
             Result.ExceptionSummary = string.Join("|", _failures);

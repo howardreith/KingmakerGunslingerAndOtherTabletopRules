@@ -30,6 +30,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-visuals.native-retention", ElementalVisualResourceRetentionTests.RetainsOwnedIdentitiesAndSharedAssetsWithoutChangingForeignEntries),
             Case("elemental-visuals.retention-preflight", ElementalVisualResourceRetentionTests.InvalidRetentionPlansCannotPartiallyMutateNativeCollections),
             Case("elemental-chargen.heritage-native-route", ElementalCharacterCreationRoutingTests.HeritageFactoryUsesObservedNativeHeritageRoute),
+            Case("elemental-chargen.native-revision-coverage", ElementalCharacterCreationRoutingTests.NativeRevisionPlansCoverLegalTransitionsAndAllHeritages),
             Case("elemental-chargen.native-creator-fixture", ElementalCharacterCreationRoutingTests.NativeCreatorFixtureIsScopedAndReportsAcceptanceSeparately),
             Case("elemental-chargen.disabled-control-boundary", ElementalCharacterCreationRoutingTests.DisabledControlCannotBootstrapProductionOrCommitCampaign),
             Case("elemental-chargen.observation-identity", ElementalCharacterCreationRoutingTests.ObservationIdentityUsesReferences),
