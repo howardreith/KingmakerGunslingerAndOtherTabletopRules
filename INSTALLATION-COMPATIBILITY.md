@@ -1,5 +1,12 @@
 # Installation, updates, removal, and compatibility
 
+The owner-requested [manual-test handoff](ELEMENTAL-RACES-EXPANSION-HANDOFF.md)
+installs the byte-identical native-tested 117 candidate into the existing UMM
+mod folder. All 135 package files match, prior module settings are preserved,
+and both UMM and Elemental Races are enabled. The prior mod folder has an
+explicit recoverable backup. Use disposable testing saves; do not select the
+unimplemented Treacherous Earth or Nereid Fascination scaffolds.
+
 The current 0.0.117 package is a development candidate, not a qualified Release C
 for production campaigns. Crystalline Form's focused KMG-only/combined native
 core and incremental consent/spent-use persistence checks pass, but complete

@@ -1,6 +1,61 @@
 {
   "schemaVersion": 1,
   "mission": "elemental-races-expansion",
+  "ownerRequestedHandoff": {
+    "status": "OWNER-REQUESTED-SEGMENT-CONCLUSION; MANUAL-TEST-HANDOFF; RELEASE C INCOMPLETE",
+    "requestedAtUtcDate": "2026-09-07",
+    "instruction": "Wrap up the current segment, install the tested build in UMM, push the feature branch, and list unimplemented material. Stop autonomous implementation for owner testing; merging and a later implementation session require a new instruction.",
+    "codeCheckpoint": "efc9d54ec29dbdd84ffe328183139f517c2f3350",
+    "installation": {
+      "codeCheckpoint": "efc9d54ec29dbdd84ffe328183139f517c2f3350",
+      "deploymentId": "20260907T0212038949733Z",
+      "deploymentSha256": "d9248e45be84c8f86bf0dcf432470b3023136bdf7e3a35edd79469e7ec9892b9",
+      "liveModDirectory": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Pathfinder Kingmaker\\Mods\\KingmakerGunslinger",
+      "version": "0.0.117",
+      "packageSha256": "acc04aa24697170f00336198d67f0ef4aa98dedc5a7884acf263d0d713de3fe4",
+      "dllSha256": "b3839a63fb83a5894169fa7ea2cbc1ef6e15f01229081b51d0f74b0d88984f05",
+      "dllMvid": "0a84af89-794b-46b5-b55e-13bf9959bcd6",
+      "packagedFilesIndependentlyByteExact": 135,
+      "featureSettingsPreserved": true,
+      "featureSettingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "elementalRacesEnabled": true,
+      "ummEnabled": true,
+      "backupDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20260907T0212002253044Z",
+      "kingmakerProcesses": 0,
+      "saveAccessed": false
+    },
+    "unfinishedRequiredImplementations": [
+      "Oread: Treacherous Earth",
+      "Undine: Nereid Fascination"
+    ],
+    "implementedTraitsAwaitingSaveQualification": [
+      "Wildfire Heart",
+      "Brazen Flame",
+      "Forge-Hardened",
+      "Granite Skin",
+      "Breeze-Kissed",
+      "Like the Wind",
+      "Secretive",
+      "Thunderous Resilience",
+      "Whispering Wind"
+    ],
+    "qualificationStillPending": [
+      "Full Breeze ability-source/nonphysical nonmagical ranged attack boundary",
+      "Breeze and Undine breath native turn-based action proof",
+      "Complete Crystalline semantic ray catalog",
+      "Nine implemented traits' fresh-process saves plus both future traits",
+      "Full all-trait lifecycle and final release-wide compatibility/module matrices",
+      "Subjective visual review; Visual Adjustments absent/NOT-RUN",
+      "Direct Buff Planner Instant consumer gameplay"
+    ],
+    "uiWarning": "Treacherous Earth and Nereid Fascination remain selectable framework scaffolds, not working mechanics; do not choose them for gameplay. The build is for disposable manual testing, not a qualified production Release C.",
+    "noNewPersistenceSourceChanges": true,
+    "report": "ELEMENTAL-RACES-EXPANSION-HANDOFF.md",
+    "mergeToMaster": false,
+    "tag": false,
+    "publicRelease": false,
+    "generatedPackageCommitted": false
+  },
   "branch": "codex/elemental-races-expansion",
   "startingCommit": "6874dc15a27ded132456dbdd480f47c794543a05",
   "authoritativeMasterCommit": "dfd551080a1aad38cdd0b19714fbcb12c81ca4ca",
@@ -698,7 +753,7 @@
     "sha256": "ba877821a24440e56bf6be7509f92658ccff78951035e4ab0e269d8e8429f4b4"
   },
   "startingTreeClean": true,
-  "phase": "release-c-breeze-native-qualification",
+  "phase": "owner-manual-test-handoff",
   "currentVersion": "0.0.117",
   "targets": {
     "releaseA": "0.0.115-elemental-heritages",
@@ -709,7 +764,7 @@
     "foundation": "PASS",
     "releaseA": "PASS-LOCAL-CHECKPOINT-PUSHED",
     "releaseB": "PASS-LOCAL-CHECKPOINT-PUSHED",
-    "releaseC": "IN-PROGRESS; EIGHTEEN-TRAITS-WITH-INCREMENTAL-NATIVE-PROOF; TEN-TRAIT-SAVES-PASS; BREEZE-KISSED-SOURCE-UNQUALIFIED; TWO-UNIMPLEMENTED; TB-BREATH-ACTIONS-AND-FULL-RELEASE-GATES-PENDING"
+    "releaseC": "OWNER-PAUSED-FOR-MANUAL-TEST; NINETEEN-TRAITS-WITH-INCREMENTAL-NATIVE-PROOF; TEN-TRAIT-SAVES-PASS; TWO-UNIMPLEMENTED; BROADER-SEMANTIC-TB-PERSISTENCE-LIFECYCLE-AND-FULL-RELEASE-GATES-PENDING"
   },
   "publicationRecovery": {
     "status": "PASS",

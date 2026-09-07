@@ -1,5 +1,12 @@
 # Elemental Races expansion blockers
 
+Current stopping reason: owner-directed manual testing, not an established
+engineering hard stop. The tested candidate is installed/enabled in UMM.
+Do not resume implementation or merge without a new owner instruction.
+See the [handoff](ELEMENTAL-RACES-EXPANSION-HANDOFF.md); the original mission
+and Release C remain incomplete. Treacherous Earth and Nereid Fascination
+are selectable scaffolds with no working mechanic and must not be chosen.
+
 The six-trait active-buff save regression is resolved by exact native
 trait-marker-loss cleanup. Two native processes (9,660 assertions) and four
 save-backed processes (230 assertions, 46 retained visual/DollData warnings)

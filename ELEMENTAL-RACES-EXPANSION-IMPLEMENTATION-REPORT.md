@@ -2,6 +2,13 @@
 
 ## Current outcome
 
+The owner has requested a manual-test handoff, superseding further autonomous
+implementation for this segment. The tested candidate is installed/enabled in
+UMM with all 135 package files independently byte-verified and settings
+preserved. See the [handoff](ELEMENTAL-RACES-EXPANSION-HANDOFF.md) for exact
+installation evidence, the two unimplemented traits and remaining gates.
+This concludes the segment, not Release C or the original mission.
+
 Breeze-Kissed's [native core checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md)
 passes 1,432 tests, clean Release/package and two guarded profiles with 11,376
 assertions (380 Breeze observations), plus two independently exact 968-entry
