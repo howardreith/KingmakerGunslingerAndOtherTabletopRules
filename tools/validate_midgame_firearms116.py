@@ -130,6 +130,16 @@ def validate(root: Path) -> None:
     require_tokens(root / "tests/KingmakerGunslinger.DomainTests/BrownFurContractTests.cs",
         "BrownFurDirectCastApi", "ContractVersion = 1")
 
+    require_tokens(root / "docs/RELEASE-NOTES-0.0.116.md",
+        "Kingmaker Gunslinger 0.0.116", "Roadwarden", "Dead Reckoning",
+        "33,800 gp", "33,300 gp", "15 Protection", "24-state",
+        "explicitly authorized")
+    require_tokens(root / "scripts/Publish-Release.ps1",
+        r"docs\RELEASE-NOTES-0.0.116.md", "ConfirmReleaseReady")
+    require_tokens(root / "README.md",
+        INFORMATIONAL_VERSION, "Roadwarden", "Dead Reckoning")
+    require_tokens(root / "CHANGELOG.md", "## " + INFORMATIONAL_VERSION)
+
     require_tokens(root / "docs/RELEASE-NOTES-0.0.115.md",
         "Kingmaker Gunslinger 0.0.115", "ContractVersion = 1",
         "KingmakerGunslinger-0.0.115-share-transmutation-instant.zip",
@@ -160,7 +170,7 @@ def validate(root: Path) -> None:
             static.get("milestone") != INFORMATIONAL_VERSION:
         raise AssertionError("0.0.116 static release identity mismatch")
     state = static.get(STATIC_KEY, {})
-    expected = {"deterministicTestCount": 1398, "newNamedFirearms": 2, "magicalFirearmCount": 10, "fixedLootFirearmCount": 5, "actualEnhancement": 3, "equivalentPricingBonus": 4, "merchantStockVariants": 4, "controlMechanicsUnchanged": True, "publicReleaseAuthorized": False}
+    expected = {"deterministicTestCount": 1398, "newNamedFirearms": 2, "magicalFirearmCount": 10, "fixedLootFirearmCount": 5, "actualEnhancement": 3, "equivalentPricingBonus": 4, "merchantStockVariants": 4, "controlMechanicsUnchanged": True, "publicReleaseAuthorized": True}
     for key, value in expected.items():
         if state.get(key) != value:
             raise AssertionError(f"0.0.116 static mismatch: {key}")
@@ -174,10 +184,10 @@ def main() -> int:
     try:
         validate(args.root.resolve())
     except Exception as exception:
-        print(f"Share Transmutation {VERSION} validation failed: {exception}",
+        print(f"Mid-game firearms {VERSION} validation failed: {exception}",
             file=sys.stderr)
         return 1
-    print(f"Share Transmutation {VERSION} focused source validation passed.")
+    print(f"Mid-game firearms {VERSION} focused source validation passed.")
     return 0
 
 
