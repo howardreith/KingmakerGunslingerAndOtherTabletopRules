@@ -220,7 +220,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
-                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression ||
+                (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec) ||
                 request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitCandidateRender ||
                 request.Scenario == RuntimeTestScenarioCatalog
@@ -320,7 +320,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ValidStageTimeout(request.LoadEntryTimeoutSeconds) ||
                     !ValidStageTimeout(request.FingerprintTimeoutSeconds))
                     return "scenario-timeout-invalid";
-                bool creatorRegression = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression;
+                bool creatorRegression = (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec);
                 if (request.Parameters == null || request.Parameters.Count != (creatorRegression ? 4 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
@@ -331,6 +331,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ElementalCharacterCreationRegressionPlan.IsAllowedCase((string)request.Parameters["race"],
                         (string)request.Parameters["class"], (string)request.Parameters["allocation"])))
                     return "character-creation-case-not-allowed";
+                if (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec &&
+                    !ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase((string)request.Parameters["race"],
+                        (string)request.Parameters["class"], (string)request.Parameters["allocation"]))
+                    return "native-respec-case-not-allowed";
                 string saveName = (string)request.Parameters["saveName"];
                 string expectedSaveName = request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad

@@ -276,3 +276,40 @@ that exact request-owned unit in cross-scene/remote-companion collections. Clean
 removes only that exact actor and verifies original ordered cross-scene, remote,
 party and player-inventory references plus money. The existing main character is
 never reassigned. Save-free new-player roll controls retain their original route.
+
+
+### Full native elemental respec observation
+
+`working-save-elemental-native-respec` requires the exact working-save guard,
+`-SaveName KMG_AUTOMATION_WORKING`, and exactly three additional parameters:
+`race` (Ifrit/Oread/Sylph/Undine), `class=Fighter`, `allocation=point-buy`.
+It creates one native CustomCompanion, completes its real creator, then invokes
+`Player.RespecCompanion` on that exact request-owned actor for seven further
+creator visits. The target choices are General, General, A, B, General, B, A,
+General, with the same legal alternate-trait plans used by the native revision
+regression. Each visit selects existing Elemental Strike through the normal feat
+catalog when needed and completes both ordinary Trait selections in compatible
+profiles. No feat blueprint or foreign selector is modified by the probe.
+
+Before each native respec, the probe spends active owned heritage/trait/elemental
+feat resources through the native resource API. It records exact GUID/amount
+expectations independently from the game. Distinct original/replacement/preview
+references, native Respec mode, the real Player success callback and final original
+identity/facts/stats/resources are observed. A preview mismatch is retained while
+the native callback completes; either preview or final mismatch fails acceptance.
+The probe never repairs providers, saved markers, resource memory or stat values.
+
+Native replacements may share a resource-list reference with the original after
+respec. They remain alive until final owned-source observation/cleanup completes.
+The existing save-write guard, exact native inventory/money rollback and controller/
+world/party/remote/cross-scene checks apply; native pause state is also restored.
+This instrumentation is pending runtime qualification; do not treat its presence
+as evidence that full native respec currently works.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario working-save-elemental-native-respec -ExpectedVersion 0.0.117 `
+  -SaveName KMG_AUTOMATION_WORKING `
+  -Parameters @{race='Ifrit';class='Fighter';allocation='point-buy'} `
+  -ExitAfterCompletion:$true -Confirm:$false
+```

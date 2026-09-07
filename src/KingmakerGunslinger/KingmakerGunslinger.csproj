@@ -947,6 +947,7 @@
     <Compile Include="RuntimeTesting\ElementalCharacterCreationRoutingObserver.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationBaselineScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationRegression.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeRespec.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationRegressionPlan.cs" />
     <Compile Include="RuntimeTesting\DisabledKmgCharacterCreationProbe.cs" />
     <Compile Include="RuntimeTesting\CharacterCreationObservationIdentity.cs" />
@@ -1017,6 +1018,8 @@
     <Compile Include="ElementalRaces\ElementalHeritagePersistenceMatrixPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageBlueprintSet.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageRuntime.cs" />
+    <Compile Include="ElementalRaces\ElementalRespecResourcePolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalNativeRespecResourceRuntime.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageSlaPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageRuleComponents.cs" />
     <Compile Include="ElementalRaces\ElementalHeritageAbilityFactory.cs" />

@@ -1045,3 +1045,145 @@ Next: full native Player respec callback qualification, then all currently visib
 Release C lifecycle/TB and migration/compatibility gates. Human UI acceptance is
 NOT-RUN. The prior installation was restored after every profile; the final
 acceptance candidate is not installed yet. No merge, tag or release occurred.
+
+
+## Full native Player respec: observation work in progress
+
+The next guarded fixture invokes Player.RespecCompanion on a real, committed,
+request-owned native mercenary, rather than only committing a temporary Respec
+controller. Eight visits cover unchanged General and both directions among all
+three heritage/alternate-trait plans. It selects existing Elemental Strike in the
+normal feat catalog and deliberately spends active owned resource GUIDs before
+respec. Original, replacement and preview references are tracked separately;
+preview and post-callback resource mismatches fail without fixture reconciliation.
+This source adds instrumentation only. Actual full-respec qualification remains
+pending; no production resource fix is justified by the earlier IL inference alone.
+
+- Full-native-respec source candidate 01: repository validation, 1,445 complete
+  domain/reflection cases, clean Release, deterministic/strict package PASS.
+  Request preflight initially failed its no-staging metadata check when only the
+  exact-build/bin and artifacts/packages directory timestamps changed; no compiler
+  or game process remained during inspection. An isolated repeat passed all 255
+  checks. The guard was not relaxed. Before runtime, cleanup gained an explicit
+  prerequisite that pause state must have been captured before it can be restored.
+  No native respec runtime result is claimed yet.
+
+
+### Full native respec reproduction and narrow resource repair, 2026-09-07
+
+The first full-stack native Player.RespecCompanion run,
+`20260907T1111253889642Z-working-save-elemental-native-respec`, is **FAIL**.
+Candidate DLL SHA-256 `77b897f29f9289a1b4e78169525069785c28475cecde7fa366d4b9b3b51f0d05`,
+MVID `ca01f9a2-3df7-4727-99da-1f9def4a0e1e`, ZIP SHA-256
+`e63531d706aa0b7c4d55e3eb0b00f1c730570e7f66003578f2c83838e93f8e64`;
+source 68ca24d3751fb67d9451781e6e90f8749ce7b7d7 plus the recorded dirty-build fingerprint.
+All 1,445 tests, repository validation, clean Release and deterministic/strict package checks passed before this run.
+
+The original General Ifrit was really committed, then its exact SLA resource
+`04e5fa42bffd4ab4b305e56dec7ccb0d` was spent from 1 to 0. The next unchanged
+General/retain respec reached a complete native final review and one successful
+native callback, but every measured preview and the original after copy-back had
+amount 1. All compared racial stats, markers, providers and ability/resource
+identities/counts were exact. This is a reproduced resource refill, not a
+synthetic-state inference. The existing elemental feat remained rank 1.
+
+Inspected native IL shows a fresh respec UnitDescriptor/UnitParts graph, followed
+by SetupNewCharacher calling ApplyRest before the success callback copies the
+replacement into the original. The focused repair captures only exact owned
+present amounts and previously suppressed owned amounts, seeds the correlated
+native replacement, preserves those amounts across native preview/action replay,
+and removes native setup refills before copy-back and at the original success
+boundary. Unseen identities keep their native budget. No GUID, selection, stat,
+provider, maximum, foreign resource or ordinary rest implementation changes.
+This repair is pending fresh runtime qualification.
+
+The failed run also found a fixture cleanup error: native PrepareRespec nulls
+the discarded replacement Body, while both native UnitDescriptor.Dispose and
+Call of the Wild's replacement prefix call Body.Dispose unconditionally. The
+fixture now retains that exact request-owned empty body for final shell disposal,
+after all native callbacks and after retiring the original. It does not patch or
+suppress the foreign Dispose method. Recorded world/party/inventory/money/pause
+restoration was exact; the external profile restored the exact starting Mods
+and UMM bytes. The failed attempt remains FAIL, including its cleanup exception.
+Human full-screen acceptance remains NOT-RUN.
+
+
+### Full native respec qualification checkpoint, 2026-09-07
+
+Candidate 05 passes four fresh-process full eleven-mod-stack profiles. Each
+performs one real first-level mercenary creation and seven actual
+Player.RespecCompanion callbacks on that original. The visit sequence is
+General, General, alternate A, alternate B, General, alternate B, alternate A,
+General, including retain/alternate and multi-slot/independent changes.
+All reviews have zero unresolved selections and a native enabled Complete
+button. The two global Trait roots and existing Elemental Strike remain usable.
+
+| Race | Guarded runtime run | Commits / respec callbacks / racial graphs | runtime-result.json SHA-256 |
+| --- | --- | --- | --- |
+| Ifrit | `20260907T1147385430995Z-working-save-elemental-native-respec` | 8 / 7 / 64 | `5799387a4d6bb88cbb3387f3559dd8553259cc047c8c554cb63f4dd5c090900a` |
+| Oread | `20260907T1159336521752Z-working-save-elemental-native-respec` | 8 / 7 / 64 | `9ad6e65594471b147c031e65a57b90f03af909659d233d1f4e51be4850d4f1f3` |
+| Sylph | `20260907T1211368234223Z-working-save-elemental-native-respec` | 8 / 7 / 64 | `57d4d7d3fb0c9e7dd9b508cd07857cb9d1f8cfeb76ef2448306f53f5603ed940` |
+| Undine | `20260907T1223437010470Z-working-save-elemental-native-respec` | 8 / 7 / 48 | `49acc40152055bceb23c401a0b7ac05b258191165215fffcc78e9d20deed5936` |
+
+Totals: 32 native commits, 28 native respec callbacks and 240 exact racial
+provider/stat/resource graph observations. All 48 final runtime assertions pass.
+No preview resource mismatch occurred. Each active owned resource was spent
+through native Resources.Spend before respec; removed identities retained their
+spent amounts when selected again. For example Sylph Breeze-Kissed gust resource
+`e117e1e0a17a4acec001000000000077` was spent 1 -> 0, removed, then returned as
+exactly one resource entry at 0. No fixture reconciliation, provider grant,
+base-stat repair or remembered-resource write supplied these results.
+
+All four final fixture cleanups restore exact world/cross-scene/remote/party
+membership, inventory references and counts, money, controller and pause state.
+Every external Mods/UMM transaction restores exactly. Every save audit passes:
+protected baseline exact, other-save metadata exact, working non-header exact,
+working header exact except its native load counter, delta 1. These runs do not
+write a save. Each log has zero KMG ERROR lines, the four known ZFavoredClass
+custom JSON KeyNotFound errors, and the already captured native BugReportCanvas
+startup exception. Those third-party/native startup errors remain unsuppressed.
+
+Qualification commands: `scripts/Build-Local.ps1` (repository validation, complete
+1,447-case domain/reflection suite, clean exact-reference Release compilation,
+deterministic package creation and strict package validation),
+`scripts/Test-RuntimeScenarioPreflight.ps1` (255 PASS), and guarded
+`scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-elemental-native-respec`
+with ExpectedVersion 0.0.117, explicit KMG_AUTOMATION_WORKING, race, Fighter,
+point-buy, TimeoutSeconds 1200, ExitAfterCompletion true, inside each reversible
+full-stack transaction. The source and artifact are unchanged across these runs.
+
+- Source commit `68ca24d3751fb67d9451781e6e90f8749ce7b7d7` plus source fingerprint
+  `a6030aebf276e7cc75b63550b63213827755660b0f578cc6b1ca60cfa8677340`.
+- Numeric version 0.0.117; informational version 0.0.117-elemental-traits.
+- Preserved ignored package:
+  `artifacts/qualification/0.0.117/character-creation-stabilization/native-respec-candidate-05.zip`.
+- ZIP SHA-256 `d698f9fcaea98fe54e4c575c225cd2bd989990e433e1532ab85e47ec130c23b8`.
+- DLL SHA-256 `2a181f769aa36574b88ab44e95fc9cb9b7ba08811705273e0d5727cab519b589`;
+  MVID `4a7dd798-0f1b-4364-93bb-d54cf5b5a9de`.
+- Manifest 1,867 identities (1,865 active, two reserved); package 135 entries.
+
+Earlier candidate-05 attempt
+`20260907T1131315408084Z-working-save-elemental-native-respec` remains a guarded
+**FAIL**: the host's 600-second deadline elapsed before the fixture finished.
+The runtime later completed all assertions in 651.253 seconds and the game
+exited automatically, but that late internal PASS does not override the host
+failure. After positively verifying process exit, the exact Mods transaction
+and saved UMM bytes were restored and all save audits passed. The original UMM
+timestamp was not durably captured by that older helper; only its exact bytes
+are claimed restored for this recovery. The profile helper now durably records
+its initial UMM timestamp and uses 1,200 seconds for this eight-visit scenario.
+The later four runs above all finish within the guarded deadline and restore
+normally. No forced game exit, personal save edit or UI input was used.
+
+Build candidate 03 exposed an accidental local text-decoding change to one
+preexisting em dash in the test runner; the exact original UTF-8 text was
+restored. Candidate 04 passed all tests but failed compilation because the
+native UnitBody collection is Items, not EquipmentItems; candidate 05 uses the
+inspected native property. Neither failed build was installed for qualification.
+
+This checkpoint qualifies owned AbilityResource preservation through native
+respec. Blood-healing UnitPart expenditure, ordinary rest after respec, native
+turn-based action costs and the expanded visible-trait persistence matrix are
+still pending. Human full-screen acceptance is NOT-RUN. The prior installation
+is restored; the final acceptance candidate is not installed. Nothing was merged,
+tagged or released.

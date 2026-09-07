@@ -80,6 +80,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'working-save-elemental-native-respec' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'working-save-elemental-character-creation' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -1385,7 +1391,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     if ($metadata.RequiresSaveName) {
-        $creatorRegression = $Scenario -ceq 'working-save-elemental-character-creation-regression'
+        $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')
         $requiredParameterCount = if ($creatorRegression) { 4 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
@@ -1401,6 +1407,10 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.class -cnotin @('Fighter', 'Gunslinger') -or
             $Parameters.allocation -cnotin @('point-buy', 'roll'))) {
             throw 'The working creator regression requires exact allowlisted race, class, and allocation parameters.'
+        }
+        if ($Scenario -ceq 'working-save-elemental-native-respec' -and
+            ($Parameters.class -cne 'Fighter' -or $Parameters.allocation -cne 'point-buy')) {
+            throw 'The native respec fixture currently requires Fighter and point-buy.'
         }
     }
     elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {
@@ -1567,7 +1577,7 @@ function New-KmgRuntimeRequest {
         descriptorResolutionTimeoutSeconds = $DescriptorResolutionTimeoutSeconds
         loadEntryTimeoutSeconds = $LoadEntryTimeoutSeconds
         fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
-        parameters = if ($Scenario -ceq 'working-save-elemental-character-creation-regression') {
+        parameters = if ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')) {
             [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
                 class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
         } elseif ($metadata.RequiresSaveName) {

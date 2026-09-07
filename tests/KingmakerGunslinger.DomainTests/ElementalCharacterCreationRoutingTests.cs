@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.RuntimeTesting;
@@ -168,6 +169,54 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string forbidden in new[] { ".AddFact(", ".RemoveFact(", ".AddSelection(", ".Reconcile(",
                 "BaseValue =", "SkillPointsRemaining =", "StatsDistribution.Points =", ".SaveGame(", ".LoadGame(" })
                 Assertions.False(source.Contains(forbidden), "Regression fixture repairs the state it must observe: " + forbidden);
+        }
+
+        internal static void FullNativeRespecPlanPreservesOriginalAndSpentIdentities()
+        {
+            var route = Enumerable.Range(0, ElementalCharacterCreationRegressionPlan.NativeRespecVisits)
+                .Select(ElementalCharacterCreationRegressionPlan.NativeRespecChoice).ToArray();
+            Assertions.True(route.SequenceEqual(new[] { 0, 0, 1, 2, 0, 2, 1, 0 }),
+                "Respec must cover unchanged spent identity and all directional heritage/trait transitions.");
+            foreach (string race in new[] { "Ifrit", "Oread", "Sylph", "Undine" })
+                Assertions.True(ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase(race, "Fighter", "point-buy"), "Missing native respec race.");
+            Assertions.False(ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase("Human", "Fighter", "point-buy"), "Unowned race accepted.");
+            Assertions.False(ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase("Ifrit", "Gunslinger", "point-buy"), "Unqualified respec class accepted.");
+            Assertions.False(ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase("Ifrit", "Fighter", "roll"), "Unqualified respec allocation accepted.");
+            string source = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger", "RuntimeTesting", "ElementalCharacterCreationNativeRespec.cs"));
+            foreach (string required in new[] { "Game.Instance.Player.RespecCompanion(_respecOriginal", "_respecOriginal.UniqueId != _respecOriginalId",
+                "_respecReplacements.Add(_unit)", "_respecOriginal.Descriptor.Resources.Spend(resource, before)", "_respecSpent[resource.AssetGuid] = after",
+                "CloseOwnedCreatorController()", "CleanupCreatorItems()", "committedOwnedResources", "_respecCallbacks != 1", "nativeRespecPreviewMismatches",
+                "if (_crossSceneBefore != null) Game.Instance.IsPaused = _creatorPauseBefore", "_respecBodies.TryGetValue(replacement, out body)", "body.Items.Any()" })
+                Assertions.True(source.Contains(required), "Missing native respec boundary: " + required);
+            foreach (string forbidden in new[] { ".AddFact(", ".RemoveFact(", ".Reconcile(", ".Remember(", "BaseValue =", ".SaveGame(", ".LoadGame(" })
+                Assertions.False(source.Contains(forbidden), "The fixture repairs the native state it must observe: " + forbidden);
+        }
+
+        internal static void RespecCapturePreservesOnlyObservedOwnedIdentities()
+        {
+            var saved = new Dictionary<string, int> { ["active"] = 1, ["suppressed"] = 0, ["foreign"] = 0 };
+            var live = new Dictionary<string, int> { ["active"] = 0, ["foreign"] = 3 };
+            var result = ElementalRespecResourcePolicy.Capture(new[] { "active", "suppressed", "unseen" }, saved, live);
+            Assertions.True(result.Count == 2 && result["active"] == 0 && result["suppressed"] == 0,
+                "Live expenditure and suppressed expenditure must survive without inventing an unseen daily budget.");
+            Assertions.True(saved["active"] == 1 && live["foreign"] == 3, "Capture changed source state.");
+            saved["suppressed"] = 1;
+            Assertions.True(result["suppressed"] == 0 && !result.ContainsKey("foreign"), "Snapshot aliases source or includes a foreign resource.");
+        }
+
+        internal static void RespecPreservationNeverRefillsOrExceedsCurrentCapacity()
+        {
+            for (int current = 0; current <= 10; ++current)
+                for (int remembered = 0; remembered <= 10; ++remembered)
+                    Assertions.True(ElementalRespecResourcePolicy.Amount(current, remembered) == Math.Min(current, remembered),
+                        "Respec may only remove a refill up to the previously observed exact identity budget.");
+            Assertions.True(ElementalRespecResourcePolicy.Amount(1, -1) == 0, "Malformed negative expenditure was not conservative.");
+            string source = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger", "ElementalRaces", "ElementalNativeRespecResourceRuntime.cs"));
+            foreach (string required in new[] { "ConditionalWeakTable<UnitDescriptor, Snapshot>", "LevelUpState.CharBuildMode.Respec",
+                "ReferenceEquals(target, Original.Descriptor)", "snapshot.Preserve(original.Descriptor, true)", "SetupNewCharacher", "RequestPreview", "Forget(snapshot)" })
+                Assertions.True(source.Contains(required), "Missing respec owner/lifetime contract: " + required);
+            foreach (string forbidden in new[] { ".AddFact(", ".RemoveFact(", ".Reconcile(", "BaseValue =", ".Restore(" })
+                Assertions.False(source.Contains(forbidden), "Resource bridge changed an unrelated native subsystem: " + forbidden);
         }
 
         private static string FindRoot()

@@ -14,6 +14,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new[] { "point-buy", "roll" }.Contains(allocation);
         }
 
+        internal const int NativeRespecVisits = 8;
+        internal static bool IsAllowedRespecCase(string race, string characterClass, string allocation)
+        {
+            return IsAllowedCase(race, characterClass, allocation) && characterClass == "Fighter" && allocation == "point-buy";
+        }
+        internal static int NativeRespecChoice(int visit)
+        {
+            if (visit < 0 || visit >= NativeRespecVisits) throw new ArgumentOutOfRangeException("visit");
+            return new[] { 0, 0, 1, 2, 0, 2, 1, 0 }[visit];
+        }
+
         internal static int[] Route(int character)
         {
             switch (character)
