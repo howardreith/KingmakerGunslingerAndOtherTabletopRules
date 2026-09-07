@@ -105,6 +105,9 @@
     <Compile Include="FirearmFitAssetTests.cs" />
     <Compile Include="RepairRuntimePolicyTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
+    <Compile Include="MidgameFirearmTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\MidgameFirearmCatalog.cs"><Link>Firearms\MidgameFirearmCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\SkeletalSalesmanStockCatalog.cs"><Link>Acquisition\SkeletalSalesmanStockCatalog.cs</Link></Compile>
     <Compile Include="FeatureModuleSettingsTests.cs" />
     <Compile Include="ProtectionFromAlignmentControlImmunityTests.cs" />
     <Compile Include="BodyguardBlueprintContractTests.cs" />

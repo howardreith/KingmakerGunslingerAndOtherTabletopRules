@@ -1,5 +1,14 @@
 # Kingmaker Gunslinger
 
+Version 0.0.116-midgame-firearms-and-protection adds two named firearms to the
+Skeletal Salesman's mid-game weapon stock: Roadwarden, a +3 Reliable musket
+valued at 33,800 gp, and Dead Reckoning, a +3 Seeking pistol valued at 33,300 gp.
+Each applicable stock contains one copy of each. Existing generated stock
+receives them through the merchant's normal save-load reconciliation, which
+preserves purchases and buyback items. Protection from Alignment descriptions
+now explain their existing bonuses and prevention of new control effects in
+direct rules language. Spell behavior is unchanged.
+
 Version `0.0.115-share-transmutation-instant` adds the versioned
 `BrownFurDirectCastApi` contract used by compatible automation clients to run
 Share Transmutation through Brown-Fur's native transaction without queuing an

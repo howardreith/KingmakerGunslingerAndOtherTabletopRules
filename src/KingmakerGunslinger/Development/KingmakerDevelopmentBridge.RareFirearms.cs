@@ -59,7 +59,7 @@ namespace KingmakerGunslinger.Development
             MagicFirearmBlueprintCatalog catalog = RequireRareCatalog();
             foreach (MagicFirearmBlueprintEntry entry in catalog.Entries)
                 AddExact(inventory, entry.Item);
-            return DevelopmentActionResult.Success("Added one exact copy of all eight rare-firearm test items to shared inventory. No proficiency, ammunition, class level, or placement state changed. Use a disposable save.");
+            return DevelopmentActionResult.Success("Added one exact copy of all ten rare-firearm test items to shared inventory. No proficiency, ammunition, class level, or placement state changed. Use a disposable save.");
         }
 
         internal DevelopmentActionResult DescribeRareFirearmAcquisition()
@@ -163,7 +163,7 @@ namespace KingmakerGunslinger.Development
         private static MagicFirearmBlueprintCatalog RequireRareCatalog()
         {
             MagicFirearmBlueprintCatalog value = BlueprintBootstrap.MagicFirearms;
-            if (value == null || value.Entries == null || value.Entries.Length != 8)
+            if (value == null || value.Entries == null || value.Entries.Length != 10)
                 throw new InvalidOperationException("Rare firearm blueprint initialization has not completed.");
             return value;
         }

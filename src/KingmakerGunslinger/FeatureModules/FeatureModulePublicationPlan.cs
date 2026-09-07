@@ -10,6 +10,7 @@ namespace KingmakerGunslinger.FeatureModules
             CapitalGunslingerStock = active.Gunslinger;
             BeneathStolenLandsStock = active.Gunslinger;
             RareFirearmLoot = active.Gunslinger;
+            SkeletalSalesmanStock = active.Gunslinger;
             AcadamaeFeat = active.AcadamaeGraduate;
             CordCampaignLoot = active.AcadamaeGraduate;
             ShieldOtherSpellLists = active.ShieldOther;
@@ -33,6 +34,7 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool CapitalGunslingerStock { get; private set; }
         internal bool BeneathStolenLandsStock { get; private set; }
         internal bool RareFirearmLoot { get; private set; }
+        internal bool SkeletalSalesmanStock { get; private set; }
         internal bool AcadamaeFeat { get; private set; }
         internal bool CordCampaignLoot { get; private set; }
         internal bool ShieldOtherSpellLists { get; private set; }

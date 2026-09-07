@@ -18,8 +18,10 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
                 (communal ? "allies" : "the target") + " against " +
                 alignmentName + " creatures. " + recipient +
                 " gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by " +
-                alignmentName + " creatures. While this protection is active, it also prevents a new domination, charm, or comparable mental-control effect recognized by this mod from taking hold when its source is " +
-                alignmentName + ". " + ExistingControlLimitation;
+                alignmentName + " creatures. While this protection lasts, it prevents new charm, domination, and similar effects that would place " +
+                (communal ? "an affected ally" : "the target") +
+                " under the control of " + (alignment == ProtectionAlignment.Evil ? "an " : "a ") +
+                alignmentName + " creature. " + ExistingControlLimitation;
         }
 
         internal static string GenericSpell(bool communal)
@@ -31,7 +33,9 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
             return title +
                 " lets the caster choose evil, good, law, or chaos. " +
                 recipient +
-                " gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by creatures of the selected alignment. While the resulting protection is active, it also prevents a new domination, charm, or comparable mental-control effect recognized by this mod from taking hold when its source has that alignment. " +
+                " gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by creatures of the selected alignment. While this protection lasts, it prevents new charm, domination, and similar effects that would place " +
+                (communal ? "an affected ally" : "the target") +
+                " under the control of a creature of the selected alignment. " +
                 ExistingControlLimitation;
         }
 
@@ -41,8 +45,9 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
             return "This creature is warded against " + alignmentName +
                 " creatures. It gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by " +
                 alignmentName +
-                " creatures. A new domination, charm, or comparable mental-control effect recognized by this mod cannot take hold when its source is " +
-                alignmentName + ". " + ExistingControlLimitation;
+                " creatures. While this protection lasts, it prevents new charm, domination, and similar effects that would place this creature under the control of " +
+                (alignment == ProtectionAlignment.Evil ? "an " : "a ") +
+                alignmentName + " creature. " + ExistingControlLimitation;
         }
 
         private static string AlignmentName(ProtectionAlignment alignment)

@@ -17,7 +17,7 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["plannedType"] == "BlueprintItemWeapon" &&
                 (string)value["status"] == "active").ToArray();
             JToken[] actual = audit["items"].ToArray();
-            Assertions.Equal(68, expected.Length,
+            Assertions.Equal(70, expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
                 "The visual audit does not cover every active custom weapon.");
@@ -59,7 +59,7 @@ namespace KingmakerGunslinger.DomainTests
                         (string)item["symbolicIdentity"] +
                         " lacks required audit field " + field + ".");
 
-            Assertions.Equal(56, audit["items"].Count(value =>
+            Assertions.Equal(58, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "equipped project weapon"),
                 "Equipped custom-weapon audit scope changed.");
             Assertions.Equal(2, audit["items"].Count(value =>
@@ -82,7 +82,7 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["mappingScope"] == "equipped project weapon").ToArray();
             var expectedCounts = new Dictionary<string, int>(StringComparer.Ordinal)
             {
-                { "Pistol", 4 }, { "Musket", 5 }, { "Blunderbuss", 3 },
+                { "Pistol", 5 }, { "Musket", 6 }, { "Blunderbuss", 3 },
                 { "Rifle", 1 }, { "Revolver", 1 },
                 { "Elven Branched Spear", 12 }, { "Wakizashi", 10 },
                 { "Katana", 10 }, { "Nodachi", 10 }
@@ -179,7 +179,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Revolver" };
             JToken[] items = audit["items"].Where(value => families.Contains(
                 (string)value["familyOrFirearmKind"])).ToArray();
-            Assertions.Equal(14, items.Length,
+            Assertions.Equal(16, items.Length,
                 "The approved equipped firearm item count changed.");
             foreach (JToken item in items)
             {

@@ -12896,6 +12896,8 @@
     {
       "symbol": "KMG.ElementalRaces.Undine.Visual.Head.Female.02", "guid": "e2bd207dbf6b4f15b84ff7d4f6c7efc7",
       "plannedType": "EquipmentEntity", "status": "active", "milestone": "Elemental Races visuals", "notes": "Project-owned Undine female head recolor proxy over compatible native Kingmaker geometry."
-    }
+    },
+    {"symbol": "KMG.Firearms.RoadwardenItem", "guid": "66d2f8c4d6aa43e0be72ac18ed9fcd81", "plannedType": "BlueprintItemWeapon", "status": "active", "milestone": "Mid-game merchant firearms", "notes": "Named +3 Reliable musket; Skeletal Salesman C3/C4; named upgrade-only crafting policy."},
+    {"symbol": "KMG.Firearms.DeadReckoningItem", "guid": "b8db89aba5364c27b1626896664a1913", "plannedType": "BlueprintItemWeapon", "status": "active", "milestone": "Mid-game merchant firearms", "notes": "Named +3 Seeking pistol; Skeletal Salesman C3/C4; named upgrade-only crafting policy."}
   ]
 }
