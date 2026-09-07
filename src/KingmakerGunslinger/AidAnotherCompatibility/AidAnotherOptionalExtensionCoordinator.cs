@@ -149,6 +149,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
             }
             try
             {
+                KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRoutingObserver
+                    .BeforeOptionalReconciliation(checkpoint);
                 UnityModManager.ModEntry[] entries = ReadEntries(
                     context == null ? null : context.ModEntry);
                 UnityModManager.ModEntry cotwEntry = Single(entries,
@@ -271,6 +273,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
             }
             finally
             {
+                KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRoutingObserver
+                    .AfterOptionalReconciliation(checkpoint);
                 lock (Gate) _reconciling = false;
             }
         }
