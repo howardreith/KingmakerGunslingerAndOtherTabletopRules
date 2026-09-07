@@ -141,6 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gunslingerOutfitProductionPersistence;
         private GunslingerOutfitRenderScenario.ElementalRacePersistenceSession
             _elementalRacePersistence;
+        private ElementalCharacterCreationBaselineScenario _elementalCharacterCreationBaseline;
         private ElementalRaceDevelopmentProbeScenario.Session
             _elementalRaceDevelopmentProbe;
         private ElementalRaceVisualAuditScenario.Session
@@ -833,6 +834,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (ResourcesLibrary.Preloading) return;
                     Complete(ElementalHeritageBlueprintScenario.Run(
                         _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation)
+                {
+                    if (_elementalCharacterCreationBaseline == null)
+                    {
+                        if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation)
+                        { RunWorkingSaveSmoke(); return; }
+                        if (ResourcesLibrary.Preloading) return;
+                        _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(_context, _request);
+                        _manualElapsed = Stopwatch.StartNew();
+                    }
+                    _elementalCharacterCreationBaseline.Poll();
+                    if (_elementalCharacterCreationBaseline.Complete)
+                        Complete(_elementalCharacterCreationBaseline.Result);
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
@@ -2217,7 +2235,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
-                if (IsExpandedSummoningPersistenceScenario())
+                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation)
+                {
+                    WorkingSaveSmokeEvidence loaded = _workingSaveSmoke.Stop();
+                    _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(
+                        _context, _request, loaded);
+                    _manualElapsed = Stopwatch.StartNew();
+                }
+                else if (IsExpandedSummoningPersistenceScenario())
                 {
                     StartExpandedSummoningPersistence();
                 }

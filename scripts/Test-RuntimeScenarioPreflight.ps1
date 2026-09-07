@@ -53,6 +53,10 @@ $expected = @(
     'disposable-elemental-undine-feats',
     'observe-elemental-heritage-blueprints',
     'observe-elemental-character-creation-routing',
+    'disposable-elemental-character-creation-baseline',
+    'disposable-elemental-character-creation-case',
+    'disposable-global-traits-kmg-disabled-control',
+    'working-save-elemental-character-creation',
     'observe-elemental-alternate-trait-framework',
     'disposable-elemental-heritage-mechanics',
     'disposable-elemental-heritage-slas',
@@ -886,7 +890,12 @@ finally {
     Remove-Item Function:\global:Get-CimInstance
     Remove-Item Function:\global:Start-Process
 }
-Assert-True ((Get-TreeFingerprint $artifactRoot) -ceq $artifactBefore) `
+$artifactAfter = Get-TreeFingerprint $artifactRoot
+if ($artifactAfter -cne $artifactBefore) {
+    Compare-Object ($artifactBefore -split "`n") ($artifactAfter -split "`n") |
+        Select-Object -First 8 | Format-Table -AutoSize | Out-Host
+}
+Assert-True ($artifactAfter -ceq $artifactBefore) `
     'unsupported-does-not-build-or-stage-package'
 Assert-True ((Get-DirectoryIdentity $backupRoot) -ceq $backupBefore) `
     'unsupported-creates-no-backup'
@@ -895,6 +904,41 @@ Assert-True ((Get-DirectoryIdentity $evidenceRoot) -ceq $evidenceBefore) `
 Assert-True ($script:cimCalls -eq 0) 'unsupported-performs-no-cim'
 Assert-True ($script:startProcessCalls -eq 0) `
     'unsupported-launches-neither-steam-nor-kingmaker'
+
+
+$creatorBaseline = Get-KmgRuntimeScenarioMetadata 'working-save-elemental-character-creation'
+Assert-True ($creatorBaseline.RequiresSaveName -and $creatorBaseline.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $creatorBaseline.RequiresManualInteraction -and $creatorBaseline.UsesWorkingStageTimeouts) 'native-creator-requires-qualified-working-save'
+
+foreach ($race in @('Ifrit', 'Oread', 'Sylph', 'Undine')) {
+    foreach ($allocation in @('point-buy', 'roll')) {
+        [void](Assert-KmgRuntimeScenarioPreflight -Scenario 'disposable-elemental-character-creation-case' `
+            -ExpectedVersion '0.0.117' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 `
+            -Parameters @{ race = $race; class = 'Fighter'; allocation = $allocation })
+        foreach ($characterClass in @('Fighter', 'Gunslinger')) {
+            $request = New-KmgRuntimeRequest -Scenario 'disposable-elemental-character-creation-case' `
+                -ExpectedVersion '0.0.117' -TimeoutSeconds 600 -ExitAfterCompletion $true `
+                -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-creator-request-test') `
+                -Parameters @{race=$race;class=$characterClass;allocation=$allocation}
+            $serialized = $request | ConvertTo-Json -Depth 8 | ConvertFrom-Json
+            Assert-True (@($serialized.parameters.PSObject.Properties).Count -eq 3 -and
+                $serialized.parameters.race -ceq $race -and
+                $serialized.parameters.class -ceq $characterClass -and
+                $serialized.parameters.allocation -ceq $allocation) `
+                "creator-case-request-json-round-trips-$race-$characterClass-$allocation"
+        }
+    }
+}
+foreach ($invalid in @(
+    @{race='Human';class='Fighter';allocation='roll'},
+    @{race='Ifrit';class='Wizard';allocation='roll'},
+    @{race='Ifrit';class='Fighter';allocation='guessed'},
+    @{race='Ifrit';class='Fighter';allocation='roll';saveName='KMG_AUTOMATION_WORKING'})) {
+    Assert-Throws {
+        Assert-KmgRuntimeScenarioPreflight -Scenario 'disposable-elemental-character-creation-case' `
+            -ExpectedVersion '0.0.117' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 -Parameters $invalid
+    } 'creator-case-rejects-unscoped-parameters'
+}
 
 if ($failures.Count -ne 0) {
     throw "Runtime scenario preflight tests failed: $($failures -join ', ')"

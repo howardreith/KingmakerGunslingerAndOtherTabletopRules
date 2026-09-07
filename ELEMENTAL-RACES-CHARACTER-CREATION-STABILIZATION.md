@@ -184,3 +184,311 @@ been performed at this checkpoint.
 | RacesUnleashed | 1.0.11 | `6d18168cb90ffe60931addc8ee11e42b3ef647ef0e6d4b7ce8980d44659f4cb0` |
 | TweakOrTreat | 1.1.0 | `a518324e15632aba46d6c467b156a31e9afd282e9827dee3e79ad14673852b92` |
 | ZFavoredClass | 1.3.1 | `dcd3adf98d1a04c30d772381e7c56ce4beff35a98bcea165aff206a2f0aac26c` |
+
+## Native creator fixture development ? 2026-09-07 (in progress)
+
+Instrumentation commit `aa63b22e6df9256f07157fd2ab845edc44849d19` is
+pushed. The following native creator fixture work is a continuation of that
+checkpoint. No production routing, trait publication, or GUID change has yet
+been made at this checkpoint. These diagnostic results do not qualify the
+installed candidate or override the owner's failed acceptance observations.
+
+The fixture opens the actual full-screen `CharacterBuildController` with a
+request-created `ChargenUnit`, `CharGen` mode and `NextLevel=1`. It uses native
+portrait, race, class, racial-bonus, point-buy, skill, feature, and phase actions.
+Choice selection requires both native legality and an active, interactable
+rendered row holding the exact selection-state and feature references. It
+records allocation state, phase order, unresolved selections, visible rows,
+choice counts, and the actual phase collections consuming racial selections.
+It never changes prerequisites, obligatory flags, selection arrays or game
+rules to make a fixture pass.
+
+Two scopes are now explicit:
+
+- `disposable-elemental-character-creation-baseline` reaches native final review
+  and cancels each disposable preview. It does not commit a main-menu character.
+- `working-save-elemental-character-creation` requires the exact
+  `KMG_AUTOMATION_WORKING` guarded load and its complete receiver/fingerprint
+  evidence before allowing native final commit. This commit scenario has not
+  yet been runtime qualified at this checkpoint.
+
+A separate `disposable-global-traits-kmg-disabled-control` entry point runs
+under a temporary `KMGCharacterCreationProbe` UMM manifest. It verifies that
+KMG's actual UMM entry is unloaded/inactive, `Main` remains `NotStarted`, no
+production context is published, no KMG blueprints are present, and no Harmony
+patch has the production KMG owner. The DLL supplies diagnostics without
+calling KMG's production entry point. The control uses native Human through
+final review and cancels, so it cannot start a campaign. Its temporary folder
+and UMM state belong to the compatibility transaction and are restored.
+
+A request-scoped Harmony guard blocks the five exact native save mutation
+entry points while the creator fixture exists. Unexpected write attempts fail
+the diagnostic. Cleanup accepts native `OnHide` clearing its own controller
+following commit, while rejecting every non-null foreign controller. The
+original world-unit references, main-character reference and area reference
+must be restored. Each profile restores the original mod directory tree and
+exact original UMM Params bytes/hash. From run A05 onward a separate save audit
+also requires the protected baseline to remain byte-identical, the working
+save's non-header entries and all other header bytes to remain identical, and
+at most one native `LoadedTimes` increment. Other save-file metadata must stay
+unchanged. Audit evidence remains machine-local and ignored.
+
+### Retained diagnostic iterations
+
+All run evidence is under the external `runtime-evidence` root; all build and
+transaction records are under the ignored
+`artifacts/qualification/0.0.117/character-creation-stabilization/` directory.
+Every completed profile below restored the exact original mod tree and UMM
+Params hash `516869f3cb0822d11dfe4aa84431620e0eaf59af56cd8489ea537c818af7257f`.
+
+| Run | Evidence directory stem | Exact finding / limitation |
+| --- | --- | --- |
+| A01 | `20260907T0414178705057Z-disposable-elemental-character-creation-baseline` | Actual Ifrit and Oread class selection put heritage plus three replacement slots in Abilities. The fixture initially used lower-level allocator actions without the UI preview refresh; it did not converge. Sylph also threw in the native color selector. Diagnostic FAIL. |
+| A02 | `20260907T0429025819857Z-disposable-elemental-character-creation-baseline` | A new allocation snapshot used JObject for array-shaped native data and failed before character selection. Corrected to JToken. Diagnostic FAIL. |
+| A03 | `20260907T0432205973635Z-disposable-elemental-character-creation-baseline` | Ifrit reached native final commit with the wrong racial route. Cleanup incorrectly rejected the controller that native OnHide had cleared. Diagnostic FAIL; this is not qualified completion evidence. |
+| A04 | `20260907T0437013930971Z-disposable-elemental-character-creation-baseline` | Main-menu final commit triggered a native new-campaign transition and an unexpected SaveRoutine attempt, which the guard blocked. Diagnostic FAIL. Save-free profiles now cancel at final review. |
+| A05 | `20260907T0444519014086Z-disposable-elemental-character-creation-baseline` | KMG-only profile could identify/load the working descriptor but native Player.PostLoad could not find its main character in CrossSceneState. Load-completion TIMEOUT before a creator opened. The save audit passed with exactly one LoadedTimes increment. No save repair was attempted. |
+| Full-stack working-save control | `20260907T0451385377639Z-working-save-smoke` | PASS, 11/11 assertions, exact profile restoration. Same working save loaded under the full eleven-mod stack. Save audit passed, exactly one LoadedTimes increment. This separates the A05 profile prerequisite from a generally unreadable save. |
+| A06 | `20260907T0500086180463Z-disposable-elemental-character-creation-baseline` | Ifrit and Oread reached native final review and were canceled cleanly; both still routed all four racial selections to Abilities. Sylph again threw in CharBColorSelector.SetData while reading a texture width. Diagnostic FAIL, save audit unchanged with zero load increments. The next fixture revision records ramp liveness and continues to the remaining disposable race after recording this exact native operation as failed race acceptance. |
+| B01 | `20260907T0502469448408Z-disposable-global-traits-kmg-disabled-control` | KMG was actually skipped as disabled; production entry/blueprint/patch absence and cleanup were proven. Observation PASS is **not** Trait acceptance: the fixture omitted Human's racial ability bonus and stalled in Skills. Global Trait inspection was NOT-RUN. Native SetRacialBonus was added for the next control run. |
+
+The actual first-level Ifrit/Oread states confirm the heritage root cause:
+`FeatureGroup.None` is consumed by the native generic Abilities collection,
+after the native allocation/skills phase. Native Aasimar/Tiefling and RU
+contracts remain the comparison authority recorded above; plain Racial alone
+would not fix the dispatcher. The global empty-Traits root cause remains open
+until the corrected B control and KMG-enabled creator profiles reach the
+actual Trait selectors. The Sylph color-selector exception is an additional
+failed player-facing creation gate and must be diagnosed, not bypassed.
+
+`native-creator-build-08.log` records repository validation, all **1,437**
+domain/reflection tests, clean Release compilation, deterministic package
+creation and strict 135-entry package validation. The only compiler warning
+remains the inherited response-file `/noconfig` warning. The build is still a
+diagnostic development artifact with informational version
+`0.0.117-elemental-traits`, not an owner acceptance installation.
+
+Build 08 ZIP SHA-256:
+`052b6ce15c2701901e414cedda941c9e1e80f367347e9357e27acc92a2138e43`.
+DLL SHA-256:
+`4433a1a0e83b4a34b3a0a413b569aef7142298143bf5e9988e0ed58abe071e3e`.
+Source commit is `aa63b22e6df9256f07157fd2ab845edc44849d19` plus the recorded
+uncommitted source fingerprint; the guarded launch record binds the exact
+source tree, package, installed DLL and MVID for each run. Earlier unsuccessful
+iterations and their evidence have not been overwritten or erased.
+
+Heritage repair, alternate-trait routing, no-op unpublication, Helpful contract
+repair, real final completion, back-navigation, respec, full persistence and
+lifecycle qualification, compatibility acceptance, and the final acceptance
+installation are still outstanding. Human UI acceptance remains **NOT-RUN**.
+Nothing has been merged, tagged or publicly released.
+
+
+## Native global-Trait control and comparisons - 2026-09-07
+
+The corrected Profile B control reached native Total/final review with
+`State.IsComplete=true`, `RemainingSelections=0`, and the native completion
+button enabled. Both ordinary Trait selections were consumed in Abilities:
+first selection 8 extracted / 8 legal rendered categories; second selection
+8 extracted / 7 remaining legal rendered categories. Combat had 14 extracted /
+12 legal choices; Faith had 11 extracted / 10 legal choices. Native Human's
+racial bonus and the deity's legal alignment were selected through native UI
+actions. The final alignment was Chaotic Neutral. The preview was canceled;
+no final commit or campaign start occurred. Human acceptance remains NOT-RUN.
+
+B02 previously reached both Traits but failed the fixture's 240-operation
+bound in Character details because its fixed True Neutral alignment was
+incompatible with the selected deity. It did not fail at an empty Trait list.
+B03 uses the native SelectAlignment.Check contract, records the three native
+character-detail completion predicates, and reaches complete final review.
+
+| Profile / run | Runtime evidence directory stem | Diagnostic result |
+| --- | --- | --- |
+| B / `chargen-native-b-03` | `20260907T0524314773304Z-disposable-global-traits-kmg-disabled-control` | PASS |
+| C / `chargen-native-c-01` | `20260907T0527249164787Z-disposable-elemental-character-creation-baseline` | FAIL |
+| D / `chargen-native-d-01` | `20260907T0531561519452Z-disposable-elemental-character-creation-baseline` | FAIL |
+| E / `chargen-native-e-01` | `20260907T0536050809336Z-disposable-elemental-character-creation-baseline` | FAIL |
+| F / `chargen-native-f-01` | `20260907T0539578489543Z-disposable-elemental-character-creation-baseline` | FAIL |
+
+C (CotW + ZFavoredClass + KMG, Bodyguard OFF) and D (same, Bodyguard ON)
+used the same exact Build 10 DLL and native creator fixture. In **both**,
+Ifrit and Oread reached native final review with zero unresolved selections.
+Both ordinary Trait choices worked: 8/8 first categories, 8/7 second categories,
+and Faith 11/10. Combat changed from 14/12 in C to 15/13 in D. D's preexisting
+KMG publication still changed Combat.Features from 0 to 1 and AllFeatures from
+14 to 15. The isolated comparison therefore does **not** prove that this
+mutation caused the owner's empty-Trait failure.
+
+E added Races Unleashed; F restored the exact full eleven-mod stack, including
+Bag of Tricks, Dice Roller, and TweakOrTreat. Both produced the same successful
+Ifrit/Oread global-Trait and final-review observations. The racial selections
+remained in generic Abilities, so every elemental acceptance remains FAIL.
+No synthetic/blueprint PASS overrides that failure. The owner's exact race,
+class and creator entry point have been requested to narrow the still-open
+empty-global-Trait reproduction; no general foreign-mod repair is authorized
+or implemented.
+
+All five completed transactions restored the exact original mod tree and
+UMM Params bytes/hash. Their independent save audits passed with zero working
+load increments and byte-identical protected baseline. Each raw transaction
+contains exact staged mod manifests/versions, settings hashes, deployment
+identity, before/after selection snapshots, and preserved attributed logs.
+Third-party custom-data exceptions remain in those logs without suppression.
+
+C/D/E/F all reproduced a separate native Sylph appearance failure after Oread:
+Oread skin ramp 0 (`CR_Skin_GrayDead_U_EL`) was alive, but the identical shared
+texture at Sylph skin ramp 4 had become Unity-destroyed. Native
+CharBColorSelector.SetData then threw while reading its width. The failed
+native operation left the creator unable to initialize the next Undine phase;
+those overall diagnostics are FAIL, and Undine remained NOT-RUN. This is not
+character-creation acceptance for either race.
+
+Native IL inspection identifies CharGenDollRoom.UpdateDollCoroutine as a caller
+of EquipmentEntity.UnloadInnerAssetsExceptGiven; it constructs an exclusion
+set from current and initially loaded inner assets, unloads other inner assets,
+then calls ResourcesLibrary.TryUnloadResource. The next read-only probe records
+exact KMG proxy membership in those initial sets and before/after inner-asset
+unloads, without changing the exclusion set or native return values. It observes
+Sylph last so that the known native failure cannot contaminate another race's
+baseline. This is a narrower diagnostic strategy, not a workaround in production.
+
+Build 10 passed repository validation, all **1,437** domain/reflection tests,
+clean Release compilation, deterministic packaging and strict 135-entry package
+validation. ZIP SHA-256:
+`61e4b60c21ca135cb4b907550b4573742dea07b8cccb3ddf92d6ef777aadd40c`;
+DLL SHA-256:
+`aa364fd45182bcd4261e6d7a9eb41f85f927785519455391c65f68abdb7da9a7`;
+MVID `24bded57-247b-415f-be54-94f657dfe772`.
+Source: `aa63b22e6df9256f07157fd2ab845edc44849d19` plus source fingerprint
+`748617bd56a3ccc520dbb0107947eef3cb9c24c55014fb507cd4288ac7dd84cc`.
+No production behavior or identity has changed at this checkpoint.
+
+
+### Narrower fixture and native visual-unload evidence
+
+A07 (`20260907T0547342727864Z-disposable-elemental-character-creation-baseline`)
+used Build 11 and remained FAIL, with exact transaction restoration and save
+audit PASS. Moving Sylph last exposed the same failure in Undine instead;
+Ifrit and Oread still reached final review, while Undine failed at the native
+color selector and Sylph was NOT-RUN. The fixture's attempt to continue after
+the failed native operation again found no active phase. No race was accepted.
+
+The read-only before/after probe captured Oread's exact body proxy GUID
+`1d661d42bdc24e8cb79a16f27e8e2a9e` and head proxy GUID
+`d44896914e9e459385313890fcad7b56` during native inner-asset unloading. All seven
+body skin ramps were alive beforehand, absent from the native exclusion set,
+and Unity-destroyed immediately afterward. The head subsequently held the
+same destroyed textures. The creator's initial loaded-resource set had zero
+entries and protected none of the 28 registered KMG proxies; by the next
+previews two, then four, registered proxies were themselves destroyed. Raw
+caller stacks and reference evidence are retained in `assetUnloads` and
+`dollRamps.dollRooms`. The probe never modified the native exclusion set or
+return value. This proves a missing integration with native creator asset
+retention; changing palette colors or suppressing the exception would not
+repair the lifetime contract.
+
+Build 11 passed all 1,437 domain/reflection tests, clean Release build,
+deterministic package creation and strict package validation. ZIP SHA-256
+`9eace45f56903d3bc60c62b43f1315d63921249da30dadea94bbe954dd40716c`;
+DLL SHA-256
+`8b2f6742387b87b7099575bc237c60a520edaad718c6916ad2c32d9afb659ae3`;
+MVID `05e04dd3-1857-4cd1-b5d4-d7780c494899`.
+
+A new bounded `disposable-elemental-character-creation-case` request selects
+exactly one elemental race and either Fighter or Gunslinger, with point buy
+or the installed Dice Roller 0.1.2 native Roll command. Both C# activation and
+PowerShell preflight require exactly the three allowlisted string parameters
+`race`, `class`, and `allocation`. It cannot load or save a campaign and always
+cancels at final review. This supports independent fresh-process fixtures
+without the known previous-preview asset failure contaminating another race.
+For example, after the normal build/deployment identity checks:
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario disposable-elemental-character-creation-case `
+  -ExpectedVersion 0.0.117 `
+  -Parameters @{race='Ifrit';class='Fighter';allocation='roll'} `
+  -ExitAfterCompletion:$true -Confirm:$false
+```
+
+The preserved owner log records `creationKind=NewMainCharacter`, mode Roll,
+and a verified rolled array `15,6,13,12,16,11` through preview generations 5-9.
+Previous controlled full-stack comparisons used point buy. That difference
+requires an explicit rolled-stat reproduction; it does not attribute fault
+to Dice Roller. The bounded rolled case verifies the exact native controller,
+state and preview before invoking its command, then compares the verified
+assignment with all six live preview BaseValues. It never recalls/stores
+personal arrays or writes Dice Roller settings.
+
+The first compilation of this additional case (Build 12) caught a missing
+LINQ import in request validation; no runtime artifact was deployed from that
+failed build. The import was corrected before complete validation was rerun.
+
+
+### Strict request serialization recovery
+
+Build 13 passed 1,437 domain/reflection checks, clean Release compilation,
+deterministic packaging and strict package validation. The first bounded
+rolled case (`20260907T0559454833069Z-disposable-elemental-character-creation-case`)
+was rejected with `character-creation-case-not-allowed` before test activation:
+PowerShell preflight accepted the three parameters, but its request serializer
+omitted them. This is an instrumentation failure, not a character-creation result.
+The C# guard correctly rejected the empty parameter object and was not loosened.
+
+The exact owned Steam-launched process was identified by PID, start time and
+executable path, then closed with CloseMainWindow/WaitForExit; no force termination
+was used. After exit, the attributed output was preserved and the compatibility
+transaction restored the exact original mod tree. UMM had changed only its native
+LastUpdateCheck timestamp; the original bytes were restored and SHA-256 again
+matched `516869f3cb0822d11dfe4aa84431620e0eaf59af56cd8489ea537c818af7257f`.
+The independent save audit passed with zero load increments and exact protected
+baseline. The ignored recovery record preserves the failed activation and recovery.
+
+The serializer now retains the three allowlisted strings. Focused tests round-trip
+all 16 race/class/allocation combinations through the actual JSON request writer;
+the final failure check now runs after these added assertions. The profile helper
+also preserves its starting UMM bytes before staging to make exceptional recovery
+independent of a previous checkpoint. No production behavior changed.
+
+
+### Rolled full-stack controls and instrumentation checkpoint
+
+Build 15 passed repository validation, all 1,437 domain/reflection tests, clean
+Release compilation, deterministic packaging, and strict 135-entry package
+validation. The focused PowerShell request suite passed 223 checks. Two earlier
+focused runs reported a changed artifact-tree fingerprint; the isolated rerun
+passed and now reports changed paths on any future mismatch. Build 15's DLL and
+ZIP are byte-identical to Build 13 (the serializer fix is PowerShell-only): ZIP
+`f13a9425b70790aee3b1e92658dd60e74cd7a4098fd6dd64bd759915df7ab38f`, DLL
+`f818063605fcb3b79fc25472b8112bf5735ab5e0d55bdddf95a7198825ca6d33`,
+MVID `c9b906cb-1c82-491d-aedc-2bbcdeda6e8f`. Runtime source attestation was
+`aa63b22e6df9256f07157fd2ab845edc44849d19` plus fingerprint
+`1be56b2f07876b9a5a8f72bdd552bb38ad23e7fa95a6cc0c35d9aeb76dbc0d5e`.
+
+F rolled Ifrit/Fighter (`20260907T0618157770950Z-disposable-elemental-character-creation-case`)
+reached final review with zero unresolved selections, an enabled native button,
+and complete character details. Dice Roller mode Roll, generation/verified
+ generation 7/7, assignment `13,14,8,11,14,13` exactly matched preview BaseValues.
+Both global Trait roots exposed 8 categories (8 then 7 legal); Combat exposed
+15 entries/13 legal and Faith 11/10. The save-free fixture canceled without a
+native commit. Diagnostic instrumentation PASS; character acceptance FAIL because
+all four racial selections still routed through Abilities after Skills.
+
+F rolled Ifrit/Gunslinger (`20260907T0622318421796Z-disposable-elemental-character-creation-case`)
+also exposed both global Traits, with 8/8 and 8/7 categories, Combat 15/12 and
+Faith 11/10. Its verified roll was `9,12,9,9,13,11`. It selected a legal feat and
+reached Character with no remaining selections, but native NextPhase stayed
+Character until the bounded operation limit. Character acceptance FAIL; no final
+review or commit is claimed. Instrumentation and exact cleanup completed without
+exceptions. The narrower completion-predicate observation remains outstanding.
+Neither rolled control reproduced an empty global Trait list. Helpful's foreign
+Features mutation remains a contract concern, not an established root cause of
+the owner's empty-list report.
+
+Both profile transactions restored the exact original mod tree and UMM bytes;
+independent save audits passed with zero load increments and exact baseline.
+Known ZFavoredClass custom-data errors remain attributed separately. The next
+production checkpoint changes only heritage routing using the observed native
+AasimarHeritage group (42); native Racial (11) also routes to Abilities and is
+therefore not a valid repair. No production factory or Helpful publication has
+changed in this instrumentation checkpoint.
