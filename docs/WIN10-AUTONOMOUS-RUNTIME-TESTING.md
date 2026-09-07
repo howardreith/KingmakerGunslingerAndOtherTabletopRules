@@ -313,3 +313,13 @@ as evidence that full native respec currently works.
   -Parameters @{race='Ifrit';class='Fighter';allocation='point-buy'} `
   -ExitAfterCompletion:$true -Confirm:$false
 ```
+
+
+The native elemental respec fixture also observes Fire/Stone/Storm in the Blood
+capacity. Its native-respec-only Oread/Sylph alternate-B plans select Stone/Storm
+in the Blood; creator back-navigation plans are unchanged. Real matching damage
+arms the owned healing buff, and only that disposable actor's native buff tick
+spends two points. The synchronous clock/pause/random scope is restored exactly.
+No ledger writer, fact grant or reconciliation seeds the measured expenditure.
+Every preview and final native callback compares the independent spent counters;
+ordinary rest is tested only after the last successful respec callback.

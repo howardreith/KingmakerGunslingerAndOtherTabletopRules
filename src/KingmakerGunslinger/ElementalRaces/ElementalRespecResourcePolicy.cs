@@ -20,6 +20,14 @@ namespace KingmakerGunslinger.ElementalRaces
             return result;
         }
 
+        // Blood healing stores expenditure rather than remaining charges. Never
+        // clamp this down to the replacement's temporarily lower character level.
+        internal static int Expenditure(int current, int captured)
+        {
+            if (current < 0 || captured < 0) throw new ArgumentOutOfRangeException("captured");
+            return Math.Max(current, captured);
+        }
+
         internal static int Amount(int current, int remembered)
         {
             return Math.Min(Math.Max(0, current), Math.Max(0, remembered));

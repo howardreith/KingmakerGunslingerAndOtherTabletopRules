@@ -182,13 +182,27 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase("Human", "Fighter", "point-buy"), "Unowned race accepted.");
             Assertions.False(ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase("Ifrit", "Gunslinger", "point-buy"), "Unqualified respec class accepted.");
             Assertions.False(ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase("Ifrit", "Fighter", "roll"), "Unqualified respec allocation accepted.");
+            var bloodCoverage = new HashSet<ElementalAlternateTraitId>();
+            foreach (ElementalHeritageRace race in Enum.GetValues(typeof(ElementalHeritageRace)))
+                foreach (int choice in Enumerable.Range(0, 3))
+                {
+                    var traits = ElementalCharacterCreationRegressionPlan.NativeRespecTraits(race, choice);
+                    var heritage = ElementalHeritagePolicy.Ordered().Where(value => value.ParentRace == race).ToArray()[choice];
+                    var state = ElementalAlternateTraitPolicy.Resolve(race, heritage.Id, traits);
+                    Assertions.Equal(traits.Length, state.TraitProviderSymbols().Length, "Native respec blood plan discarded an overlapping trait.");
+                    Assertions.True(traits.All(ElementalAlternateTraitPolicy.IsPublished), "Native blood respec published a deferred choice.");
+                    foreach (var id in traits) bloodCoverage.Add(id);
+                }
+            Assertions.True(new[] { ElementalAlternateTraitId.FireInTheBlood, ElementalAlternateTraitId.StoneInTheBlood,
+                ElementalAlternateTraitId.StormInTheBlood }.All(bloodCoverage.Contains), "Native respec omitted a blood counter.");
             string source = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger", "RuntimeTesting", "ElementalCharacterCreationNativeRespec.cs"));
             foreach (string required in new[] { "Game.Instance.Player.RespecCompanion(_respecOriginal", "_respecOriginal.UniqueId != _respecOriginalId",
                 "_respecReplacements.Add(_unit)", "_respecOriginal.Descriptor.Resources.Spend(resource, before)", "_respecSpent[resource.AssetGuid] = after",
                 "CloseOwnedCreatorController()", "CleanupCreatorItems()", "committedOwnedResources", "_respecCallbacks != 1", "nativeRespecPreviewMismatches",
-                "if (_crossSceneBefore != null) Game.Instance.IsPaused = _creatorPauseBefore", "_respecBodies.TryGetValue(replacement, out body)", "body.Items.Any()" })
+                "if (_crossSceneBefore != null) Game.Instance.IsPaused = _creatorPauseBefore", "_respecBodies.TryGetValue(replacement, out body)", "body.Items.Any()", "Rulebook.Trigger(new RuleDealDamage", "owner.Buffs.Tick()", "_respecBloodSpent[trait.Definition.Id] = after",
+                "ObserveNativeRespecBlood", "RestController.ApplyRest(owner)", "Game.Instance.Player.GameTime = clock" })
                 Assertions.True(source.Contains(required), "Missing native respec boundary: " + required);
-            foreach (string forbidden in new[] { ".AddFact(", ".RemoveFact(", ".Reconcile(", ".Remember(", "BaseValue =", ".SaveGame(", ".LoadGame(" })
+            foreach (string forbidden in new[] { ".AddFact(", ".RemoveFact(", ".Reconcile(", ".Remember(", ".Record(", "BaseValue =", ".SaveGame(", ".LoadGame(" })
                 Assertions.False(source.Contains(forbidden), "The fixture repairs the native state it must observe: " + forbidden);
         }
 
@@ -217,6 +231,21 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(required), "Missing respec owner/lifetime contract: " + required);
             foreach (string forbidden in new[] { ".AddFact(", ".RemoveFact(", ".Reconcile(", "BaseValue =", ".Restore(" })
                 Assertions.False(source.Contains(forbidden), "Resource bridge changed an unrelated native subsystem: " + forbidden);
+        }
+
+        internal static void NativeRespecBloodExpenditureSurvivesRemovalAndLowerLevel()
+        {
+            int spent = ElementalRespecResourcePolicy.Expenditure(0, 5);
+            Assertions.Equal(5, spent, "Fresh replacement refilled the captured blood capacity.");
+            Assertions.Equal(0, ElementalBloodPolicy.Remaining(1, spent), "Lower-level respec invented healing capacity.");
+            spent = ElementalRespecResourcePolicy.Expenditure(0, spent);
+            Assertions.Equal(3, ElementalBloodPolicy.Remaining(4, spent), "Later level incorrectly forgot earlier blood healing.");
+            Assertions.Equal(7, ElementalRespecResourcePolicy.Expenditure(7, 5), "Preservation erased newer expenditure.");
+            Assertions.Equal(5, ElementalRespecResourcePolicy.Expenditure(spent, spent), "Repeated preview changed expenditure.");
+            string source = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger", "ElementalRaces", "ElementalBloodRuntime.cs"));
+            Assertions.True(source.Contains("_fireHealingReceived = _stoneHealingReceived = _stormHealingReceived = 0;") &&
+                source.Contains("PreserveRespecExpenditure") && source.Contains("_schemaVersion != ElementalBloodPolicy.SchemaVersion"),
+                "Ordinary rest or schema identity changed while preserving native respec expenditure.");
         }
 
         private static string FindRoot()

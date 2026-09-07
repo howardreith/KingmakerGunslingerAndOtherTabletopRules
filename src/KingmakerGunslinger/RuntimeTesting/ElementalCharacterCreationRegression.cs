@@ -197,7 +197,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (ReferenceEquals(selection, race.Heritages.Selection)) return race.Heritages.Choices()[choice].Marker;
             var slot = race.AlternateTraits.Selections().SingleOrDefault(value => ReferenceEquals(value.Selection, selection));
             if (slot == null) return null;
-            var wanted = ElementalCharacterCreationRegressionPlan.Traits(race.Heritages.Race, choice);
+            var wanted = _nativeRespec ? ElementalCharacterCreationRegressionPlan.NativeRespecTraits(race.Heritages.Race, choice)
+                : ElementalCharacterCreationRegressionPlan.Traits(race.Heritages.Race, choice);
             return slot.Choices.SingleOrDefault(value => wanted.Contains(value.Definition.Id))?.Marker ?? slot.RetainMarker;
         }
 
@@ -423,6 +424,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     exact &= selection.Selection.CanSelect(owner, _controller.State, selection, retain);
                 }
             }
+            exact &= ObserveNativeRespecBlood(checkpoint, owner, committedOwner != null);
             int[] overlay = AbilityStats.Select(stat => owner.Stats.GetStat(stat).ModifiedValue - owner.Stats.GetStat(stat).BaseValue).ToArray();
             int[] expectedOverlay = Enumerable.Range(0, 6).Select(index => heritage.Definition.ModifierFor((ElementalHeritageStat)index)).ToArray();
             exact &= overlay.SequenceEqual(expectedOverlay);
