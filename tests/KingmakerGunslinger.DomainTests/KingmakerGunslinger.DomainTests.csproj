@@ -68,6 +68,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalRespecResourcePolicy.cs"><Link>ElementalRaces\ElementalRespecResourcePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalTraitDailyResourcePolicy.cs"><Link>ElementalRaces\ElementalTraitDailyResourcePolicy.cs</Link></Compile>
     <Compile Include="ElementalBloodInsightPersistencePolicyTests.cs" />
+    <Compile Include="ElementalVisibleTraitPersistenceTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalVisibleTraitPersistencePolicy.cs"><Link>ElementalRaces\ElementalVisibleTraitPersistencePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalBloodInsightPersistencePolicy.cs"><Link>ElementalRaces\ElementalBloodInsightPersistencePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalBloodPolicy.cs"><Link>ElementalRaces\ElementalBloodPolicy.cs</Link></Compile>
     <Compile Include="ElementalComponentIdentityPolicyTests.cs" />

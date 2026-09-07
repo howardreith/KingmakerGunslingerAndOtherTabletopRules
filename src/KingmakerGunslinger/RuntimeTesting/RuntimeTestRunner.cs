@@ -1905,7 +1905,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             : null,
                     pauseOnLoadCompletion: _request.Scenario ==
                         RuntimeTestScenarioCatalog
-                            .ElementalRaceModuleDisabledPersistence);
+                            .ElementalRaceModuleDisabledPersistence ||
+                        _request.Scenario == RuntimeTestScenarioCatalog
+                            .ElementalRaceModuleRestoredPersistence);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();
