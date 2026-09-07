@@ -1,5 +1,15 @@
 # Installation, updates, removal, and compatibility
 
+Current stabilization candidate identity is
+`0.0.117-elemental-char-gen-stabilization`; its disposable acceptance archive is
+`KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip`.
+The guarded local workflow builds `KingmakerGunslinger-0.0.117-local-runtime.zip`
+and validates its immutable sidecar before backup-first deployment. Final exact
+artifact hashes and installation status belong to the
+[stabilization journal](ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md).
+Owner full-screen acceptance remains pending. Historical package references
+below retain their original evidence and do not identify the current candidate.
+
 The owner-requested [manual-test handoff](ELEMENTAL-RACES-EXPANSION-HANDOFF.md)
 installs the byte-identical native-tested 117 candidate into the existing UMM
 mod folder. All 135 package files match, prior module settings are preserved,

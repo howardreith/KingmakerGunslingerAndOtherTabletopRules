@@ -1,5 +1,25 @@
 # Kingmaker Gunslinger
 
+Current disposable acceptance candidate: **`0.0.117-elemental-char-gen-stabilization`**.
+Elemental heritage and alternate racial traits now use the native Heritage
+route before ability allocation and skills. The 12 heritages and 19 implemented
+alternate racial traits retain their identities; Treacherous Earth and Nereid
+Fascination remain registered but unpublished. Helpful preserves ZFavoredClass's
+empty `Features` contract while appending once to its Combat `AllFeatures`.
+Native creator/back-navigation, real respec, spent resources, turn-based actions
+and all visible traits' persistence/physical lifecycles have focused passing
+qualification. Exact final artifact compatibility and installation status are
+recorded in the handoff; owner full-screen UI acceptance is a separate gate. See the
+[stabilization journal](ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md).
+Release C remains in progress because the two deferred mechanics are outside
+this stabilization mission. Nothing is merged, tagged or publicly released.
+
+## Prior Release C checkpoints (historical)
+
+The following records describe the earlier segment and retain its original
+pending gates and artifact identity. The stabilization journal above supersedes
+its selection inventory and current acceptance status.
+
 The owner has concluded this segment for local manual testing. The tested
 117 candidate is installed/enabled in UMM; Release C remains incomplete.
 See the [handoff and remaining-material list](ELEMENTAL-RACES-EXPANSION-HANDOFF.md).

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.0.117-elemental-char-gen-stabilization
+
+- Route elemental heritages and alternate racial traits through the native
+  Heritage phase before ability allocation and skills.
+- Preserve ZFavoredClass's intentionally empty Combat `Features` array and
+  append Helpful exactly once to its authoritative `AllFeatures` catalog.
+- Keep Treacherous Earth and Nereid Fascination identities registered while
+  removing their no-op choices from character creation and respec.
+- Preserve owned visual assets during repeated creator reconstruction and
+  preserve spent daily resources and blood expenditure through native respec.
+- Qualify all 19 visible alternate traits through fresh-process persistence,
+  physical lifecycles, exact cleanup, native action costs, and attack boundaries.
+
+Final artifact profiles and owner UI acceptance remain separate gates. This is
+an unpublished disposable stabilization candidate; no content expansion occurs.
+
 ## 0.0.117-elemental-traits
 
 - Adds Breeze-Kissed's owned native core with seven fixed identities: ranged

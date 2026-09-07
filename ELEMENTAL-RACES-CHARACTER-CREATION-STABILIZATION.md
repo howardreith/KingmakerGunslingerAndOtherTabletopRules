@@ -1865,3 +1865,46 @@ serialization proofs and `native-obstacles-connect-units-il.txt` remain in the
 ignored stabilization evidence directory. The original installation is restored;
 final candidate identity, final profile attestation and owner UI acceptance
 remain pending.
+
+
+### Final candidate identity preparation
+
+The numerical version remains 0.0.117; the informational identity is now
+`0.0.117-elemental-char-gen-stabilization`. Version properties, assembly metadata,
+the existing exact-version test and current validation milestone are updated
+together. README, installation guidance, changelog and release notes identify
+the stabilization candidate while preserving prior checkpoint evidence under
+explicit historical labels. No production mechanic, GUID, module schema or
+selection inventory changes in this slice. Final clean build, guarded identity
+smoke, exact final profiles, pinned migration and acceptance installation remain
+pending. Human full-screen acceptance remains NOT-RUN.
+
+The first version validation correctly rejected the unchanged standalone package
+suffix. The existing package script now uses the same stabilization suffix;
+its deterministic build/package workflow and 135-entry contract are unchanged.
+
+The inherited spear/bodyguard/audio validators also map numeric version 117 to
+an exact package suffix. Their 117 branches and the existing package identity
+test now require the stabilization suffix; all earlier version branches and
+historical records are unchanged.
+
+
+The informational identity slice passes all **1,453** domain/reflection tests,
+repository validation, clean Release, deterministic packaging and strict 135
+entries. Manifest remains 1,867. Preliminary candidate source parent is
+`60f3d11743120c5c1a60de75148f5d7d8f6a4af4`, source fingerprint
+`150272a4e2db7616292a278a7d1d133f99c2cfa5be9cf641293e88c111a032e7`,
+ZIP `c9525fff8c3f239e98dc15fb053a50664bee44eb9c29a75b897bb61c365f2d3b`,
+DLL `4b1d4087c1440705a1b3059c6034e103bcc86d268cd29519d41f58b8b84c7029`,
+MVID `f62d9a55-416f-4bd0-a2e0-1409b36f5fc4`.
+Full-stack `20260907T1906049378459Z-working-save-smoke` passes **11 assertions**,
+with exact loaded informational version/source/DLL/MVID, protected-save audit
+and original Mods/UMM restoration. No KMG ERROR appears; the native startup
+and four known ZFavoredClass custom-data warnings remain separate.
+
+The external audit reads the dedicated `runtime-loaded-build-identity.json` for
+MVID and SHA rather than assuming every scenario's descriptive runtimeIdentity
+string includes an MVID; the guarded exact identity contract is unchanged.
+Package documentation now points to the handoff for final installation status,
+so the build snapshot does not claim owner acceptance. The next build will be
+from the committed source and will receive the final profile/migration matrix.

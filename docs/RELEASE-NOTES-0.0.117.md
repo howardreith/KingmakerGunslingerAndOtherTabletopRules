@@ -1,5 +1,31 @@
 # Kingmaker Gunslinger 0.0.117
 
+## Character-creation stabilization candidate
+
+Informational version: `0.0.117-elemental-char-gen-stabilization`.
+Disposable candidate package identity:
+`KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip`.
+The build/guarded deployment workflow retains its `0.0.117-local-runtime.zip`
+filename and immutable sidecar; the acceptance handoff records exact hashes.
+
+Heritages and the ten replacement-slot selections use the inspected native
+Heritage phase contract. The two unimplemented choices are registered but
+unpublished. Global Traits preserve their foreign selector contract, elemental
+feats remain published, and native back-navigation/respec preserve stat overlays,
+spent daily uses and blood expenditure. Nineteen visible traits pass native
+save/OFF/ON/rest/level/respec/cleanup and death/resurrection/polymorph/equipment
+qualification. Breeze's exact mundane feat-attack boundary and the Crystalline
+93-identity semantic ray catalog are qualified. No new content or GUID is added.
+See the [stabilization evidence](../ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md).
+The stabilization journal records final candidate profile attestation and
+installation separately from human UI acceptance. This candidate must not be
+publicly released.
+
+## Original Release C checkpoints (historical)
+
+The following evidence and pending statements retain their original artifact
+identity; the stabilization journal gives the current qualification status.
+
 Informational version: `0.0.117-elemental-traits`
 
 Proposed local package:

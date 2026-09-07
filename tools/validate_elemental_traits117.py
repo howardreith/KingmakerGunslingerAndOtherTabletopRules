@@ -13,9 +13,9 @@ import validate_elemental_feats116 as baseline
 import validate_share_transmutation115 as share_transmutation
 
 VERSION = "0.0.117"
-INFORMATIONAL_VERSION = "0.0.117-elemental-traits"
+INFORMATIONAL_VERSION = "0.0.117-elemental-char-gen-stabilization"
 PACKAGE = "KingmakerGunslinger-0.0.117-local-runtime.zip"
-PACKAGE_SUFFIX = "elemental-traits"
+PACKAGE_SUFFIX = "elemental-char-gen-stabilization"
 DETERMINISTIC_TEST_COUNT = 1453
 STATIC_KEY = "elementalTraits117"
 TRAIT_GUID_PREFIX = "e117e1e0a17a4acec001"
@@ -135,7 +135,7 @@ def validate(root: Path) -> None:
     require_tokens(root / "README.md", INFORMATIONAL_VERSION,
         "alternate racial traits", "Release C remains in progress")
     require_tokens(root / "INSTALLATION-COMPATIBILITY.md",
-        "KingmakerGunslinger-0.0.117-elemental-traits.zip")
+        "KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip")
     require_tokens(root / "ELEMENTAL-RACES-DEVIATION-MATRIX.md",
         "Replacement-slot framework", "RELEASE C IN PROGRESS")
 
