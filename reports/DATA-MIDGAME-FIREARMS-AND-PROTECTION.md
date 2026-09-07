@@ -288,3 +288,60 @@ that only the six expected release documentation/metadata/validator files
 changed (release-source-comparison.txt). New release notes and this report
 are documentation additions. This preparation build is not the final
 merged-commit release artifact.
+
+## Published release verification
+
+Task implementation: 1f6e00012d37aa754e009cea81c39fcd7f41eef7; candidate evidence: 46a7936cd11ea4509a40b5bd5c930d3ac242aaf3; authorized release preparation: 9a8b2f274e2d2b2986bb8da69c7552fcff3b939d. The explicit merge commit and release tag target are 4e10b649597333b1ec402430603d4358383d52f6. Master was pushed using the approved DATA helper with its supported -AllowDefaultBranch option. No other task branch was merged.
+
+The guarded publisher ran from clean, fully pushed master using Windows PowerShell 5.1 and the qualified DATA reference bundle:
+
+    .\scripts\Publish-Release.ps1 -ReferenceBundleDir C:/Dev/KingmakerGunslingerLab/private/extracted-references/KingmakerGunslinger-private-build-references -ReleaseNotesPath docs/RELEASE-NOTES-0.0.116.md
+
+The first invocation created the draft and annotated v0.0.116 tag after two identical clean builds. After the exact draft artifact passed the focused runtime checks below and restoration, the same command with -Publish -ConfirmReleaseReady rebuilt twice and published. Each build passed repository validation, all 1,398 tests, clean Release compilation, icon/SoundBank checks, and strict package validation. Logs: artifacts/midgame/release-draft-publisher.log and release-publish.log.
+
+Release: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.116
+
+Installable ZIP: artifacts/release/0.0.116/KingmakerGunslinger-0.0.116-midgame-firearms-and-protection.zip (23,063,563 bytes; 135 files).
+
+- ZIP SHA-256: 1602e7d1dc28800d001cc64cd4e55e1af9750555868c4a0352de4f1b16365951
+- DLL SHA-256: 79119202d1acc2a8eceda9010b27da8eeba8e77f96a386a8bffebcc3f796cbd2
+- DLL MVID: 0a493e70-42df-4daf-9ea1-722d3b5aab99
+- Build commit: 4e10b649597333b1ec402430603d4358383d52f6; branch master; version 0.0.116-midgame-firearms-and-protection.
+- Source-state SHA-256: e3865b4e72e1dd82a2cea85415b257d1e3e0b25a7cb9386a43382d618e1fcdeb.
+
+Compared with the accepted candidate, all packaged assets, blueprints, identities, and remaining payload files are byte-identical. Only README, CHANGELOG, and the DLL containing the final build commit differ. Evidence: release-payload-comparison.json. The accepted 24-state boundary and optional-compatibility evidence remains attributed to the earlier fingerprint; it is reused for unchanged production source under the release-sealing policy, not relabeled as a new matrix run.
+
+Fresh release-artifact scenarios used scripts/Invoke-KingmakerRuntimeTest.ps1 with the earlier runtime parameters, with AllowDirtyGit omitted, TimeoutSeconds 300, and DeploymentManifestPath C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260907T2123573046031Z/deployment.json. Each working scenario explicitly named KMG_AUTOMATION_WORKING. Every launch used Steam 640820 and verified the final commit, ZIP/DLL hashes, MVID, and owner context.
+
+| Release scenario | PASS assertions | Evidence directory under the DATA runtime-evidence root |
+|---|---:|---|
+| disposable-midgame-firearms | 91 | 20260907T2123587264771Z-disposable-midgame-firearms |
+| working-save-midgame-prepare | 28 | 20260907T2125204620931Z-working-save-midgame-prepare |
+| working-save-midgame-verify-cleanup | 5 | 20260907T2126542215225Z-working-save-midgame-verify-cleanup |
+| working-save-midgame-verify-absent | 3 | 20260907T2128138829869Z-working-save-midgame-verify-absent |
+
+All 127 assertions passed. Normal shop buys again displayed and debited exactly 33,800 gp for Roadwarden and 33,300 gp for Dead Reckoning, using the native modifier of 1. Normal TypeUp order, weapons filtering, all four stock variants, and player-selected PriceDown matched the earlier neighboring-stock evidence. C3 Large again placed Roadwarden between Radiant Dueling Sword +2 and Shock Sling Staff +2; Dead Reckoning appeared between Corrosive Tongi +2 and Flaming Earth Breaker +2. Purchased identities and weapon state survived a fresh load; task items were removed, saved, and verified absent on another fresh launch.
+
+The temporary wrapper's first preflight failed on PowerShell array handling before deployment or launch. Correcting the wrapper to read the existing snapshot array directly resolved it; no repository code or guard changed. The successful driver and verification records are artifacts/midgame/release-runtime-driver.log, release-runtime-verification.json, and release-restoration-verification.txt.
+
+Restore-Live-Mod.ps1 used the explicit backup C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260907T2123545388799Z with -Confirm:$false. All 135 original installed names and hashes, including absence of FeatureModules.json, were restored exactly. DATA retains its prior 0.0.115 installation; no game remains active. The protected baseline hash is unchanged. Only the authorized working save was written for purchase verification and cleanup.
+
+Public download verification passed after publication at 2026-09-07T21:32:04Z.
+GitHub reports v0.0.116 as the latest stable release, with the exact annotated
+tag target above. All three uploaded asset digests match the downloaded ZIP,
+SHA256SUMS.txt, and release-manifest.json. The downloaded ZIP is byte-identical
+to the runtime-qualified release artifact and passed CRC, embedded metadata,
+DLL identity, and strict standalone package validation.
+
+    gh release download v0.0.116 --repo howardreith/KingmakerGunslingerAndOtherTabletopRules --pattern KingmakerGunslinger-0.0.116-midgame-firearms-and-protection.zip --pattern SHA256SUMS.txt --pattern release-manifest.json --dir artifacts/release-download/0.0.116
+    .\scripts\validate-package.ps1 -PackagePath artifacts/release-download/0.0.116/KingmakerGunslinger-0.0.116-midgame-firearms-and-protection.zip
+
+Evidence: artifacts/midgame/published-release.json,
+public-download-verification.txt, and public-download-package-validation.log.
+The release, its checksum, and manifest are public; packages, machine-local
+evidence, saves, and private references remain untracked. This final report
+is a documentation-only follow-up and does not move the release tag or
+change the published package.
+
+No unresolved release blocker remains. The native saved-stock timing and
+legacy-null-tracking availability limitations described above still apply.
