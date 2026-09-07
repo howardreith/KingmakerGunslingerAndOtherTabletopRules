@@ -85,6 +85,8 @@
     <Compile Include="ElementalRacialSpellLikePolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalRacialSpellLikePolicy.cs"><Link>ElementalRaces\ElementalRacialSpellLikePolicy.cs</Link></Compile>
     <Compile Include="ElementalVisualResourceRollbackPolicyTests.cs" />
+    <Compile Include="ElementalVisualResourceRetentionTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\Visuals\ElementalVisualResourceRetentionPolicy.cs"><Link>ElementalRaces\Visuals\ElementalVisualResourceRetentionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\Visuals\ElementalVisualResourceRollbackPolicy.cs"><Link>ElementalRaces\Visuals\ElementalVisualResourceRollbackPolicy.cs</Link></Compile>
     <Compile Include="GunslingerOutfitRenderTests.cs" />
     <Compile Include="GunslingerClassAppearanceTests.cs" />

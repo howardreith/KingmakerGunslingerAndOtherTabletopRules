@@ -106,6 +106,11 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             return (ElementalRaceVisualBlueprints[])_ordered.Clone();
         }
 
+        internal void RetainCharacterCreatorResources(ISet<string> ids, IList<UnityEngine.Object> assets)
+        {
+            _registry.RetainCharacterCreatorResources(ids, assets);
+        }
+
         internal void RollbackResources()
         {
             _registry.RollbackAll();
