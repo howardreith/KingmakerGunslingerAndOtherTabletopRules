@@ -66,7 +66,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void WriteTeleportationSpellbookUi(string error)
         {
             WriteTeleportationForensicJson(TeleportationSpellbookUiPath, new { schemaVersion = 1, runId = _request.RunId,
-                claims = IsTeleportationLevelUpFixture ? "Native level-up UI, prerequisites, real published spell selectors and isolated preview learning/cancellation. Request-local XP/book prerequisites; no committed level, learned spell, free cast or save write." : "Native local-area service window, class/level toggles, spell rows, description builder, preparation and action-bar auto-fill across Unity frames. Request-local real books only; no level-up completion, casting, save writes or campaign persistence claim.",
+                claims = IsTeleportationLevelUpFixture ? "Native level-up UI, real published spell selectors, owner-graph familiarity serialization and isolated preview learning/cancellation. Request-local XP/books/saved fields; no committed level, learned spell, free cast, save write or campaign disk persistence claim." : "Native local-area service window, class/level toggles, spell rows, description builder, preparation and action-bar auto-fill across Unity frames. Request-local real books only; no level-up completion, casting, save writes or campaign persistence claim.",
                 captures = _teleportationSpellbookUiCaptures, exceptions = _teleportationSpellbookUiExceptions,
                 assertions = _teleportationSpellbookUiAssertions, saveWriteObserved = _workingSaveSmoke.WriteObserved, error });
         }

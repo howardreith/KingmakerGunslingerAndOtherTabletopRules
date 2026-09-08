@@ -935,8 +935,8 @@ PreSave and PostLoad delegate to every saved part, and PostLoad resubscribes the
 `UnitDescriptor.PreSave` calls this manager before its other fact/book collections.
 `UnitSerialization.Serialize` is the native level-up owner-graph entry: it turns
 the descriptor off, runs PreSave, creates a JToken through native JSON defaults,
-then turns the descriptor on. These decompiled contracts identify the next narrow
-persistence probe; they are not a claimed owner-graph or disk qualification.
+then turns the descriptor on. The owner-graph probe below exercises these
+contracts; campaign disk qualification remains separate.
 
 ## Native module-OFF interaction probe
 
@@ -955,3 +955,29 @@ Run `20260908T1454168314185Z-ccf0393dbee34f8d936bf1d837c4c1be` passes 8 assertio
 The existing native settlement-circle control is retained along with Travel and
 Cancel; project spell rows/confirmation are absent. This is actual native UI and
 movement evidence, not a campaign disk round trip.
+
+## Native unit-owner graph exercised through level-up
+
+`LevelUpController.StartPreviewThread` calls `UnitSerialization.Serialize(Unit)`
+when no prebuilt token is supplied. `LevelUpPreviewThread.Run` deserializes that
+exact `s_Source` through `ToObject<UnitDescriptor>()`. Native
+`LevelUpController.RequestPreview` calls preview Unit.PostLoad and TurnOn;
+`UpdatePreview` disposes the previous clone and requests a new one. Cancel disposes
+the active preview and calls `LevelUpPreviewThread.Stop`, which clears the source.
+
+The guarded level-up probe reads the exact private static `s_Source : JToken`
+field and records only the matching fixture part, never the full owner graph.
+Run `20260908T1512053583403Z-53c1d3737d794e4ead9db0053421c19e` passes all 31 checks.
+Its source token contains the actual project type with both saved fields and
+Owner. Four native class/level cases each preserve data through initial and
+rebuilt previews, bind the loaded part to the preview owner, and demonstrate
+independence by clearing only the preview boundary. Cancellation and exact original
+part/book/character/UI restoration pass with zero fixture exceptions/save writes.
+This qualifies native owner serialization and PostLoad; disk save/reload stays open.
+
+Read-only Working-save inspection also finds two Call of the Wild UnitPart types
+on its main character: `HoldingItemsMechanics.UnitPartCanHold2hWeaponIn1h` and
+`WeaponsFix+UnitPartFullProficiency`. Their assembly is part of the serialized
+contract. This is consistent with the earlier standalone Player.PostLoad failure
+and supports obtaining a compatible disposable save rather than changing its data.
+The implementation report records the unchanged archive hash and exact evidence.

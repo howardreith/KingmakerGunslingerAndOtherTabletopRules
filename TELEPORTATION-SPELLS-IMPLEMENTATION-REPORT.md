@@ -33,6 +33,7 @@ Pushed coherent checkpoints:
 - `68e1e8a8111d68335ec25f8bc34a25f684520a77`: native spellbook rows/descriptions/preparation, action-bar exclusion and exact deferred UI cleanup.
 - `5b1168f45edf4c8979e6dbbb5536344523faf61d`: actual native level-up choices, preview cancellation and same-artifact UI/resource/save regressions.
 - `f44d4f529de453220afefe6f74ca4cc4278db3c6`: saved deferred-exploration guard, 22 actual special-point casts, ordinary-travel recovery and all 26 current module boundaries.
+- `d2a49edbe8ff7302560f8d355da659b43a9b7d64`: actual native module-OFF point interactions, real-resource/ledger controls and guarded launcher contracts.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -927,6 +928,60 @@ Three shared-harness regressions passed **79** assertions on that same artifact:
 All regressions retained save-write protection and exact fixture cleanup. The
 full 26-state production matrix remains the preceding exploration-guard evidence;
 this fixture/launcher slice changes no player spell, policy, hook or publication.
+
+## Native saved-owner serialization qualification
+
+Extended `disposable-teleportation-level-up` passes **31 of 31** assertions in run
+`20260908T1512053583403Z-53c1d3737d794e4ead9db0053421c19e`, directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1512053493406Z-disposable-teleportation-level-up`.
+The native level-up UI serializes the canonical main character with both
+request-local saved fields. The actual `LevelUpPreviewThread.s_Source` JObject
+contains exactly one matching part at the observed path
+`m_Parts.m_Parts[5].Value`, with `$id`, `$type`, `_state`,
+`_explorationBoundary` and `Owner`. Its saved type is
+`KingmakerGunslinger.Spells.Teleportation.UnitPartTeleportFamiliarity, KingmakerGunslinger`.
+The numeric dictionary entry is only an observation; the probe locates the exact
+fixture payload and never treats that index as identity.
+
+For all four Wizard/Sorcerer fifth-/seventh-level cases, native deserialization
+and PostLoad create an independent part owned by the actual preview. Both fields
+survive subsequent native preview rebuilds and spell selection. Clearing the
+preview boundary changes neither the original part nor the actual serialized
+source. Native cancellation clears the owned serialization source, and cleanup
+restores the original owner/part presence/data, books, XP, features, UI and party.
+There are zero fixture exceptions and no save writes. This proves the native
+unit-owner graph, not a fresh-process campaign disk round trip.
+
+The one new read-only native reflection seam is
+`LevelUpPreviewThread.s_Source : JToken`. The original descriptor must already be
+turned on; the fixture restores native TurnOn if serialization throws because
+native UnitSerialization lacks an inner finally around that operation. Production
+serialization, spell behavior and module logic are unchanged.
+
+Exact deployment:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260908T1512053167312Z/deployment.json`.
+DLL SHA-256 `fee577eace8e0f7809f55bab66a017f546cf75a126e28622911bf859d70bc7e1`;
+package SHA-256 `f8cf553c9cdc6e976bd2234ff7a6eea22277467d500cc44aefb9d78ea92948dc`.
+The explicit Release domain command passes all **1,490** tests. Clean Release,
+repository/build-output and strict package checks pass; logs are
+`artifacts/teleportation/domain-teleportation-owner-graph.log` and
+`artifacts/teleportation/build-teleportation-owner-graph.log`.
+Two same-artifact regressions pass **42** assertions with exact cleanup:
+
+| Scenario | Assertions | Run ID | Directory under runtime-evidence |
+|---|---:|---|---|
+| disposable-teleportation-spellbook-ui | 31 | `20260908T1516073470641Z-7410cb66a2fe4e7285ae0c46cea94fae` | `20260908T1516073364990Z-disposable-teleportation-spellbook-ui` |
+| working-save-smoke | 11 | `20260908T1517406436041Z-98a0037029404c118404369a03c36ee9` | `20260908T1517406426055Z-working-save-smoke` |
+
+A separate read-only inspection of the authorized Working archive identifies
+concrete Call of the Wild saved UnitPart types on the main character. Exact
+archive SHA-256 is `36d63ee29a48ba72e422a43336f11a78ec79185bde68b958a0305a453541ff53`;
+bytes remained unchanged. `party.json` contains
+`CallOfTheWild.HoldingItemsMechanics.UnitPartCanHold2hWeaponIn1h` and
+`CallOfTheWild.WeaponsFix+UnitPartFullProficiency`, both in assembly CallOfTheWild.
+This dependency is consistent with the earlier standalone native load failure;
+it is not a new isolated runtime result or permission to strip those records.
+The raw save and machine-local inspection JSON remain outside committed evidence.
 
 ## Remaining qualification and constraints
 
