@@ -2,6 +2,10 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Qualifies native point selection, dismissal and Travel with Teleportation OFF
+  despite real available spellbook resources. Eight guarded assertions and 79
+  enabled interaction/save regressions pass with exact fixture/settings cleanup.
+
 - Prevents delayed native perception/reveal work after a magical arrival through
   a save-owned boundary that ordinary Travel releases. The guarded special-point
   audit passes 68 assertions, including malformed-state recovery and exact cleanup.

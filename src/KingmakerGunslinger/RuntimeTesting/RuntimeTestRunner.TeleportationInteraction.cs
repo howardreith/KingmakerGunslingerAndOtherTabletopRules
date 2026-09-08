@@ -33,11 +33,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<RuntimeTestAssertion> _teleportationInteractionAssertions = new List<RuntimeTestAssertion>();
         private readonly List<object> _teleportationInteractionCaptures = new List<object>();
         private bool IsTeleportationTravelersFixture { get { return _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers; } }
-        private string TeleportationInteractionPath { get { return Path.Combine(_request.EvidenceDirectory, IsTeleportationDestinationsFixture ? "teleportation-destinations.json" : IsTeleportationTravelersFixture ? "teleportation-travelers.json" : IsTeleportationGamepadFixture ? "teleportation-gamepad.json" : "teleportation-interaction.json"); } }
+        private string TeleportationInteractionPath { get { return Path.Combine(_request.EvidenceDirectory, IsTeleportationDisabledFixture ? "teleportation-disabled.json" : IsTeleportationDestinationsFixture ? "teleportation-destinations.json" : IsTeleportationTravelersFixture ? "teleportation-travelers.json" : IsTeleportationGamepadFixture ? "teleportation-gamepad.json" : "teleportation-interaction.json"); } }
 
         private void PollTeleportationInteraction()
         {
-            if ((_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationInteraction && !IsTeleportationTravelersFixture && !IsTeleportationGamepadFixture && !IsTeleportationDestinationsFixture) || !_request.ExitAfterCompletion ||
+            if ((_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationInteraction && !IsTeleportationTravelersFixture && !IsTeleportationGamepadFixture && !IsTeleportationDestinationsFixture && !IsTeleportationDisabledFixture) || !_request.ExitAfterCompletion ||
                 _workingSaveSmoke == null || !_workingSaveSmoke.Complete || _workingSaveSmoke.WriteObserved)
                 throw new InvalidOperationException("Multi-frame interaction requires its guarded named working save, automatic exit and intact write sentinels.");
             if (_teleportationMapLoad == null)
@@ -51,7 +51,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (LoadingProcess.Instance.IsLoadingInProcess || LoadingProcess.Instance.IsLoadingScreenActive ||
                 GlobalMapRules.Instance == null || Game.Instance.CurrentMode != GameModeType.GlobalMap) return;
             if (IsTeleportationGamepadFixture && !PrepareTeleportGamepadUi()) return;
-            if (_teleportationInteractionSteps == null) _teleportationInteractionSteps = RunTeleportationInteraction().GetEnumerator();
+            if (_teleportationInteractionSteps == null) _teleportationInteractionSteps = (IsTeleportationDisabledFixture ? RunTeleportationDisabled() : RunTeleportationInteraction()).GetEnumerator();
             Exception failure = null;
             try { if (_teleportationInteractionSteps.MoveNext()) return; }
             catch (Exception exception) { failure = exception; }
@@ -81,14 +81,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void WriteTeleportationInteraction(string error)
         {
             WriteTeleportationForensicJson(TeleportationInteractionPath, new { schemaVersion = 1, runId = _request.RunId,
-                claims = IsTeleportationDestinationsFixture ? "Real contextual Greater Teleport at native book-event/component points and all stable point types, preserving native prohibitions and deferred relocation invariants. Request-local real book/visited-state fixture; no save writes or campaign prohibition changes." : IsTeleportationGamepadFixture ? "Native gamepad UI scene, original navigation/input handlers, real contextual casting, modal ownership and input-layer cleanup across Unity frames. No OS input or controller emulation. Request-local controller mode, map/book/ledger fixture, no save writes." : IsTeleportationTravelersFixture ? "Request-local native associated pets, real contextual casting, native damage/life events and exact cleanup across Unity frames. No save writes or life-state threshold replacement." :
+                claims = IsTeleportationDisabledFixture ? "Actual native destination selection, dismissal and Travel with the module OFF, real request-local book resources and existing ledger fields. No spell casting or save writes; exact fixture cleanup." : IsTeleportationDestinationsFixture ? "Real contextual Greater Teleport at native book-event/component points and all stable point types, preserving native prohibitions and deferred relocation invariants. Request-local real book/visited-state fixture; no save writes or campaign prohibition changes." : IsTeleportationGamepadFixture ? "Native gamepad UI scene, original navigation/input handlers, real contextual casting, modal ownership and input-layer cleanup across Unity frames. No OS input or controller emulation. Request-local controller mode, map/book/ledger fixture, no save writes." : IsTeleportationTravelersFixture ? "Request-local native associated pets, real contextual casting, native damage/life events and exact cleanup across Unity frames. No save writes or life-state threshold replacement." :
                     "Native panel, button, Escape stack, confirmation and movement-event evidence across actual Unity frames. No synthetic input or screen coordinates. Ordinary travel uses request-local native time input; magical casting uses the production path.",
                 captures = _teleportationInteractionCaptures, assertions = _teleportationInteractionAssertions,
                 destinationExceptions = IsTeleportationDestinationsFixture ? _teleportationDestinationExceptions : null,
+                disabledExceptions = IsTeleportationDisabledFixture ? _teleportationDisabledExceptions : null,
                 saveWriteObserved = _workingSaveSmoke.WriteObserved, error });
         }
         private void TeleportInteractionAssert(string id, string expected, string actual, bool pass)
-        { _teleportationInteractionAssertions.Add(Assertion((IsTeleportationDestinationsFixture ? "teleportation-destinations-" : IsTeleportationTravelersFixture ? "teleportation-travelers-" : IsTeleportationGamepadFixture ? "teleportation-gamepad-" : "teleportation-interaction-") + id, expected, actual, pass, TeleportationInteractionPath)); }
+        { _teleportationInteractionAssertions.Add(Assertion((IsTeleportationDisabledFixture ? "teleportation-disabled-" : IsTeleportationDestinationsFixture ? "teleportation-destinations-" : IsTeleportationTravelersFixture ? "teleportation-travelers-" : IsTeleportationGamepadFixture ? "teleportation-gamepad-" : "teleportation-interaction-") + id, expected, actual, pass, TeleportationInteractionPath)); }
         private void CaptureTeleportInteraction(string step, object state)
         { _teleportationInteractionCaptures.Add(new { step, frame = Time.frameCount, state }); }
 

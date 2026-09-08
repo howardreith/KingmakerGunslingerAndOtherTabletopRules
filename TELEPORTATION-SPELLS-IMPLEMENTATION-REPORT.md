@@ -32,6 +32,7 @@ Pushed coherent checkpoints:
 - `cdee670b2879431972f4a9baa70f249e15db8803`: native gamepad destination rows/navigation, shared native confirmation, rendered-text and module-hook qualification.
 - `68e1e8a8111d68335ec25f8bc34a25f684520a77`: native spellbook rows/descriptions/preparation, action-bar exclusion and exact deferred UI cleanup.
 - `5b1168f45edf4c8979e6dbbb5536344523faf61d`: actual native level-up choices, preview cancellation and same-artifact UI/resource/save regressions.
+- `f44d4f529de453220afefe6f74ca4cc4278db3c6`: saved deferred-exploration guard, 22 actual special-point casts, ordinary-travel recovery and all 26 current module boundaries.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -878,6 +879,54 @@ built Release candidate DLL SHA-256 is
 package SHA-256 is
 `96883bec0bd9809d67972fc95c9063bbc26f10b633ee8d453b02c318075c03b8`.
 This candidate is not substituted for the exact deployed runtime artifact above.
+
+## Native world-map interaction with the module OFF
+
+`disposable-teleportation-disabled` passed **8 of 8** assertions in run
+`20260908T1454168314185Z-ccf0393dbee34f8d936bf1d837c4c1be`, directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1454168204196Z-disposable-teleportation-disabled`.
+The actual native Sorcerer book knew Teleport and Greater Teleport with 8 fifth-
+and 7 seventh-level slots. Teleportation publication and all feature hooks were
+absent. Three native selection/dismissal cycles produced no project spell rows
+or confirmation. The existing native controls, including its settlement-circle
+control, remained unchanged. Native Travel started once and completed its two
+revealed edges without spending a spell or changing the existing familiarity
+and exploration-boundary fields.
+
+Structured `teleportation-disabled.json` records zero fixture exceptions, no
+save writes and exact cleanup. The original owner had no familiarity UnitPart;
+the fixture restored that absence after testing a request-local existing payload.
+This establishes OFF behavior and live-state preservation, not disk persistence.
+The settings transaction restored the exact original SHA-256
+`a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749`.
+
+The matrix wrapper now permits this one focused scenario only with a single OFF
+configuration and mandatory automatic exit. Read-only guard tests caught and
+corrected a mismatch between module-observation parameters and the working-save
+scenario's single save-name contract before launch. Runtime preflight passes
+**213** checks; compatibility/settings/launcher guards pass **4,129**. No rejected
+game run occurred in this slice.
+
+Exact deployed artifact:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260908T1454167869099Z/deployment.json`,
+DLL SHA-256 `bb4aa07e3d59a99dce1c5c340f9645d52260c933e1be665d1cff875e9ebaf756`,
+package SHA-256 `aa835dd8452e46baf3c701618aafda1c65f7d02308587e512fd88e9f7fafa846`.
+The explicit Release domain command passed all **1,490** cases. Clean Release,
+repository/build-output and strict package validation passed; logs are
+`artifacts/teleportation/domain-teleportation-disabled.log` and
+`artifacts/teleportation/build-teleportation-disabled-final.log`.
+
+Three shared-harness regressions passed **79** assertions on that same artifact:
+
+| Scenario | Assertions | Run ID | Directory under runtime-evidence |
+|---|---:|---|---|
+| disposable-teleportation-interaction | 29 | `20260908T1457048510396Z-2d1589c65d6245e5be0c35cdf86dc229` | `20260908T1457048410397Z-disposable-teleportation-interaction` |
+| disposable-teleportation-gamepad | 39 | `20260908T1458399298789Z-91f7a91786814f9ca138d05ef97e4fa8` | `20260908T1458399288793Z-disposable-teleportation-gamepad` |
+| working-save-smoke | 11 | `20260908T1500288234183Z-dff2c79e103643d7b0ce046a6ec2ade7` | `20260908T1500288224196Z-working-save-smoke` |
+
+All regressions retained save-write protection and exact fixture cleanup. The
+full 26-state production matrix remains the preceding exploration-guard evidence;
+this fixture/launcher slice changes no player spell, policy, hook or publication.
 
 ## Remaining qualification and constraints
 
