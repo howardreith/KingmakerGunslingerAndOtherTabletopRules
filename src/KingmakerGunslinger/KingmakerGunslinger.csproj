@@ -905,6 +905,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpellbookUi.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationLevelUp.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDestinations.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDisabled.cs" />
     <Compile Include="Spells\Teleportation\TeleportationText.cs" />
     <Compile Include="Spells\Teleportation\TeleportationCombatLog.cs" />
     <Compile Include="Spells\Teleportation\WorldMapPointSpellActionPatches.cs" />

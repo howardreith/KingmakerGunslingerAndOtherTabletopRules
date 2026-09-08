@@ -53,6 +53,7 @@ $expected = @(
         'disposable-teleportation-spellbook-ui',
         'disposable-teleportation-level-up',
         'disposable-teleportation-destinations',
+        'disposable-teleportation-disabled',
     'disposable-midgame-firearms',
     'working-save-midgame-prepare',
     'working-save-midgame-verify-cleanup',
@@ -901,6 +902,28 @@ Assert-True ((Get-DirectoryIdentity $evidenceRoot) -ceq $evidenceBefore) `
 Assert-True ($script:cimCalls -eq 0) 'unsupported-performs-no-cim'
 Assert-True ($script:startProcessCalls -eq 0) `
     'unsupported-launches-neither-steam-nor-kingmaker'
+
+$disabledMetadata = Get-KmgRuntimeScenarioMetadata 'disposable-teleportation-disabled'
+Assert-True ($disabledMetadata.RequiresSaveName -and $disabledMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING') 'disabled-map-working-save-only'
+Assert-True (-not $disabledMetadata.RequiresManualInteraction -and $disabledMetadata.UsesWorkingStageTimeouts) 'disabled-map-autonomous-working-deadlines'
+$disabledTimeouts = @{
+    CatalogTimeoutSeconds = 120; SelectionTimeoutSeconds = 120; CompletionTimeoutSeconds = 120
+    MainMenuTimeoutSeconds = 120; ActionResolutionTimeoutSeconds = 120; ActionInvocationTimeoutSeconds = 120
+    DescriptorResolutionTimeoutSeconds = 120; LoadEntryTimeoutSeconds = 120; FingerprintTimeoutSeconds = 120
+}
+$disabledRequest = New-KmgRuntimeRequest @disabledTimeouts -Scenario 'disposable-teleportation-disabled' `
+    -ExpectedVersion '0.0.116' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'disabled-request-test') `
+    -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
+Assert-True ($disabledRequest.parameters.Count -eq 1 -and $disabledRequest.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING') 'disabled-map-request-preserves-exact-save'
+foreach ($invalidSave in @('', 'KMG_AUTOMATION_BASELINE')) {
+    Assert-Throws {
+        New-KmgRuntimeRequest @disabledTimeouts -Scenario 'disposable-teleportation-disabled' `
+            -ExpectedVersion '0.0.116' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+            -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'disabled-request-test') `
+            -Parameters @{ saveName = $invalidSave }
+    } ('disabled-map-rejects-save-' + $invalidSave)
+}
 
 if ($failures.Count -ne 0) {
     throw "Runtime scenario preflight tests failed: $($failures -join ', ')"

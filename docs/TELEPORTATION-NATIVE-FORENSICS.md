@@ -937,3 +937,21 @@ PreSave and PostLoad delegate to every saved part, and PostLoad resubscribes the
 the descriptor off, runs PreSave, creates a JToken through native JSON defaults,
 then turns the descriptor on. These decompiled contracts identify the next narrow
 persistence probe; they are not a claimed owner-graph or disk qualification.
+
+## Native module-OFF interaction probe
+
+The guarded `disposable-teleportation-disabled` scenario does not initialize any
+production patch reflection cache. It reads the exact native
+`GlobalMapMessageBox.m_Dialog` and `m_AcceptText` fields independently, waits for
+the native fade and visible geometry, invokes `OnLocationSelect`, native `Hide`,
+and the actual Accept Button callback. Native `MapMovementController.Tick` then
+advances its real revealed route with request-local time input, using the already
+audited private `CalcSpeedModifiers` seam. No click/action/arrival/exploration
+hook is installed. A real book and two project save fields exist only inside the
+disposable fixture; both fields remain unchanged OFF and all fixture data is
+restored before the save sentinels close.
+
+Run `20260908T1454168314185Z-ccf0393dbee34f8d936bf1d837c4c1be` passes 8 assertions.
+The existing native settlement-circle control is retained along with Travel and
+Cancel; project spell rows/confirmation are absent. This is actual native UI and
+movement evidence, not a campaign disk round trip.

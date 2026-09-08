@@ -83,16 +83,16 @@ save write; it requires automatic process exit. Never use the baseline save.
 ```
 
 Native associated pets have separate traveler evidence below. Mod-provided mounts,
-full campaign disk persistence, normal spellbook/level-up UI cases and full compatibility
-profiles still require qualification. Run IDs and exact limits are in the implementation report.
+full campaign disk persistence and full compatibility profiles still require
+qualification. Native spellbook/level-up UI results are recorded below. Run IDs and exact limits are in the implementation report.
 
 The feature branch adds the twelfth default-ON module, `teleportation-spells`,
 using settings schema 11. The fast domain settings/publication matrix covers
 4,096 combinations; the guarded runtime boundary matrix contains 26 states.
 Historical release results retain their original module and assertion counts.
-All 26 boundary states passed 845 assertions at source ba32ac2; added gamepad
-hooks subsequently passed all ON, all OFF, Teleportation alone ON and alone OFF
-checks (134 assertions); a new full matrix has not been claimed. The native destination-panel observation is documented in
+All 26 current boundary states passed 897 assertions at the exploration-guard
+checkpoint, including desktop, gamepad, arrival and exploration hook counts.
+Historical results retain their original counts. The native destination-panel observation is documented in
 `docs/TELEPORTATION-NATIVE-FORENSICS.md`; it is not spellcasting proof.
 
 
@@ -334,3 +334,36 @@ implementation report for exact IDs, rejected probes and same-artifact regressio
 The current complete domain count is 1,490. All 26 module boundaries passed
 897 assertions with exploration hooks 1 ON / 0 OFF and exact settings
 restoration. Full campaign disk persistence and required profiles remain open.
+
+### Teleportation disabled world-map interaction
+
+`disposable-teleportation-disabled` uses the actual native destination panel
+with Teleportation OFF. Its disposable fixture provides real known spells and
+available native slots, plus existing familiarity and exploration-boundary
+fields. Three native selection/dismissal cycles must show no magical rows,
+modal or resource changes. The native Travel button must start one route, spend
+no spell and complete ordinary arrivals without changing either saved field.
+The fixture restores the original UnitPart presence/data, books, map, roster,
+time and UI; save-write sentinels remain armed throughout.
+
+Use the settings transaction wrapper with one explicit OFF configuration:
+
+```powershell
+.\scripts\Invoke-FeatureModuleRuntimeMatrix.ps1 `
+  -Scenario disposable-teleportation-disabled `
+  -Combination on-on-on-on-on-on-on-on-on-on-on-off `
+  -ExpectedVersion 0.0.116 -AllowDirtyGit `
+  -ExitAfterCompletion:$true -Confirm:$false
+```
+
+The wrapper selects only `KMG_AUTOMATION_WORKING` and restores the exact original
+settings bytes. Boundary/multiple configurations, Teleportation ON and missing
+automatic exit are rejected for this scenario. Read `teleportation-disabled.json`
+and `runtime-result.json`; this live-state probe does not establish campaign
+disk save/reload persistence.
+
+Qualified OFF run: `20260908T1454168314185Z-ccf0393dbee34f8d936bf1d837c4c1be`,
+8 of 8 assertions PASS, zero fixture exceptions/save writes and exact cleanup.
+The same artifact passes enabled desktop (29), gamepad (39) and working-save (11)
+regressions. The implementation report records exact run IDs, paths and hashes.
+Launcher preflight has 213 checks and compatibility/settings guards have 4,129.
