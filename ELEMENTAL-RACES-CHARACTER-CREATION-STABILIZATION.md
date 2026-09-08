@@ -2567,3 +2567,34 @@ preparation. Production mechanics, assets, version identity and GUIDs remain
 those of accepted artifact 132f0650e997579c589d19874a022aa5ee2213f2. The complete
 source/build/package gates and focused final-artifact guarded runtime checks
 precede publication. Deferred mechanics remain unavailable.
+
+
+## Published release and installed handoff (2026-09-08)
+
+The owner-accepted stabilization is merged into master and published as
+[v0.0.117](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.117). The immutable release tag targets
+`f8a2fd996752afb0e361a53bec175328ace5435a`, including latest upstream master
+`58d9511082af30f1a4ec88c1238ae7ae2b3651c2`. Release preparation and final
+evidence were committed on the feature branch; no direct implementation commit
+is made to master. The final evidence follow-up does not move the release tag.
+
+Two deterministic builds per publisher invocation pass all 1,458 tests; the
+canonical preflight passes 259 checks. Nine final-artifact guarded Steam
+processes pass 107 assertions, twelve native creator completions and fourteen
+Player respec callbacks, with zero KMG errors and exact restoration. Seven
+foreign-selector audits preserve the empty Features contract and fourteen
+ordered originals, adding Helpful once only with Bodyguard ON.
+
+The public download and installed UMM package both verify against ZIP SHA-256
+`9368c1ff2c82b76574bab5ed75868d7eb633e759f925e82a1c0da7e861f62f6f`, DLL SHA-256
+`fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f` and MVID
+`18f5eaaa-3021-4836-8763-9ba22965b958`. All 135 installed files match; settings,
+UMM enabled state, unrelated mods and protected-save audits pass. The prior
+installation remains recoverable at `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260908T0405189875596Z`.
+The [public release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md)
+contains exact identities, runs, publication and installation verification.
+
+The owner explicitly accepted and authorized this release. Individual human
+checklist results remain unreported; no historical NOT-RUN result is rewritten
+as a fabricated test PASS. Deferred mechanics remain registered and unavailable.
+Stop after release finalization; no further content expansion is performed.
