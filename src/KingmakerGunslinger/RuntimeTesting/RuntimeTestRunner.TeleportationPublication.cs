@@ -122,6 +122,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 abilities.Select(value => value.AssetGuid).Distinct().Count() == 3, path));
             assertions.Add(Assertion("teleportation-module-spell-publication", "exact base/domain levels match saved module intent", "enabled=" + enabled + ";travelExists=" + travelExists,
                 originalPublication && (BlueprintBootstrap.TeleportationPublication != null) == enabled, path));
+            MethodInfo explorationTick = typeof(LocationRevealController).GetMethod("Tick", Type.EmptyTypes);
+            if (explorationTick == null) throw new MissingMethodException("Native location-reveal tick is absent.");
+            var explorationInfo = patchedMethods.Contains(explorationTick) ? _context.Harmony.GetPatchInfo(explorationTick) : null;
+            int explorationHooks = explorationInfo == null ? 0 : explorationInfo.Prefixes.Count(value =>
+                value.owner == _context.ModId && value.patch != null && value.patch.DeclaringType == typeof(Spells.Teleportation.TeleportExplorationGuardPatches));
+            assertions.Add(Assertion("teleportation-exploration-module-hook", "saved arrival exploration hook follows module intent and is absent OFF",
+                "enabled=" + enabled + ";actualHooks=" + explorationHooks,
+                enabled == Spells.Teleportation.TeleportExplorationGuardPatches.Installed && explorationHooks == (enabled ? 1 : 0), path));
             assertions.Add(Assertion("teleportation-familiarity-module-hooks", "ordinary-arrival hooks match module intent",
                 "enabled=" + enabled + ";installed=" + Spells.Teleportation.TeleportFamiliarityPatches.Installed + ";actualHooks=" + familiarityHookCount,
                 enabled == Spells.Teleportation.TeleportFamiliarityPatches.Installed && familiarityHookCount == (enabled ? 2 : 0), path));

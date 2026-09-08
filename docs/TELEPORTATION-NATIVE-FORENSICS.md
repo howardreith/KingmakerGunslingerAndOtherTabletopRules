@@ -885,3 +885,55 @@ UI state, selection, party, positions, time and pause are restored. This proves
 native spell choice and cancellation, not committed character advancement or
 campaign disk persistence. The implementation report records rejected probes
 and same-artifact regressions.
+
+
+## Native deferred exploration after magical arrival
+
+`Kingmaker.Controllers.GlobalMap.LocationRevealController.Tick()` reads
+`GlobalMapRules.Instance.Pawn.Position` even when no travel command is walking.
+It iterates unrevealed native locations, checks reveal conditions and distance,
+and may assign `LocationData.LastPerceptionRolled`, call the native party skill
+check and reveal a location. Its distance thresholds use maximum controllable-party
+Perception: ordinary/hidden locations use `1 + perception / 4`, landmarks use
+`6 + perception`. The narrow settlement relocation calls alone therefore cannot
+prevent exploration on subsequent controller ticks.
+
+`TeleportExplorationGuardPatches` installs one module-ON-only prefix on that exact
+native Tick. Each committed magical arrival records a versioned map ID, point ID
+and native mileage string in `_explorationBoundary` on the campaign main character's
+existing `UnitPartTeleportFamiliarity`. It is separate from ordinary-arrival counts.
+An absent field preserves native exploration. At the exact stationary magical
+arrival, the prefix skips only this exploration controller. Native walking,
+changed point/map or changed mileage clears the boundary and resumes the original
+Tick. Walking also releases malformed saved data before parsing; stationary corrupt
+state prevents further spell casting and emits one technical diagnostic.
+
+The module OFF path installs no exploration prefix and preserves serialized data.
+A hook-installation failure hides contextual casts while unrelated modules remain
+active. Production uses only the exact Tick method reflection seam and native public
+state. Guarded fixtures additionally capture/restore the project's private saved
+field, including a request-local malformed value; no player UI can inject it.
+The hook observer checks Harmony's patched-method registry before GetPatchInfo,
+because the installed Harmony12 bridge throws for an unpatched target.
+
+`disposable-teleportation-destinations`, run `20260908T1330037600506Z-cc0ea3d5a53a4123a156a651546ca8c3`,
+passes all 68 assertions, including 22 actual contextual casts, deferred protected
+snapshots, normal exploration after native Travel and corrupted-boundary recovery.
+The first Travel uses revealed native edge `4f2e9de0dde02a741a02ab55a2baf376` to
+point `e1edfc64e48a2964c8eb583e36ebd57e`. Native `OnBreak` stops but retains its
+paused MapTravelData; `GoToLocationRevealed` had cleared stationary PartyPosition.
+The fixture verifies zero walked distance and resets that finished control before
+starting its second native Travel. Both controls spend no spell resource. All
+fixture fields, books, perception records, ledger fields and UI are restored, with
+zero fixture exceptions or save writes. Native campaign disk persistence of both
+saved fields remains an independent unfinished gate.
+
+
+The exact native `UnitPartsManager` marks its Type-to-UnitPart dictionary and
+owner with JsonProperty. Its Ensure assigns that owner and subscribes the part;
+PreSave and PostLoad delegate to every saved part, and PostLoad resubscribes them.
+`UnitDescriptor.PreSave` calls this manager before its other fact/book collections.
+`UnitSerialization.Serialize` is the native level-up owner-graph entry: it turns
+the descriptor off, runs PreSave, creates a JToken through native JSON defaults,
+then turns the descriptor on. These decompiled contracts identify the next narrow
+persistence probe; they are not a claimed owner-graph or disk qualification.

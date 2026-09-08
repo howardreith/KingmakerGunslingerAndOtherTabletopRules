@@ -904,6 +904,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationGamepad.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpellbookUi.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationLevelUp.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDestinations.cs" />
     <Compile Include="Spells\Teleportation\TeleportationText.cs" />
     <Compile Include="Spells\Teleportation\TeleportationCombatLog.cs" />
     <Compile Include="Spells\Teleportation\WorldMapPointSpellActionPatches.cs" />
@@ -912,6 +913,8 @@
     <Compile Include="Spells\Teleportation\WordOfRecallCapitalState.cs" />
     <Compile Include="Spells\Teleportation\TeleportationNativeCastResource.cs" />
     <Compile Include="Spells\Teleportation\UnitPartTeleportFamiliarity.cs" />
+    <Compile Include="Spells\Teleportation\TeleportExplorationBoundary.cs" />
+    <Compile Include="Spells\Teleportation\TeleportExplorationGuardPatches.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityRuntime.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityPatches.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInventory.cs" />

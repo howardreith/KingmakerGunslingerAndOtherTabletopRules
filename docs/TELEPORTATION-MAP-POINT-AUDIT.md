@@ -1,7 +1,8 @@
 # Teleportation map-point inventory and exclusion audit
 
-This is a structural audit for the contextual teleportation feature in progress.
-Safe contextual casting at these points has not yet been qualified.
+This audit combines the exact base-game structural inventory with guarded
+contextual arrival evidence at 22 permitted special/type-representative points.
+It does not qualify every campaign restriction state or other map scenes.
 
 The companion [CSV](TELEPORTATION-MAP-POINT-INVENTORY.csv) contains all 706 unique
 stable point IDs discovered in the exact standalone base-game library. It retains
@@ -50,12 +51,12 @@ have no qualifying persistent selectable point unless independently proven by
 these same contracts. Unknown point types fail closed.
 
 The versioned explicit forbidden catalog currently has no production entries:
-no unconditional point-specific prohibition has yet been established by this
-forensic checkpoint. This is an unresolved qualification item, not a claim that
-every registered point is permitted. Before enabling live casting, review the
-native restrictions and arrival behavior of persistent book events, special
-portal points, capital/Oleg state changes, and non-main-map points. Record any
-additional unconditional exclusion by its exact ID and proved reason.
+no unconditional point-specific prohibition has been established. All 22 permitted
+points in the special-point audit below passed real contextual arrival. Nineteen
+other special points remain excluded by native campaign restrictions. This does
+not permit an arbitrary registered point or bypass those conditions. Non-main-map
+points and other campaign restriction states remain outside this arrival evidence;
+any later unconditional exclusion requires an exact ID and proved reason.
 
 Recall identity is fixed to Oleg's point
 `758559f44d15fc844bf30a10a83154d5` before capital establishment and capital point
@@ -73,3 +74,40 @@ region `caacbcf9f6d6561459f526e584ded703`, which constructs a prebuilt settlemen
 before it is claimed. The strict static-scene/unique-anchor/native-restriction
 checks now have guarded composition evidence. This is not arrival or final forbidden
 catalog qualification; special points still require the complete casting audit.
+
+
+## Guarded special-point arrivals and deferred exploration
+
+Run `20260908T1330037600506Z-cc0ea3d5a53a4123a156a651546ca8c3` passed **68 assertions**. The
+[curated arrival CSV](TELEPORTATION-MAP-POINT-ARRIVAL-AUDIT.csv) records all 41
+selected stable IDs, native component types, eligibility and mechanical result.
+The fixture selected every current book-event/component point, Oleg and capital,
+and one native permitted representative of each type. It provided visited/revealed
+state only inside the disposable request; it never changed native restrictions.
+
+All 22 permitted points received actual Greater Teleport actions and native
+confirmations, spent one real seventh-level slot each and preserved their native
+controls. This covers all five stable types, all ten current book events and six
+component-bearing points. Complete protected map, time, fatigue, route, encounter,
+party and familiarity snapshots remain identical through 12 deferred frames.
+The 19 rejected points all report `CampaignProhibition`, with `IsRestricted=true`;
+real spell resources do not promote them. Shelyn's cathedral point
+`e3edf8b6987b34444972aae5bfa9d2fe`, including its two SummonPoolTriggers and
+activation/deactivation components, remains in this natively excluded group.
+
+All 611 scene anchors have at least one native graph edge: 165 have one, 31 have
+two, 318 have three, 96 have four and one has five. No zero-edge anchor was observed.
+This inventory fact does not establish that a route is currently revealed.
+
+The first audit exposed native stationary exploration after arrival at
+`07b9f4001ac3eed4da444c36653c584f`: the nearby hidden point
+`312bf36ac8bc4c74cb0969908c876cce` changed its LastPerceptionRolled from 0 to 12.
+The production saved-arrival guard now prevents that deferred reveal/perception
+work until native ordinary travel resumes. The corrected audit proves both
+suppression after every cast and resumed exploration during actual native Travel,
+including recovery from malformed spell state. The native positive-control edge
+is fixture setup after all cast assertions, never a teleport effect.
+
+Full raw evidence remains under
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1330037500523Z-disposable-teleportation-destinations`.
+No additional unconditional deny-catalog entry is justified by these results.

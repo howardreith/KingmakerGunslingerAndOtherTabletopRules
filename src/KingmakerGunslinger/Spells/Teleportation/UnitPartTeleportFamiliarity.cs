@@ -11,6 +11,16 @@ namespace KingmakerGunslinger.Spells.Teleportation
         [JsonProperty]
         private string _state;
         internal bool DiagnosticEmitted;
+        [JsonProperty]
+        private string _explorationBoundary;
+        internal bool ExplorationDiagnosticEmitted;
+        internal TeleportExplorationBoundary ReadExplorationBoundary()
+        { return TeleportExplorationBoundary.Parse(_explorationBoundary); }
+        internal bool SuppressExploration(string mapId, string pointId, float miles, bool ordinaryWalking)
+        { return TeleportExplorationBoundary.SuppressSaved(_explorationBoundary, mapId, pointId, miles, ordinaryWalking); }
+        internal void MarkMagicalArrival(TeleportExplorationBoundary boundary)
+        { _explorationBoundary = boundary.Serialize(); }
+        internal void ClearExplorationBoundary() { _explorationBoundary = null; }
 
         internal TeleportFamiliarityState Read()
         { return _state == null ? new TeleportFamiliarityState() : TeleportFamiliarityState.Parse(_state); }

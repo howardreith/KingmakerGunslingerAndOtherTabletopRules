@@ -91,6 +91,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 _origin, TeleportationWorldMapAdapter.Forbidden);
             if (!decision.Eligible) throw new InvalidOperationException("Resolved destination changed before placement: " + decision.Diagnostic);
             materialEffectStarting();
+            TeleportExplorationGuardPatches.MarkArrival(context, destinationId);
             // The stationary-point portion of native settlement-circle relocation.
             // TeleportParty also reveals edges; this narrow boundary does not.
             context.Rules.SetCurrentPosition(new MapPosition(destination));

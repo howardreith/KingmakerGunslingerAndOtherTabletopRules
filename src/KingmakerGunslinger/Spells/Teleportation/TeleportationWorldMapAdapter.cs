@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 result.Map = game.Player.GlobalMap;
                 result.Rules = GlobalMapRules.Instance;
                 if (relocationPending) result.Blocks |= TeleportCastBlock.RelocationPending;
+                if (!TeleportExplorationGuardPatches.Installed) result.Blocks |= TeleportCastBlock.UnknownState;
                 if (LoadingProcess.Instance.IsLoadingInProcess || LoadingProcess.Instance.IsLoadingScreenActive)
                     result.Blocks |= TeleportCastBlock.Loading | TeleportCastBlock.AreaTransition;
                 if (game.CurrentMode != GameModeType.GlobalMap || game.CurrentlyLoadedArea == null ||
@@ -104,6 +105,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 UnitPartTeleportFamiliarity ledger = owner == null ? null : owner.Descriptor.Get<UnitPartTeleportFamiliarity>();
                 if (ledger == null || !(result.Familiarity = ledger.Read()).LegacyMigrationComplete)
                     result.Blocks |= TeleportCastBlock.UnknownState;
+                if (ledger != null) ledger.ReadExplorationBoundary();
+                if (result.Blocks == TeleportCastBlock.None)
+                    new TeleportExplorationBoundary(game.CurrentlyLoadedArea.AssetGuid, result.OriginId, result.Map.MilesTravelled);
                 result.Recall = ReadRecall(game.Player);
                 result.Diagnostic = "blocks=" + result.Blocks + ";origin=" + result.OriginId +
                     ";area=" + (game.CurrentlyLoadedArea == null ? null : game.CurrentlyLoadedArea.AssetGuid) +

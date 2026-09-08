@@ -33,11 +33,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<RuntimeTestAssertion> _teleportationInteractionAssertions = new List<RuntimeTestAssertion>();
         private readonly List<object> _teleportationInteractionCaptures = new List<object>();
         private bool IsTeleportationTravelersFixture { get { return _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers; } }
-        private string TeleportationInteractionPath { get { return Path.Combine(_request.EvidenceDirectory, IsTeleportationTravelersFixture ? "teleportation-travelers.json" : IsTeleportationGamepadFixture ? "teleportation-gamepad.json" : "teleportation-interaction.json"); } }
+        private string TeleportationInteractionPath { get { return Path.Combine(_request.EvidenceDirectory, IsTeleportationDestinationsFixture ? "teleportation-destinations.json" : IsTeleportationTravelersFixture ? "teleportation-travelers.json" : IsTeleportationGamepadFixture ? "teleportation-gamepad.json" : "teleportation-interaction.json"); } }
 
         private void PollTeleportationInteraction()
         {
-            if ((_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationInteraction && !IsTeleportationTravelersFixture && !IsTeleportationGamepadFixture) || !_request.ExitAfterCompletion ||
+            if ((_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationInteraction && !IsTeleportationTravelersFixture && !IsTeleportationGamepadFixture && !IsTeleportationDestinationsFixture) || !_request.ExitAfterCompletion ||
                 _workingSaveSmoke == null || !_workingSaveSmoke.Complete || _workingSaveSmoke.WriteObserved)
                 throw new InvalidOperationException("Multi-frame interaction requires its guarded named working save, automatic exit and intact write sentinels.");
             if (_teleportationMapLoad == null)
@@ -81,13 +81,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void WriteTeleportationInteraction(string error)
         {
             WriteTeleportationForensicJson(TeleportationInteractionPath, new { schemaVersion = 1, runId = _request.RunId,
-                claims = IsTeleportationGamepadFixture ? "Native gamepad UI scene, original navigation/input handlers, real contextual casting, modal ownership and input-layer cleanup across Unity frames. No OS input or controller emulation. Request-local controller mode, map/book/ledger fixture, no save writes." : IsTeleportationTravelersFixture ? "Request-local native associated pets, real contextual casting, native damage/life events and exact cleanup across Unity frames. No save writes or life-state threshold replacement." :
+                claims = IsTeleportationDestinationsFixture ? "Real contextual Greater Teleport at native book-event/component points and all stable point types, preserving native prohibitions and deferred relocation invariants. Request-local real book/visited-state fixture; no save writes or campaign prohibition changes." : IsTeleportationGamepadFixture ? "Native gamepad UI scene, original navigation/input handlers, real contextual casting, modal ownership and input-layer cleanup across Unity frames. No OS input or controller emulation. Request-local controller mode, map/book/ledger fixture, no save writes." : IsTeleportationTravelersFixture ? "Request-local native associated pets, real contextual casting, native damage/life events and exact cleanup across Unity frames. No save writes or life-state threshold replacement." :
                     "Native panel, button, Escape stack, confirmation and movement-event evidence across actual Unity frames. No synthetic input or screen coordinates. Ordinary travel uses request-local native time input; magical casting uses the production path.",
                 captures = _teleportationInteractionCaptures, assertions = _teleportationInteractionAssertions,
+                destinationExceptions = IsTeleportationDestinationsFixture ? _teleportationDestinationExceptions : null,
                 saveWriteObserved = _workingSaveSmoke.WriteObserved, error });
         }
         private void TeleportInteractionAssert(string id, string expected, string actual, bool pass)
-        { _teleportationInteractionAssertions.Add(Assertion((IsTeleportationTravelersFixture ? "teleportation-travelers-" : IsTeleportationGamepadFixture ? "teleportation-gamepad-" : "teleportation-interaction-") + id, expected, actual, pass, TeleportationInteractionPath)); }
+        { _teleportationInteractionAssertions.Add(Assertion((IsTeleportationDestinationsFixture ? "teleportation-destinations-" : IsTeleportationTravelersFixture ? "teleportation-travelers-" : IsTeleportationGamepadFixture ? "teleportation-gamepad-" : "teleportation-interaction-") + id, expected, actual, pass, TeleportationInteractionPath)); }
         private void CaptureTeleportInteraction(string step, object state)
         { _teleportationInteractionCaptures.Add(new { step, frame = Time.frameCount, state }); }
 
@@ -118,12 +119,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var pointRecords = map.Locations.ToArray();
             var edgeRecords = map.Edges.ToArray();
             var snapshots = pointRecords.Select(value => new TeleportNativeFieldSnapshot(value.Value))
-                .Concat(edgeRecords.Select(value => new TeleportNativeFieldSnapshot(value.Value))).ToArray();
+                .Concat(edgeRecords.Select(value => new TeleportNativeFieldSnapshot(value.Value)))
+                .Concat(new[] { new TeleportNativeFieldSnapshot(ledger) }).ToArray();
             var payload = typeof(UnitPartTeleportFamiliarity).GetField("_state", BindingFlags.Instance | BindingFlags.NonPublic);
             var originalPayload = payload.GetValue(ledger);
             var owners = new List<TeleportResourceFixtureOwner>();
             var movement = new TeleportInteractionMovementObserver();
             EventBus.Subscribe(movement);
+            if (IsTeleportationDestinationsFixture) Application.logMessageReceived += ObserveTeleportDestinationException;
             try
             {
                 var chain = FindTeleportInteractionChain(rules);
@@ -144,6 +147,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (IsTeleportationGamepadFixture)
                 {
                     foreach (int tick in RunTeleportationGamepad(origin, middle, target, owners, movement)) yield return tick;
+                    yield break;
+                }
+                if (IsTeleportationDestinationsFixture)
+                {
+                    foreach (int tick in RunTeleportationDestinations(origin, owners, movement)) yield return tick;
                     yield break;
                 }
                 if (IsTeleportationTravelersFixture)
@@ -376,6 +384,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     map.TravelData == null && map.CurrentEncounterData == null && !_workingSaveSmoke.WriteObserved &&
                     !TeleportContextConfirmationPresenter.Pending && TeleportationConfirmationSurface.Available() != null && player.GameTime == originalTime;
                 CaptureTeleportInteraction("cleanup", new { restored, movement.Starts, movement.Stops, cameraTargetRestored = rig.GetPosition() == originalCamera });
+                if (IsTeleportationDestinationsFixture)
+                {
+                    Application.logMessageReceived -= ObserveTeleportDestinationException;
+                    TeleportInteractionAssert("exceptions", "zero exceptions during destination fixture setup, casting and cleanup",
+                        "count=" + _teleportationDestinationExceptions.Count, _teleportationDestinationExceptions.Count == 0);
+                }
                 TeleportInteractionAssert("cleanup", "exact original resource owners, map fields, ledger, time input, roster and UI restored before save sentinel closes",
                     "restored=" + restored, restored);
             }

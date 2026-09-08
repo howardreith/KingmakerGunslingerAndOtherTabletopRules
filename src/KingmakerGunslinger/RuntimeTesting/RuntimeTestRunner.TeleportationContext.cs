@@ -90,7 +90,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var pointRecords = map.Locations.ToArray();
             var edgeRecords = map.Edges.ToArray();
             var snapshots = pointRecords.Select(value => new TeleportNativeFieldSnapshot(value.Value))
-                .Concat(edgeRecords.Select(value => new TeleportNativeFieldSnapshot(value.Value))).ToArray();
+                .Concat(edgeRecords.Select(value => new TeleportNativeFieldSnapshot(value.Value)))
+                .Concat(new[] { new TeleportNativeFieldSnapshot(ledger) }).ToArray();
             var fixtures = new List<TeleportResourceFixtureOwner>();
             var assertions = new List<RuntimeTestAssertion>();
             var captures = new List<object>();

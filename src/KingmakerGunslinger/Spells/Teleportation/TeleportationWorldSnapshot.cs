@@ -39,7 +39,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             _protectedState = TeleportationDiagnosticJson.Serialize(protection);
             var position = context.Rules.Pawn.Position;
             State = new { pointId = context.OriginId, pawnPosition = new { x = position.x, y = position.y, z = position.z },
-                world = protection, roster = Travelers.Evidence() };
+                world = protection, roster = Travelers.Evidence(),
+                explorationBoundary = context.Player.MainCharacter.Value.Descriptor.Get<UnitPartTeleportFamiliarity>().ReadExplorationBoundary() == null ? null :
+                    context.Player.MainCharacter.Value.Descriptor.Get<UnitPartTeleportFamiliarity>().ReadExplorationBoundary().Serialize() };
         }
 
         internal void Verify(string expectedPointId)
