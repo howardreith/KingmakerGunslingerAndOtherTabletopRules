@@ -270,7 +270,9 @@ unconsciousness and reroll exclusion now have guarded evidence, and protected
 state comparisons reject deliberate time/map/resource changes.
 Native desktop spellbook rows, descriptions, preparation and action-bar auto-fill
 now have 31 passing guarded assertions with exact fixture cleanup.
-Full campaign persistence, mod-provided mounts, normal level-up UI and
+Native Wizard/Sorcerer level-up choices at spell levels 5 and 7 now pass 18
+guarded preview/selection/cancellation assertions. No character level is committed.
+Full campaign persistence, mod-provided mounts, special points and
 required compatibility profiles remain under qualification. See the
 [native forensics](docs/TELEPORTATION-NATIVE-FORENSICS.md) and
 [implementation report](TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md). The

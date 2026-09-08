@@ -33,17 +33,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<RuntimeTestAssertion> _teleportationSpellbookUiAssertions = new List<RuntimeTestAssertion>();
         private readonly List<object> _teleportationSpellbookUiCaptures = new List<object>();
         private readonly List<object> _teleportationSpellbookUiExceptions = new List<object>();
-        private string TeleportationSpellbookUiPath { get { return Path.Combine(_request.EvidenceDirectory, "teleportation-spellbook-ui.json"); } }
+        private string TeleportationSpellbookUiPath { get { return Path.Combine(_request.EvidenceDirectory, IsTeleportationLevelUpFixture ? "teleportation-level-up.json" : "teleportation-spellbook-ui.json"); } }
         private void PollTeleportationSpellbookUi()
         {
-            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi || !_request.ExitAfterCompletion ||
+            if ((_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi && !IsTeleportationLevelUpFixture) || !_request.ExitAfterCompletion ||
                 _workingSaveSmoke == null || !_workingSaveSmoke.Complete || _workingSaveSmoke.WriteObserved)
                 throw new InvalidOperationException("Spellbook UI qualification requires its guarded working save, mandatory exit and intact write sentinels.");
             if (_teleportationSpellbookUiWatch == null) _teleportationSpellbookUiWatch = Stopwatch.StartNew();
             if (_teleportationSpellbookUiWatch.Elapsed.TotalSeconds > _request.CompletionTimeoutSeconds)
                 throw new InvalidOperationException("Spellbook UI qualification timed out.");
             if (LoadingProcess.Instance.IsLoadingInProcess || LoadingProcess.Instance.IsLoadingScreenActive) return;
-            if (_teleportationSpellbookUiSteps == null) _teleportationSpellbookUiSteps = RunTeleportationSpellbookUi().GetEnumerator();
+            if (_teleportationSpellbookUiSteps == null) _teleportationSpellbookUiSteps = (IsTeleportationLevelUpFixture ? RunTeleportationLevelUp() : RunTeleportationSpellbookUi()).GetEnumerator();
             Exception failure = null;
             try { if (_teleportationSpellbookUiSteps.MoveNext()) return; }
             catch (Exception exception) { failure = exception; }
@@ -66,12 +66,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void WriteTeleportationSpellbookUi(string error)
         {
             WriteTeleportationForensicJson(TeleportationSpellbookUiPath, new { schemaVersion = 1, runId = _request.RunId,
-                claims = "Native local-area service window, class/level toggles, spell rows, description builder, preparation and action-bar auto-fill across Unity frames. Request-local real books only; no level-up completion, casting, save writes or campaign persistence claim.",
+                claims = IsTeleportationLevelUpFixture ? "Native level-up UI, prerequisites, real published spell selectors and isolated preview learning/cancellation. Request-local XP/book prerequisites; no committed level, learned spell, free cast or save write." : "Native local-area service window, class/level toggles, spell rows, description builder, preparation and action-bar auto-fill across Unity frames. Request-local real books only; no level-up completion, casting, save writes or campaign persistence claim.",
                 captures = _teleportationSpellbookUiCaptures, exceptions = _teleportationSpellbookUiExceptions,
                 assertions = _teleportationSpellbookUiAssertions, saveWriteObserved = _workingSaveSmoke.WriteObserved, error });
         }
         private void TeleportSpellbookUiAssert(string id, string expected, string actual, bool pass)
-        { _teleportationSpellbookUiAssertions.Add(Assertion("teleportation-spellbook-ui-" + id, expected, actual, pass, TeleportationSpellbookUiPath)); }
+        { _teleportationSpellbookUiAssertions.Add(Assertion((IsTeleportationLevelUpFixture ? "teleportation-level-up-" : "teleportation-spellbook-ui-") + id, expected, actual, pass, TeleportationSpellbookUiPath)); }
         private void CaptureTeleportSpellbookUi(string step, object state)
         { _teleportationSpellbookUiCaptures.Add(new { step, frame = Time.frameCount, state }); }
         private void ObserveTeleportSpellbookUiException(string message, string stack, LogType type)

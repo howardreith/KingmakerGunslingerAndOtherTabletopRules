@@ -30,6 +30,7 @@ Pushed coherent checkpoints:
 - `35616afa59c9e4045317d92e727d6392a5e77d1f`: native Travel/Escape, live source counts, stable reopened layout and scrolling across frames.
 - `ba32ac2d6e7a916aedbdf61b4dea2ff093d3c746`: native mishap life-state settlement, real associated-pet qualification and corrected world/resource fingerprints.
 - `cdee670b2879431972f4a9baa70f249e15db8803`: native gamepad destination rows/navigation, shared native confirmation, rendered-text and module-hook qualification.
+- `68e1e8a8111d68335ec25f8bc34a25f684520a77`: native spellbook rows/descriptions/preparation, action-bar exclusion and exact deferred UI cleanup.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -687,13 +688,79 @@ The complete 1,482-case domain suite, clean Release build and strict UMM package
 validation passed (`artifacts/teleportation/build-spellbook-ui-refresh.log`).
 Runtime preflight passed 208 checks; compatibility/settings parameter checks
 passed 4,120. This qualifies the native desktop spellbook and action-bar paths in
-the installed profile. Normal level-up selection, other compatibility profiles,
-and full campaign familiarity disk persistence remain separate open gates.
+the installed profile. Level-up selection is covered by the following checkpoint; other compatibility
+profiles and full campaign familiarity disk persistence remain open gates.
+
+## Native level-up selection qualification
+
+`disposable-teleportation-level-up` passed **18 of 18** assertions in guarded
+Steam run `20260908T1207363385307Z-e204a1b706bf41b6891074349d6bc571`.
+Evidence directory:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1207363299683Z-disposable-teleportation-level-up`.
+Read `runtime-result.json`, `teleportation-level-up.json` and copied
+`output_log-level-up.txt`.
+
+Actual native Wizard and Sorcerer spell selection rows expose Teleport at 5 and
+Greater Teleport at 7. The fixture supplies real books immediately below each
+native caster-level threshold and temporarily supplies XP eligibility, while
+the original character remains level 2. Native class, feature and skill rules
+unlock the Spells phase; selection counts and phase flags are never overwritten.
+The actual enabled row learns the exact spell only in the isolated native
+preview. Escape and the owned native cancellation dialog close each UI; exact
+preview cancellation disposes that clone/thread. Original known spells,
+resources, levels, class/feature references, XP, UI settings/selection, party,
+positions, time and pause remain unchanged. The native inactive warmup backend
+and presenter Unit reference are preserved. No save write occurs.
+
+There are zero native/mod exceptions during fixture setup through cleanup.
+The same four pre-fixture ZFavoredClass startup exceptions remain in the full
+log and are not a compatibility PASS. No completed character advancement or
+campaign disk save/reload is claimed by this preview fixture.
+
+Same-artifact regressions, all PASS with protected saves and exact cleanup:
+
+| Scenario | Assertions | Run ID | Directory under the lab runtime-evidence root |
+|---|---:|---|---|
+| Native spellbook/action bar | 31 | `20260908T1210416696946Z-fde966bb32004196abeb2d42cfcaff29` | `20260908T1210416596942Z-disposable-teleportation-spellbook-ui` |
+| Native cast resources | 19 | `20260908T1212152093227Z-811c49b39de842efa75f4f368911cb80` | `20260908T1212152083223Z-disposable-teleportation-resources` |
+| Working save | 11 | `20260908T1213478289669Z-9f25ccb87448473880e9630ecbb6aab0` | `20260908T1213478289669Z-working-save-smoke` |
+
+All four runs use deployment
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260908T1207362949656Z/deployment.json`,
+DLL SHA-256 `8709efc3ff5446770a6d3425f0601ea386a5f1d84ea7dad855cc591a14d37dde`.
+The guarded artifact passed 1,482 domain cases and strict UMM package validation;
+runtime preflight passes 208 checks and compatibility/settings parameters 4,120.
+
+Rejected exploratory runs (not qualification PASS):
+
+- `20260908T1149415773399Z-28822031d57f477683d29ae66d91fbfe`, directory
+  `20260908T1149415693618Z-disposable-teleportation-level-up`, stopped before
+  changes at an overly broad existing-backend prerequisite.
+- `20260908T1159123042357Z-5b808abda8c94db7b9587f2faf79de56`, directory
+  `20260908T1159122956740Z-disposable-teleportation-level-up`, identified the
+  closed UI's native main-menu warmup reference. Exact IL proved its lifecycle;
+  the corrected fixture preserves that inactive object without cancelling it.
+- `20260908T1203200766808Z-6b98667eceb34b21b35c72975d82f059`, directory
+  `20260908T1203200646834Z-disposable-teleportation-level-up`, passed both Wizard
+  cases but retained a Sorcerer row across a native deferred refresh. Its bound
+  BlueprintAbility was cleared before the fixture read it. Exact compiled IL
+  identified the failing fixture read; re-resolving the current native widget
+  across frames fixed the probe. Cleanup remained exact and save writes zero.
+
+Production spell publication or player level-up behavior required no change.
+Final checkpoint validation also passed the explicit Release domain command
+(1,482 tests), clean Release build, repository/build-output checks and strict
+installable-package validation. Logs are
+`artifacts/teleportation/domain-level-up-checkpoint.log` and
+`artifacts/teleportation/build-level-up-checkpoint.log`. The separately built
+Release package remains a qualification candidate; its DLL SHA-256 is
+`b263ece7fb6a6b1fb34597eb340824a41d8286332240a292b76884acef7198c2`.
+It is not substituted for the exact deployed runtime artifact identified above.
 
 ## Remaining qualification and constraints
 
 Full campaign familiarity disk save/reload, mod-provided mount qualification,
-normal level-up UI qualification, special-point arrival audit,
+special-point arrival audit,
 a final complete module matrix, and all required compatibility profiles remain incomplete. The current UI qualification
 uses structured native button invocation and measured on-screen geometry across
 frames; it is not a presentation review of every camera position/resolution.
