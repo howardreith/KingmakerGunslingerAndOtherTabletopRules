@@ -22,10 +22,6 @@ param(
 
     [bool]$ExitAfterCompletion = $true,
     [hashtable]$Parameters = @{},
-    [ValidateSet(
-        'KMG_AUTOMATION_WORKING',
-        'KMG_P0_FOCUSED_AIM_AFFECTED_COPY',
-        'KMG_IHW_HUMAN_REPRO_COPY')]
     [string]$SaveName,
     [ValidateSet(
         'gunslinger-only',
@@ -65,7 +61,13 @@ if ($scenarioMetadata.RequiresSaveName) {
     if ([string]::IsNullOrWhiteSpace($SaveName)) {
         throw "$Scenario requires explicit -SaveName $($scenarioMetadata.PermittedSaveName)."
     }
-    if ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')) {
+    if ($Scenario -ceq 'disposable-teleportation-persistence') {
+        if ($Parameters.Count -ne 2 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath')) {
+            throw 'Persistence requires typed -SaveName plus exactly phase and planPath.'
+        }
+        $Parameters = $Parameters.Clone()
+        $Parameters.saveName = $SaveName
+    } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')) {
         if ($Parameters.Count -ne 3 -or $Parameters.ContainsKey('saveName')) {
             throw 'Use typed -SaveName plus exactly race, class, and allocation in -Parameters.'
         }

@@ -261,6 +261,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
@@ -333,8 +334,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ValidStageTimeout(request.LoadEntryTimeoutSeconds) ||
                     !ValidStageTimeout(request.FingerprintTimeoutSeconds))
                     return "scenario-timeout-invalid";
+                bool persistence = request.Scenario == TeleportPersistenceIdentity.Scenario;
+                if (persistence && (!request.ExitAfterCompletion || !TeleportPersistencePlan.ValidParameters(request.Parameters)))
+                    return "persistence-plan-parameters-invalid";
                 bool creatorRegression = (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec);
-                if (request.Parameters == null || request.Parameters.Count != (creatorRegression ? 4 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (persistence ? 3 : creatorRegression ? 4 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
@@ -359,7 +363,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? RuntimeTestScenarioCatalog
                                 .InHarmsWayHumanReproSaveName
                         : ManualSaveLoadObservation.WorkingSave;
-                if (!string.Equals(saveName, expectedSaveName,
+                if (!persistence && !string.Equals(saveName, expectedSaveName,
                     StringComparison.Ordinal))
                     return string.Equals(saveName, ManualSaveLoadObservation.BaselineSave,
                         StringComparison.Ordinal)

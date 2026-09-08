@@ -43,6 +43,7 @@ $expected = @(
     'mod-load-smoke',
     'observe-teleportation-native-contracts',
     'observe-teleportation-world-map',
+        'disposable-teleportation-persistence',
         'disposable-teleportation-familiarity',
         'disposable-teleportation-resources',
         'disposable-teleportation-context',
@@ -1076,6 +1077,17 @@ foreach ($invalid in @(
     @{saveName='KMG_AUTOMATION_WORKING'})) {
     $creatorArgs.Parameters = $invalid
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } 'native-respec-rejects-unscoped-request'
+}
+
+$persistenceArgs = $creatorArgs.Clone()
+$persistenceArgs.Scenario = 'disposable-teleportation-persistence'
+foreach ($invalid in @(
+    @{ saveName = 'KMG_AUTOMATION_WORKING' },
+    @{ saveName = 'KMG_AUTOMATION_BASELINE'; phase = 'A'; planPath = 'missing' },
+    @{ saveName = 'KMG_AUTOMATION_WORKING'; phase = 'E'; planPath = 'missing' },
+    @{ saveName = 'KMG_AUTOMATION_WORKING'; phase = 'A'; planPath = 'missing'; extra = $true })) {
+    $persistenceArgs.Parameters = $invalid
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @persistenceArgs } 'persistence-rejects-unguarded-input-before-launch'
 }
 
 if ($failures.Count -ne 0) {

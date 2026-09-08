@@ -72,6 +72,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void SaveOwnedObserverContract()
         {
             VerifyReadOnlyNativeLoadCounter();
+            VerifyDisposablePersistenceIdentity();
             string part = File.ReadAllText("src/KingmakerGunslinger/Spells/Teleportation/UnitPartTeleportFamiliarity.cs");
             string patches = File.ReadAllText("src/KingmakerGunslinger/Spells/Teleportation/TeleportFamiliarityPatches.cs");
             string runtime = File.ReadAllText("src/KingmakerGunslinger/Spells/Teleportation/TeleportFamiliarityRuntime.cs");
@@ -83,6 +84,20 @@ namespace KingmakerGunslinger.DomainTests
                 !runtime.Contains("FindPath("), "Observe actual existing path geometry independently of reveal without planning or moving.");
             Assertions.True(patches.Contains("source[index].opcode == OpCodes.Stloc_1") &&
                 patches.Contains("load.labels.AddRange(instruction.labels)"), "Capture native initialized baseline and preserve branch targets at returns.");
+        }
+        private static void VerifyDisposablePersistenceIdentity()
+        {
+            const string tx = "20260908T2130001234567Z_0123456789abcdef0123456789abcdef";
+            Assertions.True(KingmakerGunslinger.RuntimeTesting.TeleportPersistenceIdentity.ValidTransaction(tx), "Unique UTC/GUID transaction format.");
+            foreach (string bad in new[] { "", "../../working", tx.ToUpperInvariant(), tx + "_A" })
+                Assertions.False(KingmakerGunslinger.RuntimeTesting.TeleportPersistenceIdentity.ValidTransaction(bad), "Reject ambiguous transaction identity.");
+            string a = KingmakerGunslinger.RuntimeTesting.TeleportPersistenceIdentity.Name(tx, "A");
+            Assertions.Equal("KMG_AUTOMATION_WORKING", KingmakerGunslinger.RuntimeTesting.TeleportPersistenceIdentity.InputName(tx, "A"), "Phase A has one protected input.");
+            Assertions.Equal(a, KingmakerGunslinger.RuntimeTesting.TeleportPersistenceIdentity.InputName(tx, "B"), "B loads only its transaction A.");
+            Assertions.True(KingmakerGunslinger.RuntimeTesting.TeleportPersistenceIdentity.MatchesFile(a, "Manual_301_" + a + ".zks"), "Only the exact native manual filename is allowed.");
+            foreach (string bad in new[] { "Manual_299_KMG_AUTOMATION_WORKING.zks", "../Manual_301_" + a + ".zks", "Manual_301_" + a + ".zks.bak", "Auto_301_" + a + ".zks" })
+                Assertions.False(KingmakerGunslinger.RuntimeTesting.TeleportPersistenceIdentity.MatchesFile(a, bad), "No overwrite, unrelated path or broad prefix ownership.");
+            Assertions.Throws<ArgumentException>(() => KingmakerGunslinger.RuntimeTesting.TeleportPersistenceIdentity.Name(tx, "D"), "The final verification phase cannot create a save.");
         }
         private static void VerifyReadOnlyNativeLoadCounter()
         {

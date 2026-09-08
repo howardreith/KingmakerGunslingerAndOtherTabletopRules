@@ -415,3 +415,15 @@ on clean commit `b439f5df22e2260322453c069b23eaee734b8a33`, run
 The downloaded public ZIP matches the exact runtime package, both deterministic
 release builds and all 135 installed files; settings are unchanged. See the
 implementation report's publication addendum for hashes and result paths.
+
+## Teleportation fresh-process persistence
+
+The post-release repair adds a four-process native disk gate with protected
+pre-existing saves and transaction-owned A/B/C saves. See
+[the guarded procedure](docs/TELEPORTATION-PERSISTENCE-QUALIFICATION.md) and
+[the development evidence report](TELEPORTATION-HARDENING-REPORT.md).
+Run `scripts/Test-TeleportationSaveProtection.ps1` and
+`scripts/Test-TeleportationPersistenceTransaction.ps1` before its first native
+launch. Use Windows PowerShell for runtime/profile workflows; no manual save
+selection is needed. A final release must repeat the disk gate on its own exact
+committed artifact.

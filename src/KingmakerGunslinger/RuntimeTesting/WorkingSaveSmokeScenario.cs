@@ -155,6 +155,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private object _catalogReceiver;
         private object _workingDescriptor;
         private GuardedReadOnlySave _readOnlySave;
+        private GuardedDisposableSaveLease _disposableSave;
         private SaveCatalogDescriptorEvidence _workingEvidence;
         private int _buttonCandidates;
         private int _buttonInvocations;
@@ -395,6 +396,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             _expectedWorkingWriteArmed = true;
             Add("exact-working-save-write-armed", null, null,
                 "one SaveRoutine invocation; exact captured SaveInfo reference only");
+        }
+        internal void ArmDisposableSave(GuardedDisposableSaveLease lease)
+        {
+            RequireGameThread();
+            if (!Complete || _writeObserved || lease == null || _disposableSave != null || _expectedWorkingWriteArmed)
+                throw new InvalidOperationException("A disposable save requires one completed exact load and intact write sentinels.");
+            _disposableSave = lease;
+            var method = ExactPatchableMethod(typeof(Kingmaker.EntitySystem.Persistence.SaveManager), "PrepareSave",
+                new[] { typeof(Kingmaker.EntitySystem.Persistence.SaveInfo) }, typeof(void));
+            Patch(method, typeof(WorkingSaveSmokeScenario).GetMethod("Prefix", BindingFlags.NonPublic | BindingFlags.Static),
+                typeof(WorkingSaveSmokeScenario).GetMethod("DisposablePreparedPostfix", BindingFlags.NonPublic | BindingFlags.Static));
+        }
+        private static void DisposablePreparedPostfix(Kingmaker.EntitySystem.Persistence.SaveInfo save)
+        {
+            if (_active != null && _active._disposableSave != null) _active._disposableSave.Prepared(save);
         }
         internal List<string> HookIdentifiers
         {
@@ -1461,11 +1477,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static void Prefix(MethodBase __originalMethod, object __instance,
+        private static bool Prefix(MethodBase __originalMethod, object __instance,
             object[] __args)
         {
             WorkingSaveSmokeScenario active = _active;
-            if (active == null) return;
+            if (active == null) return true;
+            if (active._disposableSave != null && GuardedDisposableSaveLease.IsWrite(__originalMethod))
+            {
+                bool allowed = active._disposableSave.Enter(__originalMethod, __args);
+                if (!allowed) active._writeObserved = true;
+                active.Add(allowed ? "owned-disposable-save-write" : "rejected-disposable-save-write", __originalMethod, __args,
+                    "allowed=" + allowed + ";exactTransactionOnly=true");
+                return allowed;
+            }
             try
             {
                 active.ObserveEnter(__originalMethod, __instance, __args);
@@ -1474,6 +1498,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 active.CaptureHookException("prefix", __originalMethod, exception);
             }
+            return true;
         }
 
         private static void Postfix(MethodBase __originalMethod, object[] __args)
