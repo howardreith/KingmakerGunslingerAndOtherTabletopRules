@@ -1,5 +1,22 @@
 # Elemental Races expansion: manual-test handoff
 
+## Owner-accepted public release (2026-09-08)
+
+The owner accepted the installed stabilization candidate and explicitly authorized
+finalization, merge, push and publication. **v0.0.117 is published and installed**;
+master includes the accepted feature and latest upstream release content.
+The public ZIP and local UMM installation match the runtime-qualified release
+artifact `f8a2fd996752afb0e361a53bec175328ace5435a`. All nine final-artifact profiles pass,
+including twelve completed characters and fourteen native respec callbacks.
+See the [public release verification](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md) for exact hashes, run IDs,
+public-download checks and the recoverable installation backup.
+
+The earlier candidate-only stopping boundary below is historical. No individual
+human checklist results are inferred. Deferred mechanics remain unavailable;
+no further feature work is part of this completed release continuation.
+
+### Historical candidate evidence below
+
 ## Character-creation stabilization candidate (2026-09-07)
 
 The exact `0.0.117-elemental-char-gen-stabilization` candidate is installed for
