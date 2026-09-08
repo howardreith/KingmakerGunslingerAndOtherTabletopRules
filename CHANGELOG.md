@@ -2,6 +2,11 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Adds guarded native save-load diagnostics. Contextual casting still passes 44
+  assertions; the isolated load failure is traced to Craft Magic Items data in
+  the working save. Standalone/Soundpacks startup and publication pass 54 checks;
+  save-backed isolated compatibility remains open.
+
 - Qualifies both familiarity fields through native unit-owner serialization,
   preview loading/rebuilds and cancellation. The extended level-up probe passes
   31 assertions; spellbook/working-save regressions pass 42. Disk persistence

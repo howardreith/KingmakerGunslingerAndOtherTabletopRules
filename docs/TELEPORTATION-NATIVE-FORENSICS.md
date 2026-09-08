@@ -981,3 +981,40 @@ on its main character: `HoldingItemsMechanics.UnitPartCanHold2hWeaponIn1h` and
 contract. This is consistent with the earlier standalone Player.PostLoad failure
 and supports obtaining a compatible disposable save rather than changing its data.
 The implementation report records the unchanged archive hash and exact evidence.
+
+## Isolated save-load failure: native deserialization evidence
+
+The native SaveManager deliberately writes `player.json` with CrossSceneState
+null and writes that state separately as `party.json`. Native
+`ThreadedGameLoader.Start` runs the two deserialization tasks with
+`DefaultJsonSettings.DefaultSettings`, then assigns the loaded cross-scene state.
+`Player.PostLoad` calls `CrossSceneState.PostLoad` before resolving Inventory via
+`AllEntityData.Single(d => d.UniqueId == MainCharacter.UniqueId)`. The split format
+and native `BitexSave=false` are not evidence of a modded or invalid save format.
+Native LoadRoutine increments LoadedTimes and rewrites the archive's header;
+normal loading can therefore change the archive hash without saving fixture data.
+
+The guarded casting request now observes the exact public, zero-argument native
+methods `ThreadedGameLoader.Start(): Task`, `Player.PostLoad(): void` and
+`SceneEntitiesState.PostLoad(): void` through typed method resolution. There are
+five diagnostic callbacks under a unique request Harmony owner, plus one bounded
+read-only JsonSerializerSettings.Error listener. It never sets ErrorContext.Handled
+or changes native JSON settings. The output uses the isolated diagnostic serializer,
+never the game's opt-in save resolver. Normal play installs no diagnostic hooks.
+
+All-installed control `20260908T1611031845325Z-fa6772374a8a44ab922891a7a68367ce`
+passes 44 assertions with three entities, one matching main character through all
+four PostLoad observations and zero JSON errors. The isolated Call of the Wild
+reproduction `20260908T1614096701205Z-786ddfaea6b54b1c94519d01b232d2a1` observes two
+underlying missing Craft Magic Items blueprints: the main character's timer buff
+context and a generated vendor item. Their exceptions propagate through 15 JSON
+error notifications. Player.PostLoad then sees an empty state and null main ID;
+its native Single throws before the casting fixture starts. This supersedes the
+earlier inference based only on saved Call of the Wild UnitPart types.
+
+Both observations remove all five hooks and the listener, retain exact native
+resolver/converter references and report no observer faults. The isolated scenario
+remains TIMEOUT, not compatibility PASS; its Mods/settings transaction restores
+exactly. No save records were stripped or converted. Exact result directories,
+artifact identities and the save-free standalone/Soundpacks results are in the
+implementation report.
