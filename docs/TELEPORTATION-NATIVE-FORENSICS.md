@@ -189,3 +189,26 @@ because the initial runner edit passed entry-only arguments to restoration.
 Transaction `compat-20260907T233119Z-678d60cfc67c` was restored explicitly with
 `restorationVerified=true`; the corrected complete run above supersedes it.
 No gameplay qualification is inferred from any inventory observation.
+
+## Contextual policy and transaction checkpoint
+
+The dependency-light service layer now covers positive destination eligibility,
+exact recall destination IDs, real-source availability facts, stable source
+ordering/deduplication, native action collection preservation, alternate-distance
+preference and severity buckets, and an idempotent selected-source transaction.
+It does not yet install point-action patches or publish the three spells.
+
+Outcome resolution applies the locked table, repeats mishap damage through a
+per-traveler damage adapter, retains a single expenditure, and stops at the
+high defensive limit. Exact spells perform no destination/damage roll. Resource
+compensation requires proven exact expenditure before any material effect or
+resolved rules result. Recording diagnostics happens after the result is
+retained, so a logging exception cannot refund a legitimate no-alternate failure.
+
+All 1,428 domain tests, repository validation, clean Release build, and strict
+package validation pass. Guarded Steam working-save regression
+`20260908T0002218529266Z-95161ed64ae242d38f4dc117ebb8a9d3` passes 11 assertions;
+result directory `20260908T0002218529266Z-working-save-smoke`. This proves the
+existing working-save path remains functional for this artifact. It does not
+prove live contextual casting, which remains pending native adapters and
+feature qualification. Release metadata remains 0.0.116.

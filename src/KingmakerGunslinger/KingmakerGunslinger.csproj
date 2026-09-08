@@ -868,6 +868,14 @@
     <Compile Include="Persistence\PersistenceRuntimePreflightProbeData.cs" />
     <Compile Include="Persistence\PersistenceRuntimePreflightReport.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Spells\Teleportation\TeleportDestinationPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportForbiddenDestinationCatalog.cs" />
+    <Compile Include="Spells\Teleportation\WordOfRecallDestinationPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportCastAvailabilityPolicy.cs" />
+    <Compile Include="Spells\Teleportation\WorldMapPointSpellActionComposer.cs" />
+    <Compile Include="Spells\Teleportation\TeleportAlternateDestinationPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportCastTransaction.cs" />
+    <Compile Include="Spells\Teleportation\TeleportOutcomeResolver.cs" />
     <Compile Include="Spells\Teleportation\TeleportSpellKind.cs" />
     <Compile Include="Spells\Teleportation\TeleportRollTable.cs" />
     <Compile Include="Spells\Teleportation\TeleportFailureSeverityPolicy.cs" />
