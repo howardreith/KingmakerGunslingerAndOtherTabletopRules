@@ -1,6 +1,7 @@
 # Testing
 
-The active release is 0.0.78 Expanded Summoning. Repository validation,
+The released base is 0.0.116; contextual teleportation qualification is in progress
+below. Historical Expanded Summoning gates retain their original counts. Repository validation,
 dependency-free domain tests, exact-reference Release builds, package checks,
 and native runtime evidence are separate gates; none substitutes for another.
 
@@ -100,3 +101,22 @@ settings assignment across all 4,096 combinations and rejects each missing or
 mistyped key, without staging a profile or launching the game. The publication
 observer additionally audits actual familiarity patch metadata: two hooks ON,
 zero hooks OFF. Full current contextual feature qualification remains pending.
+
+The guarded `disposable-teleportation-resources` probe uses the named working save
+and native world-map mode. It temporarily supplies unused native Wizard,
+Sorcerer and Cleric books to two active-party owners, learns/prepares project
+spells through native book methods, and restores all original books/resources
+and casting attributes. It never writes a save or relocates the party.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-resources `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true -Confirm:$false
+```
+
+This proves the resource adapter: absent/known-only/unrested sources, distinct
+caster/book pools, linked opposition preparations, exact native spend, duplicate
+suppression, verified one-time restoration, stale and exhausted source omission,
+and refusal to refund another operation's expenditure. It does not qualify
+contextual UI, confirmation, Teleport outcomes or relocation. Those must use the
+same production source and transaction adapters in the later casting scenarios.

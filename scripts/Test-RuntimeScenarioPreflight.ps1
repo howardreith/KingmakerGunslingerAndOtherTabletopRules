@@ -44,6 +44,7 @@ $expected = @(
     'observe-teleportation-native-contracts',
     'observe-teleportation-world-map',
         'disposable-teleportation-familiarity',
+        'disposable-teleportation-resources',
     'disposable-midgame-firearms',
     'working-save-midgame-prepare',
     'working-save-midgame-verify-cleanup',

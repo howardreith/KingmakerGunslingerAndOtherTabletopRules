@@ -534,6 +534,7 @@ try {
         'disposable-brown-fur-native-cast',
         'observe-teleportation-world-map',
         'disposable-teleportation-familiarity',
+        'disposable-teleportation-resources',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',

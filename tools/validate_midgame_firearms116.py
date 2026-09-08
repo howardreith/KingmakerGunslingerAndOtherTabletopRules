@@ -11,7 +11,7 @@ from pathlib import Path
 VERSION = "0.0.116"
 INFORMATIONAL_VERSION = "0.0.116-midgame-firearms-and-protection"
 # Current deterministic suite includes contextual teleportation; historical release evidence below remains 1398.
-DETERMINISTIC_TEST_COUNT = 1439
+DETERMINISTIC_TEST_COUNT = 1449
 STATIC_KEY = "midgameFirearms116"
 
 

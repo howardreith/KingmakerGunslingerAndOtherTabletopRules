@@ -632,6 +632,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationResources &&
                     !IsExpandedSummoningPersistenceScenario() &&
                     !IsElvenBranchedSpearPersistenceScenario() &&
                     !IsEasternWeaponsPersistenceScenario() &&
@@ -1621,6 +1622,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
@@ -1699,6 +1701,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
@@ -2203,6 +2206,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningVisualContracts)
                 {
                     Complete(RunDisposableExpandedSummoningVisualContracts());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources)
+                {
+                    PollTeleportationResources();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity)
                 {
@@ -4812,6 +4819,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
             receiverBoundPath = receiverBoundPath ||

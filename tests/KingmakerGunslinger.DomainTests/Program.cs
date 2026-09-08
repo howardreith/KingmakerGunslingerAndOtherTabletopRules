@@ -25,6 +25,16 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("teleportation.resource.PreparedSingleUsesAndReverseOrder", TeleportationResourceTests.PreparedSingleUsesAndReverseOrder),
+            Case("teleportation.resource.OppositionGroupsCountOnce", TeleportationResourceTests.OppositionGroupsCountOnce),
+            Case("teleportation.resource.SpentAndUnrelatedIgnored", TeleportationResourceTests.SpentAndUnrelatedIgnored),
+            Case("teleportation.resource.PartialAndBrokenGroupsFailClosed", TeleportationResourceTests.PartialAndBrokenGroupsFailClosed),
+            Case("teleportation.resource.UnknownNativeSlotsFailClosed", TeleportationResourceTests.UnknownNativeSlotsFailClosed),
+            Case("teleportation.resource.SpontaneousDeltaIsExact", TeleportationResourceTests.SpontaneousDeltaIsExact),
+            Case("teleportation.resource.PreparedDeltaIsExact", TeleportationResourceTests.PreparedDeltaIsExact),
+            Case("teleportation.resource.TopologyChangesFailClosed", TeleportationResourceTests.TopologyChangesFailClosed),
+            Case("teleportation.resource.AllSingleUseDeltas", TeleportationResourceTests.AllSingleUseDeltas),
+            Case("teleportation.resource.OtherOperationCannotBeCompensated", TeleportationResourceTests.OtherOperationCannotBeCompensated),
             Case("teleportation.NoSourcePreservesNative", TeleportationContextTests.NoSourcePreservesNative),
             Case("teleportation.InvalidPointsPreserveNative", TeleportationContextTests.InvalidPointsPreserveNative),
             Case("teleportation.SupportedKindsAndNativeVisit", TeleportationContextTests.SupportedKindsAndNativeVisit),

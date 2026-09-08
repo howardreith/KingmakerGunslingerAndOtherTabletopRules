@@ -79,8 +79,42 @@ Items and converted sources must be rejected.
 
 `RestoreSpontaneousSlots(level, count)` adds and clamps to `GetSpellsPerDay`.
 Compensation requires a captured exact original count, an unchanged resource
-pool, and verified restoration. Prepared-slot linked/opposition behavior and
-exact restoration still require further inspection.
+pool, and verified restoration. `Spellbook.Memorize` assigns a shared `LinkedSlots`
+array to all members of a preparation and marks them unavailable until native
+restoration. `SpellSlot.Spend` clears its own availability and, for opposition
+preparations, every linked member. Native `IsMainSlot` is a display/group marker;
+`SpendInternal` may select a non-main member when scanning backwards. The adapter
+therefore counts complete reciprocal groups, predicts the native selected use,
+and verifies every affected member plus all other native resource levels.
+
+`AbilityRestoreSpellSlot.Apply` restores the captured prepared slot by assigning
+its `Available` field. Production compensation uses that proven operation on the
+exact captured group; spontaneous compensation calls `RestoreSpontaneousSlots`
+only after confirming its current capacity can restore the original count. Every
+restoration is verified and guarded once. A change before this request invokes
+native Spend is ambiguous, even if it resembles a one-use debit: it cannot be
+attributed to or refunded by this request.
+
+The production adapter uses public native APIs/fields only. It validates active
+party membership, ownership, native living/CanAct state, known/prepared data,
+casting restrictions, exact unmodified AbilityData and positive real resource
+counts. Native `AddSpecial(int, BlueprintAbility)` also registers the spell in
+`m_KnownSpellLevels`, with its AbilityData in `m_SpecialSpells`. Spontaneous
+source discovery therefore includes both public `GetKnownSpells` and
+`GetSpecialSpells`; capture and expenditure recheck physical known membership.
+The guarded resource fixture alone invokes the exact private `AddSpecial` method
+to qualify a special-only known instance. Production does not use that reflection
+seam or grant any spell. Items, conversions, metamagic, summons, pets as casters, inactive owners,
+unproven linked groups and over-cap spontaneous pools are omitted. It captures
+all ten native resource levels and actual collection/slot/ability/link identities
+before spending; no private slot-pool reflection write is used.
+
+Installed-profile run `20260908T0318149717580Z-e4d810cac736401d9836f64429241bb7`
+(directory `20260908T0318149620713Z-disposable-teleportation-resources`) passed
+17 assertions. Seven real native sources included two casters, distinct books,
+opposition preparations and spontaneous fifth/seventh-level slots. Every case
+spent and restored exactly one use; cleanup and no-save-write checks passed.
+This is lower-layer resource evidence, not a completed contextual spell cast.
 
 ## Ordinary arrival and persistence
 
@@ -407,3 +441,32 @@ entities using `<PostLoad>b__136_0`; that predicate compares each entity's exact
 The fixture never executed, no save was changed, and profile restoration was
 verified. The underlying profile/save prerequisite remains unresolved. Neither
 save-free startup nor an installed-profile load is a standalone save-backed PASS.
+
+### Resource checkpoint completion
+
+Final resource run `20260908T0342259125609Z-337c4bc0fcbd45f6ae14803d9563b042`
+passed 19 assertions in `20260908T0342259005448Z-disposable-teleportation-resources`.
+It proves special-only native known membership and attribution-safe compensation
+in addition to the seven normal prepared/spontaneous sources. Native slot and
+known-record operations were real; no point button, confirmation, damage or
+relocation was exercised. The clean Release/package build and all 1,449 domain
+cases passed. Installed-profile evidence does not qualify standalone casting.
+
+### Confirmation callback and layout seams
+
+`GlobalMapMessageBox.FillDialogInfoLocation(bool)` completes the native action
+states before `OnLocationSelect` calls `Canvas.ForceUpdateCanvases` and chooses
+its native point-anchored pivot. A narrow postfix there can add positive rows
+before native placement, without another route calculation. Native `HandleAccept`
+calls `Accept` while the panel is active; keyboard focus on an added row will
+need explicit qualification to ensure it cannot also start normal travel.
+
+`Kingmaker.UI.IDialogMessageBoxUIHandler.HandleOpen(string, BoxType, Action<BoxButton>,
+string, string, string, Action<string>)` is the native confirmation event seam.
+`DialogMessageBoxBase.BoxType.Dialog` provides Yes/No controls. `OnButtonYes` and
+`OnButtonNo` call `Hide` first, then invoke their callback; Escape maps Dialog
+to No. `Hide` clears `IsShown`, removes its Escape handler and hides the veil.
+`HandleForceClose` hides without invoking a result callback, so an owned pending
+request must detect that disappearance and cancel. The current inspected desktop
+implementation returns early for gamepad mode; that frontend still needs its
+own integration qualification.
