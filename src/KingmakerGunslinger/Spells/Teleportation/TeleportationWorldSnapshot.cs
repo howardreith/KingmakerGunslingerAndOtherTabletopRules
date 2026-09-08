@@ -4,7 +4,6 @@ using Kingmaker;
 using Kingmaker.EntitySystem.Persistence;
 using Kingmaker.Globalmap;
 using Kingmaker.UnitLogic.Parts;
-using Newtonsoft.Json;
 
 namespace KingmakerGunslinger.Spells.Teleportation
 {
@@ -37,7 +36,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             _edgeRecords = context.Map.Edges.OrderBy(value => value.Key.AssetGuid, StringComparer.Ordinal)
                 .Select(value => (object)value.Value).ToArray();
             object protection = ProtectedState(context, Travelers);
-            _protectedState = JsonConvert.SerializeObject(protection);
+            _protectedState = TeleportationDiagnosticJson.Serialize(protection);
             var position = context.Rules.Pawn.Position;
             State = new { pointId = context.OriginId, pawnPosition = new { x = position.x, y = position.y, z = position.z },
                 world = protection, roster = Travelers.Evidence() };
@@ -57,7 +56,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 !_encounters.SequenceEqual(current.Map.Encounters.Cast<object>()) ||
                 !_locationRecords.SequenceEqual(current.Map.Locations.OrderBy(value => value.Key.AssetGuid, StringComparer.Ordinal).Select(value => (object)value.Value)) ||
                 !_edgeRecords.SequenceEqual(current.Map.Edges.OrderBy(value => value.Key.AssetGuid, StringComparer.Ordinal).Select(value => (object)value.Value)) ||
-                _protectedState != JsonConvert.SerializeObject(ProtectedState(current, travelers)))
+                _protectedState != TeleportationDiagnosticJson.Serialize(ProtectedState(current, travelers)))
                 throw new InvalidOperationException("Native relocation changed protected party, time, fatigue, route, encounter, map or familiarity state.");
         }
 

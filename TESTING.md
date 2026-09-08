@@ -177,3 +177,28 @@ no save and cannot be invoked through normal player UI.
   -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$true -Confirm:$false
 ```
+
+### Disposable teleportation traveler probe
+
+`disposable-teleportation-travelers` uses the same guarded named working-save
+load and world-map fixture as the interaction scenario. It temporarily creates
+real native leopard pets with reciprocal master relationships and an unowned
+nontraveler control. Actual appended spell rows and native Cast confirmation
+exercise repeated mishaps, death exclusion, unconscious living travelers and
+exact prepared expenditure. Native damage/life events and before/after rosters
+are written to `teleportation-travelers.json`. No life-state threshold is
+reimplemented. The request restores original health/damage attribution, books,
+pet relationships, cross-scene entities, map fields, ledger and prefab identity
+under save-write sentinels; automatic exit is mandatory.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-travelers `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true -Confirm:$false
+```
+
+The corrected probe passed 15 structured assertions, including deliberate
+protected-state/resource changes, associated native death and unconsciousness.
+Exact run IDs and the rejected initial probe are in the implementation report.
+An assertion failure remains a failure even when cleanup succeeds. Do not use
+it on a personal campaign save.

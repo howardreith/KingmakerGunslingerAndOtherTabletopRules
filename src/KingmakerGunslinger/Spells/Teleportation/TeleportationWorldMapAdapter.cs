@@ -174,7 +174,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 // A native visited flag with no recorded/migrated count cannot supply
                 // Teleport odds. Exact spells can still use proven native visited state.
                 .Where(value => value.Spell != TeleportSpellKind.Teleport ||
-                    TeleportationCastExecution.FamiliarityFor(context, point.Id) != TeleportFamiliarity.Unvisited)
+                    (TeleportationCastExecution.FamiliarityFor(context, point.Id) != TeleportFamiliarity.Unvisited &&
+                    (TeleportRollTable.For(TeleportationCastExecution.FamiliarityFor(context, point.Id)).MishapPercent == 0 ||
+                    TeleportationMishapDamageTarget.CanApply(TeleportationTravelers.Read(context.Player)))))
                 .Where(value => context.Recall.Known || value.Spell != TeleportSpellKind.WordOfRecall);
             return WorldMapPointSpellActionComposer.Compose(new object[0], point, context.OriginId,
                 context.Blocks, sources, Forbidden, context.Recall.Established, context.Recall.DestinationId).SpellActions;

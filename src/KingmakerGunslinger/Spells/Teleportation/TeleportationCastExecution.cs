@@ -3,7 +3,6 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Globalmap.Blueprints;
 using KingmakerGunslinger.Bootstrap;
-using Newtonsoft.Json;
 
 namespace KingmakerGunslinger.Spells.Teleportation
 {
@@ -35,7 +34,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             _source = TeleportationSpellbookAdapter.Resolve(current.Source);
             if (_source == null) { diagnostic = "No current exact spellbook resource."; return null; }
             Familiarity = FamiliarityFor(context, action.Destination.Id);
-            if (action.Source.Spell == TeleportSpellKind.Teleport) TeleportRollTable.For(Familiarity);
+            if (action.Source.Spell == TeleportSpellKind.Teleport && TeleportRollTable.For(Familiarity).MishapPercent > 0 &&
+                !TeleportationMishapDamageTarget.CanApply(TeleportationTravelers.Read(context.Player)))
+            { diagnostic = "Native life-state update is unavailable for a living traveler."; return null; }
             _before = new TeleportationWorldSnapshot(context);
             Resource = _source.Capture();
             _world = new TeleportationOutcomeWorld(_before, _source, context.OriginId, _rolls);
@@ -80,7 +81,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private static void Record(string code, object value)
         {
             ModContext context;
-            if (ModContext.TryGet(out context)) context.Logger.Info("teleportation", code, JsonConvert.SerializeObject(value));
+            if (ModContext.TryGet(out context)) context.Logger.Info("teleportation", code, TeleportationDiagnosticJson.Serialize(value));
         }
     }
 }

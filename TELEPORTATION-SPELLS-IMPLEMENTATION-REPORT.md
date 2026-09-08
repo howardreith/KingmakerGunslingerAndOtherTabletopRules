@@ -27,6 +27,7 @@ Pushed coherent checkpoints:
 - `8eede43c0dfb3b8bfb3bbe5656b905cb2add6155`: real prepared/spontaneous source enumeration and proven native resource expenditure.
 - `53b373575fb71a80d7da69849b028f2d5a34a33b`: exact current world-map destination and capital-state composition.
 - `2f0b6bfadfca93269bc2255e98ae69bf818976f7`: native desktop rows/confirmation, canonical real casts and protected relocation.
+- `35616afa59c9e4045317d92e727d6392a5e77d1f`: native Travel/Escape, live source counts, stable reopened layout and scrolling across frames.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -97,7 +98,7 @@ current-state adapter and isolated Recall-state fixture are qualified below.
 
 ## Validation checkpoints
 
-- Current domain suite: 1,470 passing cases, including 4,096 module settings round
+- Current domain suite: 1,475 passing cases, including 4,096 module settings round
   trips and 4,096 publication-intent combinations. The guarded catalog generates
   26 boundary configurations for 12 modules.
 - Clean Release build and strict installable-package validation passed for the
@@ -327,9 +328,10 @@ rows, with original native actions unchanged. It proved Cancel, repeated menu
 selection, exact Teleport, spontaneous seventh-level Greater Teleport, pre/post
 capital Recall, graph-ranked off-target/similar outcomes, repeated confirmation,
 stale destination and one/repeated mishaps. Damage rose by 1 in all three living
-members for one mishap and by 1 then 2 for repeated mishaps. Every successful
-cast proved protected state unchanged, a single real resource expenditure,
-exact cleanup and no save writes. No pet/mount was present in this working save.
+members for one mishap and by 1 then 2 for repeated mishaps. Each successful cast reported a single real resource expenditure and no save
+writes. Its anonymous fingerprint comparisons were later found incomplete; the
+corrected serializer, negative controls and superseding runs are recorded below.
+No pet/mount was present in this working save.
 
 The local result artifact is `teleportation-casting.json` within each named
 runtime directory. Build/package log:
@@ -419,10 +421,89 @@ Working-save regression `20260908T0703527193851Z-6454ae9f84a34c5aa1daee562708449
 directory `20260908T0703527103850Z-working-save-smoke`, passed all eleven assertions
 with zero save writes. Complete compatibility qualification is separate.
 
+## Native mishap life state and snapshot correction
+
+The first pet probe exposed a real production defect. All three original party
+members and the three associated native pets had views but were outside
+`Game.State.AwakeUnits`. RuleDealDamage changed HP damage, while the synchronous
+mishap loop still read cached Conscious state. Thus a pet lethally damaged by the
+first mishap incorrectly received the next packet. The same delay hid native
+unconsciousness. The rejected run is
+`20260908T0724492651938Z-55ced266ed42469d95beb2f72b0238ff`, directory
+`20260908T0724492566466Z-disposable-teleportation-travelers`, FAIL. Cleanup and
+save-write guards passed. The initial dead control also revived during the
+confirmation wait through native out-of-combat recovery; the corrected fixture
+establishes and records that control immediately before the actual commitment.
+
+Production now exposes only the native UnitLifeController protected per-unit
+boundary through a narrow subclass. It checks native life state before a damage
+packet and settles native unconsciousness/death after it, before another reroll.
+It neither registers a controller nor changes native thresholds, ferocity,
+regeneration, difficulty, HP floors or recovery. Living travelers must have their
+native views for a possible mishap; unknown support omits the Teleport source and
+fails pre-spend revalidation. Unconscious living units remain included; dead
+units receive no further packet. Material-effect tracking begins before native
+life/damage operations, preserving the no-refund-after-effect rule.
+
+The probe also exposed global JSON defaults that reduced some anonymous
+fingerprints/logs to an object identifier. Early PASS results are retained as run
+history, but those anonymous comparisons are not accepted as protected-state,
+resource-fingerprint or native-action-content proof. Typed slot-delta checks and
+explicit roster/reference checks were independent. Production and fixture
+fingerprints now use an isolated serializer with an explicit ordinary contract
+resolver, without changing the game's save serializer. The corrected runtime
+checks deliberately change world time, traveled miles, point flags and visit time;
+each change must be rejected and exact restoration accepted. A real temporary
+prepared expenditure must change its resource fingerprint. Structured cast logs
+must retain action, world, resource, event and result fields.
+
+Corrected installed-profile traveler run
+`20260908T0743051211896Z-0b845aad9e574a77bd53746466e5827e`, directory
+`20260908T0743051121851Z-disposable-teleportation-travelers`, passed 15 assertions.
+It created three native leopard pets through SpawnUnit/SetMaster and an unowned
+cross-scene control. The first mishap dealt 2 to each living traveler and killed
+the fragile pet. The second dealt 1 to the surviving travelers and skipped that
+pet. An already dead pet and the nontraveler took zero. A separate cast put a
+living pet into native Unconscious state; it received both packets. Both casts
+spent exactly one real preparation and preserved the canonical token/roster and
+protected world state. All temporary entities, ownership, original HP/life/damage
+attribution, book state, prefab identity, map data, ledger and time were restored
+under intact save-write sentinels.
+
+`teleportation-travelers.json` holds structured evidence. The production log check
+found all six full cast records and zero teleportation errors. Native off-scene
+death visuals emitted four bounded inactive-view coroutine warnings in this
+fixture; life events and rules damage completed. No view was activated or moved
+to suppress those native presentation warnings. Native difficulty recovery after
+the synchronous result remains untouched. Permanent death under other difficulty
+settings and mod-provided mount representations are not separately qualified.
+
+Superseding regressions with the corrected comparisons:
+
+- Casting: `20260908T0748191029883Z-d82a6141e3e84987958b3e1f4a29c030`, directory
+  `20260908T0748190940075Z-disposable-teleportation-casting`, all 42 assertions PASS.
+- Native interaction: `20260908T0751392109622Z-8c5bb2bbda2b44c0a07d7874e37a1120`,
+  directory `20260908T0751392014182Z-disposable-teleportation-interaction`, all 29
+  assertions PASS, with original native action contents/callbacks and actual
+  resource fingerprints compared. Two ordinary routes each started exactly once.
+- Resources: `20260908T0756240277406Z-8c30ba0c637f4155b1e40492f52e816e`, directory
+  `20260908T0756240167503Z-disposable-teleportation-resources`, all 19
+  assertions PASS with the corrected book fingerprints.
+
+All named runs launched through Steam App ID 640820 and proved zero save writes.
+Current clean Release/package log:
+`artifacts/teleportation/build-travelers-checkpoint.log`; explicit domain log:
+`artifacts/teleportation/domain-travelers.log`. All 1,475 domain cases and strict
+package validation passed. Runtime preflight passed 208 checks plus map metadata;
+compatibility parameter/settings checks passed 4,120. Working-save regression
+`20260908T0806109909820Z-967379eaf9a2461ead657bdc5a2a100a`, directory
+`20260908T0806109819970Z-working-save-smoke`, passed all eleven assertions with
+zero save writes. No release promotion is implied.
+
 ## Remaining qualification and constraints
 
-Full campaign familiarity disk save/reload, actual associated pet/mount fixtures,
-unconscious/dead traveler cases, remaining UI lifecycle/input boundaries,
+Full campaign familiarity disk save/reload, mod-provided mount qualification,
+remaining UI lifecycle/input boundaries,
 gamepad augmentation/navigation, complete 26-state module boundaries, and all
 required compatibility profiles remain incomplete. The current UI qualification
 uses structured native button invocation and measured on-screen geometry across
