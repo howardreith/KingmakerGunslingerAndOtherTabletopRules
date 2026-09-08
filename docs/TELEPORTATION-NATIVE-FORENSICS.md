@@ -288,3 +288,68 @@ Teleportation. Actual three-spell publication, OFF patch absence, contextual UI,
 resource expenditure, and the 26-state live publication matrix remain pending.
 No release metadata was promoted. The curated point inventory and unresolved
 exclusions are in `TELEPORTATION-MAP-POINT-AUDIT.md` and its companion CSV.
+
+
+## Real spell blueprint and publication checkpoint
+
+Three project-owned stable spell identities are appended after the immutable
+0.0.116 manifest prefix. Teleport and Greater Teleport publish at native Wizard
+5/7 and exact optional Travel domain 5/7; Word of Recall publishes at Cleric 6
+and Druid 8. Identity registration uses a separate registry and publication uses
+an independent list transaction. A failure disables Teleportation without
+rolling back unrelated modules. No character receives a direct known-spell or
+prepared-slot grant.
+
+The Dimension Door donor's Parent is explicitly cleared. All local target flags
+are false, no delivery/effect component is retained, metamagic and spell resistance
+are absent, material-component data is non-null/empty, and action-bar autofill is
+ignored. The checker rejects local areas. Full contextual cast-state and resource
+revalidation remain future adapter work.
+
+The first two live publication probes were rejected:
+`20260908T0110532931491Z-f0ed01a798b640cca67cd77017cd0165` and
+`20260908T0118069315518Z-71ca0716a33b4e9c93bde69f465d2d61`.
+Narrow diagnostics showed late `SpellListComponent` metadata in the installed
+profile, with every local-cast restriction still intact. Its exact native class
+has only `SpellList` and `SpellLevel` fields and a constructor. Validation now
+allows that exact metadata type and rejects every other extra component.
+Standalone retains only the two owned components; the installed profile adds
+two list components to Teleport/Greater Teleport and three to Word of Recall.
+This comparison does not identify which optional provider added each component.
+
+Native list publication first resolves every required target, then replaces
+individual `SpellLevelList.Spells` references and clears `m_SpellsFiltered`.
+Different physical levels that previously shared a list are handled separately;
+conflicting requests for one physical level fail before mutation. Duplicate
+publication preserves already valid list/cache instances. Rollback checks all
+ownership references before restoring exact previous list and cache instances.
+`SpellLevelList.m_SpellsFiltered` is the sole production reflection seam in this
+publication transaction.
+
+Qualified runs:
+
+- Installed profile ON: `20260908T0121349574829Z-c5b927ca303441749237d48dd72e9151`,
+  directory `20260908T0121349454809Z-observe-teleportation-native-contracts`,
+  seven assertions PASS.
+- Standalone ON: `20260908T0125261375669Z-778971707ad141d0a3b7afab95922da6`,
+  directory `20260908T0125261285579Z-observe-teleportation-native-contracts`,
+  seven assertions PASS; profile `compat-20260908T012436Z-1388860e92dc` restored
+  Mods, SoundBank, and settings exactly.
+- Teleportation OFF / other eleven ON:
+  `20260908T0129144377215Z-2b8748198eca415fbcca4e2006bd264f`, directory
+  `20260908T0129144220691Z-observe-feature-module-settings`, 31 assertions PASS;
+  settings restored byte-for-byte. The OFF probe performs no publication fixture.
+- Working save: `20260908T0133209151824Z-e0fd19bcdadc456dbe3a1b1ea77bc991`,
+  directory `20260908T0133208995428Z-working-save-smoke`, eleven assertions PASS.
+
+The guarded main-menu publication fixture removes owned spells only from copied
+in-memory lists, calls the actual publication and rollback methods, verifies
+exact reference restoration, and restores the original native lists/cache in
+`finally`. It does not learn/prepare spells, cast, relocate, or write a save.
+The module boundary observer uses the same publication checks. Native spellbook
+interaction and actual contextual expenditure remain unqualified.
+
+All 1,432 domain tests, clean Release build, repository checks, and strict
+installable-package validation pass. The manifest contains 1,711 entries:
+1,709 active and two reserved. The complete published 0.0.116 prefix is pinned
+by a separate hash in validation. Release metadata remains 0.0.116.

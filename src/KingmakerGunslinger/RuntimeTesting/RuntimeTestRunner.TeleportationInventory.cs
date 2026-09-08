@@ -83,6 +83,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             assertions.Add(Assertion("teleportation-observation-scope", "main menu; no save or area loaded",
                 "area=" + (Game.Instance.CurrentlyLoadedArea == null ? "none" : "loaded"),
                 Game.Instance.CurrentlyLoadedArea == null, inventory.claims));
+            ObserveTeleportationSpellPublication(assertions);
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }

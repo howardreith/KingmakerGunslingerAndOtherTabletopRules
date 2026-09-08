@@ -69,6 +69,14 @@ The feature branch adds the twelfth default-ON module, `teleportation-spells`,
 using settings schema 11. The fast domain settings/publication matrix covers
 4,096 combinations; the guarded runtime boundary matrix contains 26 states.
 Historical release results retain their original module and assertion counts.
-Full twelve-module runtime publication qualification remains pending the spell
+Full twelve-module runtime qualification remains pending the contextual casting
 implementation. The native destination-panel observation is documented in
 `docs/TELEPORTATION-NATIVE-FORENSICS.md`; it is not spellcasting proof.
+
+
+The guarded `observe-teleportation-native-contracts` scenario now also checks the
+three real strategic blueprints, native list levels, repeated-publication
+identity, exact list/cache rollback, and fixture cleanup. It is main-menu-only
+and save-free. `observe-feature-module-settings` shares these publication checks;
+when Teleportation is OFF it verifies absence and does not invoke a publication
+fixture. These checks do not exercise contextual casting or spend spell slots.
