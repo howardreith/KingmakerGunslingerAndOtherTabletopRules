@@ -23,9 +23,12 @@ Pushed coherent checkpoints:
 - `87782a8a8c742aa91f43b663e2d88ac138518ea0`: default-ON twelfth module and schema-11 contracts.
 - `15e7a644b1e11dc473fc4fc2d461ae935d139961`: real strategic spell blueprints and isolated native-list transactions.
 - `321c0fe884e8a43604a794e017d2cd382ac89806`: save-owned ordinary-arrival observer and guarded familiarity qualification.
+- `8eede43c0dfb3b8bfb3bbe5656b905cb2add6155`: real prepared/spontaneous source enumeration and proven native resource expenditure.
 
-Every checkpoint was pushed using the owner's exact policy wrapper. The draft
-pull request and final source commit list remain pending implementation.
+Every checkpoint was pushed using the owner's exact policy wrapper. Draft
+[pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
+is open with an evidence-based in-progress summary. The final qualified source
+commit list remains pending implementation.
 
 ## Implementation and evidence
 
@@ -85,11 +88,12 @@ qualification remains outstanding; serialization alone is not that proof.
 
 The [point audit](docs/TELEPORTATION-MAP-POINT-AUDIT.md) and companion CSV retain
 706 unique stable IDs and 611 observed main-map anchors. Point-specific explicit
-exclusions and current campaign arrival gates remain qualification work.
+exclusions and complete campaign arrival qualification remain open. The production
+current-state adapter and isolated Recall-state fixture are qualified below.
 
 ## Validation checkpoints
 
-- Current domain suite: 1,449 passing cases, including 4,096 module settings round
+- Current domain suite: 1,454 passing cases, including 4,096 module settings round
   trips and 4,096 publication-intent combinations. The guarded catalog generates
   26 boundary configurations for 12 modules.
 - Clean Release build and strict installable-package validation passed for the
@@ -227,6 +231,63 @@ contextual casting is qualified by this probe.
 
 These resource runs used the installed profile. Standalone save-backed resources,
 full required compatibility profiles and all contextual casting gates remain open.
+
+## Current map and destination composition checkpoint
+
+`TeleportationWorldMapAdapter` reads the current native campaign, loaded static
+map scene, anchored canonical pawn, mode stack, loading queue/screen, combat,
+dialogue/scheduled dialogue, cutscene pool, kingdom modes, encounter state, travel
+command and request occupancy. It reads existing location records through
+`GlobalMapState.Locations.TryGetValue`; point composition creates no records or
+ledger entries and performs no route calculation. Native `LocationRestriction`
+checks and closure state supplement exact registered blueprint/current anchor,
+reveal, visit, point kind and origin checks.
+
+The base-game capital region is `caacbcf9f6d6561459f526e584ded703`. Its prebuilt
+settlement exists before region claim, so Recall establishment follows that exact
+native region's claimed state. After claim, the settlement must belong to that
+region and resolve the exact capital point. Unknown state or an invalid established
+anchor never falls back to Oleg's. An absent kingdom is the pre-capital case.
+
+Guarded installed-profile run
+`20260908T0421564890455Z-9fc529962db34a83958398ca5b84c1e9`, directory
+`20260908T0421564779636Z-disposable-teleportation-context`, passed 14 assertions.
+Six actual Greater/Teleport source rows covered two casters and distinct native
+books; Recall appeared only at its resolved point before/after capital claim.
+Current, closed, hidden, unvisited and pending-relocation controls omitted actions.
+Reading all 611 current points and repeatedly composing sources changed no native
+map records, familiarity, spell resources or time. The temporary capital state,
+original absent kingdom, map placement and real books were restored with no save
+write. This qualifies production action composition, not rendered contextual rows,
+confirmation, native normal-travel continuation or a completed magical cast.
+
+The prologue save has no kingdom. The fixture uses native KingdomState's exact
+private deserialization constructor, then assigns only the newly constructed
+object's Regions collection with a native prebuilt RegionState. It briefly binds
+that object in the guarded fixture and restores the original reference before
+exit. Native region-claim/founding actions and the notifying public kingdom
+constructor are never used. No fixture entry point is available in normal play.
+
+Rejected probes are retained truthfully:
+
+- `20260908T0410123244107Z-4af31b8155f34375ae74482c97def1cc`, directory
+  `20260908T0410123164095Z-disposable-teleportation-context`: ERROR before fixture
+  mutation because the initial probe incorrectly expected an existing kingdom.
+- `20260908T0416458142761Z-984e0307ba574bed915837f1375b74f5`, directory
+  `20260908T0416458022745Z-disposable-teleportation-context`: ERROR after proving
+  the native UI scene (`UI_Globalmap_Scene`) differs from the map scene
+  (`Globalmap`). The gate now uses the loaded area's native static scene; exact
+  cleanup and no-save-write assertions passed even in that rejected run.
+
+All 1,454 domain cases, repository validation, clean Release build and strict
+package validation passed (`artifacts/teleportation/build-context-static-scene.log`).
+The compatibility parameter/settings regression passed all 4,120 checks, and
+runtime preflight passed 208 checks plus the guarded map metadata check.
+Final clean Release/package log: `artifacts/teleportation/build-context-checkpoint.log`.
+The explicit domain command also passed (`artifacts/teleportation/domain-context.log`).
+Working-save regression `20260908T0430569217853Z-ef80210c30b6463a86bb0d90477a39ff`,
+directory `20260908T0430569137709Z-working-save-smoke`, passed all eleven assertions.
+The current package remains 0.0.116; no release promotion is implied.
 
 ## Remaining qualification and constraints
 

@@ -535,6 +535,7 @@ try {
         'observe-teleportation-world-map',
         'disposable-teleportation-familiarity',
         'disposable-teleportation-resources',
+        'disposable-teleportation-context',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',

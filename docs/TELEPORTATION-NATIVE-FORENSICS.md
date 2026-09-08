@@ -1,6 +1,6 @@
 # Contextual world-map teleportation native forensics
 
-Status: initial exact-assembly audit; no casting or relocation runtime qualification yet.
+Status: native contracts and guarded component qualification; completed contextual casting and relocation remain unqualified.
 
 The clean base is `58d9511082af30f1a4ec88c1238ae7ae2b3651c2`, verified against
 freshly fetched `origin/master` on 2026-09-07 before creating
@@ -470,3 +470,58 @@ to No. `Hide` clears `IsShown`, removes its Escape handler and hides the veil.
 request must detect that disappearance and cancel. The current inspected desktop
 implementation returns early for gamepad mode; that frontend still needs its
 own integration qualification.
+
+
+## Current world-map context and capital state
+
+`LoadingProcess.IsLoadingInProcess` includes both the executing process and its
+queued processes. `IsLoadingScreenActive` covers the remaining screen lifecycle.
+`Game.IsModeActive` reads the native mode stack, while `CurrentMode` must be
+GlobalMap for composition. `DialogController.Dialog`, `Player.Dialog.Scheduled`,
+`Game.CutsceneLock`, active cutscene pool entries, kingdom modes, current encounter,
+and any current MapTravelData additionally block composition. A stationary pawn
+must coincide with its current exact registered point's native placement anchor.
+
+The map's native component scene is `Globalmap`; the area's CustomUIScene is
+`UI_Globalmap_Scene`. These are distinct. The adapter checks the loaded area's
+`GetStaticScene().SceneName` against the current GlobalMapRules scene, then verifies
+point membership against the native map dictionary, active scene instances and
+unique registered identities. `GetStaticScene` simply returns native StaticScene.
+No raw pointer, scene label as point identity, or transform write is involved.
+
+`GlobalMapRules.GetLocationObject` only reads its dictionary. In contrast, the
+native location-data getter can create a persistent record. Production destination
+reads therefore use existing `GlobalMapState.Locations.TryGetValue` records.
+`LocationData.GetInfo/Name` evaluates native variation conditions and existing
+settlements without creating a region; names are presentation only.
+`LocationRestriction.IsRestricted` checks its native IgnoreCondition override,
+AllowedCondition and required companions. Native IsClosed also prevents an action.
+
+`RegionState(BlueprintRegion)` constructs a settlement when SettlementIsPrebuilt
+is true; it does not claim the region. Native capital region
+`caacbcf9f6d6561459f526e584ded703` is prebuilt and resolves capital point
+`f83de5c382e087b4ab6ce0b7397a2a13`. Claiming that exact region establishes the
+capital. A missing/unowned/wrong-point settlement after claim suppresses Recall
+without falling back. A missing kingdom precedes establishment. Unknown or
+non-prebuilt capital contracts fail closed for Recall.
+
+The guarded context fixture uses the exact native private KingdomState
+`JsonConstructorMark` constructor to initialize a detached temporary state without
+the public constructor's BP event. Its Regions field is assigned only on that new
+object, using a native RegionState. The assignment-only RegionState.IsClaimed setter
+provides the before/after control. These reflection seams are fixture-only. The
+original kingdom reference, region/settlement state, map state and spellbooks are
+restored before return, with save-write sentinels active.
+
+Run `20260908T0421564890455Z-9fc529962db34a83958398ca5b84c1e9` passed 14 assertions;
+directory `20260908T0421564779636Z-disposable-teleportation-context`. It qualifies
+current destination/Recall/source composition and all 611 map reads, not rendered
+UI or completed casting. The two rejected fixture/scene-assumption runs and their
+exact identifiers are recorded in the implementation report.
+
+Additional traced contracts for the next adapter: Player.AddCharacterToLists
+excludes pets from Party, but includes cross-scene units in AllCharacters and
+relates pets through UnitDescriptor.Master. Native RulebookEvent.Dice exposes
+D100 (RollEntry.Value), D10, and D(DiceFormula); DiceTypeExtension.Sides returns
+the integer sides value directly. Native damage/relocation qualification remains
+outstanding; these traces alone do not establish live mishap behavior.
