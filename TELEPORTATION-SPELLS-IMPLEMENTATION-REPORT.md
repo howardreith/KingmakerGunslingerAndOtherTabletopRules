@@ -31,6 +31,7 @@ Pushed coherent checkpoints:
 - `ba32ac2d6e7a916aedbdf61b4dea2ff093d3c746`: native mishap life-state settlement, real associated-pet qualification and corrected world/resource fingerprints.
 - `cdee670b2879431972f4a9baa70f249e15db8803`: native gamepad destination rows/navigation, shared native confirmation, rendered-text and module-hook qualification.
 - `68e1e8a8111d68335ec25f8bc34a25f684520a77`: native spellbook rows/descriptions/preparation, action-bar exclusion and exact deferred UI cleanup.
+- `5b1168f45edf4c8979e6dbbb5536344523faf61d`: actual native level-up choices, preview cancellation and same-artifact UI/resource/save regressions.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -95,13 +96,14 @@ payload serialization have passed. Full campaign owner-graph disk save/reload
 qualification remains outstanding; serialization alone is not that proof.
 
 The [point audit](docs/TELEPORTATION-MAP-POINT-AUDIT.md) and companion CSV retain
-706 unique stable IDs and 611 observed main-map anchors. Point-specific explicit
-exclusions and complete campaign arrival qualification remain open. The production
-current-state adapter and isolated Recall-state fixture are qualified below.
+706 unique stable IDs and 611 observed main-map anchors. The special-point audit
+qualifies 22 actual arrivals and preserves 19 native campaign exclusions; no
+unconditional point-specific deny was justified. Other campaign/map contexts and
+full campaign persistence remain open. Exact scope and evidence follow below.
 
 ## Validation checkpoints
 
-- Current domain suite: 1,482 passing cases, including 4,096 module settings round
+- Current domain suite: 1,490 passing cases, including 4,096 module settings round
   trips and 4,096 publication-intent combinations. The guarded catalog generates
   26 boundary configurations for 12 modules.
 - Clean Release build and strict installable-package validation passed for the
@@ -757,11 +759,132 @@ Release package remains a qualification candidate; its DLL SHA-256 is
 `b263ece7fb6a6b1fb34597eb340824a41d8286332240a292b76884acef7198c2`.
 It is not substituted for the exact deployed runtime artifact identified above.
 
+## Deferred exploration and special-point qualification
+
+A guarded special-point cast exposed a real native deferred exploration effect:
+arrival at `07b9f4001ac3eed4da444c36653c584f` let LocationRevealController change
+nearby hidden point `312bf36ac8bc4c74cb0969908c876cce` LastPerceptionRolled from
+0 to 12 on subsequent frames. Immediate relocation snapshots alone missed this.
+A versioned save-owned arrival boundary now suppresses that one native controller
+while the party remains at its magical arrival. Ordinary Travel releases it,
+including malformed saved state. OFF installs no prefix. No point-specific blanket
+ban, native route replacement, or perception/reveal rollback is used.
+
+Final audit run `20260908T1330037600506Z-cc0ea3d5a53a4123a156a651546ca8c3` passed **68 of 68**,
+with zero fixture exceptions, zero save writes and exact cleanup. Evidence:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1330037500523Z-disposable-teleportation-destinations`,
+`runtime-result.json`, `teleportation-destinations.json` and copied
+`output_log-destinations-recovery-control.txt`. It audits 611 current points;
+41 special/type-representative points yield 22 actual native-confirmed Greater
+Teleport casts and 19 native campaign exclusions. All five stable point types,
+all ten current book events, Oleg/capital and six component points are covered.
+Each cast spends one real seventh-level slot, retains native controls and protects
+all captured world/party state across deferred frames. Native Travel restores the
+actual hidden-point perception check, twice, without spending spell slots.
+The [curated point audit](docs/TELEPORTATION-MAP-POINT-ARRIVAL-AUDIT.csv) records exact
+IDs and results. Other campaign restriction states and other map scenes remain
+outside this proof. No unconditional deny-catalog entry was justified.
+
+All following runs use deployment
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260908T1330037170527Z/deployment.json`,
+DLL SHA-256 `5faa368ab26a0db6f07bb26ee144256ea076733caa914b6c3791b1b10492a475`,
+package SHA-256 `ebf8ebf0cf5c888d87306e64ddd47b1ebad7807bd454261a96c14298ba050982`.
+The artifact passed 1,490 domain cases, clean Release build and strict package
+validation. Runtime preflight passes 208 checks and compatibility/settings
+parameters 4,120. Log: `artifacts/teleportation/build-exploration-recovery-control.log`.
+
+Seven focused same-artifact regressions passed **164 assertions**:
+
+| Scenario | Assertions | Run ID | Directory under runtime-evidence |
+|---|---:|---|---|
+| casting | 42 | `20260908T1332488279913Z-4396ce68fb7941f1b5ec051dd99caf6d` | `20260908T1332488179916Z-disposable-teleportation-casting` |
+| interaction | 29 | `20260908T1334279588379Z-e2865e0c71b148fea80b350d52eff7fe` | `20260908T1334279578363Z-disposable-teleportation-interaction` |
+| gamepad | 39 | `20260908T1336031772247Z-5a93c01e9f9f496abb538ebdbbbfd584` | `20260908T1336031762237Z-disposable-teleportation-gamepad` |
+| travelers | 15 | `20260908T1337535092280Z-3c850ceeb7b141c2a9f3dbc53042371e` | `20260908T1337535082277Z-disposable-teleportation-travelers` |
+| resources | 19 | `20260908T1339283460896Z-7f9c508249214600918505adb936ac2c` | `20260908T1339283450871Z-disposable-teleportation-resources` |
+| familiarity | 9 | `20260908T1341005910988Z-c22b34cefdd043599baab9468db9395b` | `20260908T1341005901011Z-disposable-teleportation-familiarity` |
+| working-save-smoke | 11 | `20260908T1342325654068Z-60f7266a522f4d4da5ddcc600885f3ad` | `20260908T1342325644062Z-working-save-smoke` |
+
+All **26** current module boundaries passed **897 assertions**. Actual
+Teleportation desktop/gamepad/arrival/exploration hook counts are 4/4/2/1 ON and
+0/0/0/0 OFF. Each transaction restores exact original settings bytes; original
+SHA-256 is `a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749`.
+These startup/publication boundaries do not substitute for other mod profiles.
+
+| Configuration (catalog order) | Assertions | Run ID | Directory under runtime-evidence |
+|---|---:|---|---|
+| on-on-on-on-on-on-on-on-on-on-on-on | 35 | `20260908T1344008733699Z-139e43e24b6c49b39cd858655cf0842c` | `20260908T1344008723720Z-observe-feature-module-settings` |
+| on-on-on-on-on-on-on-on-on-on-on-off | 35 | `20260908T1345189914526Z-5a6227730754438fb33413b349b8e519` | `20260908T1345189904556Z-observe-feature-module-settings` |
+| on-on-on-on-on-on-on-on-on-on-off-on | 35 | `20260908T1346351706243Z-fd3e691577a342d4a77d57cf09c689b7` | `20260908T1346351696240Z-observe-feature-module-settings` |
+| on-on-on-on-on-on-on-on-on-off-on-on | 35 | `20260908T1347525373601Z-03dfdaae426c4d829d7649d5d5bd915d` | `20260908T1347525363627Z-observe-feature-module-settings` |
+| on-on-on-on-on-on-on-on-off-on-on-on | 35 | `20260908T1349097110828Z-19ad7a641f0646aca712a7d77acaff67` | `20260908T1349097100821Z-observe-feature-module-settings` |
+| on-on-on-on-on-on-on-off-on-on-on-on | 35 | `20260908T1350270593275Z-d0e882584a224893ba2b753b30daf07e` | `20260908T1350270583240Z-observe-feature-module-settings` |
+| on-on-on-on-on-on-off-on-on-on-on-on | 35 | `20260908T1351441113813Z-c340d0a94dd244dab8375fbb384e2b36` | `20260908T1351441103819Z-observe-feature-module-settings` |
+| on-on-on-on-on-off-on-on-on-on-on-on | 35 | `20260908T1353014240528Z-0d5340aa8e0244039211f7e23c6b13e0` | `20260908T1353014230526Z-observe-feature-module-settings` |
+| on-on-on-on-off-on-on-on-on-on-on-on | 35 | `20260908T1354178190348Z-535d581169aa49ed8c3ebae33b83e1cf` | `20260908T1354178180373Z-observe-feature-module-settings` |
+| on-on-on-off-on-on-on-on-on-on-on-on | 35 | `20260908T1355353560391Z-49bab445f4994cdfaeeb3e4c365b8682` | `20260908T1355353550392Z-observe-feature-module-settings` |
+| on-on-off-on-on-on-on-on-on-on-on-on | 35 | `20260908T1356521660013Z-65b36357e8c643e583052915ac393a44` | `20260908T1356521650011Z-observe-feature-module-settings` |
+| on-off-on-on-on-on-on-on-on-on-on-on | 35 | `20260908T1358088768439Z-b52fcd52cbbb41428f384ac9bf8d88d3` | `20260908T1358088758432Z-observe-feature-module-settings` |
+| on-off-off-off-off-off-off-off-off-off-off-off | 35 | `20260908T1359262472980Z-ed00acb6cd5c47e2904a46a15c4b968f` | `20260908T1359262462982Z-observe-feature-module-settings` |
+| off-on-on-on-on-on-on-on-on-on-on-on | 34 | `20260908T1400429780919Z-10225aea68834dd583ae0800ed535a21` | `20260908T1400429770930Z-observe-feature-module-settings` |
+| off-on-off-off-off-off-off-off-off-off-off-off | 34 | `20260908T1401598166208Z-6af6d5897a8149c79de919ae36ed2e4e` | `20260908T1401598160043Z-observe-feature-module-settings` |
+| off-off-on-off-off-off-off-off-off-off-off-off | 34 | `20260908T1403163434716Z-0164b9ef4d41448aa23d89ebd9b5ffe2` | `20260908T1403163424709Z-observe-feature-module-settings` |
+| off-off-off-on-off-off-off-off-off-off-off-off | 34 | `20260908T1404342721720Z-6ba3589ab884449a9de77eab7b740fd5` | `20260908T1404342711728Z-observe-feature-module-settings` |
+| off-off-off-off-on-off-off-off-off-off-off-off | 34 | `20260908T1405514200586Z-62c0b358fcdf439697669242817e157c` | `20260908T1405514190496Z-observe-feature-module-settings` |
+| off-off-off-off-off-on-off-off-off-off-off-off | 34 | `20260908T1407077332014Z-717fef89b425406db9f0d64ef05add45` | `20260908T1407077322023Z-observe-feature-module-settings` |
+| off-off-off-off-off-off-on-off-off-off-off-off | 34 | `20260908T1408249093394Z-640942fd62bf4f948bd1993aaa87f634` | `20260908T1408249073381Z-observe-feature-module-settings` |
+| off-off-off-off-off-off-off-on-off-off-off-off | 34 | `20260908T1409420499989Z-7b97f2f84a2047f7884a4036e3a62b65` | `20260908T1409420489998Z-observe-feature-module-settings` |
+| off-off-off-off-off-off-off-off-on-off-off-off | 34 | `20260908T1410589268541Z-082dab0d8d7e4731b3f0e51981158db0` | `20260908T1410589258539Z-observe-feature-module-settings` |
+| off-off-off-off-off-off-off-off-off-on-off-off | 34 | `20260908T1412154444841Z-e2e3bac5a96d495cb0560a7a43b72e30` | `20260908T1412154434842Z-observe-feature-module-settings` |
+| off-off-off-off-off-off-off-off-off-off-on-off | 34 | `20260908T1413319334092Z-5bdf60f0b53442af9371f4e827585fcf` | `20260908T1413319324108Z-observe-feature-module-settings` |
+| off-off-off-off-off-off-off-off-off-off-off-on | 34 | `20260908T1414498150630Z-8bc790ad7fba49938e9141d8c4127215` | `20260908T1414498145408Z-observe-feature-module-settings` |
+| off-off-off-off-off-off-off-off-off-off-off-off | 34 | `20260908T1416070697182Z-bf0af4ffc2e14f0f96db3b08a557c615` | `20260908T1416070687182Z-observe-feature-module-settings` |
+
+Rejected and superseded probes are retained truthfully:
+
+- `20260908T1229326505641Z-1ce931b6ab584e448c53eb486d63d8e9`, directory
+  `20260908T1229326410251Z-disposable-teleportation-destinations`, ERROR after four
+  casts when the fifth changed deferred map state. No save writes; exact cleanup.
+- `20260908T1235137817318Z-7c1a929babc7498c87e46f28fdc5d7ee`, directory
+  `20260908T1235137707368Z-disposable-teleportation-destinations`, ERROR; narrowed
+  differences proved the exact post-commit perception change, with no selection
+  difference. This was a production defect and required the saved-arrival guard.
+- `20260908T1257287107457Z-52c784f01e1d4050a00ac28ad9613fac`, directory
+  `20260908T1257286997479Z-disposable-teleportation-destinations`, ERROR after all 22
+  cast invariants passed: the ordinary-travel control lacked a revealed route.
+- `20260908T1309026483770Z-583312525794498b890011181056c449`, directory
+  `20260908T1309026403790Z-disposable-teleportation-destinations`, passed 67 assertions
+  after the adjacent-edge control correction. The 68-assertion run supersedes it
+  and adds native recovery from a malformed saved boundary.
+- `20260908T1323274762788Z-ec412aec35574be388a64dd51cee8a54`, directory
+  `20260908T1323274642770Z-disposable-teleportation-destinations`, ERROR after 66
+  passing checks: the fixture tried to start its second Travel from the native
+  paused command's null stationary position. Native IL proved Stop's lifecycle;
+  a zero-distance fixture reset corrected the probe. No production change was needed.
+
+All destination probes restored tracked state, recorded zero fixture exceptions
+and made no save writes. The four known ZFavoredClass startup exceptions occur
+before these fixtures and remain recorded; they are not a compatibility PASS.
+A preliminary batch was stopped at the outer monitor while its guarded traveler
+fixture completed its own cleanup and automatic exit. The complete current batch
+above is the qualification evidence; interrupted monitoring is not substituted.
+
+Final checkpoint checks also passed the explicit Release domain command
+(`artifacts/teleportation/domain-exploration-recovery-checkpoint.log`) and clean
+Release/build-output/repository/strict-package checks
+(`artifacts/teleportation/build-exploration-final-checkpoint.log`). The separately
+built Release candidate DLL SHA-256 is
+`1cb3251989f9a566e62e2fca94df909027c18afc4c7308b30aa1c4ed93339cc3`;
+package SHA-256 is
+`96883bec0bd9809d67972fc95c9063bbc26f10b633ee8d453b02c318075c03b8`.
+This candidate is not substituted for the exact deployed runtime artifact above.
+
 ## Remaining qualification and constraints
 
 Full campaign familiarity disk save/reload, mod-provided mount qualification,
-special-point arrival audit,
-a final complete module matrix, and all required compatibility profiles remain incomplete. The current UI qualification
+other campaign restriction states/map scenes and all required compatibility
+profiles remain incomplete. This checkpoint passed the complete 26-state module
+matrix. The current UI qualification
 uses structured native button invocation and measured on-screen geometry across
 frames; it is not a presentation review of every camera position/resolution.
 

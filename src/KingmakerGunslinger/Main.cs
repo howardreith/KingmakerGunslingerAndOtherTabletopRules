@@ -102,6 +102,7 @@ namespace KingmakerGunslinger
                 Audio.FirearmSoundRuntime.Configure(context);
                 context.InstallPatches();
                 Spells.Teleportation.TeleportFamiliarityPatches.Install(context);
+                Spells.Teleportation.TeleportExplorationGuardPatches.Install(context);
                 Spells.Teleportation.WorldMapPointSpellActionPatches.Install(context);
                 Spells.Teleportation.WorldMapPointConsoleSpellActionPatches.Install(context);
                 EasternWeaponArmsArmorCompatibility.Install(context.Harmony);

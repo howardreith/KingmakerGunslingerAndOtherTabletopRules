@@ -29,8 +29,9 @@ Next concrete action: retain this inventory as the guard list for final 0.0.75 v
 The standalone teleportation feature adds default-ON module 12 / schema 11.
 Its three spell identities always register, while native spell-list publication
 and all contextual/arrival hooks require the module to be enabled. Desktop and
-gamepad destination hooks are 4 each; ordinary-arrival/load hooks are 2. OFF
-installs zero of these hooks and preserves already serialized familiarity.
+gamepad destination hooks are 4 each; ordinary-arrival/load hooks are 2 and the
+saved-arrival exploration hook is 1. OFF installs zero of these hooks and
+preserves already serialized familiarity and arrival-boundary fields.
 
 The preceding desktop source ba32ac2 passed all 26 module boundary states
 (845 assertions). The gamepad addition passed all ON, all OFF, only Teleportation
@@ -38,3 +39,10 @@ ON and only Teleportation OFF (134 assertions), including native publication,
 exact rollback and actual hook counts. Settings bytes were restored exactly.
 These are feature checkpoints; complete release qualification remains open.
 Exact run IDs and limits are in the [teleportation report](../TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md).
+
+
+The exploration-guard source checkpoint passes all 26 current boundaries with
+897 assertions. Hooks are counted from the actual Harmony registry,
+including absent unpatched targets OFF. All publication, duplicate/rollback and
+settings restoration checks pass. The report records every run ID and the exact
+immutable deployed artifact; other mod profiles and disk persistence remain open.

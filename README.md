@@ -256,9 +256,9 @@ and In Harms Way**, **Protection from Alignment: control immunity**, and
 default enabled. Older settings migrate to schema 11 while preserving every
 explicit value. Any absent module key, including Teleportation, migrates ON.
 
-The native desktop checkpoint has passed all 26 module boundary configurations.
-The native gamepad destination/confirmation path also has 39 passing guarded
-assertions, followed by desktop regressions and four focused module checks.
+The current exploration-guard checkpoint has passed all 26 module boundary
+configurations (897 assertions), plus desktop/gamepad casting and
+native resource, traveler, familiarity and working-save regressions.
 
 The Teleportation setting is under development on the contextual teleportation
 branch. The native desktop and gamepad destination panels now append usable spellbook
@@ -272,8 +272,11 @@ Native desktop spellbook rows, descriptions, preparation and action-bar auto-fil
 now have 31 passing guarded assertions with exact fixture cleanup.
 Native Wizard/Sorcerer level-up choices at spell levels 5 and 7 now pass 18
 guarded preview/selection/cancellation assertions. No character level is committed.
-Full campaign persistence, mod-provided mounts, special points and
-required compatibility profiles remain under qualification. See the
+A 68-assertion special-point audit now covers 22 actual casts across all five
+stable native point types and preserves 19 native campaign exclusions. A saved
+arrival boundary prevents delayed map exploration after teleportation; native
+Travel resumes exploration. Full campaign persistence, mod-provided mounts,
+other campaign/map contexts and required compatibility profiles remain under qualification. See the
 [native forensics](docs/TELEPORTATION-NATIVE-FORENSICS.md) and
 [implementation report](TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md). The
 [player smoke guide](docs/TELEPORTATION-SPELLS-SMOKE-TEST.md) covers destination

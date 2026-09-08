@@ -304,3 +304,20 @@ project-owned presentation assets. The 30-item acquisition inventory in
 `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md` maps existing stable item
 GUIDs to exact installed base-campaign loot GUIDs; target GUIDs are references
 to native Kingmaker blueprints and are not project-owned manifest entries.
+
+
+## Contextual Teleportation identities (qualification branch)
+
+The standalone feature appends three project-owned stable spell identities:
+
+| Symbol | GUID |
+|---|---|
+| `KMG.Spells.Teleport.Ability` | `82e3fb1dce1647b58d3b7169c8520af0` |
+| `KMG.Spells.GreaterTeleport.Ability` | `73d19adfe18743e0a2a3a21abf4af5f3` |
+| `KMG.Spells.WordOfRecall.Ability` | `596d85a666204d6ea5c0188e53f4b4de` |
+
+All register and validate independently of publication. Module 12, schema 11,
+controls player spell-list publication and contextual world-map runtime hooks.
+The exploration guard and familiarity ledger add no blueprint identity. No
+existing GUID or published release identity is changed. Complete qualification
+and the next unused release version remain pending in the implementation report.

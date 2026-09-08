@@ -298,3 +298,39 @@ across deferred refreshes before selecting. It records zero fixture exceptions
 and save writes. Spellbook UI (31), real resources (19), and working-save (11)
 regressions pass on the same artifact. Exact run IDs/directories and the three
 rejected exploratory runs are recorded in the implementation report.
+
+### Special Teleportation destination audit
+
+`disposable-teleportation-destinations` loads only `KMG_AUTOMATION_WORKING` through
+Steam and requires automatic exit. It inventories the actual native map, then
+uses request-local visited/revealed state for native book-event/component points
+and a representative of every stable point type. Native campaign prohibitions
+and closed states are never changed. It captures each eligible point's actual
+no-source native controls before providing one real Sorcerer book, then selects
+its Greater Teleport row and confirms through the native dialog. Exact slot
+expenditure and protected relocation state are checked across subsequent frames.
+Natively prohibited points must still offer no spell source. Books, map state,
+familiarity, time input and party state are restored before save sentinels close.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario disposable-teleportation-destinations `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
+```
+
+Read `teleportation-destinations.json` and `runtime-result.json`. This scenario
+must pass before its selected points are treated as qualified. It does not
+establish other campaign restriction states or non-main-map scene support.
+
+
+Current destination qualification: `20260908T1330037600506Z-cc0ea3d5a53a4123a156a651546ca8c3` passes
+all 68 assertions, with zero fixture exceptions or save writes. All 22 actual
+casts preserve deferred protected map state. Native Travel releases exploration;
+a second control proves malformed saved spell data cannot block ordinary travel.
+The fixture opens one adjacent native edge only after all cast checks, verifies
+zero traversal and restores it during cleanup. Read the curated point audit and
+implementation report for exact IDs, rejected probes and same-artifact regressions.
+The current complete domain count is 1,490. All 26 module boundaries passed
+897 assertions with exploration hooks 1 ON / 0 OFF and exact settings
+restoration. Full campaign disk persistence and required profiles remain open.

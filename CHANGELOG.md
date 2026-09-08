@@ -2,6 +2,11 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Prevents delayed native perception/reveal work after a magical arrival through
+  a save-owned boundary that ordinary Travel releases. The guarded special-point
+  audit passes 68 assertions, including malformed-state recovery and exact cleanup.
+  All 26 module boundaries pass 897 assertions on the same artifact.
+
 - Qualifies actual native Wizard/Sorcerer level-up spell choices and cancellation
   with 18 guarded assertions. Same-artifact spellbook/resource/working-save
   regressions pass 61 assertions, with fixture cleanup and no save writes.
