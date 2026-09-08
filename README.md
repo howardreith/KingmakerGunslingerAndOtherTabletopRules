@@ -260,6 +260,8 @@ The Teleportation setting is under development on the contextual teleportation
 branch. The native desktop destination panel now appends usable spellbook
 sources and opens a native confirmation. Guarded casts have verified real slot
 expenditure, exact and alternate arrival, Recall switching, and repeated mishaps.
+Native Travel, Escape, live source counts, repeated selection and long source
+lists also have structured evidence across actual UI frames.
 Full campaign persistence, associated-unit fixtures, remaining UI cases and
 required compatibility profiles remain under qualification. See the
 [native forensics](docs/TELEPORTATION-NATIVE-FORENSICS.md) and

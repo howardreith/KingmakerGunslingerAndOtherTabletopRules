@@ -26,6 +26,7 @@ Pushed coherent checkpoints:
 - `321c0fe884e8a43604a794e017d2cd382ac89806`: save-owned ordinary-arrival observer and guarded familiarity qualification.
 - `8eede43c0dfb3b8bfb3bbe5656b905cb2add6155`: real prepared/spontaneous source enumeration and proven native resource expenditure.
 - `53b373575fb71a80d7da69849b028f2d5a34a33b`: exact current world-map destination and capital-state composition.
+- `2f0b6bfadfca93269bc2255e98ae69bf818976f7`: native desktop rows/confirmation, canonical real casts and protected relocation.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -96,7 +97,7 @@ current-state adapter and isolated Recall-state fixture are qualified below.
 
 ## Validation checkpoints
 
-- Current domain suite: 1,467 passing cases, including 4,096 module settings round
+- Current domain suite: 1,470 passing cases, including 4,096 module settings round
   trips and 4,096 publication-intent combinations. The guarded catalog generates
   26 boundary configurations for 12 modules.
 - Clean Release build and strict installable-package validation passed for the
@@ -364,14 +365,68 @@ write sentinels. Current clean Release/package log:
 plus the map metadata check; compatibility parameter/settings checks passed 4,120.
 No generated package, runtime payload or campaign save is committed.
 
+## Native interaction across frames
+
+`disposable-teleportation-interaction` now uses actual Unity updates, native
+CameraRig scrolling, the original Travel button, the native Escape stack and
+native dialog buttons. It counts IPawnMovementHandler start/stop events, verifies
+unchanged native button callbacks/order, and restores all fixture state before
+closing save-write sentinels. A long source list uses a native ScrollRect within
+the space above/below the selected point. A fresh native-only layout measurement
+prevents previous rows from shrinking the next menu's viewport.
+
+- Final interaction run `20260908T0645599302678Z-3fbdcbc3efcc4ef3a07e1687ff737d38`,
+  directory `20260908T0645599222679Z-disposable-teleportation-interaction`, passed
+  29 assertions. Both the no-source and augmented native Travel actions emitted
+  exactly one start and completed the ordinary two-edge route. Escape, force
+  closure, stale destination, native dialog replacement, unvisited/current-point
+  omission, live count changes, exhausted-row removal and a real delayed
+  confirmation passed. Eight reopens retained a 213-unit source viewport. Twelve
+  real sources used 426 units of content within a 370.1854-unit viewport; the
+  panel remained on screen and native scrolling reached the final source.
+- Full casting regression `20260908T0651138625548Z-e62f45df4e7247b9b97325b3cf24ffc8`,
+  directory `20260908T0651138505575Z-disposable-teleportation-casting`, passed all
+  42 assertions after the layout change. Its fixture now centers distant selected
+  points through the native camera API before invoking native point selection.
+- Earlier interaction run `20260908T0616354540124Z-120ea8c2089b477f9c3b9135e7e37aed`,
+  directory `20260908T0616354420112Z-disposable-teleportation-interaction`, was FAIL:
+  the probe assumed native HandleOpen replaced an already shown dialog. IL and
+  runtime establish that it returns unchanged. The corrected probe uses native
+  ForceClose followed by native HandleOpen and proves the old request cancels
+  without closing the unrelated replacement.
+- Run `20260908T0628168568585Z-c60e43921e9642eba455525480a0b21e`, directory
+  `20260908T0628168448610Z-disposable-teleportation-interaction`, was ERROR: twenty
+  frames did not guarantee the native fade had completed at uncapped FPS, and the
+  third companion did not satisfy the assumed absent-book prerequisite. The
+  probe now waits for observable native alpha and uses temporary real native
+  Druid books on the two established fixture owners for the long-list case.
+  These unusual fixture preparations are removed before completion; production
+  publication and character acquisition remain unchanged.
+- The corrected intermediate run
+  `20260908T0637242006253Z-1d3f0bdea7de4987b5ab067c320ea295`, directory
+  `20260908T0637241916142Z-disposable-teleportation-interaction`, passed 28
+  assertions before the additional viewport-stability check.
+
+All these runs launched through Steam App ID 640820. Fixture restoration and
+zero save writes were proven, including the rejected probes. Artifacts are
+`teleportation-interaction.json` and `teleportation-casting.json` in the named
+machine-local directories. Explicit domain log:
+`artifacts/teleportation/domain-interaction-final.log`; clean Release/package log:
+`artifacts/teleportation/build-interaction-checkpoint.log`. All 1,470 domain cases
+and strict package checks passed. Runtime preflight passed 208 checks plus the
+map metadata check, and compatibility parameter/settings checks passed 4,120.
+Working-save regression `20260908T0703527193851Z-6454ae9f84a34c5aa1daee5627084490`,
+directory `20260908T0703527103850Z-working-save-smoke`, passed all eleven assertions
+with zero save writes. Complete compatibility qualification is separate.
+
 ## Remaining qualification and constraints
 
 Full campaign familiarity disk save/reload, actual associated pet/mount fixtures,
-unconscious/dead traveler cases, every UI lifecycle and normal-travel boundary,
+unconscious/dead traveler cases, remaining UI lifecycle/input boundaries,
 gamepad augmentation/navigation, complete 26-state module boundaries, and all
 required compatibility profiles remain incomplete. The current UI qualification
-uses structured native button invocation; it is not an on-screen presentation
-review of every camera position/resolution or a proof of multi-frame lifecycle.
+uses structured native button invocation and measured on-screen geometry across
+frames; it is not a presentation review of every camera position/resolution.
 
 The installed host is UMM 0.33.0.0; the requested 0.32.4 host has not been qualified.
 Required Arms and Armor and Toggle Custom Soundpacks references were absent from

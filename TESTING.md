@@ -158,3 +158,22 @@ The working save predates kingdom creation. This scenario constructs native
 kingdom data temporarily using its deserialization constructor, restores the
 original absent reference and real spellbook/map/ledger state, and verifies no
 save write. It never claims a region or founds a settlement through campaign actions.
+
+
+The guarded `disposable-teleportation-interaction` scenario uses the same named
+working save and automatic-exit requirement as the casting probe. It waits for
+actual Unity frames, scrolls the native camera to a selected point, and inspects
+native panel geometry and callbacks. It exercises native Travel before and after
+real spell sources exist, native Escape, forced dialog closure, stale destination
+cancellation, native dialog replacement, live/exhausted source rows, and long-list
+scrolling. Native movement-start events establish exactly one ordinary route;
+real contextual confirmation establishes one magical spell use. Its iterator
+restores the fixture even when the outer runner stops early. This scenario writes
+no save and cannot be invoked through normal player UI.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario disposable-teleportation-interaction `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true -Confirm:$false
+```

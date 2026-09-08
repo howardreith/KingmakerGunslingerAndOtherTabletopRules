@@ -893,6 +893,7 @@
     <Compile Include="Spells\Teleportation\TeleportationOutcomeWorld.cs" />
     <Compile Include="Spells\Teleportation\TeleportationCastExecution.cs" />
     <Compile Include="Spells\Teleportation\TeleportContextPresentation.cs" />
+    <Compile Include="Spells\Teleportation\TeleportContextLayoutPolicy.cs" />
     <Compile Include="Spells\Teleportation\TeleportationText.cs" />
     <Compile Include="Spells\Teleportation\TeleportationCombatLog.cs" />
     <Compile Include="Spells\Teleportation\WorldMapPointSpellActionPatches.cs" />
@@ -910,6 +911,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationResources.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationContext.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationCasting.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInteraction.cs" />
     <Compile Include="Compatibility\EasternWeaponArmsArmorCompatibility.cs" />
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />
