@@ -620,6 +620,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'disposable-teleportation-persistence' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'transaction-owned persistence input'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'disposable-teleportation-familiarity' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -1500,11 +1506,39 @@ function Assert-KmgRuntimeScenarioPreflight {
     }
     if ($metadata.RequiresSaveName) {
         $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')
-        $requiredParameterCount = if ($creatorRegression) { 4 } else { 1 }
+        $persistence = $Scenario -ceq 'disposable-teleportation-persistence'
+        if ($persistence) {
+            if ($Parameters.Count -ne 3 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath') -or
+                $Parameters.phase -cnotin @('A', 'B', 'C', 'D') -or $Parameters.planPath -isnot [string] -or
+                -not [IO.Path]::IsPathRooted($Parameters.planPath) -or -not (Test-Path -LiteralPath $Parameters.planPath -PathType Leaf)) {
+                throw 'Persistence requires an exact phase and an existing guarded plan.'
+            }
+            $guardedPath = [IO.Path]::GetFullPath($Parameters.planPath)
+            if (-not $guardedPath.StartsWith($script:KmgRuntimeEvidenceRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
+                throw 'Persistence plan must be inside the guarded evidence root.'
+            }
+            for ($ancestor = Get-Item -LiteralPath $guardedPath; $null -ne $ancestor; $ancestor = if ($ancestor -is [IO.DirectoryInfo]) { $ancestor.Parent } else { $ancestor.Directory }) {
+                if (($ancestor.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw 'Persistence plan cannot cross a reparse point.' }
+            }
+            $plan = Get-Content -LiteralPath $Parameters.planPath -Raw | ConvertFrom-Json
+            $txPattern = '[0-9]{8}T[0-9]{13}Z_[a-f0-9]{32}'
+            if ($plan.transactionId -cnotmatch ('^' + $txPattern + '$') -or $plan.phase -cne $Parameters.phase -or
+                $plan.schemaVersion -ne 1 -or $plan.version -cne $ExpectedVersion -or
+                $plan.input.name -cne $Parameters.saveName -or
+                $plan.input.sha256 -cne (Get-FileHash -LiteralPath $plan.input.path -Algorithm SHA256).Hash.ToLowerInvariant()) {
+                throw 'Persistence input identity or hash differs from its exact plan.'
+            }
+            $priorPhase = @{ B = 'A'; C = 'B'; D = 'C' }
+            $allowedName = if ($Parameters.phase -ceq 'A') { 'KMG_AUTOMATION_WORKING' } else {
+                'KMG_TELEPORT_PERSISTENCE_' + $plan.transactionId + '_' + $priorPhase[$Parameters.phase]
+            }
+            if ($Parameters.saveName -cne $allowedName) { throw 'Persistence input is not owned by this phase transaction.' }
+        }
+        $requiredParameterCount = if ($persistence) { 3 } elseif ($creatorRegression) { 4 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
-            $Parameters.saveName -cne $metadata.PermittedSaveName) {
+            (-not $persistence -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
             throw "$Scenario requires its exact working save and allowlisted parameters."
         }
         if ($creatorRegression -and (-not $Parameters.ContainsKey('race') -or
@@ -1690,6 +1724,8 @@ function New-KmgRuntimeRequest {
         parameters = if ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')) {
             [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
                 class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
+        } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {
+            [ordered]@{ saveName = [string]$Parameters.saveName; phase = [string]$Parameters.phase; planPath = [string]$Parameters.planPath }
         } elseif ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
         } elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {

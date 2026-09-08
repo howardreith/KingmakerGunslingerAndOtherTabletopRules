@@ -52,3 +52,72 @@ The actual native MarkLocationExplored action, followed by reveal/open/seen flag
 All 85 pre-existing save files retained their full SHA-256, length, creation/write times, and attributes in all three runs. The normal native load preserved the working header exactly; there were no new save files and no game process remained. Protection reports: `hardening-save-protection-20260908T2025396335308Z`, `hardening-save-protection-20260908T2029118188070Z`, and `hardening-save-protection-20260908T2031468113536Z` beneath the evidence root.
 
 A fixture-local C# name collision and a PowerShell parameter parse error were corrected before runtime. Neither attempted a campaign load or write. Fresh-process disk persistence, UI coexistence, the final native suite, module matrix, deterministic release builds, and public package verification remain required.
+
+## Fresh-process persistence checkpoint
+
+Policy/loader commit `830e96fddb6547da99a541319b4ba93fd6f19281` is pushed.
+The new persistence harness is documented in
+[TELEPORTATION-PERSISTENCE-QUALIFICATION.md](docs/TELEPORTATION-PERSISTENCE-QUALIFICATION.md).
+
+Development artifact: ZIP `1f3acce7b03f3e4fdf537e198fc09348b486789e36ea19dfa240c3400b0e99ea`,
+DLL `9c0950bde194b1037269eee7d491b4c3437b3bf6f720ff42f977d9cc1df99300`,
+MVID `2b347d2b-87fb-4bb7-885d-3da1e5b68bfd`, source-state
+`b572bcc43143b81740db4511a3f3e037968b917c88846d383fddb7f6c08c6551`.
+Deployment: `deployments/20260908T2150221586271Z/deployment.json`.
+Transaction directory beneath the evidence root:
+`teleportation-persistence-20260908T2150222561999Z_98ff6a1c8c1e4b6db9df61dc5ae0da7f`.
+
+| Phase | Fresh process | Run ID | Assertions |
+| --- | --- | --- | --- |
+| A: establish/native save | 17716 | 20260908T2150242698997Z-106e2046fd4544438dc9ab88920c7f7b | 12 PASS |
+| B: reload/travel/cast/save | 24944 | 20260908T2152055558836Z-faef0cad17af420ca8c83d14558882d7 | 11 PASS |
+| C: module OFF/reload/save | 28008 | 20260908T2153375576905Z-52f5afc00a6c4bdaaa7963f8040a82c0 | 7 PASS |
+| D: module ON/fresh reload | 19292 | 20260908T2154497622660Z-f5f61fa5cc5941e49c5a289dbbbb3ebf | 2 PASS |
+
+All 32 assertions passed on the same artifact. Native campaign ZIP saves A, B,
+and C passed header and exact UnitPart checks. Fresh processes restored the one
+canonical owner, format-1 payload, migration flag, counts and exploration
+boundary exactly. Both Teleport families used positive persisted visits. Real
+contextual casts consumed one native prepared use and added no familiarity.
+Native intermediate/final ordinary boundaries each incremented exactly once;
+the alleged duplicate count remains unreproduced and movement code is unchanged.
+
+Cleanup removed only transaction-owned Manual_303/304/305 A/B/C saves. All 85
+pre-existing files, including Baseline and Working, retained hashes and metadata.
+Settings bytes and the complete Mods tree matched the initial inventory; no game
+process remained. New KMG settings backup and UMM cache cleanup is recorded in
+`owned-mod-sidecar-cleanup.json`. No raw artifacts or saves are committed.
+
+Current source checks: repository validation PASS; full domain suite 1,550 PASS;
+clean Release build with warnings as errors PASS; strict UMM package PASS;
+guarded preflight 283 PASS; settings/ownership/sidecar transaction 9 PASS;
+Windows save-protection 6 PASS; exact module parameter/settings 4,129 PASS;
+compatibility filesystem transactions and runner bindings PASS.
+
+Rejected development probes retained truthfully:
+
+- Three fixture compilation errors and an isolated OrderedDictionary copy error
+  were fixed before campaign writes.
+- A PowerShell 7 compatibility-fixture comparison rejected timestamp string
+  precision (`...428504Z` versus `...4285040Z`) although bytes and timestamps were
+  unchanged. The documented Windows PowerShell runner passed; production profile
+  code was not changed for that formatting difference.
+- Transaction `20260908T2126046632787Z_9fe1ffebea7048d79d56b86a70fe0223`
+  stopped before launch on a PowerShell path-walk property error. All original
+  saves/settings/Mods remained unchanged.
+- Transaction `20260908T2129139088157Z_8878bdaa90574a2f9fa71ee28600d13f`
+  passed A/B but failed C when a fixture snapshot assumed a point anchor during
+  native Travel. No production defect was inferred. Its two owned saves were
+  deleted and all existing saves preserved. The initial full-tree check found
+  newly created KMG `.previous` and exact DLL cache files; precise subsequent
+  cleanup restored the complete original tree, recorded in
+  `post-failure-recovery.json`. This attempt is not a persistence PASS.
+- Automatic approval review rejected an isolated test edit after interpreting
+  its fixture DLL path as the live assembly. The test now explicitly confines
+  its directory to repository artifacts/tests and uses a harmless `.bin`
+  payload. All nine transaction checks pass; no installed DLL was overwritten
+  with fixture content.
+
+UI coexistence, final artifact native scenarios/module matrix, deterministic
+release builds and public package verification remain required. These development
+results are not substituted for qualification of the eventual release commit.

@@ -1148,6 +1148,12 @@
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />
     <Compile Include="RuntimeTesting\LoadGameButtonActionObservation.cs" />
     <Compile Include="RuntimeTesting\WorkingSaveSmokeScenario.cs" />
+    <Compile Include="RuntimeTesting\TeleportPersistenceIdentity.cs" />
+    <Compile Include="RuntimeTesting\TeleportPersistencePlan.cs" />
+    <Compile Include="RuntimeTesting\GuardedDisposableSaveLease.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPersistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPersistenceMovement.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPersistenceSave.cs" />
     <Compile Include="RuntimeTesting\GuardedReadOnlySave.cs" />
     <Compile Include="RuntimeTesting\GuardedSaveLoadCounter.cs" />
   </ItemGroup>

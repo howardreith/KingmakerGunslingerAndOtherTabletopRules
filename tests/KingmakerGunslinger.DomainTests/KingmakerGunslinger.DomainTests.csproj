@@ -155,6 +155,7 @@
     <Compile Include="TeleportationOutcomeTests.cs" />
     <Compile Include="TeleportationPolicyTests.cs" />
     <Compile Include="TeleportationArrivalTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\TeleportPersistenceIdentity.cs"><Link>RuntimeTesting\TeleportPersistenceIdentity.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\GuardedSaveLoadCounter.cs"><Link>RuntimeTesting\GuardedSaveLoadCounter.cs</Link></Compile>
     <Compile Include="TeleportationResourceTests.cs" />
     <Compile Include="TeleportationWorldMapTests.cs" />

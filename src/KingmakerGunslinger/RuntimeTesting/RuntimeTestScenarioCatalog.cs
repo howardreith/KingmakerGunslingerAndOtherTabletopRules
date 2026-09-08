@@ -16,6 +16,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string DisposableTeleportationInteraction = "disposable-teleportation-interaction";
         internal const string DisposableTeleportationCasting = "disposable-teleportation-casting";
         internal const string DisposableTeleportationContext = "disposable-teleportation-context";
+        internal const string DisposableTeleportationPersistence = "disposable-teleportation-persistence";
         internal const string DisposableTeleportationFamiliarity = "disposable-teleportation-familiarity";
         internal const string ObserveTeleportationWorldMap = "observe-teleportation-world-map";
         internal const string ObserveTeleportationNativeContracts = "observe-teleportation-native-contracts";
@@ -598,6 +599,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableMidgameFirearms,
                 ObserveTeleportationNativeContracts,
                 ObserveTeleportationWorldMap,
+                DisposableTeleportationPersistence,
                 DisposableTeleportationFamiliarity,
                 DisposableTeleportationResources,
                 DisposableTeleportationContext,
