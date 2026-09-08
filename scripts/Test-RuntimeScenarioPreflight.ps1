@@ -42,6 +42,7 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
 $expected = @(
     'mod-load-smoke',
     'observe-teleportation-native-contracts',
+    'observe-teleportation-world-map',
     'disposable-midgame-firearms',
     'working-save-midgame-prepare',
     'working-save-midgame-verify-cleanup',
@@ -819,6 +820,8 @@ function Get-TreeFingerprint([string]$Path) {
     if (-not (Test-Path -LiteralPath $Path)) { return '<missing>' }
     return (@(Get-ChildItem -LiteralPath $Path -Recurse -Force |
         Sort-Object FullName | ForEach-Object {
+            # Refresh cached enumeration metadata before comparing filesystem state.
+            $_.Refresh()
             $length = if ($_.PSIsContainer) { 0 } else { $_.Length }
             '{0}|{1}|{2}' -f $_.FullName, $length, $_.LastWriteTimeUtc.Ticks
         }) -join "`n")
@@ -845,7 +848,12 @@ finally {
     Remove-Item Function:\global:Get-CimInstance
     Remove-Item Function:\global:Start-Process
 }
-Assert-True ((Get-TreeFingerprint $artifactRoot) -ceq $artifactBefore) `
+$artifactAfter = Get-TreeFingerprint $artifactRoot
+if ($artifactAfter -cne $artifactBefore) {
+    Compare-Object ($artifactBefore -split "`n") ($artifactAfter -split "`n") |
+        ForEach-Object { Write-Warning ('Unexpected artifact delta: {0} {1}' -f $_.SideIndicator, $_.InputObject) }
+}
+Assert-True ($artifactAfter -ceq $artifactBefore) `
     'unsupported-does-not-build-or-stage-package'
 Assert-True ((Get-DirectoryIdentity $backupRoot) -ceq $backupBefore) `
     'unsupported-creates-no-backup'
@@ -859,3 +867,9 @@ if ($failures.Count -ne 0) {
     throw "Runtime scenario preflight tests failed: $($failures -join ', ')"
 }
 Write-Host "Runtime scenario preflight tests passed: $checks"
+
+$teleportationMap = Get-KmgRuntimeScenarioMetadata 'observe-teleportation-world-map'
+if (-not $teleportationMap.RequiresSaveName -or $teleportationMap.PermittedSaveName -cne 'KMG_AUTOMATION_WORKING' -or $teleportationMap.RequiresManualInteraction -or -not $teleportationMap.UsesWorkingStageTimeouts) {
+    throw 'Teleportation world-map observation must use the autonomous guarded working-save contract.'
+}
+Write-Host 'Teleportation world-map guarded metadata check passed.'

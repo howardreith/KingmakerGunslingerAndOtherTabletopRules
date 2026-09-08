@@ -212,3 +212,56 @@ result directory `20260908T0002218529266Z-working-save-smoke`. This proves the
 existing working-save path remains functional for this artifact. It does not
 prove live contextual casting, which remains pending native adapters and
 feature qualification. Release metadata remains 0.0.116.
+
+
+## Guarded native destination panel observation
+
+`observe-teleportation-world-map` requires the exact guarded
+`KMG_AUTOMATION_WORKING` load, then creates a disposable world-map scene fixture
+with `Game.LoadArea(BlueprintRoot.GlobalMap.GlobalMapEnterPoint, AutoSaveMode.None)`.
+It never invokes a travel spell or claims relocation qualification. The working
+save is in the prologue: the first run correctly failed because no revealed
+non-origin point was available. Its run ID was
+`20260908T0017310600627Z-090f3920894d48c1b50bf1599e9c6639`.
+
+The revised probe records all scene points before fixture changes and selects
+Oleg's exact stable blueprint ID when an ordinary revealed fixture is absent.
+It temporarily sets that point's reveal/visited flags. The reflection seam is
+`LocationData.IsRevealed`'s private setter, whose entire native body assigns the
+backing boolean. Calling native `Reveal()` would also execute campaign triggers,
+so this setter is used only inside the guarded disposable observation. All three
+flags are restored in `finally`; the save-write sentinel remains installed.
+
+Run `20260908T0028468837443Z-700a1cbb6ead4159812161c32be81f08` passed all five
+assertions. Directory: `20260908T0028468636122Z-observe-teleportation-world-map`.
+The structured files `teleportation-scene-points.json` and
+`teleportation-world-map-forensics.json` record 611 native scene points, exact
+selection correlation, unchanged origin/time/travel command and party IDs,
+restored fixture flags, a closed panel, and no observed save writes.
+The remaining 95 inventory blueprints are not current main-campaign scene
+anchors; blueprint registration alone must never make them eligible.
+
+The live desktop `GlobalMapMessageBox` owns a `LocationGoToDialog` CanvasGroup
+with `VerticalLayoutGroupWorkaround` and `ContentSizeFitter`. Its native child
+`Controllers` contains the standard Accept/Cancel pair and the alternative OK
+control; `TeleportControllers` is the settlement-circle action. Buttons are
+native `ButtonPF` objects with persistent listeners `Accept`, `Hide`, and
+`OnTeleportPressed`. Additional positive spell rows can be appended to this
+existing vertical layout after native composition. No native listener needs
+replacement, no normal-travel continuation needs synthesis, and no raw click
+patch is justified. Presentation sizing still needs live casting qualification.
+
+Canonical token placement uses the `GlobalMapLocation` component's own transform
+as the anchor, through native `UpdatePawnPosition`; `LocationVisualPostion` is a
+separate visual field. The probe now records both explicitly. This inventory
+proves structural anchors, not campaign permission or safe spell arrival.
+
+Validation for this observer: 1,428 domain tests, repository validation, clean
+Release/package build, strict installable-package validation, and guarded native
+panel observation pass. The preflight fingerprint assertion now captures its
+post-operation snapshot once and emits exact deltas on failure. A later diagnostic
+identified only stale directory enumeration timestamps (deploy-staging, the exact
+build bin directory, and packages); no file or directory identity delta appeared.
+The fingerprint now refreshes each FileSystemInfo before reading its metadata,
+retaining both file and directory comparisons. Failed preflight runs are not
+used as successful qualification evidence.

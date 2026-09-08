@@ -881,6 +881,7 @@
     <Compile Include="Spells\Teleportation\TeleportFailureSeverityPolicy.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityState.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInventory.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationWorldMapForensics.cs" />
     <Compile Include="Compatibility\EasternWeaponArmsArmorCompatibility.cs" />
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />
