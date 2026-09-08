@@ -22,6 +22,7 @@ Pushed coherent checkpoints:
 - `b919c267bcadc4f005a5777ea969778d84e64c57`: guarded native world-map panel observation.
 - `87782a8a8c742aa91f43b663e2d88ac138518ea0`: default-ON twelfth module and schema-11 contracts.
 - `15e7a644b1e11dc473fc4fc2d461ae935d139961`: real strategic spell blueprints and isolated native-list transactions.
+- `321c0fe884e8a43604a794e017d2cd382ac89806`: save-owned ordinary-arrival observer and guarded familiarity qualification.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. The draft
 pull request and final source commit list remain pending implementation.
@@ -61,7 +62,8 @@ other extra components are rejected.
 
 Native `Spellbook.Spend` handles prepared groups and spontaneous slots. Native
 `RestoreSpontaneousSlots` and captured prepared-slot availability restoration
-were traced, but the production cast-source/resource adapter is not implemented.
+are implemented in the production cast-source/resource adapter. Guarded native
+resource probes are recorded below; complete contextual transactions remain pending.
 
 The settlement-circle wrapper calls `TeleportParty`, which opens outgoing edges.
 That wrapper would violate the no-reveal contract. The narrower native
@@ -87,7 +89,7 @@ exclusions and current campaign arrival gates remain qualification work.
 
 ## Validation checkpoints
 
-- Current domain suite: 1,439 passing cases, including 4,096 module settings round
+- Current domain suite: 1,449 passing cases, including 4,096 module settings round
   trips and 4,096 publication-intent combinations. The guarded catalog generates
   26 boundary configurations for 12 modules.
 - Clean Release build and strict installable-package validation passed for the
@@ -179,9 +181,56 @@ Additional publication qualification:
 - Runtime preflight passed all 208 checks plus the world-map metadata check;
   the compatibility module parameter/settings regression passed all 4,120 checks.
 
+## Real spell-resource checkpoint
+
+`TeleportationSpellbookAdapter` reads current active-party sources, never cached
+class possession. Prepared uses are exact current native instances, including
+reciprocal opposition-slot groups; spontaneous sources require actual known data
+and a positive native correct-level pool. Sources retain caster/book identity,
+current counts and labels and re-resolve when selected later.
+
+`TeleportationNativeCastResource` captures all native resource levels and exact
+collection/slot/ability/link identities. It calls native `Spellbook.Spend`,
+requires its success, proves exactly one selected use changed, and guards duplicate
+calls. Exact prepared-field or native spontaneous restoration is allowed once
+only after an attributable one-use change. Another operation's resource change
+cannot be refunded by this lease. The request-local transaction still owns the
+separate pre-effect/after-effect and rules-failure refund decisions.
+
+Initial installed-profile run
+`20260908T0318149717580Z-e4d810cac736401d9836f64429241bb7`, directory
+`20260908T0318149620713Z-disposable-teleportation-resources`, passed 17 assertions.
+Seven real sources covered two owners, three native spellbook types, opposition
+and ordinary preparations, fifth/seventh-level spontaneous slots, exact spend,
+duplicate suppression, exact restoration and stale/exhausted omission. Original
+books/resources/attributes, party, time and map were restored; no save write.
+This predates the additional attribution and special-known controls; no
+contextual casting is qualified by this probe.
+
+- Attribution run `20260908T0327477925922Z-7b95d23ec68642499170889059dbc317`,
+  directory `20260908T0327477805944Z-disposable-teleportation-resources`, 18
+  assertions PASS, including refusal to refund another operation's native debit.
+- Attribution-build working-save regression
+  `20260908T0332593382632Z-b752783d7c6a46e4a33906d50f45a7ff`, directory
+  `20260908T0332593301534Z-working-save-smoke`, eleven assertions PASS.
+- Final resource checkpoint run
+  `20260908T0342259125609Z-337c4bc0fcbd45f6ae14803d9563b042`, directory
+  `20260908T0342259005448Z-disposable-teleportation-resources`, 19 assertions PASS.
+  This adds an exact native special-only known instance, which spends one real
+  spontaneous slot through the same adapter. Both common and special known lists
+  are checked during discovery, capture and expenditure. Fixture cleanup and
+  save-write sentinels passed.
+- All 1,449 domain cases, clean Release build and strict package validation passed
+  for the final resource checkpoint (`artifacts/teleportation/build-resources-special.log`).
+  Runtime preflight remains 208 passing checks plus map metadata; the compatibility
+  parameter/settings regression remains 4,120 passing checks.
+
+These resource runs used the installed profile. Standalone save-backed resources,
+full required compatibility profiles and all contextual casting gates remain open.
+
 ## Remaining qualification and constraints
 
-Native cast-source enumeration/spend/compensation, UI augmentation and native
+End-to-end contextual source transactions, UI augmentation and native
 confirmation, campaign familiarity save/reload, canonical damage/RNG,
 relocation invariants, all required contextual scenarios, persistence, complete
 26-state runtime boundaries, and compatibility profiles remain incomplete.

@@ -9,9 +9,11 @@
   receives a direct spell grant, and the spells have no local-map effect.
 - Adds pure familiarity/outcome/source/transaction policies and guarded native
   panel, inventory, and publication checks. Adds a save-owned familiarity ledger
-  and guarded native ordinary-arrival observation. Contextual casting, full save/reload,
-  native resource expenditure, relocation, and full runtime qualification remain
-  incomplete. Release metadata is unchanged.
+  and guarded native ordinary-arrival observation.
+- Reads real current spellbook sources, groups linked opposition preparations as
+  one use, and verifies native expenditure and exact pre-effect compensation.
+  Contextual casting, full save/reload, relocation, and complete runtime
+  qualification remain incomplete. Release metadata is unchanged.
 
 ## 0.0.116-midgame-firearms-and-protection
 

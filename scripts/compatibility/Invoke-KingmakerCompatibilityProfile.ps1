@@ -59,6 +59,7 @@ param(
         'observe-teleportation-native-contracts',
         'observe-teleportation-world-map',
         'disposable-teleportation-familiarity',
+        'disposable-teleportation-resources',
         'observe-expanded-summoning-inventory',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
@@ -330,6 +331,7 @@ try {
         if ($name -in @('musket-master-mechanics-and-starter',
             'working-save-smoke', 'disposable-brown-fur-native-cast',
             'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
+            'disposable-teleportation-resources',
             'summon-same-turn-activation', 'summon-same-turn-acadamae',
             'summon-same-turn-multiple', 'summon-same-turn-native-control',
             'summon-same-turn-rtwp-control')) {
