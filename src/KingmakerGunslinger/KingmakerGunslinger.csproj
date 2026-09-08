@@ -1148,6 +1148,8 @@
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />
     <Compile Include="RuntimeTesting\LoadGameButtonActionObservation.cs" />
     <Compile Include="RuntimeTesting\WorkingSaveSmokeScenario.cs" />
+    <Compile Include="RuntimeTesting\GuardedReadOnlySave.cs" />
+    <Compile Include="RuntimeTesting\GuardedSaveLoadCounter.cs" />
   </ItemGroup>
 
   <ItemGroup>

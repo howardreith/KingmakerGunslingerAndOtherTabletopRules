@@ -34,15 +34,16 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (sources == null) throw new ArgumentNullException("sources");
             var empty = new WorldMapPointSpellAction[0];
             // No enumeration, UI construction, continuation or resource operation on the native-only path.
-            if (blocks != TeleportCastBlock.None || !TeleportDestinationPolicy.Evaluate(destination, originId, catalog).Eligible)
+            if (blocks != TeleportCastBlock.None || !TeleportDestinationPolicy.EvaluateSafety(destination, originId, catalog).Eligible)
                 return new WorldMapPointSpellActions<T>(native, empty);
             var usable = sources.Where(TeleportCastAvailabilityPolicy.Usable).GroupBy(value => value.Key, StringComparer.Ordinal)
                 // Conflicting equivalent variants are ambiguous: omit the pool rather than guess its count.
                 .Where(group => group.All(value => value.Uses == group.First().Uses &&
                     value.Kind == group.First().Kind && value.SpellLevel == group.First().SpellLevel &&
                     value.PartyOrder == group.First().PartyOrder))
-                .Select(group => group.First()).Where(value => value.Spell != TeleportSpellKind.WordOfRecall ||
-                    WordOfRecallDestinationPolicy.Matches(destination.Id, capitalEstablished, nativeCapitalId))
+                .Select(group => group.First()).Where(value => value.Spell == TeleportSpellKind.WordOfRecall
+                    ? WordOfRecallDestinationPolicy.Matches(destination.Id, capitalEstablished, nativeCapitalId)
+                    : TeleportDestinationPolicy.Evaluate(destination, originId, catalog).Eligible)
                 .OrderBy(value => value.Spell).ThenBy(value => value.PartyOrder)
                 .ThenBy(value => value.CasterId, StringComparer.Ordinal).ThenBy(value => value.BookId, StringComparer.Ordinal).ToArray();
             var actions = usable.Select(value => new WorldMapPointSpellAction(destination, originId, value,

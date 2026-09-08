@@ -59,7 +59,10 @@ namespace KingmakerGunslinger.DomainTests
             NativeOnly(Compose(Point(visits: 0), sources));
             NativeOnly(Compose(Point(Origin), sources));
             NativeOnly(Compose(Point(), sources, catalog: Catalog(Target)));
-            NativeOnly(Compose(Point(WordOfRecallDestinationPolicy.OlegId, visits: 0), sources));
+            NativeOnly(Compose(Point(WordOfRecallDestinationPolicy.OlegId, visits: 0),
+                sources.Where(value => value.Spell != TeleportSpellKind.WordOfRecall)));
+            NativeOnly(Compose(Point(visits: 0, nativeVisited: true), sources));
+            NativeOnly(Compose(Point(visits: -1, nativeVisited: true), sources));
         }
         internal static void SupportedKindsAndNativeVisit()
         {
@@ -67,8 +70,33 @@ namespace KingmakerGunslinger.DomainTests
                 if (kind != TeleportPointKind.Unknown)
                     Assertions.True(TeleportDestinationPolicy.Evaluate(Point(kind: kind), Origin, Catalog()).Eligible,
                         "Stable visited settlements, crossroads and persistent non-area kinds share positive eligibility.");
-            Assertions.True(TeleportDestinationPolicy.Evaluate(Point(visits: 0, nativeVisited: true), Origin, Catalog()).Eligible,
-                "Native visited point is eligible while migration records its first count.");
+            foreach (bool nativeVisited in new[] { false, true })
+            {
+                var point = Point(visits: 0, nativeVisited: nativeVisited);
+                Assertions.Equal(TeleportDestinationReason.Unvisited,
+                    TeleportDestinationPolicy.Evaluate(point, Origin, Catalog()).Reason,
+                    "Live native state cannot substitute for persisted arrival evidence.");
+                NativeOnly(Compose(point, new[] { Source(), Source(TeleportSpellKind.GreaterTeleport) }));
+            }
+            var ledger = TeleportFamiliarityState.Parse("1|1");
+            ledger.MigrateLegacy(new[] { Target });
+            NativeOnly(Compose(Point(visits: ledger.Count(Target), nativeVisited: true),
+                new[] { Source(), Source(TeleportSpellKind.GreaterTeleport) }));
+            var arrival = new TeleportOrdinaryArrivalObservation(0,
+                new[] { new TeleportRouteBoundary(Target, 10, true) });
+            foreach (string id in arrival.Complete(10, true, Target)) ledger.RecordOrdinaryArrival(id);
+            foreach (string id in arrival.Complete(10, true, Target)) ledger.RecordOrdinaryArrival(id);
+            Assertions.Equal(1, ledger.Count(Target), "An actual completed boundary credits exactly once.");
+            Assertions.Equal(2, Compose(Point(visits: ledger.Count(Target)),
+                new[] { Source(), Source(TeleportSpellKind.GreaterTeleport) }).SpellActions.Count,
+                "An ordinary arrival enables both Teleport families even without a native flag.");
+            string saved = "1|1|" + Target + ":7";
+            var existing = TeleportFamiliarityState.Parse(saved);
+            existing.MigrateLegacy(new[] { Target, Book2 });
+            Assertions.Equal(saved, existing.Serialize(), "Existing v0.0.118 payload and migration flag are unchanged.");
+            Assertions.Equal(2, Compose(Point(visits: existing.Count(Target)),
+                new[] { Source(), Source(TeleportSpellKind.GreaterTeleport) }).SpellActions.Count,
+                "Existing positive historical counts retain exact eligibility.");
         }
         internal static void DestinationReasonsAreExact()
         {
@@ -117,10 +145,13 @@ namespace KingmakerGunslinger.DomainTests
         internal static void RecallUsesOnlyLockedDestination()
         {
             var recall = new[] { Source(TeleportSpellKind.WordOfRecall) };
-            Assertions.Equal(1, Compose(Point(WordOfRecallDestinationPolicy.OlegId), recall).SpellActions.Count, "Pre-capital Oleg.");
+            Assertions.Equal(1, Compose(Point(WordOfRecallDestinationPolicy.OlegId, visits: 0), recall).SpellActions.Count,
+                "Pre-capital Oleg is a fixed sanctuary, independent of Teleport familiarity.");
+            NativeOnly(Compose(Point(WordOfRecallDestinationPolicy.OlegId, visits: -1), recall));
             NativeOnly(Compose(Point(), recall));
             NativeOnly(Compose(Point(WordOfRecallDestinationPolicy.CapitalId), recall));
-            Assertions.Equal(1, Compose(Point(WordOfRecallDestinationPolicy.CapitalId), recall, capital: true).SpellActions.Count, "Established capital.");
+            Assertions.Equal(1, Compose(Point(WordOfRecallDestinationPolicy.CapitalId, visits: 0), recall, capital: true).SpellActions.Count,
+                "Established capital retains exact sanctuary eligibility without a Teleport ledger count.");
             NativeOnly(Compose(Point(WordOfRecallDestinationPolicy.OlegId), recall, capital: true));
             NativeOnly(Compose(Point(WordOfRecallDestinationPolicy.OlegId), recall, capital: true, capitalId: null));
             NativeOnly(Compose(Point(WordOfRecallDestinationPolicy.CapitalId, facts: TeleportDestinationFacts.Required & ~TeleportDestinationFacts.Active), recall, capital: true));

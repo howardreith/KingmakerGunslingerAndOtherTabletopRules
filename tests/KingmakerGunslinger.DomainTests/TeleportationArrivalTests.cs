@@ -71,6 +71,7 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void SaveOwnedObserverContract()
         {
+            VerifyReadOnlyNativeLoadCounter();
             string part = File.ReadAllText("src/KingmakerGunslinger/Spells/Teleportation/UnitPartTeleportFamiliarity.cs");
             string patches = File.ReadAllText("src/KingmakerGunslinger/Spells/Teleportation/TeleportFamiliarityPatches.cs");
             string runtime = File.ReadAllText("src/KingmakerGunslinger/Spells/Teleportation/TeleportFamiliarityRuntime.cs");
@@ -82,6 +83,27 @@ namespace KingmakerGunslinger.DomainTests
                 !runtime.Contains("FindPath("), "Observe actual existing path geometry independently of reveal without planning or moving.");
             Assertions.True(patches.Contains("source[index].opcode == OpCodes.Stloc_1") &&
                 patches.Contains("load.labels.AddRange(instruction.labels)"), "Capture native initialized baseline and preserve branch targets at returns.");
+        }
+        private static void VerifyReadOnlyNativeLoadCounter()
+        {
+            const string before = "{\"Name\":\"working\",\"LoadedTimes\":8,\"GameId\":\"campaign\"}";
+            const string after = "{\"Name\":\"working\",\"LoadedTimes\":9,\"GameId\":\"campaign\"}";
+            var counter = new KingmakerGunslinger.RuntimeTesting.GuardedSaveLoadCounter(before);
+            Assertions.False(counter.Complete, "Opening a save grants no commit.");
+            Assertions.Throws<InvalidOperationException>(() => counter.SuppressCommit(), "An uncorrelated commit is rejected.");
+            foreach (string wrong in new[] { before, after.Replace("campaign", "another"), after.Replace(":9", ":10") })
+                Assertions.Throws<InvalidOperationException>(() => counter.SuppressHeader("header", wrong),
+                    "Only one exact native LoadedTimes increment may be suppressed.");
+            Assertions.Throws<InvalidOperationException>(() => counter.SuppressHeader("player", after), "Campaign writes cannot masquerade as bookkeeping.");
+            counter.SuppressHeader("header", after);
+            Assertions.False(counter.Complete, "Header observation requires its matching native commit boundary.");
+            Assertions.Throws<InvalidOperationException>(() => counter.SuppressHeader("header", after), "Duplicate header callback rejected.");
+            counter.SuppressCommit();
+            Assertions.True(counter.Complete, "Exactly one correlated header/commit pair completes without a disk write.");
+            Assertions.Throws<InvalidOperationException>(() => counter.SuppressCommit(), "Duplicate commit rejected.");
+            foreach (string invalid in new[] { "{}", "{\"LoadedTimes\":-1}", "{\"LoadedTimes\":2147483647}", "{\"LoadedTimes\":\"8\"}" })
+                Assertions.Throws<InvalidOperationException>(() => new KingmakerGunslinger.RuntimeTesting.GuardedSaveLoadCounter(invalid),
+                    "Ambiguous or overflowed native bookkeeping cannot authorize a load write.");
         }
     }
 }
