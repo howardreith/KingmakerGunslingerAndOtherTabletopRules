@@ -1,8 +1,27 @@
 # Installation, updates, removal, and compatibility
 
-Current stabilization candidate identity is
-`0.0.117-elemental-char-gen-stabilization`; its disposable acceptance archive is
+Current release identity is
+`0.0.117-elemental-char-gen-stabilization`; its installable UMM archive is
 `KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip`.
+Download this file from the
+[0.0.117 release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.117)
+and install it through Unity Mod Manager. Preserve your FeatureModules.json
+settings and restart the game after updating. UMM displays the numeric version
+0.0.117. Elemental Races uses its existing setting and defaults ON.
+
+The owner accepted the installed candidate and authorized publication. All
+nineteen visible alternate racial traits are qualified; Treacherous Earth and
+Nereid Fascination remain unavailable. The two global ZFavoredClass Trait
+selections retain their category choices with Bodyguard OFF or ON. Existing
+ZFavoredClass custom-data exceptions are recorded separately and are not repaired
+by this release. See the [release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md)
+for exact artifacts, compatibility coverage and retained limitations.
+
+## Historical candidate qualification
+
+The following candidate records retain their original scope and pending gates.
+They do not supersede the accepted release status above.
+
 The guarded local workflow builds `KingmakerGunslinger-0.0.117-local-runtime.zip`
 and validates its immutable sidecar before backup-first deployment. Final exact
 artifact hashes and installation status belong to the

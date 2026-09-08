@@ -1,6 +1,6 @@
 # Kingmaker Gunslinger
 
-Current disposable acceptance candidate: **`0.0.117-elemental-char-gen-stabilization`**.
+Current version: **`0.0.117-elemental-char-gen-stabilization`** (UMM: **0.0.117**).
 Elemental heritage and alternate racial traits now use the native Heritage
 route before ability allocation and skills. The 12 heritages and 19 implemented
 alternate racial traits retain their identities; Treacherous Earth and Nereid
@@ -8,12 +8,13 @@ Fascination remain registered but unpublished. Helpful preserves ZFavoredClass's
 empty `Features` contract while appending once to its Combat `AllFeatures`.
 Native creator/back-navigation, real respec, spent resources, turn-based actions
 and all visible traits' persistence/physical lifecycles have focused passing
-qualification. Exact final artifact compatibility and installation status are
-recorded in the handoff; owner full-screen UI acceptance is a separate gate. See the
-[stabilization journal](ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md).
-Release C remains in progress because the two deferred mechanics are outside
-this stabilization mission. The owner-authorized 0.0.116 master integration is
-included; this stabilization candidate is not tagged or publicly released.
+qualification. The owner accepted the installed candidate and explicitly
+authorized this public release. Download the installable ZIP from
+[release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.117).
+See the [release notes](docs/RELEASE-NOTES-0.0.117.md) and
+[release verification](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md).
+The two deferred mechanics and favored-class bonuses remain outside this release.
+The owner-authorized 0.0.116 master integration is included.
 
 Version 0.0.116-midgame-firearms-and-protection adds two named firearms to the
 Skeletal Salesman's mid-game weapon stock: Roadwarden, a +3 Reliable musket
