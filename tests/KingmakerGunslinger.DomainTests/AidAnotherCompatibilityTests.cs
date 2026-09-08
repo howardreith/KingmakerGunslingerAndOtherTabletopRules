@@ -110,6 +110,43 @@ namespace KingmakerGunslinger.DomainTests
                 "Rollback did not preserve a proven later foreign append.");
         }
 
+        internal static void ForeignTraitCatalogPreservesEmptyFeatures()
+        {
+            var other = new Identity("other");
+            var helpful = new Identity("helpful");
+            Identity[] features = new Identity[0];
+            Identity[] all = new[] { other };
+            Identity[] originalFeatures = features, originalAll = all;
+            var transaction = new HelpfulPublicationTransaction().AppendForeignTraitCatalog(
+                () => features, () => all, value => all = value, helpful, value => value.Id);
+            transaction.Commit();
+            Assertions.True(ReferenceEquals(features, originalFeatures) && features.Length == 0 &&
+                all.Length == 2 && ReferenceEquals(all[0], other) && ReferenceEquals(all[1], helpful),
+                "Foreign Features was populated or the authoritative catalog lost its order/identities.");
+            Identity[] published = all;
+            transaction.Commit();
+            new HelpfulPublicationTransaction().AppendForeignTraitCatalog(
+                () => features, () => all, value => all = value, helpful, value => value.Id).Commit();
+            Assertions.True(ReferenceEquals(all, published) && ReferenceEquals(features, originalFeatures),
+                "Repeated publication changed an array reference or duplicated Helpful.");
+            transaction.Rollback();
+            Assertions.True(ReferenceEquals(all, originalAll) && ReferenceEquals(features, originalFeatures),
+                "Rollback did not restore the exact foreign contract.");
+            foreach (Identity[] changed in new[] { null, new[] { other } })
+            {
+                bool rejected = false;
+                try { new HelpfulPublicationTransaction().AppendForeignTraitCatalog(
+                    () => changed, () => all, value => all = value, helpful, value => value.Id); }
+                catch (InvalidOperationException) { rejected = true; }
+                Assertions.True(rejected && ReferenceEquals(all, originalAll),
+                    "An uninspected Features contract was guessed or mutated.");
+            }
+            string coordinator = Read("src", "KingmakerGunslinger", "AidAnotherCompatibility",
+                "AidAnotherOptionalExtensionCoordinator.cs");
+            Assertions.True(!coordinator.Contains("favored.CombatTraits.Features = value"),
+                "The foreign empty Features field acquired a writer.");
+        }
+
         internal static void PublicationFailureRestoresEveryArray()
         {
             var original = new Identity("original");
@@ -250,8 +287,7 @@ namespace KingmakerGunslinger.DomainTests
                 "MaximumPendingUpdateRetries = 2",
                 "pending-contract-timeout:",
                 "cotw-aid-another-feature-list",
-                "favored-combat-features",
-                "favored-combat-all-features", "PrerequisiteNoFeature",
+                "AppendForeignTraitCatalog", "PrerequisiteNoFeature",
                 "context.FeatureModules.Active.BodyguardFeats",
                 "AidAnotherGrantRuntime.Configure(null, null)",
                 "unrelated KMG modules remain active" })

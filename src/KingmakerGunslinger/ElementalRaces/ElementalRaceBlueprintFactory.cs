@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.UnitLogic.FactLogic;
@@ -65,7 +66,7 @@ namespace KingmakerGunslinger.ElementalRaces
                             definition);
                     Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility ability =
                         ElementalRaceAbilityFactory.RegisterAbility(library,
-                            registry, definition, resource);
+                            registry, definition, resource, aasimar.Icon);
                     BlueprintFeature resistance = registry.Register<
                         BlueprintFeature>(definition.ResistanceSymbol,
                             () => CreateResistance(definition));
@@ -75,17 +76,28 @@ namespace KingmakerGunslinger.ElementalRaces
                     BlueprintFeature sla =
                         ElementalRaceAbilityFactory.RegisterFeature(registry,
                             definition, resource, ability);
+                    ElementalHeritageRaceBlueprints heritages =
+                        ElementalHeritageBlueprintFactory.Register(library,
+                            registry, definition, affinity, sla, resource,
+                            ability);
+                    ElementalAlternateTraitRaceBlueprints alternateTraits =
+                        ElementalAlternateTraitBlueprintFactory.Register(
+                            library, registry, ToHeritageRace(definition.Kind),
+                            ability.Icon);
                     BlueprintRace race = registry.Register<BlueprintRace>(
                         definition.RaceSymbol,
                         () => CreateRace(definition, aasimar, keen, slow,
-                            resistance, affinity, sla, raceVisuals));
+                            resistance, affinity, sla,
+                            heritages.Selection, alternateTraits, raceVisuals));
                     var blueprints = new ElementalRaceBlueprints(definition, race,
                         resistance, affinity, sla, resource, ability,
-                        raceVisuals);
+                        raceVisuals, heritages, alternateTraits);
                     ValidateRace(blueprints, aasimar, keen, slow, outsider);
                     result.Add(blueprints);
                 }
-                return new ElementalRaceBlueprintSet(result, visuals);
+                var set = new ElementalRaceBlueprintSet(result, visuals);
+                ElementalHeritageRuntime.Configure(set);
+                return set;
             }
             catch
             {
@@ -106,7 +118,12 @@ namespace KingmakerGunslinger.ElementalRaces
                 ValueType = ContextValueType.Simple,
                 Value = ResistanceValue
             };
-            feature.ComponentsArray = new BlueprintComponent[] { resistance };
+            feature.ComponentsArray = new BlueprintComponent[]
+            {
+                resistance,
+                ScriptableObject.CreateInstance<
+                    ElementalOwnedProviderController>()
+            };
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create(LocalizationKey(definition,
                     "Resistance.Name"), definition.Resistance +
@@ -115,7 +132,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     "Resistance.Description"), "You have " +
                     definition.Resistance.ToString().ToLowerInvariant() +
                     " resistance " + ResistanceValue + "."), null);
-            return feature;
+            return ElementalComponentIdentity.Prepare(feature);
         }
 
         private static BlueprintFeature CreateAffinity(
@@ -125,7 +142,12 @@ namespace KingmakerGunslinger.ElementalRaces
             var affinity = ScriptableObject.CreateInstance<
                 ElementalSpellAffinity>();
             affinity.DescriptorMask = checked((int)definition.Affinity);
-            feature.ComponentsArray = new BlueprintComponent[] { affinity };
+            feature.ComponentsArray = new BlueprintComponent[]
+            {
+                affinity,
+                ScriptableObject.CreateInstance<
+                    ElementalOwnedProviderController>()
+            };
             string affinityName = definition.Kind == ElementalRaceKind.Sylph ?
                 "Air Affinity" : definition.Kind == ElementalRaceKind.Undine ?
                     "Water Affinity" : definition.Affinity + " Affinity";
@@ -136,7 +158,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     "Affinity.Description"), "+1 racial bonus to spell DC " +
                     "for spells with the " + definition.Affinity +
                     " descriptor. This does not increase caster level."), null);
-            return feature;
+            return ElementalComponentIdentity.Prepare(feature);
         }
 
         private static BlueprintRace CreateRace(
@@ -144,22 +166,31 @@ namespace KingmakerGunslinger.ElementalRaces
             BlueprintFeature keen, BlueprintFeature slow,
             BlueprintFeature resistance,
             BlueprintFeature affinity, BlueprintFeature sla,
+            BlueprintFeatureSelection heritageSelection,
+            ElementalAlternateTraitRaceBlueprints alternateTraits,
             ElementalRaceVisualBlueprints visuals)
         {
             BlueprintRace race = BlueprintCloneService.Clone(aasimar,
                 InternalName(definition.RaceSymbol));
-            race.ComponentsArray = definition.Stats.Select(value =>
+            var components = definition.Stats.Select(value =>
             {
                 var bonus = ScriptableObject.CreateInstance<AddStatBonus>();
                 bonus.Stat = value.Stat;
                 bonus.Value = value.Value;
                 bonus.Descriptor = Kingmaker.Enums.ModifierDescriptor.Racial;
                 return (BlueprintComponent)bonus;
-            }).ToArray();
+            }).ToList();
+            var heritageController = ScriptableObject.CreateInstance<
+                ElementalHeritageRaceController>();
+            heritageController.Race = (int)definition.Kind;
+            components.Add(heritageController);
+            race.ComponentsArray = components.ToArray();
             var features = new List<BlueprintFeature>
             {
-                keen, resistance, affinity, sla
+                keen, resistance, affinity, sla, heritageSelection
             };
+            features.AddRange(alternateTraits.Selections().Select(value =>
+                (BlueprintFeature)value.Selection));
             if (definition.SlowAndSteady) features.Insert(1, slow);
             race.Features = features.ToArray();
             race.Presets = visuals.Presets;
@@ -171,7 +202,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 LocalizationService.Create(LocalizationKey(definition,
                     "Race.Description"), definition.Description),
                 aasimar.Icon);
-            return race;
+            return ElementalComponentIdentity.Prepare(race);
         }
 
         private static BlueprintFeature BaseFeature(string symbol)
@@ -218,6 +249,9 @@ namespace KingmakerGunslinger.ElementalRaces
             AddStatBonus[] stats = (race.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).OfType<AddStatBonus>()
                 .ToArray();
+            ElementalHeritageRaceController heritageController =
+                (race.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<ElementalHeritageRaceController>().SingleOrDefault();
             AddDamageResistanceEnergy resistance = value.Resistance
                 .ComponentsArray.OfType<AddDamageResistanceEnergy>().Single();
             if (ReferenceEquals(race, aasimar) || race.Size != aasimar.Size ||
@@ -227,7 +261,12 @@ namespace KingmakerGunslinger.ElementalRaces
                 !race.Features.Contains(value.Resistance) ||
                 !race.Features.Contains(value.Affinity) ||
                 !race.Features.Contains(value.SlaFeature) ||
+                !race.Features.Contains(value.Heritages.Selection) ||
+                value.AlternateTraits.Selections().Any(selection =>
+                    !race.Features.Contains(selection.Selection)) ||
                 race.Features.Contains(slow) != value.Definition.SlowAndSteady ||
+                heritageController == null ||
+                heritageController.Race != (int)value.Definition.Kind ||
                 resistance.Type != value.Definition.Resistance ||
                 value.Affinity.ComponentsArray.OfType<
                     ElementalSpellAffinity>().Single().DescriptorMask !=
@@ -240,6 +279,12 @@ namespace KingmakerGunslinger.ElementalRaces
                     value.Visuals.FemaleOptions))
                 throw new InvalidOperationException(value.Definition.DisplayName +
                     " race blueprint failed deterministic validation.");
+        }
+
+        private static ElementalHeritageRace ToHeritageRace(
+            ElementalRaceKind race)
+        {
+            return (ElementalHeritageRace)(int)race;
         }
 
         private static string LocalizationKey(

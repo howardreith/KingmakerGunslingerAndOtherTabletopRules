@@ -1,5 +1,134 @@
 # Changelog
 
+## 0.0.117 public release
+
+- Adds twelve heritage choices, eleven elemental feats and nineteen implemented
+  alternate racial traits to the existing Elemental Races module.
+- Presents heritage and alternate racial choices before ability allocation and
+  skills, with legal retain-base choices and deterministic back-navigation.
+- Preserves both ordinary ZFavoredClass Trait selections and publishes Helpful
+  once without populating its intentionally empty Combat Features array.
+- Preserves spent racial resources through native respec and save/load, and
+  stabilizes the visible traits' action costs, provider cleanup and lifecycles.
+- Keeps Treacherous Earth and Nereid Fascination registered but unavailable.
+- Includes the released Roadwarden, Dead Reckoning and Protection wording changes.
+
+The owner accepted the installed stabilization candidate and authorized merge,
+push and publication. Gameplay source and existing identities are unchanged
+during release preparation. Exact artifacts and verification are recorded in
+[the release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md).
+
+The candidate sections below retain their historical evidence and status.
+
+## 0.0.117-elemental-char-gen-stabilization
+
+- Route elemental heritages and alternate racial traits through the native
+  Heritage phase before ability allocation and skills.
+- Preserve ZFavoredClass's intentionally empty Combat `Features` array and
+  append Helpful exactly once to its authoritative `AllFeatures` catalog.
+- Keep Treacherous Earth and Nereid Fascination identities registered while
+  removing their no-op choices from character creation and respec.
+- Preserve owned visual assets during repeated creator reconstruction and
+  preserve spent daily resources and blood expenditure through native respec.
+- Qualify all 19 visible alternate traits through fresh-process persistence,
+  physical lifecycles, exact cleanup, native action costs, and attack boundaries.
+
+Final artifact profiles and owner UI acceptance remain separate gates. This is
+an unpublished disposable stabilization candidate; no content expansion occurs.
+
+## 0.0.117-elemental-traits
+
+- Adds Breeze-Kissed's owned native core with seven fixed identities: ranged
+  defense, swift calm/renew and a daily Standard Bull Rush/Trip using ordinary
+  native CMB. All 1,432 tests, clean build/package and two guarded profiles
+  pass 11,376 assertions with exact restoration. Broader attack-source,
+  turn-based and fresh-save/lifecycle gates remain; not full Release C PASS.
+  See the [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md).
+
+- Integrates the separately published 0.0.115 Brown-Fur direct-cast fix from
+  authoritative master without changing elemental identities or mechanics.
+  All 1,431 tests, clean build/package, 30 compiled API checks and six guarded
+  processes pass; native-command and strict working-payload controls remain
+  distinct from NOT-RUN direct-consumer Instant gameplay. See the
+  [integration checkpoint](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md).
+
+- Qualifies native RTWP breath action commitment and the append-only ten-trait
+  save matrix: all 1,428 tests, clean build/package and nine guarded processes
+  pass 11,325 assertions, including renewed pinned 0.0.114 migration.
+  Exact saved Sickened context/duration, spent uses, OFF/ON/rest/level/respec
+  and fresh absence pass. No new identities or production rules. Retained
+  warnings and turn-based/full-release limits are in the
+  [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md).
+- Adds Acid Breath and Ooze Breath with four fixed ability/resource identities,
+  native five-foot acid cones, exact current-CON parameters and Reflex halving.
+  Ooze applies three-round non-poison Sickened only on a failed save. All 1,427
+  tests, clean build/package and 10,936 assertions in two native profiles pass.
+  The later action/save checkpoint above supplies new RTWP and save proof. See
+  the [focused breath checkpoint](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md).
+- Avoids attempted feat-transient restoration inside native disabled level-up
+  previews, preserving exact original buffs, item effects and absolute expiry.
+  All 1,424 tests, clean build/package and nine guarded processes pass 10,594
+  assertions, including renewed eight-trait saves and pinned 0.0.114 migration.
+  No identity/schema changes. This repairs the inherited service in 117, not
+  the retained 116 ZIP. See the [preview checkpoint](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md).
+- Strengthens Crystalline native-command coverage for delayed multi-ray casts,
+  duplicate impact notifications, non-damage effects and native hand states.
+  All 1,424 tests, clean build/package and 10,242 guarded assertions pass.
+  No production rule or identity changes; the remaining-trait donor audit is
+  read-only. See the [controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md).
+- Preserves exact owned providers during native whole-unit save suspension,
+  preventing Crystalline consent from being silently reset before serialization.
+  The eight-trait save matrix and renewed 0.0.114 migration pass alongside
+  1,424 tests and native KMG-only/combined regressions. Exact failures, warnings
+  and remaining gates are retained in the
+  [persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md).
+- Adds Crystalline Form's exact-ray racial AC and opt-in daily native impact
+  deflection with three stable resource/buff/mode identities. Full 1,423 tests,
+  clean build/package and two guarded KMG-only/combined processes pass 10,168
+  assertions. Complete ray/catalog and save-backed gates remain separate; see
+  the [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
+- Adds incrementally qualified Efreeti Magic: Enlarge Person
+  and Reduce Person wrappers share one persisted daily resource and retain
+  native person targeting. All 1,421 tests and clean build/package pass.
+  Nine guarded processes pass 10,066 assertions: native KMG-only/combined,
+  actual multi-trait OFF/ON saves, shared spent uses and active size buffs,
+  rest/level/respec/cleanup, and renewed pinned 0.0.114 migration. Visual
+  diagnostics and full Release C lifecycle/compatibility gates remain explicit.
+- Adds 62 fixed manifest identities for ten explicit replacement-slot
+  selections, ten retain-base markers, 21 visible alternate-trait markers,
+  and 21 separate hidden mechanic providers.
+- Adds an exhaustive pure replacement policy for Energy Resistance,
+  Elemental Affinity, and Racial Spell-Like Ability slots across every parent
+  race, heritage, legal combination, invalid overlap, and fact-order
+  transition.
+- Extends the owned heritage reconciler to compute one desired provider state,
+  preserve spent racial-SLA amounts, and remove only exact project-owned
+  resistance, affinity, SLA, ability, and alternate-trait provider facts.
+- Adds each relevant slot selector to the existing parent race without adding
+  top-level races, a module toggle, a schema revision, or dynamic identities.
+- Implements Wildfire Heart, Brazen Flame, Forge-Hardened, Granite Skin,
+  Like the Wind, Secretive, Thunderous Resilience, and Whispering Wind with
+  native stat/resistance components and narrow save/damage rules.
+- Makes Scorching Weapons' existing fire nonstacking policy independent of
+  later-acquired Brazen Flame by removing only its exact owned damage packet.
+- Gives Acadamae's self-fatigue save the existing native fatigue reason, with
+  unchanged DC, command, resource, and fatigue-resolution behavior.
+- Qualifies this first passive slice with 1,415 tests, clean build/package,
+  eight guarded processes, 13,397 assertions, zero runtime warnings, and
+  exact KMG-only/combined profile restoration, including module-OFF.
+- Implements Fire, Earth and Air Insight through exact native spell-family
+  and creature-subtype checks; focused native command and rule tests pass.
+- Adds three fixed blood-trait buff identities and a shared native reactive-
+  healing implementation that counts only HP actually received against the
+  persisted daily cap. Focused native checks pass in KMG-only and highest-risk
+  combined profiles; trait-bearing persistence remains pending.
+- The current component-name repair passes pinned 0.0.114 migration mechanics
+  in three fresh processes (28 assertions), preserving spent uses and appearance
+  data; subjective visual review is separate.
+- Release C remains in progress: three mechanics remain to implement;
+  complete Crystalline, all-trait persistence/lifecycle and final release-wide
+  gates are pending. Earlier incremental results retain their historical scope.
+
 ## 0.0.116-midgame-firearms-and-protection
 
 - Adds Roadwarden (+3 Reliable musket, 33,800 gp) and Dead Reckoning
@@ -13,6 +142,62 @@
   boundary states, native shop transactions, firearm rules, and fresh-process
   purchase/save/load/cleanup checks. The owner authorized final integration
   and public release.
+
+## 0.0.116-elemental-feats
+
+- Adds 25 fixed manifest identities for eleven elemental racial feats and
+  their nine abilities, four buffs, and one exact-item weapon enchantment.
+- Registers every Release B identity unconditionally so module-OFF loads can
+  resolve feat-bearing saves, while publication remains controlled by the
+  existing `elemental-races` setting with no schema revision.
+- Publishes all eleven feats to the universal selector and only Elemental
+  Strike, Scorching Weapons, Inner Flame, and Blazing Aura to the Fighter
+  combat-feat selector through deterministic, exact-GUID-aware, reversible
+  transactions.
+- Binds prerequisites to exact project race and provider blueprints and records
+  exact level/feat requirements, action economy, honest Kingmaker limitations,
+  and approved native adaptations.
+- Implements and independently qualifies every required Release B feat
+  mechanic through native command, attack, damage, save, concealment, buff,
+  equipment, combat-maneuver, summon, targeting, and rest paths. Hydraulic
+  Maneuver exposes native Bull Rush, Disarm, Trip, and Dirty Trick (blind),
+  while Triton Portal summons 1d3 exact native Small Water Elementals using
+  the shared racial Hydraulic Push use.
+- Persists command-created one-round Elemental Strike and exact-item Scorching
+  Weapons state through direct stable item references plus absolute game-time
+  expiry, including module-OFF hydration, without retargeting swapped gear or
+  restoring expired/ineligible effects. A 24-fixture three-process transaction
+  and fourth-process absence pass.
+- Qualifies the final candidate with 1,408/1,408 deterministic cases, a clean
+  exact-reference Release build, strict 135-entry package validation, a
+  five-process 73/73 integrated mechanics regression, and 31/31 guarded
+  compatibility processes spanning all six required installed profiles in
+  both module states. All 12 profile transactions restored the original mod
+  tree and settings exactly. Visual Adjustments was absent and is NOT-RUN.
+
+## 0.0.115-elemental-heritages
+
+- Adds one obligatory three-choice heritage selection to each existing Ifrit,
+  Oread, Sylph, and Undine race without adding top-level races or changing any
+  0.0.114 race, General affinity, General SLA, or General resource GUID.
+- Implements General plus Lavasoul/Sunsoul, Gemsoul/Ironsoul,
+  Smokesoul/Stormsoul, and Mistsoul/Rimesoul with exact net racial-stat
+  overlays, one active affinity provider, and one active racial SLA provider.
+- Uses audited native Firebelly, Flare Burst, Color Spray, Expeditious Retreat,
+  Shocking Grasp, and Blur behavior. Unerring Weapon and Chill Touch use narrow
+  project-owned native-rule implementations with stable child and item
+  enchantment identities.
+- Treats a missing heritage marker on an existing 0.0.114 character as General.
+  Provider reconciliation is exact-identity scoped, idempotent, and preserves
+  remembered daily-resource amounts instead of restoring a spent use.
+- Retains the hardened spell-only elemental-affinity predicate and exact
+  Charisma-based racial SLA DC/total-character-level caster-level contract.
+- Qualifies Release A through the complete 1,407-case suite, clean build and
+  strict package validation, dedicated blueprint/mechanics/SLA runs,
+  24-fixture ON/OFF/ON persistence, exact 0.0.114 migration, native visual
+  state transitions, and twelve restoration-verified transactions spanning
+  all six required installed compatibility profiles. Visual Adjustments was
+  absent and remains NOT-RUN.
 
 ## 0.0.115-share-transmutation-instant
 

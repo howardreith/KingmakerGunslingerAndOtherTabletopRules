@@ -1,5 +1,77 @@
 # Current architecture
 
+## Retained public Brown-Fur direct-cast contract
+
+The 0.0.117 expansion integrates authoritative master 0.0.115 without altering
+its five Brown-Fur production files. Contract version 1 validates exact native
+AbilityData/target objects and keeps provider-owned reservoir reservation,
+debit, Share/Powerful/Supremacy scopes and delayed-process cleanup. The API is
+optional and adds no consumer assembly dependency or save-bearing identity.
+The [integration checkpoint](ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md)
+separates compiled API/native-command proof from NOT-RUN Instant-client gameplay.
+
+## Elemental alternate racial traits 0.0.117 layer
+
+Release C adds a pure three-slot replacement policy over the existing exact
+Ifrit, Oread, Sylph, and Undine blueprints. Energy Resistance, Elemental
+Affinity, and Racial Spell-Like Ability providers are resolved from the exact
+race, active heritage marker, and legal alternate-trait marker set. Ten
+obligatory race-owned selectors expose an explicit retain-base choice wherever
+the catalog has an alternative; multi-slot choices carry exact mutual
+exclusions.
+
+Selectable markers and hidden mechanic providers have separate stable
+identities. The owned runtime reconciler derives one desired state, adds
+missing desired providers before removing obsolete ones, remembers exact
+heritage-SLA resource amounts, and removes only project-owned facts and
+abilities. Missing heritage markers still resolve to General, and module state
+continues to gate publication rather than identity registration. Trait
+mechanics and their guarded qualification remain in progress.
+
+The first eight passive providers use native AddStatBonus and energy
+resistance components plus feature-local RuleSavingThrow/RulePrepareDamage
+handlers. Dependency-free policy decides one conditional save bonus and one
+correlated native melee-hit contribution. Parent ability/context traversal is
+cycle-safe; native Racial/NaturalArmor descriptor behavior is preserved.
+Scorching Weapons retains the exact packet it contributed to a damage event
+and rechecks nonstacking after preparation, before native damage calculation;
+only that exact owned packet may be removed. No donor or global modifier
+table is changed. Acadamae's local self-fatigue save carries the existing
+native fatigue context so descriptor-based defenses can recognize it.
+Dedicated passive and weapon-interaction scenarios contain all new live
+mechanic assertions; the central runner is unchanged.
+
+Fire, Earth and Air Insight use a shared typed native RuleSummonUnit helper:
+only actual spellbook casts from exact Summon Monster/Nature's Ally families
+and matching native subtype facts add two rounds to the per-creature duration.
+No donor, spell list or summon template is mutated. A factory-only component
+identity finalizer preserves the sole legacy state-bearing blank-name alias;
+ambiguous state-bearing names fail closed. Current native hydration passes,
+and renewed exact 0.0.114 migration mechanics now pass independently.
+
+The three blood traits add separate stable one-round healing buffs. Matching
+native damage results are inspected before resistance/immunity reduction;
+repeated hits extend only the existing buff's end time without resetting its
+native tick. A native RuleHealDamage subclass caps that trait's healing after
+native pre-healing handlers and records only RuleHealDamage.Value. A serialized
+owner UnitPart retains actual expenditure through provider removal and native
+level-up; exact native unit-rest events reset it. No global damage/healing patch
+or shared resource mutation is introduced. Native save reconstruction also
+deactivates providers temporarily, so OnTurnOff must not destroy active buffs.
+The owned buff observes exact same-owner native trait-marker loss for actual
+removal, while ordinary native expiry/death handle duration cleanup. Dedicated
+runtime and six-trait fresh-process persistence scenarios prove this boundary;
+full Release C lifecycle qualification remains pending.
+
+The elemental feat-transient service reads the exact installed
+BuffCollection.m_Disabled preview contract after finding its existing owned
+UnitPart. A native preview is a mutation-free no-op; ordinary owners retain the
+existing hydration/expiry path. The native flag is never written, and a missing
+or changed field fails closed. Dedicated command/LevelUpController preview,
+cancel/commit and native per-item expiry tests prove original references and
+absolute times remain exact. The scoped logger spy is read-only and active
+only in that scenario. No native mechanic patch or saved schema is added.
+
 ## Expanded Summoning 0.0.78 layer
 
 Player-visible summon children use a project-owned icon manifest with 77
@@ -518,15 +590,141 @@ catalog, bespoke mechanics, and first-playtest Focused Weapon compatibility,
 plus the Brown-Fur identity ledger, six appended score-toggle identities,
 the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
-Elemental Races mechanics and visual identities extend the append-only ledger
-to 1706 stable IDs: 1704 active and 2 reserved. The Elemental Races addition is
-24 mechanical blueprints, 16 body-wrapper or visual-preset blueprints, and 28
-project-owned `EquipmentEntity` resource proxies over native Kingmaker
-geometry and native color ramps. All 68 identities remain registered while
-race-selector publication is disabled. The two In Harm's Way immediate-action
+Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
+identities, plus the released Roadwarden and Dead Reckoning firearms, extend
+the append-only ledger to 1869 stable IDs: 1867 active and 2 reserved. The
+0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
+body-wrapper or visual-preset blueprints, and 28 project-owned
+`EquipmentEntity` resource proxies over native Kingmaker geometry and native
+color ramps. Release A appends 53 stable heritage identities: four selections,
+twelve markers, eight affinity providers, eight feature/resource/ability SLA
+triplets, and five supporting ability or weapon-enchantment identities.
+Release B appends eleven feat features, nine abilities, four buffs, and one
+weapon enchantment. `ElementalFeatBlueprintFactory` registers all 25 before
+`ElementalFeatPublication` independently reconciles the universal and Fighter
+selectors through the established exact-GUID-aware transaction.
+Release C appends ten replacement-slot selections, ten retain-base markers,
+21 visible trait markers, and 21 hidden mechanic providers. The framework
+registers all 62 plus three blood-trait buffs, four Efreeti Magic identities,
+three Crystalline Form resource/consent identities, and four Undine breath
+ability/resource identities
+unconditionally and keeps publication within the existing
+parent race and `elemental-races` module boundary.
+Native AddFacts/AddAbilityResources own the Efreeti daily graph; its owned
+activation memory retains the lower of native current and remembered amounts.
+The existing heritage UnitPart clears only owned prior-day snapshots on native
+rest, including suppressed resources. Exact daily-graph reconciliation removes
+inactive root/variant/resource instances without touching foreign facts or
+already-cast native size buffs. The dedicated seven-trait persistence scenario
+selects legal affinity-plus-SLA replacements through native creation/respec and
+checks racial modifiers separately from native size modifiers.
+Acid/Ooze Breath use the same exact owned daily-graph/resource-memory boundary,
+with an optional dedicated parameter component instead of SLA parameters.
+A pure half-level/current-CON policy supplies the DC and capped damage dice.
+Fresh native cone, conditional, save, energy damage and condition components
+perform delivery; a native rank-zero condition avoids the engine's minimum
+one-damage packet without changing damage rules globally. Dedicated actual
+commands prove native effects in both profiles. The later dedicated RTWP
+controller driver proves ordinary command/cooldown commitment without
+Cutscene or IgnoreCooldown. An append-only ten-trait persistence policy
+drives native breath casts against one isolated disposable fixture. Exact
+source/caster/DC/end-time comparisons precede any fresh-load mutation.
+Native UnitState owns the audited Sickened system companion; the harness
+checks it without directly creating/removing it. Older matrices and all
+production identities remain unchanged. Breath-specific turn-based actions,
+eleven other traits' persistence and full lifecycle remain separate gates.
+Breeze-Kissed's incremental native core adds seven fixed identities and a local
+native AC subscriber. Completed physical weapon metadata supplies the /magic
+boundary. Gusts use ordinary native CMB; explicit swift calm/renew and daily
+resource memory own the wind state. Two guarded profiles pass native commands,
+cooldowns, maneuvers, AC and exact fixture/restoration controls. Broader
+ability-source/nonphysical ranged attacks, turn-based actions and fresh-save
+lifecycle are separate open gates. Its dedicated scenario isolates only
+request-local animation/controller timing and the final firearm UI sink;
+native publication validation, ammunition and misfire remain active.
+Crystalline Form has incremental native core proof: its owned provider
+uses native racial AC modifiers and a local projectile-hit subscriber, with
+an exact semantic ray catalog instead of the overbroad Ray weapon category.
+The native opt-in mode costs no action; its independent daily resource is
+committed only after an eligible hit. Dedicated native commands prove AC,
+deflection, resource/rest, equipment and awareness in two profiles. Remaining
+catalog/multi-ray and persistence gates are not covered by that core proof or
+the earlier seven-trait transaction. The later eight-trait save cycle adds
+two Ironsoul consent/resource fixtures and retains the historical matrices.
+Native whole-unit TurnOff sets Owner.IsTurnedOn=false before fact callbacks.
+The four owned race/heritage/trait/retain removal callbacks skip reconciliation
+only at that suspension boundary, retaining exact AddFacts-owned modes and
+buffs during serialization. Active-unit marker removal still reconciles.
+Dedicated native TurnOff/TurnOn and real OFF/ON save/rest/level/respec tests,
+plus renewed pinned 0.0.114 migration, qualify this narrow correction without
+adding saved state or changing any identity.
+The separate native control extension drives prepared Wizard multi-ray and
+non-damage spells through real commands. Only projectile arrival and native
+between-ray clock scheduling are isolated; finally restores the exact clock.
+Its remaining-trait read-only audit uses complete explicit DTO serialization
+and proves unchanged catalog/component references, not mechanic correctness.
+`elemental-races` setting gates race, feat, and trait-selector publication; no
+module identity or schema member was added. All 229 active elemental identities
+remain registered while selector publication is disabled. Exact 0.0.114
+markerless-General migration and the
+24-fixture ON/OFF/ON reconstruction transaction prove that reconciliation
+preserves inherited stat components and current resource amounts while adding
+or removing only exact project-owned providers. The two In Harm's Way immediate-action
 debt facts remain hidden and mechanically inert; they preserve an off-turn
 spend across save/load and tie it to the owner's next actual turn without
 using a global-round flag.
+
+Release B gameplay remains outside bootstrap orchestration. Feature-specific
+components own Elemental Strike, Wings, Ifrit, and Sylph behavior, while
+dedicated guarded scenarios own their live rule-event fixtures. Airy Step adds
+one temporary `ModifierDescriptor.Racial` modifier to the current native
+`RuleSavingThrow` and claims the exact event through a weak identity table.
+Because Kingmaker has no Air descriptor, a fixed eleven-ability native catalog
+supplements Electricity descriptor and direct electricity-damage checks;
+effective parent traversal cannot multiply the bonus. The existing Wings fact
+changes the computed total from +2 to +4 rather than adding another modifier.
+
+Cloud Gazer uses a narrow postfix on the existing
+`RuleConcealmentCheck.Success` getter. It verifies the active parent
+`RuleAttackRoll`, exact feat owner, ordinary sight state, target invisibility,
+and every active target concealment provider. It succeeds only when all
+providers are exact native Obscuring Mist or explicit project Fog/Mist/Cloud
+markers, so unrelated and concurrent defenses fail closed. Inner Breath is a
+local `RuleApplyBuff` component: two exact audited native respiration-required
+buff identities and explicit project semantic markers are blocked, while no
+name, Poison descriptor, cloud shape, or visual inference broadens immunity.
+
+Hydraulic Maneuver is a project-owned ability-variant parent with four
+manifest-backed children. Each child carries Kingmaker's native
+`ContextActionCombatManeuver`, replaces base attack bonus with current total
+character level, and selects the current best Intelligence, Wisdom, or
+Charisma modifier. A feature-local availability component requires the exact
+Undine race, active project Hydraulic Push provider and ability, and a positive
+amount in that existing resource. The existing resource-commit action spends
+exactly once immediately before the synchronous native maneuver. Bull Rush,
+Disarm, Trip, and `DirtyTrickBlind` therefore retain native success, failure,
+immunity, weapon-state, and movement behavior without changing unrelated
+maneuvers. `DirtyTrickDazzle` has no native Kingmaker path and is absent.
+
+Triton Portal clones only the native Small Water Elemental summon component
+and action graph into its project-owned manifest identity; blueprint
+references remain references, while mutable component/action objects are
+deep-cloned. The owned count changes to 1d3 and ordinary native duration,
+faction, source linkage, death, dismissal, and cleanup remain authoritative.
+An owned point-target checker requires a finite point that projects to nearby
+walkable ground. `AbilityData.CanTarget` is the actual player-facing
+point-selection boundary; `UnitUseAbility` assumes that validation already
+occurred. The full-round SpellLike command shares Hydraulic Push's exact
+resource and has no dependency on Expanded Summoning publication or code.
+
+The final Release B gate reran all five mechanics slices against one immutable
+clean-build artifact, then exercised exact feat registration/publication in 31
+fresh compatibility processes. The 24-fixture persistence transaction proves
+that registered feat facts, abilities, resources, command-created buffs, and
+two exact item-enchantment references hydrate with the module disabled. Exact
+artifact, runtime, and transaction hashes are recorded in
+`docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`.
+
 The additional reservation is the request-gated Elemental Races diagnostic
 race. It is never part of ordinary bootstrap or character creation and is
 removed by the guarded probe that owns it.
@@ -535,7 +733,7 @@ do not change the unconditional core registration count; they register only
 after the structural CotW contract succeeds, while selector publication
 remains independently gated. The Urban and Bodyguard identities are native
 core identities, and the 16 elemental visual blueprints bring unconditional
-core blueprint registration to 1620 in every module state. The 28 elemental
+core blueprint registration to 1698 in every module state. The 28 elemental
 visual resource proxies are registered through a separate exact-shape native
 resource-cache transaction. All 1184
 Expanded Summoning feature identities, all twenty-nine spear identities, and

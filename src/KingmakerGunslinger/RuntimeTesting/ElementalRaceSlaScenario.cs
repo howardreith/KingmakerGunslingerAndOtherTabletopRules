@@ -66,7 +66,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public bool ArcaneFailureInapplicable { get; set; }
             public bool AvailableAfterCast { get; set; }
             public bool SecondAbilityAvailable { get; set; }
-            public bool SecondCommandCanStart { get; set; }
+            public bool SecondNativeCommandCanStart { get; set; }
+            public bool SecondPlayerPathAvailable { get; set; }
             public int ResourceAfterSecond { get; set; }
             public int ResourceAfterRest { get; set; }
 
@@ -81,6 +82,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (ProcessEnded || ProcessDetached) &&
                     ArcaneFailureInapplicable && !AvailableAfterCast &&
                     !SecondAbilityAvailable &&
+                    !SecondPlayerPathAvailable &&
                     ResourceAfterSecond == 0 && ResourceAfterRest == 1;
             }
         }
@@ -120,6 +122,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             public bool SuccessfulSavePassed { get; set; }
             public int FailedContextCasterLevel { get; set; }
             public int SuccessfulContextCasterLevel { get; set; }
+            public int ContextSpellLevel { get; set; }
+            public int CurrentCharismaModifier { get; set; }
+            public int ExpectedDifficultyClass { get; set; }
+            public bool AffinityActiveForSla { get; set; }
             public int FailedContextDifficultyClass { get; set; }
             public int SuccessfulContextDifficultyClass { get; set; }
             public string NativeActionGraph { get; set; }
@@ -140,6 +146,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";reflex=" + FailedSaveModifier + "/" +
                     SuccessfulSaveModifier + ";second=" +
                     Command.SecondAbilityAvailable + "/" +
+                    Command.SecondPlayerPathAvailable + "/" +
+                    Command.SecondNativeCommandCanStart + "/" +
                     Command.ResourceAfterSecond + ";save=" +
                     FailedSaveEvents + ":" + FailedSaveD20 + ":" +
                     FailedSavePassed + "/" + SuccessfulSaveEvents + ":" +
@@ -147,7 +155,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";params=" + FailedContextCasterLevel + ":" +
                     FailedContextDifficultyClass + "/" +
                     SuccessfulContextCasterLevel + ":" +
-                    SuccessfulContextDifficultyClass;
+                    SuccessfulContextDifficultyClass + ";formula=10+" +
+                    ContextSpellLevel + "+" + CurrentCharismaModifier +
+                    "=" + ExpectedDifficultyClass + ";affinity=" +
+                    AffinityActiveForSla;
             }
         }
 
@@ -324,6 +335,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             AbilityExecutionContext failedContext = data.CreateExecutionContext(
                 new TargetWrapper(failed));
             result.FailedContextCasterLevel = failedContext.Params.CasterLevel;
+            result.ContextSpellLevel = failedContext.Params.SpellLevel;
+            result.CurrentCharismaModifier = caster.Descriptor.Stats.Charisma
+                .Bonus;
+            result.ExpectedDifficultyClass = ElementalRacialSpellLikePolicy
+                .DifficultyClass(result.ContextSpellLevel,
+                    result.CurrentCharismaModifier);
+            result.AffinityActiveForSla = caster.Descriptor.HasFact(
+                blueprints.Affinity);
             result.FailedContextDifficultyClass = failedContext.Params.DC;
             int failedHpBefore = failed.HPLeft;
             SaveObservation failedSave;
@@ -371,6 +390,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.SuccessfulSaveModifier >= 100 &&
                 result.FailedContextCasterLevel == 5 &&
                 result.SuccessfulContextCasterLevel == 5 &&
+                result.ContextSpellLevel == 1 &&
+                result.AffinityActiveForSla &&
+                result.FailedContextDifficultyClass ==
+                    result.ExpectedDifficultyClass &&
                 result.FailedContextDifficultyClass ==
                 result.SuccessfulContextDifficultyClass &&
                 failedSave.DifficultyClass ==
@@ -556,7 +579,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             AbilityData secondData = RequireAbility(caster, data.Blueprint);
             result.SecondAbilityAvailable = secondData.IsAvailable;
             UnitUseAbility second = CreateCommand(secondData, target, caster);
-            result.SecondCommandCanStart = second.CanStart;
+            result.SecondNativeCommandCanStart = second.CanStart;
+            result.SecondPlayerPathAvailable = secondData.IsAvailable &&
+                result.SecondNativeCommandCanStart;
             result.ResourceAfterSecond = caster.Descriptor.Resources
                 .GetResourceAmount(resource);
             InvokeCommandEnded(second, true);
@@ -858,7 +883,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string observed = sla.Summary();
                 Add(assertions, "elemental-" + key + "-native-command",
                     "queued cancel spends zero; exact OnAction spends one; " +
-                    "fresh AbilityData unavailable at zero resource; ordinary rest restores one",
+                    "fresh AbilityData makes the player command boundary " +
+                    "unavailable at zero resource; ordinary rest restores one",
                     observed, sla.AbilityType == AbilityType.SpellLike
                         .ToString() && sla.Command != null &&
                         sla.Command.Pass(),
@@ -871,7 +897,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         observed, sla.NativeConeExact,
                         "production and native AbilityDeliverProjectile fields");
                     Add(assertions, "elemental-ifrit-native-damage-save",
-                        "5d6 Fire at CL5; Reflex success halves identical roll",
+                        "5d6 Fire at CL5; exact DC = 11 + current Charisma modifier with affinity +0; Reflex success halves identical roll",
                         observed, sla.NativeDamageAndSave,
                         "actual cloned AbilityEffectRunAction and native save/damage rules");
                 }

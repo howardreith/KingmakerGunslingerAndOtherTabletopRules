@@ -1,5 +1,21 @@
 # Kingmaker Gunslinger
 
+Current version: **`0.0.117-elemental-char-gen-stabilization`** (UMM: **0.0.117**).
+Elemental heritage and alternate racial traits now use the native Heritage
+route before ability allocation and skills. The 12 heritages and 19 implemented
+alternate racial traits retain their identities; Treacherous Earth and Nereid
+Fascination remain registered but unpublished. Helpful preserves ZFavoredClass's
+empty `Features` contract while appending once to its Combat `AllFeatures`.
+Native creator/back-navigation, real respec, spent resources, turn-based actions
+and all visible traits' persistence/physical lifecycles have focused passing
+qualification. The owner accepted the installed candidate and explicitly
+authorized this public release. Download the installable ZIP from
+[release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.117).
+See the [release notes](docs/RELEASE-NOTES-0.0.117.md) and
+[release verification](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md).
+The two deferred mechanics and favored-class bonuses remain outside this release.
+The owner-authorized 0.0.116 master integration is included.
+
 Version 0.0.116-midgame-firearms-and-protection adds two named firearms to the
 Skeletal Salesman's mid-game weapon stock: Roadwarden, a +3 Reliable musket
 valued at 33,800 gp, and Dead Reckoning, a +3 Seeking pistol valued at 33,300 gp.
@@ -9,7 +25,102 @@ preserves purchases and buyback items. Protection from Alignment descriptions
 now explain their existing bonuses and prevention of new control effects in
 direct rules language. Spell behavior is unchanged.
 
-Version `0.0.115-share-transmutation-instant` adds the versioned
+## Prior Release C checkpoints (historical)
+
+The following records describe the earlier segment and retain its original
+pending gates and artifact identity. The stabilization journal above supersedes
+its selection inventory and current acceptance status.
+
+The owner has concluded this segment for local manual testing. The tested
+117 candidate is installed/enabled in UMM; Release C remains incomplete.
+See the [handoff and remaining-material list](ELEMENTAL-RACES-EXPANSION-HANDOFF.md).
+Do not choose the unimplemented Treacherous Earth or Nereid Fascination
+selection scaffolds for gameplay.
+
+Version `0.0.117-elemental-traits` is the in-progress Release C expansion of the
+existing **Elemental Races: Ifrit, Oread, Sylph, and Undine** feature module.
+It also retains the published 0.0.115 Brown-Fur direct-cast compatibility fix.
+The [master integration](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md)
+passes 1,431 tests, clean build/package and guarded native regressions; this
+does not claim direct Buff Planner Instant-mode live acceptance.
+It now registers the fixed replacement-slot framework for 21 required
+alternate racial traits: ten explicit slot selections, ten retain-base
+markers, 21 visible choice markers, and 21 separate hidden providers. The
+pure policy covers all legal combinations and overlap exclusions independent
+of fact order, while the owned reconciler preserves existing SLA amounts and
+removes only exact project providers. Release C remains in progress; the trait
+mechanics and guarded runtime, persistence, and compatibility gates are not
+yet complete. The first eight traits now have focused native-mechanics proof:
+Wildfire Heart, Brazen Flame, Forge-Hardened, Granite Skin, Like the Wind,
+Secretive, Thunderous Resilience, and Whispering Wind. Fire, Earth and Air
+Insight, Fire in the Blood, Stone in the Blood and Storm in the Blood now pass
+focused native checks plus incremental module-OFF/ON save, level-up, rest,
+respec and cleanup checks, including spent healing capacity and active buffs.
+Efreeti Magic also passes native KMG-only/combined checks and actual
+native-selected multi-trait OFF/ON saves, spent shared uses, active size buffs,
+rest, level-up, respec, cleanup and renewed 0.0.114 migration. See its
+[incremental checkpoint](docs/ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md).
+Crystalline Form now has focused native core proof: ray-only racial AC, chosen
+daily deflection, native action/resource handling, equipment and awareness
+boundaries. See its [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
+Its subsequent [persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md)
+preserves armed consent and spent uses across native save suspension, OFF/ON
+loading, level-up, rest and base-trait respec, with renewed 0.0.114 migration.
+Its [additional native controls](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
+also prove multi-ray/one-use, duplicate impact, non-damage ray suppression and
+two-handed/disabled-hand recovery in both profiles.
+The [native preview correction](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
+also preserves existing Elemental Strike/Scorching Weapons state during native
+level-up previews, with renewed OFF/ON save and 0.0.114 migration checks.
+Acid Breath and Ooze Breath also pass a [focused native checkpoint](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md):
+actual five-foot cones, half-level/current-Constitution parameters, Reflex
+halving and non-poison Sickened, with four fixed ability/resource identities.
+Their [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md)
+also passes native RTWP cooldown controls, a ten-trait OFF/ON save/rest/level/
+respec matrix, exact active Sickened persistence and renewed 0.0.114 migration.
+Breath-specific turn-based action proof remains pending.
+Breeze-Kissed's [native core checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md)
+passes actual ranged defense, swift calm/renew, daily Bull Rush/Trip with
+ordinary native CMB, cancellation and spent-use/rest/level controls for all
+three Sylph heritages. Seven fixed identities append. Broader attack-source
+coverage, turn-based actions and fresh-save/lifecycle proof remain pending.
+Remaining semantic catalog work, two other required mechanics, the complete
+trait persistence/lifecycle matrix and final qualification remain.
+This is not a finished Release C package.
+
+Release B remains locally qualified. It registers eleven stable feat identities plus fourteen supporting ability,
+buff, and weapon-enchantment identities in every module state. When the module
+is enabled, all eleven feats publish to the universal feat selector and the
+four Combat feats publish to the Fighter combat-feat selector through exact-
+GUID-aware reversible transactions. The catalog includes Elemental Strike,
+the Scorching Weapons/Inner Flame/Blazing Aura chain, Firesight, Airy Step,
+Wings of Air, Cloud Gazer, Inner Breath, Hydraulic Maneuver, and Triton Portal.
+Release B passes locally. All eleven feat mechanics pass dedicated and final
+integrated guarded scenarios; 24 race/sex/heritage fixtures pass module-OFF/ON
+save persistence and exact cleanup; and all six required installed
+compatibility profiles pass in both module states with byte-exact restoration.
+The Release A/B checkpoints are pushed on the dedicated feature branch after
+the user updated the allowlist. Visual Adjustments remains **NOT-RUN** (absent).
+
+Release A added one obligatory heritage selection per race. Each selection has
+exactly three choices: General plus two alternate heritages. The parent race
+blueprints and all 0.0.114 General
+SLA/resource/affinity identities remain unchanged, and the module still
+defaults ON. A missing marker on a legacy 0.0.114 character resolves as General
+without duplicating its racial modifiers or restoring a spent daily use.
+
+The choices are General Ifrit, Lavasoul, Sunsoul; General Oread, Gemsoul,
+Ironsoul; General Sylph, Smokesoul, Stormsoul; and General Undine, Mistsoul,
+Rimesoul. Alternate heritages apply exact net racial-stat changes, retain the
+parent race's common traits and visuals, and reconcile exactly one active
+affinity and racial spell-like ability. Audited native Kingmaker substitutions
+are Firebelly for Burning Sands, Flare Burst for Sun Metal, Expeditious Retreat
+for Blurred Movement, and Blur for Obscuring Mist. Player-facing names describe
+the abilities actually granted. Unerring Weapon and Chill Touch use narrow
+project-owned implementations where no complete safe Kingmaker donor exists.
+
+The expansion branch also incorporates the published
+`0.0.115-share-transmutation-instant` fix, including the versioned
 `BrownFurDirectCastApi` contract used by compatible automation clients to run
 Share Transmutation through Brown-Fur's native transaction without queuing an
 animated casting command. The provider still validates the real ability,
@@ -18,11 +129,6 @@ debit, and retains delayed execution state through terminal cleanup. Consumers
 that cannot validate contract version 1 must use the safe animated fallback.
 This remains an optional public API: Kingmaker Gunslinger has no compile-time
 or package dependency on Kingmaker Buff Planner.
-
-The retained `0.0.114-elemental-races` release adds the **Elemental Races: Ifrit, Oread,
-Sylph, and Undine** feature module. It defaults ON. Any explicit saved value is
-preserved; changing the checkbox still requires a complete Kingmaker restart
-and never rebuilds the live blueprint graph.
 
 All four races are Medium and have distinct, stable project identities.
 Ifrits receive +2 Dexterity, +2 Charisma, -2 Wisdom, fire resistance 5, Fire
@@ -46,21 +152,22 @@ for safe doll and equipment compatibility, so some base-game dialogue or
 RaceId-only logic can mistake them for Aasimar. Exact race-blueprint
 prerequisites remain distinct.
 
-The release uses only audited vanilla Kingmaker modular character assets and
+Release A uses only audited vanilla Kingmaker modular character assets and
 project-owned stable proxies and color ramps. It adds no original meshes,
 copied third-party assets, persistent elemental VFX, or runtime dependencies.
 The identities remain registered when the module is OFF so an existing
 elemental character can load while the races are hidden from new-character and
 respec selectors. Uninstalling the whole mod from a campaign containing its
-content remains unsupported. Automated structural and mechanical qualification
-has passed, including all 24 eleven-module boundary states and exact standalone,
-Call of the Wild, Races Unleashed, combined, and Favored Class/Tweak or Treat
-high-risk profiles with full transaction restoration. Visual Adjustments was
-not installed and is **NOT-RUN**. The owner accepted the candidate's visual
-direction and explicitly authorized this release; individual checklist
-observations were not supplied and are not inferred.
+content remains unsupported. The 0.0.114 release passed its documented
+structural, mechanical, persistence, and compatibility gates; those records
+remain historical evidence rather than being relabelled as 0.0.115 proof.
+Release A independently passed its full 1,407-case suite, clean package gates,
+guarded blueprint/mechanics/SLA runs, 24-fixture persistence, exact 0.0.114
+migration, native visual state transitions, and all six required installed
+compatibility profiles in both module states. Visual Adjustments was not
+installed and remains **NOT-RUN**.
 
-The release retains version `0.0.113`'s save-load hotfix for the
+The current branch retains version `0.0.113`'s save-load hotfix for the
 paper-cartridge mode repair.
 Paper-mode reads now use only the native activatable ability's current state;
 they never reconcile marker buffs or alter a unit while Kingmaker is loading a

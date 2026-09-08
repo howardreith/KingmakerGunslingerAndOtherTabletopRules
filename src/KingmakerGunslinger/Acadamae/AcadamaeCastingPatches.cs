@@ -406,8 +406,8 @@ namespace KingmakerGunslinger.Acadamae
         {
             if (rule == null || !Invocations.Consume(rule, rule.Spell)) return false;
             if (!rule.Success || _fatigued == null) return false;
-            var saving = new RuleSavingThrow(rule.Initiator,
-                SavingThrowType.Fortitude, 15 + rule.Spell.SpellLevel);
+            RuleSavingThrow saving = CreateFatigueSavingThrow(rule.Initiator,
+                rule.Spell.SpellLevel);
             AcadamaeSavingThrowTestControl.Begin(saving);
             try { Rulebook.Trigger(saving); }
             finally { AcadamaeSavingThrowTestControl.End(); }
@@ -445,6 +445,23 @@ namespace KingmakerGunslinger.Acadamae
             }
             PublishResolution(rule, saving, _lastFatigueDisposition);
             return true;
+        }
+
+        internal static RuleSavingThrow CreateFatigueSavingThrow(
+            Kingmaker.EntitySystem.Entities.UnitEntityData caster, int spellLevel)
+        {
+            if (caster == null || _fatigued == null)
+                throw new InvalidOperationException(
+                    "The exact Acadamae fatigue save context is unavailable.");
+            // This is a save against the native fatigue effect, not against
+            // the accelerated summon spell. Native descriptor defenses apply.
+            return new RuleSavingThrow(caster, SavingThrowType.Fortitude,
+                15 + spellLevel)
+            {
+                Reason = new Kingmaker.UnitLogic.Mechanics.MechanicsContext(
+                    caster, caster.Descriptor, _fatigued, null,
+                    new TargetWrapper(caster))
+            };
         }
 
         private static void PublishResolution(RuleCastSpell rule,

@@ -12,7 +12,7 @@ foreach ($profile in $profiles.profiles) {
     $results += $result
 }
 $runtime = @($results | Where-Object runtimeCapable)
-if ($runtime.Count -ne 12) { throw "Expected twelve runtime-capable profiles, observed $($runtime.Count)." }
+if ($runtime.Count -ne 13) { throw "Expected thirteen runtime-capable profiles, observed $($runtime.Count)." }
 $racesUnleashed = @($results | Where-Object {
     $_.profileId -ceq 'gunslinger-races-unleashed'
 })[0]
@@ -34,6 +34,17 @@ if (-not $racesUnleashed.runtimeCapable -or
         $_.key -ceq 'call-of-the-wild'
     }).Count -ne 1) {
     throw 'The two exact Races Unleashed profiles did not preserve their required mod graphs.'
+}
+$tweak = @($results | Where-Object {
+    $_.profileId -ceq 'gunslinger-tweak-or-treat'
+})[0]
+if (-not $tweak.runtimeCapable -or
+    @($tweak.runtimeMods | Where-Object key -ceq 'call-of-the-wild').Count -ne 1 -or
+    @($tweak.runtimeMods | Where-Object key -ceq 'races-unleashed').Count -ne 1 -or
+    @($tweak.runtimeMods | Where-Object key -ceq 'tweak-or-treat').Count -ne 1 -or
+    @($tweak.runtimeMods | Where-Object key -ceq 'favored-class').Count -ne 0 -or
+    @($tweak.expectedUmmIds).Count -ne 4) {
+    throw 'The minimum Tweak or Treat profile did not preserve its exact dependency graph or Favored Class isolation.'
 }
 $favoredProfiles = @($results | Where-Object {
     $_.profileId -in @(
@@ -66,4 +77,4 @@ if ($craft.runtimeCapable -or $craft.staticOnlyReferences.Count -ne 1) { throw '
 $all = $results | Where-Object profileId -ceq 'gunslinger-all-loadable-local'
 if (@($all.runtimeMods | Where-Object key -eq 'kaz-asset-references').Count -ne 0) { throw 'KAZ references entered runtime staging.' }
 if (@($all.expectedUmmIds | Where-Object { $_ -like 'KAZ_*' }).Count -ne 0) { throw 'KAZ UMM IDs entered all-loadable profile.' }
-Write-Host 'All fourteen compatibility profile dry-runs passed; twelve are runtime capable, both exact Races Unleashed graphs resolve, the dedicated CMI authority remains separately staged, and KAZ references remain non-runtime.'
+Write-Host 'All fifteen compatibility profile dry-runs passed; thirteen are runtime capable, both exact Races Unleashed graphs and the minimum Tweak or Treat dependency graph resolve, the dedicated CMI authority remains separately staged, and KAZ references remain non-runtime.'

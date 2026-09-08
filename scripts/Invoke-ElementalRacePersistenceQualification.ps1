@@ -1,8 +1,11 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-# Two guarded fresh-process phases persist, verify, and clean up the fixtures.
-# Run elemental-race-persistence-verify-absent separately after this restores.
+# Three guarded fresh-process phases persist race, heritage, Release B feat,
+# and the eight-trait blood/Insight/Efreeti/Crystalline matrix; verify module-OFF,
+# restore the module, respec, and clean up the
+# fixtures. Run the fresh-load absence phase separately after this restores the
+# caller's original settings bytes.
 param(
-    [string]$ExpectedVersion = '0.0.115',
+    [string]$ExpectedVersion = '0.0.117',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
     [string]$SaveName = 'KMG_AUTOMATION_WORKING',
     [ValidateRange(120, 1800)][int]$TimeoutSeconds = 900,
@@ -30,7 +33,7 @@ foreach ($path in @($DeploymentManifestPath, $PackagePath)) {
     }
 }
 if (-not $PSCmdlet.ShouldProcess($SaveName,
-        'run the authorized two-launch eight-fixture Elemental Races persistence sequence')) {
+        'run the authorized three-launch 24-fixture Elemental Races heritage and feat persistence sequence')) {
     return
 }
 
@@ -42,6 +45,9 @@ $originalBytes = if ($originalExists) {
     $null
 }
 $failure = $null
+$evidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
+$evidenceDirectoriesBefore = @(Get-ChildItem -LiteralPath $evidenceRoot -Directory |
+    ForEach-Object FullName)
 
 function Set-ElementalRacesEnabled([bool]$enabled) {
     $configuration = [ordered]@{
@@ -88,6 +94,27 @@ function Wait-ForGuardedKingmakerExit([string]$phase) {
     }
 }
 
+function Preserve-PhaseNativeLog([string]$scenario) {
+    $created = @(Get-ChildItem -LiteralPath $evidenceRoot -Directory |
+        Where-Object { $_.Name.EndsWith('-' + $scenario,
+            [StringComparison]::Ordinal) -and
+            $evidenceDirectoriesBefore -notcontains $_.FullName })
+    if ($created.Count -ne 1) {
+        throw "Expected exactly one new persistence evidence directory for $scenario."
+    }
+    $resultPath = Join-Path $created[0].FullName 'runtime-result.json'
+    $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+    if ($result.scenario -cne $scenario -or $result.status -cne 'PASS' -or
+        $result.loadedModVersion -cne $ExpectedVersion -or
+        @($result.assertions | Where-Object { $_.status -cne 'PASS' }).Count -ne 0) {
+        throw "Persistence phase is not an exact structured PASS: $scenario"
+    }
+    # Native hydration errors must survive the next launch's log rotation.
+    & (Join-Path $PSScriptRoot 'compatibility\Collect-KmgCompatibilityAttributionLog.ps1') `
+        -EvidenceDirectory $created[0].FullName `
+        -ConfigurationId ('elemental-traits-' + $scenario) | Out-Null
+}
+
 try {
     Set-ElementalRacesEnabled $true
     & $invoke -Scenario 'elemental-race-persistence-prepare' `
@@ -101,6 +128,7 @@ try {
         throw 'Elemental Races persistence prepare failed.'
     }
     Wait-ForGuardedKingmakerExit 'prepare'
+    Preserve-PhaseNativeLog 'elemental-race-persistence-prepare'
 
     Set-ElementalRacesEnabled $false
     & $invoke -Scenario 'elemental-race-module-disabled-persistence' `
@@ -111,12 +139,30 @@ try {
         -DeploymentManifestPath $DeploymentManifestPath `
         -PackagePath $PackagePath
     if ($LASTEXITCODE -ne 0) {
-        throw 'Elemental Races persistence verify/cleanup failed.'
+        throw 'Elemental Races module-disabled persistence verification failed.'
     }
-    Wait-ForGuardedKingmakerExit 'module-disabled-verify-cleanup'
+    Wait-ForGuardedKingmakerExit 'module-disabled-verify-preserve'
+    Preserve-PhaseNativeLog 'elemental-race-module-disabled-persistence'
+
+    Set-ElementalRacesEnabled $true
+    & $invoke -Scenario 'elemental-race-module-restored-persistence' `
+        -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
+        -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
+        -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach `
+        -ReuseInstalledArtifact `
+        -DeploymentManifestPath $DeploymentManifestPath `
+        -PackagePath $PackagePath
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Elemental Races module-restored Respec/cleanup failed.'
+    }
+    Wait-ForGuardedKingmakerExit 'module-restored-respec-cleanup'
+    Preserve-PhaseNativeLog 'elemental-race-module-restored-persistence'
 }
 catch { $failure = $_ }
 finally {
+    # A terminal FAIL result can precede Application.Quit completing. Never
+    # restore settings while that guarded process is still running.
+    Wait-ForGuardedKingmakerExit 'settings restoration'
     Restore-OriginalFeatureState
     $restoredExists = Test-Path -LiteralPath $settings -PathType Leaf
     if ($restoredExists -ne $originalExists) {
@@ -131,4 +177,4 @@ finally {
     }
 }
 if ($failure -ne $null) { throw $failure }
-Write-Host "Elemental Races two-launch persistence and cleanup PASS; run elemental-race-persistence-verify-absent next; package=$PackagePath; deployment=$DeploymentManifestPath"
+Write-Host "Elemental Races three-launch heritage and feat persistence and cleanup PASS; run elemental-race-persistence-verify-absent next; package=$PackagePath; deployment=$DeploymentManifestPath"

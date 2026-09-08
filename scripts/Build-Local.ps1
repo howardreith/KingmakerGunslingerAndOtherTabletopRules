@@ -12,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.116') { throw "Build-Local supports only active version 0.0.116, observed $($info.Version)." }
+if ($info.Version -ne '0.0.117') { throw "Build-Local supports only active version 0.0.117, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -51,7 +51,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean -MSBuildPath $msbuild
 
-$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.116'
+$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.117'
 $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `

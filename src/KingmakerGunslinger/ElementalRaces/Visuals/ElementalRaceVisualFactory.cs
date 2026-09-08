@@ -68,6 +68,10 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 ResolvePlan(value, aasimar, logger)).ToArray();
             var resourceRegistry = new
                 ElementalRaceVisualResourceRegistry(manifest, logger);
+            resourceRegistry.BindNativeDependencies(plans.SelectMany(plan =>
+                plan.Definition.Proxies().Select(spec => new KeyValuePair<string, EquipmentEntity>(
+                    (plan.RequireDonor(spec.Symbol).UsedFallback ? spec.Fallback : spec.Donor).AssetId,
+                    plan.RequireDonor(spec.Symbol).Resource)).Concat(plan.PaletteSources)));
             resourceRegistry.EnsureAvailable(definitions.SelectMany(value =>
                 value.Proxies()));
 
@@ -337,9 +341,10 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             }
 
             List<Texture2D> palette;
+            List<KeyValuePair<string, EquipmentEntity>> paletteSources;
             string paletteFailure;
             if (!TryResolvePalette(definition.SkinPalette, out palette,
-                out paletteFailure))
+                out paletteSources, out paletteFailure))
             {
                 reasons.Add("skin-palette:" + paletteFailure);
                 EquipmentEntity fallbackHead = RequireExact(
@@ -347,6 +352,8 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                     "stable Aasimar skin-palette fallback");
                 palette = NormalizeFallbackPalette(fallbackHead.PrimaryRamps,
                     ElementalRaceVisualCatalog.SkinRampCount);
+                paletteSources = new List<KeyValuePair<string, EquipmentEntity>> {
+                    new KeyValuePair<string, EquipmentEntity>(definition.Male.Heads[0].Fallback.AssetId, fallbackHead) };
             }
 
             ResolvedOptions male;
@@ -378,6 +385,7 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             {
                 Definition = definition,
                 SkinPalette = palette,
+                PaletteSources = paletteSources,
                 Donors = donors,
                 Male = male,
                 Female = female,
@@ -388,8 +396,10 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
 
         private static bool TryResolvePalette(
             IEnumerable<ElementalRaceRampReference> references,
-            out List<Texture2D> palette, out string failure)
+            out List<Texture2D> palette, out List<KeyValuePair<string, EquipmentEntity>> sources,
+            out string failure)
         {
+            sources = new List<KeyValuePair<string, EquipmentEntity>>();
             palette = new List<Texture2D>();
             failure = string.Empty;
             foreach (ElementalRaceRampReference reference in references)
@@ -400,6 +410,7 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                     palette.Clear();
                     return false;
                 }
+                sources.Add(new KeyValuePair<string, EquipmentEntity>(reference.Source.AssetId, source));
                 if (source.ColorsProfile == null ||
                     !string.Equals(source.ColorsProfile.name,
                         reference.ExpectedProfile, StringComparison.Ordinal))
@@ -646,6 +657,7 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
         {
             internal ElementalRaceVisualDefinition Definition;
             internal List<Texture2D> SkinPalette;
+            internal List<KeyValuePair<string, EquipmentEntity>> PaletteSources;
             internal Dictionary<string, ResolvedDonor> Donors;
             internal ResolvedOptions Male;
             internal ResolvedOptions Female;

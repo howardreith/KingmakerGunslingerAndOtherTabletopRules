@@ -34,6 +34,23 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
             return this;
         }
 
+        // The inspected ZFavoredClass contract leaves Features empty. Native
+        // ExtractSelectionItems and CanSelect consume AllFeatures exclusively.
+        // This entry point intentionally accepts no writer for Features.
+        internal HelpfulPublicationTransaction AppendForeignTraitCatalog<T>(
+            Func<T[]> readFeatures, Func<T[]> readAllFeatures,
+            Action<T[]> writeAllFeatures, T addition, Func<T, string> identity)
+            where T : class
+        {
+            if (readFeatures == null) throw new ArgumentNullException("readFeatures");
+            T[] features = readFeatures();
+            T[] all = readAllFeatures == null ? null : readAllFeatures();
+            if (features == null || features.Length != 0 || all == null || all.Length == 0)
+                throw new InvalidOperationException("Foreign Combat Trait catalog no longer has the inspected empty-Features contract.");
+            return Append("favored-combat-all-features", readAllFeatures,
+                writeAllFeatures, addition, identity, false);
+        }
+
         internal void Commit()
         {
             if (_committed) return;
