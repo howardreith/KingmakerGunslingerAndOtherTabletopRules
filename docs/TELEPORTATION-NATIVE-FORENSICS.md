@@ -665,13 +665,61 @@ Neither failed probe wrote a save or left the temporary books/map fields behind.
 This desktop evidence does not qualify gamepad navigation, all resolutions,
 associated-unit death behavior or complete campaign save/reload.
 
-Additional pending damage forensics: RuleDealDamage.OnTrigger updates Damage and
+Damage forensics at that checkpoint: RuleDealDamage.OnTrigger updates Damage and
 raises native damage events, but does not itself update UnitState.LifeState.
 UnitLifeController.TickOnUnit performs that native transition, including ordinary
 unconsciousness, death, ferocity, regeneration and difficulty behavior. It is
 registered for GlobalMap among its five native modes; BaseUnitController.Tick
 iterates AwakeUnits unless TickSleeping is overridden. Native OnUnitDeath also
-uses the unit view. Whether every off-scene canonical traveler is covered in the
-required same-request mishap sequence still needs guarded living/dead/pet evidence;
-the existing HP-safe three-member probes do not establish it. No alternate life
-threshold or HP floor has been introduced.
+uses the unit view. The HP-safe three-member probes did not establish the
+required off-scene living/dead/pet behavior. The following checkpoint supplies
+that evidence and the resulting native boundary; no alternate life threshold or
+HP floor has been introduced.
+
+### Native mishap life-state boundary and JSON contracts
+
+The guarded traveler probe proved that canonical global-map party members and
+native pets had inactive views and were absent from AwakeUnits. A synchronous
+RuleDealDamage packet does not itself settle UnitState.LifeState. The production
+`TeleportationMishapDamageTarget` now derives narrowly from UnitLifeController and
+uses its protected ShouldTickOnUnit/TickOnUnit methods for the affected target.
+No new reflection seam, global controller, native threshold copy, HP floor or
+view activation is involved. This occurs inside material-effect tracking.
+
+Native UnitReturnToConsciousController.Tick iterates the native unit pool outside
+combat and invokes MakeUnitConscious on non-finally-dead units. That explains the
+first dead fixture control's recovery during the confirmation frames. The final
+probe establishes native death immediately before commitment, observes the
+normal native life event, and leaves difficulty/recovery behavior untouched.
+
+Native EntityCreationController.SpawnUnit writes a fresh ID to the loaded donor
+prefab before cloning it. The request-local pet fixture restores that prefab ID
+immediately after each spawn. It uses SetMaster for reciprocal native ownership,
+RemoveEntityData for disposal, and explicit original cross-scene/party/HP/damage
+attribution checks. Fixture-only restoration uses the exact private setter of
+UnitEntityData.LastHandledDamage; it never runs in production casting.
+
+The native save contract resolver omitted anonymous snapshot properties under
+JsonConvert defaults. `TeleportationDiagnosticJson` uses JsonSerializer.Create
+with DefaultContractResolver, invariant culture and no reference/type metadata.
+It is used for protected-state comparison, diagnostics and guarded native UI/book
+fingerprints; it never replaces the game's save serializer. Negative controls
+prove native time/miles/point changes and actual prepared expenditure are detected.
+Earlier anonymous fingerprint assertions are superseded, as stated in the report.
+
+Traveler run `20260908T0743051211896Z-0b845aad9e574a77bd53746466e5827e` passed 15
+assertions, including native pet death on the first mishap, exclusion on reroll,
+unconscious living damage, dead/nontraveling controls and complete cleanup.
+Casting and interaction regressions with the corrected comparisons passed 42
+and 29 assertions respectively; exact IDs and paths are in the report. Native
+inactive death visuals emitted bounded coroutine warnings, not failed damage or
+life transitions. No optional death visual was forced active in a world-map cast.
+
+Additional inventory findings for subsequent qualification: base-game AddFamiliar
+creates a Visual.Critters.Familiar and records it in UnitEntityData.Familiars; it
+is not a UnitEntityData damage target. No base-game mount unit controller/type
+was found in the exact assembly class inventory. Mod-provided canonical unit
+associations still require profile qualification. RegionalBuffController.Tick
+returns unless GlobalMapRules.PartyInTravel is true, so its LocationRadiusBuff
+processing is not a stationary placement callback. Special-point casting remains
+an open qualification item.

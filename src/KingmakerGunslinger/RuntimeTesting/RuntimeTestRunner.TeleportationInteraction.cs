@@ -32,11 +32,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerator<int> _teleportationInteractionSteps;
         private readonly List<RuntimeTestAssertion> _teleportationInteractionAssertions = new List<RuntimeTestAssertion>();
         private readonly List<object> _teleportationInteractionCaptures = new List<object>();
-        private string TeleportationInteractionPath { get { return Path.Combine(_request.EvidenceDirectory, "teleportation-interaction.json"); } }
+        private bool IsTeleportationTravelersFixture { get { return _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers; } }
+        private string TeleportationInteractionPath { get { return Path.Combine(_request.EvidenceDirectory, IsTeleportationTravelersFixture ? "teleportation-travelers.json" : "teleportation-interaction.json"); } }
 
         private void PollTeleportationInteraction()
         {
-            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationInteraction || !_request.ExitAfterCompletion ||
+            if ((_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationInteraction && !IsTeleportationTravelersFixture) || !_request.ExitAfterCompletion ||
                 _workingSaveSmoke == null || !_workingSaveSmoke.Complete || _workingSaveSmoke.WriteObserved)
                 throw new InvalidOperationException("Multi-frame interaction requires its guarded named working save, automatic exit and intact write sentinels.");
             if (_teleportationMapLoad == null)
@@ -77,12 +78,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void WriteTeleportationInteraction(string error)
         {
             WriteTeleportationForensicJson(TeleportationInteractionPath, new { schemaVersion = 1, runId = _request.RunId,
-                claims = "Native panel, button, Escape stack, confirmation and movement-event evidence across actual Unity frames. No synthetic input or screen coordinates. Ordinary travel uses request-local native time input; magical casting uses the production path.",
+                claims = IsTeleportationTravelersFixture ? "Request-local native associated pets, real contextual casting, native damage/life events and exact cleanup across Unity frames. No save writes or life-state threshold replacement." :
+                    "Native panel, button, Escape stack, confirmation and movement-event evidence across actual Unity frames. No synthetic input or screen coordinates. Ordinary travel uses request-local native time input; magical casting uses the production path.",
                 captures = _teleportationInteractionCaptures, assertions = _teleportationInteractionAssertions,
                 saveWriteObserved = _workingSaveSmoke.WriteObserved, error });
         }
         private void TeleportInteractionAssert(string id, string expected, string actual, bool pass)
-        { _teleportationInteractionAssertions.Add(Assertion("teleportation-interaction-" + id, expected, actual, pass, TeleportationInteractionPath)); }
+        { _teleportationInteractionAssertions.Add(Assertion((IsTeleportationTravelersFixture ? "teleportation-travelers-" : "teleportation-interaction-") + id, expected, actual, pass, TeleportationInteractionPath)); }
         private void CaptureTeleportInteraction(string step, object state)
         { _teleportationInteractionCaptures.Add(new { step, frame = Time.frameCount, state }); }
 
@@ -134,6 +136,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Real camera updates settle the native point anchor. No hard-coded
                 // screen position, transform mutation, or synthetic pointer input.
                 for (int frame = 0; frame < 60; frame++) yield return 0;
+                if (IsTeleportationTravelersFixture)
+                {
+                    foreach (int tick in RunTeleportationTravelers(origin, target, owners)) yield return tick;
+                    yield break;
+                }
                 panel.OnLocationSelect(target.Blueprint, false);
                 foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
                 var dialog = (CanvasGroup)WorldMapPointSpellActionPatches.DialogField.GetValue(panel);

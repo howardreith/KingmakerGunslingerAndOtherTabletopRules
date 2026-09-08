@@ -238,7 +238,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static string TeleportResourceFingerprint(Spellbook book)
         {
-            return JsonConvert.SerializeObject(new { id = book.Blueprint.AssetGuid, book.CasterLevel,
+            return TeleportationDiagnosticJson.Serialize(new { id = book.Blueprint.AssetGuid, book.CasterLevel,
                 levels = Enumerable.Range(0, 10).Select(level => new { level,
                     spontaneous = book.GetSpontaneousSlots(level), capacity = book.GetSpellsPerDay(level),
                     known = (book.GetKnownSpells(level) ?? Enumerable.Empty<AbilityData>()).Select(value => value.Blueprint.AssetGuid).ToArray(),

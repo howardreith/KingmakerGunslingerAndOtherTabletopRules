@@ -314,7 +314,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         { return (Button)typeof(DialogMessageBox).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(DialogMessageBox.Instance); }
         private static string TeleportationNativeButtons(GlobalMapMessageBox panel)
         {
-            return JsonConvert.SerializeObject(panel.GetComponentsInChildren<Button>(true).Where(value => value.GetComponentInParent<TeleportDestinationRows>() == null)
+            return TeleportationDiagnosticJson.Serialize(panel.GetComponentsInChildren<Button>(true).Where(value => value.GetComponentInParent<TeleportDestinationRows>() == null)
                 .Select(value => new { name = value.name, active = value.gameObject.activeSelf, interactable = value.interactable,
                     labels = value.GetComponentsInChildren<TextMeshProUGUI>(true).Select(label => label.text).ToArray(),
                     callbacks = Enumerable.Range(0, value.onClick.GetPersistentEventCount()).Select(value.onClick.GetPersistentMethodName).ToArray() }).ToArray());

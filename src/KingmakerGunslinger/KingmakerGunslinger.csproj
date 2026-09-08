@@ -889,8 +889,11 @@
     <Compile Include="Spells\Teleportation\TeleportTravelerRosterPolicy.cs" />
     <Compile Include="Spells\Teleportation\TeleportationTravelers.cs" />
     <Compile Include="Spells\Teleportation\TeleportationWorldSnapshot.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationDiagnosticJson.cs" />
     <Compile Include="Spells\Teleportation\TeleportationDistanceAdapter.cs" />
     <Compile Include="Spells\Teleportation\TeleportationOutcomeWorld.cs" />
+    <Compile Include="Spells\Teleportation\TeleportMishapDamagePolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationMishapDamageTarget.cs" />
     <Compile Include="Spells\Teleportation\TeleportationCastExecution.cs" />
     <Compile Include="Spells\Teleportation\TeleportContextPresentation.cs" />
     <Compile Include="Spells\Teleportation\TeleportContextLayoutPolicy.cs" />
@@ -912,6 +915,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationContext.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationCasting.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInteraction.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationTravelers.cs" />
     <Compile Include="Compatibility\EasternWeaponArmsArmorCompatibility.cs" />
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />

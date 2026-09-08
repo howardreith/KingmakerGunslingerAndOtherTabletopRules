@@ -538,6 +538,7 @@ try {
         'disposable-teleportation-context',
         'disposable-teleportation-casting',
         'disposable-teleportation-interaction',
+        'disposable-teleportation-travelers',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',

@@ -5,8 +5,6 @@ using Kingmaker.Blueprints;
 using Kingmaker.Globalmap.Blueprints;
 using Kingmaker.Globalmap.State;
 using Kingmaker.RuleSystem;
-using Kingmaker.RuleSystem.Rules;
-using Kingmaker.RuleSystem.Rules.Damage;
 
 namespace KingmakerGunslinger.Spells.Teleportation
 {
@@ -57,18 +55,17 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var current = TeleportationTravelers.Read(Kingmaker.Game.Instance.Player);
             if (!_before.Travelers.Matches(current)) throw new InvalidOperationException("Canonical traveling roster changed before mishap damage.");
             var target = current.Units.Single(value => value.UniqueId == id);
-            if (target.Descriptor.State.IsDead) throw new InvalidOperationException("Mishap target is no longer living.");
             int before = target.Damage;
-            var rule = new RuleDealDamage(_source.Book.Owner.Unit, target,
-                new DamageBundle(new DirectDamage(new DiceFormula(0, DiceType.D10), amount))) {
-                SourceAbility = _source.Ability.Blueprint
-            };
-            // No HP floor, direct HP assignment, or special death prevention.
-            Rulebook.Trigger(rule);
-            Events.Add(new { kind = "mishap-damage", unitId = id, rolledDamage = amount,
-                nativeDamage = rule.Damage, damageBefore = before, damageAfter = target.Damage,
+            string previousLife = target.Descriptor.State.LifeState.ToString();
+            var damage = new TeleportationMishapDamageTarget(target, _source);
+            bool applied = TeleportMishapDamagePolicy.Apply(damage, amount);
+            Events.Add(new { kind = applied ? "mishap-damage" : "mishap-skip-dead", unitId = id, rolledDamage = amount,
+                nativeDamage = damage.Rule == null ? 0 : damage.Rule.Damage, damageBefore = before, damageAfter = target.Damage,
+                lifeBefore = previousLife, lifeAfter = target.Descriptor.State.LifeState.ToString(),
                 livingAfter = !target.Descriptor.State.IsDead, unconsciousAfter = target.Descriptor.State.IsUnconscious,
-                nativeRule = typeof(RuleDealDamage).FullName, minimumHitPoints = rule.MinHPAfterDamage });
+                nativeRule = typeof(Kingmaker.RuleSystem.Rules.Damage.RuleDealDamage).FullName,
+                nativeLifeController = "UnitLifeController.ShouldTickOnUnit/TickOnUnit",
+                minimumHitPoints = damage.Rule == null ? null : damage.Rule.MinHPAfterDamage });
         }
         public TeleportAlternateDecision SelectAlternate(string intendedId, string originId, double severity)
         {

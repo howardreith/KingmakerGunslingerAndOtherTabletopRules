@@ -2,6 +2,10 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Settles native mishap death/unconsciousness before rerolls and qualifies real
+  associated pets. Isolates snapshot serialization from native save defaults
+  and verifies that deliberate world/resource changes are detected.
+
 - Appends currently usable caster/spellbook rows to the native desktop destination
   panel, with native confirmation and no extra UI on the no-spell path.
 - Preserves native Travel and Escape across UI frames. Long real-source lists
@@ -24,7 +28,7 @@
   and guarded native ordinary-arrival observation.
 - Reads real current spellbook sources, groups linked opposition preparations as
   one use, and verifies native expenditure and exact pre-effect compensation.
-  Full save/reload, associated pets/mounts, remaining UI cases and complete
+  Full save/reload, mod-provided mounts, remaining UI cases and complete
   compatibility qualification remain incomplete. Release metadata is unchanged.
 
 ## 0.0.116-midgame-firearms-and-protection

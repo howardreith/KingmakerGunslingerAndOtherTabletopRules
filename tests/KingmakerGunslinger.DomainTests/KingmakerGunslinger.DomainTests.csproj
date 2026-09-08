@@ -116,6 +116,8 @@
     <Compile Include="TeleportationTravelerTests.cs" />
     <Compile Include="TeleportationPresentationTests.cs" />
     <Compile Include="TeleportationLayoutTests.cs" />
+    <Compile Include="TeleportationMishapTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportMishapDamagePolicy.cs" Link="Spells\Teleportation\TeleportMishapDamagePolicy.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportContextPresentation.cs"><Link>Teleportation\TeleportContextPresentation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportContextLayoutPolicy.cs"><Link>Teleportation\TeleportContextLayoutPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportTravelerRosterPolicy.cs"><Link>Teleportation\TeleportTravelerRosterPolicy.cs</Link></Compile>
