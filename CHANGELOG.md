@@ -2,6 +2,9 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Adds read-only current world-map/destination composition, exact capital-region
+  Recall resolution and guarded native state/resource preservation evidence.
+
 - Adds the default-ON World-Map Teleportation Spells setting and schema-11
   migration, preserving explicit settings and all other module decisions.
 - Registers Teleport, Greater Teleport, and Word of Recall as real spell

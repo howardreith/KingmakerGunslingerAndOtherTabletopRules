@@ -885,6 +885,8 @@
     <Compile Include="Spells\Teleportation\TeleportOrdinaryArrivalPolicy.cs" />
     <Compile Include="Spells\Teleportation\TeleportPreparedPoolPolicy.cs" />
     <Compile Include="Spells\Teleportation\TeleportationSpellbookAdapter.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationWorldMapAdapter.cs" />
+    <Compile Include="Spells\Teleportation\WordOfRecallCapitalState.cs" />
     <Compile Include="Spells\Teleportation\TeleportationNativeCastResource.cs" />
     <Compile Include="Spells\Teleportation\UnitPartTeleportFamiliarity.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityRuntime.cs" />
@@ -894,6 +896,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationWorldMapForensics.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationFamiliarity.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationResources.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationContext.cs" />
     <Compile Include="Compatibility\EasternWeaponArmsArmorCompatibility.cs" />
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />

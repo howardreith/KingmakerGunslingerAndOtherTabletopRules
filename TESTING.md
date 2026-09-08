@@ -120,3 +120,21 @@ suppression, verified one-time restoration, stale and exhausted source omission,
 and refusal to refund another operation's expenditure. It does not qualify
 contextual UI, confirmation, Teleport outcomes or relocation. Those must use the
 same production source and transaction adapters in the later casting scenarios.
+
+The guarded `disposable-teleportation-context` scenario verifies the production
+current-map/destination/Recall adapter with real temporary native books and exact
+capital-state controls. It reads all current native points without creating map
+records, changing familiarity, planning travel or spending a resource. It is a
+composition checkpoint; rendered rows, confirmation and completed casting remain
+separate required gates.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-context `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true -Confirm:$false
+```
+
+The working save predates kingdom creation. This scenario constructs native
+kingdom data temporarily using its deserialization constructor, restores the
+original absent reference and real spellbook/map/ledger state, and verifies no
+save write. It never claims a region or founds a settlement through campaign actions.

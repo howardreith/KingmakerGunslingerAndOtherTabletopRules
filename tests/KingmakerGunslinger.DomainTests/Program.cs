@@ -25,6 +25,11 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("teleportation.world.PrebuiltSettlementDoesNotEstablishCapital", TeleportationWorldMapTests.PrebuiltSettlementDoesNotEstablishCapital),
+            Case("teleportation.world.EstablishedCapitalRequiresExactOwnedAnchor", TeleportationWorldMapTests.EstablishedCapitalRequiresExactOwnedAnchor),
+            Case("teleportation.world.UnknownCapitalDoesNotGuess", TeleportationWorldMapTests.UnknownCapitalDoesNotGuess),
+            Case("teleportation.world.DestinationReadsCannotCreateCampaignState", TeleportationWorldMapTests.DestinationReadsCannotCreateCampaignState),
+            Case("teleportation.world.NativeContextRequiresCurrentWorldMapAndParty", TeleportationWorldMapTests.NativeContextRequiresCurrentWorldMapAndParty),
             Case("teleportation.resource.PreparedSingleUsesAndReverseOrder", TeleportationResourceTests.PreparedSingleUsesAndReverseOrder),
             Case("teleportation.resource.OppositionGroupsCountOnce", TeleportationResourceTests.OppositionGroupsCountOnce),
             Case("teleportation.resource.SpentAndUnrelatedIgnored", TeleportationResourceTests.SpentAndUnrelatedIgnored),

@@ -62,3 +62,14 @@ Recall identity is fixed to Oleg's point
 `f83de5c382e087b4ab6ce0b7397a2a13` afterward. Establishment and current anchor
 validity still require native campaign-state qualification. An invalid capital
 must not fall back to Oleg's.
+
+
+Current-state qualification checkpoint: installed-profile run
+`20260908T0421564890455Z-9fc529962db34a83958398ca5b84c1e9` read all 611 current
+native points through the production adapter without adding/changing map records,
+resources, time or familiarity. Native closed/hidden/unvisited/current-point
+controls suppress all actions. Capital establishment follows exact native capital
+region `caacbcf9f6d6561459f526e584ded703`, which constructs a prebuilt settlement
+before it is claimed. The strict static-scene/unique-anchor/native-restriction
+checks now have guarded composition evidence. This is not arrival or final forbidden
+catalog qualification; special points still require the complete casting audit.
