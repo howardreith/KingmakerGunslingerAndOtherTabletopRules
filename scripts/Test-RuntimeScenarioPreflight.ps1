@@ -49,6 +49,7 @@ $expected = @(
         'disposable-teleportation-casting',
         'disposable-teleportation-interaction',
         'disposable-teleportation-travelers',
+        'disposable-teleportation-gamepad',
     'disposable-midgame-firearms',
     'working-save-midgame-prepare',
     'working-save-midgame-verify-cleanup',

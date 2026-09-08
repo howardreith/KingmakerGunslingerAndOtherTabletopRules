@@ -897,6 +897,11 @@
     <Compile Include="Spells\Teleportation\TeleportationCastExecution.cs" />
     <Compile Include="Spells\Teleportation\TeleportContextPresentation.cs" />
     <Compile Include="Spells\Teleportation\TeleportContextLayoutPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportContextScrollPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationConfirmationSurface.cs" />
+    <Compile Include="Spells\Teleportation\WorldMapPointConsoleSpellActionPatches.cs" />
+    <Compile Include="Spells\Teleportation\WorldMapPointConsoleSpellActionRuntime.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationGamepad.cs" />
     <Compile Include="Spells\Teleportation\TeleportationText.cs" />
     <Compile Include="Spells\Teleportation\TeleportationCombatLog.cs" />
     <Compile Include="Spells\Teleportation\WorldMapPointSpellActionPatches.cs" />

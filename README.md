@@ -256,8 +256,12 @@ and In Harms Way**, **Protection from Alignment: control immunity**, and
 default enabled. Older settings migrate to schema 11 while preserving every
 explicit value. Any absent module key, including Teleportation, migrates ON.
 
+The native desktop checkpoint has passed all 26 module boundary configurations.
+The native gamepad destination/confirmation path also has 39 passing guarded
+assertions, followed by desktop regressions and four focused module checks.
+
 The Teleportation setting is under development on the contextual teleportation
-branch. The native desktop destination panel now appends usable spellbook
+branch. The native desktop and gamepad destination panels now append usable spellbook
 sources and opens a native confirmation. Guarded casts have verified real slot
 expenditure, exact and alternate arrival, Recall switching, and repeated mishaps.
 Native Travel, Escape, live source counts, repeated selection and long source

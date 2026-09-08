@@ -82,16 +82,17 @@ save write; it requires automatic process exit. Never use the baseline save.
   -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
 ```
 
-This does not yet qualify an actual traveling pet/mount, gamepad navigation,
-full campaign disk persistence, every UI lifecycle case or all compatibility
-profiles. Run IDs and exact limits are in the implementation report.
+Native associated pets have separate traveler evidence below. Mod-provided mounts,
+full campaign disk persistence, normal spellbook/level-up UI cases and full compatibility
+profiles still require qualification. Run IDs and exact limits are in the implementation report.
 
 The feature branch adds the twelfth default-ON module, `teleportation-spells`,
 using settings schema 11. The fast domain settings/publication matrix covers
 4,096 combinations; the guarded runtime boundary matrix contains 26 states.
 Historical release results retain their original module and assertion counts.
-Full twelve-module runtime qualification remains pending the contextual casting
-implementation. The native destination-panel observation is documented in
+All 26 boundary states passed 845 assertions at source ba32ac2; added gamepad
+hooks subsequently passed all ON, all OFF, Teleportation alone ON and alone OFF
+checks (134 assertions); a new full matrix has not been claimed. The native destination-panel observation is documented in
 `docs/TELEPORTATION-NATIVE-FORENSICS.md`; it is not spellcasting proof.
 
 
@@ -202,3 +203,33 @@ protected-state/resource changes, associated native death and unconsciousness.
 Exact run IDs and the rejected initial probe are in the implementation report.
 An assertion failure remains a failure even when cleanup succeeds. Do not use
 it on a personal campaign save.
+
+### Guarded native gamepad destination scenario
+
+`disposable-teleportation-gamepad` first loads the exact desktop working save,
+then loads the desktop world map before switching controller mode. Native
+loading-UI disposal/load/initialization and the same-area Game.LoadArea path
+replace the UI scenes without running old local controls under gamepad mode. It checks the actual scene and
+native modal hosts, original destination controls/defaults, native directional
+navigation, cancellation and modal replacement, exact prepared/spontaneous
+casting, pre/post-capital Recall, live/exhausted sources, long-list reachability
+and input-layer cleanup across real frames. An exception observer covers the
+controller transition through cleanup. Rendered confirmation text is checked
+with native uppercase styling, complete animation and its actual overlay canvas.
+The same source/confirmation/transaction/outcome paths are used in normal play.
+There is no OS input, controller emulation or pointer-event patch. The fixture
+restores books, map fields, ledger and time input; it disposes request-local
+native UI contexts and restores controller mode before exit;
+save-write sentinels remain armed and automatic process exit is required.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-gamepad `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
+```
+
+Evidence is `teleportation-gamepad.json` in the named runtime directory. A
+successful compile or controller-mode flag alone does not qualify this adapter.
+Run `20260908T1010179638483Z-9fc7ced7478444cf954b1bf08ce52cc1` passed all 39
+assertions with zero exceptions/save writes; the implementation report records
+rejected probes, corrections, desktop regressions and exact result directories.

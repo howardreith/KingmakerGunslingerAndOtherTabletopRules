@@ -25,7 +25,10 @@ Full feature and compatibility qualification is still in progress; the released
 7. Before capital establishment, select **Oleg's Trading Post** for **Word of
    Recall**. After establishment, select the **capital's world-map point** instead.
    Recall appears only at its current destination and never enters the local area.
-8. Check all active members and their associated traveling companions remain
+8. With a controller, use native directional navigation to reach each spell
+   source. The list scrolls as needed; native confirm opens the spell confirmation
+   and native cancel dismisses it. Travel remains the native default.
+9. Check all active members and their associated traveling companions remain
    together. Reopen a destination to check the updated source counts. Repeat
    cancel/reopen operations and check that no duplicate rows appear.
 

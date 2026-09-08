@@ -23,3 +23,18 @@ The bootstrap publication plan now binds the class catalog; basic and Fighter fe
 Runtime qualification proved every listed boundary in all four standalone combinations and exact Call of the Wild ON/ON and Gunslinger-OFF/Acadamae-ON configurations. The registered identity count remained 250, second reconciliation was a no-op, and native/foreign fixture entries were preserved.
 
 Next concrete action: retain this inventory as the guard list for final 0.0.75 validation and future player-facing additions.
+
+## Contextual Teleportation module checkpoint
+
+The standalone teleportation feature adds default-ON module 12 / schema 11.
+Its three spell identities always register, while native spell-list publication
+and all contextual/arrival hooks require the module to be enabled. Desktop and
+gamepad destination hooks are 4 each; ordinary-arrival/load hooks are 2. OFF
+installs zero of these hooks and preserves already serialized familiarity.
+
+The preceding desktop source ba32ac2 passed all 26 module boundary states
+(845 assertions). The gamepad addition passed all ON, all OFF, only Teleportation
+ON and only Teleportation OFF (134 assertions), including native publication,
+exact rollback and actual hook counts. Settings bytes were restored exactly.
+These are feature checkpoints; complete release qualification remains open.
+Exact run IDs and limits are in the [teleportation report](../TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md).
