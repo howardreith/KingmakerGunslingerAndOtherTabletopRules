@@ -1,5 +1,30 @@
 # Elemental Races expansion acceptance checklist
 
+## Character-creation stabilization (2026-09-07)
+
+- [x] Four heritage and ten alternate-racial-slot selections use the actual native
+  Heritage consumer before allocation/skills, with legal choices and retain base.
+- [x] Both deferred no-op markers remain registered and are absent from every
+  player-facing selector; all published choices have specific mechanics.
+- [x] Ordinary global Traits complete in controlled B/C/D/E/F profiles; Helpful
+  occurs once with Bodyguard ON and is absent with it OFF, preserving foreign arrays.
+- [x] Full-stack real native creator commits cover every elemental race and all
+  twelve heritages; back-navigation, point-buy and Dice Roller preserve ownership.
+- [x] Actual Player respec preserves spent resources and facts; fresh-process
+  legacy migration, Release A/B and all 19 visible traits' persistence/lifecycle pass.
+- [x] All 1,458 tests, clean Release, deterministic/strict 135-entry package,
+  compatibility profiles and exact-restoration audits pass for the installed artifact.
+- [x] Backup-first installation preserves settings, UMM, unrelated mods and saves;
+  branch checkpoint is pushed. Owner-authorized master-to-feature merge only;
+  no merge back to master, tag or public release.
+- [ ] Owner full-screen creator acceptance through the original entry point.
+  The original empty global Trait trigger is not conclusively diagnosed.
+
+See the [exact handoff](docs/ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION-HANDOFF.md).
+Reduced profiles reach real native final review without a commit; full-stack F
+provides actual creation and Player-respec completions. The earlier incomplete
+Release C and expansion checklist below remains historical and is not rewritten.
+
 ## Owner-directed manual-test handoff (not full release acceptance)
 
 - [x] Conclude implementation at pushed code checkpoint

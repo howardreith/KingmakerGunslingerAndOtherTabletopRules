@@ -15,7 +15,11 @@ feats remain published, and native back-navigation/respec preserve stat overlays
 spent daily uses and blood expenditure. Nineteen visible traits pass native
 save/OFF/ON/rest/level/respec/cleanup and death/resurrection/polymorph/equipment
 qualification. Breeze's exact mundane feat-attack boundary and the Crystalline
-93-identity semantic ray catalog are qualified. No new content or GUID is added.
+93-identity semantic ray catalog are qualified. Stabilization adds no new elemental
+content or identities. The owner-authorized integration of released master
+0.0.116 retains Roadwarden, Dead Reckoning, their Skeletal Salesman stock and
+Protection wording. Its two released firearm identities bring the combined
+manifest to 1,869. See the [exact installed candidate handoff](ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION-HANDOFF.md).
 See the [stabilization evidence](../ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md).
 The stabilization journal records final candidate profile attestation and
 installation separately from human UI acceptance. This candidate must not be
