@@ -540,6 +540,7 @@ try {
         'disposable-teleportation-interaction',
         'disposable-teleportation-travelers',
         'disposable-teleportation-gamepad',
+        'disposable-teleportation-spellbook-ui',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',

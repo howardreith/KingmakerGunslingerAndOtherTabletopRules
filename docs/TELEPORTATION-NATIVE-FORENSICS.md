@@ -794,3 +794,40 @@ exception storm and is not UI-stability proof. Desktop regressions subsequently
 passed 42 casting and 29 interaction assertions; all ON/OFF and Teleportation-only
 ON/OFF settings checks prove actual module hook counts. Physical controller
 hardware and every screen resolution are outside these structured checks.
+
+## Native spellbook UI qualification seams
+
+The guarded `disposable-teleportation-spellbook-ui` fixture uses
+`ServiceWindowController.HandleOpenSpellbook` and normal
+`SpellbookClassTab.Toggle` / `SpellBookLevelTabs.m_Tabs` controls.
+`SpellBookView.GetSpellsForLevel` combines the actual book's known, special and
+custom spells; `GoNextPage` / `GoPrevPage` preserve its native pagination.
+`SpellItem.Toggle` drives native selected-spell events. `SpellItem.Memorize`
+reaches `SpellBookController.MemorizeWithSound` and `Spellbook.Memorize`, with
+`SpellSlotItem.MechanicSlot` providing the real displayed preparation identity.
+`TooltipTrigger.OpenDescriptionWindow` uses the original row's collected data
+and native `DescriptionController` / `DescriptionTemplatesAbility`, including
+its material-component path.
+
+`ActionBarManager.AddSpellHandler` and prepared-spell handlers schedule the
+native `ActionBarSlots.Set` refresh. `UnitUISettings.TryToInitialize` checks
+`ActionBarAutoFillIgnored` through `SetSlotAutomatically` for prepared and
+spontaneous spell slots. The guarded fixture observes this across frames with
+ordinary Dimension Door as a positive control. Its cleanup alone reads/restores
+exact native `Slots` references and `m_Phase`, `m_ShowAdditionalActionBarOnce`,
+`<Dirty>k__BackingField`, `m_AlreadyAutomaniclyAdded`, and
+`m_ActivatableAbilityAlreadyAutomaniclyAdded` fields and list contents.
+Production does not assign these UI fields. `SelectionManager.SelectUnit` and
+`MultiSelect(..., false)` use native selection events without OS input. Pause
+is request-local and restored. Native spellbook UI success remains subject to
+its structured runtime result; these decompiled paths alone are not live proof.
+
+Live qualification: `20260908T1116293771376Z-9db2a72926a64a2aaba36bc40c295800`
+passes 31 assertions. Native `Spellbook.AddKnown` takes `isCopy`; true suppresses
+`ILearnSpellHandler.HandleLearnSpell`. The fixture therefore uses the real native
+selection change to refresh its action bar after setup. This is not a production
+patch or synthetic event. Native service-window close releases the parent input
+surface and restores the preexisting Pause mode. The complete structured result
+records an inactive surface, alpha 0, actual spell rows/descriptions/preparations,
+zero fixture UI exceptions and exact cleanup including deferred native refresh.
+Normal level-up selection remains unqualified by this scenario.
