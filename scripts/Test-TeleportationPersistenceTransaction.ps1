@@ -4,7 +4,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $tokens = $null; $errors = $null
 $scriptPath = Join-Path $PSScriptRoot 'Invoke-TeleportationPersistenceQualification.ps1'
-$ast = [Management.Automation.Language.Parser]::ParseFile($scriptPath, [ref]$tokens, [ref]$errors)
+$ast = [Management.Automation.Language.Parser]::ParseInput(([IO.File]::ReadAllText($scriptPath) + [Environment]::NewLine + [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'TeleportationPersistence.Common.ps1'))), [ref]$tokens, [ref]$errors)
 if ($errors.Count -ne 0) { throw 'Persistence orchestrator has syntax errors.' }
 foreach ($name in @('Restore-PersistenceSettings', 'Get-PersistenceModsInventory', 'Register-PersistenceOwnedSave', 'Restore-PersistenceSidecars')) {
     $function = @($ast.FindAll({ param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq $name }, $true))

@@ -1148,6 +1148,9 @@
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />
     <Compile Include="RuntimeTesting\LoadGameButtonActionObservation.cs" />
     <Compile Include="RuntimeTesting\WorkingSaveSmokeScenario.cs" />
+    <Compile Include="RuntimeTesting\TeleportCoexistenceForeignAction.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationCoexistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationCoexistenceModals.cs" />
     <Compile Include="RuntimeTesting\TeleportPersistenceIdentity.cs" />
     <Compile Include="RuntimeTesting\TeleportPersistencePlan.cs" />
     <Compile Include="RuntimeTesting\GuardedDisposableSaveLease.cs" />

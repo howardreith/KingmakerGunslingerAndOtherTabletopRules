@@ -94,7 +94,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _teleportationGamepadUiPhase = 4;
             return false;
         }
-        private bool IsTeleportationGamepadFixture { get { return _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad; } }
+        private bool IsTeleportationGamepadFixture { get { return _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad || _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistenceGamepad; } }
         private void RestoreTeleportationController()
         {
             if (!_teleportationOriginalController.HasValue) return;

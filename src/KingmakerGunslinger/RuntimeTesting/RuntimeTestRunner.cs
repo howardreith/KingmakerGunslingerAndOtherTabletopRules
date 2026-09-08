@@ -633,6 +633,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
+                    !IsTeleportationCoexistenceFixture &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationPersistence &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationResources &&
@@ -1763,6 +1764,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
+                    IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
@@ -1852,6 +1854,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
+                    IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
@@ -2411,6 +2414,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources)
                 {
                     PollTeleportationResources();
+                }
+                else if (IsTeleportationCoexistenceFixture)
+                {
+                    PollTeleportationInteraction();
                 }
                 else if (_request.Scenario == TeleportPersistenceIdentity.Scenario)
                 {
@@ -5023,7 +5030,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
-                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                IsTeleportationCoexistenceFixture ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||

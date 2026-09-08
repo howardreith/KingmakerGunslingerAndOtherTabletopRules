@@ -52,6 +52,22 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(0, nativeCalls, "Composition and dismissal invoke no action.");
             result.NativeActions[0]();
             Assertions.Equal(1, nativeCalls, "Choosing native travel invokes its original operation once.");
+            int foreignCalls = 0;
+            Action foreign = () => foreignCalls++;
+            var extended = new[] { original, foreign, inspect };
+            foreach (int uses in new[] { 0, 2, 1, 0, 2 })
+            {
+                var current = WorldMapPointSpellActionComposer.Compose(extended, Point(), Origin, TeleportCastBlock.None,
+                    new[] { Source(uses: uses) }, Catalog(), false, null);
+                Assertions.True(ReferenceEquals(extended, current.NativeActions) &&
+                    current.NativeActions.SequenceEqual(new[] { original, foreign, inspect }),
+                    "Reopen and exhaustion preserve the exact foreign/native collection, callback identities and order.");
+                Assertions.Equal(uses > 0 ? 1 : 0, current.SpellActions.Count, "Only owned spell rows follow current availability.");
+                Assertions.Equal(0, foreignCalls, "Composition and dismissal never fire a foreign callback.");
+            }
+            extended[1]();
+            Assertions.Equal(1, foreignCalls, "The preserved foreign callback fires exactly once when selected.");
+            Assertions.Equal(1, nativeCalls, "Foreign selection never invokes Travel or Inspect.");
         }
         internal static void InvalidPointsPreserveNative()
         {
