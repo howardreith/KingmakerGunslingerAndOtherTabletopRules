@@ -13163,6 +13163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Unity Mod Manager ModEntry.Info.Version")
             };
             MidgamePublicationContracts(assertions, expectedGunslinger);
+            ObserveTeleportationSpellPublication(assertions);
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
         }

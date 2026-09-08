@@ -12898,6 +12898,9 @@
       "plannedType": "EquipmentEntity", "status": "active", "milestone": "Elemental Races visuals", "notes": "Project-owned Undine female head recolor proxy over compatible native Kingmaker geometry."
     },
     {"symbol": "KMG.Firearms.RoadwardenItem", "guid": "66d2f8c4d6aa43e0be72ac18ed9fcd81", "plannedType": "BlueprintItemWeapon", "status": "active", "milestone": "Mid-game merchant firearms", "notes": "Named +3 Reliable musket; Skeletal Salesman C3/C4; named upgrade-only crafting policy."},
-    {"symbol": "KMG.Firearms.DeadReckoningItem", "guid": "b8db89aba5364c27b1626896664a1913", "plannedType": "BlueprintItemWeapon", "status": "active", "milestone": "Mid-game merchant firearms", "notes": "Named +3 Seeking pistol; Skeletal Salesman C3/C4; named upgrade-only crafting policy."}
+    {"symbol": "KMG.Firearms.DeadReckoningItem", "guid": "b8db89aba5364c27b1626896664a1913", "plannedType": "BlueprintItemWeapon", "status": "active", "milestone": "Mid-game merchant firearms", "notes": "Named +3 Seeking pistol; Skeletal Salesman C3/C4; named upgrade-only crafting policy."},
+    {"symbol": "KMG.Spells.Teleport.Ability", "guid": "82e3fb1dce1647b58d3b7169c8520af0", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Contextual world-map teleportation", "notes": "Real spellbook-backed strategic spell; no functional local-map target or effect."},
+    {"symbol": "KMG.Spells.GreaterTeleport.Ability", "guid": "73d19adfe18743e0a2a3a21abf4af5f3", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Contextual world-map teleportation", "notes": "Real spellbook-backed strategic spell; no functional local-map target or effect."},
+    {"symbol": "KMG.Spells.WordOfRecall.Ability", "guid": "596d85a666204d6ea5c0188e53f4b4de", "plannedType": "BlueprintAbility", "status": "active", "milestone": "Contextual world-map teleportation", "notes": "Real spellbook-backed strategic spell; no functional local-map target or effect."}
   ]
 }

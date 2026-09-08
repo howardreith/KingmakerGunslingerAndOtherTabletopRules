@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased: contextual world-map teleportation in development
+
+- Adds the default-ON World-Map Teleportation Spells setting and schema-11
+  migration, preserving explicit settings and all other module decisions.
+- Registers Teleport, Greater Teleport, and Word of Recall as real spell
+  blueprints with transactional native spell-list publication. No character
+  receives a direct spell grant, and the spells have no local-map effect.
+- Adds pure familiarity/outcome/source/transaction policies and guarded native
+  panel, inventory, and publication checks. Contextual casting, saved familiarity,
+  native resource expenditure, relocation, and full runtime qualification remain
+  incomplete. Release metadata is unchanged.
+
 ## 0.0.116-midgame-firearms-and-protection
 
 - Adds Roadwarden (+3 Reliable musket, 33,800 gp) and Dead Reckoning

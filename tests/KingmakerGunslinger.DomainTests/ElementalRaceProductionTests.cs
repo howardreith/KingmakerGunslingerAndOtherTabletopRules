@@ -93,9 +93,9 @@ namespace KingmakerGunslinger.DomainTests
                     StringComparison.Ordinal)).ToArray();
             Assertions.Equal(68, elemental.Length,
                 "Production elemental identity count changed.");
-            Assertions.Equal(1708, all.Length,
+            Assertions.Equal(1711, all.Length,
                 "Manifest total must include 68 production elemental identities.");
-            Assertions.Equal(1706, all.Count(value => string.Equals(
+            Assertions.Equal(1709, all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
             Assertions.Equal(all.Length, all.Select(value =>
