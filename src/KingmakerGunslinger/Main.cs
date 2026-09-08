@@ -101,6 +101,7 @@ namespace KingmakerGunslinger
                 // A missing/invalid bank must never disable firearm mechanics.
                 Audio.FirearmSoundRuntime.Configure(context);
                 context.InstallPatches();
+                Spells.Teleportation.TeleportFamiliarityPatches.Install(context);
                 EasternWeaponArmsArmorCompatibility.Install(context.Harmony);
                 BrownFurOptionalExtensionCoordinator.Install(context);
                 AidAnotherOptionalExtensionCoordinator.Install(context);

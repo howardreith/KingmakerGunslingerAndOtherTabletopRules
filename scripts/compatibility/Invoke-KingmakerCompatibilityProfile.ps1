@@ -57,6 +57,8 @@ param(
         'working-save-eastern-weapons-verify-cleanup',
         'working-save-eastern-weapons-verify-absent',
         'observe-teleportation-native-contracts',
+        'observe-teleportation-world-map',
+        'disposable-teleportation-familiarity',
         'observe-expanded-summoning-inventory',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
@@ -160,7 +162,7 @@ if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
 }
 if ($moduleScenario) {
     $keys = @($Parameters.Keys | Sort-Object)
-    if ($keys.Count -ne 11 -or $keys[0] -cne 'acadamaeGraduate' -or
+    if ($keys.Count -ne 12 -or $keys[0] -cne 'acadamaeGraduate' -or
         $keys[1] -cne 'bodyguardFeats' -or
         $keys[2] -cne 'brownFurTransmuter' -or
         $keys[3] -cne 'easternWeapons' -or
@@ -168,7 +170,8 @@ if ($moduleScenario) {
         $keys[5] -cne 'elvenBranchedSpears' -or
         $keys[6] -cne 'expandedSummoning' -or $keys[7] -cne 'gunslinger' -or
         $keys[8] -cne 'protectionFromAlignmentControlImmunity' -or
-        $keys[9] -cne 'shieldOther' -or $keys[10] -cne 'urbanBarbarian' -or
+        $keys[9] -cne 'shieldOther' -or $keys[10] -cne 'teleportationSpells' -or
+        $keys[11] -cne 'urbanBarbarian' -or
         $Parameters.gunslinger -isnot [bool] -or
         $Parameters.acadamaeGraduate -isnot [bool] -or
         $Parameters.shieldOther -isnot [bool] -or
@@ -179,8 +182,9 @@ if ($moduleScenario) {
         $Parameters.urbanBarbarian -isnot [bool] -or
         $Parameters.bodyguardFeats -isnot [bool] -or
         $Parameters.protectionFromAlignmentControlImmunity -isnot [bool] -or
-        $Parameters.elementalRaces -isnot [bool]) {
-        throw 'Feature-module profile observation requires exactly eleven Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, and elementalRaces.'
+        $Parameters.elementalRaces -isnot [bool] -or
+        $Parameters.teleportationSpells -isnot [bool]) {
+        throw 'Feature-module profile observation requires exactly twelve Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, and teleportationSpells.'
     }
 } elseif ($assetAttributionScenario) {
     $keys = @($Parameters.Keys)
@@ -273,7 +277,7 @@ try {
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
-        $settings = [ordered]@{ schemaVersion = 10
+        $settings = [ordered]@{ schemaVersion = 11
             gunslinger = [bool]$Parameters.gunslinger
             'acadamae-graduate' = [bool]$Parameters.acadamaeGraduate
             'shield-other' = [bool]$Parameters.shieldOther
@@ -285,7 +289,8 @@ try {
             'bodyguard-feats' = [bool]$Parameters.bodyguardFeats
             'protection-from-alignment-control-immunity' =
                 [bool]$Parameters.protectionFromAlignmentControlImmunity
-            'elemental-races' = [bool]$Parameters.elementalRaces }
+            'elemental-races' = [bool]$Parameters.elementalRaces
+            'teleportation-spells' = [bool]$Parameters.teleportationSpells }
         $temporary = $settingsPath + '.kmg-profile.tmp'
         [IO.File]::WriteAllText($temporary,
             ($settings | ConvertTo-Json -Depth 4),
@@ -324,6 +329,7 @@ try {
         }
         if ($name -in @('musket-master-mechanics-and-starter',
             'working-save-smoke', 'disposable-brown-fur-native-cast',
+            'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
             'summon-same-turn-activation', 'summon-same-turn-acadamae',
             'summon-same-turn-multiple', 'summon-same-turn-native-control',
             'summon-same-turn-rtwp-control')) {

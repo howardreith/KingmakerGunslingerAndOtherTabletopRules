@@ -882,9 +882,14 @@
     <Compile Include="Spells\Teleportation\TeleportRollTable.cs" />
     <Compile Include="Spells\Teleportation\TeleportFailureSeverityPolicy.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityState.cs" />
+    <Compile Include="Spells\Teleportation\TeleportOrdinaryArrivalPolicy.cs" />
+    <Compile Include="Spells\Teleportation\UnitPartTeleportFamiliarity.cs" />
+    <Compile Include="Spells\Teleportation\TeleportFamiliarityRuntime.cs" />
+    <Compile Include="Spells\Teleportation\TeleportFamiliarityPatches.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInventory.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPublication.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationWorldMapForensics.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationFamiliarity.cs" />
     <Compile Include="Compatibility\EasternWeaponArmsArmorCompatibility.cs" />
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />

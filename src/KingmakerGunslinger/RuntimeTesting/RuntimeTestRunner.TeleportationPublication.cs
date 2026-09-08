@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Kingmaker;
+using Harmony12;
+using Kingmaker.Controllers.GlobalMap;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
@@ -24,6 +26,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             var abilities = new[] { spells.Teleport, spells.GreaterTeleport, spells.WordOfRecall };
             foreach (var ability in abilities) TeleportationSpellBlueprints.Validate(ability);
             bool enabled = _context.FeatureModules.Active.TeleportationSpells;
+            MethodInfo[] familiarityTargets = { typeof(MapMovementController).GetMethod("MoveAlongEdge", BindingFlags.Static | BindingFlags.NonPublic),
+                typeof(Player).GetMethod("OnAreaLoaded", Type.EmptyTypes) };
+            // The installed Harmony12-to-Harmony2 bridge throws for an unpatched method.
+            // Its registry is authoritative for absence; only inspect registered targets.
+            var patchedMethods = new HashSet<MethodBase>(_context.Harmony.GetPatchedMethods());
+            int familiarityHookCount = familiarityTargets.Sum(target => {
+                if (target == null) throw new MissingMethodException("A native familiarity target is absent.");
+                if (!patchedMethods.Contains(target)) return 0;
+                Patches patches = _context.Harmony.GetPatchInfo(target);
+                return patches == null ? 0 : patches.Prefixes.Concat(patches.Postfixes).Concat(patches.Transpilers)
+                    .Count(value => value.owner == _context.ModId && value.patch != null &&
+                        value.patch.DeclaringType == typeof(Spells.Teleportation.TeleportFamiliarityPatches));
+            });
             bool travelExists = BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(TeleportationSpellListPublication.TravelListId);
             var targets = new List<TeleportationPublicationProbeTarget> {
                 TeleportationProbeTarget(TeleportationSpellListPublication.WizardListId, 5, spells.Teleport),
@@ -84,11 +99,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     components = value.ComponentsArray.Select(component => component.GetType().FullName).ToArray() }).ToArray(),
                 targets = targets.Select(value => new { listId = value.ListId, level = value.Level.SpellLevel,
                     spell = value.Spell.AssetGuid, exactReferences = value.Level.Spells.Count(spell => ReferenceEquals(spell, value.Spell)) }).ToArray(),
-                rollbackExercised = enabled, duplicateSafe, exactRollback, originalInstancesRestored = restored });
+                rollbackExercised = enabled, duplicateSafe, exactRollback, originalInstancesRestored = restored, familiarityHookCount });
             assertions.Add(Assertion("teleportation-three-real-spell-blueprints", "three exact Conjuration/standard strategic blueprints", "count=" + abilities.Length,
                 abilities.Select(value => value.AssetGuid).Distinct().Count() == 3, path));
             assertions.Add(Assertion("teleportation-module-spell-publication", "exact base/domain levels match saved module intent", "enabled=" + enabled + ";travelExists=" + travelExists,
                 originalPublication && (BlueprintBootstrap.TeleportationPublication != null) == enabled, path));
+            assertions.Add(Assertion("teleportation-familiarity-module-hooks", "ordinary-arrival hooks match module intent",
+                "enabled=" + enabled + ";installed=" + Spells.Teleportation.TeleportFamiliarityPatches.Installed + ";actualHooks=" + familiarityHookCount,
+                enabled == Spells.Teleportation.TeleportFamiliarityPatches.Installed && familiarityHookCount == (enabled ? 2 : 0), path));
             assertions.Add(Assertion("teleportation-publication-duplicate-safe", enabled ? "native list/cache identity unchanged by repeated publication" : "not exercised while module OFF",
                 enabled ? "passed=" + duplicateSafe : "module OFF; no publication invoked", duplicateSafe, path));
             assertions.Add(Assertion("teleportation-publication-exact-rollback", enabled ? "exact prior native list/cache references restored" : "not exercised while module OFF",

@@ -44,8 +44,7 @@ encounter marker. Its arrival restrictions require separate native inspection;
 the adapter must not conflate the two concepts.
 
 Automatic exclusions must cover missing/duplicate stable identity, absent or
-inactive current scene anchors, unrevealed or unvisited state, native fake or
-transient state, native campaign prohibition, and the party's occupied point.
+inactive current scene anchors, unrevealed or unvisited state, native transient state, native campaign prohibition, and the party's occupied point.
 Random encounter markers, temporary camp/event markers, and the moving token
 have no qualifying persistent selectable point unless independently proven by
 these same contracts. Unknown point types fail closed.

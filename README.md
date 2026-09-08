@@ -257,8 +257,9 @@ default enabled. Older settings migrate to schema 11 while preserving every
 explicit value. Any absent module key, including Teleportation, migrates ON.
 
 The Teleportation setting is under development on the contextual teleportation
-feature branch. Native spell publication is implemented; contextual casting remains under
-development and unqualified.
+feature branch. Native spell publication and a save-owned ordinary-arrival ledger
+are implemented. Contextual casting and full campaign persistence qualification
+remain in progress.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 

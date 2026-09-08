@@ -89,11 +89,47 @@ exact restoration still require further inspection.
 `LastVisited` changes during local-area entry/reconstruction and cannot
 implement familiarity.
 
-`MapMovementController.MoveAlongEdge` calls `OpenOutgoingEdges` at ordinary
-intermediate-point arrivals and the final destination. A narrowly matched
-call seam can observe real movement without counting clicks, loading,
-map reconstruction, local-area reentry, or magical relocation. Deduplication
-and save/load behavior remain live qualification work.
+`MapMovementController.MoveAlongEdge` calls `OpenOutgoingEdges` at intermediate
+points only when the prior `CurrentEdge` exists, its `RevealPath` flag is true,
+and the edge changed. Both native `TravelEdge` constructors initialize that flag
+true, including on already revealed roads; it is not native visited state. The
+initial hypothesis that known roads automatically clear the flag was disproved
+by guarded preview/actual-route evidence. The calls also miss intermediate
+boundaries crossed in a first, large movement frame, so they are not a complete
+arrival-count seam.
+
+The implemented observer matches the unique local-0 `MapTravelData.WalkedDistance`
+load followed by local-1 store, after native partial-edge initialization and
+before movement. An invocation-local sample records the existing path's native
+spline endpoint distances. At each normal method return it compares the native
+completed distance, caps a stopped/replaced route at the actual settled point,
+and records qualifying boundary crossings once. Branch labels are retained.
+It never plans paths, advances time, moves the token, opens edges or reveals
+points. Unknown IL/geometry disables this adapter; it does not alter vanilla
+movement or other modules.
+
+Manual hooks are `Kingmaker.Controllers.GlobalMap.MapMovementController.MoveAlongEdge`
+(transpiler) and `Kingmaker.Player.OnAreaLoaded` (migration-only postfix). Neither
+is installed when the module is OFF. `UnitPartTeleportFamiliarity` uses the exact
+main-character descriptor's native Get/Ensure ownership. Its private JsonProperty
+payload is the sole count source; native save/load callbacks leave bytes intact.
+`EdgesOpened || IsExplored` seeds legacy counts once before new ordinary arrivals.
+Reveals after migration cannot add ledger counts.
+
+Guarded `disposable-teleportation-familiarity` passed nine assertions in run
+`20260908T0223050324619Z-eb7985f6f51d4f098d522387a20eb2ee`. It used native panel
+Accept, native route planning, and native Tick with a request-local time input,
+then restored tracked state and verified no save write. Three actual trips
+counted both directions and known intermediate crossroads. This establishes
+that narrow native movement seam, not full contextual spell casting or disk
+persistence. Ownerless UnitPart payload serialization passed; a prior generic
+live-owner serialization probe failed on Unity Vector3 recursion and was narrowed.
+
+Fixture-only reflection accesses LocationData.IsRevealed's assignment-only setter,
+MapMovementController.CalcSpeedModifiers, the UnitPart payload, and captured
+LocationData/MapEdgeData fields for restoration. Production has no fixture entry
+point. Full game-save owner graph/reload and disabled-module persistence still
+require the guarded save workflow.
 
 `UnitPartControlledRageSelection` establishes the save-owned serialized-string
 pattern. The new familiarity policy has a versioned deterministic stable-ID
@@ -353,3 +389,21 @@ All 1,432 domain tests, clean Release build, repository checks, and strict
 installable-package validation pass. The manifest contains 1,711 entries:
 1,709 active and two reserved. The complete published 0.0.116 prefix is pinned
 by a separate hash in validation. Release metadata remains 0.0.116.
+
+### OFF hook registry and standalone load qualification
+
+The installed Harmony12 compatibility bridge throws inside `ToHarmony12` when
+`GetPatchInfo` receives a method absent from the patched-method registry. The
+runtime observer now obtains `GetPatchedMethods` first and only requests details
+for registered methods. OFF run `20260908T0250396138426Z-1b12dee6c0c04cd1977f7dcd49b0bac7`
+proved zero owned familiarity hooks; standalone ON run
+`20260908T0253148546708Z-b7f27f81de57400b93fcb15c9439d023` proved exactly two.
+
+The standalone save-backed attempt
+`20260908T0232569730289Z-b4cdb0b1cfee4e8b944bac6a69901fd9` failed before this
+feature fixture. Native `Player.PostLoad` IL002e calls `Single` on cross-scene
+entities using `<PostLoad>b__136_0`; that predicate compares each entity's exact
+`UniqueId` to `Player.MainCharacter.UniqueId`. No match existed in that run.
+The fixture never executed, no save was changed, and profile restoration was
+verified. The underlying profile/save prerequisite remains unresolved. Neither
+save-free startup nor an installed-profile load is a standalone save-backed PASS.
