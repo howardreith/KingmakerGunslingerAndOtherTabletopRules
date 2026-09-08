@@ -1,6 +1,6 @@
 # Contextual world-map teleportation implementation report
 
-Status: IN PROGRESS. The native desktop contextual casting checkpoint has
+Status: IN PROGRESS. Native desktop and gamepad contextual casting have
 structured runtime evidence; complete feature and compatibility qualification
 remain unfinished. Release metadata remains 0.0.116.
 
@@ -28,6 +28,7 @@ Pushed coherent checkpoints:
 - `53b373575fb71a80d7da69849b028f2d5a34a33b`: exact current world-map destination and capital-state composition.
 - `2f0b6bfadfca93269bc2255e98ae69bf818976f7`: native desktop rows/confirmation, canonical real casts and protected relocation.
 - `35616afa59c9e4045317d92e727d6392a5e77d1f`: native Travel/Escape, live source counts, stable reopened layout and scrolling across frames.
+- `ba32ac2d6e7a916aedbdf61b4dea2ff093d3c746`: native mishap life-state settlement, real associated-pet qualification and corrected world/resource fingerprints.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -98,7 +99,7 @@ current-state adapter and isolated Recall-state fixture are qualified below.
 
 ## Validation checkpoints
 
-- Current domain suite: 1,475 passing cases, including 4,096 module settings round
+- Current domain suite: 1,482 passing cases, including 4,096 module settings round
   trips and 4,096 publication-intent combinations. The guarded catalog generates
   26 boundary configurations for 12 modules.
 - Clean Release build and strict installable-package validation passed for the
@@ -500,12 +501,144 @@ compatibility parameter/settings checks passed 4,120. Working-save regression
 `20260908T0806109819970Z-working-save-smoke`, passed all eleven assertions with
 zero save writes. No release promotion is implied.
 
+## Complete module boundary checkpoint
+
+Qualified source: `ba32ac2d6e7a916aedbdf61b4dea2ff093d3c746`. All 26 required configurations passed 845 structured assertions through guarded Steam App ID 640820 launches.
+
+The exact expected set was checked: all ON, all OFF, each module alone ON, and each module alone OFF. Each run verified real spell-list publication/rollback, actual destination/familiarity Harmony hooks, and unrelated module decisions. These runs precede the gamepad adapter; its additional hooks require separate qualification.
+
+Settings restored byte-for-byte, SHA-256 `a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749`. Machine-local aggregate: `artifacts/teleportation/module-boundary-results.json`. Launch/build/package log: `artifacts/teleportation/runtime-module-boundary-matrix.log`.
+
+Runtime results live under `C:/Dev/KingmakerGunslingerLab/runtime-evidence/<directory>/runtime-result.json`.
+
+| Configuration | Run ID | Directory | Assertions |
+| --- | --- | --- | --- |
+| All ON | `20260908T0815415736194Z-3b60b100eacf462797a13c6ae78d6608` | `20260908T0815415616195Z-observe-feature-module-settings` | 33 PASS |
+| Only teleportationSpells OFF | `20260908T0817374509820Z-9de2031877764baeb08372acf8441100` | `20260908T0817374469805Z-observe-feature-module-settings` | 33 PASS |
+| Only elementalRaces OFF | `20260908T0819339602175Z-ec68c5a5e9ca442b90bbd7ada1f4d33b` | `20260908T0819339562186Z-observe-feature-module-settings` | 33 PASS |
+| Only protectionFromAlignmentControlImmunity OFF | `20260908T0821302048418Z-08257842553e4102a525980eacf6b89c` | `20260908T0821302018389Z-observe-feature-module-settings` | 33 PASS |
+| Only bodyguardFeats OFF | `20260908T0823268216126Z-18a83612f9c44f19b457d10c84f2ebe2` | `20260908T0823268176116Z-observe-feature-module-settings` | 33 PASS |
+| Only urbanBarbarian OFF | `20260908T0825231531057Z-49b304583531441e93bef44f65f7addb` | `20260908T0825231531057Z-observe-feature-module-settings` | 33 PASS |
+| Only brownFurTransmuter OFF | `20260908T0827205570114Z-f2969d616c2e4727a1277c1bb53d316a` | `20260908T0827205570114Z-observe-feature-module-settings` | 33 PASS |
+| Only easternWeapons OFF | `20260908T0829178179571Z-2f3fe46f599a454baae03cfa02cb680e` | `20260908T0829178164602Z-observe-feature-module-settings` | 33 PASS |
+| Only elvenBranchedSpears OFF | `20260908T0831137624285Z-fb18394dd5244a249e5263749a372045` | `20260908T0831137584252Z-observe-feature-module-settings` | 33 PASS |
+| Only expandedSummoning OFF | `20260908T0833095032941Z-515a2b6143bc453abd18b00518f965f0` | `20260908T0833095032941Z-observe-feature-module-settings` | 33 PASS |
+| Only shieldOther OFF | `20260908T0835058062108Z-720a252c8aea4f4689de2101092702dd` | `20260908T0835058051611Z-observe-feature-module-settings` | 33 PASS |
+| Only acadamaeGraduate OFF | `20260908T0837022379660Z-f4091c0dd3a84201aeab3a75cddeb922` | `20260908T0837022379660Z-observe-feature-module-settings` | 33 PASS |
+| Only gunslinger ON | `20260908T0838591362410Z-eb50421bfa654944b4656436a381713f` | `20260908T0838591332419Z-observe-feature-module-settings` | 33 PASS |
+| Only gunslinger OFF | `20260908T0840548541026Z-5e878cc479164ebeb986470bf0373cfb` | `20260908T0840548541026Z-observe-feature-module-settings` | 32 PASS |
+| Only acadamaeGraduate ON | `20260908T0842512435461Z-657dae61888c4d38be6add80baf6d2b4` | `20260908T0842512405465Z-observe-feature-module-settings` | 32 PASS |
+| Only shieldOther ON | `20260908T0844471399790Z-b3c2fcd52b364125a302fc0833943f37` | `20260908T0844471399790Z-observe-feature-module-settings` | 32 PASS |
+| Only expandedSummoning ON | `20260908T0846436149390Z-ebda76c8e7994b82802171cd9516a8f1` | `20260908T0846436109450Z-observe-feature-module-settings` | 32 PASS |
+| Only elvenBranchedSpears ON | `20260908T0848395260009Z-18c22f6d0b414c049e6276aafa48f007` | `20260908T0848395260009Z-observe-feature-module-settings` | 32 PASS |
+| Only easternWeapons ON | `20260908T0850359675650Z-800c3a9d8c3b4149b476c72b968d2dab` | `20260908T0850359675650Z-observe-feature-module-settings` | 32 PASS |
+| Only brownFurTransmuter ON | `20260908T0852324791144Z-3f78b524b69942adb0538abdd64d3139` | `20260908T0852324791144Z-observe-feature-module-settings` | 32 PASS |
+| Only urbanBarbarian ON | `20260908T0854285982206Z-7e7c0f4320544059a73b5bba1697731a` | `20260908T0854285982206Z-observe-feature-module-settings` | 32 PASS |
+| Only bodyguardFeats ON | `20260908T0856251153884Z-d26aa990c77145119d529354a8d2e67f` | `20260908T0856251153884Z-observe-feature-module-settings` | 32 PASS |
+| Only protectionFromAlignmentControlImmunity ON | `20260908T0858217890667Z-c7567cc3354a47aebd2085676d3ee22f` | `20260908T0858217890667Z-observe-feature-module-settings` | 32 PASS |
+| Only elementalRaces ON | `20260908T0900178203755Z-5006331c470148d784d526b1d29f81cd` | `20260908T0900178203755Z-observe-feature-module-settings` | 32 PASS |
+| Only teleportationSpells ON | `20260908T0902140842296Z-16e359d8470b4e27aa846b2aa66c397c` | `20260908T0902140842296Z-observe-feature-module-settings` | 32 PASS |
+| All OFF | `20260908T0904097232535Z-1fcecd2180ee4521a00bd40b7235529c` | `20260908T0904097152777Z-observe-feature-module-settings` | 32 PASS |
+
+## Native gamepad destination qualification
+
+The gamepad adapter appends native ConsoleButton rows after destination
+composition and registers them with the existing navigation collection. Native
+Travel, other native controls, their order/default and their input layers remain
+intact. The shared native confirmation binds the same physical spellbook and
+uses the desktop transaction/outcome/relocation implementation.
+
+The final guarded gamepad run passed 39 assertions. It covers no-source,
+unvisited, closed and current-point omission; native Travel exactly once before
+and after augmentation; six distinct source rows; six reopen cycles; native
+cancel and modal replacement ownership; live counts and removal of an exhausted
+selected row from navigation; real prepared Teleport, spontaneous Greater
+Teleport and pre/post-capital Recall; twelve-source scrolling; exact cleanup;
+and zero observed native/mod UI exceptions. Recall appears first only on its
+required stable destination. All four completed casts use actual contextual
+rows and native confirmation controls. No save write occurred.
+
+TextMeshPro evidence includes every rendered character, numeric percentage,
+line break, source count and confirmation label. The native font's uppercase /
+small-caps styling is accepted without changing the text. The actual modal uses
+ScreenSpaceOverlay, so geometry is measured through its owning canvas rather
+than the world-map UI camera. Native fade/rotation must finish; the text and
+buttons must fit on screen without truncation or overflow. This is structured
+UI evidence, not screenshot inference or a review of every display resolution.
+
+| Scenario/configuration | Assertions | Exact run ID | Result directory |
+|---|---:|---|---|
+| Native gamepad interaction/casting | 39 PASS | `20260908T1010179638483Z-9fc7ced7478444cf954b1bf08ce52cc1` | `20260908T1010179548235Z-disposable-teleportation-gamepad` |
+| Desktop contextual casting | 42 PASS | `20260908T1014214159153Z-9a69a30993ed40c788bc296626ba20c7` | `20260908T1014214079156Z-disposable-teleportation-casting` |
+| Desktop interaction | 29 PASS | `20260908T1018389758730Z-7424c79a9121415384eae22539d144d8` | `20260908T1018389608496Z-disposable-teleportation-interaction` |
+| Working save | 11 PASS | `20260908T1020106360919Z-795b2fcd0c7d4f39b8cd0ce28ae03e7e` | `20260908T1020106360919Z-working-save-smoke` |
+| All modules ON | 34 PASS | `20260908T1021358972525Z-595267a8e06449e7ac21581616b787c8` | `20260908T1021358972525Z-observe-feature-module-settings` |
+| Only Teleportation OFF | 34 PASS | `20260908T1022507762681Z-b926a0f844934c46b4aca52592bd744c` | `20260908T1022507762681Z-observe-feature-module-settings` |
+| Only Teleportation ON | 33 PASS | `20260908T1024059211546Z-5bdd420157864e94921b3f500a172d77` | `20260908T1024059211546Z-observe-feature-module-settings` |
+| All modules OFF | 33 PASS | `20260908T1025217015010Z-d5cfb7f6835c4407a94d48db8ddea8bb` | `20260908T1025217015010Z-observe-feature-module-settings` |
+
+All directories above are beneath
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/` and contain
+`runtime-result.json`. The gamepad detail is `teleportation-gamepad.json`;
+regressions retain their scenario-specific artifacts and copied native logs.
+The seven regressions passed 216 assertions, for 255 assertions including the
+new gamepad run. They reuse deployment
+`deployments/20260908T1010179218231Z/deployment.json` and the same immutable local
+runtime package. Native logs contain no Teleportation errors. Gamepad logs and
+the request-local exception observer contain zero native UI exceptions.
+
+The four focused module runs verify actual desktop/gamepad/familiarity hook
+counts 4/4/2 when enabled and 0/0/0 when disabled, plus real publication and exact
+rollback. The original settings bytes were restored after every configuration;
+the independently checked final SHA-256 is
+`a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749`.
+The prior full 26-state/845-assertion matrix remains evidence for ba32ac2;
+these four runs qualify the new module hook boundary, not a new full 26-state run.
+
+The complete 1,482-case domain suite, clean Release build, build-output and
+strict installable-package checks pass. The relevant local logs are
+`artifacts/teleportation/domain-gamepad-extended.log` and
+`artifacts/teleportation/build-gamepad-canvas-fields.log`.
+The scenario preflight passes 208 checks plus teleportation metadata validation;
+compatibility parameter/settings validation passes 4,120 checks. Generated
+packages, proprietary inspection output and raw runtime artifacts are uncommitted.
+
+### Rejected gamepad probes and corrections
+
+- `20260908T0912419437069Z-fe953e125eb749049cdfe34df6866906`
+  (`20260908T0912419357133Z-disposable-teleportation-gamepad`) stopped before
+  fixture casting: the console map existed but only the desktop modal was loaded.
+- `20260908T0923268173371Z-5e17835d386049e0b5200f91e23a9f6e`
+  (`20260908T0923268083372Z-disposable-teleportation-gamepad`) passed 25 cast/input
+  assertions, but subsequent native-log review found 112 local-UI null references
+  and console map initialization observer errors. It is not UI-stability proof.
+  Controller mode had changed while desktop local-area controls were still live.
+- `20260908T0947531104480Z-3592e8882fa14a47ae07b522630b498d`
+  (`20260908T0947531004541Z-disposable-teleportation-gamepad`) used a fully loaded
+  desktop world map before native console UI reloading. It proved zero exceptions
+  and restored state, but failed three case-sensitive rendered-text assertions.
+- `20260908T0955417846206Z-df215b0d815e40cb8bba5ec4a03661f5`
+  (`20260908T0955417756218Z-disposable-teleportation-gamepad`) retained those
+  failures while recording the exact native uppercase/small-caps text and layout.
+- `20260908T1001455915923Z-3d662cd0ddeb439c8033200ff9932bae`
+  (`20260908T1001455831596Z-disposable-teleportation-gamepad`) exposed an incorrect
+  measurement camera: UIUtility.IsTransformInScreen assumes Game.UI.UICamera,
+  while this native modal belongs to a separate overlay canvas. The final run
+  above uses the correct canvas and waits for native animation completion.
+
+Fixture setup now follows native loading contracts: load the desktop world map,
+dispose/unload the desktop loading UI, load/initialize the console loading UI,
+and invoke the exact native same-area Game.LoadArea overload with no autosave
+and no forced unload. SceneLoader owns UI scene replacement. It leaves no old
+local-area controls running under gamepad mode. Before mandatory process exit,
+all books/map/ledger changes are restored, native UI contexts are disposed and
+controller mode is restored. No input event is synthesized or published.
+
 ## Remaining qualification and constraints
 
 Full campaign familiarity disk save/reload, mod-provided mount qualification,
-remaining UI lifecycle/input boundaries,
-gamepad augmentation/navigation, complete 26-state module boundaries, and all
-required compatibility profiles remain incomplete. The current UI qualification
+normal spellbook/action-bar/level-up UI qualification, special-point arrival audit,
+a final complete module matrix, and all required compatibility profiles remain incomplete. The current UI qualification
 uses structured native button invocation and measured on-screen geometry across
 frames; it is not a presentation review of every camera position/resolution.
 

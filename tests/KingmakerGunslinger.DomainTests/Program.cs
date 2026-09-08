@@ -25,6 +25,13 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("teleportation.scroll.VisibleSelectionDoesNotMoveViewport", TeleportationScrollTests.VisibleSelectionDoesNotMoveViewport),
+            Case("teleportation.scroll.SelectionAboveUsesSmallestScroll", TeleportationScrollTests.SelectionAboveUsesSmallestScroll),
+            Case("teleportation.scroll.SelectionBelowUsesSmallestScroll", TeleportationScrollTests.SelectionBelowUsesSmallestScroll),
+            Case("teleportation.scroll.FirstAndLastSourcesRemainReachable", TeleportationScrollTests.FirstAndLastSourcesRemainReachable),
+            Case("teleportation.scroll.ShortContentDoesNotScroll", TeleportationScrollTests.ShortContentDoesNotScroll),
+            Case("teleportation.scroll.OversizedRowHasStableTopAlignment", TeleportationScrollTests.OversizedRowHasStableTopAlignment),
+            Case("teleportation.scroll.UnknownGeometryFailsClosed", TeleportationScrollTests.UnknownGeometryFailsClosed),
             Case("teleportation.layout.NativeActionsAndRowsFitAroundSelectedAnchor", TeleportationLayoutTests.NativeActionsAndRowsFitAroundSelectedAnchor),
             Case("teleportation.layout.LongListsScrollBeforeObscuringNativeActions", TeleportationLayoutTests.LongListsScrollBeforeObscuringNativeActions),
             Case("teleportation.layout.UnprovenOrInsufficientGeometryFailsClosed", TeleportationLayoutTests.UnprovenOrInsufficientGeometryFailsClosed),

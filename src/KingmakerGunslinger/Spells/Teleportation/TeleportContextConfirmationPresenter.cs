@@ -14,7 +14,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
     internal sealed class TeleportContextConfirmationPresenter : MonoBehaviour
     {
         private static TeleportContextConfirmationPresenter _current;
-        private DialogMessageBox _dialog;
+        private TeleportationConfirmationSurface _surface;
+        private bool _opened;
         private WorldMapPointSpellAction _action;
         private TeleportationWorldMapContext _openedContext;
         private Kingmaker.UnitLogic.Spellbook _openedBook;
@@ -26,18 +27,19 @@ namespace KingmakerGunslinger.Spells.Teleportation
         internal string Message { get; private set; }
         internal static bool Pending { get { return _current != null; } }
         internal static TeleportContextConfirmationPresenter Current { get { return _current; } }
-        internal static bool CanOpen { get { return !Pending && Game.Instance != null && !Game.Instance.IsControllerGamepad &&
-            DialogMessageBox.Instance != null && !DialogMessageBox.Instance.IsShown; } }
+        internal static bool CanOpen { get { return !Pending && TeleportationConfirmationSurface.Available() != null; } }
 
         internal static void Open(WorldMapPointSpellAction action, TeleportationWorldMapContext context, ITeleportationRolls qualificationRolls = null)
         {
-            if (!CanOpen || action == null || context == null || !context.Usable) return;
+            if (Pending || action == null || context == null || !context.Usable) return;
+            var surface = TeleportationConfirmationSurface.Available();
+            if (surface == null) return;
             var source = TeleportationSpellbookAdapter.Resolve(action.Source);
             if (source == null) return;
-            var self = DialogMessageBox.Instance.gameObject.AddComponent<TeleportContextConfirmationPresenter>();
+            var self = surface.Host.AddComponent<TeleportContextConfirmationPresenter>();
             try
             {
-                self._dialog = DialogMessageBox.Instance;
+                self._surface = surface;
                 self._action = action;
                 self._openedContext = context;
                 self._openedBook = source.Book;
@@ -50,16 +52,17 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 EventBus.RaiseEvent<IDialogMessageBoxUIHandler>(handler => handler.HandleOpen(self.Message,
                     DialogMessageBoxBase.BoxType.Dialog, self._callback,
                     TeleportationText.Get("Confirm", "Cast"), TeleportationText.Get("Cancel", "Cancel"), null, null));
-                if (!self._dialog.IsShown || !self.OwnsCallback()) self.Cancel(false);
+                self._opened = true;
+                if (!surface.Shown || !self.OwnsCallback()) self.Cancel(false);
             }
             catch { self.Cancel(true); throw; }
         }
         private bool OwnsCallback()
-        { return _dialog != null && ReferenceEquals(WorldMapPointSpellActionPatches.ConfirmationCallbackField.GetValue(_dialog), _callback); }
+        { return _surface != null && _surface.Owns(_callback); }
         private bool StillValid()
         {
             var context = TeleportationWorldMapAdapter.Capture(false);
-            if (!context.Usable || context.OriginId != _action.OriginId ||
+            if (_surface == null || !_surface.ControllerMatches || !context.Usable || context.OriginId != _action.OriginId ||
                 !ReferenceEquals(context.Player, _openedContext.Player) || !ReferenceEquals(context.Map, _openedContext.Map) ||
                 !ReferenceEquals(context.Rules, _openedContext.Rules)) return false;
             var point = ResourcesLibrary.TryGetBlueprint<BlueprintLocation>(_action.Destination.Id);
@@ -74,7 +77,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (_settled) return;
             try
             {
-                if (_dialog == null || !_dialog.IsShown || !OwnsCallback()) Cancel(false);
+                if (_surface == null || !_surface.Shown || !OwnsCallback()) Cancel(false);
                 else if (!StillValid()) Cancel(true);
             }
             catch (Exception exception) { Cancel(true); WorldMapPointSpellActionRuntime.Report(exception); }
@@ -101,10 +104,12 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (_settled) return;
             _settled = true;
             if (Transaction != null) Transaction.Cancel();
-            if (closeOwnedDialog && _dialog != null && _dialog.IsShown && OwnsCallback()) _dialog.HandleForceClose();
+            if (closeOwnedDialog && _surface != null && _surface.Shown && OwnsCallback()) _surface.Close();
             if (ReferenceEquals(_current, this)) _current = null;
             Destroy(this);
         }
+        private void OnDisable()
+        { if (_opened && !_settled) Cancel(false); }
         private void OnDestroy()
         {
             if (!_settled && Transaction != null) Transaction.Cancel();

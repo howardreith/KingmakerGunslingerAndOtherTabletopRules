@@ -2,6 +2,11 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Adds native gamepad destination rows, scrolling through existing navigation,
+  shared native confirmations and live source removal. Guarded qualification
+  passes 39 assertions with zero UI exceptions, plus desktop and module regressions.
+  The preceding desktop checkpoint passed all 26 module boundary configurations.
+
 - Settles native mishap death/unconsciousness before rerolls and qualifies real
   associated pets. Isolates snapshot serialization from native save defaults
   and verifies that deliberate world/resource changes are detected.

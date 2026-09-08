@@ -1,6 +1,6 @@
 # Contextual world-map teleportation native forensics
 
-Status: native contracts and guarded component qualification; completed contextual casting and relocation remain unqualified.
+Status: native desktop/gamepad casting, relocation and associated-pet checkpoints have structured evidence; full feature qualification remains in progress.
 
 The clean base is `58d9511082af30f1a4ec88c1238ae7ae2b3651c2`, verified against
 freshly fetched `origin/master` on 2026-09-07 before creating
@@ -467,8 +467,8 @@ string, string, string, Action<string>)` is the native confirmation event seam.
 `OnButtonNo` call `Hide` first, then invoke their callback; Escape maps Dialog
 to No. `Hide` clears `IsShown`, removes its Escape handler and hides the veil.
 `HandleForceClose` hides without invoking a result callback, so an owned pending
-request must detect that disappearance and cancel. The current inspected desktop
-implementation returns early for gamepad mode; that frontend still needs its
+request must detect that disappearance and cancel. At that earlier checkpoint, the inspected desktop
+implementation returned early for gamepad mode; that frontend still needed its
 own integration qualification.
 
 
@@ -723,3 +723,74 @@ associations still require profile qualification. RegionalBuffController.Tick
 returns unless GlobalMapRules.PartyInTravel is true, so its LocationRadiusBuff
 processing is not a stationary placement callback. Special-point casting remains
 an open qualification item.
+
+## Native gamepad adapter and guarded qualification
+
+`GlobalMapMessageBoxView.SetFromLocation` has a cleanup prefix;
+`FillDialogInfoLocation(bool)` has a positive-source append postfix;
+`UpdateNavigation` has an append-registration postfix;
+`DestroyViewImplementation` has a cleanup prefix. All four hooks are manual and
+absent when Teleportation is OFF. Native Accept/Cancel, pointer methods and
+navigation collection construction remain unchanged. The adapter reads exact
+`m_Dialog`, `m_ConfirmButton`, `m_NavigationCollection`, and the protected generic
+`ViewModel` property. Native ConsoleButton.SetConfirmAction replaces the clone's
+action; AddRow/RemoveEntity manage only owned rows. Native default selection is
+already established before registration. A pure minimal-scroll policy keeps the
+selected row visible inside the appended ScrollRect.
+
+The shared confirmation presenter captures either the desktop modal or one
+uniquely identified, loaded native DialogMessageBoxView. Console ownership reads
+its protected ViewModel and DialogMessageBoxVM.m_OnClose; it never changes those
+fields. Native MessageBoxUiContext.HandleOpen replaces an existing console modal,
+whereas desktop HandleOpen ignores an already shown dialog. Console ForceHide
+calls HideDialogMessageBox, which disposes the VM and deactivates/unbinds the
+view. OnDisable cancels a pending owned request immediately without closing a
+replacement. Normal Yes calls the callback before disposal; the same idempotent
+spell transaction handles both frontends.
+
+Fixture-only setup first completes the native desktop global-map load. It then
+calls RootUiContext.DisposeLoadingScreen, BundledSceneLoader.UnloadSceneAsync
+for the old loading UI, LoadSceneAsync for SceneName.LoadingScreenUI under
+gamepad mode, and RootUiContext.InitializeLoadingScreen. This creates the actual
+console modal through the native startup contract. The exact private
+Game.LoadArea(BlueprintArea, BlueprintAreaEnterPoint, AutoSaveMode, bool, SaveInfo)
+overload reloads the same area with None/false/null. Its native SceneLoader
+replaces m_LoadedUIScene using SceneName.GetCustomUIName and initializes the
+console global-map context. The public enter-point overload would only call
+Game.Teleport when already in the same area, so it cannot perform this UI reload.
+No loader field is assigned by the fixture. Old local-area controls must be
+unloaded before controller mode changes: otherwise CharacterUIDecal and local
+action-bar controls dereference the absent console UnitSelectionManager.
+
+The fixture reads DialogMessageBoxView.m_WindowAnimator and
+WindowAnimator.m_CanvasGroup, and waits for native fade/local-rotation completion.
+TextMeshPro.GetParsedText returns the actually parsed characters, including the
+native uppercase/small-caps styling. The modal's root canvas is
+ScreenSpaceOverlay; native UIUtility.IsTransformInScreen uses Game.UI.UICamera
+and is unsuitable for that separate overlay. The fixture projects the actual
+canvas corners with its owning camera (null for overlay) against dynamic screen
+bounds. It verifies complete text, no truncation/overflow and on-screen controls.
+Production confirmation styling and layout are unchanged.
+
+Other fixture-only seams read native modal m_NavigationCollection/m_YesButton,
+invoke exact OnConfirmPressed/OnCancelPressed/TryDoDown/OnConfirmClick/
+OnDeclineClicked handlers with their verified Rewired.InputActionEventData
+parameter, and read native ConsoleButton.m_OnConfirmAction for control evidence.
+These are request-local method invocations; no OS input, controller emulation or
+synthetic input event is published. Recall uses the already documented native
+KingdomState deserialization constructor and RegionState.IsClaimed setter, with
+exact restoration. Application.logMessageReceived captures exceptions from the
+controller transition through cleanup. RootUiContext.DisposeUiScene and
+DisposeLoadingScreen dispose the request-created native contexts before restoring
+controller mode and mandatory process exit. Save-write sentinels remain armed.
+
+Run `20260908T1010179638483Z-9fc7ced7478444cf954b1bf08ce52cc1` passed all 39
+assertions, with zero native UI exceptions and zero save writes. The report
+records actual native scenes, source/navigation controls, rendered confirmations,
+real Teleport/Greater/Recall expenditure and relocation, native travel exactly
+once, live/exhausted rows and complete cleanup. It also records rejected probes:
+the original 25-assertion result did not detect its controller-transition
+exception storm and is not UI-stability proof. Desktop regressions subsequently
+passed 42 casting and 29 interaction assertions; all ON/OFF and Teleportation-only
+ON/OFF settings checks prove actual module hook counts. Physical controller
+hardware and every screen resolution are outside these structured checks.
