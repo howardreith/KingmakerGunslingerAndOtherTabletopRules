@@ -21,6 +21,7 @@ Pushed coherent checkpoints:
 - `d0b746d8542655665eb4842c90cb104644c16a36`: contextual actions, alternate outcomes, one-use transactions and mishaps.
 - `b919c267bcadc4f005a5777ea969778d84e64c57`: guarded native world-map panel observation.
 - `87782a8a8c742aa91f43b663e2d88ac138518ea0`: default-ON twelfth module and schema-11 contracts.
+- `15e7a644b1e11dc473fc4fc2d461ae935d139961`: real strategic spell blueprints and isolated native-list transactions.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. The draft
 pull request and final source commit list remain pending implementation.
@@ -67,10 +68,18 @@ That wrapper would violate the no-reveal contract. The narrower native
 `SetCurrentPosition(new MapPosition(point))` plus `UpdatePawnPosition()` path was
 traced; safe real contextual relocation remains unqualified.
 
-A game-save-owned `UnitPart` is planned for the already tested familiarity state.
-Only the two ordinary-arrival calls inside `MapMovementController.MoveAlongEdge`
-are candidates for recording visits; map activation/reconstruction must not count.
-The serialized runtime part and live ordinary-arrival hook are not implemented.
+`UnitPartTeleportFamiliarity` now owns the versioned ledger on the canonical main
+character. `Player.OnAreaLoaded` performs idempotent legacy migration. Save/load
+callbacks do not rewrite the payload; disabled modules install no familiarity
+hooks. A narrow `MoveAlongEdge` observer captures native initialized progress and
+completed route boundaries without planning or changing movement. It handles
+intermediate points, final arrivals, revisits, partial-edge starts, native reveal
+stops and duplicate callbacks. The native `RevealPath` flag is not a visited-state
+flag: both native constructors initialize it true, even for known roads.
+
+Guarded native movement, live no-op save/load callbacks, and ownerless UnitPart
+payload serialization have passed. Full campaign owner-graph disk save/reload
+qualification remains outstanding; serialization alone is not that proof.
 
 The [point audit](docs/TELEPORTATION-MAP-POINT-AUDIT.md) and companion CSV retain
 706 unique stable IDs and 611 observed main-map anchors. Point-specific explicit
@@ -78,7 +87,7 @@ exclusions and current campaign arrival gates remain qualification work.
 
 ## Validation checkpoints
 
-- Current domain suite: 1,432 passing cases, including 4,096 module settings round
+- Current domain suite: 1,439 passing cases, including 4,096 module settings round
   trips and 4,096 publication-intent combinations. The guarded catalog generates
   26 boundary configurations for 12 modules.
 - Clean Release build and strict installable-package validation passed for the
@@ -110,10 +119,70 @@ Additional publication qualification:
 - Publication working-save regression: `20260908T0133209151824Z-e0fd19bcdadc456dbe3a1b1ea77bc991`,
   directory `20260908T0133208995428Z-working-save-smoke`, eleven assertions PASS.
 
+## Familiarity checkpoint
+
+- Installed-profile run `20260908T0223050324619Z-eb7985f6f51d4f098d522387a20eb2ee`,
+  directory `20260908T0223050168190Z-disposable-teleportation-familiarity`, nine
+  assertions PASS. Native panel Accept created each two-edge ordinary route;
+  native movement crossed the intermediate and destination points exactly once
+  on three trips. Revealed edges were revisited in both directions. Fixture
+  placement, selection, cancellation and canonical placement alone added no
+  arrival; exact tracked fields/payload were restored with no save write.
+- This fixture supplies a request-local native time step and invokes native
+  `MapMovementController.Tick`; it does not qualify spell casting, magical travel
+  invariants, or a complete disk save/reload.
+- Earlier runs `20260908T0210049014005Z-a6db54375d6842de871763945981aa0a`
+  and `20260908T0215131100646Z-e3345b3289c2419c9e5c3b014a9fe56f` were ERROR:
+  a fixture wrongly required `RevealPath=false` on known roads. Native constructor
+  inspection and structured preview/actual route evidence corrected that assumption.
+- Run `20260908T0219294157924Z-f773af6e672649e89dde88a37aec5da8` passed all
+  three native travel legs but was ERROR overall: generic JSON serialization
+  followed the live UnitPart Owner into Unity data. The corrected carrier probe
+  keeps the live owner graph out of its scope; disk persistence stays pending.
+- The compatibility wrapper now preserves schema 11 and all twelve module keys.
+  Its actual parameter-validation and settings-construction code passed 4,120
+  focused checks (4,096 settings combinations plus absent/mistyped keys).
+
+- Standalone arrival run `20260908T0232569730289Z-b4cdb0b1cfee4e8b944bac6a69901fd9`,
+  directory `20260908T0232569670314Z-disposable-teleportation-familiarity`, TIMEOUT
+  before the feature fixture: native `Player.PostLoad` could not locate the main
+  character in the cross-scene entity state. Catalog identity and load correlation
+  passed; load completion did not. No save was changed. Profile transaction
+  `compat-20260908T023211Z-f488f858a5a5` verified exact restoration. A valid standalone
+  save-backed fixture remains to be established; this is not a passing feature run.
+- OFF hook-audit run `20260908T0243251891594Z-cc8b7de8808c47b89db97e9f1358dc9f`,
+  directory `20260908T0243251771556Z-observe-feature-module-settings`, ERROR before
+  assertions: the installed Harmony12 bridge throws when `GetPatchInfo` receives
+  an unpatched method. The probe now checks the actual patched-method registry
+  before requesting details; zero installed hooks must still be proven. Exact
+  settings restoration passed.
+
+- Corrected OFF run `20260908T0250396138426Z-1b12dee6c0c04cd1977f7dcd49b0bac7`,
+  directory `20260908T0250396018424Z-observe-feature-module-settings`, 32 assertions
+  PASS: no familiarity hooks installed, no spell publication, exact settings bytes
+  restored. The bridge workaround observes the registry; it does not suppress an
+  error in production movement or infer absence from the module flag.
+- Standalone startup run `20260908T0253148546708Z-b7f27f81de57400b93fcb15c9439d023`,
+  directory `20260908T0253148446200Z-observe-teleportation-native-contracts`, eight
+  assertions PASS, including exactly two installed familiarity hooks. Profile
+  transaction `compat-20260908T025227Z-ff5836da6505` restored exact bytes. This
+  save-free result does not resolve the standalone working-save load failure.
+- The corrected familiarity candidate passed all 1,439 domain cases, a clean
+  Release build, and strict installable-package validation. Local logs:
+  `artifacts/teleportation/domain-familiarity-bridge.log` and
+  `artifacts/teleportation/build-familiarity-bridge.log`.
+
+- Restored installed-profile working-save regression
+  `20260908T0255386128427Z-bf16bca1f4aa4a3ca198fa01d923d29f`, directory
+  `20260908T0255386008390Z-working-save-smoke`, eleven assertions PASS. This
+  confirms the guarded named save loads with the restored installed profile.
+- Runtime preflight passed all 208 checks plus the world-map metadata check;
+  the compatibility module parameter/settings regression passed all 4,120 checks.
+
 ## Remaining qualification and constraints
 
 Native cast-source enumeration/spend/compensation, UI augmentation and native
-confirmation, saved familiarity, ordinary movement counting, canonical damage/RNG,
+confirmation, campaign familiarity save/reload, canonical damage/RNG,
 relocation invariants, all required contextual scenarios, persistence, complete
 26-state runtime boundaries, and compatibility profiles remain incomplete.
 

@@ -80,3 +80,23 @@ identity, exact list/cache rollback, and fixture cleanup. It is main-menu-only
 and save-free. `observe-feature-module-settings` shares these publication checks;
 when Teleportation is OFF it verifies absence and does not invoke a publication
 fixture. These checks do not exercise contextual casting or spend spell slots.
+
+The guarded `disposable-teleportation-familiarity` scenario requires the exact
+working save and automatic exit. It uses native destination Accept and native
+movement with a request-local time input, records ordinary arrivals/revisits,
+checks selection/cancel/placement exclusions, round-trips an ownerless UnitPart
+payload, and restores tracked fixture state under save-write sentinels. This is
+not full campaign disk persistence or contextual spellcasting qualification.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-familiarity `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExitAfterCompletion:$true -Confirm:$false
+.\scripts\compatibility\Test-FeatureModuleCompatibilityParameters.ps1
+```
+
+The latter executes the compatibility runner's actual module validation and
+settings assignment across all 4,096 combinations and rejects each missing or
+mistyped key, without staging a profile or launching the game. The publication
+observer additionally audits actual familiarity patch metadata: two hooks ON,
+zero hooks OFF. Full current contextual feature qualification remains pending.

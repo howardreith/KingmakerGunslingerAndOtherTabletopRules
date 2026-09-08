@@ -533,6 +533,7 @@ try {
         'disposable-expanded-summoning-visual-contracts',
         'disposable-brown-fur-native-cast',
         'observe-teleportation-world-map',
+        'disposable-teleportation-familiarity',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',

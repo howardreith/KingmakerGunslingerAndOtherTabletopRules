@@ -43,6 +43,7 @@ $expected = @(
     'mod-load-smoke',
     'observe-teleportation-native-contracts',
     'observe-teleportation-world-map',
+        'disposable-teleportation-familiarity',
     'disposable-midgame-firearms',
     'working-save-midgame-prepare',
     'working-save-midgame-verify-cleanup',

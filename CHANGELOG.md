@@ -8,7 +8,8 @@
   blueprints with transactional native spell-list publication. No character
   receives a direct spell grant, and the spells have no local-map effect.
 - Adds pure familiarity/outcome/source/transaction policies and guarded native
-  panel, inventory, and publication checks. Contextual casting, saved familiarity,
+  panel, inventory, and publication checks. Adds a save-owned familiarity ledger
+  and guarded native ordinary-arrival observation. Contextual casting, full save/reload,
   native resource expenditure, relocation, and full runtime qualification remain
   incomplete. Release metadata is unchanged.
 
