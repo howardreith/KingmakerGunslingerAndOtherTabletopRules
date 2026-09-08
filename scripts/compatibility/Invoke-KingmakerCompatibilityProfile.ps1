@@ -61,6 +61,7 @@ param(
         'disposable-teleportation-familiarity',
         'disposable-teleportation-resources',
         'disposable-teleportation-context',
+        'disposable-teleportation-casting',
         'observe-expanded-summoning-inventory',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
@@ -334,6 +335,7 @@ try {
             'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
             'disposable-teleportation-resources',
             'disposable-teleportation-context',
+            'disposable-teleportation-casting',
             'summon-same-turn-activation', 'summon-same-turn-acadamae',
             'summon-same-turn-multiple', 'summon-same-turn-native-control',
             'summon-same-turn-rtwp-control')) {

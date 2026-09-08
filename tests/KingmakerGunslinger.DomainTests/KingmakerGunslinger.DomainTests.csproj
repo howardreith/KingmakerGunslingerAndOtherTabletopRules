@@ -113,6 +113,10 @@
     <Compile Include="TeleportationArrivalTests.cs" />
     <Compile Include="TeleportationResourceTests.cs" />
     <Compile Include="TeleportationWorldMapTests.cs" />
+    <Compile Include="TeleportationTravelerTests.cs" />
+    <Compile Include="TeleportationPresentationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportContextPresentation.cs"><Link>Teleportation\TeleportContextPresentation.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportTravelerRosterPolicy.cs"><Link>Teleportation\TeleportTravelerRosterPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\WordOfRecallCapitalState.cs"><Link>Teleportation\WordOfRecallCapitalState.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportPreparedPoolPolicy.cs"><Link>Teleportation\TeleportPreparedPoolPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportOrdinaryArrivalPolicy.cs"><Link>Teleportation\TeleportOrdinaryArrivalPolicy.cs</Link></Compile>

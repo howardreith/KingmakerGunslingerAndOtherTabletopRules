@@ -1,7 +1,8 @@
 # Contextual world-map teleportation implementation report
 
-Status: IN PROGRESS. This report does not qualify contextual casting or authorize
-a release. Release metadata remains 0.0.116.
+Status: IN PROGRESS. The native desktop contextual casting checkpoint has
+structured runtime evidence; complete feature and compatibility qualification
+remain unfinished. Release metadata remains 0.0.116.
 
 ## Base and scope
 
@@ -24,6 +25,7 @@ Pushed coherent checkpoints:
 - `15e7a644b1e11dc473fc4fc2d461ae935d139961`: real strategic spell blueprints and isolated native-list transactions.
 - `321c0fe884e8a43604a794e017d2cd382ac89806`: save-owned ordinary-arrival observer and guarded familiarity qualification.
 - `8eede43c0dfb3b8bfb3bbe5656b905cb2add6155`: real prepared/spontaneous source enumeration and proven native resource expenditure.
+- `53b373575fb71a80d7da69849b028f2d5a34a33b`: exact current world-map destination and capital-state composition.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -42,9 +44,9 @@ does not establish actual native spell expenditure or relocation.
 The native desktop destination presenter is `GlobalMapMessageBox.OnLocationSelect`.
 Its existing vertical destination layout and native Accept/Hide/circle buttons
 were inspected through guarded structured evidence. Additional spell actions
-will use this panel; no raw pointer interception or separate travel window is
-needed. Actual augmentation, confirmation, and no-spell preservation proof are
-still pending.
+now append to this panel. The native Accept operation, button order/labels and
+callbacks remain unchanged. A no-source selection creates no spell rows or
+confirmation. The guarded casting checkpoint below supplies evidence.
 
 The three manifest identities are:
 
@@ -66,12 +68,13 @@ other extra components are rejected.
 Native `Spellbook.Spend` handles prepared groups and spontaneous slots. Native
 `RestoreSpontaneousSlots` and captured prepared-slot availability restoration
 are implemented in the production cast-source/resource adapter. Guarded native
-resource probes are recorded below; complete contextual transactions remain pending.
+resource probes and actual contextual transactions are recorded below.
 
 The settlement-circle wrapper calls `TeleportParty`, which opens outgoing edges.
 That wrapper would violate the no-reveal contract. The narrower native
 `SetCurrentPosition(new MapPosition(point))` plus `UpdatePawnPosition()` path was
-traced; safe real contextual relocation remains unqualified.
+traced and exercised by the actual contextual cast checkpoint below. The shared
+native token moves without entering an area or traversing a route.
 
 `UnitPartTeleportFamiliarity` now owns the versioned ledger on the canonical main
 character. `Player.OnAreaLoaded` performs idempotent legacy migration. Save/load
@@ -93,7 +96,7 @@ current-state adapter and isolated Recall-state fixture are qualified below.
 
 ## Validation checkpoints
 
-- Current domain suite: 1,454 passing cases, including 4,096 module settings round
+- Current domain suite: 1,467 passing cases, including 4,096 module settings round
   trips and 4,096 publication-intent combinations. The guarded catalog generates
   26 boundary configurations for 12 modules.
 - Clean Release build and strict installable-package validation passed for the
@@ -289,12 +292,86 @@ Working-save regression `20260908T0430569217853Z-ef80210c30b6463a86bb0d90477a39f
 directory `20260908T0430569137709Z-working-save-smoke`, passed all eleven assertions.
 The current package remains 0.0.116; no release promotion is implied.
 
+## Native desktop contextual casting checkpoint
+
+The manual module-gated hooks append positive source rows after native
+`GlobalMapMessageBox.FillDialogInfoLocation`. Native Accept, Hide, Enter and
+circle actions retain their existing callbacks and presentation. There is no
+raw pointer hook, normal-travel interception, persistent travel window or free
+cast entry. The owned inactive button clone clears persistent events and its
+donor localization component, then uses current localized source labels.
+
+The selected row closes the native point panel and opens its native dialog
+confirmation. A request owns its exact source/destination and an idempotent
+transaction. Confirmation re-reads source availability and all current map
+conditions. Cancellation, stale selection and repeated callbacks cannot spend
+another slot. Rules results, including failures, use the one committed resource.
+
+Native graph ranking uses the existing QuickGraph graph and native weight
+function. D100/D10 production rolls use RulebookEvent.Dice. Each mishap sends
+its one d10 value through RuleDealDamage for every living canonical traveler,
+without a hit-point floor. Native relocation compares structured before/after
+party/pet identities, canonical token, world time, weariness, travel/encounter
+state, all point/edge discovery records, perception IDs and the saved ledger.
+
+Run `20260908T0508534702414Z-e3ef7871730244eda49763aa3789b9db`, directory
+`20260908T0508534612400Z-disposable-teleportation-casting`, was rejected: cloned
+LocalizedUIText.Awake reset every row to Accept and inherited ignoreLayout left
+rows overlapping. Exact cast mechanics passed but this was an overall FAIL.
+
+Corrected run `20260908T0518061328136Z-dcef820240d34772a501292ba833475e`, directory
+`20260908T0518061237339Z-disposable-teleportation-casting`, passed 37 assertions.
+The two native Wizard sources and one Sorcerer source produced six unambiguous
+rows, with original native actions unchanged. It proved Cancel, repeated menu
+selection, exact Teleport, spontaneous seventh-level Greater Teleport, pre/post
+capital Recall, graph-ranked off-target/similar outcomes, repeated confirmation,
+stale destination and one/repeated mishaps. Damage rose by 1 in all three living
+members for one mishap and by 1 then 2 for repeated mishaps. Every successful
+cast proved protected state unchanged, a single real resource expenditure,
+exact cleanup and no save writes. No pet/mount was present in this working save.
+
+The local result artifact is `teleportation-casting.json` within each named
+runtime directory. Build/package log:
+`artifacts/teleportation/build-casting-mishap.log`; all 1,467 domain cases passed.
+The strengthened run `20260908T0531179887178Z-e33c3e7fe3fe46a781e7a99c5883f0d7`,
+directory `20260908T0531179797184Z-disposable-teleportation-casting`, passed all
+41 assertions, adding no-alternate rules failure (slot remains spent), exact
+pre-effect compensation, stale caster cancellation and canonical non-injected
+dice (native d100 = 19).
+
+Final casting checkpoint run
+`20260908T0542206317921Z-5180c9651e2840f1bbe49631dddaa2ef`, directory
+`20260908T0542206207909Z-disposable-teleportation-casting`, passed all 42 assertions.
+It additionally replaced the selected physical spellbook with a real new native
+book having the same caster, blueprint and available preparation: the open
+confirmation canceled with both books unspent. Confirmation binds the opening
+Player/Map/Rules and physical book references while re-resolving the valid use.
+The fixture restored the exact original book dictionary entry and all state.
+
+Module OFF run `20260908T0535060528821Z-be76dbc835524646b26a0df3844267ea`, directory
+`20260908T0535060408993Z-observe-feature-module-settings`, passed 33 assertions.
+The actual Harmony registry contained zero familiarity and zero destination hooks;
+the three spells were absent from their player lists. The settings transaction
+restored exact bytes, SHA-256
+`a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749`.
+
+Working-save regression `20260908T0545391191224Z-94ee28fffc1445669dd335920b10d484`,
+directory `20260908T0545391101186Z-working-save-smoke`, passed all eleven assertions.
+All these requests launched through Steam App ID 640820 and preserved the save
+write sentinels. Current clean Release/package log:
+`artifacts/teleportation/build-casting-book-identity.log`; explicit domain log:
+`artifacts/teleportation/domain-casting.log`. Runtime preflight passed 208 checks
+plus the map metadata check; compatibility parameter/settings checks passed 4,120.
+No generated package, runtime payload or campaign save is committed.
+
 ## Remaining qualification and constraints
 
-End-to-end contextual source transactions, UI augmentation and native
-confirmation, campaign familiarity save/reload, canonical damage/RNG,
-relocation invariants, all required contextual scenarios, persistence, complete
-26-state runtime boundaries, and compatibility profiles remain incomplete.
+Full campaign familiarity disk save/reload, actual associated pet/mount fixtures,
+unconscious/dead traveler cases, every UI lifecycle and normal-travel boundary,
+gamepad augmentation/navigation, complete 26-state module boundaries, and all
+required compatibility profiles remain incomplete. The current UI qualification
+uses structured native button invocation; it is not an on-screen presentation
+review of every camera position/resolution or a proof of multi-frame lifecycle.
 
 The installed host is UMM 0.33.0.0; the requested 0.32.4 host has not been qualified.
 Required Arms and Armor and Toggle Custom Soundpacks references were absent from
@@ -302,5 +379,5 @@ the configured reference folder, installed Mods, and inspected project backups.
 Owner questions about those references, UMM qualification, and the next unused
 release version remain pending. Existing 0.0.115/0.0.116 releases will be preserved.
 
-No claim of completed contextual casting, final compatibility, or release
-readiness follows from these preparatory checkpoints.
+These checkpoints do not establish complete feature, final compatibility or
+release readiness.

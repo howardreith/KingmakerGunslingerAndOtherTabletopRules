@@ -171,6 +171,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!TeleportDestinationPolicy.Evaluate(point, context.OriginId, Forbidden).Eligible)
                 return new WorldMapPointSpellAction[0];
             var sources = TeleportationSpellbookAdapter.Enumerate(context.Player).Select(value => value.Snapshot)
+                // A native visited flag with no recorded/migrated count cannot supply
+                // Teleport odds. Exact spells can still use proven native visited state.
+                .Where(value => value.Spell != TeleportSpellKind.Teleport ||
+                    TeleportationCastExecution.FamiliarityFor(context, point.Id) != TeleportFamiliarity.Unvisited)
                 .Where(value => context.Recall.Known || value.Spell != TeleportSpellKind.WordOfRecall);
             return WorldMapPointSpellActionComposer.Compose(new object[0], point, context.OriginId,
                 context.Blocks, sources, Forbidden, context.Recall.Established, context.Recall.DestinationId).SpellActions;

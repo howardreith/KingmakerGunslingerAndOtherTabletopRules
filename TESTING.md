@@ -66,6 +66,26 @@ metadata.
 
 ## Contextual teleportation qualification in progress
 
+The guarded `disposable-teleportation-casting` scenario extends the same named
+working-save context fixture. It selects a native destination, invokes the
+appended source button and the native confirmation buttons, then observes the
+production resource transaction, outcomes and relocation. The request-local dice
+sequence is bound to those rows only. It exercises cancellation, duplicate
+callbacks, source labels/layout, prepared Teleport, spontaneous Greater Teleport,
+pre/post-capital Recall, graph-ranked alternatives and repeated native damage.
+The fixture restores map records, ledger, temporary books and damage without a
+save write; it requires automatic process exit. Never use the baseline save.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-casting `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
+```
+
+This does not yet qualify an actual traveling pet/mount, gamepad navigation,
+full campaign disk persistence, every UI lifecycle case or all compatibility
+profiles. Run IDs and exact limits are in the implementation report.
+
 The feature branch adds the twelfth default-ON module, `teleportation-spells`,
 using settings schema 11. The fast domain settings/publication matrix covers
 4,096 combinations; the guarded runtime boundary matrix contains 26 states.

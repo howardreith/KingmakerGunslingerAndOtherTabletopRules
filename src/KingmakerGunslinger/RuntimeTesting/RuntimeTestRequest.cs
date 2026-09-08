@@ -260,6 +260,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatiguePrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatigueVerifyCleanup ||
