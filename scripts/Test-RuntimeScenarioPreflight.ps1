@@ -244,6 +244,10 @@ $expected = @(
     'observe-save-catalog-provider',
     'observe-load-game-button-action',
     'working-save-smoke',
+    'disposable-midgame-firearms',
+    'working-save-midgame-prepare',
+    'working-save-midgame-verify-cleanup',
+    'working-save-midgame-verify-absent',
     'p0-affected-focused-aim-save-load',
     'disposable-in-harms-way-human-repro',
     'working-save-shield-other-prepare',
@@ -267,6 +271,19 @@ Assert-True (($csharpNames -join "`n") -ceq ($powershellNames -join "`n")) `
     'csharp-powershell-catalog-sync'
 Assert-True (($expected | Sort-Object) -join "`n" -ceq
     ($powershellNames -join "`n")) 'documented-scenarios-retained'
+$midgameDisposable = Get-KmgRuntimeScenarioMetadata 'disposable-midgame-firearms'
+Assert-True (-not $midgameDisposable.RequiresSaveName -and
+    -not $midgameDisposable.RequiresManualInteraction) `
+    'midgame-firearms-is-autonomous-save-free'
+foreach ($midgamePersistence in @('working-save-midgame-prepare',
+    'working-save-midgame-verify-cleanup', 'working-save-midgame-verify-absent')) {
+    $midgameMetadata = Get-KmgRuntimeScenarioMetadata $midgamePersistence
+    Assert-True ($midgameMetadata.RequiresSaveName -and
+        $midgameMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+        -not $midgameMetadata.RequiresManualInteraction -and
+        $midgameMetadata.UsesWorkingStageTimeouts) `
+        "$midgamePersistence-remains-guarded-working-save-only"
+}
 $assetAttribution = Get-KmgRuntimeScenarioMetadata `
     'observe-kmg-compatibility-asset-attribution'
 Assert-True (-not $assetAttribution.RequiresManualInteraction -and
@@ -867,6 +884,10 @@ function Get-TreeFingerprint([string]$Path) {
     if (-not (Test-Path -LiteralPath $Path)) { return '<missing>' }
     return (@(Get-ChildItem -LiteralPath $Path -Recurse -Force |
         Sort-Object FullName | ForEach-Object {
+            # Enumeration can carry stale cached directory timestamps on Windows.
+            # Read current metadata for both snapshots; retain all identity,
+            # length and timestamp comparisons. Refresh does not mutate files.
+            $_.Refresh()
             $length = if ($_.PSIsContainer) { 0 } else { $_.Length }
             '{0}|{1}|{2}' -f $_.FullName, $length, $_.LastWriteTimeUtc.Ticks
         }) -join "`n")

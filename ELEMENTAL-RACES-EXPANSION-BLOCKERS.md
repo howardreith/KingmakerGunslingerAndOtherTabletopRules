@@ -1,5 +1,30 @@
 # Elemental Races expansion blockers
 
+## Character-creation stabilization candidate (2026-09-07)
+
+The exact `0.0.117-elemental-char-gen-stabilization` candidate is installed for
+owner acceptance. Source commit: `132f0650e997579c589d19874a022aa5ee2213f2`.
+All 1,458 domain/reflection tests, clean Release, deterministic/strict package,
+final compatibility, migration and the 19 visible traits' persistence/lifecycle
+checks pass. See the [stabilization acceptance handoff](docs/ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION-HANDOFF.md) for exact
+artifact hashes, run IDs, inventories, limitations, backup and owner checklist.
+
+Heritages and alternate racial selections use the native Heritage route before
+allocation and skills. Both ordinary Trait roots complete with Bodyguard OFF
+and ON. Helpful preserves the foreign empty Features contract. Treacherous Earth
+and Nereid Fascination remain registered but unpublished; the only added content is the owner-authorized released master integration.
+The original empty-Trait trigger remains unconfirmed. Human full-screen UI
+acceptance is **NOT-RUN**, so the owner-reported acceptance gate is not marked PASS.
+Released master was merged into the feature branch at the owner's request.
+No feature-to-master merge, tag or public release was performed; stop here for owner acceptance.
+
+### Historical expansion handoff below
+
+The following prior evidence is retained unchanged and describes the previous
+candidate and earlier scope. Its pending/selectable statements do not describe
+the stabilized inventory above. Full expansion Release C still includes the two
+deferred traits and is not declared complete.
+
 Current stopping reason: owner-directed manual testing, not an established
 engineering hard stop. The tested candidate is installed/enabled in UMM.
 Do not resume implementation or merge without a new owner instruction.

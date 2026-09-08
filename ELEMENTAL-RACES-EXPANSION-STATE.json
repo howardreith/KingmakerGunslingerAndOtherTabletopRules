@@ -1,5 +1,229 @@
 {
   "schemaVersion": 1,
+  "characterCreationStabilization": {
+    "status": "AUTOMATED-READINESS-PASS; INSTALLED-FOR-OWNER-ACCEPTANCE; HUMAN-UI-NOT-RUN",
+    "startingCommit": "c7df5de21ea2860b99a25777b021d7f44a5858fa",
+    "artifactSourceCommit": "132f0650e997579c589d19874a022aa5ee2213f2",
+    "branch": "codex/elemental-races-expansion",
+    "version": "0.0.117-elemental-char-gen-stabilization",
+    "packageSha256": "7b930f3f084796f81e9d7cb0a6babea248404c87eb72381509019c8843c9ec14",
+    "dllSha256": "fcfe67df81077f9add11ad3770168161c65f3906805fe1c483ae096130892fef",
+    "dllMvid": "35dd73ec-4168-457b-8c03-5135e0e9e1ee",
+    "manifestEntries": 1869,
+    "packageEntries": 135,
+    "domainTests": 1458,
+    "preflightTests": 259,
+    "preflightCorrectionSha256": "eacfa39dab0a5d4dc9a3fa4cc140d2f05a069ac5dfd9f76c17e519b9606bc963",
+    "finalRuntimeAssertions": 13847,
+    "installed": true,
+    "backupDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20260908T0120399445825Z",
+    "humanUiAcceptance": "NOT-RUN",
+    "originalEmptyTraitTrigger": "NOT-CONCLUSIVELY-ATTRIBUTED",
+    "visibleTraits": 19,
+    "registeredTraits": 21,
+    "deferredUnpublished": [
+      "Treacherous Earth",
+      "Nereid Fascination"
+    ],
+    "profileRestorationsExact": true,
+    "sourceArtifactUnchangedSinceQualification": true,
+    "documentationMayFollowArtifact": true,
+    "preflightTestMayFollowArtifact": true,
+    "masterIntoFeatureMerged": true,
+    "ownerAuthorizedMaster": "58d9511082af30f1a4ec88c1238ae7ae2b3651c2",
+    "featureIntoMasterMerged": false,
+    "tagged": false,
+    "released": false,
+    "report": "docs/ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION-HANDOFF.md",
+    "profiles": [
+      {
+        "runId": "merged-final-01-mechanics-a",
+        "profile": "A",
+        "scenario": "observe-elemental-alternate-trait-framework",
+        "assertions": 6325,
+        "artifactExact": true,
+        "restored": true
+      },
+      {
+        "runId": "merged-final-01-mechanics-f",
+        "profile": "F",
+        "scenario": "observe-elemental-alternate-trait-framework",
+        "assertions": 6517,
+        "artifactExact": true,
+        "restored": true
+      },
+      {
+        "runId": "merged-final-01-turn-costs-a",
+        "profile": "A",
+        "scenario": "disposable-elemental-trait-turn-costs",
+        "assertions": 103,
+        "artifactExact": true,
+        "restored": true
+      },
+      {
+        "runId": "merged-final-01-turn-costs-f",
+        "profile": "F",
+        "scenario": "disposable-elemental-trait-turn-costs",
+        "assertions": 103,
+        "artifactExact": true,
+        "restored": true
+      },
+      {
+        "runId": "merged-final-01-firearms-f",
+        "profile": "F",
+        "scenario": "disposable-midgame-firearms",
+        "assertions": 92,
+        "artifactExact": true,
+        "restored": true
+      },
+      {
+        "runId": "merged-final-01-creator-a",
+        "profile": "A",
+        "scenario": "disposable-elemental-character-creation-baseline",
+        "assertions": 11,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 4,
+        "nativeCommits": 0
+      },
+      {
+        "runId": "merged-final-01-creator-g",
+        "profile": "G",
+        "scenario": "disposable-elemental-character-creation-baseline",
+        "assertions": 11,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 4,
+        "nativeCommits": 0
+      },
+      {
+        "runId": "merged-final-01-creator-h",
+        "profile": "H",
+        "scenario": "disposable-elemental-character-creation-baseline",
+        "assertions": 11,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 4,
+        "nativeCommits": 0
+      },
+      {
+        "runId": "merged-final-01-control-b",
+        "profile": "B",
+        "scenario": "disposable-global-traits-kmg-disabled-control",
+        "assertions": 8,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 1,
+        "nativeCommits": 0
+      },
+      {
+        "runId": "merged-final-01-creator-c",
+        "profile": "C",
+        "scenario": "disposable-elemental-character-creation-baseline",
+        "assertions": 11,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 4,
+        "nativeCommits": 0
+      },
+      {
+        "runId": "merged-final-01-creator-d",
+        "profile": "D",
+        "scenario": "disposable-elemental-character-creation-baseline",
+        "assertions": 11,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 4,
+        "nativeCommits": 0
+      },
+      {
+        "runId": "merged-final-01-creator-e",
+        "profile": "E",
+        "scenario": "disposable-elemental-character-creation-baseline",
+        "assertions": 11,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 4,
+        "nativeCommits": 0
+      },
+      {
+        "runId": "merged-final-01-creator-f-ifrit",
+        "profile": "F",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "assertions": 12,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 3,
+        "nativeCommits": 3
+      },
+      {
+        "runId": "merged-final-01-creator-f-oread",
+        "profile": "F",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "assertions": 12,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 3,
+        "nativeCommits": 3
+      },
+      {
+        "runId": "merged-final-01-creator-f-sylph",
+        "profile": "F",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "assertions": 12,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 3,
+        "nativeCommits": 3
+      },
+      {
+        "runId": "merged-final-01-creator-f-undine",
+        "profile": "F",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "assertions": 12,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 3,
+        "nativeCommits": 3
+      },
+      {
+        "runId": "merged-final-01-respec-f-sylph",
+        "profile": "F",
+        "scenario": "working-save-elemental-native-respec",
+        "assertions": 12,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 8,
+        "nativeCommits": 8
+      },
+      {
+        "runId": "merged-final-01-respec-f-oread",
+        "profile": "F",
+        "scenario": "working-save-elemental-native-respec",
+        "assertions": 12,
+        "artifactExact": true,
+        "restored": true,
+        "characters": 8,
+        "nativeCommits": 8
+      },
+      {
+        "runId": "merged-final-01-elemental-off-f",
+        "profile": "F",
+        "scenario": "elemental-races-races-unleashed-compatibility",
+        "assertions": 13,
+        "artifactExact": true,
+        "restored": true
+      },
+      {
+        "runId": "merged-final-01-smoke-f",
+        "profile": "F",
+        "scenario": "working-save-smoke",
+        "assertions": 11,
+        "artifactExact": true,
+        "restored": true
+      }
+    ]
+  },
   "mission": "elemental-races-expansion",
   "ownerRequestedHandoff": {
     "status": "OWNER-REQUESTED-SEGMENT-CONCLUSION; MANUAL-TEST-HANDOFF; RELEASE C INCOMPLETE",
