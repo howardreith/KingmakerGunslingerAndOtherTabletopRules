@@ -1,5 +1,11 @@
 # Elemental Races 0.0.117 public release verification
 
+Status: **PUBLISHED AND INSTALLED**. [Release v0.0.117](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.117) was published
+at `2026-09-08T04:03:01Z` and is the latest stable release.
+The final UMM installation and public download both match the runtime-qualified
+release artifact. The sections below preserve the preparation history and add
+its observed final verification.
+
 ## Owner acceptance and authorization
 
 The owner accepted the installed `0.0.117-elemental-char-gen-stabilization`
@@ -85,3 +91,142 @@ only README, CHANGELOG, INSTALLATION-COMPATIBILITY and the DLL's build provenanc
 differ. This preparation build is not the final merged release artifact.
 Evidence remains under `artifacts/qualification/0.0.117/public-release`, including
 `release-preparation-build.log` and `preparation-verification.json`.
+
+## Published release and final installation
+
+The validated preparation commit is `8e70ec500337429ad9ecec8154fde27464985ecc`.
+Master was first fast-forwarded to the latest remote tip, then the accepted
+feature branch was merged with an explicit merge commit:
+`f8a2fd996752afb0e361a53bec175328ace5435a`. The required non-force push helper published master.
+Annotated tag `v0.0.117` resolves to that exact merge commit locally and remotely.
+No other feature branch was merged. Later documentation does not move this tag
+or change the immutable release assets.
+
+The guarded publisher ran twice from clean, fully pushed master: first to make
+the draft, then with `-Publish -ConfirmReleaseReady` after runtime qualification.
+Each invocation ran two clean builds, with all 1,458 domain/reflection tests
+passing in each build and identical ZIP/DLL hashes. The canonical runtime
+preflight passed 259 checks. The exact final publication command was:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Publish-Release.ps1 `
+  -ReferenceBundleDir C:/Dev/KingmakerGunslingerLab/private/extracted-references/KingmakerGunslinger-private-build-references `
+  -Publish -ConfirmReleaseReady
+```
+
+| Final release identity | Value |
+| --- | --- |
+| Tag / artifact source | `v0.0.117` / `f8a2fd996752afb0e361a53bec175328ace5435a` |
+| Informational version | `0.0.117-elemental-char-gen-stabilization` |
+| ZIP SHA-256 | `9368c1ff2c82b76574bab5ed75868d7eb633e759f925e82a1c0da7e861f62f6f` |
+| DLL SHA-256 | `fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f` |
+| DLL MVID | `18f5eaaa-3021-4836-8763-9ba22965b958` |
+| Source-state SHA-256 | `c6dd37868df849d4feb29098779db60d03dc83c8f8070a98ef5265d6f66b48f7` |
+| ZIP bytes / package files / manifest identities | 23,351,596 / 135 / 1,869 |
+
+Installable archive:
+`artifacts/release/0.0.117/KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip`.
+The local-runtime and public-download copies are byte-identical. Compared with
+the accepted candidate, only README, CHANGELOG, INSTALLATION-COMPATIBILITY and
+the DLL's embedded build provenance differ. All gameplay source, version
+metadata, assets and blueprint identities remain unchanged.
+
+## Final-artifact guarded runtime verification
+
+All **9 fresh Steam processes and 107 assertions PASS** on the exact release
+artifact, with no failed release-runtime attempt. Each guarded launch verified
+the commit, DLL hash/MVID, ZIP hash, owner context and Steam App ID 640820.
+The release matrix uses the established reversible profile driver, with the
+optional dirty-Git allowance removed; all runs require clean committed source.
+Only `KMG_AUTOMATION_WORKING` is used for saved-world fixtures.
+
+| Release check | Guarded evidence run | Assertions | Result / restoration |
+| --- | --- | ---: | --- |
+| creator-f-ifrit | `20260908T0257453655130Z-working-save-elemental-character-creation-regression` | 12 | PASS / exact |
+| creator-f-oread | `20260908T0304180863244Z-working-save-elemental-character-creation-regression` | 12 | PASS / exact |
+| creator-f-sylph | `20260908T0311107375788Z-working-save-elemental-character-creation-regression` | 12 | PASS / exact |
+| creator-f-undine | `20260908T0317272351388Z-working-save-elemental-character-creation-regression` | 12 | PASS / exact |
+| respec-f-sylph | `20260908T0323145173079Z-working-save-elemental-native-respec` | 12 | PASS / exact |
+| respec-f-oread | `20260908T0335187632087Z-working-save-elemental-native-respec` | 12 | PASS / exact |
+| traits-bodyguard-off | `20260908T0347586921758Z-disposable-elemental-character-creation-baseline` | 11 | PASS / exact |
+| elemental-off-f | `20260908T0352561319890Z-elemental-races-races-unleashed-compatibility` | 13 | PASS / exact |
+| smoke-f | `20260908T0355456836449Z-working-save-smoke` | 11 | PASS / exact |
+
+The four full-stack creator runs complete twelve real characters, one per race
+and heritage, across 32 native final reviews and 184 exact racial graph
+observations. Ifrit and Oread use point-buy; Sylph Gunslinger and Undine Fighter
+use Dice Roller. Both global Trait selections are observed and completed,
+back-navigation preserves allocation baselines, and commits leave no unresolved
+selections. The Bodyguard-OFF control reviews four native first-level builds;
+it intentionally does not commit saved-world characters and is not counted
+among the twelve completed characters.
+
+The two full-stack Player respec runs include two initial seed characters and
+fourteen actual native respec callbacks: sixteen commits and 128 exact racial
+graph observations. All callbacks return to the original identity/descriptor.
+Sixteen committed daily-resource records include ten spent-use records; every
+amount equals its expected amount and every provider count is exact. All 128
+blood-capacity observations match the expected expenditure, including nonzero
+spent counters. Preview mismatches are zero. Ordinary rest restores the intended
+uses and blood capacity after respec. Party, remote companions, inventory,
+money, cross-scene entities and pause state clean up exactly.
+
+The foreign-selector audit independently checks seven creator/respec profiles
+at construction, reconciliation, active first-level global Traits and three
+repeated reconciliation callbacks. Combat Features remains the exact original
+empty array. With Bodyguard ON, AllFeatures preserves fourteen exact ordered
+foreign choices and contains Helpful once; with Bodyguard OFF it retains the
+original fourteen-entry array and Helpful is absent. Both top-level Trait
+selectors preserve their exact objects and arrays, with eight categories each.
+No foreign choice is lost, duplicated or reordered.
+
+Every profile restores the previous mod tree, file hashes/timestamps, settings
+and UMM state exactly. Protected baseline data remains exact; the disposable
+working save changes only its ordinary load counter in the seven load-backed
+runs. Other save-file metadata remains exact. No new character or fixture is
+saved to a campaign by these release-sealing scenarios.
+
+All nine logs have zero KMG ERROR lines. Each retains the same one native
+BugReportCanvas startup exception and four known ZFavoredClass custom-data
+exceptions. Those diagnostics remain separate from KMG failures; none is
+suppressed or repaired. The accepted candidate's broader migration,
+OFF/ON/rest/level/cleanup and nineteen-trait lifecycle matrix retains its own
+artifact attribution and is reused only for unchanged gameplay source.
+
+## Public download and local UMM verification
+
+GitHub reports `v0.0.117` as the latest stable, non-draft, non-prerelease at
+`2026-09-08T04:03:01Z`. The end-user download includes exactly the UMM ZIP,
+`SHA256SUMS.txt` and `release-manifest.json`. All three GitHub asset digests match
+the downloaded files; the checksum, manifest, ZIP CRC, embedded metadata,
+DLL identity and strict package validation pass. The downloaded ZIP is identical
+to the artifact used by all nine release runs. Publication evidence is recorded
+in `published-release.json`, `public-download-verification.json`,
+`download-package-validation.log`, `draft-publisher.log` and `publish.log`.
+
+Backup-first installation completed at `2026-09-08T04:05:26.0367443Z` using the
+existing `Deploy-Local.ps1` installer. The installed directory is:
+`C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger`.
+
+An independent comparison verifies all 135 package files byte for byte; the
+only additional installed file is the preserved FeatureModules.json. UMM,
+Elemental Races and Bodyguard Feats remain enabled. Module settings bytes and
+timestamp are unchanged (SHA-256 `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`).
+UMM settings bytes and timestamp are unchanged (SHA-256 `058de3da0ac8a070e448ee92cd3ed5fcdc89137867ae27fa802ef21c4a6e6646`).
+All unrelated mod files and timestamps remain exact. The named save payloads
+and other saves' metadata remain unchanged, with no save load during installation.
+No game or active compatibility transaction remains.
+
+The complete previous installation, including its settings backup and runtime
+cache, is recoverable with exact file hashes/timestamps at:
+`C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260908T0405189875596Z`.
+
+Deployment record: `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260908T0405222302243Z\deployment.json`.
+Local installation evidence: `installed-release.json`,
+`installation-save-audit-after.json` and `final-installation.log`.
+All machine-local artifacts remain ignored and uncommitted.
+
+Owner acceptance and release authorization are complete as explicitly supplied.
+Individual full-screen checklist results were not supplied and are not invented.
+Treacherous Earth, Nereid Fascination, favored-class bonuses and other content
+expansion remain deferred; this release concludes the authorized stabilization.
