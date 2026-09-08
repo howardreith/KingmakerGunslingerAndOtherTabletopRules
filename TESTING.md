@@ -407,3 +407,11 @@ checks pass 114 assertions through Steam App ID 640820. Exact run IDs and hashes
 are in the implementation report's 0.0.118 section. The owner authorized release
 and will test the remaining campaign/compatibility behavior in a high-level game;
 full original qualification is not claimed. UMM 0.33.0.0 is the observed host.
+
+
+The published 0.0.118 binary subsequently passed 44/44 guarded casting assertions
+on clean commit `b439f5df22e2260322453c069b23eaee734b8a33`, run
+`20260908T1743365922333Z-56147b3233b54d74b48e4187630715b0`.
+The downloaded public ZIP matches the exact runtime package, both deterministic
+release builds and all 135 installed files; settings are unchanged. See the
+implementation report's publication addendum for hashes and result paths.

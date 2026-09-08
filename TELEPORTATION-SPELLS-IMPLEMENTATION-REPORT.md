@@ -20,8 +20,10 @@ commits, including published 0.0.115 and 0.0.116 work, were inspected and retain
 See `docs/TELEPORTATION-NATIVE-FORENSICS.md` for the reconciliation. Branch:
 `codex/contextual-world-map-teleportation`. No merge or history rewrite occurred.
 
-Release source SHA and publication evidence: recorded in the final 0.0.118
-publication addendum. Full original qualification is not claimed.
+Final tagged release source SHA: `b439f5df22e2260322453c069b23eaee734b8a33` (`v0.0.118`).
+The publication addendum records the exact public package and matching live
+runtime evidence. Subsequent documentation-only evidence commits do not alter
+the tagged release artifact. Full original qualification is not claimed.
 
 Pushed coherent checkpoints:
 
@@ -1188,3 +1190,68 @@ All fixture and observer cleanup assertions pass. Campaign save-writing is not
 used to persist fixture state. These runs are the release preparation checkpoint;
 the committed release artifact carries its own embedded Git identity and is
 reported separately below after final publication verification.
+
+
+## Published 0.0.118 verification
+
+Release: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.118
+
+Published at **2026-09-08T17:48:27Z**, as a normal public release (not a draft or
+prerelease), directly from the authorized feature branch. The original master
+and historical releases were not changed or merged. Release source commit:
+`b439f5df22e2260322453c069b23eaee734b8a33`. The coherent release commit was pushed
+through the required `Push-KingmakerGunslinger.ps1` wrapper before publication.
+
+The existing `Publish-Release.ps1` ran with the provenance-verified private
+reference bundle, `-ReleaseBranch codex/contextual-world-map-teleportation`,
+`-AllowNonDefaultReleaseBranch -Publish -ConfirmReleaseReady`. Both clean builds
+pass all 1,550 domain tests and strict package validation and produce identical
+DLL and package bytes. The public assets are the installable ZIP,
+`SHA256SUMS.txt` and `release-manifest.json`. Generated assets are not committed.
+
+| Artifact | Exact identity |
+|---|---|
+| ZIP | `KingmakerGunslinger-0.0.118-contextual-world-map-teleportation.zip` |
+| ZIP bytes | `23634234` |
+| ZIP SHA256 | `2fe00a2ce35f29cfe20c1acdfbb8e2f74923d1790b4a9b617bfba0224ee6eba7` |
+| DLL SHA256 | `e4baa780eaed361704e07293affdb22b0ea9c47566449306c4570aa808cb5bc8` |
+| DLL MVID | `ae74e4bb-c4e0-4277-850c-dc317eb39324` |
+| Source-state SHA256 | `4440cfc71165217173820b3e10ed411549ab07b7f0cde873774e6db0902b677e` |
+
+The clean, committed artifact passed **44/44 native casting assertions**, with
+zero assertion failures and no result warnings, before publication:
+
+- Run ID: `20260908T1743365922333Z-56147b3233b54d74b48e4187630715b0`.
+- Scenario: `disposable-teleportation-casting`.
+- Result: `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1743365832333Z-disposable-teleportation-casting/runtime-result.json`.
+- Deployment: `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260908T1743365467165Z/deployment.json`.
+- Save: only named disposable `KMG_AUTOMATION_WORKING`; guarded Steam App ID
+  640820, automatic exit, no manual input and no saved fixture state.
+
+This is an actual native destination-row/confirmation cast using real captured
+prepared and spontaneous resources, outcome resolution, mishap damage and
+canonical party relocation. It is not a free command or an isolated relocation
+method call. The earlier 114 preparation assertions retain their separate
+artifact identities above; they are not relabeled as this final binary.
+
+The public ZIP and both accompanying manifest/checksum assets were downloaded
+again. Its hash matches the publisher, both deterministic builds and the exact
+runtime deployment package. The downloaded ZIP independently passes strict
+standalone package validation. All **135 installed package files** match that
+public ZIP byte for byte, so the owner's current installation already contains
+the published build. FeatureModules.json remains unchanged at SHA256
+`a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749`.
+
+Local final evidence: `artifacts/teleportation/publish-118.log`,
+`runtime-release-118.log`, `published-package-118-validation.log`, and
+`published-118/verification.json`. These raw local files and packages are ignored.
+Draft PR #10 remains the review record on the feature branch:
+https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10
+
+The owner explicitly authorized this release for their high-level campaign
+playtest. Full campaign disk persistence, the complete isolated save-backed
+compatibility matrix, Arms and Armor and exact UMM 0.32.4 remain unqualified.
+The observed host is UMM 0.33.0.0. Current native casting passes on the installed
+stack; the available save's Craft Magic Items data remains the independently
+proven impediment to isolated save-backed profiles. These limits are published
+in the release notes and have not been converted into success claims.
