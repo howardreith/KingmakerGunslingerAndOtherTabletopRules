@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.115',
+    [string]$ExpectedVersion = '0.0.116',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
     [string]$Combination = 'all',
     [bool]$ExitAfterCompletion = $true,
@@ -38,7 +38,7 @@ try {
 $moduleCatalog = @(Get-KmgFeatureModuleCatalog)
 $boundaryRequested = $Combination -ceq 'all'
 if ($Boundary14) {
-    Write-Warning '-Boundary14 is obsolete; it now selects the complete generic boundary matrix (24 states for eleven modules).'
+    Write-Warning '-Boundary14 is obsolete; it now selects the complete generic boundary matrix (26 states for twelve modules).'
 }
 if (($Boundary -or $Boundary14) -and $Combination -ne 'all') {
     throw 'A boundary matrix cannot be combined with a single -Combination.'
@@ -66,7 +66,7 @@ $failure = $null
 try {
     foreach ($entry in $combinations) {
         $configuration = [ordered]@{
-            schemaVersion = 10
+            schemaVersion = 11
         }
         $runtimeParameters = @{}
         foreach ($module in $moduleCatalog) {

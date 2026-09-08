@@ -813,6 +813,35 @@ Assert-True ($orchestrator.Contains("'working-save-fatigue-prepare',") -and
     $orchestrator.Contains("'working-save-fatigue-verify-absent',")) `
     'fatigue-persistence-uses-working-save-result-deadline'
 
+. (Join-Path $PSScriptRoot 'FeatureModuleCatalog.ps1')
+$modules = @(Get-KmgFeatureModuleCatalog)
+$moduleParameters = @{}
+foreach ($module in $modules) { $moduleParameters[$module.RuntimeParameter] = $false }
+Assert-True ($modules.Count -eq 12) 'teleportation-twelve-module-catalog'
+$moduleRequest = New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
+    -ExpectedVersion '0.0.116' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `
+    -Parameters $moduleParameters
+Assert-True ($moduleRequest.parameters.teleportationSpells -ceq $false) `
+    'teleportation-explicit-off-request-round-trips'
+foreach ($module in $modules) {
+    $incomplete = $moduleParameters.Clone()
+    $incomplete.Remove($module.RuntimeParameter)
+    Assert-Throws {
+        New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
+            -ExpectedVersion '0.0.116' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+            -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `
+            -Parameters $incomplete
+    } ('module-request-rejects-missing-' + $module.RuntimeParameter)
+}
+$moduleParameters.teleportationSpells = 'false'
+Assert-Throws {
+    New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
+        -ExpectedVersion '0.0.116' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `
+        -Parameters $moduleParameters
+} 'teleportation-request-rejects-untyped-boolean'
+
 $artifactRoot = Join-Path $root 'artifacts'
 $backupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod'
 $evidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'

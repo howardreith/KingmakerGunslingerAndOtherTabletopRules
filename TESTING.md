@@ -61,3 +61,14 @@ suppressions, icon-category differentiation, and unchanged standalone Summon
 Elemental roots. The visual scenario measures the approved relative scale
 pairs after live view attachment rather than inferring scale from blueprint
 metadata.
+
+
+## Contextual teleportation qualification in progress
+
+The feature branch adds the twelfth default-ON module, `teleportation-spells`,
+using settings schema 11. The fast domain settings/publication matrix covers
+4,096 combinations; the guarded runtime boundary matrix contains 26 states.
+Historical release results retain their original module and assertion counts.
+Full twelve-module runtime publication qualification remains pending the spell
+implementation. The native destination-panel observation is documented in
+`docs/TELEPORTATION-NATIVE-FORENSICS.md`; it is not spellcasting proof.

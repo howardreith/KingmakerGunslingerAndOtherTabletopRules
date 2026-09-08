@@ -1319,7 +1319,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 11 -or
+        if ($Parameters.Count -ne 12 -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
@@ -1342,8 +1342,10 @@ function Assert-KmgRuntimeScenarioPreflight {
                 'protectionFromAlignmentControlImmunity') -or
             $Parameters.protectionFromAlignmentControlImmunity -isnot [bool] -or
             -not $Parameters.ContainsKey('elementalRaces') -or
-            $Parameters.elementalRaces -isnot [bool]) {
-            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, and elementalRaces parameters."
+            $Parameters.elementalRaces -isnot [bool] -or
+            -not $Parameters.ContainsKey('teleportationSpells') -or
+            $Parameters.teleportationSpells -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, and teleportationSpells parameters."
         }
     }
     elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -1466,6 +1468,7 @@ function New-KmgRuntimeRequest {
                 protectionFromAlignmentControlImmunity =
                     [bool]$Parameters.protectionFromAlignmentControlImmunity
                 elementalRaces = [bool]$Parameters.elementalRaces
+                teleportationSpells = [bool]$Parameters.teleportationSpells
             }
         } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {
