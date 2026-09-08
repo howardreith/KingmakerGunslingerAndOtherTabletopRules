@@ -2,6 +2,10 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Qualifies native spellbook rows/descriptions/preparation and action-bar auto-fill
+  with 31 guarded assertions, zero fixture UI exceptions and exact cleanup; the
+  same-artifact working-save regression passes 11 assertions.
+
 - Adds native gamepad destination rows, scrolling through existing navigation,
   shared native confirmations and live source removal. Guarded qualification
   passes 39 assertions with zero UI exceptions, plus desktop and module regressions.

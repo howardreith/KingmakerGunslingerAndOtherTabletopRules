@@ -264,6 +264,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatiguePrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatigueVerifyCleanup ||

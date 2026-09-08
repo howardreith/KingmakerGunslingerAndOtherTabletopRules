@@ -233,3 +233,35 @@ successful compile or controller-mode flag alone does not qualify this adapter.
 Run `20260908T1010179638483Z-9fc7ced7478444cf954b1bf08ce52cc1` passed all 39
 assertions with zero exceptions/save writes; the implementation report records
 rejected probes, corrections, desktop regressions and exact result directories.
+
+### Native Teleportation spellbook and action-bar qualification
+
+`disposable-teleportation-spellbook-ui` loads only the named disposable
+`KMG_AUTOMATION_WORKING` save through the guarded Steam workflow. It opens the
+native local-area service-window spellbook, uses native class/level toggles and
+pagination, selects project spell rows, opens their native descriptions, and
+prepares real spells through those rows. An ordinary native Dimension Door is
+the positive control for native action-bar auto-fill. Project spells must remain
+absent from auto-fill and unusable in the local area. The request-local real
+Wizard, Sorcerer, Cleric and Druid books, action-bar state, selection and pause
+state are restored before the save-write sentinels close. Automatic exit is
+mandatory. This does not complete level-up or establish campaign disk persistence.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario disposable-teleportation-spellbook-ui `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
+```
+
+Read `teleportation-spellbook-ui.json` and `runtime-result.json`, including native
+UI exceptions and deferred cleanup assertions. Compilation is not qualification.
+
+Qualified run: `20260908T1116293771376Z-9db2a72926a64a2aaba36bc40c295800`,
+31 assertions PASS, zero fixture UI exceptions and zero save writes. The native
+copy-mode fixture setup is followed by a real selection refresh before checking
+auto-fill. Native close preserves the fixture's Pause mode; the captured surface
+is inactive, alpha 0 and blocks no input. Same-artifact working-save regression
+`20260908T1119401911470Z-fd2dafbefbba4ea987af7857b8e42855` passes 11 assertions.
+The implementation report records the rejected first probe and startup-only
+ZFavoredClass diagnostics; this is not complete compatibility qualification.

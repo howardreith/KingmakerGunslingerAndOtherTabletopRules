@@ -262,13 +262,15 @@ assertions, followed by desktop regressions and four focused module checks.
 
 The Teleportation setting is under development on the contextual teleportation
 branch. The native desktop and gamepad destination panels now append usable spellbook
-sources and opens a native confirmation. Guarded casts have verified real slot
+sources and open a native confirmation. Guarded casts have verified real slot
 expenditure, exact and alternate arrival, Recall switching, and repeated mishaps.
 Native Travel, Escape, live source counts, repeated selection and long source
 lists also have structured evidence across actual UI frames. Native pet death,
 unconsciousness and reroll exclusion now have guarded evidence, and protected
 state comparisons reject deliberate time/map/resource changes.
-Full campaign persistence, mod-provided mounts, remaining UI cases and
+Native desktop spellbook rows, descriptions, preparation and action-bar auto-fill
+now have 31 passing guarded assertions with exact fixture cleanup.
+Full campaign persistence, mod-provided mounts, normal level-up UI and
 required compatibility profiles remain under qualification. See the
 [native forensics](docs/TELEPORTATION-NATIVE-FORENSICS.md) and
 [implementation report](TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md). The

@@ -902,6 +902,7 @@
     <Compile Include="Spells\Teleportation\WorldMapPointConsoleSpellActionPatches.cs" />
     <Compile Include="Spells\Teleportation\WorldMapPointConsoleSpellActionRuntime.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationGamepad.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpellbookUi.cs" />
     <Compile Include="Spells\Teleportation\TeleportationText.cs" />
     <Compile Include="Spells\Teleportation\TeleportationCombatLog.cs" />
     <Compile Include="Spells\Teleportation\WorldMapPointSpellActionPatches.cs" />

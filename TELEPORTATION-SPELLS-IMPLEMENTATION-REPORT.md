@@ -29,6 +29,7 @@ Pushed coherent checkpoints:
 - `2f0b6bfadfca93269bc2255e98ae69bf818976f7`: native desktop rows/confirmation, canonical real casts and protected relocation.
 - `35616afa59c9e4045317d92e727d6392a5e77d1f`: native Travel/Escape, live source counts, stable reopened layout and scrolling across frames.
 - `ba32ac2d6e7a916aedbdf61b4dea2ff093d3c746`: native mishap life-state settlement, real associated-pet qualification and corrected world/resource fingerprints.
+- `cdee670b2879431972f4a9baa70f249e15db8803`: native gamepad destination rows/navigation, shared native confirmation, rendered-text and module-hook qualification.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -634,10 +635,65 @@ local-area controls running under gamepad mode. Before mandatory process exit,
 all books/map/ledger changes are restored, native UI contexts are disposed and
 controller mode is restored. No input event is synthesized or published.
 
+## Native spellbook and action-bar qualification
+
+The guarded `disposable-teleportation-spellbook-ui` scenario passed **31 of 31**
+assertions on run `20260908T1116293771376Z-9db2a72926a64a2aaba36bc40c295800`.
+Evidence directory:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1116293681361Z-disposable-teleportation-spellbook-ui`.
+Read `runtime-result.json`, `teleportation-spellbook-ui.json`, and the copied
+`output_log-spellbook-ui.txt`.
+
+This uses the actual local-area native service window, class/level toggles,
+spell rows and pagination. Wizard and Sorcerer Teleport 5 / Greater Teleport 7,
+Cleric Word of Recall 6 and Druid Word of Recall 8 all display the correct real
+book, spell, icon and complete native description. Native row preparation
+allocates real unavailable preparations and displays their actual slots; native
+rest makes the preparations ready. All strategic spells remain unavailable in
+the local area and absent from the native metamagic selection. After a native
+selection refresh, ordinary Dimension Door reaches the actual action bar while
+all strategic spells remain absent, including after preparation/rest callbacks.
+
+Native service-window close/reopen works. The captured closed surface is
+inactive, alpha 0, blocks no input, and returns to the fixture's native Pause
+mode with its action bar active. The scenario restores the exact original
+spellbooks/resources/stats, action-bar array and history references/contents,
+selection, party, positions, area, time and pause state. Deferred native refresh
+is observed after restoration. The UI exception observer records zero exceptions
+from fixture setup through cleanup, and save-write sentinels record zero writes.
+Four ZFavoredClass `KeyNotFoundException` messages occur during mod startup,
+before this fixture; they are not hidden or treated as compatibility PASS.
+
+Same-artifact working-save regression:
+`20260908T1119401911470Z-fd2dafbefbba4ea987af7857b8e42855`, **11 of 11 PASS**,
+directory `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1119401795087Z-working-save-smoke`.
+Both runs use deployment
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260908T1116293351376Z/deployment.json`.
+The exact protected working-save fingerprint checks pass; no save is modified.
+
+Rejected first probe:
+`20260908T1107377752219Z-0f67a057eddb4f6aa1fe8a9b0a2a9b66`, directory
+`20260908T1107377632211Z-disposable-teleportation-spellbook-ui`, failed two of
+31 assertions. Its early native positive control had not refreshed because
+fixture `Spellbook.AddKnown(..., isCopy: true)` emits no learn event. Its close
+assertion incorrectly expected Default mode while the fixture deliberately used
+native Pause; an animated child flag was also sampled before it settled. The
+corrected fixture reselects the owner through native selection events and checks
+the native service-window input surface/HUD, recording actual visibility and
+alpha. Both probes had zero UI exceptions and exact cleanup; the first is not a
+qualification PASS. Production spell or UI behavior required no change.
+
+The complete 1,482-case domain suite, clean Release build and strict UMM package
+validation passed (`artifacts/teleportation/build-spellbook-ui-refresh.log`).
+Runtime preflight passed 208 checks; compatibility/settings parameter checks
+passed 4,120. This qualifies the native desktop spellbook and action-bar paths in
+the installed profile. Normal level-up selection, other compatibility profiles,
+and full campaign familiarity disk persistence remain separate open gates.
+
 ## Remaining qualification and constraints
 
 Full campaign familiarity disk save/reload, mod-provided mount qualification,
-normal spellbook/action-bar/level-up UI qualification, special-point arrival audit,
+normal level-up UI qualification, special-point arrival audit,
 a final complete module matrix, and all required compatibility profiles remain incomplete. The current UI qualification
 uses structured native button invocation and measured on-screen geometry across
 frames; it is not a presentation review of every camera position/resolution.
