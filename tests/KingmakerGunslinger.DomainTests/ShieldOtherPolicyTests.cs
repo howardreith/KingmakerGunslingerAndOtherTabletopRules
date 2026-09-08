@@ -260,7 +260,7 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRequest.cs"));
             string runner = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
-            foreach (string token in new[] { "request.Parameters.Count != 11",
+            foreach (string token in new[] { "request.Parameters.Count != 12",
                 "Property(\"shieldOther\")", "[\"shieldOther\"].Type != JTokenType.Boolean",
                 "Property(\"expandedSummoning\")",
                 "[\"expandedSummoning\"].Type != JTokenType.Boolean",

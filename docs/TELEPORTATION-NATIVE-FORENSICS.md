@@ -265,3 +265,26 @@ build bin directory, and packages); no file or directory identity delta appeared
 The fingerprint now refreshes each FileSystemInfo before reading its metadata,
 retaining both file and directory comparisons. Failed preflight runs are not
 used as successful qualification evidence.
+
+
+## Twelve-module settings checkpoint
+
+The default-ON `teleportation-spells` setting is the twelfth independent module.
+Schema 11 preserves every explicit old value, migrates an absent Teleportation
+key ON, preserves explicit OFF, and retains malformed quarantine/future-schema
+rejection. Configuration copies, equality, bit 2048, formatting, UMM settings,
+publication intent, the guarded typed request, and module observer include it.
+
+All 1,429 domain cases pass, including 4,096 actual settings round trips and
+4,096 independent publication plans. The PowerShell catalog produces exactly
+12 modules and 26 boundary states; guarded preflight passes 208 checks plus the
+world-map metadata check. Repository validation, clean Release build, and strict
+package validation pass. The canonical Steam working-save regression passes 11
+assertions: run `20260908T0044326727368Z-252ae5a1786547be8ab5ee7ea16f3d2d`,
+directory `20260908T0044326571115Z-working-save-smoke`.
+
+The module observer currently proves restart-bound settings intent only for
+Teleportation. Actual three-spell publication, OFF patch absence, contextual UI,
+resource expenditure, and the 26-state live publication matrix remain pending.
+No release metadata was promoted. The curated point inventory and unresolved
+exclusions are in `TELEPORTATION-MAP-POINT-AUDIT.md` and its companion CSV.

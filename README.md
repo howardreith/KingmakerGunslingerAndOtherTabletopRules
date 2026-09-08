@@ -246,23 +246,28 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find eleven checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find twelve checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
 Transmuter -- requires Call of the Wild**, **Urban Barbarian**, **Bodyguard
 and In Harms Way**, **Protection from Alignment: control immunity**, and
-**Elemental Races: Ifrit, Oread, Sylph, and Undine**. All eleven modules
-default enabled. Older settings migrate to schema 10 while preserving every
-explicit value. Any absent module key, including Elemental Races, migrates ON.
+**Elemental Races: Ifrit, Oread, Sylph, and Undine**, plus
+**World-Map Teleportation Spells**. All twelve modules
+default enabled. Older settings migrate to schema 11 while preserving every
+explicit value. Any absent module key, including Teleportation, migrates ON.
+
+The Teleportation setting is under development on the contextual teleportation
+feature branch. Its spell publication and live casting qualification are pending;
+this checkpoint does not claim a usable travel feature.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All eleven modules
+items, summons, ammunition state, or equipment from a save. All twelve modules
 publish independently. Brown-Fur is the only CotW-dependent module: absent or
 incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
-publication while the other ten modules continue. Urban Barbarian and
+publication while the other eleven modules continue. Urban Barbarian and
 Protection from Alignment remain available regardless of CotW compatibility.
 Keep the whole mod installed
 for any campaign that has used project content.

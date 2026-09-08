@@ -13016,6 +13016,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedProtectionFromAlignmentControlImmunity ? 15 : 0) &&
                     protectionObservation.InvalidDescriptions == 0,
                     "exact terminal-buff component and player-description inventories"),
+                Assertion("feature-module-teleportation-restart-snapshot",
+                    _request.Parameters["teleportationSpells"].ToString(),
+                    _context.FeatureModules.Active.TeleportationSpells.ToString(),
+                    _context.FeatureModules.Active.TeleportationSpells == (bool)_request.Parameters["teleportationSpells"],
+                    "immutable restart-bound Teleportation publication intent; casting qualification is separate"),
                 Assertion("feature-module-elemental-races-restart-snapshot",
                     expectedElementalRaces ? "enabled" : "disabled",
                     activeElementalRaces ? "enabled" : "disabled",

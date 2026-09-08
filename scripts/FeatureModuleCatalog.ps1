@@ -79,6 +79,13 @@ function Get-KmgFeatureModuleCatalog {
             DependencyState = 'independent'
             RuntimeParameter = 'elementalRaces'
         }
+        [pscustomobject]@{
+            InternalProperty = 'TeleportationSpells'
+            JsonKey = 'teleportation-spells'
+            DisplayName = 'World-Map Teleportation Spells'
+            DependencyState = 'independent'
+            RuntimeParameter = 'teleportationSpells'
+        }
     )
 }
 
