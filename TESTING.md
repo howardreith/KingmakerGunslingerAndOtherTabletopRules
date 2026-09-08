@@ -76,6 +76,16 @@ pre/post-capital Recall, graph-ranked alternatives and repeated native damage.
 The fixture restores map records, ledger, temporary books and damage without a
 save write; it requires automatic process exit. Never use the baseline save.
 
+This exact request also records bounded native deserialization errors and main
+character/cross-scene PostLoad state in `teleportation-save-load.json`. Its five
+request-owned hooks and error listener must be removed, with native JSON settings
+retained. The extended casting control passes 44 assertions. No diagnostic hooks
+exist during normal play. The current Working archive contains Craft Magic Items
+blueprint data and cannot qualify isolated profiles that omit that dependency;
+its isolated load failure is diagnosed in the implementation report. Do not strip
+saved records to make a profile pass. Native header LoadedTimes updates during
+loading are distinct from saving campaign/fixture state.
+
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-casting `
   -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `

@@ -1817,6 +1817,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();
+                StartTeleportationLoadDiagnostics();
                 _workingStartupStage = "hooks-install-complete";
                 WriteLifecycleStage(_workingStartupStage);
                 _manualElapsed = Stopwatch.StartNew();
@@ -29473,6 +29474,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             StopTeleportationInteraction(result);
             StopTeleportationSpellbookUi(result);
+            StopTeleportationLoadDiagnostics(result);
             if (_saveLoadObservation != null && result.SaveLoadObservation == null)
                 result.SaveLoadObservation = _saveLoadObservation.Stop();
             if (_catalogObservation != null && result.SaveCatalogObservation == null)

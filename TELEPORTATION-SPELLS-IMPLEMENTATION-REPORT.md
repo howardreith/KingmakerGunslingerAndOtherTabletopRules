@@ -34,6 +34,7 @@ Pushed coherent checkpoints:
 - `5b1168f45edf4c8979e6dbbb5536344523faf61d`: actual native level-up choices, preview cancellation and same-artifact UI/resource/save regressions.
 - `f44d4f529de453220afefe6f74ca4cc4278db3c6`: saved deferred-exploration guard, 22 actual special-point casts, ordinary-travel recovery and all 26 current module boundaries.
 - `d2a49edbe8ff7302560f8d355da659b43a9b7d64`: actual native module-OFF point interactions, real-resource/ledger controls and guarded launcher contracts.
+- `4373c7aca0cba635cecd35fd2d5cc82def566e17`: native familiarity owner serialization, independent preview loading and exact cancellation cleanup.
 
 Every checkpoint was pushed using the owner's exact policy wrapper. Draft
 [pull request #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
@@ -976,12 +977,107 @@ Two same-artifact regressions pass **42** assertions with exact cleanup:
 A separate read-only inspection of the authorized Working archive identifies
 concrete Call of the Wild saved UnitPart types on the main character. Exact
 archive SHA-256 is `36d63ee29a48ba72e422a43336f11a78ec79185bde68b958a0305a453541ff53`;
-bytes remained unchanged. `party.json` contains
+bytes remained unchanged during that read-only inspection. `party.json` contains
 `CallOfTheWild.HoldingItemsMechanics.UnitPartCanHold2hWeaponIn1h` and
 `CallOfTheWild.WeaponsFix+UnitPartFullProficiency`, both in assembly CallOfTheWild.
-This dependency is consistent with the earlier standalone native load failure;
-it is not a new isolated runtime result or permission to strip those records.
-The raw save and machine-local inspection JSON remain outside committed evidence.
+That inspection alone did not establish the cause of the isolated load failure.
+The guarded diagnostic below identifies additional Craft Magic Items blueprint
+dependencies. The raw save and machine-local inspection JSON remain uncommitted.
+Native loading increments `header.LoadedTimes` and rewrites that header; archive
+byte identity is not claimed across native loads. SaveRoutine/save-state sentinels
+and fixture restoration remain separate from this native load metadata behavior.
+
+## Guarded native save-load diagnostics and compatibility isolation
+
+The existing explicit `disposable-teleportation-casting` request now installs
+five request-owned observations on exact `ThreadedGameLoader.Start(): Task`,
+`Player.PostLoad(): void` and `SceneEntitiesState.PostLoad(): void` methods.
+A bounded JSON error listener attaches immediately before native deserialization
+starts. It never handles errors or changes the resolver/converters. Flattened
+`teleportation-save-load.json` records preserve the native main-character ID,
+cross-scene entity IDs, matching count, error paths and cleanup. Normal play
+installs none of these hooks. The diagnostic uses the isolated project JSON
+writer, and its Harmony owner differs from every production hook owner.
+
+The all-installed control passes **44 of 44** assertions:
+`20260908T1611031845325Z-fa6772374a8a44ab922891a7a68367ce`, directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1611031765298Z-disposable-teleportation-casting`.
+Native loading restores all three cross-scene entities, with exactly one main
+character before and after cross-scene/Player PostLoad. There are zero native
+JSON error events and zero observer faults. The ordinary contextual casting
+fixture still passes; all five diagnostic hooks and the listener are removed,
+and native resolver/converter references remain unchanged.
+
+The same artifact reproduces the isolated Call of the Wild load failure in
+`20260908T1614096701205Z-786ddfaea6b54b1c94519d01b232d2a1`, directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1614096621205Z-disposable-teleportation-casting`.
+Result is **TIMEOUT**, with ten passing and three failing harness assertions;
+this is not a casting or compatibility PASS. Fifteen error notifications
+propagate from two native deserialization failures:
+
+- `party.json`, `m_EntityData[0].Descriptor.Buffs.m_Facts[0].m_Context.AssociatedBlueprint`:
+  unavailable `52e4be2ba79c8c94d907bdbaf23ec15f#CraftMagicItems(timer)`.
+- `player.json`, `SharedVendorTables.m_PersistentTables[0].Entries[19].Item`:
+  an unavailable Craft Magic Items generated ring/enchantment blueprint.
+
+After both deserialization tasks fail, Player.PostLoad sees a null main-character
+ID and zero cross-scene entities. Native `Single` throws before the Teleportation
+fixture begins. The observer itself cleans up successfully with zero faults.
+The exact isolated transaction `compat-20260908T161400Z-310e172649ef` restores the
+complete Mods tree/settings and reports `restorationVerified=true`. No save data
+was stripped, converted or repaired. A compatible disposable save is required for
+pure standalone/Call of the Wild save-backed qualification; no earlier Working
+archive was found in the lab's runtime backups.
+
+An earlier uninstrumented Call of the Wild transaction,
+`compat-20260908T152805Z-03ba855477ba`, had startup PASS run
+`20260908T1528144422015Z-39c7e4d99f664096918bad68088313bd` (23 assertions), directory
+`20260908T1528144336400Z-observe-optional-mod-compatibility`, followed by casting
+TIMEOUT `20260908T1529289815960Z-8e94df045cbd45efba81c5ca33ab1323`, directory
+`20260908T1529289805974Z-disposable-teleportation-casting`. Automatic restoration
+initially waited on the exiting owned process. After its natural exit, the exact
+restore script completed with `restorationVerified=true`; no process was killed.
+
+Diagnostic artifact deployment:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260908T1611031435318Z/deployment.json`.
+Its parent commit is `4373c7aca0cba635cecd35fd2d5cc82def566e17`, with source-state
+SHA-256 `688b914fc304f2ff09cc8f896101a0ca00e5b111bb60aff7a1518f0133d92634`.
+DLL SHA-256 `6e1d2b912a20008ae71bb81e9a41fdac534f2dd5f9f08fe5e95310d179b8872b`;
+MVID `f373feae-6744-4865-bd6d-9f5b08b81d28`; runtime package SHA-256
+`2db43030e5d2b8cecf1c1e1d1f8b7e5a42f70c0006dd2263b79a0014b1ec61b5`.
+The full domain suite passes **1,490** tests. Clean Release, repository and strict
+package validation pass. Logs are `artifacts/teleportation/domain-teleportation-load-diagnostics.log`,
+`build-teleportation-load-diagnostics-final.log` and
+`repository-teleportation-load-diagnostics.log` in that same ignored folder.
+
+### Lightweight optional-profile checks
+
+Following the owner's September 8 clarification, Arms and Armor/Soundpacks are
+secondary compatibility checks, not reasons to expand Teleportation development.
+The author's [Soundpacks 1.0.0 release](https://github.com/spacehamster/KingmakerToggleCustomSoundpacksMod/releases/tag/1.0.0)
+was downloaded to ignored local references. Archive SHA-256 is
+`90ee4e770266523299176f9cd322b5d390a4b2d0a6792bb4312280ebd19acb8e`;
+DLL SHA-256 `d28bf095ae3705f70ae011d446f8cb064a47d7ed28f6f788770a7676a920a4c6`.
+This qualifies the exact GitHub 1.0.0 artifact, not Nexus's separately listed
+1.0.1 version. The author's [Arms and Armor source](https://github.com/bfennema/KingmakerArmsArmor)
+is public; its [Nexus 1.0.10 binary](https://www.nexusmods.com/pathfinderkingmaker/mods/186?tab=files)
+requires login and GitHub exposes no release asset. No credential access or
+unverified mirror was used.
+
+Four fresh, save-free Steam probes pass **54** assertions on the diagnostic
+artifact. These prove optional-mod startup/patch observation and native spell
+identity, publication, rollback and hook contracts, not contextual casting:
+
+| Profile | Scenario | Assertions | Run ID | Directory under runtime-evidence |
+|---|---|---:|---|---|
+| standalone | observe-optional-mod-compatibility | 16 | `20260908T1621535912623Z-a04c43beff344ca1857c550d84b488ac` | `20260908T1621535806678Z-observe-optional-mod-compatibility` |
+| standalone | observe-teleportation-native-contracts | 11 | `20260908T1622505918024Z-5f62b37d2ca640868e62f2362e36e302` | `20260908T1622505907633Z-observe-teleportation-native-contracts` |
+| Soundpacks 1.0.0 | observe-optional-mod-compatibility | 16 | `20260908T1623516228153Z-91769d5ff9bc43a0ace56f6c608eb1b9` | `20260908T1623516218126Z-observe-optional-mod-compatibility` |
+| Soundpacks 1.0.0 | observe-teleportation-native-contracts | 11 | `20260908T1624482673982Z-307f5ba88b484e0c8471f1417a743e56` | `20260908T1624482663853Z-observe-teleportation-native-contracts` |
+
+Transactions `compat-20260908T162149Z-708d1e32eb28` and
+`compat-20260908T162347Z-765439b983a6` both restore exactly. Feature settings SHA-256
+remains `a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749`.
 
 ## Remaining qualification and constraints
 
@@ -993,10 +1089,10 @@ uses structured native button invocation and measured on-screen geometry across
 frames; it is not a presentation review of every camera position/resolution.
 
 The installed host is UMM 0.33.0.0; the requested 0.32.4 host has not been qualified.
-Required Arms and Armor and Toggle Custom Soundpacks references were absent from
-the configured reference folder, installed Mods, and inspected project backups.
-Owner questions about those references, UMM qualification, and the next unused
-release version remain pending. Existing 0.0.115/0.0.116 releases will be preserved.
+Soundpacks startup/publication checks now pass as recorded above. Arms and Armor
+binary testing is deferred under the owner's priority clarification. A compatible
+save for isolated profiles, UMM qualification and the next unused release version
+remain unresolved. Existing 0.0.115/0.0.116 releases will be preserved.
 
 These checkpoints do not establish complete feature, final compatibility or
 release readiness.
