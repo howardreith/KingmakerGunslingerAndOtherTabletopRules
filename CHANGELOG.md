@@ -2,6 +2,12 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Appends currently usable caster/spellbook rows to the native desktop destination
+  panel, with native confirmation and no extra UI on the no-spell path.
+- Executes real prepared/spontaneous casts through canonical party-token
+  relocation, native graph distances, native dice and RuleDealDamage mishaps.
+  Guarded evidence covers slot use, cancellation, exact/alternate arrival,
+  Recall switching, repeated mishaps and protected world state.
 - Adds read-only current world-map/destination composition, exact capital-region
   Recall resolution and guarded native state/resource preservation evidence.
 
@@ -15,8 +21,8 @@
   and guarded native ordinary-arrival observation.
 - Reads real current spellbook sources, groups linked opposition preparations as
   one use, and verifies native expenditure and exact pre-effect compensation.
-  Contextual casting, full save/reload, relocation, and complete runtime
-  qualification remain incomplete. Release metadata is unchanged.
+  Full save/reload, associated pets/mounts, remaining UI cases and complete
+  compatibility qualification remain incomplete. Release metadata is unchanged.
 
 ## 0.0.116-midgame-firearms-and-protection
 

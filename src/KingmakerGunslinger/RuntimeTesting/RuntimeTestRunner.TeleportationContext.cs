@@ -26,7 +26,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private void PollTeleportationContext()
         {
-            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationContext || !_request.ExitAfterCompletion ||
+            if ((_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationContext &&
+                _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationCasting) || !_request.ExitAfterCompletion ||
                 _workingSaveSmoke == null || !_workingSaveSmoke.Complete || _workingSaveSmoke.WriteObserved)
                 throw new InvalidOperationException("Context fixture requires its guarded named working save, automatic exit and intact write sentinels.");
             if (_teleportationMapLoad == null)
@@ -44,6 +45,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunTeleportationContext()
         {
+            bool casting = _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting;
             Player player = Game.Instance.Player;
             GlobalMapRules rules = GlobalMapRules.Instance;
             GlobalMapState map = GlobalMapRules.State;
@@ -91,7 +93,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var fixtures = new List<TeleportResourceFixtureOwner>();
             var assertions = new List<RuntimeTestAssertion>();
             var captures = new List<object>();
-            string path = Path.Combine(_request.EvidenceDirectory, "teleportation-context.json");
+            string path = Path.Combine(_request.EvidenceDirectory, casting ? "teleportation-casting.json" : "teleportation-context.json");
             Exception failure = null;
             bool cleaned = false;
             try
@@ -122,6 +124,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions.Add(Assertion("teleportation-context-no-spell-source", "no magical actions before real fixture spellbooks",
                     "actions=" + TeleportationWorldMapAdapter.Compose(context, points[1].Blueprint).Count,
                     TeleportationWorldMapAdapter.Compose(context, points[1].Blueprint).Count == 0, path));
+                if (casting) ObserveTeleportationVanillaPanel(points[1], assertions, captures, path);
                 BlueprintCharacterClass wizard = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
                     "ba34257984f4c41408ce1dc2004e342e", "native Wizard context fixture");
                 BlueprintCharacterClass sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
@@ -213,10 +216,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     map.Edges.Count == edgeRecords.Length && resources == string.Join("|", books.Select(TeleportResourceFingerprint)) &&
                     familiar == ledger.Read().Serialize() && map.TravelData == null && originalTime == player.GameTime &&
                     actions.Select(value => value.Key).SequenceEqual(compose(points[1].Blueprint).Select(value => value.Key)), path));
+                if (casting) RunTeleportationContextualCasts(points[0], points[1], oleg, capital,
+                    books, capitalRegion, setClaimed, assertions, captures, path);
             }
             catch (Exception exception) { failure = exception; }
             finally
             {
+                if (casting) CloseTeleportationFixturePanels();
                 capitalRegion.Settlement = settlement; setClaimed.Invoke(capitalRegion, new object[] { originalClaimed });
                 player.Kingdom = originalKingdom;
                 if (!ReferenceEquals(probeKingdom, originalKingdom)) probeKingdom.Dispose();
@@ -234,7 +240,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             assertions.Add(Assertion("teleportation-context-fixture-cleanup", "exact map/ledger/capital/resources restored; no save writes",
                 "cleaned=" + cleaned, cleaned, path));
             WriteTeleportationForensicJson(path, new { schemaVersion = 1, runId = _request.RunId,
-                claims = "Production current-map/destination/Recall/source composition only. Native UI rows, confirmations and completed magical casts are not yet qualified by this probe.",
+                claims = casting ? "Guarded native destination rows, confirmations and real spellbook-backed world-map casts; request-local fixture restored without save writes." : "Production current-map/destination/Recall/source composition only. Native UI rows, confirmations and completed magical casts are not yet qualified by this probe.",
                 captures, assertions, cleaned, saveWriteObserved = _workingSaveSmoke.WriteObserved, error = failure == null ? null : failure.ToString() });
             return CreateResult(failure != null ? RuntimeTestStatuses.Error : assertions.All(value => value.Status == "PASS") ?
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, failure == null ? null : failure.ToString());

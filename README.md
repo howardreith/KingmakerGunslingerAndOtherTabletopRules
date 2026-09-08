@@ -257,12 +257,15 @@ default enabled. Older settings migrate to schema 11 while preserving every
 explicit value. Any absent module key, including Teleportation, migrates ON.
 
 The Teleportation setting is under development on the contextual teleportation
-feature branch. Native spell publication, a save-owned ordinary-arrival ledger,
-and real prepared/spontaneous resource adapters are implemented. Current native
-destination and Recall-state composition have guarded evidence. Rendered spell
-actions, completed contextual casting and full campaign persistence qualification
-remain in progress; see [draft PR #10](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/10)
-and the [implementation report](TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md).
+branch. The native desktop destination panel now appends usable spellbook
+sources and opens a native confirmation. Guarded casts have verified real slot
+expenditure, exact and alternate arrival, Recall switching, and repeated mishaps.
+Full campaign persistence, associated-unit fixtures, remaining UI cases and
+required compatibility profiles remain under qualification. See the
+[native forensics](docs/TELEPORTATION-NATIVE-FORENSICS.md) and
+[implementation report](TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md). The
+[player smoke guide](docs/TELEPORTATION-SPELLS-SMOKE-TEST.md) covers destination
+selection, confirmation and slot checks.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 

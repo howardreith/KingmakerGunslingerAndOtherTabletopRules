@@ -39,6 +39,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Count(value => value.owner == _context.ModId && value.patch != null &&
                         value.patch.DeclaringType == typeof(Spells.Teleportation.TeleportFamiliarityPatches));
             });
+            int destinationHookCount = new[] { "OnLocationSelect", "FillDialogInfoLocation", "Hide", "Dispose" }.Sum(name => {
+                MethodInfo target = typeof(Kingmaker.UI.GlobalMap.GlobalMapMessageBox).GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (target == null) throw new MissingMethodException("Native destination target " + name);
+                if (!patchedMethods.Contains(target)) return 0;
+                Patches patches = _context.Harmony.GetPatchInfo(target);
+                return patches == null ? 0 : patches.Prefixes.Concat(patches.Postfixes).Concat(patches.Transpilers)
+                    .Count(value => value.owner == _context.ModId && value.patch != null &&
+                        value.patch.DeclaringType == typeof(Spells.Teleportation.WorldMapPointSpellActionPatches));
+            });
             bool travelExists = BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(TeleportationSpellListPublication.TravelListId);
             var targets = new List<TeleportationPublicationProbeTarget> {
                 TeleportationProbeTarget(TeleportationSpellListPublication.WizardListId, 5, spells.Teleport),
@@ -89,7 +98,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(cache.GetValue(value), originalCaches[index])).All(value => value);
                 if (!restored) throw new InvalidOperationException("Strategic spell publication probe could not restore original native list/cache instances.");
             }
-            WriteTeleportationForensicJson(path, new { runId = _request.RunId, enabled, travelExists,
+            WriteTeleportationForensicJson(path, new { runId = _request.RunId, enabled, travelExists, destinationHookCount,
                 claims = "Native blueprint and spell-list publication/rollback only; no spell was cast, learned or prepared.",
                 spells = abilities.Select(value => new { id = value.AssetGuid, name = value.Name,
                     type = value.Type.ToString(), action = value.ActionType.ToString(), icon = value.Icon != null,
@@ -107,6 +116,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             assertions.Add(Assertion("teleportation-familiarity-module-hooks", "ordinary-arrival hooks match module intent",
                 "enabled=" + enabled + ";installed=" + Spells.Teleportation.TeleportFamiliarityPatches.Installed + ";actualHooks=" + familiarityHookCount,
                 enabled == Spells.Teleportation.TeleportFamiliarityPatches.Installed && familiarityHookCount == (enabled ? 2 : 0), path));
+            assertions.Add(Assertion("teleportation-destination-module-hooks", "native destination hooks match module intent; no hooks OFF",
+                "enabled=" + enabled + ";installed=" + Spells.Teleportation.WorldMapPointSpellActionPatches.Installed + ";actualHooks=" + destinationHookCount,
+                enabled == Spells.Teleportation.WorldMapPointSpellActionPatches.Installed && destinationHookCount == (enabled ? 4 : 0), path));
             assertions.Add(Assertion("teleportation-publication-duplicate-safe", enabled ? "native list/cache identity unchanged by repeated publication" : "not exercised while module OFF",
                 enabled ? "passed=" + duplicateSafe : "module OFF; no publication invoked", duplicateSafe, path));
             assertions.Add(Assertion("teleportation-publication-exact-rollback", enabled ? "exact prior native list/cache references restored" : "not exercised while module OFF",

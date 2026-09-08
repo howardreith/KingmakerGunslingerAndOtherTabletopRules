@@ -196,11 +196,11 @@ namespace KingmakerGunslinger.DomainTests
                     SearchOption.AllDirectories).Where(path =>
                         File.ReadAllText(path).Contains(
                             "UIUtility.SendWarning(message)")).ToArray();
-            Assertions.Equal(1, helperCallers.Length,
-                "The native warning helper must remain behind one firearm adapter.");
-            Assertions.Equal("FirearmConditionTopNotification.cs",
-                Path.GetFileName(helperCallers[0]),
-                "A production subsystem bypasses the firearm notification adapter.");
+            Assertions.Equal(2, helperCallers.Length,
+                "The native warning helper remains behind the firearm and contextual teleportation adapters.");
+            Assertions.Equal("FirearmConditionTopNotification.cs,TeleportationCombatLog.cs",
+                string.Join(",", helperCallers.Select(Path.GetFileName).OrderBy(value => value, StringComparer.Ordinal)),
+                "A production subsystem bypasses its qualified notification adapter.");
 
             string nativeSink = File.ReadAllText(Path.Combine(sourceRoot,
                 "Diagnostics", "NativeCombatLog.cs"));

@@ -536,6 +536,7 @@ try {
         'disposable-teleportation-familiarity',
         'disposable-teleportation-resources',
         'disposable-teleportation-context',
+        'disposable-teleportation-casting',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',

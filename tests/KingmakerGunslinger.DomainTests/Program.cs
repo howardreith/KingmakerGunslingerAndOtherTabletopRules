@@ -25,6 +25,19 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("teleportation.presentation.PreparedRowIncludesCurrentCount", TeleportationContextTests.PreparedRowIncludesCurrentCount),
+            Case("teleportation.presentation.SpontaneousRowsIncludeCorrectLevelAndPlural", TeleportationContextTests.SpontaneousRowsIncludeCorrectLevelAndPlural),
+            Case("teleportation.presentation.AmbiguousCasterRowsNameTheBook", TeleportationContextTests.AmbiguousCasterRowsNameTheBook),
+            Case("teleportation.presentation.ConfirmationShowsExactOddsAndOrdinaryCount", TeleportationContextTests.ConfirmationShowsExactOddsAndOrdinaryCount),
+            Case("teleportation.presentation.ExactSpellConfirmationHasNoDestinationOdds", TeleportationContextTests.ExactSpellConfirmationHasNoDestinationOdds),
+            Case("teleportation.presentation.RecallConfirmationNamesSelectedDestination", TeleportationContextTests.RecallConfirmationNamesSelectedDestination),
+            Case("teleportation.travelers.ActivePartyOrderIsPreserved", TeleportationTravelerTests.ActivePartyOrderIsPreserved),
+            Case("teleportation.travelers.AssociatedUnitsTravelWithTheirOwners", TeleportationTravelerTests.AssociatedUnitsTravelWithTheirOwners),
+            Case("teleportation.travelers.ChainedAssociationDoesNotDependOnEnumerationOrder", TeleportationTravelerTests.ChainedAssociationDoesNotDependOnEnumerationOrder),
+            Case("teleportation.travelers.DetachedAndInactiveAssociationsAreExcluded", TeleportationTravelerTests.DetachedAndInactiveAssociationsAreExcluded),
+            Case("teleportation.travelers.MissingActiveCanonicalUnitFailsClosed", TeleportationTravelerTests.MissingActiveCanonicalUnitFailsClosed),
+            Case("teleportation.travelers.AmbiguousCanonicalIdentityFailsClosed", TeleportationTravelerTests.AmbiguousCanonicalIdentityFailsClosed),
+            Case("teleportation.travelers.UnrelatedCyclesCannotCreateTravelers", TeleportationTravelerTests.UnrelatedCyclesCannotCreateTravelers),
             Case("teleportation.world.PrebuiltSettlementDoesNotEstablishCapital", TeleportationWorldMapTests.PrebuiltSettlementDoesNotEstablishCapital),
             Case("teleportation.world.EstablishedCapitalRequiresExactOwnedAnchor", TeleportationWorldMapTests.EstablishedCapitalRequiresExactOwnedAnchor),
             Case("teleportation.world.UnknownCapitalDoesNotGuess", TeleportationWorldMapTests.UnknownCapitalDoesNotGuess),

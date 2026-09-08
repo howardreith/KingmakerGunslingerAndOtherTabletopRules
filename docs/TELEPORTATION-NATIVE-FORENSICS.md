@@ -525,3 +525,98 @@ relates pets through UnitDescriptor.Master. Native RulebookEvent.Dice exposes
 D100 (RollEntry.Value), D10, and D(DiceFormula); DiceTypeExtension.Sides returns
 the integer sides value directly. Native damage/relocation qualification remains
 outstanding; these traces alone do not establish live mishap behavior.
+
+
+## Native contextual cast execution checkpoint
+
+Desktop augmentation is a postfix on `GlobalMapMessageBox.FillDialogInfoLocation`.
+`OnLocationSelect`, `Hide` and `Dispose` prefixes remove only owned appended rows.
+There is no Accept, GoToLocation, pointer or route-planning patch. The native
+OnLocationSelect layout/onscreen positioning still runs after the appended rows.
+No usable source returns before constructing any UI. Reflection reads the exact
+`m_Dialog`, `m_Location`, and `m_AcceptText` fields; ownership uses the exact native
+`DialogMessageBox.m_OnClose` callback field. OFF installs none of these hooks.
+
+The native button donor has `LocalizedUIText.Awake`, which overwrites its label
+from a serialized shared string, and an ignored LayoutElement. The owned inactive
+clone removes that localization component, replaces all persistent click events,
+clears ignoreLayout and adopts the measured native content width/row height.
+The containing native panel and its original buttons are untouched. A native
+ScrollRect bounds the appended list; no screen coordinates identify a point.
+The selected unnamed native crossroads receives a localized descriptive label
+in confirmation only; IDs alone continue to control mechanics.
+
+`IDialogMessageBoxUIHandler.HandleOpen` owns the confirmation. Native Cancel/Esc
+callbacks spend nothing. A request-lifetime component checks callback ownership,
+force-close disappearance and live validity. Native Yes uses the same guarded
+transaction and native resource lease. The pending guard spans the complete
+synchronous execution. Feedback uses `UIUtility.SendWarning` through the narrow
+TeleportationCombatLog adapter and the existing combat-log helper.
+
+`Player.AllCharacters` includes cross-scene canonical associated units that
+local ControllableCharacters omits. The roster retains native Party order,
+then stable associated Master chains, and checks reciprocal Pet ownership.
+Dead units remain transported; the mishap resolver selects living units for
+native damage. The current working-save fixture contains three living active
+members and no associated units, so pet/mount qualification remains open.
+
+Graph distance reads `GlobalMapRules.m_Graph` and its exact private static
+`GetGraphWeights(TaggedEdge<GlobalMapLocation, GlobalMapEdge>)` delegate, then
+calls the game's QuickGraph `ShortestPathsDijkstra`. Every Edge.Data record must
+already exist to avoid the native lazy creation path. No route command is made.
+The native FindPath route wrapper uses the same graph and supplies no independent
+fallback when it is absent. Coordinate fallback is explicit and logged.
+
+Production RNG uses RulebookEvent.Dice.D100/D10 and Dice.D(DiceFormula).
+DiceTypeExtension.Sides returns the numeric die size, allowing canonical uniform
+selection within any percentile bucket. Injected queues live only on guarded
+request rows and their single execution. Damage uses one DirectDamage fixed
+bonus per living traveler through Rulebook.Trigger(RuleDealDamage), with the
+selected spell as SourceAbility and no MinHPAfterDamage floor.
+
+Relocation calls only native SetCurrentPosition(new MapPosition(point)) and
+UpdatePawnPosition. Before/after structured snapshots compare exact player,
+map, rules, pawn, area, scene, party and associated-unit references, GameTime,
+UnitPartWeariness state, route/history, encounter/miles state, every point/edge
+record and discovery flag, perception IDs and familiarity. LastLocation and
+the canonical token position are the intended native changes. No local area,
+route movement, time correction, party unit load or transform mutation is used.
+
+First end-to-end run `20260908T0508534702414Z-e3ef7871730244eda49763aa3789b9db`
+failed the label assertion and exposed overlapping ignored native LayoutElements.
+All completed casts still proved exact expenditure and protected relocation;
+that failed run is not acceptance evidence. The corrected run
+`20260908T0518061328136Z-dcef820240d34772a501292ba833475e` passed 37 assertions
+(directory `20260908T0518061237339Z-disposable-teleportation-casting`). It includes
+normal and repeated native mishap packets of 1 then 2, all three travelers,
+one spell use, graph alternatives, exact Recall before/after capital, native
+cancel/duplicate callbacks and exact fixture cleanup with no save writes.
+
+The final desktop cast checkpoint
+`20260908T0542206317921Z-5180c9651e2840f1bbe49631dddaa2ef` passed 42 assertions
+in `20260908T0542206207909Z-disposable-teleportation-casting`, adding real-book
+replacement cancellation, no-alternate failure, pre-effect resource restoration,
+stale caster and normal production RNG to the earlier 37-assertion run. Native
+UnitDescriptor.DeleteSpellbook only removes m_Spellbooks' entry; the guarded
+replacement fixture retains/restores the exact prior instance in that dictionary.
+This reflection write exists only in the disposable runner. Production confirmation
+binds native Player/Map/Rules/book references; it does not replace any book.
+
+Module OFF run `20260908T0535060528821Z-be76dbc835524646b26a0df3844267ea` proved
+zero actual destination hooks and zero arrival hooks, with no player-list
+publication. Working-save regression
+`20260908T0545391191224Z-94ee28fffc1445669dd335920b10d484` passed eleven assertions.
+Neither result substitutes for remaining scene/input/associated-unit/persistence
+or compatibility qualification.
+
+Additional native input inspection found that desktop DialogMessageBox.Update
+only calls TextInputChanged (the text-field confirmation mode), and the native
+IMessageBoxUIHandler.HandleAccept has no direct call site in Assembly-CSharp IL.
+Do not infer a duplicate Enter-key route from interface names. The native
+OnYesSelect coroutine and guarded multi-frame input/navigation remain to inspect.
+Gamepad GlobalMapMessageBoxView.LocationNeedsMessageBox returns true for revealed
+non-origin points, and SetFromLocation calls FillDialogInfoLocation before native
+positioning. UpdateNavigation builds the existing native collection and selects
+its default; ConsoleMultiNavigationCollection exposes AddRow/RemoveEntity, while
+ConsoleButton.SetConfirmAction supplies a native action seam. These are inspected
+integration candidates, not installed or qualified gamepad functionality.
