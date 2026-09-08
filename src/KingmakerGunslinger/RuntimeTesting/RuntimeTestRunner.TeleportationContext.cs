@@ -46,6 +46,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private RuntimeTestResult RunTeleportationContext()
         {
             bool casting = _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting;
+            var originalCamera = casting ? TeleportationCastingCamera().GetPosition() : UnityEngine.Vector3.zero;
             Player player = Game.Instance.Player;
             GlobalMapRules rules = GlobalMapRules.Instance;
             GlobalMapState map = GlobalMapRules.State;
@@ -222,7 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception) { failure = exception; }
             finally
             {
-                if (casting) CloseTeleportationFixturePanels();
+                if (casting) { CloseTeleportationFixturePanels(); TeleportationCastingCamera().ScrollTo(originalCamera); }
                 capitalRegion.Settlement = settlement; setClaimed.Invoke(capitalRegion, new object[] { originalClaimed });
                 player.Kingdom = originalKingdom;
                 if (!ReferenceEquals(probeKingdom, originalKingdom)) probeKingdom.Dispose();

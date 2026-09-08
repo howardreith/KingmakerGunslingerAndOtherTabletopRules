@@ -33,7 +33,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var map = GlobalMapRules.State;
             var position = map.PartyPosition;
             var time = Game.Instance.Player.GameTime;
-            panel.OnLocationSelect(target.Blueprint, false);
+            SelectTeleportationCastingPoint(panel, target);
             _teleportationNativeActions = TeleportationNativeButtons(panel);
             captures.Add(new { step = "native-no-spell-interaction", selectedId = target.Blueprint.AssetGuid,
                 nativeActions = _teleportationNativeActions, visible = panel.gameObject.activeInHierarchy,
@@ -64,7 +64,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             restoreOrigin();
             string before = slots();
-            panel.OnLocationSelect(target.Blueprint, false);
+            SelectTeleportationCastingPoint(panel, target);
             var rows = panel.GetComponentsInChildren<TeleportDestinationRows>(true).SingleOrDefault();
             captures.Add(new { step = "native-augmented-interaction", selectedId = target.Blueprint.AssetGuid,
                 hooksInstalled = WorldMapPointSpellActionPatches.Installed, context = TeleportationWorldMapAdapter.Capture(false).Diagnostic,
@@ -85,7 +85,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rows.Buttons.Select(value => ((RectTransform)value.transform).anchoredPosition.y).Distinct().Count() == rows.Actions.Count &&
                 rows.Buttons.All(value => ((RectTransform)value.transform).rect.width >= viewport.rect.width - 1 &&
                     ((RectTransform)value.transform).rect.height > 0), path));
-            panel.OnLocationSelect(target.Blueprint, false);
+            SelectTeleportationCastingPoint(panel, target);
             assertions.Add(Assertion("teleportation-ui-reopen-deduplicates", "one row container and one row per source after repeated native selection",
                 "containers=" + panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length,
                 panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length == 1 &&
@@ -285,7 +285,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static TeleportContextConfirmationPresenter OpenTeleportationFixtureConfirmation(GlobalMapMessageBox panel,
             GlobalMapLocation point, TeleportSpellKind spell, TeleportCastSourceKind kind, TeleportationFixtureRolls rolls)
         {
-            panel.OnLocationSelect(point.Blueprint, false);
+            SelectTeleportationCastingPoint(panel, point);
             var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
             if (rows == null) throw new InvalidOperationException("No contextual actions for guarded " + spell + " cast at " + point.Blueprint.AssetGuid);
             int index = Array.FindIndex(rows.Actions.ToArray(), value => value.Source.Spell == spell && value.Source.Kind == kind);
@@ -298,6 +298,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (request == null || !DialogMessageBox.Instance.IsShown || panel.gameObject.activeInHierarchy)
                 throw new InvalidOperationException("Selected native spell row did not open its own confirmation and close the destination presenter.");
             return request;
+        }
+        private static Kingmaker.View.CameraRig TeleportationCastingCamera()
+        { return Resources.FindObjectsOfTypeAll<Kingmaker.View.CameraRig>().Single(value => value != null &&
+            value.gameObject.activeInHierarchy && value.gameObject.scene.IsValid() && value.gameObject.scene.isLoaded); }
+        private static void SelectTeleportationCastingPoint(GlobalMapMessageBox panel, GlobalMapLocation point)
+        {
+            // The guarded fixture selects distant points without pointer input.
+            // Center through the native camera API first, so the native presenter
+            // receives a real on-screen anchor rather than an off-screen probe.
+            TeleportationCastingCamera().ScrollToImmediately(point.transform.position);
+            panel.OnLocationSelect(point.Blueprint, false);
         }
         private static Button TeleportationFixtureDialogButton(string field)
         { return (Button)typeof(DialogMessageBox).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(DialogMessageBox.Instance); }

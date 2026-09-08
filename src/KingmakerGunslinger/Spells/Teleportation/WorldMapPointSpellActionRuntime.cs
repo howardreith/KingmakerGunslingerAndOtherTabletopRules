@@ -120,8 +120,13 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 scroll.content = self._content;
                 var canvas = dialog.GetComponentInParent<Canvas>();
                 float canvasHeight = canvas == null ? 0 : ((RectTransform)canvas.transform).rect.height;
+                // Clear detached the previous source container. Recalculate the
+                // native-only body before reading its cached preferred height;
+                // otherwise repeated selection can include the previous rows' height.
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)dialog.transform);
                 float nativeHeight = LayoutUtility.GetPreferredHeight((RectTransform)dialog.transform);
-                self._maximumHeight = Math.Max(self._rowHeight, canvasHeight - nativeHeight - self._rowHeight * 2);
+                float anchorY = Game.GetCamera().WorldToViewportPoint(self._location.LocationTooltipPoint.position).y;
+                self._maximumHeight = TeleportContextLayoutPolicy.MaximumRowsHeight(canvasHeight, anchorY, nativeHeight, self._rowHeight);
                 foreach (var action in actions) self.Add(donor, action);
                 self.Resize();
                 self._ready = true;

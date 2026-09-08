@@ -4,6 +4,9 @@
 
 - Appends currently usable caster/spellbook rows to the native desktop destination
   panel, with native confirmation and no extra UI on the no-spell path.
+- Preserves native Travel and Escape across UI frames. Long real-source lists
+  scroll within space measured around the selected point, with a fresh native
+  body measurement on every reopen and immediate removal of exhausted sources.
 - Executes real prepared/spontaneous casts through canonical party-token
   relocation, native graph distances, native dice and RuleDealDamage mishaps.
   Guarded evidence covers slot use, cancellation, exact/alternate arrival,

@@ -613,10 +613,65 @@ Additional native input inspection found that desktop DialogMessageBox.Update
 only calls TextInputChanged (the text-field confirmation mode), and the native
 IMessageBoxUIHandler.HandleAccept has no direct call site in Assembly-CSharp IL.
 Do not infer a duplicate Enter-key route from interface names. The native
-OnYesSelect coroutine and guarded multi-frame input/navigation remain to inspect.
+OnYesSelect coroutine yields, calls Yes.Select, yields again, and calls
+Yes.Select again; it does not invoke the button callback. Guarded keyboard
+submission/navigation beyond the Escape stack remains unqualified.
 Gamepad GlobalMapMessageBoxView.LocationNeedsMessageBox returns true for revealed
 non-origin points, and SetFromLocation calls FillDialogInfoLocation before native
 positioning. UpdateNavigation builds the existing native collection and selects
 its default; ConsoleMultiNavigationCollection exposes AddRow/RemoveEntity, while
 ConsoleButton.SetConfirmAction supplies a native action seam. These are inspected
 integration candidates, not installed or qualified gamepad functionality.
+
+
+## Native desktop lifetime and scrolling qualification
+
+Native `DialogMessageBox.HandleOpen` returns immediately when IsShown is true.
+`HandleForceClose` calls Hide without invoking the close callback. The production
+confirmation's Update detects disappearance or callback replacement and cancels
+its request. Native `EscHotkeyManager.OnEscPressed` invokes the last subscribed
+action; point selection subscribes the original Hide callback, and confirmation
+subscribes DialogMessageBox.OnEscPressed. No synthetic input or raw key patch is
+needed to exercise these exact boundaries through the guarded runner.
+
+`MapTravelData.Start` emits IPawnMovementHandler.OnPawnMovementStarted after
+UpdateStartPosition sets Walking. A request-local native event subscriber counted
+one start and one stop for each actual ordinary route. It installs no movement
+patch, supplies no alternative route, and is removed before fixture cleanup.
+
+`UIGlobalMapConsts.Pivots` contains eight native anchor pivots. The appended source
+viewport reserves room for the native panel body and its native-sized row spacing
+above or below the selected point, using native WorldToViewportPoint and current
+canvas geometry. Native code still chooses the final panel pivot/position. The
+original panel layout is recomputed only after positive actions were resolved;
+this prevents its cached preferred height from including a previous source list.
+The no-source path does not perform this extra layout operation.
+
+Guarded run `20260908T0645599302678Z-3fbdcbc3efcc4ef3a07e1687ff737d38`
+(`20260908T0645599222679Z-disposable-teleportation-interaction`) passed 29
+assertions: native behavior without sources, native Travel with sources, actual
+Escape and force-close handling, dialog replacement, no-op/unvisited omission,
+live use count/exhaustion, repeated selection, real confirmation after frame
+updates, and native scrolling to the final row among twelve real sources. The
+eight reopened short lists retained exactly 213 layout units of viewport height.
+The long list contained 426 units in a 370.1854-unit visible viewport. Native
+UIUtility.IsTransformInScreen and RectTransform bounds supplied structured
+geometry evidence. No screen coordinates, screenshot, OCR or pointer input was
+used. The full 42-assertion casting regression also passed in
+`20260908T0651138625548Z-e62f45df4e7247b9b97325b3cf24ffc8`.
+
+The report retains both rejected interaction probes and their exact run IDs.
+Neither failed probe wrote a save or left the temporary books/map fields behind.
+This desktop evidence does not qualify gamepad navigation, all resolutions,
+associated-unit death behavior or complete campaign save/reload.
+
+Additional pending damage forensics: RuleDealDamage.OnTrigger updates Damage and
+raises native damage events, but does not itself update UnitState.LifeState.
+UnitLifeController.TickOnUnit performs that native transition, including ordinary
+unconsciousness, death, ferocity, regeneration and difficulty behavior. It is
+registered for GlobalMap among its five native modes; BaseUnitController.Tick
+iterates AwakeUnits unless TickSleeping is overridden. Native OnUnitDeath also
+uses the unit view. Whether every off-scene canonical traveler is covered in the
+required same-request mishap sequence still needs guarded living/dead/pet evidence;
+the existing HP-safe three-member probes do not establish it. No alternate life
+threshold or HP floor has been introduced.

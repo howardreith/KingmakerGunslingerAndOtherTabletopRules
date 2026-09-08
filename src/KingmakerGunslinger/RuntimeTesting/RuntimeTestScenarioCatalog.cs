@@ -7,6 +7,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
         internal const string DisposableTeleportationResources = "disposable-teleportation-resources";
+        internal const string DisposableTeleportationInteraction = "disposable-teleportation-interaction";
         internal const string DisposableTeleportationCasting = "disposable-teleportation-casting";
         internal const string DisposableTeleportationContext = "disposable-teleportation-context";
         internal const string DisposableTeleportationFamiliarity = "disposable-teleportation-familiarity";
@@ -529,6 +530,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableTeleportationResources,
                 DisposableTeleportationContext,
                 DisposableTeleportationCasting,
+                DisposableTeleportationInteraction,
                 ReliableFirearmMisfireMatrix,
                 BlunderbussThunderingScatter,
                 ObserveProductionFirearmFallbacks,

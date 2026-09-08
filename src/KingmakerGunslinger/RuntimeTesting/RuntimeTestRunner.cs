@@ -634,6 +634,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationResources &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationCasting &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationInteraction &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationContext &&
                     !IsExpandedSummoningPersistenceScenario() &&
                     !IsElvenBranchedSpearPersistenceScenario() &&
@@ -1626,6 +1627,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
@@ -1707,6 +1709,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
@@ -2217,6 +2220,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting)
                 {
                     PollTeleportationContext();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction)
+                {
+                    PollTeleportationInteraction();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources)
                 {
@@ -4832,6 +4839,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
@@ -29433,6 +29441,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            StopTeleportationInteraction(result);
             if (_saveLoadObservation != null && result.SaveLoadObservation == null)
                 result.SaveLoadObservation = _saveLoadObservation.Stop();
             if (_catalogObservation != null && result.SaveCatalogObservation == null)
