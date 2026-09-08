@@ -831,3 +831,57 @@ surface and restores the preexisting Pause mode. The complete structured result
 records an inactive surface, alpha 0, actual spell rows/descriptions/preparations,
 zero fixture UI exceptions and exact cleanup including deferred native refresh.
 Normal level-up selection remains unqualified by this scenario.
+
+## Native level-up selection and preview cancellation
+
+`CharacterBuildController.HandleLevelUpStart` checks native
+`LevelUpController.CanLevelUp` and calls `Start(..., instantCommit: false)`.
+Native `UnitSerialization.Serialize` / `LevelUpPreviewThread.RequestPreview`
+create a separate descriptor. `SetClass` delegates to native `SelectClass`,
+class mechanics and `ApplySpellbook.Apply`. The latter adds one caster level
+through `Spellbook.AddCasterLevel` and calculates actual `SpellSelectionData`
+from the native book: known-spell count differences for Sorcerer, or
+`SpellsPerLevel` / `ExtraMaxLevel` for Wizard. No fixture code writes those
+selection counts, phase flags or native prerequisites.
+
+The guarded fixture uses only native `SpendAttributePoint`, `SetFeature` with
+`Selection.CanSelect`, and `SpendSkillPoint` to finish preview prerequisites.
+`CharBPhaseSpells.SetupSelector` reaches `CharBSelectorLayer.FillSpellLevel`
+and reads the actual published `SpellList.GetSpells(level)`. Native
+`CharBSelectionSwitchItem.Toggle` selects the book/level slot;
+`CharBuildSelectorItem.Toggle` invokes its bound `SetSpell` callback and native
+`SelectSpell.Apply` / `Spellbook.AddKnown` on the preview. Deferred native
+refresh can recycle widgets, so qualification re-resolves their exact current
+spell binding and rendered name across eight frames before invoking the row.
+
+Escape uses `CharacterBuildController.OnHotKeyEscPressed` and its native
+`OnHideDialogAnswer` confirmation. The fixture verifies callback ownership,
+invokes the native Yes button and waits for closure. Native `OnHide` drops the
+presenter's backend reference; exact IL contains no caller of
+`LevelUpController.Cancel`. The fixture explicitly cancels its own preview to
+dispose the cloned unit and stop the preview thread. It never commits a level.
+
+The main-menu `CharacterBuildController.Warmup` leaves an AutoCommit backend in
+`UIAccess.LevelUpController` with Unit and Preview referring to the same
+object. The exact base assembly only assigns this field in native Start and
+never clears it. The fixture allows that object only with the actual presenter
+closed and its backend null; it captures and restores the global reference
+without cancelling or mutating it. Any unrelated active preview fails closed.
+It also restores the original public presenter Unit reference.
+
+The only added reflection seam is the native `UnitProgressionData.Experience`
+private auto-property setter, used to establish request-local XP eligibility
+and restore its exact original value. Unlike GainExperience, it emits no XP
+or automatic level-up event. Existing shared guarded fixture seams handle real
+book creation/removal, casting stats, action-bar references and confirmation
+ownership. All fixture changes remain behind the explicit scenario and save
+sentinels; no production level-up patch was added.
+
+Run `20260908T1207363385307Z-e204a1b706bf41b6891074349d6bc571` passed all 18
+assertions. Wizard and Sorcerer Teleport 5 / Greater Teleport 7 appear as actual
+enabled native choices, enter only the preview book, and disappear on native
+cancellation. Exact original class/feature references, XP, books, resources,
+UI state, selection, party, positions, time and pause are restored. This proves
+native spell choice and cancellation, not committed character advancement or
+campaign disk persistence. The implementation report records rejected probes
+and same-artifact regressions.

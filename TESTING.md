@@ -265,3 +265,36 @@ is inactive, alpha 0 and blocks no input. Same-artifact working-save regression
 `20260908T1119401911470Z-fd2dafbefbba4ea987af7857b8e42855` passes 11 assertions.
 The implementation report records the rejected first probe and startup-only
 ZFavoredClass diagnostics; this is not complete compatibility qualification.
+
+### Native Teleportation level-up preview qualification
+
+`disposable-teleportation-level-up` uses the same guarded working-save load and
+mandatory exit. Request-local real Wizard/Sorcerer books sit immediately before
+the native caster-level thresholds for fifth- and seventh-level spell choices.
+A temporary native XP precondition permits opening the normal level-up preview;
+no level is committed. Native class, feature, skill and spell-selection rules
+unlock the native Spells phase. The actual published spell row is selected, and
+only the preview may learn it. The native cancel dialog closes the UI, followed
+by cancellation of the exact owned native preview/thread. Fixture books, XP,
+resources, class/feature identities, UI state and pause are restored before the
+save-write sentinels close. No spell-selection count, phase lock or prerequisite
+is overwritten. Results are in `teleportation-level-up.json` and
+`runtime-result.json`; runtime qualification is required.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario disposable-teleportation-level-up `
+  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
+```
+
+Qualified run: `20260908T1207363385307Z-e204a1b706bf41b6891074349d6bc571`,
+18 of 18 assertions PASS. Native Wizard 8->9 / 12->13 and Sorcerer 9->10 /
+13->14 caster-level transitions produce the actual fifth-/seventh-level spell
+choices; the actual character stays at level 2. Native prerequisite choices
+remain confined to the preview. The fixture preserves the proven inactive
+main-menu warmup reference in UIAccess, and re-resolves native selector widgets
+across deferred refreshes before selecting. It records zero fixture exceptions
+and save writes. Spellbook UI (31), real resources (19), and working-save (11)
+regressions pass on the same artifact. Exact run IDs/directories and the three
+rejected exploratory runs are recorded in the implementation report.

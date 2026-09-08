@@ -264,15 +264,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _charisma = owner.Descriptor.Stats.Charisma.BaseValue;
                 _detached = owner.IsDetached;
             }
-            internal Spellbook AddBook(BlueprintSpellbook blueprint)
+            internal Spellbook AddBook(BlueprintSpellbook blueprint, int casterLevels = 20)
             {
+                if (casterLevels < 1 || casterLevels > 20) throw new ArgumentOutOfRangeException("casterLevels");
                 if (_owner.Descriptor.GetSpellbook(blueprint) != null) throw new InvalidOperationException("Fixture never replaces an existing spellbook.");
                 _owner.Descriptor.Stats.Intelligence.BaseValue = 30;
                 _owner.Descriptor.Stats.Wisdom.BaseValue = 30;
                 _owner.Descriptor.Stats.Charisma.BaseValue = 30;
                 Spellbook book = _owner.Descriptor.DemandSpellbook(blueprint);
                 Books.Add(book); // Record ownership before subsequent fixture operations can throw.
-                for (int level = 0; level < 20; level++) book.AddCasterLevel();
+                for (int level = 0; level < casterLevels; level++) book.AddCasterLevel();
                 book.UpdateAllSlotsSize(false);
                 return book;
             }

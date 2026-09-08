@@ -66,6 +66,7 @@ param(
         'disposable-teleportation-travelers',
         'disposable-teleportation-gamepad',
         'disposable-teleportation-spellbook-ui',
+        'disposable-teleportation-level-up',
         'observe-expanded-summoning-inventory',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
@@ -344,6 +345,7 @@ try {
             'disposable-teleportation-travelers',
             'disposable-teleportation-gamepad',
             'disposable-teleportation-spellbook-ui',
+            'disposable-teleportation-level-up',
             'summon-same-turn-activation', 'summon-same-turn-acadamae',
             'summon-same-turn-multiple', 'summon-same-turn-native-control',
             'summon-same-turn-rtwp-control')) {

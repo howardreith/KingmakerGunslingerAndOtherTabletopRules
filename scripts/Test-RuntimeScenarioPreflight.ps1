@@ -51,6 +51,7 @@ $expected = @(
         'disposable-teleportation-travelers',
         'disposable-teleportation-gamepad',
         'disposable-teleportation-spellbook-ui',
+        'disposable-teleportation-level-up',
     'disposable-midgame-firearms',
     'working-save-midgame-prepare',
     'working-save-midgame-verify-cleanup',

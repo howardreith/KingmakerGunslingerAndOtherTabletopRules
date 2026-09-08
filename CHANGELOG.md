@@ -2,6 +2,10 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Qualifies actual native Wizard/Sorcerer level-up spell choices and cancellation
+  with 18 guarded assertions. Same-artifact spellbook/resource/working-save
+  regressions pass 61 assertions, with fixture cleanup and no save writes.
+
 - Qualifies native spellbook rows/descriptions/preparation and action-bar auto-fill
   with 31 guarded assertions, zero fixture UI exceptions and exact cleanup; the
   same-artifact working-save regression passes 11 assertions.
