@@ -32,6 +32,7 @@ param(
         'gunslinger-races-unleashed',
         'gunslinger-call-of-the-wild',
         'gunslinger-call-of-the-wild-races-unleashed',
+        'gunslinger-tweak-or-treat',
         'gunslinger-arms-armor',
         'gunslinger-toggle-custom-soundpacks',
         'gunslinger-high-risk-combined',
@@ -43,6 +44,7 @@ param(
     [switch]$AllowForceTerminate,
     [switch]$ManualInteractionRequired,
     [switch]$ReuseInstalledArtifact,
+    [switch]$ReuseQualifiedElementalRaces114Release,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
     [string]$SteamPath = 'C:\Program Files (x86)\Steam\steam.exe',
@@ -63,10 +65,18 @@ if ($scenarioMetadata.RequiresSaveName) {
     if ([string]::IsNullOrWhiteSpace($SaveName)) {
         throw "$Scenario requires explicit -SaveName $($scenarioMetadata.PermittedSaveName)."
     }
-    if ($Parameters.Count -ne 0) {
-        throw 'Use the strictly typed -SaveName parameter, not -Parameters.'
+    if ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')) {
+        if ($Parameters.Count -ne 3 -or $Parameters.ContainsKey('saveName')) {
+            throw 'Use typed -SaveName plus exactly race, class, and allocation in -Parameters.'
+        }
+        $Parameters = $Parameters.Clone()
+        $Parameters.saveName = $SaveName
+    } else {
+        if ($Parameters.Count -ne 0) {
+            throw 'Use the strictly typed -SaveName parameter, not -Parameters.'
+        }
+        $Parameters = @{ saveName = $SaveName }
     }
-    $Parameters = @{ saveName = $SaveName }
 }
 elseif ($PSBoundParameters.ContainsKey('SaveName')) {
     throw "-SaveName is not valid for scenario '$Scenario'."
@@ -125,7 +135,8 @@ $requestFingerprintTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
     -LoadEntryTimeoutSeconds $requestLoadEntryTimeout `
     -FingerprintTimeoutSeconds $requestFingerprintTimeout `
     -Parameters $Parameters -EnforceManualInteraction `
-    -ManualInteractionRequired:$ManualInteractionRequired)
+    -ManualInteractionRequired:$ManualInteractionRequired `
+    -PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release)
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -137,20 +148,32 @@ Assert-KmgSteamAppId -AppId $SteamAppId
 Assert-KmgUnelevated
 $SteamPath = Assert-KmgSteamExecutable -SteamPath $SteamPath
 
+$artifactReuse = $ReuseInstalledArtifact -or
+    $ReuseQualifiedElementalRaces114Release
 if ($ReuseInstalledArtifact -and
+    $ReuseQualifiedElementalRaces114Release) {
+    throw 'Current-source and qualified-legacy artifact reuse are mutually exclusive.'
+}
+if ($artifactReuse -and
     ([string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
      [string]::IsNullOrWhiteSpace($PackagePath))) {
-    throw '-ReuseInstalledArtifact requires exact -DeploymentManifestPath and -PackagePath.'
+    throw 'Artifact reuse requires exact -DeploymentManifestPath and -PackagePath.'
 }
-if (-not $ReuseInstalledArtifact -and
+if (-not $artifactReuse -and
     (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
      -not [string]::IsNullOrWhiteSpace($PackagePath))) {
-    throw 'Deployment/package paths are valid only with -ReuseInstalledArtifact.'
+    throw 'Deployment/package paths are valid only with an explicit artifact-reuse authority.'
+}
+if ($ReuseQualifiedElementalRaces114Release -and
+    ($Scenario -cne 'elemental-race-persistence-prepare' -or
+     $ExpectedVersion -cne '0.0.114' -or
+     $SaveName -cne 'KMG_AUTOMATION_WORKING')) {
+    throw 'Qualified 0.0.114 reuse permits only elemental-race-persistence-prepare on KMG_AUTOMATION_WORKING with ExpectedVersion 0.0.114.'
 }
 
 if (-not $PSCmdlet.ShouldProcess(
     "Steam App ID $SteamAppId",
-    $(if ($ReuseInstalledArtifact) {
+    $(if ($artifactReuse) {
         "verify and reuse immutable installed artifact, then launch guarded scenario '$Scenario'"
       } else {
         "build, validate, deploy, and launch guarded scenario '$Scenario'"
@@ -165,7 +188,15 @@ if (-not $PSCmdlet.ShouldProcess(
 # their own ShouldProcess behavior.
 $ConfirmPreference = 'None'
 $WhatIfPreference = $false
-if ($ReuseInstalledArtifact) {
+if ($ReuseQualifiedElementalRaces114Release) {
+    $reuse = Assert-KmgQualifiedElementalRaces114Deployment `
+        -DeploymentManifestPath $DeploymentManifestPath `
+        -PackagePath $PackagePath -RepositoryRoot $root `
+        -AllowDirtyGit:$AllowDirtyGit
+    $package = $reuse.PackagePath
+    $deploymentManifestPath = $reuse.DeploymentManifestPath
+}
+elseif ($ReuseInstalledArtifact) {
     $reuse = Assert-KmgReusableDeployment `
         -DeploymentManifestPath $DeploymentManifestPath `
         -PackagePath $PackagePath -RepositoryRoot $root `
@@ -199,7 +230,8 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
     -ActionInvocationTimeoutSeconds $requestActionInvocationTimeout `
     -DescriptorResolutionTimeoutSeconds $requestDescriptorResolutionTimeout `
     -LoadEntryTimeoutSeconds $requestLoadEntryTimeout `
-    -FingerprintTimeoutSeconds $requestFingerprintTimeout
+    -FingerprintTimeoutSeconds $requestFingerprintTimeout `
+    -PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
 $requestPath = $initialized.requestPath
@@ -613,11 +645,14 @@ try {
     elseif ($Scenario -in @(
         'elemental-race-persistence-prepare',
         'elemental-race-module-disabled-persistence',
+        'elemental-race-module-restored-persistence',
+        'elemental-race-legacy-migration',
         'elemental-race-persistence-verify-absent')) {
-        # Eight exact race/sex fixtures cover prepare, fresh module-OFF load,
-        # reconstruction/rest/level-up/cleanup, and fresh-load absence.
+        # Twenty-four exact race/sex/heritage fixtures cover prepare, fresh
+        # module-OFF reconstruction/rest/level-up/preservation, module-ON
+        # native heritage Respec/cleanup, and fresh-load absence.
         $deadline = [DateTime]::UtcNow.AddSeconds(
-            [Math]::Max($TimeoutSeconds, 1800) + 15)
+            [Math]::Max($TimeoutSeconds, 5400) + 15)
     }
     elseif ($Scenario -in @(
         'gunslinger-outfit-production-persistence-prepare',
@@ -681,8 +716,16 @@ try {
     $orchestration.completedAtUtc = [DateTime]::UtcNow.ToString('o')
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
     $terminalOutcomeRecorded = $true
-    & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
-        -EvidenceDirectory $evidence -PackagePath $package
+    if ($ReuseQualifiedElementalRaces114Release) {
+        & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
+            -EvidenceDirectory $evidence `
+            -QualifiedElementalRaces114DeploymentManifestPath `
+                $deploymentManifestPath
+    }
+    else {
+        & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
+            -EvidenceDirectory $evidence -PackagePath $package
+    }
     Write-Host "Runtime evidence manifest: $(Join-Path $evidence 'evidence-manifest.json')"
     Write-Host "Runtime result: $resultPath"
     Write-Host "Status: $($result.status)"

@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.116\"") &&
-                props.Contains("<KmgVersion>0.0.116</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.116-midgame-firearms-and-protection</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.116\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.116\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.116-midgame-firearms-and-protection\")"),
-                "Release and assembly identity are not transactionally pinned to the mid-game firearms content patch.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.117\"") &&
+                props.Contains("<KmgVersion>0.0.117</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.117-elemental-char-gen-stabilization</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.117\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.117\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.117-elemental-char-gen-stabilization\")"),
+                "Release and assembly identity are not transactionally pinned to the character-creation stabilization candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-midgame-firearms-and-protection.zip") &&
+                "$($info.Id)-$($info.Version)-elemental-char-gen-stabilization.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the mid-game firearms archive.");
-            Assertions.True(runtime.Contains("active version 0.0.116") &&
-                localBuild.Contains("active version 0.0.116") &&
-                localBuild.Contains("local-runtime\\0.0.116"),
+                "Package identity is not pinned to the character-creation stabilization archive.");
+            Assertions.True(runtime.Contains("active version 0.0.117") &&
+                localBuild.Contains("active version 0.0.117") &&
+                localBuild.Contains("local-runtime\\0.0.117"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

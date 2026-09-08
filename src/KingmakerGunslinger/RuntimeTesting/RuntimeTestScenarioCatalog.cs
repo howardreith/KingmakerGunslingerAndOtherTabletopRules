@@ -108,6 +108,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-gunslinger-presentation";
         internal const string ObserveElementalRaceBlueprints =
             "observe-elemental-race-blueprints";
+        internal const string ObserveElementalHeritageDonors =
+            "observe-elemental-heritage-donors";
+        internal const string ObserveElementalFeatNativeContracts =
+            "observe-elemental-feat-native-contracts";
+        internal const string DisposableElementalFeatMechanics =
+            "disposable-elemental-feat-mechanics";
+        internal const string DisposableElementalIfritFeats =
+            "disposable-elemental-ifrit-feats";
+        internal const string DisposableElementalIfritAdvancedFeats =
+            "disposable-elemental-ifrit-advanced-feats";
+        internal const string DisposableElementalSylphFeats =
+            "disposable-elemental-sylph-feats";
+        internal const string DisposableElementalUndineFeats =
+            "disposable-elemental-undine-feats";
+        internal const string ObserveElementalHeritageBlueprints =
+            "observe-elemental-heritage-blueprints";
+        internal const string WorkingSaveElementalCharacterCreation =
+            "working-save-elemental-character-creation";
+        internal const string DisposableGlobalTraitsKmgDisabledControl =
+            "disposable-global-traits-kmg-disabled-control";
+        internal const string WorkingSaveElementalCharacterCreationRegression =
+            "working-save-elemental-character-creation-regression";
+        internal const string WorkingSaveElementalNativeRespec =
+            "working-save-elemental-native-respec";
+        internal const string DisposableElementalCharacterCreationCase =
+            "disposable-elemental-character-creation-case";
+        internal const string DisposableElementalCharacterCreationBaseline =
+            "disposable-elemental-character-creation-baseline";
+        internal const string ObserveElementalCharacterCreationRouting =
+            "observe-elemental-character-creation-routing";
+        internal const string DisposableElementalTraitTurnCosts =
+            "disposable-elemental-trait-turn-costs";
+        internal const string ObserveElementalAlternateTraitFramework =
+            "observe-elemental-alternate-trait-framework";
+        internal const string DisposableElementalHeritageMechanics =
+            "disposable-elemental-heritage-mechanics";
+        internal const string DisposableElementalHeritageSlas =
+            "disposable-elemental-heritage-slas";
         internal const string ElementalRaceVisualAudit =
             "elemental-race-visual-audit";
         internal const string ElementalRaceClassClothing =
@@ -120,10 +158,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             "elemental-race-persistence-prepare";
         internal const string ElementalRaceModuleDisabledPersistence =
             "elemental-race-module-disabled-persistence";
+        internal const string ElementalRaceModuleRestoredPersistence =
+            "elemental-race-module-restored-persistence";
+        internal const string ElementalRaceLegacyMigration =
+            "elemental-race-legacy-migration";
         internal const string ElementalRacePersistenceVerifyAbsent =
             "elemental-race-persistence-verify-absent";
         internal const string DisposableElementalRaceMechanics =
             "disposable-elemental-race-mechanics";
+        internal const string DisposableElementalSpellAffinity =
+            "disposable-elemental-spell-affinity";
         internal const string DisposableElementalRaceSlas =
             "disposable-elemental-race-slas";
         internal const string DisposableHydraulicPush =
@@ -460,14 +504,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveClassBlueprintContracts,
                 ObserveGunslingerPresentation,
                 ObserveElementalRaceBlueprints,
+                ObserveElementalHeritageDonors,
+                ObserveElementalFeatNativeContracts,
+                DisposableElementalFeatMechanics,
+                DisposableElementalIfritFeats,
+                DisposableElementalIfritAdvancedFeats,
+                DisposableElementalSylphFeats,
+                DisposableElementalUndineFeats,
+                ObserveElementalHeritageBlueprints,
+                ObserveElementalCharacterCreationRouting,
+                DisposableElementalCharacterCreationBaseline,
+                DisposableElementalCharacterCreationCase,
+                DisposableGlobalTraitsKmgDisabledControl,
+                WorkingSaveElementalCharacterCreation,
+                WorkingSaveElementalCharacterCreationRegression,
+                WorkingSaveElementalNativeRespec,
+                DisposableElementalTraitTurnCosts,
+                ObserveElementalAlternateTraitFramework,
+                DisposableElementalHeritageMechanics,
+                DisposableElementalHeritageSlas,
                 ElementalRaceVisualAudit,
                 ElementalRaceClassClothing,
                 ElementalRaceClassEquipment,
                 ElementalRaceMotion,
                 ElementalRacePersistencePrepare,
                 ElementalRaceModuleDisabledPersistence,
+                ElementalRaceModuleRestoredPersistence,
+                ElementalRaceLegacyMigration,
                 ElementalRacePersistenceVerifyAbsent,
                 DisposableElementalRaceMechanics,
+                DisposableElementalSpellAffinity,
                 DisposableElementalRaceSlas,
                 DisposableHydraulicPush,
                 DisposableElementalRaceNativeIdentity,
@@ -643,6 +709,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal) ||
                 string.Equals(scenario,
                     ElementalRaceModuleDisabledPersistence,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    ElementalRaceModuleRestoredPersistence,
+                    StringComparison.Ordinal) ||
+                string.Equals(scenario,
+                    ElementalRaceLegacyMigration,
                     StringComparison.Ordinal) ||
                 string.Equals(scenario,
                     ElementalRacePersistenceVerifyAbsent,

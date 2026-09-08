@@ -218,11 +218,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ((JArray)_evidence["productionRaces"]).Add(
                         DescribeRace(race));
                 bool productionRegistered =
-                    production.Count == ElementalRaceIdentityCatalog.IdentityCount &&
+                    production.Count == ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount &&
                     productionRaces.Length == ElementalRaceCatalog.RaceCount &&
                     production.OrderedBlueprints().All(IsRegisteredExactly);
                 Add(_assertions, "elemental-production-identities",
-                    ElementalRaceIdentityCatalog.IdentityCount +
+                    ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount +
                         " project blueprint identities resolve exactly in fixed Ifrit/Oread/Sylph/Undine order",
                     "count=" + production.Count + ";races=" +
                         string.Join("|", productionRaces.Select(Identity)

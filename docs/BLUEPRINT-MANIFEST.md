@@ -1,5 +1,11 @@
 # Blueprint manifest and registration contract
 
+The owner-authorized public-master 0.0.115 integration into the 117 expansion
+adds no blueprint identities and changes no elemental manifest entry. Its
+Brown-Fur direct-cast handles are transient transactions, not saved facts.
+Exact artifact and runtime evidence is in the
+[integration checkpoint](ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md).
+
 ## Sprint 55 status
 
 The append-only contract contains 233 stable identifiers: 232 active and one reserved. Prior wrapper and persisted marker identities remain hidden for compatibility; the latest identities append the native Pistolero/Musket Master archetypes, truthful archetype deed summaries, Steady Aim and Up Close and Deadly action/marker pairs, Twin Shot Knockdown's targeted action, four archetype-aware True Grit choices, and supporting scoped features without changing any established GUID.
@@ -8,7 +14,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1706 stable identifiers: 1704 active and 2 reserved.
+Validator contract: 1869 stable identifiers: 1867 active and 2 reserved.
 
 The second reservation, `KMG.ElementalRaces.Diagnostics.ProbeRace`
 (`57005fca40ab4775ae2fea5613214054`), is development-only. Ordinary bootstrap
@@ -16,14 +22,107 @@ does not register it. The guarded Elemental Races probe temporarily registers
 the exact identity without publishing it to `CharacterRaces`, then removes the
 owned dictionary/list entries before completion.
 
-Elemental Races owns 68 active manifest identities: 24 mechanical race,
-feature, resource, and SLA blueprints; 16 Human-compatible body-wrapper and
-visual-preset blueprints; and 28 `EquipmentEntity` body, head, and optional
-horn recolor proxies. The 40 blueprint identities and all 28 resource proxies
-are registered on every startup so saved race and doll references continue to
+Elemental Races owns 229 active manifest identities. The 0.0.114 foundation
+contains 24 mechanical race, feature, resource, and SLA blueprints; 16
+Human-compatible body-wrapper and visual-preset blueprints; and 28
+`EquipmentEntity` body, head, and optional horn recolor proxies. Release A
+adds 53 stable heritage identities: four selections, twelve choice markers,
+eight affinity providers, eight feature/resource/ability SLA triplets, and
+five supporting ability or weapon-enchantment identities. Release B appends 25
+stable identities: eleven feat features, nine abilities, four buffs, and one
+exact-item weapon enchantment. Release C appends 62 stable replacement-
+framework identities: ten slot selections, ten retain-base markers, 21
+visible trait markers, and 21 hidden providers. Three blood-trait buffs append
+their own fixed identities. Efreeti Magic adds three ability identities and
+one shared resource identity. Crystalline Form adds its resource, consent buff
+and activatable mode. Acid Breath and Ooze Breath each add an ability and
+independent daily resource. The later RTWP and ten-trait save checkpoint adds
+no identities; native action commitment, saved effects and spent amounts pass.
+Turn-based actions, full lifecycle and release-wide gates remain pending.
+All 201 elemental blueprint identities and all
+28 resource proxies register on every startup so saved race, heritage,
+provider, resource, feat, trait, active-effect, and doll references continue to
 resolve while selector publication is disabled. The resource proxies reuse
 native Kingmaker geometry and native ramp textures; the package contains no
 extracted game asset.
+
+The blood buffs append to, and do not replace, the 62 framework identities:
+
+| Trait buff | Stable GUID |
+| --- | --- |
+| Fire in the Blood | `e117e1e0a17a4acec001000000000063` |
+| Stone in the Blood | `e117e1e0a17a4acec001000000000064` |
+| Storm in the Blood | `e117e1e0a17a4acec001000000000065` |
+
+Efreeti Magic appends four identities; its incremental native and seven-trait
+save-backed qualification pass (complete release lifecycle remains pending):
+
+| Symbol suffix under `KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic` | Stable GUID |
+| --- | --- |
+| `.Resource` | `e117e1e0a17a4acec001000000000066` |
+| `.Ability` | `e117e1e0a17a4acec001000000000067` |
+| `.EnlargePerson` | `e117e1e0a17a4acec001000000000068` |
+| `.ReducePerson` | `e117e1e0a17a4acec001000000000069` |
+
+Crystalline Form appends three identities. Its later incremental eight-trait
+save cycle qualifies consent and resource persistence on two Ironsoul fixtures,
+without adding any identity; full trait lifecycle remains pending:
+The subsequent multi-ray/non-damage/hand-control and remaining-trait audit
+checkpoint also adds zero save-bearing identities.
+The later native feat-preview correction likewise adds zero identities and
+does not change the transient UnitPart schema or any existing GUID.
+
+| Suffix under `KMG.ElementalRaces.Traits.Oread.CrystallineForm` | Stable GUID |
+| --- | --- |
+| `.Resource` | `e117e1e0a17a4acec001000000000070` |
+| `.ArmedBuff` | `e117e1e0a17a4acec001000000000071` |
+| `.Mode` | `e117e1e0a17a4acec001000000000072` |
+
+Undine breath additions under `KMG.ElementalRaces.Traits.Undine`:
+
+| Symbol suffix | Stable GUID |
+| --- | --- |
+| `AcidBreath.Resource` | `e117e1e0a17a4acec001000000000073` |
+| `AcidBreath.Ability` | `e117e1e0a17a4acec001000000000074` |
+| `OozeBreath.Resource` | `e117e1e0a17a4acec001000000000075` |
+| `OozeBreath.Ability` | `e117e1e0a17a4acec001000000000076` |
+
+Breeze-Kissed's incremental native core appends seven identities under
+`KMG.ElementalRaces.Traits.Sylph.BreezeKissed`; no previous GUID changes:
+both native profiles pass; broader attack-source, turn-based and fresh-save
+gates remain. The current Release C graph has 83 active identities.
+
+| Suffix | Stable GUID |
+| --- | --- |
+| `.Resource` | `e117e1e0a17a4acec001000000000077` |
+| `.Gust` | `e117e1e0a17a4acec001000000000078` |
+| `.BullRush` | `e117e1e0a17a4acec001000000000079` |
+| `.Trip` | `e117e1e0a17a4acec001000000000080` |
+| `.CalmedBuff` | `e117e1e0a17a4acec001000000000081` |
+| `.CalmWinds` | `e117e1e0a17a4acec001000000000082` |
+| `.RenewWinds` | `e117e1e0a17a4acec001000000000083` |
+
+Each blood-buff symbol is its visible trait marker symbol plus `.FastHealingBuff`.
+Daily actual-healing expenditure is saved in `UnitPartElementalBloodCapacity`;
+provider removal does not remove that ledger. Focused native checks pass in
+KMG-only and highest-risk combined profiles. The six-Insight/blood fresh-process
+cycle also preserves all nine active blood buffs and partially spent capacity;
+complete lifecycle and other traits' persistence remain separate gates.
+
+Release A runtime observed all 53 appended identities at their exact manifest
+GUIDs. The 0.0.114-to-0.0.115 save-backed migration retained every legacy race,
+General affinity, General SLA, and General resource identity and introduced no
+marker requirement for existing characters. Module-OFF compatibility runs
+across all six required installed profiles observed all identities registered
+while publishing no Elemental race to the native selector.
+
+Release B runtime observed all 25 appended feat identities at their exact
+manifest GUIDs in every module state. With Elemental Races enabled, all eleven
+exact feat references publish once to the universal selector and the four
+Combat feats publish once to the Fighter selector. With the module disabled,
+all identities remain registered and both selectors receive zero project
+entries. Replay, foreign-order preservation, exact-GUID conflict refusal, and
+reverse rollback passed in all six required installed compatibility profiles.
 
 The 25 active `KMG.BrownFur.*` identities are owned by the isolated optional
 extension. They are registered only when the structural Call of the Wild
@@ -38,7 +137,7 @@ unconditional native-core identities. They remain registered when
 `bodyguard-feats` is disabled so existing feat owners and persistent mode
 markers remain loadable; publication and runtime mutation are gated
 independently. The unconditional package-core blueprint registration count is
-1620; the 28 elemental visual resource proxies are registered separately in
+1784; the 28 elemental visual resource proxies are registered separately in
 the validated native resource cache.
 The historical non-Brown-Fur reservation remains reserved independently.
 The 1,155 Expanded Summoning identities freeze the feature foundation: 67 unit

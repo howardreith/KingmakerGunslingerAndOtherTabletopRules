@@ -241,3 +241,103 @@ After validating the atomic in-game ready marker, the orchestrator instructs
 the human to open Load Game and explicitly forbids selection or loading. The
 probe never invokes a provider or sends input. See
 `SAVE-CATALOG-PROVIDER-OBSERVATION.md`.
+
+### Elemental character-creation back-navigation regression
+
+`working-save-elemental-character-creation-regression` requires the exact guarded
+working-save load, Elemental Races enabled, and three additional strict parameters:
+`race` (Ifrit/Oread/Sylph/Undine), `class` (Fighter/Gunslinger), and `allocation`
+(point-buy/roll). Roll additionally requires the installed active Dice Roller
+0.1.2 contract. Use typed `-SaveName KMG_AUTOMATION_WORKING` and
+`-Parameters @{race='Ifrit';class='Fighter';allocation='point-buy'}` with the
+normal Steam runtime orchestrator. Unknown or extra parameters fail preflight.
+
+The fixture owns three new level-0 characters. Each goes through the native
+full-screen creator, then revisits unlocked Heritage using native Back and exact
+selection-tab toggles. It resets replacement slots through retain-base before
+selecting the next legal combination. It never adds/removes facts, rewrites
+ability or skill budgets, or calls the replacement reconciler to fix evidence.
+The three committed final heritages cover General and both alternates. Exact
+facts, providers, abilities, resource identities/counts, stat overlays, unchanged
+allocation baselines, rendered legal choices, complete native states and commit
+callbacks are required. An exact deferred marker in an extracted choice list is
+FAIL. Negative skill budgets can refund only a request-owned native skill action.
+
+Native save writes remain blocked. The working-save contents are not saved and
+all request-owned characters/controllers are disposed after observation. The
+preexisting world membership, main character, area, idle global controller and
+build-unit references must be restored exactly. A failed per-character result
+makes this regression request FAIL. Human UI acceptance remains a separate gate.
+
+Loaded-game rolled creator regressions use the native `CustomCompanion` blueprint,
+because Dice Roller excludes an unrelated non-mercenary player candidate when a
+campaign main character already exists. Native mercenary completion may enroll
+that exact request-owned unit in cross-scene/remote-companion collections. Cleanup
+removes only that exact actor and verifies original ordered cross-scene, remote,
+party and player-inventory references plus money. The existing main character is
+never reassigned. Save-free new-player roll controls retain their original route.
+
+
+### Full native elemental respec observation
+
+`working-save-elemental-native-respec` requires the exact working-save guard,
+`-SaveName KMG_AUTOMATION_WORKING`, and exactly three additional parameters:
+`race` (Ifrit/Oread/Sylph/Undine), `class=Fighter`, `allocation=point-buy`.
+It creates one native CustomCompanion, completes its real creator, then invokes
+`Player.RespecCompanion` on that exact request-owned actor for seven further
+creator visits. The target choices are General, General, A, B, General, B, A,
+General, with the same legal alternate-trait plans used by the native revision
+regression. Each visit selects existing Elemental Strike through the normal feat
+catalog when needed and completes both ordinary Trait selections in compatible
+profiles. No feat blueprint or foreign selector is modified by the probe.
+
+Before each native respec, the probe spends active owned heritage/trait/elemental
+feat resources through the native resource API. It records exact GUID/amount
+expectations independently from the game. Distinct original/replacement/preview
+references, native Respec mode, the real Player success callback and final original
+identity/facts/stats/resources are observed. A preview mismatch is retained while
+the native callback completes; either preview or final mismatch fails acceptance.
+The probe never repairs providers, saved markers, resource memory or stat values.
+
+Native replacements may share a resource-list reference with the original after
+respec. They remain alive until final owned-source observation/cleanup completes.
+The existing save-write guard, exact native inventory/money rollback and controller/
+world/party/remote/cross-scene checks apply; native pause state is also restored.
+This instrumentation is pending runtime qualification; do not treat its presence
+as evidence that full native respec currently works.
+
+```powershell
+.\scripts\Invoke-KingmakerRuntimeTest.ps1 `
+  -Scenario working-save-elemental-native-respec -ExpectedVersion 0.0.117 `
+  -SaveName KMG_AUTOMATION_WORKING `
+  -Parameters @{race='Ifrit';class='Fighter';allocation='point-buy'} `
+  -ExitAfterCompletion:$true -Confirm:$false
+```
+
+
+The native elemental respec fixture also observes Fire/Stone/Storm in the Blood
+capacity. Its native-respec-only Oread/Sylph alternate-B plans select Stone/Storm
+in the Blood; creator back-navigation plans are unchanged. Real matching damage
+arms the owned healing buff, and only that disposable actor's native buff tick
+spends two points. The synchronous clock/pause/random scope is restored exactly.
+No ledger writer, fact grant or reconciliation seeds the measured expenditure.
+Every preview and final native callback compares the independent spent counters;
+ordinary rest is tested only after the last successful respec callback.
+
+
+The guarded save-free `disposable-elemental-trait-turn-costs` scenario owns two
+native scene actors at a time and enters the actual turn-based controller. It
+queues ordinary UnitUseAbility commands for all Sylph/Undine heritages: Calm and
+Renew spend one Swift action, both Gust variants and Acid/Ooze Breath spend one
+Standard action. Same-turn repeated Swift use must remain blocked. Cancellation
+spends nothing; native execution and repeated ticks must charge exactly once.
+The fixture never writes cooldown or resource amounts. Scoped native ticks and
+owned animation/projectile completion cues do not supply mechanical outcomes.
+It restores mode stack, combat, settings, pause, clock, camera, projectiles,
+controller and actor state; no save is opened or written. Native mode is toggled
+on after owned combat enrollment; only absent save-free navigation-grid
+flush/erosion is skipped inside the exact two-actor scope. KMG-only and the
+owner's eleven-mod stack each passed 103 assertions on candidate 11; exact
+artifact and restoration evidence is in
+[ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md](../ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md).
+This does not establish human full-screen character-creator acceptance.

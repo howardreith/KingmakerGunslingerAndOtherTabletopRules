@@ -1,6 +1,86 @@
 # Installation, updates, removal, and compatibility
 
+Current release identity is
+`0.0.117-elemental-char-gen-stabilization`; its installable UMM archive is
+`KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip`.
+Download this file from the
+[0.0.117 release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.117)
+and install it through Unity Mod Manager. Preserve your FeatureModules.json
+settings and restart the game after updating. UMM displays the numeric version
+0.0.117. Elemental Races uses its existing setting and defaults ON.
+
+The owner accepted the installed candidate and authorized publication. All
+nineteen visible alternate racial traits are qualified; Treacherous Earth and
+Nereid Fascination remain unavailable. The two global ZFavoredClass Trait
+selections retain their category choices with Bodyguard OFF or ON. Existing
+ZFavoredClass custom-data exceptions are recorded separately and are not repaired
+by this release. See the [release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md)
+for exact artifacts, compatibility coverage and retained limitations.
+
+## Historical candidate qualification
+
+The following candidate records retain their original scope and pending gates.
+They do not supersede the accepted release status above.
+
+The guarded local workflow builds `KingmakerGunslinger-0.0.117-local-runtime.zip`
+and validates its immutable sidecar before backup-first deployment. Final exact
+artifact hashes and installation status belong to the
+[stabilization journal](ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md).
+Owner full-screen acceptance remains pending. Historical package references
+below retain their original evidence and do not identify the current candidate.
+
+The owner-requested [manual-test handoff](ELEMENTAL-RACES-EXPANSION-HANDOFF.md)
+installs the byte-identical native-tested 117 candidate into the existing UMM
+mod folder. All 135 package files match, prior module settings are preserved,
+and both UMM and Elemental Races are enabled. The prior mod folder has an
+explicit recoverable backup. Use disposable testing saves; do not select the
+unimplemented Treacherous Earth or Nereid Fascination scaffolds.
+
+The current 0.0.117 package is a development candidate, not a qualified Release C
+for production campaigns. Crystalline Form's focused KMG-only/combined native
+core and incremental consent/spent-use persistence checks pass, but complete
+trait lifecycle and remaining release gates do not yet have complete proof.
+See the [exact persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md).
+Its final transactions restore the entire original installed mod tree and
+settings exactly. The initial failed diagnostic's metadata-restoration failure
+is retained separately; no later PASS retroactively qualifies it.
+No new optional dependency, module toggle or settings schema is introduced.
+The later [native controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md)
+passes KMG-only and highest-risk combined with independently verified exact
+968-entry folder restoration. It is not the final release-wide profile matrix;
+existing combined diagnostics and absent Visual Adjustments remain explicit.
+
+The [preview correction](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md)
+additionally passes native KMG-only/combined and renewed installed-copy
+OFF/ON/save/legacy checks, with three independently exact 968-entry folder
+restorations. It fixes the prior preview diagnostics in 117; the 116 package
+is unchanged. It neither completes the final profile matrix nor clears the
+retained visual warnings.
+
 ## Supported baseline
+
+The [Breeze-Kissed native core checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md)
+passes KMG-only and highest-risk combined with the same archived candidate:
+11,376 assertions, independently exact 968-entry mod/settings restorations,
+no save access and no remaining game. Four pre-existing combined Favored
+Class diagnostic signatures remain; no FCB behavior or optional dependency
+is added. This does not replace the pending final six-profile/module matrix,
+Breeze persistence, or absent/NOT-RUN Visual Adjustments coverage.
+
+The later [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md)
+adds actual ten-trait installed-copy OFF/ON persistence and renewed pinned
+0.0.114 migration alongside both native profiles. Nine processes pass 11,325
+assertions; all three 968-entry mod/settings restorations independently match.
+The isolated combined profile remains save-free evidence, not a claim that it
+loads this working fixture. Full Release C profiles and subjective visuals
+remain pending; all 60 result warnings are retained.
+
+The subsequent [breath checkpoint](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md)
+passes both native profiles with 10,936 assertions and independently exact
+968-entry restorations. No optional dependency is introduced. These save-free
+processes do not qualify breath-bearing persistence or the final release-wide
+matrix. Visual Adjustments remains absent/NOT-RUN; inherited native diagnostics
+remain recorded instead of being declared clean.
 
 This build is qualified against Pathfinder: Kingmaker Enhanced Plus Edition
 2.1.7b on Windows through Steam, with Unity Mod Manager 0.32.4 or later in the
@@ -12,6 +92,14 @@ assembly supplied by that environment. Do not copy game, Unity, UMM, Harmony,
 or compiler assemblies into this mod folder.
 
 ## Share Transmutation automation compatibility
+
+The in-progress 117 expansion integrates authoritative public master 0.0.115;
+its native-command, optional-absence and elemental regressions pass on one
+immutable candidate. Six original mod/settings transactions restore exactly.
+The strict working-save repeat permits only native header LoadedTimes changes
+and proves all gameplay payloads unchanged. This is not direct-consumer
+Instant-mode acceptance or final Release C compatibility qualification.
+See the [integration report](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md).
 
 Version 0.0.115 exposes Brown-Fur direct-cast contract version 1 for optional
 consumers such as Kingmaker Buff Planner. A compatible consumer may use it only
@@ -45,12 +133,12 @@ transient action debt; it does not alter either feat or automation mode.
 
 1. Back up any saves you intend to keep outside the game's active save folder.
 2. Install the standalone
-   `KingmakerGunslinger-0.0.115-share-transmutation-instant.zip`
+   `KingmakerGunslinger-0.0.117-elemental-traits.zip`
    with Unity Mod Manager for Pathfinder: Kingmaker.
 3. Do not install a source archive, repository snapshot, private reference
    bundle, compiler package, or framework reference archive.
 4. Launch the game through Steam and verify that Unity Mod Manager reports
-   Kingmaker Gunslinger version 0.0.115 without a red/broken load indicator.
+   Kingmaker Gunslinger version 0.0.117 without a red/broken load indicator.
 5. Use a new or disposable save until the build's known limitations are
    acceptable for your campaign.
 
@@ -158,6 +246,71 @@ Eighteen fresh-process scenarios passed with exact restoration of the complete
 pretest mod tree and relevant settings. This structural/mechanical evidence
 does not replace the human appearance checklist or claim a Visual Adjustments
 result.
+
+Release A package `KingmakerGunslinger-0.0.115-elemental-heritages.zip` has
+independent guarded evidence. KMG alone, Call of the
+Wild, Races Unleashed, Call of the Wild + Favored Class, the minimum valid
+Call of the Wild + Races Unleashed + Tweak or Treat stack, and the highest-risk
+installed combined stack all passed. Each profile ran with Elemental Races ON
+and OFF. The ON runs proved expected mod identities, foreign catalog
+preservation, singular contiguous Elemental publication, and all 53 heritage
+blueprints. The OFF runs proved complete identity registration with zero
+Elemental entries in the top-level race selector. Twelve transactions restored
+the exact original 968-entry mod tree (SHA-256
+`376F3A6CE9432789D00BB2C8E314D8DFDB4CA2D12D14A9F709AAE16673263999`)
+and relevant settings. No favored-class bonus was added. Visual Adjustments
+was absent, so its Release A row is NOT-RUN rather than PASS.
+
+Release B package `KingmakerGunslinger-0.0.116-elemental-feats.zip` also has
+independent guarded evidence. KMG alone, Call of the Wild, Races Unleashed,
+Call of the Wild + Favored Class, Tweak or Treat, and the highest-risk
+installed combined stack passed with Elemental Races ON and OFF. The ON runs
+proved all 25 Release B identities were registered, all eleven exact feat
+references appeared once in the universal selector, the four Combat feats
+appeared once in the Fighter selector, and every pre-existing native or
+third-party entry retained its reference and order. Reconciliation replay was
+a true no-op. OFF runs retained all identities and published zero Elemental
+race or feat entries.
+
+The Release B matrix passed 31 guarded Steam processes and 359 assertions with
+zero runtime-result warnings. All 12 transactions restored the exact original
+968-entry mod tree and `FeatureModules.json`; optional settings were also
+restored byte-for-byte. Favored Class was observed only for compatibility and
+received no favored-class bonuses or publication behavior. Visual Adjustments
+was absent and remains **NOT-RUN**. Exact run IDs and hashes are recorded in
+`docs/ELEMENTAL-RACES-0.0.116-QUALIFICATION.md`.
+
+Release C's first eight passive traits have focused KMG-only and highest-risk
+combined-profile runtime proof, including a combined module-OFF pass. Eight
+guarded processes and 13,397 assertions pass with zero runtime-result warnings;
+all three profile transactions restore exact settings and mod folders.
+This is an implementation checkpoint, not final 0.0.117 qualification:
+trait-bearing persistence, the remaining mechanics, and the full final
+compatibility/module matrices remain pending. See
+`docs/ELEMENTAL-RACES-0.0.117-PASSIVE-MECHANICS-CHECKPOINT.md`.
+
+Subsequent Insight and component-identity runs pass KMG-only native mechanics
+and current heritage/feat persistence. Three blood-trait buffs register
+unconditionally and pass focused native tests in KMG-only and highest-risk
+combined profiles, with zero warnings and exact restoration. Six Insights/blood
+traits subsequently pass actual native-selected OFF/ON saves, spent capacity,
+active buffs, level-up, rest, respec and fresh absence (230 assertions, 46
+retained visual/DollData warnings). Saved fixtures use the original installed
+configuration. The isolated combined profile's working-save load timeout is
+not a PASS; only its save-free checks are qualified here. That historical
+six-trait cycle did not qualify the remaining traits' persistence or lifecycle.
+The exact 0.0.114 release inputs are recovered byte-for-byte and renewed legacy
+migration mechanics pass independently. Earlier evidence remains historical.
+
+The subsequent Efreeti Magic slice also passes KMG-only and highest-risk
+combined native checks: 9,796 assertions, zero runtime-result warnings,
+two exact 968-entry profile restorations. Its actual native-selected seven-trait
+save matrix passes four processes and 242 assertions, including six legal
+two-trait Ifrits, shared spent uses, active native size effects, OFF/ON load,
+level-up, rest, respec and fresh absence. Renewed pinned 0.0.114 migration passes
+another three processes and 28 assertions. The other fourteen traits' save
+coverage, full lifecycle and final release-wide compatibility gates remain.
+See the [exact Efreeti ledger](docs/ELEMENTAL-RACES-0.0.117-EFREETI-MAGIC-CHECKPOINT.md).
 
 ## Removal warning
 

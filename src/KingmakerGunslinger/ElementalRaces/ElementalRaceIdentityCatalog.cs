@@ -7,9 +7,20 @@ namespace KingmakerGunslinger.ElementalRaces
 {
     internal static class ElementalRaceIdentityCatalog
     {
-        internal const int MechanicIdentityCount = 24;
-        internal const int IdentityCount = MechanicIdentityCount +
+        internal const int LegacyMechanicIdentityCount = 24;
+        internal const int HeritageIdentityCount = 53;
+        internal const int FeatIdentityCount = 25;
+        internal const int TraitFrameworkIdentityCount = 62;
+        internal const int TraitMechanicIdentityCount = 21;
+        internal const int MechanicIdentityCount = LegacyMechanicIdentityCount +
+            HeritageIdentityCount + FeatIdentityCount +
+            TraitFrameworkIdentityCount + TraitMechanicIdentityCount;
+        internal const int RaceBlueprintIdentityCount =
+            LegacyMechanicIdentityCount + HeritageIdentityCount +
+            TraitFrameworkIdentityCount + TraitMechanicIdentityCount +
             ElementalRaceVisualCatalog.BlueprintIdentityCount;
+        internal const int IdentityCount = RaceBlueprintIdentityCount +
+            FeatIdentityCount;
         internal const int ManifestIdentityCount = IdentityCount +
             ElementalRaceVisualCatalog.ResourceIdentityCount;
 
@@ -41,6 +52,68 @@ namespace KingmakerGunslinger.ElementalRaces
         internal const string UndineSlaResource = "KMG.ElementalRaces.Undine.HydraulicPushResource";
         internal const string UndineSlaAbility = "KMG.ElementalRaces.Undine.HydraulicPushAbility";
 
+        internal const string UnerringWeaponPrimaryAbility =
+            "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponPrimaryAbility";
+        internal const string UnerringWeaponSecondaryAbility =
+            "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponSecondaryAbility";
+        internal const string UnerringWeaponEnchantment =
+            "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponEnchantment";
+        internal const string ChillTouchDeliveryAbility =
+            "KMG.ElementalRaces.Undine.Rimesoul.ChillTouchDeliveryAbility";
+        internal const string ShockingGraspDeliveryAbility =
+            "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspDeliveryAbility";
+
+        internal const string ElementalStrikeFeat =
+            "KMG.ElementalRaces.Feats.ElementalStrike";
+        internal const string ScorchingWeaponsFeat =
+            "KMG.ElementalRaces.Feats.ScorchingWeapons";
+        internal const string InnerFlameFeat =
+            "KMG.ElementalRaces.Feats.InnerFlame";
+        internal const string BlazingAuraFeat =
+            "KMG.ElementalRaces.Feats.BlazingAura";
+        internal const string FiresightFeat =
+            "KMG.ElementalRaces.Feats.Firesight";
+        internal const string AiryStepFeat =
+            "KMG.ElementalRaces.Feats.AiryStep";
+        internal const string WingsOfAirFeat =
+            "KMG.ElementalRaces.Feats.WingsOfAir";
+        internal const string CloudGazerFeat =
+            "KMG.ElementalRaces.Feats.CloudGazer";
+        internal const string InnerBreathFeat =
+            "KMG.ElementalRaces.Feats.InnerBreath";
+        internal const string HydraulicManeuverFeat =
+            "KMG.ElementalRaces.Feats.HydraulicManeuver";
+        internal const string TritonPortalFeat =
+            "KMG.ElementalRaces.Feats.TritonPortal";
+        internal const string ElementalStrikeAbility =
+            "KMG.ElementalRaces.Feats.ElementalStrike.Ability";
+        internal const string ElementalStrikeBuff =
+            "KMG.ElementalRaces.Feats.ElementalStrike.Buff";
+        internal const string ScorchingWeaponsAbility =
+            "KMG.ElementalRaces.Feats.ScorchingWeapons.Ability";
+        internal const string ScorchingWeaponsBuff =
+            "KMG.ElementalRaces.Feats.ScorchingWeapons.Buff";
+        internal const string ScorchingWeaponsEnchantment =
+            "KMG.ElementalRaces.Feats.ScorchingWeapons.Enchantment";
+        internal const string BlazingAuraAbility =
+            "KMG.ElementalRaces.Feats.BlazingAura.Ability";
+        internal const string BlazingAuraBuff =
+            "KMG.ElementalRaces.Feats.BlazingAura.Buff";
+        internal const string WingsOfAirBuff =
+            "KMG.ElementalRaces.Feats.WingsOfAir.Buff";
+        internal const string HydraulicManeuverAbility =
+            "KMG.ElementalRaces.Feats.HydraulicManeuver.Ability";
+        internal const string HydraulicBullRushAbility =
+            "KMG.ElementalRaces.Feats.HydraulicManeuver.BullRushAbility";
+        internal const string HydraulicDisarmAbility =
+            "KMG.ElementalRaces.Feats.HydraulicManeuver.DisarmAbility";
+        internal const string HydraulicTripAbility =
+            "KMG.ElementalRaces.Feats.HydraulicManeuver.TripAbility";
+        internal const string HydraulicDirtyTrickBlindAbility =
+            "KMG.ElementalRaces.Feats.HydraulicManeuver.DirtyTrickBlindAbility";
+        internal const string TritonPortalAbility =
+            "KMG.ElementalRaces.Feats.TritonPortal.Ability";
+
         internal const string AasimarRaceGuid = "b7f02ba92b363064fb873963bec275ee";
         internal const string TieflingRaceGuid = "5c4e42124dc2b4647af6e36cf2590500";
         internal const string KeenSensesGuid = "9c747d24f6321f744aa1bb4bd343880d";
@@ -52,7 +125,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
         internal static IReadOnlyList<string> Symbols()
         {
-            string[] mechanics = new[]
+            string[] legacyMechanics = new[]
             {
                 IfritRace, IfritResistance, IfritAffinity, IfritSlaFeature,
                 IfritSlaResource, IfritSlaAbility,
@@ -63,8 +136,114 @@ namespace KingmakerGunslinger.ElementalRaces
                 UndineRace, UndineResistance, UndineAffinity, UndineSlaFeature,
                 UndineSlaResource, UndineSlaAbility
             };
-            return mechanics.Concat(ElementalRaceVisualCatalog
-                .BlueprintSymbols()).ToArray();
+            string[] raceBlueprints = legacyMechanics.Concat(
+                    HeritageSymbols()).Concat(TraitSymbols()).Concat(
+                    TraitMechanicSymbols()).Concat(
+                    ElementalRaceVisualCatalog
+                    .BlueprintSymbols()).ToArray();
+            return raceBlueprints.Concat(FeatSymbols()).ToArray();
+        }
+
+        internal static IReadOnlyList<string> HeritageSymbols()
+        {
+            ElementalHeritageDefinition[] alternate = ElementalHeritagePolicy
+                .Ordered().Where(entry => !entry.IsGeneral).ToArray();
+            string[] symbols = ElementalHeritagePolicy.Ordered()
+                .Select(entry => entry.SelectionSymbol)
+                .Distinct(StringComparer.Ordinal)
+                .Concat(ElementalHeritagePolicy.Ordered().Select(entry =>
+                    entry.MarkerSymbol))
+                .Concat(alternate.Select(entry => entry.AffinityFeatureSymbol))
+                .Concat(alternate.SelectMany(entry => new[]
+                {
+                    entry.SlaFeatureSymbol,
+                    entry.SlaResourceSymbol,
+                    entry.SlaAbilitySymbol
+                }))
+                .Concat(new[]
+                {
+                    UnerringWeaponPrimaryAbility,
+                    UnerringWeaponSecondaryAbility,
+                    UnerringWeaponEnchantment,
+                    ChillTouchDeliveryAbility,
+                    ShockingGraspDeliveryAbility
+                }).ToArray();
+            if (symbols.Length != HeritageIdentityCount ||
+                symbols.Distinct(StringComparer.Ordinal).Count() !=
+                    symbols.Length)
+                throw new InvalidOperationException(
+                    "Elemental heritage identity inventory drifted.");
+            return symbols;
+        }
+
+        internal static IReadOnlyList<string> FeatSymbols()
+        {
+            string[] symbols =
+            {
+                ElementalStrikeFeat, ScorchingWeaponsFeat, InnerFlameFeat,
+                BlazingAuraFeat, FiresightFeat, AiryStepFeat, WingsOfAirFeat,
+                CloudGazerFeat, InnerBreathFeat, HydraulicManeuverFeat,
+                TritonPortalFeat, ElementalStrikeAbility,
+                ElementalStrikeBuff, ScorchingWeaponsAbility,
+                ScorchingWeaponsBuff, ScorchingWeaponsEnchantment,
+                BlazingAuraAbility, BlazingAuraBuff, WingsOfAirBuff,
+                HydraulicManeuverAbility, HydraulicBullRushAbility,
+                HydraulicDisarmAbility, HydraulicTripAbility,
+                HydraulicDirtyTrickBlindAbility, TritonPortalAbility
+            };
+            if (symbols.Length != FeatIdentityCount ||
+                symbols.Distinct(StringComparer.Ordinal).Count() !=
+                    symbols.Length)
+                throw new InvalidOperationException(
+                    "Elemental feat identity inventory drifted.");
+            return symbols;
+        }
+
+        internal static IReadOnlyList<string> TraitSymbols()
+        {
+            ElementalAlternateTraitSelectionDefinition[] selections =
+                ElementalAlternateTraitPolicy.OrderedSelections().ToArray();
+            ElementalAlternateTraitDefinition[] traits =
+                ElementalAlternateTraitPolicy.Ordered().ToArray();
+            string[] symbols = selections.Select(value =>
+                    value.SelectionSymbol)
+                .Concat(selections.Select(value => value.RetainMarkerSymbol))
+                .Concat(traits.Select(value => value.MarkerSymbol))
+                .Concat(traits.Select(value => value.ProviderSymbol)).ToArray();
+            if (symbols.Length != TraitFrameworkIdentityCount ||
+                symbols.Distinct(StringComparer.Ordinal).Count() !=
+                    symbols.Length)
+                throw new InvalidOperationException(
+                    "Elemental alternate-trait framework identity inventory drifted.");
+            return symbols;
+        }
+
+        internal static IReadOnlyList<string> TraitMechanicSymbols()
+        {
+            return new[]
+            {
+                "KMG.ElementalRaces.Traits.Ifrit.FireInTheBlood.FastHealingBuff",
+                "KMG.ElementalRaces.Traits.Oread.StoneInTheBlood.FastHealingBuff",
+                "KMG.ElementalRaces.Traits.Sylph.StormInTheBlood.FastHealingBuff",
+                "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Resource",
+                "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Ability",
+                "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.EnlargePerson",
+                "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson",
+                "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Resource",
+                "KMG.ElementalRaces.Traits.Oread.CrystallineForm.ArmedBuff",
+                "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Mode",
+                "KMG.ElementalRaces.Traits.Undine.AcidBreath.Resource",
+                "KMG.ElementalRaces.Traits.Undine.AcidBreath.Ability",
+                "KMG.ElementalRaces.Traits.Undine.OozeBreath.Resource",
+                "KMG.ElementalRaces.Traits.Undine.OozeBreath.Ability",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Resource",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Gust",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.BullRush",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Trip",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmedBuff",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmWinds",
+                "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.RenewWinds"
+            };
         }
 
         internal static void Validate()

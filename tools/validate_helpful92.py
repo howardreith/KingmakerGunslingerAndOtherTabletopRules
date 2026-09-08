@@ -80,7 +80,7 @@ def validate(root: Path) -> None:
         "43d763957f364315b5fff85f9e91ca51",
         "331ed3c4a988415785f71a37b826d0f1", "enable_traits")
     require_tokens(root / required[5], "FirstUpdate",
-        "cotw-aid-another-feature-list", "favored-combat-all-features",
+        "cotw-aid-another-feature-list", "AppendForeignTraitCatalog",
         "PrerequisiteNoFeature", "publication.idempotent")
     require_tokens(root / required[6],
         "aid-another-compatibility-contracts.json",

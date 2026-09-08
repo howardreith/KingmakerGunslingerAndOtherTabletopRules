@@ -2,6 +2,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
     [string]$PackagePath,
+    [string]$QualifiedElementalRaces114DeploymentManifestPath,
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$GameDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     [string[]]$LogPath = @(),
@@ -54,9 +55,33 @@ foreach ($entry in @(
 $git = Get-KmgGitState -RepositoryRoot $root
 $info = Get-KmgModInfo -RepositoryRoot $root
 $builtHash = $null
+$packageVersion = $info.Version
+$packageSha256 = $null
+$qualifiedLegacyRuntimeOverlay = $null
+if ($PackagePath -and $QualifiedElementalRaces114DeploymentManifestPath) {
+    throw 'Current-source and qualified-legacy evidence package authorities are mutually exclusive.'
+}
 if ($PackagePath) {
     $buildManifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
     $builtHash = $buildManifest.dllSha256
+    $packageVersion = $buildManifest.version
+    $packageSha256 = $buildManifest.packageSha256
+}
+elseif ($QualifiedElementalRaces114DeploymentManifestPath) {
+    $legacy = Assert-KmgQualifiedElementalRaces114Deployment `
+        -DeploymentManifestPath `
+            $QualifiedElementalRaces114DeploymentManifestPath `
+        -PackagePath (Join-Path $root `
+            'artifacts\release\0.0.114\KingmakerGunslinger-0.0.114-elemental-races.zip') `
+        -RepositoryRoot $root -AllowDirtyGit
+    $builtHash = $legacy.DllSha256
+    $packageVersion = $legacy.Version
+    $packageSha256 = $legacy.Deployment.packageSha256
+    $qualifiedLegacyRuntimeOverlay = [ordered]@{
+        settingsMode = $legacy.SettingsMode
+        settingsSha256 = $legacy.SettingsSha256
+        runtimeGeneratedFiles = @($legacy.RuntimeGeneratedFiles)
+    }
 }
 $deployedDll = Join-Path $LiveModDirectory 'KingmakerGunslinger.dll'
 $gameExe = Join-Path $GameDirectory 'Kingmaker.exe'
@@ -66,10 +91,12 @@ $manifest = [ordered]@{
     gitCommit = $git.Commit
     gitBranch = $git.Branch
     gitStatus = $git.Status
-    packageVersion = $info.Version
+    packageVersion = $packageVersion
+    packageSha256 = $packageSha256
     builtDllSha256 = $builtHash
     deployedDllSha256 = if (Test-Path -LiteralPath $deployedDll -PathType Leaf) { Get-KmgSha256 -Path $deployedDll } else { $null }
     gameVersion = if (Test-Path -LiteralPath $gameExe -PathType Leaf) { (Get-Item -LiteralPath $gameExe).VersionInfo.FileVersion } else { $null }
+    qualifiedLegacyRuntimeOverlay = $qualifiedLegacyRuntimeOverlay
     files = $records
     exclusions = @('saves', 'credentials', 'browser data', 'unrelated user files')
 }
