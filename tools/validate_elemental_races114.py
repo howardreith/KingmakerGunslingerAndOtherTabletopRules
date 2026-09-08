@@ -15,7 +15,7 @@ VERSION = "0.0.114"
 INFORMATIONAL_VERSION = "0.0.114-elemental-races"
 PACKAGE = "KingmakerGunslinger-0.0.114-local-runtime.zip"
 PACKAGE_SUFFIX = "elemental-races"
-DETERMINISTIC_TEST_COUNT = 1390
+DETERMINISTIC_TEST_COUNT = 1399
 STATIC_KEY = "elementalRaces114"
 
 
@@ -129,6 +129,7 @@ def validate(root: Path) -> None:
     scenarios = require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/"
         "RuntimeTestScenarioCatalog.cs", "observe-elemental-race-blueprints",
         "disposable-elemental-race-mechanics",
+        "disposable-elemental-spell-affinity",
         "disposable-elemental-race-slas", "disposable-hydraulic-push",
         "elemental-race-visual-audit", "elemental-race-class-equipment",
         "elemental-race-motion", "elemental-race-persistence-prepare",

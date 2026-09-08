@@ -46,3 +46,9 @@ The exploration-guard source checkpoint passes all 26 current boundaries with
 including absent unpatched targets OFF. All publication, duplicate/rollback and
 settings restoration checks pass. The report records every run ID and the exact
 immutable deployed artifact; other mod profiles and disk persistence remain open.
+
+
+0.0.118 preserves the module-12/schema-11 contracts while incorporating the
+published 0.0.117 Elemental content. The owner explicitly authorized release and
+accepted the remaining campaign/compatibility qualification for manual testing.
+Historical boundary counts above retain their original artifact scope.

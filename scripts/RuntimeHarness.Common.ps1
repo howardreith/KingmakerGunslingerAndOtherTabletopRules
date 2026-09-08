@@ -129,6 +129,205 @@ function Assert-KmgReusableDeployment {
     }
 }
 
+function Test-KmgFlatJsonEquivalent {
+    param(
+        [Parameter(Mandatory = $true)][string]$LeftPath,
+        [Parameter(Mandatory = $true)][string]$RightPath
+    )
+    try {
+        $left = Get-Content -LiteralPath $LeftPath -Raw | ConvertFrom-Json
+        $right = Get-Content -LiteralPath $RightPath -Raw | ConvertFrom-Json
+    }
+    catch { return $false }
+    if ($null -eq $left -or $null -eq $right) { return $false }
+    [string[]]$leftNames = @($left.PSObject.Properties | ForEach-Object Name)
+    [string[]]$rightNames = @($right.PSObject.Properties | ForEach-Object Name)
+    [Array]::Sort($leftNames, [StringComparer]::Ordinal)
+    [Array]::Sort($rightNames, [StringComparer]::Ordinal)
+    if (($leftNames -join "`n") -cne ($rightNames -join "`n")) {
+        return $false
+    }
+    foreach ($name in $leftNames) {
+        $leftValue = $left.PSObject.Properties[$name].Value
+        $rightValue = $right.PSObject.Properties[$name].Value
+        if ($leftValue -is [Management.Automation.PSCustomObject] -or
+            $rightValue -is [Management.Automation.PSCustomObject] -or
+            ($leftValue -is [Collections.IEnumerable] -and
+                $leftValue -isnot [string]) -or
+            ($rightValue -is [Collections.IEnumerable] -and
+                $rightValue -isnot [string])) {
+            return $false
+        }
+        $leftJson = ConvertTo-Json -InputObject $leftValue -Compress
+        $rightJson = ConvertTo-Json -InputObject $rightValue -Compress
+        if ($leftJson -cne $rightJson) { return $false }
+    }
+    return $true
+}
+
+function Assert-KmgQualifiedLegacyRuntimeOverlay {
+    param(
+        [Parameter(Mandatory = $true)][string]$LiveDirectory,
+        [Parameter(Mandatory = $true)][string[]]$ExpectedFiles,
+        [Parameter(Mandatory = $true)][string]$ExpectedSettingsSha256,
+        [Parameter(Mandatory = $true)][string]$ExpectedDllSha256,
+        [Parameter(Mandatory = $true)][string]$ExpectedDllMvid
+    )
+    $live = (Resolve-Path -LiteralPath $LiveDirectory).Path.TrimEnd('\')
+    $settings = Join-Path $live 'FeatureModules.json'
+    $settingsPrevious = $settings + '.previous'
+    $ordinaryFiles = [Collections.Generic.List[string]]::new()
+    $runtimeGenerated = [Collections.Generic.List[string]]::new()
+    $cacheFiles = [Collections.Generic.List[string]]::new()
+    foreach ($file in @(Get-ChildItem -LiteralPath $live -Recurse -File)) {
+        $relative = $file.FullName.Substring($live.Length).TrimStart('\')
+        if ($relative -ceq 'FeatureModules.json') { continue }
+        if ($relative -ceq 'FeatureModules.json.previous') {
+            $runtimeGenerated.Add($relative)
+            continue
+        }
+        if ($relative -cmatch
+            '^KingmakerGunslinger\.dll\.[1-9][0-9]*\.cache$') {
+            $runtimeGenerated.Add($relative)
+            $cacheFiles.Add($file.FullName)
+            continue
+        }
+        $ordinaryFiles.Add($relative)
+    }
+    $ordinary = @($ordinaryFiles | Sort-Object)
+    $expected = @($ExpectedFiles | Sort-Object)
+    if (($ordinary -join "`n") -cne ($expected -join "`n")) {
+        throw 'Installed 0.0.114 file catalog contains a missing, changed-name, or unapproved extra file.'
+    }
+    if ($cacheFiles.Count -gt 1) {
+        throw 'Installed 0.0.114 contains more than one runtime-generated DLL cache.'
+    }
+    foreach ($cacheFile in $cacheFiles) {
+        if ((Get-KmgSha256 -Path $cacheFile) -cne $ExpectedDllSha256 -or
+            (Get-KmgDllMvid -Path $cacheFile) -cne $ExpectedDllMvid) {
+            throw 'Installed 0.0.114 runtime-generated DLL cache differs from the exact qualified DLL.'
+        }
+    }
+
+    $settingsExists = Test-Path -LiteralPath $settings -PathType Leaf
+    $previousExists = Test-Path -LiteralPath $settingsPrevious -PathType Leaf
+    if ($ExpectedSettingsSha256 -ceq '<absent>') {
+        if ($settingsExists -or $previousExists) {
+            throw 'Installed 0.0.114 unexpectedly created feature settings.'
+        }
+        $settingsSha = '<absent>'
+        $settingsMode = 'absent'
+    }
+    else {
+        if (-not $settingsExists) {
+            throw 'Installed 0.0.114 feature settings are unexpectedly absent.'
+        }
+        $settingsSha = Get-KmgSha256 -Path $settings
+        if ($previousExists -and
+            (Get-KmgSha256 -Path $settingsPrevious) -cne
+                $ExpectedSettingsSha256) {
+            throw 'Installed 0.0.114 feature-settings backup differs from the exact deployed bytes.'
+        }
+        if ($settingsSha -ceq $ExpectedSettingsSha256) {
+            $settingsMode = 'exact'
+        }
+        elseif (-not $previousExists -or
+            -not (Test-KmgFlatJsonEquivalent -LeftPath $settings `
+                -RightPath $settingsPrevious)) {
+            throw 'Installed 0.0.114 feature settings changed semantically or without an exact backup.'
+        }
+        else {
+            $settingsMode = 'normalized-with-exact-backup'
+        }
+    }
+    return [pscustomobject]@{
+        SettingsExists = $settingsExists
+        SettingsSha256 = $settingsSha
+        SettingsMode = $settingsMode
+        RuntimeGeneratedFiles = @($runtimeGenerated | Sort-Object)
+    }
+}
+
+function Assert-KmgQualifiedElementalRaces114Deployment {
+    param(
+        [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
+        [Parameter(Mandatory = $true)][string]$PackagePath,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [switch]$AllowDirtyGit
+    )
+    $expectedVersion = '0.0.114'
+    $expectedCommit = '6874dc15a27ded132456dbdd480f47c794543a05'
+    $expectedPackageSha = 'b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694'
+    $expectedDllSha = '09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262'
+    $expectedDllMvid = 'dcd73856-39d4-40ce-9b05-77bf249103d7'
+    $expectedPackage = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot `
+        'artifacts\release\0.0.114\KingmakerGunslinger-0.0.114-elemental-races.zip'))
+    $package = (Resolve-Path -LiteralPath $PackagePath).Path
+    if (-not $package.Equals($expectedPackage,
+            [StringComparison]::OrdinalIgnoreCase) -or
+        (Get-KmgSha256 -Path $package) -cne $expectedPackageSha) {
+        throw 'Qualified legacy reuse requires the exact pinned 0.0.114 release package.'
+    }
+    $deploymentPath = (Resolve-Path -LiteralPath `
+        $DeploymentManifestPath).Path
+    $requiredRoot = [IO.Path]::GetFullPath(
+        'C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments')
+    [void](Assert-KmgPathWithin -Path $deploymentPath -Root $requiredRoot)
+    $deployment = Get-Content -LiteralPath $deploymentPath -Raw |
+        ConvertFrom-Json
+    $git = Get-KmgGitState -RepositoryRoot $RepositoryRoot
+    if ($git.Status.Count -ne 0 -and -not $AllowDirtyGit) {
+        throw 'Qualified legacy runtime execution requires an exactly clean Git state.'
+    }
+    if ($deployment.schemaVersion -ne 1 -or
+        $deployment.authority -cne
+            'qualified-elemental-races-0.0.114-release' -or
+        $deployment.packagePath -cne $package -or
+        $deployment.packageSha256 -cne $expectedPackageSha -or
+        $deployment.commit -cne $expectedCommit -or
+        $deployment.version -cne $expectedVersion -or
+        $deployment.archiveEntryCount -ne 135 -or
+        $deployment.dllSha256 -cne $expectedDllSha -or
+        $deployment.dllMvid -cne $expectedDllMvid -or
+        $deployment.deployedDllSha256 -cne $expectedDllSha) {
+        throw 'Qualified legacy deployment manifest identity is not exact.'
+    }
+    $live = [IO.Path]::GetFullPath($deployment.liveModDirectory)
+    $expectedLive = [IO.Path]::GetFullPath(
+        'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger')
+    if (-not $live.Equals($expectedLive,
+            [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Qualified legacy deployment points outside the exact live mod directory.'
+    }
+    $info = Get-Content -LiteralPath (Join-Path $live 'Info.json') -Raw |
+        ConvertFrom-Json
+    $dll = Join-Path $live 'KingmakerGunslinger.dll'
+    if ($info.Version -cne $expectedVersion -or
+        (Get-KmgSha256 -Path $dll) -cne $expectedDllSha -or
+        (Get-KmgDllMvid -Path $dll) -cne $expectedDllMvid) {
+        throw 'Installed 0.0.114 version or DLL identity differs from its qualified deployment.'
+    }
+    $overlay = Assert-KmgQualifiedLegacyRuntimeOverlay `
+        -LiveDirectory $live -ExpectedFiles @($deployment.files) `
+        -ExpectedSettingsSha256 $deployment.featureModuleSettingsSha256 `
+        -ExpectedDllSha256 $expectedDllSha -ExpectedDllMvid $expectedDllMvid
+    Write-Host ('Qualified legacy artifact verified: producerCommit={0};version={1};package={2};dll={3};mvid={4};settings={5};settingsMode={6};runtimeOverlay={7}' -f
+        $expectedCommit, $expectedVersion, $expectedPackageSha,
+        $expectedDllSha, $expectedDllMvid, $overlay.SettingsSha256,
+        $overlay.SettingsMode, ($overlay.RuntimeGeneratedFiles -join ','))
+    return [pscustomobject]@{
+        Deployment = $deployment
+        PackagePath = $package
+        DeploymentManifestPath = $deploymentPath
+        Version = $expectedVersion
+        DllSha256 = $expectedDllSha
+        SettingsExists = $overlay.SettingsExists
+        SettingsSha256 = $overlay.SettingsSha256
+        SettingsMode = $overlay.SettingsMode
+        RuntimeGeneratedFiles = $overlay.RuntimeGeneratedFiles
+    }
+}
+
 function Read-KmgBuildLocalManifest {
     param(
         [Parameter(Mandatory = $true)][string]$PackagePath,

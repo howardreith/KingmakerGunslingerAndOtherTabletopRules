@@ -149,6 +149,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
             }
             try
             {
+                KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRoutingObserver
+                    .BeforeOptionalReconciliation(checkpoint);
                 UnityModManager.ModEntry[] entries = ReadEntries(
                     context == null ? null : context.ModEntry);
                 UnityModManager.ModEntry cotwEntry = Single(entries,
@@ -271,6 +273,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
             }
             finally
             {
+                KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRoutingObserver
+                    .AfterOptionalReconciliation(checkpoint);
                 lock (Gate) _reconciling = false;
             }
         }
@@ -351,14 +355,11 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
                         favoredExclusion, ComponentIdentity, true);
                 if (publishTrait)
                 {
-                    transaction.Append("favored-combat-features",
+                    transaction.AppendForeignTraitCatalog(
                         () => favored.CombatTraits.Features,
-                        value => favored.CombatTraits.Features = value,
-                        set.HelpfulCombat, FeatureIdentity, false)
-                        .Append("favored-combat-all-features",
-                            () => favored.CombatTraits.AllFeatures,
-                            value => favored.CombatTraits.AllFeatures = value,
-                            set.HelpfulCombat, FeatureIdentity, false);
+                        () => favored.CombatTraits.AllFeatures,
+                        value => favored.CombatTraits.AllFeatures = value,
+                        set.HelpfulCombat, FeatureIdentity);
                 }
             }
             lock (Gate) _publication = transaction;
@@ -400,8 +401,8 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
                 set.HelpfulCombat);
             int allFeatures = Count(favored.CombatTraits.AllFeatures,
                 set.HelpfulCombat);
-            if (publishTrait ? features != 1 || allFeatures != 1 :
-                    features != 0 || allFeatures != 0)
+            if (favored.CombatTraits.Features == null || favored.CombatTraits.Features.Length != 0 ||
+                features != 0 || allFeatures != (publishTrait ? 1 : 0))
                 throw new InvalidOperationException(
                     "Combat Helpful publication does not match traits/module state.");
             if (Count(favored.RaceTraits.AllFeatures,

@@ -24,33 +24,7 @@ def require_tokens(path: Path, *tokens: str) -> str:
     return text
 
 
-def validate(root: Path) -> None:
-    info = json.loads((root / "Info.json").read_text(encoding="utf-8"))
-    if info.get("Version") != VERSION or info.get("Id") != "KingmakerGunslinger":
-        raise AssertionError("Info.json release identity mismatch")
-    require_tokens(root / "Directory.Build.props",
-        f"<KmgVersion>{VERSION}</KmgVersion>",
-        f"<KmgInformationalVersion>{INFORMATIONAL_VERSION}</KmgInformationalVersion>",
-        "<LangVersion>7.3</LangVersion>", "<TreatWarningsAsErrors>true</TreatWarningsAsErrors>")
-    require_tokens(root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs",
-        f'AssemblyVersion("{VERSION}")', f'AssemblyFileVersion("{VERSION}")',
-        f'AssemblyInformationalVersion("{INFORMATIONAL_VERSION}")')
-    require_tokens(root / "scripts/Build-Local.ps1", "active version 0.0.115",
-        "local-runtime\\0.0.115", "validate-repository.ps1", "test-domain.ps1")
-    require_tokens(root / "scripts/package.ps1",
-        "$($info.Id)-$($info.Version)-share-transmutation-instant.zip",
-        "validate-build-output.ps1", "validate-package.ps1")
-    require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
-        "active version 0.0.115")
-
-    manifest = json.loads((root / "blueprints/blueprints.json").read_text(
-        encoding="utf-8"))
-    entries = manifest.get("entries", [])
-    active = [entry for entry in entries if entry.get("status") == "active"]
-    reserved = [entry for entry in entries if entry.get("status") == "reserved"]
-    if (len(entries), len(active), len(reserved)) != (1706, 1704, 2):
-        raise AssertionError("Authoritative blueprint manifest arithmetic drifted")
-
+def validate_provider_contract(root: Path) -> str:
     api = require_tokens(root / "src/KingmakerGunslinger/BrownFur/"
         "BrownFurDirectCastApi.cs", "public const int ContractVersion = 1",
         "Validate(\n            AbilityData ability, TargetWrapper target)",
@@ -86,15 +60,47 @@ def validate(root: Path) -> None:
         'Case("brown-fur.cast-direct-delayed-process"',
         'Case("brown-fur.cast-direct-four-sequential"',
         'Case("brown-fur.cast-direct-revalidation-reuse"')
-    if program.count('Case("') != DETERMINISTIC_TEST_COUNT:
-        raise AssertionError(
-            f"Expected {DETERMINISTIC_TEST_COUNT} deterministic test cases")
     require_tokens(root / "tests/KingmakerGunslinger.DomainTests/BrownFurCastTests.cs",
         "DirectCastCoordinatorRetainsDelayedProcess",
         "DirectCastCoordinatorSupportsFourSequentialCasts",
         "DirectCastRevalidatesAndReusesAbilitySafely")
     require_tokens(root / "tests/KingmakerGunslinger.DomainTests/BrownFurContractTests.cs",
         "BrownFurDirectCastApi", "ContractVersion = 1")
+
+    return program
+
+
+def validate(root: Path) -> None:
+    info = json.loads((root / "Info.json").read_text(encoding="utf-8"))
+    if info.get("Version") != VERSION or info.get("Id") != "KingmakerGunslinger":
+        raise AssertionError("Info.json release identity mismatch")
+    require_tokens(root / "Directory.Build.props",
+        f"<KmgVersion>{VERSION}</KmgVersion>",
+        f"<KmgInformationalVersion>{INFORMATIONAL_VERSION}</KmgInformationalVersion>",
+        "<LangVersion>7.3</LangVersion>", "<TreatWarningsAsErrors>true</TreatWarningsAsErrors>")
+    require_tokens(root / "src/KingmakerGunslinger/Properties/AssemblyInfo.cs",
+        f'AssemblyVersion("{VERSION}")', f'AssemblyFileVersion("{VERSION}")',
+        f'AssemblyInformationalVersion("{INFORMATIONAL_VERSION}")')
+    require_tokens(root / "scripts/Build-Local.ps1", "active version 0.0.115",
+        "local-runtime\\0.0.115", "validate-repository.ps1", "test-domain.ps1")
+    require_tokens(root / "scripts/package.ps1",
+        "$($info.Id)-$($info.Version)-share-transmutation-instant.zip",
+        "validate-build-output.ps1", "validate-package.ps1")
+    require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
+        "active version 0.0.115")
+
+    manifest = json.loads((root / "blueprints/blueprints.json").read_text(
+        encoding="utf-8"))
+    entries = manifest.get("entries", [])
+    active = [entry for entry in entries if entry.get("status") == "active"]
+    reserved = [entry for entry in entries if entry.get("status") == "reserved"]
+    if (len(entries), len(active), len(reserved)) != (1706, 1704, 2):
+        raise AssertionError("Authoritative blueprint manifest arithmetic drifted")
+
+    program = validate_provider_contract(root)
+    if program.count('Case("') != DETERMINISTIC_TEST_COUNT:
+        raise AssertionError(
+            f"Expected {DETERMINISTIC_TEST_COUNT} deterministic test cases")
 
     require_tokens(root / "docs/RELEASE-NOTES-0.0.115.md",
         "Kingmaker Gunslinger 0.0.115", "ContractVersion = 1",

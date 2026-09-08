@@ -1088,7 +1088,26 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ElementalRacePersistenceIsGuardedAndExact()
         {
             string source = Read("src", "KingmakerGunslinger",
-                "RuntimeTesting", "ElementalRacePersistenceScenario.cs");
+                "RuntimeTesting", "ElementalRacePersistenceScenario.cs") +
+                Read("src", "KingmakerGunslinger", "RuntimeTesting", "ElementalPersistenceSlaSnapshot.cs") +
+                Read("src", "KingmakerGunslinger", "RuntimeTesting", "ElementalVisibleTraitLifecycleScenario.cs");
+            string physical = Read("src", "KingmakerGunslinger", "RuntimeTesting", "ElementalVisibleTraitLifecycleScenario.cs");
+            foreach (string token in new[] { "IsFixtureUnit(_currentUnit, fixture)", "!Game.Instance.IsPaused",
+                "new RuleDealDamage(", "ResurrectAndFullRestore()", "typeof(UnitLifeController)",
+                "5d4028eb28a106d4691ed1b92bbb1915", "8dc6510d31614345a8c718208fbac1f8",
+                "_physicalActor.Body.Armor.InsertItem(_physicalArmor)", "CurrentAvatar().RebuildOutfit()",
+                "JToken.DeepEquals(stable, _physicalStableBefore)", "blood.Spent(value)",
+                "_physicalInventory.SequenceEqual(Snapshot(_inventory))", "_physicalComplete",
+                "PhysicalLifecycleEvidenceExact()", "rows.Length == _fixtures.Length * phases.Length",
+                ".Where(ElementalAlternateTraitPolicy.IsPublished)", "SequenceEqual(phases)" })
+                Assertions.True(physical.Contains(token), "Physical lifecycle lost its native transition or exact ownership guard: " + token);
+            Assertions.False(Regex.IsMatch(physical, @"\.(?:IsCheater|IsDead)\s*=(?!=)") ||
+                physical.Contains("SetLifeState(") || physical.Contains("ElementalHeritageRuntime.Reconcile("),
+                "The physical test must not fabricate life state, mutate a shared blueprint or reconcile away a failure.");
+            string featSource = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalFeatPersistenceScenario.cs");
+            string transientRuntime = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalFeatTransientRuntime.cs");
             string catalog = Read("src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
             string runner = Read("src", "KingmakerGunslinger",
@@ -1105,12 +1124,22 @@ namespace KingmakerGunslinger.DomainTests
                 "Test-RuntimeScenarioPreflight.ps1");
             string sequence = Read("scripts",
                 "Invoke-ElementalRacePersistenceQualification.ps1");
+            string legacySequence = Read("scripts",
+                "Invoke-ElementalRaceLegacyMigrationQualification.ps1");
+            string legacyDeployment = Read("scripts",
+                "Deploy-QualifiedElementalRaces114.ps1");
+            string harness = Read("scripts",
+                "RuntimeHarness.Common.ps1");
+            string evidenceCollector = Read("scripts",
+                "Collect-Runtime-Evidence.ps1");
             string project = Read("src", "KingmakerGunslinger",
                 "KingmakerGunslinger.csproj");
             string[] scenarios =
             {
                 "elemental-race-persistence-prepare",
                 "elemental-race-module-disabled-persistence",
+                "elemental-race-module-restored-persistence",
+                "elemental-race-legacy-migration",
                 "elemental-race-persistence-verify-absent"
             };
 
@@ -1118,6 +1147,9 @@ namespace KingmakerGunslinger.DomainTests
                     "ElementalRacePersistencePrepare") &&
                 catalog.Contains(
                     "ElementalRaceModuleDisabledPersistence") &&
+                catalog.Contains(
+                    "ElementalRaceModuleRestoredPersistence") &&
+                catalog.Contains("ElementalRaceLegacyMigration") &&
                 catalog.Contains(
                     "ElementalRacePersistenceVerifyAbsent") &&
                 scenarios.All(catalog.Contains) &&
@@ -1131,14 +1163,22 @@ namespace KingmakerGunslinger.DomainTests
                     "' = [pscustomobject]")) &&
                 scenarios.All(preflight.Contains) &&
                 project.Contains(
-                    @"RuntimeTesting\ElementalRacePersistenceScenario.cs"),
+                    @"RuntimeTesting\ElementalRacePersistenceScenario.cs") &&
+                project.Contains(
+                    @"RuntimeTesting\ElementalFeatPersistenceScenario.cs"),
                 "Elemental persistence is not wired through every guarded working-save surface.");
             Assertions.True(Regex.IsMatch(workingSave,
-                    @"AutomationWorkingWithElementalFixtures\s*=\s*new WorkingSaveSmokeIdentity\(.*?JamandisMansion"", 11\);",
+                    @"AutomationWorkingWithElementalFixtures\s*=\s*new WorkingSaveSmokeIdentity\(.*?JamandisMansion"", 27\);",
                     RegexOptions.Singleline) &&
                 runner.Contains(
                     ".AutomationWorkingWithElementalFixtures"),
-                "Module-disabled verification must require the exact eleven-member marker-bearing working-save identity.");
+                "Module-disabled and restored verification must require the exact 27-member marker-bearing heritage working-save identity.");
+            Assertions.True(Regex.IsMatch(workingSave,
+                    @"AutomationWorkingWithLegacyElementalFixtures\s*=\s*new WorkingSaveSmokeIdentity\(.*?JamandisMansion"", 11\);",
+                    RegexOptions.Singleline) &&
+                runner.Contains(
+                    ".AutomationWorkingWithLegacyElementalFixtures"),
+                "Legacy migration must require the exact eleven-member 0.0.114 fixture working-save identity.");
             foreach (string scenario in scenarios)
             {
                 int metadataStart = automation.IndexOf("'" + scenario +
@@ -1159,14 +1199,14 @@ namespace KingmakerGunslinger.DomainTests
                     "Elemental persistence phase must fail closed to the disposable working save: " +
                     scenario);
             }
-            int collectorStart = launcher.IndexOf(
+            int collectorStart = launcher.LastIndexOf(
                 "elemental-race-persistence-prepare",
                 StringComparison.Ordinal);
             Assertions.True(collectorStart >= 0 &&
                 launcher.Substring(collectorStart,
                     Math.Min(750, launcher.Length - collectorStart))
                     .Contains(
-                        "[Math]::Max($TimeoutSeconds, 1800) + 15"),
+                        "[Math]::Max($TimeoutSeconds, 5400) + 15"),
                 "Elemental persistence needs its exact bounded collector window.");
 
             foreach (string id in new[]
@@ -1178,7 +1218,23 @@ namespace KingmakerGunslinger.DomainTests
                 "d532ec12-a328-4afb-8cbf-7f3ddf41f072",
                 "08e1cd1d-4512-4c52-a9fa-6dd8d815499a",
                 "043d4fc2-c26c-4e72-9d11-219d0ff74b43",
-                "91472289-c1d7-4558-b7ed-a5e8c06345fb"
+                "91472289-c1d7-4558-b7ed-a5e8c06345fb",
+                "ab99c4b1-6e65-4808-9ba8-7e66b4c02832",
+                "fdff9dcf-6f07-499e-923c-a218d74388fd",
+                "e7ca2590-a307-46cf-a5c8-a182b67845d4",
+                "fb3fd14e-55f3-4b95-8e50-13a2978af655",
+                "246e29b9-c728-4dbc-8a98-45ed4975868e",
+                "68dd174b-fa0f-43b1-a8d9-7ea2e3b6d235",
+                "9395209a-333f-4ee8-9d50-027917e6c384",
+                "cfc07981-140c-47b9-bedd-4866ddb784e0",
+                "a136453c-d8ff-43cc-b2b9-636f8123a5f1",
+                "7c161687-525b-4ab6-ae5f-a28f475d79c6",
+                "a704f6d8-eb34-4bf4-89ab-b8d379942c84",
+                "9f558e70-4995-4a3d-977d-3ba24b6dcd38",
+                "9b9c9397-0c61-431a-8470-276b3709039f",
+                "91aa7243-8c28-4ed4-a274-2a9fa65b5a30",
+                "0c9440bb-f190-471d-958c-ba538c062bee",
+                "c97a0186-02de-4fe5-acfa-13ca8267baa3"
             })
                 Assertions.Equal(1, Regex.Matches(source,
                         Regex.Escape(id)).Count,
@@ -1187,9 +1243,12 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[]
             {
                 "ElementalRaceCatalog.RaceCount * 2",
-                "exactly eight race/sex fixtures",
+                "exactly 24 race/sex/heritage fixtures",
+                "ElementalHeritagePersistenceMatrixPolicy",
                 "ElementalRacePersistencePrepare",
                 "ElementalRaceModuleDisabledPersistence",
+                "ElementalRaceModuleRestoredPersistence",
+                "ElementalRaceLegacyMigration",
                 "ElementalRacePersistenceVerifyAbsent",
                 "_context.FeatureModules.Active.ElementalRaces",
                 "BlueprintRoot.Instance",
@@ -1197,31 +1256,63 @@ namespace KingmakerGunslinger.DomainTests
                 "ResourcesLibrary.TryGetBlueprint<",
                 "Progression.Race", "race.Features.All",
                 "_currentBlueprint.IsCheater = false",
-                "!unit.Blueprint.IsCheater",
+                "!owner.Unit.Blueprint.IsCheater",
                 "Descriptor.CustomGender = fixture.Gender",
                 "owner.CustomGender.HasValue",
-                "owner.Stats.GetStat(value.Stat)",
+                "foreach (ElementalHeritageStat stat in Enum.GetValues(",
+                "PersistenceStatType(stat)",
+                "expectedHeritage.Definition.ModifierFor(",
+                @"""abilityScores"", statDeltas",
                 "StatType.SkillPerception",
                 "owner.Stats.Speed.ModifiedValue",
                 "owner.Resources.GetResourceAmount(",
-                "SlaResource.GetMaxAmount(owner)",
-                "AbilityType.SpellLike", "ability.Spellbook == null",
-                "!ability.IsAffectedByArcaneSpellFailure",
+                "AbilityType.SpellLike", "result.Data.Spellbook == null",
+                "!result.Data.IsAffectedByArcaneSpellFailure",
                 "PerformNativeElementalRespec",
                 "LevelUpState.CharBuildMode.Respec",
-                "SeedFixedElementalRespecRace(_currentBlueprint, fixture)",
-                "SeedFixedElementalRespecFacts(",
-                "EnsureElementalRespecFact(owner, feature)",
+                "controller.State.FindSelection(",
+                "controller.State.CanSelectRace",
+                "controller.SelectRace(",
+                "controller.SelectFeature(",
+                "NativeSelectionRecordExact",
+                "stateNativeFromRaceSelection",
+                "HeritageProvidersExact",
+                "CaptureLegacyMigrationFixture",
+                "legacy-0.0.114-load-verify-cleanup",
+                "LegacyGeneralFixtureCount",
+                "markerlessGeneralExact",
+                "resourceBeforeReconcile",
+                "resourceAfterReconcile",
+                "CatalogFixtureIdentityCount",
+                "BlueprintRoot.Instance.CustomCompanion",
+                "SeedFixedElementalRespecRace(",
+                "owner.Progression.SetRace(fixture.Blueprints.Race)",
+                "FixedElementalRespecShellExact(",
+                "nativeCustomCompanionBlueprint",
                 "fixedRaceBeforeRespec",
-                "fixedRaceFactsBeforeRespec",
-                "seededSlaResourceBeforeRespec",
-                "seededSlaAvailableBeforeRespec",
+                "fixedRaceShellBeforeRespec",
                 "fixedRaceInInitialPreview",
-                "fixedRaceFactsInInitialPreview",
+                "fixedRaceShellInInitialPreview",
+                "raceSelectionAvailable",
+                "fixedRaceSelected",
+                "fixedRaceFactsAfterRaceSelection",
+                "selectedSlaResourceBeforeCommit",
+                "ResolveExecutableAbility",
+                "new AbilityData(root, child)",
+                "ReferenceEquals(result.Executable.Blueprint, result.Ability)",
+                "selectedSlaAvailableBeforeCommit",
+                "selectedSlaContractExact", "IsPassiveSlaReplacement(trait)",
+                "PersistenceSlaAbsentExact(fixture, owner, heritage)",
+                "result.AvailableCount == expectedAmount",
+                "result.Available == (expectedAmount > 0)",
+                "result.Maximum == 1", "result.Amount == expectedAmount",
+                "slaAbsenceExact", "slaCastApplicable",
                 "\"racePreserved\", previewRaceExact",
                 "controller.SelectClass(_gunslingerClass, false)",
                 "ConfigureExpectedDollState(controller.Doll, fixture)",
                 "controller.Commit()",
+                "previewCommonRaceFactsExact",
+                "committedCommonRaceFactsExact",
                 "distinctSourceAndReplacement",
                 "replacementLevelBeforeRespec",
                 "NativeElementalRespecRecordExact",
@@ -1229,7 +1320,9 @@ namespace KingmakerGunslinger.DomainTests
                 "elemental-race-persistence-native-respec",
                 "nativeRespecRecords",
                 "InvokeAbilitySpend(", "AbilityResourceLogic",
-                "costs[0].Spend(ability)",
+                "costs[0].Spend(executable)",
+                "slaAfter.Exact && before == 1 && after == 0",
+                "slaRespent.CastApplicable && slaRespent.Exact && resourceAfterRespend == 0",
                 "RestController.ApplyRest(",
                 "LevelUpState.CharBuildMode.CharGen",
                 "ApplyLevelup", "Progression.CharacterLevel",
@@ -1242,13 +1335,23 @@ namespace KingmakerGunslinger.DomainTests
                 "SerializedElementalClassClothesAbsent",
                 "HasExactHumanoidRig(", "materialsExact",
                 "CaptureContactSheet(", "CaptureIsometric(",
-                "ElementalPersistenceFixtureCount * 5",
+                "expectedFixtureCount * 5",
                 "PartyCharacters", "CrossSceneState.AllEntityData",
                 "ArmExactWorkingSaveWrite", "RemoveEntityData",
+                "ObserveNativeSaveGate", "IsSaveAllowed",
+                "fixturePartyCombatCount", "dualCompanionGuardCount",
+                "_fixtureStagingPosition",
+                "RequireFixtureStagingOutOfCombat",
+                "combatGuardChecks", "createdUnitCombatCount",
+                "elemental-race-persistence-combat-staging",
                 "string.IsNullOrWhiteSpace(_exceptionSummary)",
                 "\"exceptionSummary\", _exceptionSummary",
                 "ExpectedWorkingSaveRoutineCount",
                 "elemental-race-persistence-module-off",
+                "elemental-race-persistence-module-restored",
+                "elemental-race-legacy-migration-state",
+                "elemental-race-legacy-migration-cleanup",
+                "elemental-race-persistence-respec-transition-matrix",
                 "elemental-race-persistence-rest-and-level-up",
                 "elemental-race-persistence-absence",
                 "protected baseline excluded"
@@ -1256,12 +1359,135 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token),
                     "Elemental persistence lacks exact native guard/evidence token: " +
                     token);
+            foreach (string token in new[]
+            {
+                "partial class ElementalRacePersistenceSession",
+                "FeatIdentitiesRegisteredExact",
+                "FeatSelectorStateExact",
+                "ElementalFeatPublication.BasicFeatSelectionGuid",
+                "FighterCombatFeatSelectionGuid",
+                "ExpectedFeatFacts(",
+                "ElementalFeatId.ElementalStrike",
+                "ElementalFeatId.ScorchingWeapons",
+                "ElementalFeatId.InnerFlame",
+                "ElementalFeatId.BlazingAura",
+                "ElementalFeatId.Firesight",
+                "ElementalFeatId.AiryStep",
+                "ElementalFeatId.WingsOfAir",
+                "ElementalFeatId.CloudGazer",
+                "ElementalFeatId.InnerBreath",
+                "ElementalFeatId.HydraulicManeuver",
+                "ElementalFeatId.TritonPortal",
+                "EnsureFeatPersistenceFact",
+                "ExecuteFeatPersistenceAbility",
+                "PrepareFeatPersistenceTransientState",
+                "prepare-immediately-before-save",
+                "new ItemEntityWeapon(",
+                "KingmakerFirearmItemIdentityProvider",
+                "primaryEffect.IsTemporary",
+                "secondaryEffect.IsTemporary",
+                "!primaryEffect.RemoveOnUnequipItem",
+                "!secondaryEffect.RemoveOnUnequipItem",
+                "module-restored-source-before-respec",
+                "RemoveFeatPersistenceShortEffects",
+                "CleanupFeatPersistenceEquipment",
+                "PreparedFeatPersistenceInventoryExact",
+                "FeatPersistenceCleanupInventoryExact",
+                "RetainedFeatPersistenceInventoryCount",
+                "OptionalFeatPersistenceItemId",
+                "nativeItemIdentityAvailable",
+                "pauseApplied",
+                "RestorePrepareFeatPersistencePause",
+                "ReleaseLoadedFeatPersistencePause",
+                "_player.Inventory.Remove(weapon)",
+                "weapon.RemoveEnchantment(effect)",
+                "weapon.Dispose()"
+            })
+                Assertions.True(featSource.Contains(token),
+                    "Elemental feat persistence lacks exact native state/evidence token: " +
+                    token);
+            foreach (string token in new[]
+            {
+                "PrepareFeatPersistenceFixture(",
+                "_preparedFeatTransientState =",
+                "ObserveFeatPersistence(",
+                "CaptureRestoredSourceFeatPersistence(",
+                "bounded save-completion window",
+                "featPersistenceExact",
+                "loadedFeatPersistenceExact",
+                "replacementFeatPersistenceExact",
+                "module-off-loaded-before-level-up",
+                "module-off-after-level-up",
+                "module-off-after-rest",
+                "module-restored-native-respec-replacement",
+                "CleanupFeatPersistenceEquipment(unit)",
+                "ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount"
+            })
+                Assertions.True(source.Contains(token),
+                    "The guarded persistence lifecycle does not enforce its Release B feat extension: " +
+                    token);
+            foreach (string token in new[]
+            {
+                "pauseOnLoadCompletion",
+                "TryApplyLoadCompletionPause(",
+                "post-load-time-pause-pending",
+                "post-load-time-pause-applied",
+                "ReleaseLoadCompletionPause",
+                "post-load-time-pause-released"
+            })
+                Assertions.True(workingSave.Contains(token),
+                    "The guarded loader lacks exact transient-state time ownership: " +
+                    token);
+            int scorchingEndStart = transientRuntime.IndexOf(
+                "internal static void EndScorchingWeapons(",
+                StringComparison.Ordinal);
+            int scorchingEndLimit = transientRuntime.IndexOf(
+                "internal static bool IsElementalStrikeActive(",
+                scorchingEndStart, StringComparison.Ordinal);
+            Assertions.True(scorchingEndStart >= 0 &&
+                    scorchingEndLimit > scorchingEndStart,
+                "The Scorching Weapons transient teardown boundary must remain explicit.");
+            string scorchingEnd = transientRuntime.Substring(
+                scorchingEndStart, scorchingEndLimit - scorchingEndStart);
+            Assertions.False(scorchingEnd.Contains(
+                    "RemoveScorchingWeapons(owner)"),
+                "A buff OnTurnOff callback must not recursively remove its own Scorching Weapons buff.");
+            Assertions.True(scorchingEnd.Contains(
+                    "state.EndScorchingWeapons(expected)") &&
+                scorchingEnd.Contains("RemoveEnchantments(weapon)"),
+                "Scorching Weapons buff teardown must clear the exact persisted snapshot and its item enchantments.");
+            foreach (string token in new[]
+            {
+                "ReconcileAfterUnitLoad(UnitDescriptor owner)",
+                "ReconcileFeatureActivation(Owner",
+                "preserveFutureStateUntilFactsActivate",
+                "activatingFeatureIsExact",
+                "HasElementalStrikeRace(owner)",
+                "HasScorchingRace(owner)",
+                "ReconcileAfterUnitLoad(\n                __instance.Descriptor)"
+            })
+                Assertions.True(transientRuntime.Contains(token),
+                    "Transient feat hydration lacks its ordering-safe reconciliation boundary: " +
+                    token);
+            string loadPause = runner.Substring(runner.IndexOf("pauseOnLoadCompletion: _request.Scenario ==", StringComparison.Ordinal));
+            loadPause = loadPause.Substring(0, loadPause.IndexOf(");", StringComparison.Ordinal));
+            Assertions.True(loadPause.Contains(".ElementalRaceModuleDisabledPersistence ||") &&
+                loadPause.Contains(".ElementalRaceModuleRestoredPersistence"),
+                "Both OFF and restored-ON persistence loads must pause before observing saved transient mechanics.");
+            Assertions.False(source.Contains(
+                    "controller.State.AddSelection(null,"),
+                "Elemental Respec must use the native replayable SelectRace " +
+                "action rather than inject a transient selection state.");
+            Assertions.False(source.Contains(
+                    "_currentUnit.CombatState.LeaveCombat()"),
+                "Normal fixture preparation must fail closed on combat rather than clear it and continue.");
             foreach (string forbidden in new[]
             {
                 "QuickSave", "ScreenCapture", "Input.", "Mouse.",
                 "PlayerPrefs", "gameObject.SetActive"
             })
-                Assertions.False(source.Contains(forbidden),
+                Assertions.False(source.Contains(forbidden) ||
+                    featSource.Contains(forbidden),
                     "Elemental persistence contains a forbidden save/UI token: " +
                     forbidden);
             Assertions.Equal(1, Regex.Matches(source,
@@ -1310,21 +1536,154 @@ namespace KingmakerGunslinger.DomainTests
             int verify = sequence.IndexOf(
                 "& $invoke -Scenario 'elemental-race-module-disabled-persistence'",
                 StringComparison.Ordinal);
+            int reenable = sequence.IndexOf(
+                "Set-ElementalRacesEnabled $true", verify,
+                StringComparison.Ordinal);
+            int restored = sequence.IndexOf(
+                "& $invoke -Scenario 'elemental-race-module-restored-persistence'",
+                StringComparison.Ordinal);
             int finalizer = sequence.IndexOf(
-                "finally {", verify, StringComparison.Ordinal);
+                "finally {", restored, StringComparison.Ordinal);
             int restore = sequence.IndexOf(
                 "    Restore-OriginalFeatureState", finalizer,
                 StringComparison.Ordinal);
             Assertions.True(enable >= 0 && prepare > enable &&
                     disable > prepare && verify > disable &&
-                    finalizer > verify && restore > finalizer,
-                "The exact enabled-prepare, disabled-verify-cleanup, and finally-restored launch order changed.");
+                    reenable > verify && restored > reenable &&
+                    finalizer > restored && restore > finalizer,
+                "The exact enabled-prepare, disabled-verify-preserve, enabled-respec-cleanup, and finally-restored launch order changed.");
             Assertions.False(sequence.Contains(
                     "-Scenario 'elemental-race-persistence-verify-absent'"),
                 "Fresh-load absence must run only after this transaction has returned and restored settings.");
             Assertions.True(sequence.Contains(
                     "run elemental-race-persistence-verify-absent next"),
-                "The two-launch transaction must explicitly hand off the restored-settings fresh-load phase.");
+                "The three-launch transaction must explicitly hand off the restored-settings fresh-load phase.");
+
+            foreach (string token in new[]
+            {
+                "6874dc15a27ded132456dbdd480f47c794543a05",
+                "b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694",
+                "09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262",
+                "dcd73856-39d4-40ce-9b05-77bf249103d7",
+                "$expectedEntryCount = 135",
+                "qualified-elemental-races-0.0.114-release",
+                "release-manifest.json",
+                "Backup-Live-Mod.ps1",
+                "ReadAllBytes($settings)",
+                "WriteAllBytes($settingsTemporary, $settingsBytes)",
+                "$deploymentWhatIfRequested = [bool]$WhatIfPreference",
+                "$WhatIfPreference = $false",
+                "finally {",
+                "Remove-Item -LiteralPath $temporary -Recurse -Force"
+            })
+                Assertions.True(legacyDeployment.Contains(token),
+                    "Pinned 0.0.114 deployment lacks exact provenance or cleanup token: " +
+                    token);
+            int legacyValidation = legacyDeployment.IndexOf(
+                "Assert-KmgNotRunning", StringComparison.Ordinal);
+            int legacyShouldProcess = legacyDeployment.IndexOf(
+                "$PSCmdlet.ShouldProcess", StringComparison.Ordinal);
+            int legacyBackup = legacyDeployment.IndexOf(
+                "Backup-Live-Mod.ps1", StringComparison.Ordinal);
+            Assertions.True(legacyValidation >= 0 &&
+                    legacyShouldProcess > legacyValidation &&
+                    legacyBackup > legacyShouldProcess,
+                "Pinned legacy deployment must validate before authorization and back up only afterward.");
+
+            foreach (string token in new[]
+            {
+                "[ValidateSet('KMG_AUTOMATION_WORKING')]",
+                "Assert-KmgReusableDeployment",
+                "Deploy-QualifiedElementalRaces114.ps1",
+                "ReuseQualifiedElementalRaces114Release = $true",
+                "'elemental-race-legacy-migration'",
+                "'elemental-race-persistence-verify-absent'",
+                "ReadAllBytes($settings)",
+                "Restore-OriginalFeatureState",
+                "protectedBaselineExcluded = $true",
+                "resultSha256 = Get-KmgSha256",
+                "evidenceManifestSha256 = Get-KmgSha256",
+                "restoredDeploymentManifestPath",
+                "Feature-module settings existence or bytes were not restored exactly."
+            })
+                Assertions.True(legacySequence.Contains(token),
+                    "Legacy migration transaction lacks exact guard, evidence, or restoration token: " +
+                    token);
+            Assertions.False(legacySequence.Contains(
+                    "KMG_AUTOMATION_BASELINE"),
+                "The protected baseline must never be named by the legacy migration transaction.");
+            int deployOld = legacySequence.IndexOf(
+                "$legacyDeploymentManifestPath = & $deployLegacy",
+                StringComparison.Ordinal);
+            int prepareOld = legacySequence.IndexOf(
+                "-Scenario 'elemental-race-persistence-prepare'",
+                deployOld, StringComparison.Ordinal);
+            int deployNew = legacySequence.IndexOf(
+                "$migrationDeploymentManifestPath = & $deployCurrent",
+                prepareOld, StringComparison.Ordinal);
+            int migrate = legacySequence.IndexOf(
+                "-Scenario 'elemental-race-legacy-migration'",
+                deployNew, StringComparison.Ordinal);
+            int absent = legacySequence.IndexOf(
+                "-Scenario 'elemental-race-persistence-verify-absent'",
+                migrate, StringComparison.Ordinal);
+            int migrationFinally = legacySequence.IndexOf(
+                "finally {", absent, StringComparison.Ordinal);
+            int restoreSettings = legacySequence.IndexOf(
+                "Restore-OriginalFeatureState", migrationFinally,
+                StringComparison.Ordinal);
+            int restoreCurrent = legacySequence.IndexOf(
+                "$restoredDeploymentManifestPath = & $deployCurrent",
+                restoreSettings, StringComparison.Ordinal);
+            Assertions.True(deployOld >= 0 && prepareOld > deployOld &&
+                    deployNew > prepareOld && migrate > deployNew &&
+                    absent > migrate && migrationFinally > absent &&
+                    restoreSettings > migrationFinally &&
+                    restoreCurrent > restoreSettings,
+                "Legacy qualification must run old producer, current migration, absence, then finally restore settings and current artifact.");
+
+            foreach (string token in new[]
+            {
+                "[switch]$ReuseQualifiedElementalRaces114Release",
+                "-PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release",
+                "Current-source and qualified-legacy artifact reuse are mutually exclusive.",
+                "Qualified 0.0.114 reuse permits only elemental-race-persistence-prepare",
+                "Assert-KmgQualifiedElementalRaces114Deployment",
+                "-QualifiedElementalRaces114DeploymentManifestPath"
+            })
+                Assertions.True(launcher.Contains(token),
+                    "The central guarded launcher lacks pinned legacy reuse isolation: " +
+                    token);
+            Assertions.True(harness.Contains(
+                    "function Assert-KmgQualifiedElementalRaces114Deployment") &&
+                harness.Contains(
+                    "function Assert-KmgQualifiedLegacyRuntimeOverlay") &&
+                harness.Contains(
+                    "qualified-elemental-races-0.0.114-release") &&
+                harness.Contains(
+                    "^KingmakerGunslinger\\.dll\\.[1-9][0-9]*\\.cache$") &&
+                harness.Contains(
+                    "runtime-generated DLL cache differs from the exact qualified DLL") &&
+                harness.Contains(
+                    "Test-KmgFlatJsonEquivalent") &&
+                harness.Contains(
+                    "feature-settings backup differs from the exact deployed bytes") &&
+                evidenceCollector.Contains(
+                    "[string]$QualifiedElementalRaces114DeploymentManifestPath") &&
+                evidenceCollector.Contains(
+                    "Current-source and qualified-legacy evidence package authorities are mutually exclusive.") &&
+                evidenceCollector.Contains(
+                    "qualifiedLegacyRuntimeOverlay = $qualifiedLegacyRuntimeOverlay"),
+                "Legacy evidence collection must independently revalidate the pinned deployment authority.");
+            Assertions.True(automation.Contains(
+                    "[switch]$PermitQualifiedElementalRaces114") &&
+                automation.Contains(
+                    "$Scenario -ceq 'elemental-race-persistence-prepare'") &&
+                automation.Contains(
+                    "$ExpectedVersion -ceq '0.0.114'") &&
+                automation.Contains(
+                    "The qualified 0.0.114 preflight exception is limited to the Elemental Race legacy persistence producer."),
+                "The old-version preflight exception must be explicit and scenario/version exact.");
         }
 
         internal static void FinalistRaceMatrixIsExactAndReversible()

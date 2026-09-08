@@ -125,6 +125,167 @@ namespace KingmakerGunslinger.DomainTests
                     scenario +
                     " must remain autonomous, save-free, and selector-free.");
             }
+
+            string donor = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalHeritageDonorAuditScenario.cs");
+            const string donorScenario =
+                "observe-elemental-heritage-donors";
+            const string blueprintScenario =
+                "observe-elemental-heritage-blueprints";
+            const string mechanicsScenario =
+                "disposable-elemental-heritage-mechanics";
+            const string slaScenario =
+                "disposable-elemental-heritage-slas";
+            foreach (string token in new[]
+            {
+                "Firebelly", "Flare Burst", "Color Spray",
+                "Unerring Weapon", "Expeditious Retreat",
+                "Shocking Grasp", "Blur", "Chill Touch",
+                "OfType<BlueprintAbility>()",
+                "OfType<BlueprintSpellList>()", "value.Contains(ability)",
+                "ability.ComponentsArray", "ability.Parent",
+                "ability.Variants", "SaveStateTouched = false",
+                "ContractResolver = new DefaultContractResolver()",
+                "PreserveReferencesHandling.None",
+                "ReferenceLoopHandling.Error"
+            })
+                Assertions.True(donor.Contains(token),
+                    "Heritage donor audit lacks inventory token: " + token);
+            string compatibility = Read("scripts", "compatibility",
+                "Invoke-KingmakerCompatibilityProfile.ps1");
+            Assertions.True(catalog.Contains(donorScenario) &&
+                runner.Contains(
+                    "ElementalHeritageDonorAuditScenario.Run(") &&
+                automation.Contains("'" + donorScenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + donorScenario + "'") &&
+                compatibility.Contains("'" + donorScenario + "'") &&
+                project.Contains(
+                    "ElementalHeritageDonorAuditScenario.cs"),
+                "Heritage donor audit is not wired through every guarded surface.");
+            string heritageBlueprints = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalHeritageBlueprintScenario.cs");
+            Assertions.True(catalog.Contains(blueprintScenario) &&
+                catalog.Contains("ObserveElementalHeritageBlueprints,") &&
+                runner.Contains("ElementalHeritageBlueprintScenario.Run(") &&
+                automation.Contains("'" + blueprintScenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + blueprintScenario + "'") &&
+                compatibility.Contains("'" + blueprintScenario + "'") &&
+                project.Contains("ElementalHeritageBlueprintScenario.cs") &&
+                heritageBlueprints.Contains("HeritageIdentityCount") &&
+                heritageBlueprints.Contains("BlueprintsByAssetId") &&
+                heritageBlueprints.Contains(
+                    "ContractResolver = new DefaultContractResolver()") &&
+                heritageBlueprints.Contains("PreserveReferencesHandling.None") &&
+                heritageBlueprints.Contains("ReferenceLoopHandling.Error") &&
+                heritageBlueprints.Contains("SaveStateTouched = false") &&
+                heritageBlueprints.Contains("CharacterRaces"),
+                "Heritage blueprint observer is not wired through every guarded surface.");
+            string heritageMechanics = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalHeritageMechanicsScenario.cs");
+            Assertions.True(catalog.Contains(mechanicsScenario) &&
+                catalog.Contains("DisposableElementalHeritageMechanics,") &&
+                runner.Contains("ElementalHeritageMechanicsScenario.Run(") &&
+                automation.Contains("'" + mechanicsScenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + mechanicsScenario + "'") &&
+                compatibility.Contains("'" + mechanicsScenario + "'") &&
+                project.Contains("ElementalHeritageMechanicsScenario.cs") &&
+                heritageMechanics.Contains(
+                    "ElementalHeritageRuntime.Reconcile") &&
+                heritageMechanics.Contains(
+                    "LoadHydrationOrphanRemovedExact") &&
+                heritageMechanics.Contains(
+                    "owner.Abilities.AddFact(general.SlaAbility, null)") &&
+                heritageMechanics.Contains("FeatureSelectionState") &&
+                heritageMechanics.Contains("PersistantResources") &&
+                heritageMechanics.Contains("AbilityExecutionContext") &&
+                heritageMechanics.Contains("SaveStateTouched = false") &&
+                heritageMechanics.Contains(
+                    "ContractResolver = new DefaultContractResolver()") &&
+                heritageMechanics.Contains(
+                    "PreserveReferencesHandling.None") &&
+                heritageMechanics.Contains(
+                    "ReferenceLoopHandling.Error"),
+                "Heritage mechanics scenario is not wired through every guarded surface.");
+            int mechanicsOffset = automation.IndexOf("'" +
+                mechanicsScenario + "' = [pscustomobject]",
+                StringComparison.Ordinal);
+            Assertions.True(mechanicsOffset >= 0 &&
+                automation.Substring(mechanicsOffset, Math.Min(500,
+                    automation.Length - mechanicsOffset)).Contains(
+                        "RequiresSaveName = $false") &&
+                automation.Substring(mechanicsOffset, Math.Min(500,
+                    automation.Length - mechanicsOffset)).Contains(
+                        "RequiresManualInteraction = $false") &&
+                automation.Substring(mechanicsOffset, Math.Min(500,
+                    automation.Length - mechanicsOffset)).Contains(
+                        "ReadinessBehavior = 'mod-load'"),
+                "Heritage mechanics scenario must remain autonomous and save-free.");
+            string heritageSlas = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalHeritageSlaScenario.cs");
+            string heritageRuleComponents = Read("src",
+                "KingmakerGunslinger", "ElementalRaces",
+                "ElementalHeritageRuleComponents.cs");
+            Assertions.True(catalog.Contains(slaScenario) &&
+                catalog.Contains("DisposableElementalHeritageSlas,") &&
+                runner.Contains("ElementalHeritageSlaScenario.Run(") &&
+                automation.Contains("'" + slaScenario +
+                    "' = [pscustomobject]") &&
+                preflight.Contains("'" + slaScenario + "'") &&
+                compatibility.Contains("'" + slaScenario + "'") &&
+                project.Contains("ElementalHeritageSlaScenario.cs") &&
+                heritageSlas.Contains("UnitUseAbility") &&
+                heritageSlas.Contains("AbilityExecutionProcess") &&
+                heritageSlas.Contains("ItemEnchantment") &&
+                heritageSlas.Contains("RuleAttackRoll") &&
+                heritageSlas.Contains("TouchSpellsController") &&
+                heritageSlas.Contains("UnitPartElementalChillTouch") &&
+                heritageSlas.Contains("SaveStateTouched = false") &&
+                heritageSlas.Contains(
+                    "ContractResolver = new DefaultContractResolver()") &&
+                heritageSlas.Contains(
+                    "PreserveReferencesHandling.None") &&
+                heritageSlas.Contains("ReferenceLoopHandling.Error"),
+                "Heritage SLA scenario is not wired through every guarded surface.");
+            Assertions.True(heritageRuleComponents.Contains(
+                    "HarmonyBefore") &&
+                heritageRuleComponents.Contains("CallOfTheWild") &&
+                heritageSlas.Contains("appliedProject.before") &&
+                heritageSlas.Contains(
+                    "!callOfTheWildInstalled || beforeCallOfTheWild"),
+                "Chill Touch must retain its exact project charges before " +
+                "Call of the Wild's broader sticky-touch prefix.");
+            int slaOffset = automation.IndexOf("'" + slaScenario +
+                "' = [pscustomobject]", StringComparison.Ordinal);
+            Assertions.True(slaOffset >= 0 &&
+                automation.Substring(slaOffset, Math.Min(500,
+                    automation.Length - slaOffset)).Contains(
+                        "RequiresSaveName = $false") &&
+                automation.Substring(slaOffset, Math.Min(500,
+                    automation.Length - slaOffset)).Contains(
+                        "RequiresManualInteraction = $false") &&
+                automation.Substring(slaOffset, Math.Min(500,
+                    automation.Length - slaOffset)).Contains(
+                        "ReadinessBehavior = 'mod-load'"),
+                "Heritage SLA scenario must remain autonomous and save-free.");
+            Assertions.False(donor.Contains("SaveManager") ||
+                donor.Contains("Game.Instance.Player.Party") ||
+                donor.Contains("KMG_AUTOMATION_BASELINE"),
+                "Heritage donor audit must remain save-free.");
+            Assertions.False(heritageBlueprints.Contains("SaveManager") ||
+                heritageBlueprints.Contains("Game.Instance.Player.Party") ||
+                heritageBlueprints.Contains("KMG_AUTOMATION_BASELINE"),
+                "Heritage blueprint observer must remain save-free.");
+            Assertions.False(heritageMechanics.Contains("SaveManager") ||
+                heritageMechanics.Contains("Game.Instance.Player.Party") ||
+                heritageMechanics.Contains("KMG_AUTOMATION_BASELINE"),
+                "Heritage mechanics scenario must remain save-free.");
+            Assertions.False(heritageSlas.Contains("SaveManager") ||
+                heritageSlas.Contains("Game.Instance.Player.Party") ||
+                heritageSlas.Contains("KMG_AUTOMATION_BASELINE"),
+                "Heritage SLA scenario must remain save-free.");
         }
 
         internal static void ClassClothingMatrixIsExactAndSaveFree()

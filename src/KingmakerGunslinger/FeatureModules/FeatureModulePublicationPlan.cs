@@ -28,6 +28,7 @@ namespace KingmakerGunslinger.FeatureModules
             ProtectionFromAlignmentControlImmunity =
                 active.ProtectionFromAlignmentControlImmunity;
             ElementalRaceSelectors = active.ElementalRaces;
+            ElementalRaceFeats = active.ElementalRaces;
         }
         internal bool GunslingerClass { get; private set; }
         internal bool GunslingerFeats { get; private set; }
@@ -52,5 +53,6 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool BodyguardFeats { get; private set; }
         internal bool ProtectionFromAlignmentControlImmunity { get; private set; }
         internal bool ElementalRaceSelectors { get; private set; }
+        internal bool ElementalRaceFeats { get; private set; }
     }
 }

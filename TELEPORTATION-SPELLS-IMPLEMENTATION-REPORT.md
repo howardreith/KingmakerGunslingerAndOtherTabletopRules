@@ -1,8 +1,15 @@
 # Contextual world-map teleportation implementation report
 
-Status: IN PROGRESS. Native desktop and gamepad contextual casting have
-structured runtime evidence; complete feature and compatibility qualification
-remain unfinished. Release metadata remains 0.0.116.
+Status: OWNER-AUTHORIZED RELEASE 0.0.118. Native desktop and gamepad contextual
+casting have structured runtime evidence. The owner explicitly instructed:
+"Alright, just go ahead and finalize this work, push it to remote, and cut a
+release. I'll test the teleport functionality in my current high level game and
+will circle back with any issues."
+
+This supersedes the original all-gates-before-publication restriction. Remaining
+campaign and compatibility qualification is delegated to owner testing and is
+not reported as passed. The historical checkpoint records below retain their
+original artifact versions and pending status.
 
 ## Base and scope
 
@@ -13,7 +20,8 @@ commits, including published 0.0.115 and 0.0.116 work, were inspected and retain
 See `docs/TELEPORTATION-NATIVE-FORENSICS.md` for the reconciliation. Branch:
 `codex/contextual-world-map-teleportation`. No merge or history rewrite occurred.
 
-Final qualified source SHA: pending completion of all required gates.
+Release source SHA and publication evidence: recorded in the final 0.0.118
+publication addendum. Full original qualification is not claimed.
 
 Pushed coherent checkpoints:
 
@@ -106,7 +114,7 @@ full campaign persistence remain open. Exact scope and evidence follow below.
 
 ## Validation checkpoints
 
-- Current domain suite: 1,490 passing cases, including 4,096 module settings round
+- Pre-integration domain suite: 1,490 passing cases, including 4,096 module settings round
   trips and 4,096 publication-intent combinations. The guarded catalog generates
   26 boundary configurations for 12 modules.
 - Clean Release build and strict installable-package validation passed for the
@@ -1096,3 +1104,87 @@ remain unresolved. Existing 0.0.115/0.0.116 releases will be preserved.
 
 These checkpoints do not establish complete feature, final compatibility or
 release readiness.
+
+
+## Owner-authorized 0.0.118 finalization and released-baseline reconciliation
+
+Fresh master inspection on 2026-09-08 found a newer public release:
+`v0.0.117` at `f8a2fd996752afb0e361a53bec175328ace5435a`, with evidence-only
+master head `8e5eeae7973c71ca4b78dc8216d00d815af7ea26`. Its first-parent changes
+since the original clean base are the accepted Elemental stabilization merge
+and its release-evidence merge. Every included source/project/test/documentation
+change was inspected through the aggregate diff and intervening commit inventory.
+
+The branch retains the released content through an additive three-way patch,
+with no merge command, reset, force push, history rewrite or changes to master.
+Shared bootstrap/publication plans retain both the newer Elemental Feats and
+Teleportation transactions. The explicit projects and domain runner include
+both sets of sources/tests. Settings retain Teleportation's module 12/schema 11.
+All 1,869 released manifest entries remain the exact prefix, followed by the
+three stable strategic spells. Canonical sorted-JSON SHA256 of that prefix:
+`c648ebdad613e50c36b97f3337e8247a870d5ec24abc8df55b4f9e9a6a33519b`.
+
+The 0.0.117 public ZIP SHA256 is
+`9368c1ff2c82b76574bab5ed75868d7eb633e759f925e82a1c0da7e861f62f6f`.
+Versions 0.0.115, 0.0.116 and 0.0.117 are already published and remain untouched;
+this feature therefore uses the next unused version, **0.0.118**. Active metadata,
+package validation, launch defaults and test expectations advance together.
+Historical runtime claims keep their original versions. Current compatibility
+profile dispositions are reset to NOT-TESTED while preserving their historical
+notes, so changing the target ZIP never relabels an old pass as 0.0.118 evidence.
+
+The owner has accepted the remaining manual qualification for release. Native
+save-load instrumentation traced the isolated working-save failure to Craft
+Magic Items dynamic blueprints before the fixture entered; no save is converted
+or repaired. The current installed stack remains the valid guarded save-backed
+control. The complete isolated profile matrix, full campaign disk persistence,
+Arms and Armor and exact UMM 0.32.4 remain unqualified. The save-owned native
+serialization/preview evidence remains valid within its documented scope.
+
+Final combined checks and publication identifiers follow in the release addendum.
+
+
+### Combined 0.0.118 source qualification
+
+After retaining published master, the explicit Release domain command passes
+all **1,550** cases. `build.ps1 -Configuration Release -Clean -Package` passes,
+including repository invariants, production compilation with warnings as errors,
+asset validation and the strict 135-file standalone UMM package check. Guarded
+launcher preflight passes **279** checks. Compatibility filesystem transaction,
+runner binding and optional-observer contracts pass. Initial integration-only
+failures (stale package expectations and duplicate expected scenario names) were
+corrected; no gameplay behavior was changed to satisfy those checks.
+
+Local logs are under `artifacts/teleportation/`: `domain-118.log`, `build-118.log`,
+`repository-118.log`, `preflight-118.log`, `profile-118.log` and
+`observer-contract-118.log`. They are deliberately not committed.
+
+Three fresh guarded Steam App ID 640820 runs pass **114 assertions** on the same
+combined source artifact and named `KMG_AUTOMATION_WORKING` save:
+
+| Scenario | Run ID | Result | Result path beneath runtime-evidence |
+|---|---|---|---|
+| `disposable-teleportation-casting` | `20260908T1731289589213Z-97942575379440cebd17b9bb7d4bb3f9` | 44 PASS | `20260908T1731289479209Z-disposable-teleportation-casting/runtime-result.json` |
+| `disposable-teleportation-spellbook-ui` | `20260908T1734462789995Z-0aa7d6034ac5454bb9f6a3fb4fae4080` | 31 PASS | `20260908T1734462649362Z-disposable-teleportation-spellbook-ui/runtime-result.json` |
+| `disposable-teleportation-gamepad` | `20260908T1737209898042Z-33121ef59d8e4022b1296867d7273ccd` | 39 PASS | `20260908T1737209782750Z-disposable-teleportation-gamepad/runtime-result.json` |
+
+The shared deployment record is
+`deployments/20260908T1731289133268Z/deployment.json`. Its exact identity is:
+
+- Recorded parent Git commit: `66d39f723191607c4886fc746904d5af7aee130f` with the
+  reconciled release source present as a dirty, fingerprinted working tree.
+- Source-state SHA256: `30b25e31d55a66ee06e4bcd42b63a85126396fe047dc2a79d3060c27bbb4f1ad`.
+- Package SHA256: `395e6aa0343d4b119381f17754c6d37055f11a041f963993627873fbee23cb3c`.
+- DLL SHA256: `8e18ac4f6103fb6a01242b4d6622db077065b6e3386d9fabbfd2ed617b261457`.
+- DLL MVID: `1fcefd8b-9c68-4e2e-b33e-620098c28eec`.
+- Preserved module settings SHA256: `a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749`.
+
+The casting run proves the real prepared/spontaneous transaction, native
+context/confirmation, rules-level outcomes and relocation invariants after the
+released-master incorporation. The spellbook run proves native rows, preparation,
+action-bar exclusion and deferred cleanup. The controller run proves native
+navigation, default Travel, cancellation and actual spell confirmation/casting.
+All fixture and observer cleanup assertions pass. Campaign save-writing is not
+used to persist fixture state. These runs are the release preparation checkpoint;
+the committed release artifact carries its own embedded Git identity and is
+reported separately below after final publication verification.

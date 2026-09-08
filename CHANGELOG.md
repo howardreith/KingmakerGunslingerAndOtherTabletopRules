@@ -1,6 +1,19 @@
 # Changelog
 
-## Unreleased: contextual world-map teleportation in development
+## 0.0.118-contextual-world-map-teleportation
+
+- Adds Teleport (Wizard/Sorcerer 5), Greater Teleport (7), and Word of Recall
+  (Cleric 6 / Druid 8) through native world-map destination actions, using real
+  spellbook uses and a confirmation. The module defaults ON; no automatic grants.
+- Preserves ordinary Travel and the vanilla interaction when no spell is usable.
+  Includes exact Teleport odds, persistent familiarity, legal alternate arrivals,
+  repeated mishap damage, and exact Greater Teleport / Recall placement.
+- Retains all published 0.0.117 Elemental Races content and stable identities.
+- Owner explicitly authorized release for high-level campaign testing. Complete
+  save-backed isolated compatibility, full campaign disk persistence, Arms and
+  Armor, and UMM 0.32.4 remain unqualified; see the implementation report.
+
+### Earlier teleportation qualification checkpoints (historical)
 
 - Adds guarded native save-load diagnostics. Contextual casting still passes 44
   assertions; the isolated load failure is traced to Craft Magic Items data in
@@ -63,6 +76,135 @@
   Full save/reload, mod-provided mounts, remaining UI cases and complete
   compatibility qualification remain incomplete. Release metadata is unchanged.
 
+## 0.0.117 public release
+
+- Adds twelve heritage choices, eleven elemental feats and nineteen implemented
+  alternate racial traits to the existing Elemental Races module.
+- Presents heritage and alternate racial choices before ability allocation and
+  skills, with legal retain-base choices and deterministic back-navigation.
+- Preserves both ordinary ZFavoredClass Trait selections and publishes Helpful
+  once without populating its intentionally empty Combat Features array.
+- Preserves spent racial resources through native respec and save/load, and
+  stabilizes the visible traits' action costs, provider cleanup and lifecycles.
+- Keeps Treacherous Earth and Nereid Fascination registered but unavailable.
+- Includes the released Roadwarden, Dead Reckoning and Protection wording changes.
+
+The owner accepted the installed stabilization candidate and authorized merge,
+push and publication. Gameplay source and existing identities are unchanged
+during release preparation. Exact artifacts and verification are recorded in
+[the release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md).
+
+The candidate sections below retain their historical evidence and status.
+
+## 0.0.117-elemental-char-gen-stabilization
+
+- Route elemental heritages and alternate racial traits through the native
+  Heritage phase before ability allocation and skills.
+- Preserve ZFavoredClass's intentionally empty Combat `Features` array and
+  append Helpful exactly once to its authoritative `AllFeatures` catalog.
+- Keep Treacherous Earth and Nereid Fascination identities registered while
+  removing their no-op choices from character creation and respec.
+- Preserve owned visual assets during repeated creator reconstruction and
+  preserve spent daily resources and blood expenditure through native respec.
+- Qualify all 19 visible alternate traits through fresh-process persistence,
+  physical lifecycles, exact cleanup, native action costs, and attack boundaries.
+
+Final artifact profiles and owner UI acceptance remain separate gates. This is
+an unpublished disposable stabilization candidate; no content expansion occurs.
+
+## 0.0.117-elemental-traits
+
+- Adds Breeze-Kissed's owned native core with seven fixed identities: ranged
+  defense, swift calm/renew and a daily Standard Bull Rush/Trip using ordinary
+  native CMB. All 1,432 tests, clean build/package and two guarded profiles
+  pass 11,376 assertions with exact restoration. Broader attack-source,
+  turn-based and fresh-save/lifecycle gates remain; not full Release C PASS.
+  See the [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREEZE-KISSED-CORE-CHECKPOINT.md).
+
+- Integrates the separately published 0.0.115 Brown-Fur direct-cast fix from
+  authoritative master without changing elemental identities or mechanics.
+  All 1,431 tests, clean build/package, 30 compiled API checks and six guarded
+  processes pass; native-command and strict working-payload controls remain
+  distinct from NOT-RUN direct-consumer Instant gameplay. See the
+  [integration checkpoint](docs/ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md).
+
+- Qualifies native RTWP breath action commitment and the append-only ten-trait
+  save matrix: all 1,428 tests, clean build/package and nine guarded processes
+  pass 11,325 assertions, including renewed pinned 0.0.114 migration.
+  Exact saved Sickened context/duration, spent uses, OFF/ON/rest/level/respec
+  and fresh absence pass. No new identities or production rules. Retained
+  warnings and turn-based/full-release limits are in the
+  [action/save checkpoint](docs/ELEMENTAL-RACES-0.0.117-BREATH-PERSISTENCE-CHECKPOINT.md).
+- Adds Acid Breath and Ooze Breath with four fixed ability/resource identities,
+  native five-foot acid cones, exact current-CON parameters and Reflex halving.
+  Ooze applies three-round non-poison Sickened only on a failed save. All 1,427
+  tests, clean build/package and 10,936 assertions in two native profiles pass.
+  The later action/save checkpoint above supplies new RTWP and save proof. See
+  the [focused breath checkpoint](docs/ELEMENTAL-RACES-0.0.117-UNDINE-BREATHS-CHECKPOINT.md).
+- Avoids attempted feat-transient restoration inside native disabled level-up
+  previews, preserving exact original buffs, item effects and absolute expiry.
+  All 1,424 tests, clean build/package and nine guarded processes pass 10,594
+  assertions, including renewed eight-trait saves and pinned 0.0.114 migration.
+  No identity/schema changes. This repairs the inherited service in 117, not
+  the retained 116 ZIP. See the [preview checkpoint](docs/ELEMENTAL-RACES-0.0.117-FEAT-PREVIEW-CHECKPOINT.md).
+- Strengthens Crystalline native-command coverage for delayed multi-ray casts,
+  duplicate impact notifications, non-damage effects and native hand states.
+  All 1,424 tests, clean build/package and 10,242 guarded assertions pass.
+  No production rule or identity changes; the remaining-trait donor audit is
+  read-only. See the [controls checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CONTROLS-CHECKPOINT.md).
+- Preserves exact owned providers during native whole-unit save suspension,
+  preventing Crystalline consent from being silently reset before serialization.
+  The eight-trait save matrix and renewed 0.0.114 migration pass alongside
+  1,424 tests and native KMG-only/combined regressions. Exact failures, warnings
+  and remaining gates are retained in the
+  [persistence checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-PERSISTENCE-CHECKPOINT.md).
+- Adds Crystalline Form's exact-ray racial AC and opt-in daily native impact
+  deflection with three stable resource/buff/mode identities. Full 1,423 tests,
+  clean build/package and two guarded KMG-only/combined processes pass 10,168
+  assertions. Complete ray/catalog and save-backed gates remain separate; see
+  the [core checkpoint](docs/ELEMENTAL-RACES-0.0.117-CRYSTALLINE-CORE-CHECKPOINT.md).
+- Adds incrementally qualified Efreeti Magic: Enlarge Person
+  and Reduce Person wrappers share one persisted daily resource and retain
+  native person targeting. All 1,421 tests and clean build/package pass.
+  Nine guarded processes pass 10,066 assertions: native KMG-only/combined,
+  actual multi-trait OFF/ON saves, shared spent uses and active size buffs,
+  rest/level/respec/cleanup, and renewed pinned 0.0.114 migration. Visual
+  diagnostics and full Release C lifecycle/compatibility gates remain explicit.
+- Adds 62 fixed manifest identities for ten explicit replacement-slot
+  selections, ten retain-base markers, 21 visible alternate-trait markers,
+  and 21 separate hidden mechanic providers.
+- Adds an exhaustive pure replacement policy for Energy Resistance,
+  Elemental Affinity, and Racial Spell-Like Ability slots across every parent
+  race, heritage, legal combination, invalid overlap, and fact-order
+  transition.
+- Extends the owned heritage reconciler to compute one desired provider state,
+  preserve spent racial-SLA amounts, and remove only exact project-owned
+  resistance, affinity, SLA, ability, and alternate-trait provider facts.
+- Adds each relevant slot selector to the existing parent race without adding
+  top-level races, a module toggle, a schema revision, or dynamic identities.
+- Implements Wildfire Heart, Brazen Flame, Forge-Hardened, Granite Skin,
+  Like the Wind, Secretive, Thunderous Resilience, and Whispering Wind with
+  native stat/resistance components and narrow save/damage rules.
+- Makes Scorching Weapons' existing fire nonstacking policy independent of
+  later-acquired Brazen Flame by removing only its exact owned damage packet.
+- Gives Acadamae's self-fatigue save the existing native fatigue reason, with
+  unchanged DC, command, resource, and fatigue-resolution behavior.
+- Qualifies this first passive slice with 1,415 tests, clean build/package,
+  eight guarded processes, 13,397 assertions, zero runtime warnings, and
+  exact KMG-only/combined profile restoration, including module-OFF.
+- Implements Fire, Earth and Air Insight through exact native spell-family
+  and creature-subtype checks; focused native command and rule tests pass.
+- Adds three fixed blood-trait buff identities and a shared native reactive-
+  healing implementation that counts only HP actually received against the
+  persisted daily cap. Focused native checks pass in KMG-only and highest-risk
+  combined profiles; trait-bearing persistence remains pending.
+- The current component-name repair passes pinned 0.0.114 migration mechanics
+  in three fresh processes (28 assertions), preserving spent uses and appearance
+  data; subjective visual review is separate.
+- Release C remains in progress: three mechanics remain to implement;
+  complete Crystalline, all-trait persistence/lifecycle and final release-wide
+  gates are pending. Earlier incremental results retain their historical scope.
+
 ## 0.0.116-midgame-firearms-and-protection
 
 - Adds Roadwarden (+3 Reliable musket, 33,800 gp) and Dead Reckoning
@@ -76,6 +218,62 @@
   boundary states, native shop transactions, firearm rules, and fresh-process
   purchase/save/load/cleanup checks. The owner authorized final integration
   and public release.
+
+## 0.0.116-elemental-feats
+
+- Adds 25 fixed manifest identities for eleven elemental racial feats and
+  their nine abilities, four buffs, and one exact-item weapon enchantment.
+- Registers every Release B identity unconditionally so module-OFF loads can
+  resolve feat-bearing saves, while publication remains controlled by the
+  existing `elemental-races` setting with no schema revision.
+- Publishes all eleven feats to the universal selector and only Elemental
+  Strike, Scorching Weapons, Inner Flame, and Blazing Aura to the Fighter
+  combat-feat selector through deterministic, exact-GUID-aware, reversible
+  transactions.
+- Binds prerequisites to exact project race and provider blueprints and records
+  exact level/feat requirements, action economy, honest Kingmaker limitations,
+  and approved native adaptations.
+- Implements and independently qualifies every required Release B feat
+  mechanic through native command, attack, damage, save, concealment, buff,
+  equipment, combat-maneuver, summon, targeting, and rest paths. Hydraulic
+  Maneuver exposes native Bull Rush, Disarm, Trip, and Dirty Trick (blind),
+  while Triton Portal summons 1d3 exact native Small Water Elementals using
+  the shared racial Hydraulic Push use.
+- Persists command-created one-round Elemental Strike and exact-item Scorching
+  Weapons state through direct stable item references plus absolute game-time
+  expiry, including module-OFF hydration, without retargeting swapped gear or
+  restoring expired/ineligible effects. A 24-fixture three-process transaction
+  and fourth-process absence pass.
+- Qualifies the final candidate with 1,408/1,408 deterministic cases, a clean
+  exact-reference Release build, strict 135-entry package validation, a
+  five-process 73/73 integrated mechanics regression, and 31/31 guarded
+  compatibility processes spanning all six required installed profiles in
+  both module states. All 12 profile transactions restored the original mod
+  tree and settings exactly. Visual Adjustments was absent and is NOT-RUN.
+
+## 0.0.115-elemental-heritages
+
+- Adds one obligatory three-choice heritage selection to each existing Ifrit,
+  Oread, Sylph, and Undine race without adding top-level races or changing any
+  0.0.114 race, General affinity, General SLA, or General resource GUID.
+- Implements General plus Lavasoul/Sunsoul, Gemsoul/Ironsoul,
+  Smokesoul/Stormsoul, and Mistsoul/Rimesoul with exact net racial-stat
+  overlays, one active affinity provider, and one active racial SLA provider.
+- Uses audited native Firebelly, Flare Burst, Color Spray, Expeditious Retreat,
+  Shocking Grasp, and Blur behavior. Unerring Weapon and Chill Touch use narrow
+  project-owned native-rule implementations with stable child and item
+  enchantment identities.
+- Treats a missing heritage marker on an existing 0.0.114 character as General.
+  Provider reconciliation is exact-identity scoped, idempotent, and preserves
+  remembered daily-resource amounts instead of restoring a spent use.
+- Retains the hardened spell-only elemental-affinity predicate and exact
+  Charisma-based racial SLA DC/total-character-level caster-level contract.
+- Qualifies Release A through the complete 1,407-case suite, clean build and
+  strict package validation, dedicated blueprint/mechanics/SLA runs,
+  24-fixture ON/OFF/ON persistence, exact 0.0.114 migration, native visual
+  state transitions, and twelve restoration-verified transactions spanning
+  all six required installed compatibility profiles. Visual Adjustments was
+  absent and remains NOT-RUN.
 
 ## 0.0.115-share-transmutation-instant
 
@@ -1083,7 +1281,7 @@
   disturbing native facts from other classes.
 - Adds five focused policy cases; the complete suite is 795 tests.
 
-## 0.0.52 — Sprint 52 Lightning Reload
+## 0.0.52 â€” Sprint 52 Lightning Reload
 
 - Adds the level-eleven swift-action Lightning Reload deed for one equipped
   firearm chamber once per round while grit remains, without spending grit.
@@ -1091,45 +1289,45 @@
   Broken condition, and rolls back its unit-local round marker on failure.
 - Adds six focused policy cases; the complete suite is 790 tests.
 
-## 0.0.51 — Sprint 51 Expert Loading
+## 0.0.51 â€” Sprint 51 Expert Loading
 
 - Adds the level-eleven free-action pre-shot Expert Loading adaptation.
 - An armed Broken early-firearm misfire spends exactly 1 grit, remains Broken,
   and suppresses the otherwise native Broken-to-Wrecked burst.
 - Adds four focused policy cases; the complete suite is 784 tests.
 
-## 0.0.50 — Sprint 50 Bleeding Wound
+## 0.0.50 â€” Sprint 50 Bleeding Wound
 
 - Adds the level-eleven four-choice Bleeding Wound deed with free-action
   pre-shot selection, exact post-hit grit costs, ordinary firearm damage, and
   persistent native-descriptor HP or ability-score bleed.
 - Adds four focused policy cases; the complete suite is 780 tests.
 
-## 0.0.47 — Sprint 47 Targeting Legs
+## 0.0.47 â€” Sprint 47 Targeting Legs
 
-- Adds the level-seven full-round Targeting — Legs deed with normal firearm
+- Adds the level-seven full-round Targeting â€” Legs deed with normal firearm
   damage and a native automatic-strength Trip rider that preserves native
   sneak/trip immunity.
 - Adds three focused rider-policy cases; the complete suite is 776 tests.
 - Runtime-qualified native damage, successful Trip/prone aftermath, and native
   maneuver-immunity suppression in two independent guarded fresh launches.
 
-## 0.0.46 — Sprint 46 Targeting Torso
+## 0.0.46 â€” Sprint 46 Targeting Torso
 
-- Adds the level-seven full-round Targeting — Torso deed with a reference-scoped
-  19–20 threat range, native confirmation and multiplier, and sneak-immunity
+- Adds the level-seven full-round Targeting â€” Torso deed with a reference-scoped
+  19â€“20 threat range, native confirmation and multiplier, and sneak-immunity
   suppression.
 - Adds three focused threat-policy cases; the complete suite is 773 tests.
 
-## 0.0.45 — Sprint 45 Targeting Head
+## 0.0.45 â€” Sprint 45 Targeting Head
 
-- Adds the level-seven full-round Targeting — Head ability.
+- Adds the level-seven full-round Targeting â€” Head ability.
 - Spends one grit and makes one ordinary native firearm attack.
 - A qualifying hit applies one round of mind-affecting native Confusion while
   preserving native sneak-attack and mind-affecting immunity handling.
 - Adds five focused policy/rider cases; the complete suite is 770 tests.
 
-## 0.0.44 — Sprint 44 Startling Shot (in progress)
+## 0.0.44 â€” Sprint 44 Startling Shot (in progress)
 
 - Adds the level-seven standard-action Startling Shot deed using native weapon
   targeting, one item-owned chamber, positive-but-unspent grit, no attack or
@@ -1137,35 +1335,35 @@
 - Adds atomic firearm/buff rollback, focused policy tests, stable production
   blueprints, and a guarded save-free runtime scenario.
 
-## 0.0.43 — Sprint 43 Dead Shot
+## 0.0.43 â€” Sprint 43 Dead Shot
 
 - Added and runtime-qualified the full-round BAB-iterative Dead Shot deed with
   one discharge, base-dice-only hit aggregation, adjusted native critical
   confirmation, and all-roll aggregate misfire.
 
-## 0.0.42 — Sprint 42 Gun Training (in progress)
+## 0.0.42 â€” Sprint 42 Gun Training (in progress)
 
 - Adds cumulative firearm-kind selections at levels 5, 9, 13, and 17.
 - Adds exact selected-kind Dexterity-to-damage and trained Broken-state misfire
   handling without using borrowed weapon categories as firearm identity.
 
-## 0.0.41 — Sprint 41 Gunslinger bonus feats (in progress)
+## 0.0.41 â€” Sprint 41 Gunslinger bonus feats (in progress)
 
 - Began exact level 4/8/12/16/20 bonus-feat integration by reusing
   Kingmaker's native prerequisite-respecting Fighter combat-feat selection.
 
-## 0.0.40 — Sprint 40 Utility Shot (in progress)
+## 0.0.40 â€” Sprint 40 Utility Shot (in progress)
 
 - Classified Blast Lock and Scoot Unattended Object as having no meaningful
   supported Kingmaker interaction, and began the Stop Bleeding vertical slice
   with exact grit, range, bleed-descriptor, and one-chamber contracts.
 
-## 0.0.39 — Sprint 39 Pistol-Whip (in progress)
+## 0.0.39 â€” Sprint 39 Pistol-Whip (in progress)
 
 - Began the level-three Pistol-Whip vertical slice with explicit handedness,
   grit, condition, native melee-attack, enhancement, and Trip contracts.
 
-## 0.0.38 — Sprint 38 Gunslinger Initiative
+## 0.0.38 â€” Sprint 38 Gunslinger Initiative
 
 - Added the level-three grit-gated +2 native initiative-check slice through
   Kingmaker's exact post-roll `IUnitInitiativeHandler` boundary.
@@ -1175,14 +1373,14 @@
 - Advanced build, package, runtime-request, and repository validation guards to
   version 0.0.38 while preserving inherited Sprint 37 evidence.
 
-## 0.0.37 — Sprint 37 class integration (in progress)
+## 0.0.37 â€” Sprint 37 class integration (in progress)
 
 - Began the next progression slice with exact cumulative Nimble ranks at levels
   2, 6, 10, 14, and 18, using native Dodge AC semantics in light or no armor.
 - Advanced build, package, runtime-request, and repository validation guards to
   version 0.0.37 while preserving inherited Sprint 36 evidence.
 
-## 0.0.36 — Sprint 36 core deed bundle
+## 0.0.36 â€” Sprint 36 core deed bundle
 
 - Began the coherent level-one Deadeye, Gunslinger's Dodge, and Quick Clear
   checkpoint on the runtime-qualified Sprint 35 grit foundation.
@@ -1191,7 +1389,7 @@
 - Runtime-qualified Deadeye, the Gunslinger's Dodge drop-prone branch, and both
   Quick Clear action-economy variants on exact source commits.
 
-## 0.0.35 — Sprint 35 grit resource (in progress)
+## 0.0.35 â€” Sprint 35 grit resource (in progress)
 
 - Added the dependency-free bounded grit pool model and deterministic daily
   reset, maximum reconciliation, spend, restore, and operation-deduplication
@@ -1205,7 +1403,7 @@
 - Added a guarded save-free detached-unit scenario for native grant, spend,
   level-up retention, capped restore, and cleanup qualification.
 
-## 0.0.31 — Sprint 31 early firearm catalog (in progress)
+## 0.0.31 â€” Sprint 31 early firearm catalog (in progress)
 
 - Began canonical production definition data with the tabletop early pistol.
 - Added explicit catalog acceptance criteria for pistol, musket, and
@@ -1213,7 +1411,7 @@
 - Preserved the runtime-qualified Sprint 30 generic action and item-owned state
   baseline.
 
-## 0.0.30 — Sprint 30 generic definition-driven firearm actions
+## 0.0.30 â€” Sprint 30 generic definition-driven firearm actions
 
 - Accepted Sprint 29 from the combined live contract evidence and exact 0.0.29 passing maintenance matrix.
 - Added one marker-first exact-equipped-firearm context shared by Reload, Overhaul, and Repair.
@@ -1223,7 +1421,7 @@
 - Added 12 focused tests; the 611-test portable suite passes with zero failures.
 - Kept the early firearm catalog and capacity greater than one deferred.
 
-## 0.0.29 — Sprint 29 complete maintenance loop and qualification automation
+## 0.0.29 â€” Sprint 29 complete maintenance loop and qualification automation
 
 - Accepted the supplied 0.0.28 player-facing Overhaul evidence, including availability gating, interruption safety, exact one-kit consumption, same-item Wrecked-to-Broken recovery, repeat-use rejection, Reload availability, and save/load persistence.
 - Added the separate full-round personal extraordinary Repair Test Musket ability.
@@ -1237,7 +1435,7 @@
 - Added 30 dependency-free tests, bringing the suite to 599.
 - Retained the item-owned inert BlueprintWeaponEnchantment state carrier and did not revive the rejected ItemEntityWeapon.UniqueId vault.
 
-## 0.0.28 — Sprint 28 player-facing same-item overhaul
+## 0.0.28 â€” Sprint 28 player-facing same-item overhaul
 
 - Added a stackable Firearm Repair Kit blueprint.
 - Added the full-round personal extraordinary Overhaul Test Musket ability.
@@ -1246,7 +1444,7 @@
 - Added atomic cross-resource rollback, exact-item identity/revision verification, readiness diagnostics, and repair-kit controls.
 - Retained separate Broken-to-Normal repair, native Heavy Crossbow isolation, and the item-owned token carrier.
 - Added 26 dependency-free tests, bringing the suite to 569.
-- Added an accelerated Sprint 29–38 roadmap and feature-package cadence.
+- Added an accelerated Sprint 29â€“38 roadmap and feature-package cadence.
 
 ## 0.0.27-s27-item-lifecycle-recovery-contract
 
@@ -1277,9 +1475,9 @@
 
 ## 0.0.25-s25-second-misfire-explosion
 
-- Accepted the supplied 0.0.24.1 Kingmaker evidence: Normal → Broken, condition-preserving Broken reload, Broken → Wrecked, Wrecked reload rejection, Wrecked attack rejection, and zero relevant runtime faults all passed.
+- Accepted the supplied 0.0.24.1 Kingmaker evidence: Normal â†’ Broken, condition-preserving Broken reload, Broken â†’ Wrecked, Wrecked reload rejection, Wrecked attack rejection, and zero relevant runtime faults all passed.
 - Recorded the Pathfinder early-firearm second-misfire consequence and the exact Kingmaker 2.1.7b save/damage contracts before implementation.
-- Added a pure bounded explosion policy: only a detected Broken → Wrecked second misfire schedules damage; ordinary rolls and first misfires do not.
+- Added a pure bounded explosion policy: only a detected Broken â†’ Wrecked second misfire schedules damage; ordinary rolls and first misfires do not.
 - After the exact firearm is committed empty/Wrecked, validate the correlated `RuleAttackRoll`, source `RuleAttackWithWeapon`, exact runtime item, exact current wielder, and repository identity.
 - Resolve one native Reflex DC 12 save and one native non-critical, non-precision base weapon-damage event against only the exact current wielder. A passed save uses Kingmaker's native half-damage flag.
 - Build one native base weapon-damage entry from the exact runtime firearm's current damage dice and blueprint damage type, avoiding target-specific data from the original attack while still using Kingmaker's native damage pipeline.
@@ -1291,7 +1489,7 @@
 ## 0.0.24.1-s24-broken-reload-repair
 
 - Evaluated the supplied 0.0.24 Kingmaker result and kept Sprint 25 blocked.
-- Confirmed that the Normal → Broken misfire transition worked, but the stale Sprint 21 reload restriction made the required Broken → Wrecked test unreachable.
+- Confirmed that the Normal â†’ Broken misfire transition worked, but the stale Sprint 21 reload restriction made the required Broken â†’ Wrecked test unreachable.
 - Permitted an empty Broken exact Test Musket to pass both player-facing reload availability and the atomic reload transaction.
 - Required every successful reload to preserve the firearm's existing Normal or Broken condition; reload cannot silently repair a Broken firearm.
 - Retained Wrecked reload rejection before mutation.
@@ -1324,7 +1522,7 @@
 - Scoped forced-roll consumption to a successfully discharged exact firearm that actually reaches natural-d20 assignment; native Heavy Crossbows, empty firearms, Wrecked firearms, and attacks ending before a natural roll do not consume it.
 - Added process-local misfire diagnostics for eligible attacks, observed rolls, ordinary results, misfires, forced rolls, duplicates, no-natural-roll completions, pending force state, and faults.
 - Added exact reflection-contract tests for the private `set_Roll(RollEntry)` and public `IsSuccessRoll(int)` hooks, plus pure misfire and forced-queue tests, raising the dependency-free suite from 455 to 489 cases.
-- Deliberately left firearm condition unchanged. Automatic Normal → Broken and Broken → Wrecked transitions remain bounded to Sprint 24.
+- Deliberately left firearm condition unchanged. Automatic Normal â†’ Broken and Broken â†’ Wrecked transitions remain bounded to Sprint 24.
 - Added no explosions, area damage, repair gameplay, automatic iterative reloads, Rapid Reload, additional firearm content, or Gunslinger class behavior.
 
 ## 0.0.22.1-s22-attack-hook-repair
@@ -1392,7 +1590,7 @@
 - Matched Info.json ManagerVersion to the supplied Unity Mod Manager 0.32.4 runtime.
 - Re-ran the 373-case .NET Framework 4.7 regression suite three times with zero failures.
 
-## 0.0.17-s17-executed-evidence-handoff — 2026-07-13
+## 0.0.17-s17-executed-evidence-handoff â€” 2026-07-13
 
 ### Added
 
@@ -1417,7 +1615,7 @@
 - No ammunition, reload, class, vendor, or crafting additions.
 
 
-## 0.0.16-s16-runtime-qualification — 2026-07-13
+## 0.0.16-s16-runtime-qualification â€” 2026-07-13
 
 ### Added
 
@@ -1446,7 +1644,7 @@
 - Main Kingmaker compilation and the in-game lifecycle matrix remain unperformed here.
 - Persistence gate remains NO-GO / incomplete.
 
-## 0.0.15-s15-persistence-evidence — 2026-07-13
+## 0.0.15-s15-persistence-evidence â€” 2026-07-13
 
 ### Added
 
@@ -1479,7 +1677,7 @@
 - C# test execution, Kingmaker compilation, UMM rendering, evidence-file I/O, and lifecycle observations remain unperformed here.
 - Persistence gate remains NO-GO / incomplete.
 
-## 0.0.14-s14-item-identity-vault — 2026-07-13
+## 0.0.14-s14-item-identity-vault â€” 2026-07-13
 
 ### Added
 
@@ -1510,7 +1708,7 @@
 - Installed `UniqueId` shape, item-identity lifecycle semantics, custom UnitPart serialization, and legacy migration remain unproven in Kingmaker.
 - Architecture gate remains NO-GO.
 
-## 0.0.13-s13-unitpart-vault — 2026-07-13
+## 0.0.13-s13-unitpart-vault â€” 2026-07-13
 
 ### Added
 
@@ -1540,7 +1738,7 @@
 - UnitPart serialization, direct item-reference restoration, merchants, respec, deletion, and migration remain unproven in Kingmaker.
 - Architecture gate remains NO-GO.
 
-## 0.0.12-s12-persistence-spike — 2026-07-13
+## 0.0.12-s12-persistence-spike â€” 2026-07-13
 
 ### Added
 
@@ -1567,7 +1765,7 @@
 - Save/load durability unproven.
 - Architecture gate remains NO-GO.
 
-## Sprint 11 — 2026-07-13 — `0.0.11-s11-runtime-item-state`
+## Sprint 11 â€” 2026-07-13 â€” `0.0.11-s11-runtime-item-state`
 
 ### Added
 
@@ -1595,7 +1793,7 @@
 - Any claim that equip, transfer, or save/load preserves the same Kingmaker item object until tested in the running game.
 - Any claim that the 187 C# tests were compiled or executed in this environment.
 
-## Sprint 10 — 2026-07-13 — `0.0.10-s10-firearm-state`
+## Sprint 10 â€” 2026-07-13 â€” `0.0.10-s10-firearm-state`
 
 ### Added
 
@@ -1621,7 +1819,7 @@
 - Any claim that the 155 C# tests were compiled or executed in this environment.
 
 
-## Sprint 9 — 2026-07-13 — `0.0.9-s09-touch-ac`
+## Sprint 9 â€” 2026-07-13 â€” `0.0.9-s09-touch-ac`
 
 ### Added
 
@@ -1648,7 +1846,7 @@
 - Ammunition, reload, empty-fire restrictions, misfire, mutable item state, class progression, vendors, or assets.
 - Any claim that the reflection contracts or callback nesting have been confirmed in a running Kingmaker installation.
 
-## Sprint 8 — 2026-07-12 — `0.0.8-s08-combat-tracing`
+## Sprint 8 â€” 2026-07-12 â€” `0.0.8-s08-combat-tracing`
 
 ### Added
 
@@ -1674,7 +1872,7 @@
 - Touch-AC mutation, ammunition, reload, misfire, mutable item state, class progression, vendors, or assets.
 - Any claim that the candidate event members or callback order have been confirmed in a running Kingmaker installation.
 
-## Sprint 7 — 2026-07-12 — `0.0.7-s07-proficiency-controls`
+## Sprint 7 â€” 2026-07-12 â€” `0.0.7-s07-proficiency-controls`
 
 ### Added
 
@@ -1700,7 +1898,7 @@
 - Compiled DLL or UMM install ZIP.
 - Touch AC, combat instrumentation, ammunition, reload, misfire, mutable item state, class progression, vendors, or assets.
 
-## Sprint 6 — 2026-07-12 — `0.0.6-s06-test-musket`
+## Sprint 6 â€” 2026-07-12 â€” `0.0.6-s06-test-musket`
 
 ### Added
 
@@ -1724,7 +1922,7 @@
 - Compiled DLL or UMM install ZIP.
 - Player acquisition, firearm proficiency, touch AC, ammunition, reload, misfire, or mutable item state.
 
-## Sprint 5 — 2026-07-12 — `0.0.5-s05-firearm-domain`
+## Sprint 5 â€” 2026-07-12 â€” `0.0.5-s05-firearm-domain`
 
 ### Added
 
@@ -1750,7 +1948,7 @@
 - No firearm blueprint, item, proficiency, acquisition route, combat rule, ammunition, per-item state, class, asset, or UI.
 - No compiled DLL or install ZIP in this environment.
 
-## Sprint 4 — 2026-07-12 — `0.0.4-s04-diagnostic-blueprint`
+## Sprint 4 â€” 2026-07-12 â€” `0.0.4-s04-diagnostic-blueprint`
 
 ### Added
 
@@ -1782,7 +1980,7 @@
 - No firearm, weapon, proficiency, class, feat, ability, combat rule, inventory item, setting, model, animation, or persistent state.
 - No compiled DLL or install ZIP in this milestone environment.
 
-## Sprint 3 — 2026-07-12 — `0.0.3-s03-bootstrap`
+## Sprint 3 â€” 2026-07-12 â€” `0.0.3-s03-bootstrap`
 
 ### Added
 
@@ -1810,7 +2008,7 @@
 - No unload/live-toggle behavior.
 - No compiled DLL or install ZIP in this milestone environment.
 
-## Sprint 2 — 2026-07-12 — `0.0.2-s02-scaffold`
+## Sprint 2 â€” 2026-07-12 â€” `0.0.2-s02-scaffold`
 
 ### Added
 
@@ -1839,7 +2037,7 @@
 - No firearm, class, save state, custom art, or runtime settings.
 - No compiled DLL or install ZIP in this milestone environment.
 
-## Sprint 1 — 2026-07-12 — `0.0.1-s01-architecture`
+## Sprint 1 â€” 2026-07-12 â€” `0.0.1-s01-architecture`
 
 - Established the target runtime, architecture, stable-ID policy, reference audit, blueprint discovery plan, persistence candidates, and risk gates.
 ## 0.0.67 - Seventh-playtest player-path repair

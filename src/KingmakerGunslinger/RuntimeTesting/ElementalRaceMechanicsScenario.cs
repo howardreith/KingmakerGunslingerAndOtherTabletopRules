@@ -22,6 +22,7 @@ using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Class.LevelUp;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -69,10 +70,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             public bool MaterialAbsent { get; set; }
             public int CasterLevel { get; set; }
             public int SpellLevel { get; set; }
+            public int CurrentCharismaModifier { get; set; }
+            public int ExpectedSaveDc { get; set; }
             public int SaveDc { get; set; }
             public int SaveDcAfterCharisma { get; set; }
+            public int CharismaModifierAfterBonus { get; set; }
+            public int SaveDcAfterCharismaPenalty { get; set; }
+            public int CharismaModifierAfterPenalty { get; set; }
+            public int SaveDcAfterTemporaryCleanup { get; set; }
+            public bool AffinityActiveForSla { get; set; }
             public bool CancelBeforeCommitNoSpend { get; set; }
             public int ResourceAfterSpend { get; set; }
+            public int ResourceAfterSpentLevelUp { get; set; }
+            public int CasterLevelAfterSpentLevelUp { get; set; }
             public int AvailableCountAfterSpend { get; set; }
             public bool AvailableAfterSpend { get; set; }
             public int ResourceAfterRest { get; set; }
@@ -108,7 +118,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     MatchingDcWithAffinity + "/non=" +
                     NonmatchingDcWithoutAffinity + "->" +
                     NonmatchingDcWithAffinity + ";persisted=" +
-                    PersistedAmount;
+                    PersistedAmount + ";cha=" + CurrentCharismaModifier +
+                    "->" + CharismaModifierAfterBonus + "->" +
+                    CharismaModifierAfterPenalty + ";tempDc=" +
+                    SaveDcAfterCharisma + "/" +
+                    SaveDcAfterCharismaPenalty + "/" +
+                    SaveDcAfterTemporaryCleanup + ";spentLevel=" +
+                    ResourceAfterSpentLevelUp + "/CL" +
+                    CasterLevelAfterSpentLevelUp;
             }
         }
 
@@ -136,6 +153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Races = new List<RaceEvidence>()
             };
             var created = new List<UnitEntityData>();
+            var createdBlueprints = new List<BlueprintUnit>();
             UnitEntityData[] unitsBefore = Game.Instance.State.Units.All
                 .ToArray();
             UnitEntityData attacker = null;
@@ -145,7 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ElementalRaceBlueprintSet set = BlueprintBootstrap
                     .ElementalRaces;
                 if (set == null || set.Count !=
-                    ElementalRaceIdentityCatalog.IdentityCount)
+                    ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount)
                     throw new InvalidOperationException(
                         "The production elemental race set is unavailable.");
                 BlueprintCharacterClass fighter = BlueprintLibraryLookup
@@ -157,9 +175,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BlueprintBootstrap.Library, WizardClassGuid,
                         "elemental mechanics Wizard multiclass fixture");
                 Dictionary<SpellDescriptor, BlueprintAbility> matchingSpells =
-                    ResolveMatchingSpells(set);
+                    ResolveMatchingSpells(set, wizard);
                 BlueprintAbility nonmatching = ResolveNonmatchingSpell(
-                    matchingSpells.Values);
+                    matchingSpells.Values, wizard);
 
                 stage = "create-damage-source";
                 attacker = CreateUnit(created, Vector3.zero);
@@ -169,7 +187,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     stage = "exercise-" + race.Definition.Kind;
                     evidence.Races.Add(Exercise(race, fighter, wizard,
                         matchingSpells[race.Definition.Affinity], nonmatching,
-                        attacker, created));
+                        attacker, created, createdBlueprints));
                 }
             }
             catch (Exception exception)
@@ -191,6 +209,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Game.Instance.State.Units.All.ToArray()) &&
                     created.All(value => value == null ||
                         !Game.Instance.State.Units.All.Contains(value));
+                foreach (BlueprintUnit blueprint in createdBlueprints
+                    .AsEnumerable().Reverse())
+                    UnityEngine.Object.DestroyImmediate(blueprint);
             }
 
             AddAssertions(assertions, evidence);
@@ -242,10 +263,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility matchingSpell,
             BlueprintAbility nonmatchingSpell,
             UnitEntityData attacker,
-            ICollection<UnitEntityData> created)
+            ICollection<UnitEntityData> created,
+            ICollection<BlueprintUnit> createdBlueprints)
         {
+            BlueprintUnit racialBlueprint = UnityEngine.Object.Instantiate(
+                BlueprintRoot.Instance.DefaultPlayerCharacter);
+            racialBlueprint.name = "KMG_Runtime_RaceMechanics_" +
+                blueprints.Definition.Kind;
+            racialBlueprint.Race = blueprints.Race;
+            createdBlueprints.Add(racialBlueprint);
             UnitEntityData unit = CreateUnit(created,
-                new Vector3(1f, 0f, 0f));
+                new Vector3(1f, 0f, 0f), racialBlueprint);
             UnitEntityData replacement = CreateUnit(created,
                 new Vector3(2f, 0f, 0f));
             UnitDescriptor owner = unit.Descriptor;
@@ -255,9 +283,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             owner.Stats.Intelligence.BaseValue = 10;
             owner.Stats.Wisdom.BaseValue = 10;
             owner.Stats.Charisma.BaseValue = 18;
-            var beforeStats = blueprints.Definition.Stats.ToDictionary(
+            // ChargenUnit applies the actual race's stat modifiers during
+            // native construction. Measure against unmodified base values,
+            // not a second AddFact call that is intentionally idempotent.
+            var baseStats = blueprints.Definition.Stats.ToDictionary(
                 value => value.Stat,
-                value => owner.Stats.GetStat(value.Stat).ModifiedValue);
+                value => owner.Stats.GetStat(value.Stat).BaseValue);
             int perceptionBefore = owner.Stats.GetStat(
                 StatType.SkillPerception).ModifiedValue;
             int speedBefore = owner.Stats.Speed.ModifiedValue;
@@ -268,7 +299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             int[] deltas = blueprints.Definition.Stats.Select(value =>
                 owner.Stats.GetStat(value.Stat).ModifiedValue -
-                    beforeStats[value.Stat]).ToArray();
+                    baseStats[value.Stat]).ToArray();
             BlueprintFeatureBase keen = blueprints.Race.Features.Single(value =>
                 string.Equals(value.AssetGuid,
                     ElementalRaceIdentityCatalog.KeenSensesGuid,
@@ -330,6 +361,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.WizardLevel = owner.Progression.GetClassLevel(wizard);
             result.ResourceAfterLevels = owner.Resources.GetResourceAmount(
                 resource);
+            Spellbook affinitySpellbook = owner.GetSpellbook(wizard);
+            if (affinitySpellbook == null)
+                throw new InvalidOperationException(result.Race +
+                    " did not retain its native Wizard spellbook.");
 
             Ability granted = owner.Abilities.GetAbility(
                 blueprints.SlaAbility);
@@ -345,9 +380,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new TargetWrapper(unit));
             result.CasterLevel = execution.Params.CasterLevel;
             result.SpellLevel = execution.Params.SpellLevel;
+            result.CurrentCharismaModifier = owner.Stats.Charisma.Bonus;
+            result.ExpectedSaveDc = ElementalRacialSpellLikePolicy
+                .DifficultyClass(result.SpellLevel,
+                    result.CurrentCharismaModifier);
             result.SaveDc = execution.Params.DC;
-            owner.Stats.Charisma.BaseValue += 2;
+            result.AffinityActiveForSla = owner.HasFact(blueprints.Affinity);
+
+            BlueprintFeature charismaBonus = CreateCharismaAdjustment(
+                "KMG_Runtime_ElementalSla_CharismaBonus", 2,
+                ModifierDescriptor.Enhancement);
+            EnsureFact(owner, charismaBonus);
+            result.CharismaModifierAfterBonus = owner.Stats.Charisma.Bonus;
             result.SaveDcAfterCharisma = data.CreateExecutionContext(
+                new TargetWrapper(unit)).Params.DC;
+            owner.RemoveFact(charismaBonus);
+
+            BlueprintFeature charismaPenalty = CreateCharismaAdjustment(
+                "KMG_Runtime_ElementalSla_CharismaPenalty", -2,
+                ModifierDescriptor.UntypedStackable);
+            EnsureFact(owner, charismaPenalty);
+            result.CharismaModifierAfterPenalty = owner.Stats.Charisma.Bonus;
+            result.SaveDcAfterCharismaPenalty = data.CreateExecutionContext(
+                new TargetWrapper(unit)).Params.DC;
+            owner.RemoveFact(charismaPenalty);
+            result.SaveDcAfterTemporaryCleanup = data.CreateExecutionContext(
                 new TargetWrapper(unit)).Params.DC;
 
             int beforeCancel = owner.Resources.GetResourceAmount(resource);
@@ -363,6 +420,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.AvailableCountAfterSpend = data
                 .GetAvailableForCastCount();
             result.AvailableAfterSpend = data.IsAvailable;
+            Advance(owner, fighter, 1);
+            result.ResourceAfterSpentLevelUp = owner.Resources
+                .GetResourceAmount(resource);
+            result.CasterLevelAfterSpentLevelUp = data.CreateExecutionContext(
+                new TargetWrapper(unit)).Params.CasterLevel;
             Kingmaker.Controllers.Rest.RestController.ApplyRest(owner);
             result.ResourceAfterRest = owner.Resources.GetResourceAmount(
                 resource);
@@ -375,11 +437,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.MaterialAbsent && result.CancelBeforeCommitNoSpend &&
                 result.ResourceAfterSpend == 0 &&
                 result.AvailableCountAfterSpend == 0 &&
-                !result.AvailableAfterSpend && result.ResourceAfterRest == 1;
+                !result.AvailableAfterSpend &&
+                result.ResourceAfterSpentLevelUp == 0 &&
+                result.ResourceAfterRest == 1;
             result.ParameterContract = result.CharacterLevel == 5 &&
                 result.FighterLevel == 2 && result.WizardLevel == 3 &&
                 result.CasterLevel == 5 && result.SpellLevel == 1 &&
-                result.SaveDcAfterCharisma == result.SaveDc + 1;
+                result.ExpectedSaveDc == result.SaveDc &&
+                result.AffinityActiveForSla &&
+                result.CharismaModifierAfterBonus ==
+                    result.CurrentCharismaModifier + 1 &&
+                result.SaveDcAfterCharisma == result.SaveDc + 1 &&
+                result.CharismaModifierAfterPenalty ==
+                    result.CurrentCharismaModifier - 1 &&
+                result.SaveDcAfterCharismaPenalty == result.SaveDc - 1 &&
+                result.SaveDcAfterTemporaryCleanup == result.SaveDc &&
+                result.CasterLevelAfterSpentLevelUp == 6;
 
             InvokeSpend(data);
             UnitAbilityResource record = owner.Resources
@@ -408,14 +481,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (owner.HasFact(blueprints.Affinity))
                 owner.RemoveFact(blueprints.Affinity);
             result.MatchingDcWithoutAffinity = CalculateDc(matchingSpell,
-                owner, unit);
+                affinitySpellbook, unit);
             result.NonmatchingDcWithoutAffinity = CalculateDc(
-                nonmatchingSpell, owner, unit);
+                nonmatchingSpell, affinitySpellbook, unit);
             EnsureFact(owner, blueprints.Affinity);
             result.MatchingDcWithAffinity = CalculateDc(matchingSpell,
-                owner, unit);
+                affinitySpellbook, unit);
             result.NonmatchingDcWithAffinity = CalculateDc(nonmatchingSpell,
-                owner, unit);
+                affinitySpellbook, unit);
             result.AffinityContract =
                 result.MatchingDcWithAffinity ==
                     result.MatchingDcWithoutAffinity + 1 &&
@@ -425,12 +498,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static Dictionary<SpellDescriptor, BlueprintAbility>
-            ResolveMatchingSpells(ElementalRaceBlueprintSet set)
+            ResolveMatchingSpells(ElementalRaceBlueprintSet set,
+                BlueprintCharacterClass wizard)
         {
             BlueprintAbility[] spells = BlueprintBootstrap.Library
                 .GetAllBlueprints().OfType<BlueprintAbility>().Where(value =>
                     value != null && value.Type == AbilityType.Spell &&
                     value.Parent == null &&
+                    wizard.Spellbook.SpellList.Contains(value) &&
                     !string.IsNullOrWhiteSpace(value.AssetGuid) &&
                     !value.name.StartsWith("KMG_", StringComparison.Ordinal))
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
@@ -451,7 +526,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static BlueprintAbility ResolveNonmatchingSpell(
-            IEnumerable<BlueprintAbility> matching)
+            IEnumerable<BlueprintAbility> matching,
+            BlueprintCharacterClass wizard)
         {
             SpellDescriptor elemental = SpellDescriptor.Fire |
                 SpellDescriptor.Acid | SpellDescriptor.Electricity |
@@ -461,6 +537,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetAllBlueprints().OfType<BlueprintAbility>().Where(value =>
                     value != null && value.Type == AbilityType.Spell &&
                     value.Parent == null && !excluded.Contains(value) &&
+                    wizard.Spellbook.SpellList.Contains(value) &&
                     (value.SpellDescriptor & elemental) == 0 &&
                     !value.name.StartsWith("KMG_", StringComparison.Ordinal))
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
@@ -472,10 +549,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static UnitEntityData CreateUnit(
-            ICollection<UnitEntityData> created, Vector3 position)
+            ICollection<UnitEntityData> created, Vector3 position,
+            BlueprintUnit blueprint = null)
         {
             UnitEntityData result = new Kingmaker.UI.LevelUp.ChargenUnit(
-                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                blueprint ?? BlueprintRoot.Instance.DefaultPlayerCharacter)
+                .Unit;
             if (result == null || result.Descriptor == null ||
                 result.Descriptor.Resources == null)
                 throw new InvalidOperationException(
@@ -501,6 +580,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "Disposable unit rejected fact " + blueprint.AssetGuid +
                     ".");
+        }
+
+        private static BlueprintFeature CreateCharismaAdjustment(string name,
+            int value, ModifierDescriptor descriptor)
+        {
+            var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+            feature.name = name;
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.Groups = Array.Empty<FeatureGroup>();
+            var bonus = ScriptableObject.CreateInstance<AddStatBonus>();
+            bonus.Stat = StatType.Charisma;
+            bonus.Value = value;
+            bonus.Descriptor = descriptor;
+            feature.ComponentsArray = new BlueprintComponent[] { bonus };
+            return feature;
         }
 
         private static void DealEnergy(UnitEntityData attacker,
@@ -580,9 +676,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static int CalculateDc(BlueprintAbility spell,
-            UnitDescriptor owner, UnitEntityData target)
+            Spellbook spellbook, UnitEntityData target)
         {
-            var data = new AbilityData(spell, owner);
+            var data = new AbilityData(spell, spellbook);
             return data.CreateExecutionContext(
                 new TargetWrapper(target)).Params.DC;
         }
@@ -636,11 +732,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, race.DamageContract,
                     "native RuleDealDamage and EnergyDamage resolution");
                 Add(assertions, "elemental-" + key + "-sla-resource",
-                    "one use, cancel 0, commit 1, unavailable, rest to one",
+                    "one use, cancel 0, commit 1, zero blocks, spent level-up stays zero, rest restores one",
                     observed, race.ResourceContract,
                     "production SLA fact, AbilityData.Spend, and native ApplyRest");
                 Add(assertions, "elemental-" + key + "-sla-parameters",
-                    "2 Fighter + 3 Wizard => CL 5, spell level 1, Charisma DC",
+                    "2 Fighter + 3 Wizard => CL 5, exact DC 11 + current Charisma modifier, temporary +/-2 changes DC +/-1, affinity +0",
                     observed, race.ParameterContract,
                     "actual LevelUpController and AbilityExecutionContext params");
                 Add(assertions, "elemental-" + key + "-affinity",

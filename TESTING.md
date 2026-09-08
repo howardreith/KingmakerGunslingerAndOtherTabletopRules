@@ -1,7 +1,7 @@
 # Testing
 
-The released base is 0.0.116; contextual teleportation qualification is in progress
-below. Historical Expanded Summoning gates retain their original counts. Repository validation,
+The owner-authorized release is 0.0.118; contextual teleportation evidence and
+remaining manual qualification are recorded below. Historical Expanded Summoning gates retain their original counts. Repository validation,
 dependency-free domain tests, exact-reference Release builds, package checks,
 and native runtime evidence are separate gates; none substitutes for another.
 
@@ -88,7 +88,7 @@ loading are distinct from saving campaign/fixture state.
 
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-casting `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -122,7 +122,7 @@ not full campaign disk persistence or contextual spellcasting qualification.
 
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-familiarity `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$true -Confirm:$false
 .\scripts\compatibility\Test-FeatureModuleCompatibilityParameters.ps1
 ```
@@ -141,7 +141,7 @@ and casting attributes. It never writes a save or relocates the party.
 
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-resources `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -161,7 +161,7 @@ separate required gates.
 
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-context `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -185,7 +185,7 @@ no save and cannot be invoked through normal player UI.
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 `
   -Scenario disposable-teleportation-interaction `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -204,7 +204,7 @@ under save-write sentinels; automatic exit is mandatory.
 
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-travelers `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -234,7 +234,7 @@ save-write sentinels remain armed and automatic process exit is required.
 
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-gamepad `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -260,7 +260,7 @@ mandatory. This does not complete level-up or establish campaign disk persistenc
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 `
   -Scenario disposable-teleportation-spellbook-ui `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -294,7 +294,7 @@ is overwritten. Results are in `teleportation-level-up.json` and
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 `
   -Scenario disposable-teleportation-level-up `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -325,7 +325,7 @@ familiarity, time input and party state are restored before save sentinels close
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 `
   -Scenario disposable-teleportation-destinations `
-  -ExpectedVersion 0.0.116 -SaveName KMG_AUTOMATION_WORKING `
+  -ExpectedVersion 0.0.118 -SaveName KMG_AUTOMATION_WORKING `
   -AllowDirtyGit -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -341,7 +341,7 @@ a second control proves malformed saved spell data cannot block ordinary travel.
 The fixture opens one adjacent native edge only after all cast checks, verifies
 zero traversal and restores it during cleanup. Read the curated point audit and
 implementation report for exact IDs, rejected probes and same-artifact regressions.
-The current complete domain count is 1,490. All 26 module boundaries passed
+The combined 0.0.118 domain inventory is 1,550 (retaining released 0.0.117 coverage). All 26 module boundaries passed
 897 assertions with exploration hooks 1 ON / 0 OFF and exact settings
 restoration. Full campaign disk persistence and required profiles remain open.
 
@@ -362,7 +362,7 @@ Use the settings transaction wrapper with one explicit OFF configuration:
 .\scripts\Invoke-FeatureModuleRuntimeMatrix.ps1 `
   -Scenario disposable-teleportation-disabled `
   -Combination on-on-on-on-on-on-on-on-on-on-on-off `
-  -ExpectedVersion 0.0.116 -AllowDirtyGit `
+  -ExpectedVersion 0.0.118 -AllowDirtyGit `
   -ExitAfterCompletion:$true -Confirm:$false
 ```
 
@@ -396,3 +396,14 @@ Qualified owner-graph run: `20260908T1512053583403Z-53c1d3737d794e4ead9db0053421
 31 assertions PASS (the previous 18 spell-choice/cancel cases plus 13 owner-graph
 checks). Native spellbook UI (31) and protected Working-save (11) regressions pass
 on the same artifact, with zero fixture exceptions/save writes and exact cleanup.
+
+
+## 0.0.118 owner-authorized release
+
+The combined source passes 1,550 domain tests, clean Release, strict 135-file
+package validation, 279 launcher preflight checks and compatibility transaction
+contracts. Same-artifact native casting (44), spellbook (31) and controller (39)
+checks pass 114 assertions through Steam App ID 640820. Exact run IDs and hashes
+are in the implementation report's 0.0.118 section. The owner authorized release
+and will test the remaining campaign/compatibility behavior in a high-level game;
+full original qualification is not claimed. UMM 0.33.0.0 is the observed host.

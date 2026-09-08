@@ -2,10 +2,11 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.116-midgame-firearms-and-protection` targets:
+Kingmaker Gunslinger `0.0.118-contextual-world-map-teleportation` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
-- Unity Mod Manager 0.33.0 on the qualified DATA installation;
+- Unity Mod Manager 0.32.4 API contracts; guarded 0.0.118 runtime testing uses
+  UMM 0.33.0.0, with 0.32.4 runtime acceptance deferred to owner testing;
 - Harmony 1.2 through `0Harmony12.dll`;
 - .NET Framework 4.7;
 - C# 7.3;
@@ -73,6 +74,10 @@ package validation.
 
 ## Guarded GitHub release publisher
 
+The public master 0.0.115 Share Transmutation fix is incorporated into this
+branch. Its authorized publication and its NOT-RUN save-backed gameplay
+record remain distinct from this mission's unpublished release checkpoints.
+
 The owner explicitly authorized finalizing, merging, pushing, and publishing
 0.0.116. The accepted content candidate passed the complete domain suite,
 24-state module boundary matrix, and guarded shop, firearm, and purchase
@@ -82,6 +87,13 @@ Exact fingerprints and results belong in the task report. Historical 0.0.114
 compatibility evidence stays pinned to that package; 0.0.115's separate
 save-backed API qualification is not inferred from these content scenarios.
 
+The owner accepted the installed 0.0.117 stabilization candidate and explicitly
+authorized finalization, integration with latest master, merge, push and public
+release on 2026-09-07. This supersedes the earlier candidate-only boundary.
+The prior acceptance handoff and incremental notes remain historical evidence;
+the [public release report](ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md) records the
+new authorization and final artifact verification.
+
 Where installed UMM targets a newer framework, pass `-ReferenceBundleDir` to
 the publisher to use the existing provenance-checked `Build-Local.ps1` path
 for both clean deterministic builds. It runs the same source, full domain,
@@ -89,13 +101,15 @@ output, SoundBank, and strict package gates. No installed UMM/Harmony files
 are changed. If the legacy external Unity output is absent, Build-Local uses
 the tracked bundle only after the existing manifest hash check succeeds.
 
-The 0.0.114 release preserves the 0.0.113 ammunition, CMI, paper-mode,
-item-copy, and notification repairs while adding the default-ON Elemental
-Races module. It may be published only after complete version-aware
-deterministic, package, repository-validation, guarded runtime, exact
-compatibility-restoration, and owner visual-acceptance gates. The mission
-authorizes a draft pull request and candidate package only: do not create a
-tag, GitHub release, or public asset without owner authorization.
+Release 0.0.117 preserves all existing elemental identities and publishes only
+nineteen implemented alternate traits. Treacherous Earth and Nereid Fascination
+remain registered but unavailable. The accepted artifact passed 1,458 tests,
+259 harness preflight checks and 13,847 assertions across 28 guarded processes.
+Release sealing preserves gameplay source and assets, compares the new payload
+against that accepted artifact, and verifies the rebuilt DLL's final commit
+through focused guarded character-creation, native respec and load checks.
+Earlier matrix evidence retains its original artifact attribution. The owner's
+acceptance does not fabricate individual full-screen checklist results.
 
 The GitHub repository's release branch is `master`. Before publishing, make
 `master` the repository's GitHub default branch. The publisher blocks a default
@@ -141,10 +155,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.116 `
+gh release download v0.0.117 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.116-midgame-firearms-and-protection.zip' `
-  --dir "artifacts\release-download\0.0.116"
+  --pattern 'KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip' `
+  --dir "artifacts\release-download\0.0.117"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The

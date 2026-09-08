@@ -112,6 +112,12 @@ namespace KingmakerGunslinger.AidAnotherCompatibility
                     !Exact(helpful, HalflingHelpfulGuid, "HelpfulTrait"))
                     return Result(OptionalAidAnotherAvailability.Blocked,
                         "favored-class-blueprint-identities", null);
+                // Native selection reads AllFeatures. Do not guess a different
+                // optional-mod catalog contract or populate its unused Features.
+                if (combat.Features == null || combat.Features.Length != 0 ||
+                    combat.AllFeatures == null || combat.AllFeatures.Length == 0)
+                    return Result(OptionalAidAnotherAvailability.Blocked,
+                        "favored-class-combat-array-contract", null);
                 if (!string.Equals(helpful.Name, "Helpful",
                         StringComparison.Ordinal) || helpful.Ranks != 1 ||
                     helpful.HideInUI || helpful.IsClassFeature ||
