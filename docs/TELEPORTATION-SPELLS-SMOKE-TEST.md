@@ -1,11 +1,11 @@
 # Contextual teleportation player smoke test
 
-This guide applies to qualification builds on the teleportation feature branch.
-Full feature and compatibility qualification is still in progress; the released
-0.0.116 build does not include these contextual casting changes.
+Applies to the owner-authorized 0.0.118 release. The owner will test the remaining
+campaign and compatibility behavior in an existing high-level game. Keep a save
+before testing so the exact before/after result can be compared.
 
-1. Enable **World-Map Teleportation Spells**, restart Kingmaker, and use a named
-   disposable working save. Obtain spells through normal spellbook/level-up
+1. Enable **World-Map Teleportation Spells**, restart Kingmaker, and load your test
+   save. Obtain spells through normal spellbook/level-up
    selection and preparation. Existing characters receive no automatic grant.
 2. On the world map, stop traveling and select a previously visited point away
    from the party. Without an available spell, the native interaction is unchanged.

@@ -8,8 +8,10 @@ using System.Reflection;
 using System.Security.Cryptography;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Root;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.ElementalRaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -71,6 +73,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             public int SchemaVersion { get; set; }
             public bool SaveStateTouched { get; set; }
+            public bool ElementalModuleActive { get; set; }
             public bool RacesUnleashedLoaded { get; set; }
             public string RacesUnleashedIdentity { get; set; }
             public int CatalogCount { get; set; }
@@ -81,6 +84,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             public bool SecondReconciliationChanged { get; set; }
             public bool ArrayReferencePreserved { get; set; }
             public bool EntryReferencesPreserved { get; set; }
+            public int RegisteredFeatIdentityCount { get; set; }
+            public int BasicFeaturesCount { get; set; }
+            public int BasicAllFeaturesCount { get; set; }
+            public int FighterFeaturesCount { get; set; }
+            public int FighterAllFeaturesCount { get; set; }
+            public List<int> BasicFeatIndexes { get; set; }
+            public List<int> FighterFeatIndexes { get; set; }
+            public bool FeatArrayReferencesPreserved { get; set; }
+            public bool FeatEntryReferencesPreserved { get; set; }
+            public bool FeatRollbackExact { get; set; }
         }
 
         internal static RuntimeTestResult Run(ModContext context,
@@ -96,7 +109,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SaveStateTouched = false,
                 Catalog = new List<CatalogEntryEvidence>(),
                 ProjectIndexes = new List<int>(),
-                RacesUnleashedIndexes = new List<int>()
+                RacesUnleashedIndexes = new List<int>(),
+                BasicFeatIndexes = new List<int>(),
+                FighterFeatIndexes = new List<int>()
             };
             try
             {
@@ -158,16 +173,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             ElementalRaceBlueprintSet set = BlueprintBootstrap.ElementalRaces;
             bool bootstrap = BlueprintBootstrap.IsInitialized &&
                 BlueprintBootstrap.Library != null && set != null &&
-                set.Count == ElementalRaceIdentityCatalog.IdentityCount;
+                set.Count == ElementalRaceIdentityCatalog
+                    .RaceBlueprintIdentityCount;
+            bool moduleActive = context.FeatureModules.Active.ElementalRaces;
+            evidence.ElementalModuleActive = moduleActive;
             Add(assertions, "elemental-races-bootstrap",
                 "all stable elemental identities registered at catalog count",
                 set == null ? "missing" : "count=" + set.Count,
                 bootstrap, "live BlueprintBootstrap.ElementalRaces");
-            Add(assertions, "elemental-races-module-active",
-                "Elemental Races enabled for compatibility publication",
-                context.FeatureModules.Active.ElementalRaces.ToString(),
-                context.FeatureModules.Active.ElementalRaces,
-                "restart-bound live FeatureModuleConfiguration");
             if (!bootstrap)
                 throw new InvalidOperationException(
                     "The production elemental race blueprint set is unavailable.");
@@ -243,24 +256,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 nativeExact,
                 "full CharacterRaces snapshot by stable native identity");
 
-            bool projectExact = evidence.ProjectIndexes.Count == 4 &&
-                evidence.ProjectIndexes.Select((value, index) =>
-                    value == evidence.ProjectIndexes[0] + index).All(
-                        value => value) &&
-                project.Select((race, index) =>
-                    before.Count(value => ReferenceEquals(value, race)) == 1 &&
-                    before.Count(value => value != null && string.Equals(
-                        value.AssetGuid, race.AssetGuid,
-                        StringComparison.Ordinal)) == 1 &&
-                    ReferenceEquals(before[evidence.ProjectIndexes[index]],
-                        race)).All(value => value);
-            Add(assertions, "elemental-races-published-once",
-                "Ifrit, Oread, Sylph, Undine contiguous in that order",
-                "indexes=" + string.Join(",",
+            bool projectExact = moduleActive
+                ? evidence.ProjectIndexes.Count == 4 &&
+                    evidence.ProjectIndexes.Select((value, index) =>
+                        value == evidence.ProjectIndexes[0] + index).All(
+                            value => value) &&
+                    project.Select((race, index) =>
+                        before.Count(value => ReferenceEquals(value, race)) == 1 &&
+                        before.Count(value => value != null && string.Equals(
+                            value.AssetGuid, race.AssetGuid,
+                            StringComparison.Ordinal)) == 1 &&
+                        ReferenceEquals(before[evidence.ProjectIndexes[index]],
+                            race)).All(value => value)
+                : evidence.ProjectIndexes.Count == 0 && project.All(race =>
+                    before.All(value => !ReferenceEquals(value, race) &&
+                        (value == null || !string.Equals(value.AssetGuid,
+                            race.AssetGuid, StringComparison.Ordinal))));
+            Add(assertions, "elemental-races-publication-state-exact",
+                moduleActive
+                    ? "Ifrit, Oread, Sylph, Undine contiguous in that order"
+                    : "all identities registered but no elemental race published",
+                "moduleActive=" + moduleActive + ";indexes=" + string.Join(",",
                     evidence.ProjectIndexes.Select(value =>
                         value.ToString()).ToArray()),
                 projectExact,
-                "exact project references and stable GUIDs in final CharacterRaces");
+                "restart-bound setting plus exact project references and stable GUIDs in final CharacterRaces");
 
             bool ruUmmExact = ruEntries.Length <= 1 &&
                 (ru == null || evidence.RacesUnleashedLoaded &&
@@ -294,10 +314,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "six manifest identities plus the live constructed Duergar identity from the authorized local assembly");
 
             ElementalRacePublication first =
-                ElementalRacePublication.Apply(set, true);
+                ElementalRacePublication.Apply(set, moduleActive);
             BlueprintRace[] afterFirst = root.Progression.CharacterRaces;
             ElementalRacePublication second =
-                ElementalRacePublication.Apply(set, true);
+                ElementalRacePublication.Apply(set, moduleActive);
             BlueprintRace[] afterSecond = root.Progression.CharacterRaces;
             evidence.FirstReconciliationChanged = first.Changed;
             evidence.SecondReconciliationChanged = second.Changed;
@@ -322,6 +342,225 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.EntryReferencesPreserved,
                 evidence.EntryReferencesPreserved,
                 "full native, Races Unleashed, and other third-party entry snapshot");
+
+            ExerciseFeatCatalog(assertions, diagnostics, evidence,
+                moduleActive);
+        }
+
+        private static void ExerciseFeatCatalog(
+            ICollection<RuntimeTestAssertion> assertions,
+            ICollection<string> diagnostics, Evidence evidence,
+            bool moduleActive)
+        {
+            LibraryScriptableObject library = BlueprintBootstrap.Library;
+            ElementalFeatBlueprintSet featSet =
+                BlueprintBootstrap.ElementalFeats;
+            BlueprintFeature[] allFeats = featSet == null ?
+                new BlueprintFeature[0] : featSet.AllFeats();
+            BlueprintFeature[] combatFeats = featSet == null ?
+                new BlueprintFeature[0] : featSet.CombatFeats();
+            evidence.RegisteredFeatIdentityCount = featSet == null ? 0 :
+                featSet.RegisteredCount;
+            bool registeredExact = library != null && featSet != null &&
+                featSet.RegisteredCount == ElementalRaceIdentityCatalog
+                    .FeatIdentityCount &&
+                allFeats.Length == ElementalFeatPolicy.FeatCount &&
+                combatFeats.Length == ElementalFeatPolicy.Ordered().Count(
+                    value => value.IsCombat) &&
+                allFeats.All(value => LibraryContainsExact(library, value));
+            Add(assertions, "elemental-feat-identities-registered",
+                "all 25 save-bearing feat identities registered and all 11 feats resolve to exact live objects",
+                "registered=" + evidence.RegisteredFeatIdentityCount +
+                    ";feats=" + allFeats.Length + ";combat=" +
+                    combatFeats.Length,
+                registeredExact,
+                "BlueprintBootstrap.ElementalFeats plus the complete live blueprint dictionary");
+            if (!registeredExact)
+                throw new InvalidOperationException(
+                    "The production elemental feat blueprint set is unavailable.");
+
+            BlueprintFeatureSelection basic = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeatureSelection>(library,
+                    ElementalFeatPublication.BasicFeatSelectionGuid,
+                    "native basic feat selection");
+            BlueprintFeatureSelection fighter = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeatureSelection>(library,
+                    ElementalFeatPublication.FighterCombatFeatSelectionGuid,
+                    "native Fighter combat-feat selection");
+            BlueprintFeature[] basicFeaturesReference = basic.Features;
+            BlueprintFeature[] basicAllReference = basic.AllFeatures;
+            BlueprintFeature[] fighterFeaturesReference = fighter.Features;
+            BlueprintFeature[] fighterAllReference = fighter.AllFeatures;
+            BlueprintFeature[] basicFeaturesBefore = Copy(basic.Features);
+            BlueprintFeature[] basicAllBefore = Copy(basic.AllFeatures);
+            BlueprintFeature[] fighterFeaturesBefore = Copy(fighter.Features);
+            BlueprintFeature[] fighterAllBefore = Copy(fighter.AllFeatures);
+            evidence.BasicFeaturesCount = basicFeaturesBefore.Length;
+            evidence.BasicAllFeaturesCount = basicAllBefore.Length;
+            evidence.FighterFeaturesCount = fighterFeaturesBefore.Length;
+            evidence.FighterAllFeaturesCount = fighterAllBefore.Length;
+            evidence.BasicFeatIndexes.AddRange(Indexes(basicFeaturesBefore,
+                allFeats));
+            evidence.FighterFeatIndexes.AddRange(Indexes(
+                fighterFeaturesBefore, combatFeats));
+
+            bool publicationExact = PublicationExact(basicFeaturesBefore,
+                    allFeats, moduleActive) &&
+                PublicationExact(basicAllBefore, allFeats, moduleActive) &&
+                PublicationExact(fighterFeaturesBefore, combatFeats,
+                    moduleActive) &&
+                PublicationExact(fighterAllBefore, combatFeats,
+                    moduleActive);
+            Add(assertions, "elemental-feat-publication-state-exact",
+                moduleActive
+                    ? "11 universal and 4 combat feats occur exactly once in both native selector surfaces"
+                    : "all feat identities registered but no project feat published to any native selector surface",
+                "moduleActive=" + moduleActive + ";basic=" +
+                    string.Join(",", evidence.BasicFeatIndexes.Select(value =>
+                        value.ToString()).ToArray()) + ";fighter=" +
+                    string.Join(",", evidence.FighterFeatIndexes.Select(
+                        value => value.ToString()).ToArray()),
+                publicationExact,
+                "exact object/GUID counts and project order in Features plus AllFeatures");
+
+            ElementalFeatPublication first = null;
+            ElementalFeatPublication second = null;
+            BlueprintFeature[] basicFeaturesAfter = null;
+            BlueprintFeature[] basicAllAfter = null;
+            BlueprintFeature[] fighterFeaturesAfter = null;
+            BlueprintFeature[] fighterAllAfter = null;
+            try
+            {
+                first = ElementalFeatPublication.Apply(library, featSet,
+                    moduleActive);
+                second = ElementalFeatPublication.Apply(library, featSet,
+                    moduleActive);
+                basicFeaturesAfter = basic.Features;
+                basicAllAfter = basic.AllFeatures;
+                fighterFeaturesAfter = fighter.Features;
+                fighterAllAfter = fighter.AllFeatures;
+                evidence.FeatArrayReferencesPreserved =
+                    ReferenceEquals(basicFeaturesReference,
+                        basicFeaturesAfter) &&
+                    ReferenceEquals(basicAllReference, basicAllAfter) &&
+                    ReferenceEquals(fighterFeaturesReference,
+                        fighterFeaturesAfter) &&
+                    ReferenceEquals(fighterAllReference, fighterAllAfter);
+                evidence.FeatEntryReferencesPreserved =
+                    SameFeatureReferences(basicFeaturesBefore,
+                        basicFeaturesAfter) &&
+                    SameFeatureReferences(basicAllBefore, basicAllAfter) &&
+                    SameFeatureReferences(fighterFeaturesBefore,
+                        fighterFeaturesAfter) &&
+                    SameFeatureReferences(fighterAllBefore, fighterAllAfter);
+            }
+            finally
+            {
+                if (second != null) second.Rollback();
+                if (first != null) first.Rollback();
+                evidence.FeatRollbackExact =
+                    ReferenceEquals(basicFeaturesReference, basic.Features) &&
+                    ReferenceEquals(basicAllReference, basic.AllFeatures) &&
+                    ReferenceEquals(fighterFeaturesReference,
+                        fighter.Features) &&
+                    ReferenceEquals(fighterAllReference,
+                        fighter.AllFeatures) &&
+                    SameFeatureReferences(basicFeaturesBefore,
+                        basic.Features) &&
+                    SameFeatureReferences(basicAllBefore,
+                        basic.AllFeatures) &&
+                    SameFeatureReferences(fighterFeaturesBefore,
+                        fighter.Features) &&
+                    SameFeatureReferences(fighterAllBefore,
+                        fighter.AllFeatures);
+            }
+            Add(assertions, "elemental-feat-reconciliation-idempotent",
+                "two no-op publication reconciliations preserve all four exact selector arrays and entries",
+                "arrays=" + evidence.FeatArrayReferencesPreserved +
+                    ";entries=" + evidence.FeatEntryReferencesPreserved +
+                    ";rollback=" + evidence.FeatRollbackExact,
+                evidence.FeatArrayReferencesPreserved &&
+                    evidence.FeatEntryReferencesPreserved &&
+                    evidence.FeatRollbackExact,
+                "two ElementalFeatPublication.Apply transactions plus reverse-order rollback");
+            Add(assertions, "third-party-feat-order-preserved",
+                "complete universal and Fighter selector reference sequences unchanged",
+                "basic=" + basicFeaturesBefore.Length + "/" +
+                    basicAllBefore.Length + ";fighter=" +
+                    fighterFeaturesBefore.Length + "/" +
+                    fighterAllBefore.Length,
+                evidence.FeatEntryReferencesPreserved &&
+                    evidence.FeatRollbackExact,
+                "full native, optional-mod, and project Features/AllFeatures snapshots");
+            diagnostics.Add("featCatalog=registered:" +
+                evidence.RegisteredFeatIdentityCount + ";basic:" +
+                basicFeaturesBefore.Length + "/" + basicAllBefore.Length +
+                ";fighter:" + fighterFeaturesBefore.Length + "/" +
+                fighterAllBefore.Length);
+        }
+
+        private static bool LibraryContainsExact(
+            LibraryScriptableObject library, BlueprintFeature feature)
+        {
+            if (library == null || library.BlueprintsByAssetId == null ||
+                feature == null) return false;
+            BlueprintScriptableObject value;
+            return library.BlueprintsByAssetId.TryGetValue(feature.AssetGuid,
+                out value) && ReferenceEquals(value, feature);
+        }
+
+        private static BlueprintFeature[] Copy(BlueprintFeature[] values)
+        {
+            return values == null ? new BlueprintFeature[0] :
+                (BlueprintFeature[])values.Clone();
+        }
+
+        private static bool PublicationExact(BlueprintFeature[] catalog,
+            BlueprintFeature[] expected, bool published)
+        {
+            if (catalog == null || expected == null) return false;
+            foreach (BlueprintFeature feature in expected)
+            {
+                int references = catalog.Count(value =>
+                    ReferenceEquals(value, feature));
+                int guids = catalog.Count(value => value != null &&
+                    string.Equals(value.AssetGuid, feature.AssetGuid,
+                        StringComparison.Ordinal));
+                if ((published && (references != 1 || guids != 1)) ||
+                    (!published && (references != 0 || guids != 0)))
+                    return false;
+            }
+            if (!published) return true;
+            BlueprintFeature[] ordered = expected.OrderBy(value =>
+                    value.Name ?? string.Empty,
+                    StringComparer.OrdinalIgnoreCase)
+                .ThenBy(value => value.AssetGuid,
+                    StringComparer.Ordinal).ToArray();
+            BlueprintFeature[] actual = catalog.Where(value => expected.Any(
+                feature => ReferenceEquals(feature, value))).ToArray();
+            return SameFeatureReferences(ordered, actual);
+        }
+
+        private static IEnumerable<int> Indexes(
+            BlueprintFeature[] catalog, IEnumerable<BlueprintFeature> features)
+        {
+            BlueprintFeature[] expected = features.ToArray();
+            for (int index = 0; index < catalog.Length; index++)
+                if (expected.Any(value =>
+                        ReferenceEquals(value, catalog[index])))
+                    yield return index;
+        }
+
+        private static bool SameFeatureReferences(
+            IList<BlueprintFeature> expected,
+            IList<BlueprintFeature> actual)
+        {
+            if (expected == null || actual == null ||
+                expected.Count != actual.Count) return false;
+            for (int index = 0; index < expected.Count; index++)
+                if (!ReferenceEquals(expected[index], actual[index]))
+                    return false;
+            return true;
         }
 
         private static bool RacesUnleashedCatalogExact(

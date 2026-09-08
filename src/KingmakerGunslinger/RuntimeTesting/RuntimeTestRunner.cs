@@ -141,6 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gunslingerOutfitProductionPersistence;
         private GunslingerOutfitRenderScenario.ElementalRacePersistenceSession
             _elementalRacePersistence;
+        private ElementalCharacterCreationBaselineScenario _elementalCharacterCreationBaseline;
         private ElementalRaceDevelopmentProbeScenario.Session
             _elementalRaceDevelopmentProbe;
         private ElementalRaceVisualAuditScenario.Session
@@ -495,6 +496,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return;
             }
 
+            ElementalCharacterCreationRoutingObserver.Arm(decision.Request);
             var runner = new RuntimeTestRunner(decision.Request, context);
             context.ModEntry.OnUpdate += runner.OnUpdate;
             context.Logger.Info(
@@ -784,6 +786,128 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveElementalHeritageDonors)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalHeritageDonorAuditScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveElementalFeatNativeContracts)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalFeatNativeAuditScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalFeatMechanics)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalFeatMechanicsScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalIfritFeats)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalIfritFeatScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalIfritAdvancedFeats)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalIfritAdvancedFeatScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalSylphFeats)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalSylphFeatScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalUndineFeats)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalUndineFeatScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveElementalHeritageBlueprints)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalHeritageBlueprintScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                    (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                {
+                    if (_elementalCharacterCreationBaseline == null)
+                    {
+                        if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                    (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                        { RunWorkingSaveSmoke(); return; }
+                        if (ResourcesLibrary.Preloading) return;
+                        _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(_context, _request);
+                        _manualElapsed = Stopwatch.StartNew();
+                    }
+                    _elementalCharacterCreationBaseline.Poll();
+                    if (_elementalCharacterCreationBaseline.Complete)
+                        Complete(_elementalCharacterCreationBaseline.Result);
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveElementalCharacterCreationRouting)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalCharacterCreationRoutingObserver.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalTraitTurnCosts)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalTraitNativeTurnScenario.Run(_context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .ObserveElementalAlternateTraitFramework)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalAlternateTraitFrameworkScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalHeritageMechanics)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalHeritageMechanicsScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalHeritageSlas)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalHeritageSlaScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
                         .ElementalRaceVisualAudit ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .ElementalRaceClassClothing)
@@ -803,6 +927,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (ResourcesLibrary.Preloading) return;
                     Complete(ElementalRaceMechanicsScenario.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableElementalSpellAffinity)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalSpellAffinityScenario.Run(
                         _context, _request));
                     return;
                 }
@@ -1801,9 +1933,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? WorkingSaveSmokeIdentity
                                 .AutomationWorkingWithOutfitFixture
                     : _request.Scenario == RuntimeTestScenarioCatalog
-                        .ElementalRaceModuleDisabledPersistence
+                        .ElementalRaceModuleDisabledPersistence ||
+                      _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceModuleRestoredPersistence
                             ? WorkingSaveSmokeIdentity
                                 .AutomationWorkingWithElementalFixtures
+                    : _request.Scenario == RuntimeTestScenarioCatalog
+                        .ElementalRaceLegacyMigration
+                            ? WorkingSaveSmokeIdentity
+                                .AutomationWorkingWithLegacyElementalFixtures
                     : _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
                             ? WorkingSaveSmokeIdentity.AffectedFocusedAim
@@ -1813,7 +1951,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .DisposableInHarmsWayOffTurnEconomy
                                 ? WorkingSaveSmokeIdentity
                                     .InHarmsWayHumanRepro
-                            : null);
+                            : null,
+                    pauseOnLoadCompletion: _request.Scenario ==
+                        RuntimeTestScenarioCatalog
+                            .ElementalRaceModuleDisabledPersistence ||
+                        _request.Scenario == RuntimeTestScenarioCatalog
+                            .ElementalRaceModuleRestoredPersistence);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();
@@ -2155,6 +2298,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_workingSaveSmoke.Complete)
             {
                 if (IsMidgameWorkingScenario()) { PollWorkingMidgameFirearms(); }
+                else
+                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                    (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                {
+                    WorkingSaveSmokeEvidence loaded = _workingSaveSmoke.Stop();
+                    _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(
+                        _context, _request, loaded);
+                    _manualElapsed = Stopwatch.StartNew();
+                }
                 else if (IsExpandedSummoningPersistenceScenario())
                 {
                     StartExpandedSummoningPersistence();
@@ -13095,12 +13247,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activeElementalRaces == expectedElementalRaces,
                     "immutable restart-bound selector-publication intent"),
                 Assertion("feature-module-elemental-races-publication",
-                    expectedElementalRaces
-                        ? "24 stable identities and one contiguous Ifrit/Oread/Sylph/Undine selector entry each"
-                        : "24 stable identities and no elemental selector entries",
+                    ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount +
+                        (expectedElementalRaces
+                            ? " stable race-owned identities and one contiguous Ifrit/Oread/Sylph/Undine selector entry each"
+                            : " stable race-owned identities and no elemental selector entries"),
                     observed,
                     elementalSet.Count ==
-                        ElementalRaceIdentityCatalog.IdentityCount &&
+                        ElementalRaceIdentityCatalog.RaceBlueprintIdentityCount &&
                     elementalOrdered.Length == ElementalRaceCatalog.RaceCount &&
                     characterRacesUnique && elementalPublicationExact,
                     "live BlueprintRoot CharacterRaces reference/GUID inventory"),

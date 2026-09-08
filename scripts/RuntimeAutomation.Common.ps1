@@ -26,6 +26,120 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-elemental-heritage-donors' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-elemental-feat-native-contracts' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-feat-mechanics' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-ifrit-feats' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-ifrit-advanced-feats' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-sylph-feats' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-undine-feats' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-elemental-heritage-blueprints' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'working-save-elemental-character-creation-regression' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'working-save-elemental-native-respec' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'working-save-elemental-character-creation' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'disposable-elemental-character-creation-baseline' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-character-creation-case' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-global-traits-kmg-disabled-control' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-elemental-character-creation-routing' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-trait-turn-costs' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-elemental-alternate-trait-framework' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-heritage-mechanics' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-heritage-slas' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'elemental-race-visual-audit' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -39,6 +153,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
     'disposable-elemental-race-mechanics' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-spell-affinity' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
@@ -315,6 +435,18 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'elemental-race-module-disabled-persistence' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'elemental-race-module-restored-persistence' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'elemental-race-legacy-migration' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
@@ -1336,11 +1468,21 @@ function Assert-KmgRuntimeScenarioPreflight {
         [int]$FingerprintTimeoutSeconds = 0,
         [hashtable]$Parameters = @{},
         [switch]$EnforceManualInteraction,
-        [switch]$ManualInteractionRequired
+        [switch]$ManualInteractionRequired,
+        [switch]$PermitQualifiedElementalRaces114
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
-    if ($ExpectedVersion -cne '0.0.116') {
-        throw 'ExpectedVersion must be exactly the active version 0.0.116.'
+    $qualifiedElementalRaces114 =
+        $PermitQualifiedElementalRaces114 -and
+        $Scenario -ceq 'elemental-race-persistence-prepare' -and
+        $ExpectedVersion -ceq '0.0.114'
+    if ($PermitQualifiedElementalRaces114 -and
+        -not $qualifiedElementalRaces114) {
+        throw 'The qualified 0.0.114 preflight exception is limited to the Elemental Race legacy persistence producer.'
+    }
+    if ($ExpectedVersion -cne '0.0.118' -and
+        -not $qualifiedElementalRaces114) {
+        throw 'ExpectedVersion must be exactly the active version 0.0.118.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -1357,11 +1499,37 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     if ($metadata.RequiresSaveName) {
-        if ($Parameters.Count -ne 1 -or
+        $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')
+        $requiredParameterCount = if ($creatorRegression) { 4 } else { 1 }
+        if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
             $Parameters.saveName -cne $metadata.PermittedSaveName) {
-            throw "$Scenario requires exactly saveName=$($metadata.PermittedSaveName)."
+            throw "$Scenario requires its exact working save and allowlisted parameters."
+        }
+        if ($creatorRegression -and (-not $Parameters.ContainsKey('race') -or
+            -not $Parameters.ContainsKey('class') -or -not $Parameters.ContainsKey('allocation') -or
+            $Parameters.race -isnot [string] -or $Parameters.class -isnot [string] -or
+            $Parameters.allocation -isnot [string] -or
+            $Parameters.race -cnotin @('Ifrit', 'Oread', 'Sylph', 'Undine') -or
+            $Parameters.class -cnotin @('Fighter', 'Gunslinger') -or
+            $Parameters.allocation -cnotin @('point-buy', 'roll'))) {
+            throw 'The working creator regression requires exact allowlisted race, class, and allocation parameters.'
+        }
+        if ($Scenario -ceq 'working-save-elemental-native-respec' -and
+            ($Parameters.class -cne 'Fighter' -or $Parameters.allocation -cne 'point-buy')) {
+            throw 'The native respec fixture currently requires Fighter and point-buy.'
+        }
+    }
+    elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {
+        if ($Parameters.Count -ne 3 -or -not $Parameters.ContainsKey('race') -or
+            -not $Parameters.ContainsKey('class') -or -not $Parameters.ContainsKey('allocation') -or
+            $Parameters.race -isnot [string] -or $Parameters.class -isnot [string] -or
+            $Parameters.allocation -isnot [string] -or
+            $Parameters.race -cnotin @('Ifrit', 'Oread', 'Sylph', 'Undine') -or
+            $Parameters.class -cnotin @('Fighter', 'Gunslinger') -or
+            $Parameters.allocation -cnotin @('point-buy', 'roll')) {
+            throw 'The disposable creator case requires exact allowlisted race, class, and allocation parameters.'
         }
     }
     elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
@@ -1370,6 +1538,7 @@ function Assert-KmgRuntimeScenarioPreflight {
             'gunslinger-races-unleashed',
             'gunslinger-call-of-the-wild',
             'gunslinger-call-of-the-wild-races-unleashed',
+            'gunslinger-tweak-or-treat',
             'gunslinger-arms-armor',
             'gunslinger-toggle-custom-soundpacks',
             'gunslinger-high-risk-combined',
@@ -1479,7 +1648,8 @@ function New-KmgRuntimeRequest {
         [int]$FingerprintTimeoutSeconds = 0,
         [Parameter(Mandatory = $true)][bool]$ExitAfterCompletion,
         [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
-        [hashtable]$Parameters = @{}
+        [hashtable]$Parameters = @{},
+        [switch]$PermitQualifiedElementalRaces114
     )
     $metadata = Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario `
         -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
@@ -1493,7 +1663,8 @@ function New-KmgRuntimeRequest {
         -DescriptorResolutionTimeoutSeconds $DescriptorResolutionTimeoutSeconds `
         -LoadEntryTimeoutSeconds $LoadEntryTimeoutSeconds `
         -FingerprintTimeoutSeconds $FingerprintTimeoutSeconds `
-        -Parameters $Parameters
+        -Parameters $Parameters `
+        -PermitQualifiedElementalRaces114:$PermitQualifiedElementalRaces114
     $evidence = Assert-KmgRuntimeEvidenceDirectory -Path $EvidenceDirectory
     $runId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' +
         [Guid]::NewGuid().ToString('N')
@@ -1516,8 +1687,17 @@ function New-KmgRuntimeRequest {
         descriptorResolutionTimeoutSeconds = $DescriptorResolutionTimeoutSeconds
         loadEntryTimeoutSeconds = $LoadEntryTimeoutSeconds
         fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
-        parameters = if ($metadata.RequiresSaveName) {
+        parameters = if ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')) {
+            [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
+                class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
+        } elseif ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
+        } elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {
+            [ordered]@{
+                race = [string]$Parameters.race
+                class = [string]$Parameters.class
+                allocation = [string]$Parameters.allocation
+            }
         } elseif ($Scenario -ceq 'observe-optional-mod-compatibility') {
             [ordered]@{ profileId = [string]$Parameters.profileId }
         } elseif ($Scenario -ceq 'observe-feature-module-settings') {

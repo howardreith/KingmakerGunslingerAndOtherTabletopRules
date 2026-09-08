@@ -1,0 +1,480 @@
+using System;
+using System.IO;
+
+namespace KingmakerGunslinger.DomainTests
+{
+    internal static class ElementalFeatNativeAuditTests
+    {
+        internal static void GuardedAuditIsReadOnlyAndExact()
+        {
+            string scenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalFeatNativeAuditScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string compatibility = Read("scripts", "compatibility",
+                "Invoke-KingmakerCompatibilityProfile.ps1");
+            foreach (string token in new[]
+            {
+                "SaveStateTouched = false",
+                "library.GetAllBlueprints()",
+                "Enum.GetNames(",
+                "SpellDescriptors",
+                "HasNativeLightDescriptor",
+                "AbilityDescriptor",
+                "ParentAbilityGuid",
+                "ReferencedBlueprintIdentities",
+                "CollectReferencedBlueprints",
+                "\"wind\"",
+                "\"gust\"",
+                "DirtyTrickBlind",
+                "ContextActionSpawnMonster",
+                "WeaponEnergyDamageDice",
+                "AddConcealment",
+                "\"invisibility\"",
+                "\"mirror image\"",
+                "\"darkness\"",
+                "ExactBlueprintContracts",
+                "FormatContract(",
+                "70cffb448c132fa409e49156d013b175",
+                "08ae1c01155a2184db869e9ebedc758d",
+                "25699a90ed3299e438b6fd5548930809",
+                "61b312b8f91cc48418768b77cd6dcc02",
+                "30f90becaaac51f41bf56641966c4121",
+                "107788f47c4481f4db6da06498b28270",
+                "04944455200bc224d955a8e9bbd64f3f",
+                "56372b0a2749c224392a5ee74105c534"
+            })
+                Assertions.True(scenario.Contains(token),
+                    "Release B native audit is missing exact evidence token " +
+                    token + ".");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "observe-elemental-feat-native-contracts"),
+                    "Release B native audit is outside a guarded allowlist or dispatch surface.");
+            Assertions.True(runner.Contains(
+                    ".ObserveElementalFeatNativeContracts") &&
+                runner.Contains("ElementalFeatNativeAuditScenario.Run("),
+                "Release B native audit is outside the central constant-based dispatch surface.");
+            foreach (string forbidden in new[]
+            {
+                "SaveManager", "SaveGame", "AddFact(", "CreateUnit(",
+                "UnitSpawner", "Spend(", "Restore("
+            })
+                Assertions.False(scenario.Contains(forbidden),
+                    "Read-only Release B audit contains mutating surface " +
+                    forbidden + ".");
+        }
+
+        private static string Read(params string[] path)
+        {
+            return File.ReadAllText(Path.Combine(FindRoot(),
+                Path.Combine(path)));
+        }
+
+        private static string FindRoot()
+        {
+            DirectoryInfo current = new DirectoryInfo(
+                AppDomain.CurrentDomain.BaseDirectory);
+            while (current != null && !File.Exists(Path.Combine(
+                current.FullName, "KingmakerGunslinger.sln")))
+                current = current.Parent;
+            if (current == null)
+                throw new DirectoryNotFoundException(
+                    "Could not locate the repository root.");
+            return current.FullName;
+        }
+
+        internal static void MechanicsScenarioIsDedicatedAndGuarded()
+        {
+            string mechanics = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalFeatRuleComponents.cs");
+            string advanced = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalIfritAdvancedFeatMechanics.cs");
+            string sylph = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalSylphFeatMechanics.cs");
+            string undine = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalUndineFeatMechanics.cs");
+            string factory = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalFeatBlueprintFactory.cs");
+            string blueprintSet = Read("src", "KingmakerGunslinger",
+                "ElementalRaces", "ElementalFeatBlueprintSet.cs");
+            string scenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalFeatMechanicsScenario.cs");
+            string ifritScenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalIfritFeatScenario.cs");
+            string advancedScenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalIfritAdvancedFeatScenario.cs");
+            string sylphScenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalSylphFeatScenario.cs");
+            string undineScenario = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "ElementalUndineFeatScenario.cs");
+            string catalog = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestScenarioCatalog.cs");
+            string runner = Read("src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs");
+            string project = Read("src", "KingmakerGunslinger",
+                "KingmakerGunslinger.csproj");
+            string automation = Read("scripts",
+                "RuntimeAutomation.Common.ps1");
+            string preflight = Read("scripts",
+                "Test-RuntimeScenarioPreflight.ps1");
+            string compatibility = Read("scripts", "compatibility",
+                "Invoke-KingmakerCompatibilityProfile.ps1");
+
+            foreach (string token in new[]
+            {
+                "RuleInitiatorLogicComponent<RulePrepareDamage>",
+                "ConditionalWeakTable<RuleDealDamage, object>",
+                "ReferenceEquals(evt.DamageBundle.Weapon, attack.Weapon)",
+                "IsSpellDamage(damage)",
+                "PreRolledValue = bonus",
+                "ElementalWingsOfAirController",
+                "ArmorProficiencyGroup.Light",
+                "ElementalScorchingWeaponsAbilityLogic",
+                "ElementalScorchingWeaponsDamage",
+                "ElementalScorchingWeaponsSaveBonus",
+                "RemoveOnUnequipItem = false",
+                "ModifierDescriptor.Racial"
+            })
+                Assertions.True(mechanics.Contains(token),
+                    "Elemental Feat runtime mechanics are missing boundary " +
+                    token + ".");
+            foreach (string token in new[]
+            {
+                "ElementalBlazingAuraAbilityLogic",
+                "IAbilityAvailabilityProvider",
+                "ScorchingWeaponsMarker",
+                "IsOwnersTurn(caster)",
+                "ConditionalWeakTable<object, object>",
+                "RuleDealDamage(owner, creature",
+                "DamageEnergyType.Fire",
+                "[HarmonyPatch(typeof(TurnController), \"Prepare\"",
+                "ElementalFiresightConcealmentSource",
+                "ElementalFiresightConcealmentKind.Smoke",
+                "Rulebook.CurrentContext",
+                "ReferenceEquals(attack.ConcealmentCheck, check)",
+                "NativeInvisibilityComponent",
+                "UnitCondition.Blindness",
+                "[HarmonyPatch(typeof(RuleConcealmentCheck), \"get_Success\")]",
+                "Fail closed"
+            })
+                Assertions.True(advanced.Contains(token),
+                    "Advanced Ifrit mechanics are missing narrow runtime boundary " +
+                    token + ".");
+            Assertions.False(advanced.Contains("RaceId.Aasimar") ||
+                advanced.Contains("BlueprintsCache.Init") ||
+                advanced.Contains("HarmonyPatch(typeof(UnitDescriptor)"),
+                "Advanced Ifrit mechanics must not introduce a global race, cache, or unit patch.");
+            foreach (string token in new[]
+            {
+                "RuleInitiatorLogicComponent<RuleSavingThrow>",
+                "ElementalAiryStepSaveBonus",
+                "ConditionalWeakTable<RuleSavingThrow, object>",
+                "SpellDescriptor.Electricity",
+                "IsExactNativeAirEffectGuid",
+                "RuleDealDamage",
+                "DamageEnergyType.Electricity",
+                "ModifierDescriptor.Racial",
+                "ElementalCloudGazerRuntime",
+                "Rulebook.CurrentContext",
+                "ReferenceEquals(attack.ConcealmentCheck, check)",
+                "IsExactNativeCloudGazerConcealmentGuid",
+                "ElementalFiresightConcealmentKind.FogMistOrCloud",
+                "[HarmonyPatch(typeof(RuleConcealmentCheck), \"get_Success\")]",
+                "RuleInitiatorLogicComponent<RuleApplyBuff>",
+                "ElementalRespirationRequired",
+                "IsExactNativeRespirationRequiredBuffGuid",
+                "evt.CanApply = false",
+                "Fail closed"
+            })
+                Assertions.True(sylph.Contains(token),
+                    "Sylph feat mechanics are missing narrow runtime boundary " +
+                    token + ".");
+            Assertions.False(sylph.Contains("RaceId.Aasimar") ||
+                sylph.Contains("SpellDescriptor.Poison") ||
+                sylph.Contains("HarmonyPatch(typeof(UnitDescriptor)"),
+                "Sylph mechanics must not use the shared native race ID, blanket poison immunity, or a global unit patch.");
+            foreach (string token in new[]
+            {
+                "ElementalHydraulicSharedResourceAvailability",
+                "IAbilityAvailabilityProvider",
+                "HydraulicPushFeature",
+                "HydraulicPushAbility",
+                "GetResourceAmount(Resource) > 0",
+                "ElementalUndineNativeComponentClone",
+                "source is BlueprintScriptableObject",
+                "ScriptableObject.CreateInstance(type)",
+                "ReferenceComparer"
+            })
+                Assertions.True(undine.Contains(token),
+                    "Undine feat mechanics are missing exact ownership boundary " +
+                    token + ".");
+            Assertions.False(undine.Contains("RaceId.Aasimar") ||
+                undine.Contains("ExpandedSummoning") ||
+                undine.Contains("BlueprintsCache.Init"),
+                "Undine mechanics must not use the shared race ID, depend on Expanded Summoning, or patch global cache initialization.");
+            Assertions.True(advanced.Contains(
+                    "blueprints.RequireSymbol<BlueprintBuff>(") &&
+                blueprintSet.Contains("m_BlueprintsBySymbol") &&
+                blueprintSet.Contains("RequireSymbol<T>(string symbol)") &&
+                blueprintSet.Contains("symbol.Replace('.', '_')"),
+                "Runtime feat mechanics must resolve stable manifest symbols through the validated symbol index, not pass them to the GUID index.");
+            foreach (string token in new[]
+            {
+                "ConfigureElementalStrike(strikeBuff, races)",
+                "CreateWingsBuff(icon)",
+                "ACBonusAgainstAttacks",
+                "AddConditionImmunity",
+                "BuffDescriptorImmunity",
+                "ConfigureWingsFeature",
+                "ConfigureScorchingWeapons",
+                "ConfigureBlazingAura",
+                "ConfigureFiresight",
+                "ConfigureAiryStep",
+                "ConfigureInnerBreath",
+                "ConfigureHydraulicManeuver",
+                "ConfigureTritonPortal",
+                "ElementalTritonPortalGroundTargetChecker",
+                "CombatManeuver.DirtyTrickBlind",
+                "ContextActionSpawnMonster",
+                "DiceType.D3",
+                "SmallWaterElementalUnitGuid",
+                "UnitCondition.Dazzled"
+            })
+                Assertions.True(factory.Contains(token),
+                    "Elemental Feat factory wiring is missing " + token + ".");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility",
+                "RuleAttackWithWeapon",
+                "RulePrepareDamage",
+                "AttackRoll.ACRule.BonusSources",
+                "AttackRoll.TargetAC",
+                "IsTargetFlatFooted",
+                "PrimaryHand.InsertItem",
+                "MeleeAcLightWithoutWings",
+                "CombatState.LeaveCombat",
+                "Armor.RemoveItem(false)",
+                "StandardHeavyCrossbowGuid",
+                "UnitCondition.DifficultTerrain",
+                "SpellDescriptor.Ground",
+                "ArmorProficiencyGroup.Light",
+                "ArmorProficiencyGroup.Medium",
+                "SaveStateTouched = false"
+            })
+                Assertions.True(scenario.Contains(token),
+                    "Dedicated Elemental Feat scenario is missing live boundary " +
+                    token + ".");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility",
+                "PrimaryHand.InsertItem",
+                "SecondaryHand.InsertItem",
+                "RemoveOnUnequipItem",
+                "RuleAttackWithWeapon",
+                "RulePrepareDamage",
+                "RuleSavingThrow",
+                "FlamingEnchantmentGuid",
+                "WeaponSubCategory.Metal",
+                "SaveStateTouched = false",
+                "Game.Instance.State.Units.All.Remove(unit)"
+            })
+                Assertions.True(ifritScenario.Contains(token),
+                    "Dedicated Ifrit feat scenario is missing live boundary " +
+                    token + ".");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility",
+                "ElementalBlazingAuraRuntime",
+                "HandleCreatureTurnStarted",
+                "RuleDealDamage[]",
+                "DamageEnergyType.Fire",
+                "RuleAttackRoll",
+                "RuleConcealmentCheck",
+                "SeekingConcealmentRuntime.QueueForcedRoll",
+                "context.Harmony.GetPatchInfo(getter)",
+                "typeof(ElementalFiresightConcealmentPatch)",
+                "typeof(SeekingConcealmentSuccessPatch)",
+                "new RuleAttackRoll(attacker, target, weapon, -100)",
+                "AcProbeConcealmentRoll == 100",
+                "AcProbeAttackRoll +",
+                "AcProbeAttackBonus >= AcProbeTargetAc",
+                "SeekingConcealmentRuntime.QueueForcedRoll(weapon, 100)",
+                "ReachedIndependentDefense(\"MirrorImage\")",
+                "roll.TargetAC",
+                "firesight-attack-roll-isolation",
+                "ElementalFiresightConcealmentSource",
+                "InvisibilityGuid",
+                "MirrorImageGuid",
+                "BlindnessGuid",
+                "DarknessGuid",
+                "DazzledGuid",
+                "SaveStateTouched = false",
+                "Game.Instance.State.Units.All.Remove(unit)"
+            })
+                Assertions.True(advancedScenario.Contains(token),
+                    "Dedicated advanced Ifrit scenario is missing live boundary " +
+                    token + ".");
+            foreach (string token in new[]
+            {
+                "RuleSavingThrow",
+                "new MechanicsContext(source, source.Descriptor,",
+                "new RuleDealDamage(source, saver,",
+                "DamageEnergyType.Electricity",
+                "ExactNativeAirEffectGuids()",
+                "ParentAir",
+                "Overlap",
+                "WingsDelta == 4",
+                "RuleAttackRoll",
+                "RuleConcealmentCheck",
+                "SeekingConcealmentRuntime.QueueForcedRoll",
+                "context.Harmony.GetPatchInfo(getter)",
+                "typeof(ElementalCloudGazerConcealmentPatch)",
+                "typeof(SeekingConcealmentSuccessPatch)",
+                "new RuleAttackRoll(attacker, target, weapon, -100)",
+                "AcProbeConcealmentRoll == 100",
+                "ReachedIndependentDefense(\"MirrorImage\")",
+                "ElementalFiresightConcealmentKind.FogMistOrCloud",
+                "ElementalFiresightConcealmentKind.Smoke",
+                "TryApplyBuff(breather, blueprint)",
+                "ElementalRespirationRequired",
+                "OrdinaryPoisonGuid",
+                "StinkingCloudGuid",
+                "CloudkillGuid",
+                "SwampGasDotGuid",
+                "SaveStateTouched = false",
+                "Game.Instance.State.Units.All.Remove(unit)"
+            })
+                Assertions.True(sylphScenario.Contains(token),
+                    "Dedicated Sylph feat scenario is missing live boundary " +
+                    token + ".");
+            foreach (string token in new[]
+            {
+                "UnitUseAbility",
+                "RuleCombatManeuver",
+                "CombatManeuver.BullRush",
+                "CombatManeuver.Disarm",
+                "CombatManeuver.Trip",
+                "CombatManeuver.DirtyTrickBlind",
+                "UnitCondition.ImmuneToCombatManeuvers",
+                "TemporaryWisdomAfter",
+                "ContextActionSpawnMonster",
+                "RuleSummonUnit",
+                "SummonedUnitBuff",
+                "RequireFullRoundAction",
+                "ResourceAfterInvalidTarget",
+                "HydraulicAvailableAtZero",
+                "RestController.ApplyRest",
+                "TritonPortalNearestNodePatch",
+                "TritonPortalSpawnPlacesPatch",
+                "SaveStateTouched = false",
+                "Game.Instance.State.Units.All.Remove(unit)"
+            })
+                Assertions.True(undineScenario.Contains(token),
+                    "Dedicated Undine feat scenario is missing live boundary " +
+                    token + ".");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-feat-mechanics"),
+                    "Elemental Feat mechanics are outside a guarded allowlist.");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-ifrit-feats"),
+                    "Ifrit feat mechanics are outside a guarded allowlist.");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-ifrit-advanced-feats"),
+                    "Advanced Ifrit feat mechanics are outside a guarded allowlist.");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-sylph-feats"),
+                    "Sylph feat mechanics are outside a guarded allowlist.");
+            foreach (string source in new[]
+            {
+                catalog, automation, preflight, compatibility
+            })
+                Assertions.True(source.Contains(
+                        "disposable-elemental-undine-feats"),
+                    "Undine feat mechanics are outside a guarded allowlist.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalFeatMechanics") &&
+                runner.Contains("ElementalFeatMechanicsScenario.Run("),
+                "Elemental Feat mechanics are outside constant-based dispatch.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalIfritFeats") &&
+                runner.Contains("ElementalIfritFeatScenario.Run("),
+                "Ifrit feat mechanics are outside constant-based dispatch.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalIfritAdvancedFeats") &&
+                runner.Contains("ElementalIfritAdvancedFeatScenario.Run("),
+                "Advanced Ifrit mechanics are outside constant-based dispatch.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalSylphFeats") &&
+                runner.Contains("ElementalSylphFeatScenario.Run("),
+                "Sylph feat mechanics are outside constant-based dispatch.");
+            Assertions.True(runner.Contains(
+                    ".DisposableElementalUndineFeats") &&
+                runner.Contains("ElementalUndineFeatScenario.Run("),
+                "Undine feat mechanics are outside constant-based dispatch.");
+            Assertions.Equal(2,
+                catalog.Split(new[] { "DisposableElementalFeatMechanics" },
+                    StringSplitOptions.None).Length - 1,
+                "Elemental Feat mechanics must have one constant declaration and " +
+                "one executable catalog entry.");
+            Assertions.Equal(2,
+                catalog.Split(new[] { "DisposableElementalIfritFeats" },
+                    StringSplitOptions.None).Length - 1,
+                "Ifrit feat mechanics must have one constant declaration and " +
+                "one executable catalog entry.");
+            Assertions.Equal(2,
+                catalog.Split(new[] {
+                    "DisposableElementalIfritAdvancedFeats" },
+                    StringSplitOptions.None).Length - 1,
+                "Advanced Ifrit mechanics must have one constant declaration " +
+                "and one executable catalog entry.");
+            Assertions.Equal(2,
+                catalog.Split(new[] { "DisposableElementalSylphFeats" },
+                    StringSplitOptions.None).Length - 1,
+                "Sylph feat mechanics must have one constant declaration " +
+                "and one executable catalog entry.");
+            Assertions.Equal(2,
+                catalog.Split(new[] { "DisposableElementalUndineFeats" },
+                    StringSplitOptions.None).Length - 1,
+                "Undine feat mechanics must have one constant declaration " +
+                "and one executable catalog entry.");
+            Assertions.True(project.Contains(
+                    "ElementalFeatRuleComponents.cs") &&
+                project.Contains(
+                    "ElementalIfritAdvancedFeatMechanics.cs") &&
+                project.Contains("ElementalSylphFeatMechanics.cs") &&
+                project.Contains("ElementalUndineFeatMechanics.cs") &&
+                project.Contains("ElementalFeatMechanicsScenario.cs") &&
+                project.Contains("ElementalIfritFeatScenario.cs") &&
+                project.Contains("ElementalIfritAdvancedFeatScenario.cs") &&
+                project.Contains("ElementalSylphFeatScenario.cs") &&
+                project.Contains("ElementalUndineFeatScenario.cs"),
+                "Elemental Feat mechanics or scenario is outside the build.");
+        }
+    }
+}

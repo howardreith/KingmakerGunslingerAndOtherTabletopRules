@@ -69,31 +69,7 @@ def validate(root: Path) -> None:
     if len({entry["guid"] for entry in entries}) != len(entries) or \
             len({entry["symbol"] for entry in entries}) != len(entries):
         raise AssertionError("Duplicate blueprint GUID or symbol")
-    require_tokens(root / "src/KingmakerGunslinger/Firearms/MidgameFirearmCatalog.cs",
-        '"Roadwarden"', '"Dead Reckoning"', '33800, true, false',
-        '33300, false, true', 'ActualEnhancement = 3', 'EquivalentBonus = 4',
-        '80bb8a737579e35498177e1e3c75899b')
-    require_tokens(root / "src/KingmakerGunslinger/Blueprints/MagicFirearmBlueprints.cs",
-        'plus3Components[0].EnhancementBonus != 3', 'plus3Components[0].Stack',
-        'catalog.Entries.Length != 10', 'MidgameFirearmCatalog.Entries',
-        'new[] { plus3, reliable }', 'new[] { plus3, seeking }')
-    require_tokens(root / "src/KingmakerGunslinger/Development/KingmakerDevelopmentBridge.RareFirearms.cs",
-        "value.Entries.Length != 10", "all ten rare-firearm test items")
-    require_tokens(root / "src/KingmakerGunslinger/Blueprints/RareFirearmCampaignLootBlueprints.cs",
-        'BlueprintItem[] owned = Targets.Select(target =>',
-        'Published five exact count-one named firearms')
-    require_tokens(root / "src/KingmakerGunslinger/Blueprints/SkeletalSalesmanBlueprints.cs",
-        'RequireExact<BlueprintSharedVendorTable>', 'ReadVisibleSortKey',
-        'item.ItemType', 'item.Name', 'CopiesPerStock', 'publication.Validate()')
-    require_tokens(root / "src/KingmakerGunslinger/CraftMagicItemsCompatibility/CraftMagicItemsRegistrationCatalog.cs",
-        'magic.NamedEntries', 'NamedUpgradeOnly')
-    protection_hash = hashlib.sha256()
-    for path in sorted((root / "src/KingmakerGunslinger/Spells/ProtectionFromAlignment").glob("*.cs")):
-        if path.name != "ProtectionFromAlignmentDescriptions.cs":
-            protection_hash.update(path.relative_to(root).as_posix().encode() + b"\0" +
-                path.read_bytes().replace(b"\r\n", b"\n"))
-    if protection_hash.hexdigest() != "4496f413b51cb9e9df59b0827702fe643107697baa6815bcbe4f6f6cd82f3e9e":
-        raise AssertionError("Protection control/publication source changed in a wording-only patch")
+    validate_content_contract(root)
 
     api = require_tokens(root / "src/KingmakerGunslinger/BrownFur/"
         "BrownFurDirectCastApi.cs", "public const int ContractVersion = 1",
@@ -184,6 +160,46 @@ def validate(root: Path) -> None:
     for key, value in expected.items():
         if state.get(key) != value:
             raise AssertionError(f"0.0.116 static mismatch: {key}")
+
+
+def validate_content_contract(root: Path) -> None:
+    """Retain the released mechanics and identities in later candidates."""
+    require_tokens(root / "src/KingmakerGunslinger/Firearms/MidgameFirearmCatalog.cs",
+        '"Roadwarden"', '"Dead Reckoning"', '33800, true, false',
+        '33300, false, true', 'ActualEnhancement = 3', 'EquivalentBonus = 4',
+        '80bb8a737579e35498177e1e3c75899b')
+    require_tokens(root / "src/KingmakerGunslinger/Blueprints/MagicFirearmBlueprints.cs",
+        'plus3Components[0].EnhancementBonus != 3', 'plus3Components[0].Stack',
+        'catalog.Entries.Length != 10', 'MidgameFirearmCatalog.Entries',
+        'new[] { plus3, reliable }', 'new[] { plus3, seeking }')
+    require_tokens(root / "src/KingmakerGunslinger/Development/KingmakerDevelopmentBridge.RareFirearms.cs",
+        "value.Entries.Length != 10", "all ten rare-firearm test items")
+    require_tokens(root / "src/KingmakerGunslinger/Blueprints/RareFirearmCampaignLootBlueprints.cs",
+        'BlueprintItem[] owned = Targets.Select(target =>',
+        'Published five exact count-one named firearms')
+    require_tokens(root / "src/KingmakerGunslinger/Blueprints/SkeletalSalesmanBlueprints.cs",
+        'RequireExact<BlueprintSharedVendorTable>', 'ReadVisibleSortKey',
+        'item.ItemType', 'item.Name', 'CopiesPerStock', 'publication.Validate()')
+    require_tokens(root / "src/KingmakerGunslinger/CraftMagicItemsCompatibility/CraftMagicItemsRegistrationCatalog.cs",
+        'magic.NamedEntries', 'NamedUpgradeOnly')
+    protection_hash = hashlib.sha256()
+    for path in sorted((root / "src/KingmakerGunslinger/Spells/ProtectionFromAlignment").glob("*.cs")):
+        if path.name != "ProtectionFromAlignmentDescriptions.cs":
+            protection_hash.update(path.relative_to(root).as_posix().encode() + b"\0" +
+                path.read_bytes().replace(b"\r\n", b"\n"))
+    if protection_hash.hexdigest() != "4496f413b51cb9e9df59b0827702fe643107697baa6815bcbe4f6f6cd82f3e9e":
+        raise AssertionError("Protection control/publication source changed in a wording-only patch")
+
+    require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.MidgameFirearms.cs",
+        "midgame-native-log-publication", "Diagnostics.NativeCombatLog.Faults == logFaults",
+        "log.Messages == Diagnostics.NativeCombatLog.Attempts - logAttempts")
+    entries = json.loads((root / "blueprints/blueprints.json").read_text(encoding="utf-8"))["entries"]
+    by_symbol = {entry["symbol"]: entry for entry in entries}
+    for symbol, guid in {"KMG.Firearms.RoadwardenItem": "66d2f8c4d6aa43e0be72ac18ed9fcd81",
+            "KMG.Firearms.DeadReckoningItem": "b8db89aba5364c27b1626896664a1913"}.items():
+        entry = by_symbol[symbol]
+        if (entry["guid"], entry["plannedType"], entry["status"]) != (guid, "BlueprintItemWeapon", "active"):
+            raise AssertionError("Released mid-game firearm identity changed: " + symbol)
 
 
 def main() -> int:

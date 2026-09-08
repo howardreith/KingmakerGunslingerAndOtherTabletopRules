@@ -56,7 +56,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 MidgamePublicationContracts(assertions, true);
                 foreach (SkeletalSalesmanStockTarget spec in SkeletalSalesmanStockCatalog.Targets)
                     MidgameMerchantFixture(spec, assertions);
-                MidgameWeaponRules(assertions);
+                // This exact main-menu fixture has no BattleLogView. Capture
+                // only the final UI sink, retaining native publication and
+                // verifying every attempted annotation reached the sink.
+                long logAttempts = Diagnostics.NativeCombatLog.Attempts;
+                long logFaults = Diagnostics.NativeCombatLog.Faults;
+                using (var log = new ElementalBreezeKissedScenario.FirearmLogCapture())
+                {
+                    MidgameWeaponRules(assertions);
+                    assertions.Add(Assertion("midgame-native-log-publication", "every native message captured; no new publication fault",
+                        "messages=" + log.Messages + ";attempts=" + (Diagnostics.NativeCombatLog.Attempts - logAttempts),
+                        log.Messages > 0 && log.Messages == Diagnostics.NativeCombatLog.Attempts - logAttempts &&
+                        Diagnostics.NativeCombatLog.Faults == logFaults,
+                        "request-local absent UI sink only; unchanged native message validation and attack rules"));
+                }
             }
             catch (Exception exception)
             {
