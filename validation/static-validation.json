@@ -978,6 +978,19 @@
     "traitPersistenceQualificationPending": true,
     "traitCompatibilityQualificationPending": true
   },
+  "elementalStabilization117Release": {
+    "ownerAcceptedCandidate": true,
+    "ownerReleaseAuthorized": true,
+    "individualHumanChecklistEvidenceProvided": false,
+    "acceptedCandidateCommit": "132f0650e997579c589d19874a022aa5ee2213f2",
+    "acceptedCandidateRuntimeAssertions": 13847,
+    "acceptedCandidateRuntimeProcesses": 28,
+    "visibleAlternateTraitCount": 19,
+    "registeredAlternateTraitCount": 21,
+    "deferredChoicesPublished": false,
+    "favoredClassBonusesAdded": false,
+    "releasePreparationChangesGameplay": false
+  },
   "midgameFirearms116": {
     "deterministicTestCount": 1398,
     "newNamedFirearms": 2,

@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.0.117 public release
+
+- Adds twelve heritage choices, eleven elemental feats and nineteen implemented
+  alternate racial traits to the existing Elemental Races module.
+- Presents heritage and alternate racial choices before ability allocation and
+  skills, with legal retain-base choices and deterministic back-navigation.
+- Preserves both ordinary ZFavoredClass Trait selections and publishes Helpful
+  once without populating its intentionally empty Combat Features array.
+- Preserves spent racial resources through native respec and save/load, and
+  stabilizes the visible traits' action costs, provider cleanup and lifecycles.
+- Keeps Treacherous Earth and Nereid Fascination registered but unavailable.
+- Includes the released Roadwarden, Dead Reckoning and Protection wording changes.
+
+The owner accepted the installed stabilization candidate and authorized merge,
+push and publication. Gameplay source and existing identities are unchanged
+during release preparation. Exact artifacts and verification are recorded in
+[the release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md).
+
+The candidate sections below retain their historical evidence and status.
+
 ## 0.0.117-elemental-char-gen-stabilization
 
 - Route elemental heritages and alternate racial traits through the native

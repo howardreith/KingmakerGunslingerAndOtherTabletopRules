@@ -2549,3 +2549,21 @@ unchanged. Per-profile full manifests, settings hashes, active selector snapshot
 and exact restoration records remain in the ignored stabilization evidence
 directory. No raw logs, generated ZIPs, saves or proprietary assemblies are
 committed. All earlier journal evidence remains intact.
+
+
+## Owner-accepted public release continuation (2026-09-07)
+
+The owner accepted the installed stabilization candidate and explicitly authorized
+finalizing, integrating latest master, merging to master, pushing and cutting a
+public release. This supersedes the previous no-publication stopping boundary.
+Release preparation begins at clean, pushed a5fe788fa95b1cc870ecab99993b15f503371a92.
+Latest origin/master 58d9511082af30f1a4ec88c1238ae7ae2b3651c2 is already included.
+The [public release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md) records
+this continuation; all prior evidence above retains its original artifact and
+acceptance status. No individual human UI checklist result is inferred.
+
+Only current release documentation and its validation contract change during
+preparation. Production mechanics, assets, version identity and GUIDs remain
+those of accepted artifact 132f0650e997579c589d19874a022aa5ee2213f2. The complete
+source/build/package gates and focused final-artifact guarded runtime checks
+precede publication. Deferred mechanics remain unavailable.

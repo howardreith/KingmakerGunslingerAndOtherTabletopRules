@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Release gate for the in-progress 0.0.117 Elemental Traits candidate."""
+"""Release gate for owner-accepted 0.0.117 Elemental Races stabilization."""
 from __future__ import annotations
 
 import argparse
@@ -136,9 +136,14 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "'observe-elemental-alternate-trait-framework' = [pscustomobject]")
 
-    require_tokens(root / "docs/RELEASE-NOTES-0.0.117.md",
+    require_tokens(root / "docs/ELEMENTAL-RACES-0.0.117-HISTORICAL-RELEASE-NOTES.md",
         "Kingmaker Gunslinger 0.0.117", "elemental-traits",
         "Release C remains in progress")
+    require_tokens(root / "docs/RELEASE-NOTES-0.0.117.md",
+        "Kingmaker Gunslinger 0.0.117", INFORMATIONAL_VERSION,
+        "nineteen implemented alternate racial traits", "Treacherous Earth",
+        "Nereid Fascination", "owner accepted the installed candidate",
+        "explicitly authorized", "1,458", "13,847")
     require_tokens(root / "README.md", INFORMATIONAL_VERSION,
         "alternate racial traits", "Release C remains in progress")
     require_tokens(root / "INSTALLATION-COMPATIBILITY.md",
@@ -168,6 +173,31 @@ def validate(root: Path) -> None:
     for key, value in expected.items():
         if state.get(key) != value:
             raise AssertionError(f"0.0.117 static mismatch: {key}")
+
+
+    # Preserve incremental candidate evidence; publication covers qualified
+    # visible content and the owner's explicit acceptance only.
+    release = static.get("elementalStabilization117Release", {})
+    release_expected = {
+        'ownerAcceptedCandidate': True,
+        'ownerReleaseAuthorized': True,
+        'individualHumanChecklistEvidenceProvided': False,
+        'acceptedCandidateCommit': '132f0650e997579c589d19874a022aa5ee2213f2',
+        'acceptedCandidateRuntimeAssertions': 13847,
+        'acceptedCandidateRuntimeProcesses': 28,
+        'visibleAlternateTraitCount': 19,
+        'registeredAlternateTraitCount': 21,
+        'deferredChoicesPublished': False,
+        'favoredClassBonusesAdded': False,
+        'releasePreparationChangesGameplay': False,
+    }
+    for key, value in release_expected.items():
+        if release.get(key) != value:
+            raise AssertionError(f"0.0.117 public release contract mismatch: {key}")
+    require_tokens(root / "docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md",
+        "All of this is fully authorized", release_expected["acceptedCandidateCommit"],
+        "58d9511082af30f1a4ec88c1238ae7ae2b3651c2",
+        "individual full-screen checklist", "guarded", "Steam")
 
 
 def main() -> int:

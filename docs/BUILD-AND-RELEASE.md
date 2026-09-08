@@ -87,8 +87,12 @@ Exact fingerprints and results belong in the task report. Historical 0.0.114
 compatibility evidence stays pinned to that package; 0.0.115's separate
 save-backed API qualification is not inferred from these content scenarios.
 
-The owner authorized merging that released master into this stabilization branch
-on 2026-09-07. This does not authorize publishing the 0.0.117 candidate.
+The owner accepted the installed 0.0.117 stabilization candidate and explicitly
+authorized finalization, integration with latest master, merge, push and public
+release on 2026-09-07. This supersedes the earlier candidate-only boundary.
+The prior acceptance handoff and incremental notes remain historical evidence;
+the [public release report](ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md) records the
+new authorization and final artifact verification.
 
 Where installed UMM targets a newer framework, pass `-ReferenceBundleDir` to
 the publisher to use the existing provenance-checked `Build-Local.ps1` path
@@ -97,14 +101,15 @@ output, SoundBank, and strict package gates. No installed UMM/Harmony files
 are changed. If the legacy external Unity output is absent, Build-Local uses
 the tracked bundle only after the existing manifest hash check succeeds.
 
-The in-progress 0.0.117 candidate preserves the qualified 0.0.116 Elemental
-Races and feat identities and adds alternate racial traits within the existing
-module. It may be
-published only after complete version-aware
-deterministic, package, repository-validation, guarded runtime, exact
-compatibility-restoration, and owner visual-acceptance gates. The mission
-authorizes a draft pull request and candidate package only: do not create a
-tag, GitHub release, or public asset without owner authorization.
+Release 0.0.117 preserves all existing elemental identities and publishes only
+nineteen implemented alternate traits. Treacherous Earth and Nereid Fascination
+remain registered but unavailable. The accepted artifact passed 1,458 tests,
+259 harness preflight checks and 13,847 assertions across 28 guarded processes.
+Release sealing preserves gameplay source and assets, compares the new payload
+against that accepted artifact, and verifies the rebuilt DLL's final commit
+through focused guarded character-creation, native respec and load checks.
+Earlier matrix evidence retains its original artifact attribution. The owner's
+acceptance does not fabricate individual full-screen checklist results.
 
 The GitHub repository's release branch is `master`. Before publishing, make
 `master` the repository's GitHub default branch. The publisher blocks a default
@@ -150,10 +155,10 @@ After publication, download the named file under **Assets**. Do not download
 GitHub's automatic **Source code (zip)** archive.
 
 ```powershell
-gh release download v0.0.116 `
+gh release download v0.0.117 `
   --repo howardreith/KingmakerGunslingerAndOtherTabletopRules `
-  --pattern 'KingmakerGunslinger-0.0.116-midgame-firearms-and-protection.zip' `
-  --dir "artifacts\release-download\0.0.116"
+  --pattern 'KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip' `
+  --dir "artifacts\release-download\0.0.117"
 ```
 
 Drag that downloaded ZIP directly into Unity Mod Manager's Mods tab. The
