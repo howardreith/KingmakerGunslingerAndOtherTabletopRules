@@ -6,6 +6,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
+        internal const string ObserveTeleportationWorldMap = "observe-teleportation-world-map";
         internal const string ObserveTeleportationNativeContracts = "observe-teleportation-native-contracts";
         internal const string ObserveKmgCompatibilityAssetAttribution =
             "observe-kmg-compatibility-asset-attribution";
@@ -519,6 +520,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 MagicFirearmNativeProperties,
                 DisposableMidgameFirearms,
                 ObserveTeleportationNativeContracts,
+                ObserveTeleportationWorldMap,
                 ReliableFirearmMisfireMatrix,
                 BlunderbussThunderingScatter,
                 ObserveProductionFirearmFallbacks,

@@ -532,6 +532,7 @@ try {
         'summon-same-turn-rtwp-control',
         'disposable-expanded-summoning-visual-contracts',
         'disposable-brown-fur-native-cast',
+        'observe-teleportation-world-map',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',
