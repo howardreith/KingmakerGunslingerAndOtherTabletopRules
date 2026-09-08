@@ -2,6 +2,11 @@
 
 ## Unreleased: contextual world-map teleportation in development
 
+- Qualifies both familiarity fields through native unit-owner serialization,
+  preview loading/rebuilds and cancellation. The extended level-up probe passes
+  31 assertions; spellbook/working-save regressions pass 42. Disk persistence
+  remains a separate qualification gate.
+
 - Qualifies native point selection, dismissal and Travel with Teleportation OFF
   despite real available spellbook resources. Eight guarded assertions and 79
   enabled interaction/save regressions pass with exact fixture/settings cleanup.

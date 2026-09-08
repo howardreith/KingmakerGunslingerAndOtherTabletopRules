@@ -18,6 +18,7 @@ using Kingmaker.UnitLogic.Class.LevelUp;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Spells.Teleportation;
+using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -59,7 +60,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, "b3a505fb61437dc4097f43c3f8f9a4cf", "native Sorcerer level-up fixture");
             var owner = player.Party.FirstOrDefault(value => TeleportationSpellbookAdapter.CasterAvailable(value) && value.View != null && value.IsDirectlyControllable &&
                 value.Descriptor.Progression.CharacterLevel < 20 && value.Descriptor.GetSpellbook(wizard.Spellbook) == null && value.Descriptor.GetSpellbook(sorcerer.Spellbook) == null);
-            if (owner == null) throw new InvalidOperationException("No available native owner with unused level-up fixture books.");
+            if (owner == null || !ReferenceEquals(owner, player.MainCharacter.Value) || !owner.Descriptor.IsTurnedOn)
+                throw new InvalidOperationException("The canonical active save owner must have unused level-up fixture books.");
             var experience = typeof(UnitProgressionData).GetProperty("Experience");
             if (experience == null || experience.PropertyType != typeof(int) || experience.GetSetMethod(true) == null)
                 throw new InvalidOperationException("Native request-local experience restoration seam differs.");
@@ -79,21 +81,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new TeleportLevelUpEntry(sorcerer, 9, TeleportSpellKind.Teleport, 5),
                 new TeleportLevelUpEntry(sorcerer, 13, TeleportSpellKind.GreaterTeleport, 7)
             };
+            var savedState = new TeleportLevelUpSavedStateFixture(owner.Descriptor);
             Application.logMessageReceived += ObserveTeleportSpellbookUiException;
             try
             {
                 game.IsPaused = true;
+                savedState.Prepare();
                 // The native XP setter is a fixture-only precondition; it grants
                 // no level and emits no experience/automatic level-up event.
                 experience.SetValue(owner.Descriptor.Progression,
                     Math.Max(originalExperience, game.BlueprintRoot.Progression.XPTable.GetBonus(originalLevel + 1)), null);
                 foreach (var entry in entries)
-                    foreach (int frame in QualifyTeleportLevelUpEntry(controller, owner, entry)) yield return frame;
+                    foreach (int frame in QualifyTeleportLevelUpEntry(controller, owner, entry, savedState)) yield return frame;
                 foreach (var snapshot in uiSnapshots) snapshot.Restore();
                 for (int frame = 0; frame < 30; frame++) yield return 0;
             }
             finally
             {
+                savedState.Restore();
                 experience.SetValue(owner.Descriptor.Progression, originalExperience, null);
                 controller.Unit = originalPresenterUnit;
                 ui.SelectionManagerPC.MultiSelect(originalSelection.Select(value => value.View).ToArray(), false);
@@ -106,12 +111,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ui.SelectionManagerPC.SelectedUnits.SequenceEqual(originalSelection) && player.Party.SequenceEqual(originalParty) &&
                     originalPositions.SequenceEqual(originalParty.Select(value => value.Position)) &&
                     ReferenceEquals(game.CurrentlyLoadedArea, originalArea) && player.GameTime == originalTime && game.IsPaused == originalPaused &&
-                    !controller.IsShow && ReferenceEquals(ui.LevelUpController, originalBackend) &&
+                    savedState.IsRestored() && !controller.IsShow && ReferenceEquals(ui.LevelUpController, originalBackend) &&
                     ReferenceEquals(controller.Unit, originalPresenterUnit) && !DialogMessageBox.Instance.IsShown && !_workingSaveSmoke.WriteObserved;
                 CaptureTeleportSpellbookUi("level-up-cleanup", new { unchanged, experience = owner.Descriptor.Progression.Experience,
                     characterLevel = owner.Descriptor.Progression.CharacterLevel, sameClassReferences = owner.Descriptor.Progression.Classes.SequenceEqual(originalClasses),
                     sameFeatureReferences = owner.Descriptor.Progression.Features.Enumerable.SequenceEqual(originalFeatures), uiSettingsRestored = uiSnapshots.All(value => value.IsRestored()),
                     timeUnchanged = player.GameTime == originalTime, baselineBackendRestored = ReferenceEquals(ui.LevelUpController, originalBackend), uiShown = controller.IsShow });
+                TeleportSpellbookUiAssert("saved-owner-cleanup", "original familiarity part presence, fields, owner and native serialization source restored", "restored=" + savedState.IsRestored(), savedState.IsRestored());
                 TeleportSpellbookUiAssert("cleanup", "no character level, feature, spell, XP, resource, UI, party, time or save-write effect survives cancellation", "unchanged=" + unchanged, unchanged);
                 TeleportSpellbookUiAssert("exceptions", "zero native or mod exceptions from level-up fixture setup through cleanup", "count=" + _teleportationSpellbookUiExceptions.Count, _teleportationSpellbookUiExceptions.Count == 0);
             }
@@ -124,7 +130,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal TeleportLevelUpEntry(BlueprintCharacterClass type, int casterLevel, TeleportSpellKind kind, int spellLevel)
             { Class = type; CasterLevelBefore = casterLevel; Kind = kind; SpellLevel = spellLevel; }
         }
-        private IEnumerable<int> QualifyTeleportLevelUpEntry(CharacterBuildController controller, UnitEntityData owner, TeleportLevelUpEntry entry)
+        private IEnumerable<int> QualifyTeleportLevelUpEntry(CharacterBuildController controller, UnitEntityData owner, TeleportLevelUpEntry entry, TeleportLevelUpSavedStateFixture savedState)
         {
             string caseId = entry.Class.AssetGuid + "-" + entry.SpellLevel;
             var spell = BlueprintBootstrap.Teleportation.Get(entry.Kind);
@@ -143,6 +149,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (backend == null || backend.AutoCommit || ReferenceEquals(backend.Preview, owner.Descriptor))
                     throw new InvalidOperationException("The native level-up failed to allocate its isolated preview.");
                 for (int frame = 0; frame < 30; frame++) yield return 0;
+                object savedEvidence;
+                bool savedRoundTrip = savedState.RoundTripMatches(backend.Preview, out savedEvidence);
+                CaptureTeleportSpellbookUi("native-owner-round-trip-initial-" + caseId, savedEvidence);
+                TeleportSpellbookUiAssert("saved-owner-initial-" + caseId, "native serialized owner graph contains both fields and the loaded preview has an independent correctly owned part", "matches=" + savedRoundTrip, savedRoundTrip);
+                if (!savedRoundTrip) throw new InvalidOperationException("Native unit serialization did not preserve the owned teleportation state.");
                 controller.SetClass(entry.Class);
                 CompleteTeleportLevelUpPrerequisites(controller);
                 CaptureTeleportSpellbookUi("native-level-up-prerequisites-" + caseId, new { classId = entry.Class.AssetGuid, ownerId = owner.UniqueId,
@@ -193,6 +204,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "previewKnown=" + backend.Preview.GetSpellbook(entry.Class.Spellbook).IsKnown(spell) + ";originalKnown=" + book.IsKnown(spell),
                     backend.Preview.GetSpellbook(entry.Class.Spellbook).IsKnown(spell) && !book.IsKnown(spell) &&
                     originalResource == TeleportResourceFingerprint(book) && owner.Descriptor.Progression.CharacterLevel == originalLevel);
+                savedRoundTrip = savedState.RoundTripMatches(backend.Preview, out savedEvidence);
+                CaptureTeleportSpellbookUi("native-owner-round-trip-selected-" + caseId, savedEvidence);
+                TeleportSpellbookUiAssert("saved-owner-selected-" + caseId, "native preview rebuilds and spell selection preserve both saved fields and owner references", "matches=" + savedRoundTrip, savedRoundTrip);
+                if (!savedRoundTrip) throw new InvalidOperationException("Native preview refresh changed teleportation saved state.");
+                backend.Preview.Get<UnitPartTeleportFamiliarity>().ClearExplorationBoundary();
+                bool independent = backend.Preview.Get<UnitPartTeleportFamiliarity>().ReadExplorationBoundary() == null && savedState.SourceUnchanged() && savedState.NativePayloadUnchanged();
+                TeleportSpellbookUiAssert("saved-owner-independent-" + caseId, "changing the disposable preview cannot change the original part or native serialized source", "independent=" + independent, independent);
                 controller.OnHotKeyEscPressed();
                 foreach (int tick in WaitTeleportLevelUpUi(() => DialogMessageBox.Instance.IsShown, "native cancel confirmation")) yield return tick;
                 var callback = (Action<DialogMessageBoxBase.BoxButton>)WorldMapPointSpellActionPatches.ConfirmationCallbackField.GetValue(DialogMessageBox.Instance);
@@ -207,6 +225,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TeleportSpellbookUiAssert("cancel-" + caseId, "native cancellation commits no known spell, level or resource change and closes the owned preview",
                     "originalKnown=" + book.IsKnown(spell) + ";level=" + owner.Descriptor.Progression.CharacterLevel,
                     !book.IsKnown(spell) && originalResource == TeleportResourceFingerprint(book) && owner.Descriptor.Progression.CharacterLevel == originalLevel &&
+                    savedState.SourceUnchanged() && savedState.NativeSourceCleared &&
                     !controller.IsShow && ReferenceEquals(Game.Instance.UI.LevelUpController, previousBackend));
             }
             finally
@@ -222,6 +241,82 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 fixture.Restore();
                 TeleportSpellbookUiAssert("book-cleanup-" + caseId, "exact native original books, resources and casting stats restored", "restored=" + fixture.IsRestored(), fixture.IsRestored());
+            }
+        }
+        // Payload setup is request-local, not an ordinary arrival. The actual
+        // native level-up serializes this part with its UnitDescriptor owner,
+        // deserializes the native preview and invokes its normal PostLoad path.
+        private sealed class TeleportLevelUpSavedStateFixture
+        {
+            private const string Counts = "1|1|00afbe29e976df24db85cda2c4c67864:2|5a69648758f7d0d49afbe2a4ef61225e:4|b78220bfcf6d25145a808aa1f1f7eee8:7";
+            private const string Boundary = "1|76f2987ea128d624490e3dfa56ec8a47|5a69648758f7d0d49afbe2a4ef61225e|12.5";
+            private readonly UnitDescriptor _owner;
+            private readonly UnitPartTeleportFamiliarity _originalPart;
+            private readonly TeleportNativeFieldSnapshot _originalFields;
+            private readonly FieldInfo _payloadField, _nativeSourceField;
+            private UnitPartTeleportFamiliarity _part;
+            internal TeleportLevelUpSavedStateFixture(UnitDescriptor owner)
+            {
+                _owner = owner; _originalPart = owner.Get<UnitPartTeleportFamiliarity>();
+                _originalFields = _originalPart == null ? null : new TeleportNativeFieldSnapshot(_originalPart);
+                _payloadField = typeof(UnitPartTeleportFamiliarity).GetField("_state", BindingFlags.Instance | BindingFlags.NonPublic);
+                _nativeSourceField = typeof(LevelUpPreviewThread).GetField("s_Source", BindingFlags.Static | BindingFlags.NonPublic);
+                if (_payloadField == null || _nativeSourceField == null || _nativeSourceField.FieldType != typeof(JToken) ||
+                    !owner.IsTurnedOn || !NativeSourceCleared || _originalPart != null && !ReferenceEquals(_originalPart.Owner, owner))
+                    throw new InvalidOperationException("Native saved-owner fixture prerequisites or exact serialization source seam differ.");
+            }
+            internal bool NativeSourceCleared { get { return _nativeSourceField.GetValue(null) == null; } }
+            internal void Prepare()
+            {
+                TeleportFamiliarityState.Parse(Counts);
+                _part = _originalPart ?? _owner.Ensure<UnitPartTeleportFamiliarity>();
+                _payloadField.SetValue(_part, Counts);
+                _part.MarkMagicalArrival(TeleportExplorationBoundary.Parse(Boundary));
+            }
+            internal bool SourceUnchanged()
+            {
+                return _part != null && ReferenceEquals(_owner.Get<UnitPartTeleportFamiliarity>(), _part) && ReferenceEquals(_part.Owner, _owner) &&
+                    _owner.IsTurnedOn && _part.Read().Serialize() == Counts && _part.ReadExplorationBoundary().Serialize() == Boundary;
+            }
+            internal bool NativePayloadUnchanged()
+            {
+                var source = _nativeSourceField.GetValue(null) as JContainer;
+                if (source == null) return false;
+                var fields = source.Descendants().OfType<JProperty>().Where(value => value.Name == "_state" &&
+                    value.Value.Type == JTokenType.String && (string)value.Value == Counts).ToArray();
+                return fields.Length == 1 && fields[0].Parent is JObject && (string)fields[0].Parent["_explorationBoundary"] == Boundary;
+            }
+            internal bool RoundTripMatches(UnitDescriptor preview, out object evidence)
+            {
+                var source = _nativeSourceField.GetValue(null) as JContainer;
+                var fields = source == null ? new JProperty[0] : source.Descendants().OfType<JProperty>()
+                    .Where(value => value.Name == "_state" && value.Value.Type == JTokenType.String && (string)value.Value == Counts).ToArray();
+                var serializedPart = fields.Length == 1 ? fields[0].Parent as JObject : null;
+                var part = preview.Get<UnitPartTeleportFamiliarity>();
+                bool jsonMatches = serializedPart != null && (string)serializedPart["_explorationBoundary"] == Boundary;
+                bool independentOwner = part != null && !ReferenceEquals(part, _part) && ReferenceEquals(part.Owner, preview) && !ReferenceEquals(preview, _owner);
+                bool fieldsMatch = part != null && part.Read().Serialize() == Counts && part.ReadExplorationBoundary() != null && part.ReadExplorationBoundary().Serialize() == Boundary;
+                bool matches = jsonMatches && independentOwner && fieldsMatch && SourceUnchanged();
+                evidence = new { sourceOwnerId = _owner.Unit.UniqueId, previewOwnerId = preview.Unit.UniqueId,
+                    nativeSourceType = source == null ? null : source.GetType().FullName, matchingSerializedFields = fields.Length,
+                    serializedPartPath = serializedPart == null ? null : serializedPart.Path,
+                    serializedPartType = serializedPart == null ? null : (string)serializedPart["$type"],
+                    serializedProperties = serializedPart == null ? null : serializedPart.Properties().Select(value => value.Name).ToArray(),
+                    jsonMatches, independentOwner, fieldsMatch, sourceUnchanged = SourceUnchanged(), counts = Counts, boundary = Boundary };
+                return matches;
+            }
+            internal void Restore()
+            {
+                if (_originalPart == null) _owner.Remove<UnitPartTeleportFamiliarity>(); else _originalFields.Restore();
+                // Native UnitSerialization lacks an inner finally around TurnOn.
+                // Restore this proven originally active owner if serialization throws.
+                if (!_owner.IsTurnedOn) _owner.TurnOn();
+            }
+            internal bool IsRestored()
+            {
+                return ReferenceEquals(_owner.Get<UnitPartTeleportFamiliarity>(), _originalPart) &&
+                    (_originalFields == null || _originalFields.Matches() && ReferenceEquals(_originalPart.Owner, _owner)) &&
+                    _owner.IsTurnedOn && NativeSourceCleared;
             }
         }
         private void CompleteTeleportLevelUpPrerequisites(CharacterBuildController controller)

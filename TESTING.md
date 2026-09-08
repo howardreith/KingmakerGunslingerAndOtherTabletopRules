@@ -367,3 +367,22 @@ Qualified OFF run: `20260908T1454168314185Z-ccf0393dbee34f8d936bf1d837c4c1be`,
 The same artifact passes enabled desktop (29), gamepad (39) and working-save (11)
 regressions. The implementation report records exact run IDs, paths and hashes.
 Launcher preflight has 213 checks and compatibility/settings guards have 4,129.
+
+### Native owner-graph familiarity round trip
+
+The level-up scenario now supplies two request-local saved fields on the canonical
+main character. The native UI must serialize the full UnitDescriptor and its
+UnitPartsManager, deserialize a separate preview, run native PostLoad, and retain
+both fields through subsequent preview rebuilds and spell selection. The probe
+reads the actual native `LevelUpPreviewThread.s_Source` token and reports only the
+matching part's path/type/property names and fixture values. It verifies the
+preview part has the preview owner and is independent of the original; clearing
+its arrival boundary must leave the original part and serialized token unchanged.
+Native cancellation must clear the owned source and restore the original part's
+presence/data. This extends `disposable-teleportation-level-up`; no disk save is
+written and campaign disk persistence remains a separate gate.
+
+Qualified owner-graph run: `20260908T1512053583403Z-53c1d3737d794e4ead9db0053421c19e`,
+31 assertions PASS (the previous 18 spell-choice/cancel cases plus 13 owner-graph
+checks). Native spellbook UI (31) and protected Working-save (11) regressions pass
+on the same artifact, with zero fixture exceptions/save writes and exact cleanup.
