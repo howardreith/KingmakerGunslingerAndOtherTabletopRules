@@ -261,6 +261,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistence ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistenceGamepad ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||

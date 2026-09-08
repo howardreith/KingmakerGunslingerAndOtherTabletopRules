@@ -427,3 +427,6 @@ Run `scripts/Test-TeleportationSaveProtection.ps1` and
 launch. Use Windows PowerShell for runtime/profile workflows; no manual save
 selection is needed. A final release must repeat the disk gate on its own exact
 committed artifact.
+
+Guarded additive desktop/gamepad foreign-action regression and exact cleanup:
+[Teleportation UI coexistence](docs/TELEPORTATION-UI-COEXISTENCE.md).

@@ -66,3 +66,66 @@ function Close-KmgProtectedSaveCatalog {
     param([Parameter(Mandatory = $true)]$Catalog)
     foreach ($lease in $Catalog.Leases) { $lease.Dispose() }
 }
+
+function Get-PersistenceModsInventory {
+    $root = (Resolve-Path -LiteralPath $modsRoot).Path
+    $entries = @(Get-ChildItem -LiteralPath $root -Recurse -Force | Sort-Object FullName)
+    if (@($entries | Where-Object { ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 }).Count -ne 0) { throw 'Mods inventory crosses a reparse point.' }
+    return @($entries | ForEach-Object {
+        [ordered]@{ path = $_.FullName.Substring($root.Length + 1); directory = $_.PSIsContainer
+            length = if ($_.PSIsContainer) { 0 } else { $_.Length }
+            sha256 = if ($_.PSIsContainer) { $null } else { (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() } }
+    })
+}
+function Wait-PersistenceExit {
+    $deadline = [DateTime]::UtcNow.AddSeconds(50)
+    while ((Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 250 }
+    if (Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) { throw 'Guarded game process did not terminate; no cleanup or settings restoration may run while it is alive.' }
+}
+function Restore-PersistenceSettings {
+    [IO.File]::WriteAllBytes($settingsPath, $settingsBytes)
+    $item = Get-Item -LiteralPath $settingsPath
+    $item.CreationTimeUtc = $settingsTimes[0]; $item.LastWriteTimeUtc = $settingsTimes[1]; $item.Attributes = $settingsTimes[2]
+    if ([Convert]::ToBase64String([IO.File]::ReadAllBytes($settingsPath)) -cne [Convert]::ToBase64String($settingsBytes)) { throw 'Settings byte restoration failed.' }
+}
+function Restore-PersistenceSidecars {
+    $removed = New-Object 'System.Collections.Generic.List[object]'
+    if (Test-Path -LiteralPath $previousPath -PathType Leaf) {
+        $currentBytes = [IO.File]::ReadAllBytes($previousPath)
+        $same = $null -ne $previousBytes -and [Convert]::ToBase64String($currentBytes) -ceq [Convert]::ToBase64String($previousBytes)
+        if (-not $same) {
+            $candidate = [Text.Encoding]::UTF8.GetString($currentBytes) | ConvertFrom-Json
+            if (@($candidate.PSObject.Properties).Count -ne @($settingsOriginal.PSObject.Properties).Count -or
+                $candidate.'teleportation-spells' -isnot [bool]) { throw 'Unproven settings sidecar content.' }
+            $candidate.'teleportation-spells' = $settingsOriginal.'teleportation-spells'
+            foreach ($property in $settingsOriginal.PSObject.Properties) {
+                if ($null -eq $candidate.PSObject.Properties[$property.Name] -or
+                    ($candidate.PSObject.Properties[$property.Name].Value | ConvertTo-Json -Depth 20 -Compress) -cne
+                    ($property.Value | ConvertTo-Json -Depth 20 -Compress)) { throw 'Settings sidecar differs outside the authorized single module transaction.' }
+            }
+        }
+        if ($null -eq $previousBytes) {
+            $removed.Add([ordered]@{ path = $previousPath; kind = 'transaction-settings-backup'; sha256 = (Get-FileHash -LiteralPath $previousPath -Algorithm SHA256).Hash.ToLowerInvariant() })
+            Remove-Item -LiteralPath $previousPath
+        }
+    }
+    if ($null -ne $previousBytes) {
+        [IO.File]::WriteAllBytes($previousPath, $previousBytes)
+        $item = Get-Item -LiteralPath $previousPath
+        $item.CreationTimeUtc = $previousTimes[0]; $item.LastWriteTimeUtc = $previousTimes[1]; $item.Attributes = $previousTimes[2]
+    }
+    $kmgDirectory = [IO.Path]::GetFullPath((Join-Path $modsRoot 'KingmakerGunslinger'))
+    foreach ($file in @(Get-ChildItem -LiteralPath $kmgDirectory -File -Filter '*.cache')) {
+        $relative = 'KingmakerGunslinger\' + $file.Name
+        if (@($modsBefore | Where-Object path -CEQ $relative).Count -ne 0) { continue }
+        $path = [IO.Path]::GetFullPath($file.FullName)
+        $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ([IO.Path]::GetDirectoryName($path) -cne $kmgDirectory -or
+            $file.Name -cnotmatch '^KingmakerGunslinger\.dll\.[0-9]{1,5}\.cache$' -or $hash -cne $dllSha) {
+            throw 'A new loader cache is not the exact transaction DLL; cleanup refused.'
+        }
+        $removed.Add([ordered]@{ path = $path; kind = 'UMM-timestamp-version-cache'; sha256 = $hash })
+        Remove-Item -LiteralPath $path
+    }
+    Write-PersistenceEvidence 'owned-mod-sidecar-cleanup.json' @($removed.ToArray())
+}

@@ -121,3 +121,49 @@ Rejected development probes retained truthfully:
 UI coexistence, final artifact native scenarios/module matrix, deterministic
 release builds and public package verification remain required. These development
 results are not substituted for qualification of the eventual release commit.
+
+
+## UI coexistence development checkpoint
+
+All four guarded fresh-process coexistence runs passed on source parent
+`f247e68f4abf6ad28789cceb0b2d8c45f85e80ad`, source-state SHA-256
+`5c6d879b70c8b056723e20c61a2955e2445014d8926df523abdbdaec42eaf832`.
+ZIP `5b206553da8d80484d6de3144c236f0cb4b22825eda9bb785c39cc7846f7c14a`;
+DLL `24156a39e4aea51faa27f33b0919b4d0bc444a002c81eb110add7dfb738b49a7`;
+MVID `b6d8d1b2-41f8-41b7-9c8d-35bbb51a0de2`.
+Deployment: `deployments/20260908T2232446583798Z/deployment.json`.
+
+| Controller/module | Run ID | Assertions |
+| --- | --- | --- |
+| Desktop ON | `20260908T2232467118200Z-099298049ea84af59f035e31f4876961` | 23 PASS |
+| Gamepad ON | `20260908T2234202574244Z-7e42ceada0904cdaa4334d23aee22ec4` | 25 PASS |
+| Desktop OFF | `20260908T2235577630744Z-6fa6f1d5822f46989a00ae5effb3c2a0` | 15 PASS |
+| Gamepad OFF | `20260908T2237297184946Z-f9e2ec2882cd4d8f9f524f6f68dedef3` | 17 PASS |
+
+Transaction `teleportation-hardening-coexistence-20260908T2232447428920Z`
+contains `runs.json` with exact runtime-result paths and
+`transaction-result.json`: 80 assertions PASS, all 85 pre-existing saves
+unchanged, settings and complete Mods tree restored, no game process remaining.
+Control identity/content/callback, native Travel once, no-source/OFF zero UI
+construction, exhaustion, dismissal/modal/disposal ownership, gamepad navigation
+and input-layer retention all passed. No production UI change was warranted.
+See `docs/TELEPORTATION-UI-COEXISTENCE.md` for exact fixture boundaries.
+
+Rejected probes: a compile-time Harmony12 field spelling mismatch was corrected
+before launch. Native run `20260908T2225577176895Z-22d81f4a4c604de885f4160d00c46eb3`
+failed in the new foreign fixture because Unity's active-only ancestor lookup
+could not find a button before native Fill activated the panel. Explicit inactive
+ancestry inspection fixed the probe; no production defect was inferred. Its
+transaction verified every save, setting and Mods file unchanged. A separate
+profile-resolution dry run stopped before staging because its default example
+reference root was absent; the mandatory isolated compatibility filesystem and
+runner-binding tests passed under Windows PowerShell.
+
+Repository validation, full 1,550-test domain suite, clean Release build, strict
+package validation, 283 preflight checks, 9 settings/ownership checks, 6 save
+protection checks and 4,129 module parameter/settings checks passed. The unchanged
+persistence restoration functions now live in the shared guarded script library;
+the same isolated tests execute those exact functions.
+
+Final committed artifact regression/matrix, persistence/coexistence reruns,
+deterministic release builds and public package verification remain required.
