@@ -154,6 +154,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private object _catalogObject;
         private object _catalogReceiver;
         private object _workingDescriptor;
+        private GuardedReadOnlySave _readOnlySave;
         private SaveCatalogDescriptorEvidence _workingEvidence;
         private int _buttonCandidates;
         private int _buttonInvocations;
@@ -561,6 +562,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Add("autonomous-receiver-bound-action-invoke-start", _slotAction,
                     null, "receiver=" + ObjectIdentity(_receiverBoundSlot) +
                     ";descriptor=" + ObjectIdentity(_workingDescriptor));
+                var descriptor = (Kingmaker.EntitySystem.Persistence.SaveInfo)_workingDescriptor;
+                if (_readOnlySave != null) throw new InvalidOperationException("Guarded load was already started.");
+                _readOnlySave = new GuardedReadOnlySave(descriptor,
+                    detail => Add("read-only-native-save-load", null, null, detail));
+                descriptor.Saver = _readOnlySave;
                 _slotAction.Invoke(_receiverBoundSlot, null);
                 Add("autonomous-receiver-bound-action-invoke-return", _slotAction,
                     null, "exact normal receiver-bound action invoked once");
@@ -1720,6 +1726,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void OnLoadCompleted()
         {
             RequireGameThread();
+            if (_autonomousReceiverBoundAction)
+            {
+                var descriptor = (Kingmaker.EntitySystem.Persistence.SaveInfo)_workingDescriptor;
+                if (_readOnlySave == null || !_readOnlySave.Complete ||
+                    !ReferenceEquals(descriptor.Saver, _readOnlySave))
+                    throw new InvalidOperationException("Native read-only load header protocol did not complete exactly once.");
+                descriptor.Saver = _readOnlySave.Native;
+                Add("read-only-native-save-load-verified", null, null,
+                    "headerUpdateSuppressed=1;commitSuppressed=1;nativeDescriptorRestored=true");
+            }
             _completionCallback = true;
             _completionSequence = _events.Count + 1;
             Add("after-load-callback", null, null,

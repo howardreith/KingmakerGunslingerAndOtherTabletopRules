@@ -102,8 +102,11 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(2, state.Count(Point), "Migration preserves known arrival count.");
             Assertions.Equal(1, state.Count(Other), "Legacy native visit seeds once.");
             string before = state.Serialize();
-            state.MigrateLegacy(new[] { Other });
+            const string newlyUnlocked = "33333333333333333333333333333333";
+            state.MigrateLegacy(new[] { Other, newlyUnlocked });
             Assertions.Equal(before, state.Serialize(), "Migration is idempotent.");
+            Assertions.Equal(0, state.Count(newlyUnlocked),
+                "Later reveal/open/explore mutations never become legacy arrivals, including a module-off visit.");
             TeleportFamiliarityState loaded = TeleportFamiliarityState.Parse(before);
             Assertions.Equal(before, loaded.Serialize(), "Exact deterministic serialization round trip.");
             Assertions.True(loaded.LegacyMigrationComplete, "Migration ownership survives save/load.");

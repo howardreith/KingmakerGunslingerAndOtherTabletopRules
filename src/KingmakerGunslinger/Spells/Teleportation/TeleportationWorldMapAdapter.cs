@@ -172,11 +172,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
         {
             if (context == null || !context.Usable) return new WorldMapPointSpellAction[0];
             TeleportDestinationSnapshot point = ReadDestination(context, destination);
-            if (!TeleportDestinationPolicy.Evaluate(point, context.OriginId, Forbidden).Eligible)
+            if (!TeleportDestinationPolicy.EvaluateSafety(point, context.OriginId, Forbidden).Eligible)
                 return new WorldMapPointSpellAction[0];
             var sources = TeleportationSpellbookAdapter.Enumerate(context.Player).Select(value => value.Snapshot)
-                // A native visited flag with no recorded/migrated count cannot supply
-                // Teleport odds. Exact spells can still use proven native visited state.
+                // The composer requires a persisted arrival for both Teleport
+                // families. Ordinary Teleport also needs a usable mishap path.
                 .Where(value => value.Spell != TeleportSpellKind.Teleport ||
                     (TeleportationCastExecution.FamiliarityFor(context, point.Id) != TeleportFamiliarity.Unvisited &&
                     (TeleportRollTable.For(TeleportationCastExecution.FamiliarityFor(context, point.Id)).MishapPercent == 0 ||

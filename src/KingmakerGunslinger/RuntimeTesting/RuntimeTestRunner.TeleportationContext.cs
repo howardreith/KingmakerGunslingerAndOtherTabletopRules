@@ -161,6 +161,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Concat(map.Edges.Select(value => new TeleportNativeFieldSnapshot(value.Value))).ToArray();
                 Func<BlueprintLocation, WorldMapPointSpellAction[]> compose = point => TeleportationWorldMapAdapter.Compose(
                     TeleportationWorldMapAdapter.Capture(false), point).ToArray();
+                // The native script writer is deliberately exercised after migration.
+                // Neither live exploration nor route-opening flags may enable either spell family.
+                string priorCounts = (string)payload.GetValue(ledger);
+                var noVisits = new TeleportFamiliarityState(); noVisits.MigrateLegacy(new string[0]);
+                payload.SetValue(ledger, noVisits.Serialize());
+                var postMigrationTargetData = map.Locations[points[1].Blueprint];
+                var targetState = new TeleportNativeFieldSnapshot(postMigrationTargetData);
+                try
+                {
+                    postMigrationTargetData.EdgesOpened = false; postMigrationTargetData.IsExplored = false;
+                    bool absentBefore = compose(points[1].Blueprint).Length == 0;
+                    new Kingmaker.Designers.EventConditionActionSystem.Actions.MarkLocationExplored
+                    { Location = points[1].Blueprint, Explored = true }.RunAction();
+                    bool absentAfterScript = compose(points[1].Blueprint).Length == 0;
+                    postMigrationTargetData.EdgesOpened = true; postMigrationTargetData.IsSeen = true;
+                    rules.RevealLocation(points[1], false);
+                    bool absentAfterUnlock = compose(points[1].Blueprint).Length == 0;
+                    var stillEmpty = ledger.Read();
+                    assertions.Add(Assertion("teleportation-context-live-native-flags-no-visit-bypass",
+                        "Teleport and Greater absent before/after native script exploration, reveal, seen and open flags",
+                        "before=" + absentBefore + ";script=" + absentAfterScript + ";unlock=" + absentAfterUnlock,
+                        absentBefore && absentAfterScript && absentAfterUnlock && stillEmpty.Count(points[1].Blueprint.AssetGuid) == 0 &&
+                        stillEmpty.LegacyMigrationComplete && stillEmpty.Serialize() == noVisits.Serialize(), path));
+                    assertions.Add(Assertion("teleportation-context-recall-sanctuary-without-teleport-visits",
+                        "exact pre-capital Oleg Recall remains; both Teleport families absent",
+                        "rows=" + compose(oleg.Blueprint).Length,
+                        compose(oleg.Blueprint).Length == 1 && compose(oleg.Blueprint)[0].Source.Spell == TeleportSpellKind.WordOfRecall &&
+                        compose(capital.Blueprint).Length == 0, path));
+                    captures.Add(new { step = "post-migration-scripted-unlock", target = points[1].Blueprint.AssetGuid,
+                        postMigrationTargetData.EdgesOpened, postMigrationTargetData.IsExplored, postMigrationTargetData.IsSeen, postMigrationTargetData.IsRevealed,
+                        state = stillEmpty.Serialize(), origin = map.PartyPosition.Location.AssetGuid,
+                        absentBefore, absentAfterScript, absentAfterUnlock });
+                }
+                finally { targetState.Restore(); payload.SetValue(ledger, priorCounts); }
                 var actions = compose(points[1].Blueprint);
                 captures.Add(new { step = "real-contextual-sources", actions = actions.Select(value => new { key = value.Key,
                     spell = value.Source.Spell.ToString(), caster = value.Source.CasterName, casterId = value.Source.CasterId,

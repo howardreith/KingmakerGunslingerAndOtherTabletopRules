@@ -53,16 +53,27 @@ namespace KingmakerGunslinger.Spells.Teleportation
         }
         internal static TeleportDestinationDecision Evaluate(TeleportDestinationSnapshot point,
             string originId, TeleportForbiddenDestinationCatalog catalog)
+        { return Evaluate(point, originId, catalog, true); }
+
+        // Word of Recall is an exact sanctuary rule. Its caller must also prove
+        // the current sanctuary identity; this does not admit Teleport destinations.
+        internal static TeleportDestinationDecision EvaluateSafety(TeleportDestinationSnapshot point,
+            string originId, TeleportForbiddenDestinationCatalog catalog)
+        { return Evaluate(point, originId, catalog, false); }
+
+        private static TeleportDestinationDecision Evaluate(TeleportDestinationSnapshot point,
+            string originId, TeleportForbiddenDestinationCatalog catalog, bool requireArrival)
         {
             if (catalog == null) throw new ArgumentNullException("catalog");
-            TeleportDestinationReason reason = Reason(point, originId, catalog);
+            TeleportDestinationReason reason = Reason(point, originId, catalog, requireArrival);
             return new TeleportDestinationDecision(point == null ? null : point.Id, reason,
                 "reason=" + reason + ";point=" + (point == null ? "<null>" : point.Id) +
                 ";origin=" + originId + ";facts=" + (point == null ? "none" : point.Facts.ToString()) +
-                ";ordinaryArrivals=" + (point == null ? "0" : point.OrdinaryArrivals.ToString(CultureInfo.InvariantCulture)));
+                ";nativeVisited=" + (point != null && point.NativeVisited) +
+                ";requireArrival=" + requireArrival + ";ordinaryArrivals=" + (point == null ? "0" : point.OrdinaryArrivals.ToString(CultureInfo.InvariantCulture)));
         }
         private static TeleportDestinationReason Reason(TeleportDestinationSnapshot p, string origin,
-            TeleportForbiddenDestinationCatalog catalog)
+            TeleportForbiddenDestinationCatalog catalog, bool requireArrival)
         {
             if (p == null) return TeleportDestinationReason.MissingSnapshot;
             if (!IsStableId(p.Id)) return TeleportDestinationReason.UnstableIdentity;
@@ -71,7 +82,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 return TeleportDestinationReason.UnknownPointKind;
             if (p.Has(TeleportDestinationFacts.Transient)) return TeleportDestinationReason.Transient;
             if (!p.Has(TeleportDestinationFacts.Persistent)) return TeleportDestinationReason.NotPersistent;
-            if (p.OrdinaryArrivals < 0 || (!p.NativeVisited && p.OrdinaryArrivals == 0)) return TeleportDestinationReason.Unvisited;
+            // Live reveal/exploration flags are not physical-arrival evidence.
+            // One-time legacy inference is persisted before actions are composed.
+            if (p.OrdinaryArrivals < 0 || (requireArrival && p.OrdinaryArrivals == 0))
+                return TeleportDestinationReason.Unvisited;
             if (!p.Has(TeleportDestinationFacts.Revealed)) return TeleportDestinationReason.Unrevealed;
             if (!p.Has(TeleportDestinationFacts.Active)) return TeleportDestinationReason.Inactive;
             if (!p.Has(TeleportDestinationFacts.Current)) return TeleportDestinationReason.Removed;

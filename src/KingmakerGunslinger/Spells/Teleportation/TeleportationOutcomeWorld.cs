@@ -87,8 +87,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
             _before.Verify(_origin);
             var context = TeleportationWorldMapAdapter.Capture(false);
             BlueprintLocation destination = ResourcesLibrary.TryGetBlueprint<BlueprintLocation>(destinationId);
-            var decision = TeleportDestinationPolicy.Evaluate(TeleportationWorldMapAdapter.ReadDestination(context, destination),
-                _origin, TeleportationWorldMapAdapter.Forbidden);
+            var point = TeleportationWorldMapAdapter.ReadDestination(context, destination);
+            bool recall = _source.Snapshot.Spell == TeleportSpellKind.WordOfRecall;
+            if (recall && (!context.Recall.Known || !WordOfRecallDestinationPolicy.Matches(
+                destinationId, context.Recall.Established, context.Recall.DestinationId)))
+                throw new InvalidOperationException("The exact Word of Recall sanctuary changed before placement.");
+            var decision = recall
+                ? TeleportDestinationPolicy.EvaluateSafety(point, _origin, TeleportationWorldMapAdapter.Forbidden)
+                : TeleportDestinationPolicy.Evaluate(point, _origin, TeleportationWorldMapAdapter.Forbidden);
             if (!decision.Eligible) throw new InvalidOperationException("Resolved destination changed before placement: " + decision.Diagnostic);
             materialEffectStarting();
             TeleportExplorationGuardPatches.MarkArrival(context, destinationId);
