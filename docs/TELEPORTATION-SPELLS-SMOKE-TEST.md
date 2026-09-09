@@ -1,6 +1,6 @@
 # Contextual teleportation player smoke test
 
-Applies to the owner-authorized 0.0.118 release. The owner will test the remaining
+Applies to the owner-authorized 0.0.119 release. The owner will test the remaining
 campaign and compatibility behavior in an existing high-level game. Keep a save
 before testing so the exact before/after result can be compared.
 
@@ -36,3 +36,12 @@ Teleport is Wizard/Sorcerer 5; Greater Teleport is Wizard/Sorcerer 7 (also calle
 Teleport Without Error); native Travel-domain publication uses levels 5 and 7
 when that exact list exists. Word of Recall is Cleric 6 and Druid 8. Scrolls,
 wands and item charges are outside this feature.
+
+Both Teleport and Greater Teleport require a positive persisted visit count.
+Existing positive counts are unchanged. Historical native flags are inferred
+once during legacy migration; later reveals/unlocks do not create visits.
+For a newly revealed point, verify both spells stay absent until ordinary travel
+arrives there. A visit with the module OFF may require an ordinary revisit ON.
+Save and reload your separate high-level campaign and compare familiarity and
+resource counts. Automated disk persistence is qualified on the installed stack;
+this checklist covers the owner's additional campaign conditions.

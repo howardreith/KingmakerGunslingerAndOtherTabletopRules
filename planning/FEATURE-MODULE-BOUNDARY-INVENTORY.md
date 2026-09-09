@@ -52,3 +52,14 @@ immutable deployed artifact; other mod profiles and disk persistence remain open
 published 0.0.117 Elemental content. The owner explicitly authorized release and
 accepted the remaining campaign/compatibility qualification for manual testing.
 Historical boundary counts above retain their original artifact scope.
+
+## 0.0.119 hardening gate
+
+ModuleCount remains 12 and settings schema remains 11. The complete domain
+matrix retains 4,096 configurations; native qualification covers all 26 boundary
+states. The final clean committed artifact must repeat every state, followed by
+one startup using the exact original settings to let native optional-mod
+blueprint diagnostics regenerate. This restores the complete Mods inventory
+without manually editing another mod's files. Exact plan-to-settings bindings
+and restoration ownership are covered by focused script tests. See the
+[hardening report](../TELEPORTATION-HARDENING-REPORT.md) for current results.

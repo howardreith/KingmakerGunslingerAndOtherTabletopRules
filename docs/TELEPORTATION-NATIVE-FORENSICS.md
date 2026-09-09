@@ -1018,3 +1018,10 @@ remains TIMEOUT, not compatibility PASS; its Mods/settings transaction restores
 exactly. No save records were stripped or converted. Exact result directories,
 artifact identities and the save-free standalone/Soundpacks results are in the
 implementation report.
+
+## Post-release hardening
+
+The 0.0.118 evidence above retains its historical scope. Current native visit
+forensics, ledger authority, fresh-process persistence and UI coexistence are
+recorded in TELEPORTATION-HARDENING-REPORT.md and
+docs/TELEPORTATION-HARDENING-NATIVE-VISITS.md.

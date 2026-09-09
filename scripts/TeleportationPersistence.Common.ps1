@@ -89,19 +89,36 @@ function Restore-PersistenceSettings {
     if ([Convert]::ToBase64String([IO.File]::ReadAllBytes($settingsPath)) -cne [Convert]::ToBase64String($settingsBytes)) { throw 'Settings byte restoration failed.' }
 }
 function Restore-PersistenceSidecars {
+    param([object[]]$AuthorizedSettingsStates = @())
     $removed = New-Object 'System.Collections.Generic.List[object]'
     if (Test-Path -LiteralPath $previousPath -PathType Leaf) {
         $currentBytes = [IO.File]::ReadAllBytes($previousPath)
         $same = $null -ne $previousBytes -and [Convert]::ToBase64String($currentBytes) -ceq [Convert]::ToBase64String($previousBytes)
         if (-not $same) {
             $candidate = [Text.Encoding]::UTF8.GetString($currentBytes) | ConvertFrom-Json
-            if (@($candidate.PSObject.Properties).Count -ne @($settingsOriginal.PSObject.Properties).Count -or
-                $candidate.'teleportation-spells' -isnot [bool]) { throw 'Unproven settings sidecar content.' }
-            $candidate.'teleportation-spells' = $settingsOriginal.'teleportation-spells'
-            foreach ($property in $settingsOriginal.PSObject.Properties) {
-                if ($null -eq $candidate.PSObject.Properties[$property.Name] -or
-                    ($candidate.PSObject.Properties[$property.Name].Value | ConvertTo-Json -Depth 20 -Compress) -cne
-                    ($property.Value | ConvertTo-Json -Depth 20 -Compress)) { throw 'Settings sidecar differs outside the authorized single module transaction.' }
+            # A boundary-matrix caller may supply only the exact settings states
+            # it wrote. Persistence/coexistence callers retain the single-module
+            # default and cannot authorize an unrelated settings change.
+            $matrixMatch = $false
+            foreach ($known in $AuthorizedSettingsStates) {
+                if (@($candidate.PSObject.Properties).Count -ne @($known.PSObject.Properties).Count) { continue }
+                $equal = $true
+                foreach ($property in $known.PSObject.Properties) {
+                    if ($null -eq $candidate.PSObject.Properties[$property.Name] -or
+                        ($candidate.PSObject.Properties[$property.Name].Value | ConvertTo-Json -Depth 20 -Compress) -cne
+                        ($property.Value | ConvertTo-Json -Depth 20 -Compress)) { $equal = $false; break }
+                }
+                if ($equal) { $matrixMatch = $true; break }
+            }
+            if (-not $matrixMatch) {
+                if (@($candidate.PSObject.Properties).Count -ne @($settingsOriginal.PSObject.Properties).Count -or
+                    $candidate.'teleportation-spells' -isnot [bool]) { throw 'Unproven settings sidecar content.' }
+                $candidate.'teleportation-spells' = $settingsOriginal.'teleportation-spells'
+                foreach ($property in $settingsOriginal.PSObject.Properties) {
+                    if ($null -eq $candidate.PSObject.Properties[$property.Name] -or
+                        ($candidate.PSObject.Properties[$property.Name].Value | ConvertTo-Json -Depth 20 -Compress) -cne
+                        ($property.Value | ConvertTo-Json -Depth 20 -Compress)) { throw 'Settings sidecar differs outside the authorized single module transaction.' }
+                }
             }
         }
         if ($null -eq $previousBytes) {
@@ -128,4 +145,17 @@ function Restore-PersistenceSidecars {
         Remove-Item -LiteralPath $path
     }
     Write-PersistenceEvidence 'owned-mod-sidecar-cleanup.json' @($removed.ToArray())
+}
+
+# Maps only the existing module catalog; preserves explicit OFF and the native
+# default-ON semantics of absent keys without rewriting the captured document.
+function Get-KmgOriginalModuleRuntimeParameters {
+    param([Parameter(Mandatory = $true)]$Settings)
+    $parameters = @{}
+    foreach ($module in @(Get-KmgFeatureModuleCatalog)) {
+        $property = $Settings.PSObject.Properties[$module.JsonKey]
+        if ($null -ne $property -and $property.Value -isnot [bool]) { throw 'Original module setting is not a boolean.' }
+        $parameters[$module.RuntimeParameter] = if ($null -eq $property) { $true } else { $property.Value }
+    }
+    return $parameters
 }

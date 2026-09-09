@@ -1,6 +1,6 @@
 # Kingmaker Gunslinger
 
-Current version: **`0.0.118-contextual-world-map-teleportation`** (UMM: **0.0.118**).
+Current version: **`0.0.119-contextual-world-map-teleportation`** (UMM: **0.0.119**).
 
 Teleport, Greater Teleport and Word of Recall now appear in native world-map
 point actions when an active party caster has a real available prepared use or
@@ -15,13 +15,17 @@ is Wizard/Sorcerer 5, Greater Teleport 7, and Word of Recall is Cleric 6 / Druid
 Recall goes to Oleg's world-map point before the capital is established and the
 capital's point afterward. Existing spontaneous casters use level-up or respec.
 
-Download the [0.0.118 release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.118).
-See the [release notes](docs/RELEASE-NOTES-0.0.118.md),
+Download the [0.0.119 release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.119).
+See the [release notes](docs/RELEASE-NOTES-0.0.119.md),
 [player smoke test](docs/TELEPORTATION-SPELLS-SMOKE-TEST.md) and
 [implementation evidence](TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md).
-The owner authorized release for testing in an existing high-level game; full
-campaign disk persistence and the complete save-backed compatibility matrix
-remain unqualified. Earlier structured native casting evidence is retained.
+This patch makes persisted visits authoritative for both Teleport families.
+Late revelation or route unlocking alone does not establish a visit. Existing
+counts are retained; older saves receive one explicit legacy inference.
+Fresh-process campaign save/reload and desktop/gamepad coexistence are qualified
+on the installed stack. The owner's high-level campaign playtest, other UMM
+versions and complete isolated optional-mod profiles remain unqualified.
+See the [hardening evidence](TELEPORTATION-HARDENING-REPORT.md).
 
 ## Retained 0.0.117 content and historical qualification
 

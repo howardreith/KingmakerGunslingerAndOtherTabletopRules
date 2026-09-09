@@ -167,3 +167,84 @@ the same isolated tests execute those exact functions.
 
 Final committed artifact regression/matrix, persistence/coexistence reruns,
 deterministic release builds and public package verification remain required.
+
+## Integrated development artifact and module cleanup recovery
+
+Pushed commits: policy/forensics `830e96fddb6547da99a541319b4ba93fd6f19281`,
+persistence `f247e68f4abf6ad28789cceb0b2d8c45f85e80ad`, and coexistence
+`c031aca87cbaa74f69273530d8648dcc0df9ebd4`. The following development runs use
+that last source parent with uncommitted integration orchestration:
+
+- Source-state SHA-256: `5faad98f616a8757ba07bef1f450112800abc8db1704b2fd29658f34f40cc65f`.
+- ZIP: `ced6616f18cbd068559cb8e562732178870815220a816d66f149dacaa7fac919`.
+- DLL: `c0e1eda6f287aceedc4e2d23b6ff13187de9a765571780b686e5c8f9b01fa8ba`.
+- MVID: `9839f6d6-e35c-4538-b890-0488afd78039`.
+
+Transaction directories under the guarded runtime-evidence root:
+
+| Scope | Directory | Native assertions |
+| --- | --- | --- |
+| 11 existing native scenarios | `teleportation-hardening-native-20260908T2248312774847Z` | 306 PASS |
+| Four fresh persistence phases | `teleportation-persistence-20260908T2306059823531Z_042cce75dc644cb09b83740e5a758f9b` | 32 PASS |
+| 26 module boundaries | `teleportation-hardening-boundary-20260908T2312098481322Z` | 897 PASS; initial cleanup FAIL |
+
+Exact per-run identities and result paths are in `runs.json` / `phases.json`.
+The native and persistence transactions restored all settings and the complete
+Mods tree, preserved every one of 85 existing saves, and left no game process.
+The destination/special-point audit passed 68 assertions; no unsafe stable point
+passed the native safety gates, so the explicit deny catalog stays empty.
+
+The boundary transaction's original failure is retained as a failure. All 26
+native runs passed, but `ZFavoredClass/loaded_blueprints.txt` had changed from
+SHA-256 `8d4e3fbd00315631ef63ad559c855e6a33521bab13946f4dd9f05d9db9e1cadd`
+to `92993ecfcf66b4e77f00035fbc505435dd85506760da4c9ecf7a9ba4d3fc8bcb`.
+Native forensics proved FavoredClass 1.3.1's
+`Main.LibraryScriptableObject_LoadDictionary_Patch.Postfix(LibraryScriptableObject)`
+calls `CallOfTheWild.Helpers.GuidStorage.dump(string)`. That routine creates a
+diagnostic containing only currently present blueprint name/GUID/type records.
+Changing module publication therefore changes this generated inventory.
+
+A guarded startup with the exact original twelve module settings regenerated
+the exact original diagnostic bytes through that native writer. No third-party
+code, settings or diagnostic was manually edited. Recovery run
+`20260908T2349476447177Z-2f42a4eea2db4bcdbbf84438318b4ea0` passed 35 assertions;
+result `20260908T2349476347212Z-observe-feature-module-settings/runtime-result.json`.
+The separate `post-failure-recovery.json` records original failure plus successful
+recovery: all 1,008 Mods entries exact, settings SHA-256
+`a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749`, all 85
+pre-existing saves unchanged, no game process. A first narrow sidecar probe
+refused an additional known settings backup; the tested ownership cleanup then
+removed both exact new KMG sidecars. A cross-PowerShell array-order comparison
+was rejected; independent path-to-fields comparison proved complete equality.
+Neither rejected comparison concealed a changed file.
+
+The boundary orchestrator now performs that original-configuration startup
+before its final complete-tree comparison. Its settings backup restoration
+accepts only exact configurations actually written by the current transaction.
+Focused tests cover all 26 bindings, original explicit-OFF/default-ON settings,
+malformed rejection and unauthorized backup rejection: 9 plan and 11 transaction
+checks PASS. No unrelated mod implementation was changed.
+
+## 0.0.119 release preparation
+
+A fresh remote/public inventory still shows v0.0.118 as latest and no v0.0.119
+tag. Version 0.0.119 is selected for this candidate; inspect again before public
+publication. Default and teleportation branch heads remain as inventoried above.
+All active metadata, launch expectations and current guidance use 0.0.119;
+historical evidence and all 1,872 manifest entries are preserved.
+
+The candidate must pass two deterministic clean builds and all mandatory native
+gates on its exact clean committed release source. This includes the 45 required
+fresh launches plus the original-configuration restoration startup. Development
+PASS results above do not replace those final gates. Publication, public download
+verification and exact public installation remain pending at this checkpoint.
+
+The 0.0.119 preparation source passes repository validation, all 1,550 domain
+cases, a clean warnings-as-errors Release build, the exact-reference Build-Local
+path, strict 135-file package validation, 283 guarded preflight checks, 9 plan
+checks, 11 settings/sidecar checks, 6 Windows save-protection checks, 4,129 module
+parameter/settings checks and compatibility filesystem/runner-binding checks.
+Ignored logs are `artifacts/teleportation/release119-*.log`. Metadata preparation
+briefly rejected a non-UTF-8 copyright byte and stale schema/release-note tokens;
+these were corrected before any 0.0.119 runtime launch. No gameplay defect was
+inferred from those validation failures. Final committed-artifact tests follow.

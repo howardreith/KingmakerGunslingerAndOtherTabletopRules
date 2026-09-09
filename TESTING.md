@@ -1,7 +1,11 @@
 # Testing
 
-The owner-authorized release is 0.0.118; contextual teleportation evidence and
-remaining manual qualification are recorded below. Historical Expanded Summoning gates retain their original counts. Repository validation,
+Current release preparation is 0.0.119. The mandatory gates are recorded in
+[TELEPORTATION-HARDENING-REPORT.md](TELEPORTATION-HARDENING-REPORT.md). All final
+runtime gates must use the same clean committed package. The four fresh-process
+campaign persistence phases and desktop/gamepad coexistence have development
+PASS evidence; final artifact evidence is recorded separately. Historical
+Expanded Summoning and 0.0.118 results retain their original counts. Repository validation,
 dependency-free domain tests, exact-reference Release builds, package checks,
 and native runtime evidence are separate gates; none substitutes for another.
 
@@ -32,8 +36,12 @@ Summoning qualification uses `observe-expanded-summoning-inventory`,
 `working-save-expanded-summoning-*` persistence stages, and all 16
 `observe-feature-module-settings` configurations.
 
-Only `KMG_AUTOMATION_WORKING` may be written by the authorized persistence
-workflow. Never select or modify `KMG_AUTOMATION_BASELINE`. Mechanical claims
+The historical Expanded Summoning authorization allowed working-save writes;
+it does not apply to this hardening pass. Every pre-existing save, including
+`KMG_AUTOMATION_WORKING`, must remain byte-for-byte and metadata unchanged.
+Never select or modify `KMG_AUTOMATION_BASELINE`. Only uniquely named saves
+owned by the guarded teleportation persistence transaction may be written or
+deleted. Mechanical claims
 come from structured runtime assertions, not screenshots, OCR, or coordinate
 automation. Exact run IDs and result paths are recorded in
 `EXPANDED-SUMMONING-STATE.json` and the implementation report.
@@ -64,7 +72,43 @@ pairs after live view attachment rather than inferring scale from blueprint
 metadata.
 
 
-## Contextual teleportation qualification in progress
+## Current teleportation hardening qualification
+
+Run Windows PowerShell 5.1 after deploying the exact committed Build-Local ZIP:
+
+```powershell
+.\scripts\Test-TeleportationHardeningPlan.ps1
+.\scripts\Test-TeleportationPersistenceTransaction.ps1
+.\scripts\Test-TeleportationSaveProtection.ps1
+.\scripts\Test-RuntimeScenarioPreflight.ps1
+.\scripts\compatibility\Test-FeatureModuleCompatibilityParameters.ps1
+.\scripts\compatibility\Test-KingmakerCompatibilityProfile.ps1
+.\scripts\Invoke-TeleportationHardeningQualification.ps1 -Scope Coexistence `
+  -ExpectedVersion 0.0.119 -DeploymentManifestPath <deployment-json> `
+  -PackagePath <tested-package-zip> -Confirm:$false
+.\scripts\Invoke-TeleportationHardeningQualification.ps1 -Scope Native `
+  -ExpectedVersion 0.0.119 -DeploymentManifestPath <deployment-json> `
+  -PackagePath <tested-package-zip> -Confirm:$false
+.\scripts\Invoke-TeleportationPersistenceQualification.ps1 `
+  -ExpectedVersion 0.0.119 -DeploymentManifestPath <deployment-json> `
+  -PackagePath <tested-package-zip> -Confirm:$false
+.\scripts\Invoke-TeleportationHardeningQualification.ps1 -Scope Boundary `
+  -ExpectedVersion 0.0.119 -DeploymentManifestPath <deployment-json> `
+  -PackagePath <tested-package-zip> -Confirm:$false
+```
+
+The scopes cover 4 coexistence runs, 11 existing native runs, 4 persistence
+phases and 26 module states. One additional original-configuration startup
+restores a third-party generated blueprint diagnostic through its native writer;
+no third-party code or settings are edited. All 46 launches require fresh Steam
+processes, exact artifact identity, protected save inventories and complete
+settings/Mods restoration. The same scripts fail closed on unknown sidecars.
+Focused harness checks: 9 plan, 11 settings/sidecar, 6 save-protection, 283
+preflight and 4,129 module parameter/settings assertions. See the
+[persistence procedure](docs/TELEPORTATION-PERSISTENCE-QUALIFICATION.md) and
+[UI coexistence procedure](docs/TELEPORTATION-UI-COEXISTENCE.md).
+
+## Historical 0.0.118 teleportation checkpoints
 
 The guarded `disposable-teleportation-casting` scenario extends the same named
 working-save context fixture. It selects a native destination, invokes the
@@ -83,8 +127,9 @@ retained. The extended casting control passes 44 assertions. No diagnostic hooks
 exist during normal play. The current Working archive contains Craft Magic Items
 blueprint data and cannot qualify isolated profiles that omit that dependency;
 its isolated load failure is diagnosed in the implementation report. Do not strip
-saved records to make a profile pass. Native header LoadedTimes updates during
-loading are distinct from saving campaign/fixture state.
+saved records to make a profile pass. At that historical checkpoint native loading changed LoadedTimes. The current
+hardening loader suppresses only that exact header update/commit protocol and
+holds read-only Windows leases on every pre-existing save.
 
 ```powershell
 .\scripts\Invoke-KingmakerRuntimeTest.ps1 -Scenario disposable-teleportation-casting `

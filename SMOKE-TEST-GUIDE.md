@@ -1,4 +1,4 @@
-# Kingmaker Gunslinger 0.0.118 player smoke test
+# Kingmaker Gunslinger 0.0.119 player smoke test
 
 Keep a save before testing. Enable World-Map Teleportation Spells and restart.
 Learn and prepare the spells normally; existing characters receive no free grant.
@@ -18,9 +18,12 @@ Druid 8. Existing spontaneous casters use normal level-up or respecialization.
 6. Verify no local area opens. Reopen the point panel and check updated counts
    and absence of duplicate rows. The party's current point offers no spell row.
 
-The owner authorized this release for high-level campaign testing. Complete
-campaign persistence and isolated save-backed compatibility remain unqualified.
-The full guide and implementation evidence are available on the release branch.
+Both Teleport families require a positive saved ordinary/migrated visit. A newly
+revealed point remains unavailable until ordinary arrival. A visit made with the
+module OFF may require a normal revisit ON. Check a save/reload on your separate
+high-level campaign; automated fresh-process persistence is qualified on the
+installed stack. Isolated optional-mod profiles and unusual late-campaign states
+remain unqualified. See TELEPORTATION-HARDENING-REPORT.md for exact evidence.
 
 ## Historical maintenance-loop guide
 

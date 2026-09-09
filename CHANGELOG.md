@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.0.119-contextual-world-map-teleportation
+
+- Requires a positive persisted ordinary/migrated visit for both Teleport and
+  Greater Teleport. Later native exploration or unlock flags cannot bypass it.
+- Preserves existing format-1 counts, migration flags and exploration boundaries.
+  One-time legacy inference remains available; Word of Recall retains its exact
+  Oleg/capital sanctuary rule. Module-OFF visits may need an ordinary revisit ON.
+- Adds four fresh-process native campaign persistence phases and additive
+  desktop/gamepad foreign-action coexistence regressions. Pre-existing saves
+  remain read-only; only uniquely owned disposable saves are written/deleted.
+- Repeats all native teleportation gates and 26 module boundaries. The earlier
+  duplicate-arrival concern and a production UI defect were not reproduced;
+  movement and UI implementations remain unchanged.
+- Retains all published 0.0.118 content and blueprint identities. Installed-stack
+  qualification does not establish every optional-mod profile, UMM 0.32.4 or
+  unusual late-campaign behavior. See the hardening report for exact evidence.
+
 ## 0.0.118-contextual-world-map-teleportation
 
 - Adds Teleport (Wizard/Sorcerer 5), Greater Teleport (7), and Word of Recall

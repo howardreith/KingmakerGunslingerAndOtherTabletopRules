@@ -318,7 +318,7 @@ Assert-True (-not $cmiPersistence.RequiresManualInteraction -and
     'craft-magic-items-persistence-is-guarded-working-save-only'
 $assetRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-kmg-compatibility-asset-attribution' `
-    -ExpectedVersion '0.0.118' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
         'kmg-attribution-request-test') `
     -Parameters @{ assetConfiguration = 'firearms-only' }
@@ -327,7 +327,7 @@ Assert-True ($assetRequest.parameters.assetConfiguration -ceq 'firearms-only') `
 Assert-Throws {
     New-KmgRuntimeRequest `
         -Scenario 'observe-kmg-compatibility-asset-attribution' `
-        -ExpectedVersion '0.0.118' -TimeoutSeconds 120 `
+        -ExpectedVersion '0.0.119' -TimeoutSeconds 120 `
         -ExitAfterCompletion $true `
         -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
             'kmg-attribution-request-test') `
@@ -793,7 +793,7 @@ Assert-True (-not $humanRepro.RequiresManualInteraction -and
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.118'
+    ExpectedVersion = '0.0.119'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -826,7 +826,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.118' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.119' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -899,7 +899,7 @@ $moduleParameters = @{}
 foreach ($module in $modules) { $moduleParameters[$module.RuntimeParameter] = $false }
 Assert-True ($modules.Count -eq 12) 'teleportation-twelve-module-catalog'
 $moduleRequest = New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
-    -ExpectedVersion '0.0.118' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `
     -Parameters $moduleParameters
 Assert-True ($moduleRequest.parameters.teleportationSpells -ceq $false) `
@@ -909,7 +909,7 @@ foreach ($module in $modules) {
     $incomplete.Remove($module.RuntimeParameter)
     Assert-Throws {
         New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
-            -ExpectedVersion '0.0.118' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+            -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
             -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `
             -Parameters $incomplete
     } ('module-request-rejects-missing-' + $module.RuntimeParameter)
@@ -917,7 +917,7 @@ foreach ($module in $modules) {
 $moduleParameters.teleportationSpells = 'false'
 Assert-Throws {
     New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
-        -ExpectedVersion '0.0.118' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+        -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
         -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `
         -Parameters $moduleParameters
 } 'teleportation-request-rejects-untyped-boolean'
@@ -952,7 +952,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.118' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.119' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {
@@ -983,14 +983,14 @@ $disabledTimeouts = @{
     DescriptorResolutionTimeoutSeconds = 120; LoadEntryTimeoutSeconds = 120; FingerprintTimeoutSeconds = 120
 }
 $disabledRequest = New-KmgRuntimeRequest @disabledTimeouts -Scenario 'disposable-teleportation-disabled' `
-    -ExpectedVersion '0.0.118' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'disabled-request-test') `
     -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
 Assert-True ($disabledRequest.parameters.Count -eq 1 -and $disabledRequest.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING') 'disabled-map-request-preserves-exact-save'
 foreach ($invalidSave in @('', 'KMG_AUTOMATION_BASELINE')) {
     Assert-Throws {
         New-KmgRuntimeRequest @disabledTimeouts -Scenario 'disposable-teleportation-disabled' `
-            -ExpectedVersion '0.0.118' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+            -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
             -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'disabled-request-test') `
             -Parameters @{ saveName = $invalidSave }
     } ('disabled-map-rejects-save-' + $invalidSave)
@@ -1003,11 +1003,11 @@ Assert-True ($creatorBaseline.RequiresSaveName -and $creatorBaseline.PermittedSa
 foreach ($race in @('Ifrit', 'Oread', 'Sylph', 'Undine')) {
     foreach ($allocation in @('point-buy', 'roll')) {
         [void](Assert-KmgRuntimeScenarioPreflight -Scenario 'disposable-elemental-character-creation-case' `
-            -ExpectedVersion '0.0.118' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 `
+            -ExpectedVersion '0.0.119' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 `
             -Parameters @{ race = $race; class = 'Fighter'; allocation = $allocation })
         foreach ($characterClass in @('Fighter', 'Gunslinger')) {
             $request = New-KmgRuntimeRequest -Scenario 'disposable-elemental-character-creation-case' `
-                -ExpectedVersion '0.0.118' -TimeoutSeconds 600 -ExitAfterCompletion $true `
+                -ExpectedVersion '0.0.119' -TimeoutSeconds 600 -ExitAfterCompletion $true `
                 -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-creator-request-test') `
                 -Parameters @{race=$race;class=$characterClass;allocation=$allocation}
             $serialized = $request | ConvertTo-Json -Depth 8 | ConvertFrom-Json
@@ -1026,7 +1026,7 @@ foreach ($invalid in @(
     @{race='Ifrit';class='Fighter';allocation='roll';saveName='KMG_AUTOMATION_WORKING'})) {
     Assert-Throws {
         Assert-KmgRuntimeScenarioPreflight -Scenario 'disposable-elemental-character-creation-case' `
-            -ExpectedVersion '0.0.118' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 -Parameters $invalid
+            -ExpectedVersion '0.0.119' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 -Parameters $invalid
     } 'creator-case-rejects-unscoped-parameters'
 }
 
