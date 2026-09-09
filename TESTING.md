@@ -8,7 +8,7 @@ boundaries. Run script tests in separate `powershell.exe -NoProfile
 -ExecutionPolicy Bypass -File <script>` processes so fixture stubs cannot affect
 a later native launch in the calling session.
 
-Current release preparation is 0.0.119. The mandatory gates are recorded in
+Current public release is 0.0.119. The mandatory gates are recorded in
 [TELEPORTATION-HARDENING-REPORT.md](TELEPORTATION-HARDENING-REPORT.md). All final
 runtime gates must use the same clean committed package. The four fresh-process
 campaign persistence phases and desktop/gamepad coexistence have development

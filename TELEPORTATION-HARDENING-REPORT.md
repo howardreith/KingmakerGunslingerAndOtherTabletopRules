@@ -1,6 +1,6 @@
 # Contextual teleportation post-release hardening
 
-Status: the owner explicitly authorized stopping remaining tests and publishing 0.0.119. Completed checks and waived final-artifact repeats are distinguished below; public sealing/verification follows.
+Status: v0.0.119 is publicly released, independently verified and installed. The owner waived remaining final-artifact runtime repeats; completed candidate/development evidence and that waiver remain distinct below.
 
 ## Source inventory before editing
 
@@ -341,3 +341,74 @@ teleportation remains `d8c53c68fa8e4dc45407e6a35e16f2c5a46b0fa6`, latest public 
 is v0.0.118 and v0.0.119 remains unused. Historical content will not be replaced.
 The publisher's existing deterministic build/package/provenance checks remain
 required. No additional native launches are planned under the owner's waiver.
+
+## Published 0.0.119 verification
+
+Normal public release: [v0.0.119](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.119).
+The tag and release source are `72520eeb66a036da50473bec7b2e0019ca6304f6` on
+`codex/teleportation-post-release-hardening`. Master and every historical release
+remain untouched. Publication used the existing provenance-checked publisher
+with the expressly authorized non-default release branch option.
+
+Coherent implementation/evidence commits pushed through the required wrapper:
+
+1. `830e96fddb6547da99a541319b4ba93fd6f19281`: native visit forensics, strict policy, focused tests and read-only native loading.
+2. `f247e68f4abf6ad28789cceb0b2d8c45f85e80ad`: guarded fresh-process persistence harness and qualification.
+3. `c031aca87cbaa74f69273530d8648dcc0df9ebd4`: additive desktop/gamepad coexistence regressions.
+4. `c6e291af6d90cecde013ab06cbaf4fc94d8b2c3a`: release preparation and exact matrix restoration.
+5. `72520eeb66a036da50473bec7b2e0019ca6304f6`: owner-authorized sealing with explicit qualification limits.
+
+Published at `2026-09-09T00:57:32Z`. Public assets were downloaded again to ignored
+`published-119-20260909T0058253536729Z` evidence. The public manifest, checksum,
+GitHub tag/source and both deterministic publisher builds agree.
+
+| Identity | Value |
+| --- | --- |
+| ZIP SHA-256 | `4d1b32f7edb31503c9dac9227f92629df9d8278e44ff9738d24bc95e25cd55a3` |
+| DLL SHA-256 | `41949920a30f2c515e60ec3631fc9b5d34ca95b7c6a34a576aff10ae35843e6c` |
+| Source-state SHA-256 | `0b41b71fed5cb0390339b7bdee44302d88d459364337db4326173e4698534ebc` |
+| MVID | `14d17fa5-1bbf-407b-b29f-0138d5efad81` |
+| Preserved settings SHA-256 | `a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749` |
+
+The publisher reran repository validation, the full 1,550-test domain suite,
+two clean exact-reference Release builds with warnings as errors, strict build
+output, SoundBank and 135-file UMM package validation. Both builds produced
+identical package/DLL bytes. The downloaded public ZIP passed strict validation
+again. Its DLL MVID was independently read from the downloaded assembly bytes.
+The exact downloaded bytes were copied to the already hash-verified Build-Local
+package path without altering its provenance sidecar, then installed with
+`Deploy-Local.ps1`. Every one of 135 installed package files matched its ZIP entry.
+
+Public installation deployment: `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260909T0100386581697Z\deployment.json`.
+
+The installation preserved FeatureModules.json bytes and metadata, all unrelated
+Mods entries and settings, and all 85 pre-existing saves. Each save's complete
+hash, length, creation/write ticks and attributes also matched the mission's
+original protected inventory. Baseline and Working were not written, renamed,
+deleted or overwritten. Only the three owned A/B/C saves in each completed
+development persistence transaction were written/deleted; the canceled candidate
+transaction created none. No Kingmaker process remains. Raw evidence, packages,
+saves, machine-local settings and proprietary assemblies are not committed.
+
+The public ZIP matches the deterministic release builds and the installed package.
+It is **not byte-identical to the earlier native-tested candidate**: sealing
+updated documentation and embedded commit identity. Gameplay source is unchanged.
+The owner waived further native launches, so no post-sealing runtime PASS is
+claimed. Completed 0.0.119 candidate evidence is 15 processes / 386 assertions;
+development fresh-process persistence is 32 assertions per completed A/B/C/D
+transaction, and the development matrix is 26 native states / 897 assertions plus
+a separate 35-assertion native diagnostic restoration. Final-artifact persistence,
+full matrix and restoration-startup repeats remain waived/unrun.
+
+Remaining scope limits: installed UMM 0.33.0.0 results do not qualify UMM 0.32.4,
+complete isolated optional-mod save-backed profiles, unavailable Arms and Armor,
+mod-provided mount variants or unusual late-campaign states. The automation save
+requires Craft Magic Items. The owner's separate high-level campaign playtest
+remains outstanding. Legacy native flags remain imperfect one-time historical
+inference; they are never a live visit bypass after migration.
+
+For that later campaign playtest: obtain/prepare spells normally; check ordinary
+Travel and cancel cost nothing; compare both Teleport families at a newly
+revealed point before and after ordinary arrival; inspect Teleport odds; verify
+one real use per completed cast, exact Greater Teleport/Recall destination,
+unchanged party/time and no local-area entry; then save/reload and compare counts.
