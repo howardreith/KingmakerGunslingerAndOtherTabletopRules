@@ -92,6 +92,17 @@ try {
     try { Restore-PersistenceSidecars } catch { $rejected = $true }
     if (-not $rejected) { throw 'Unrelated sidecar mutation was accepted.' }
     $checks++
+    $exactMatrix = '{"schemaVersion":11,"teleportation-spells":false,"unrelated":true}' | ConvertFrom-Json
+    Restore-PersistenceSidecars -AuthorizedSettingsStates @($exactMatrix)
+    if ([Convert]::ToBase64String([IO.File]::ReadAllBytes($previousPath)) -cne [Convert]::ToBase64String($previousBytes)) {
+        throw 'An exact explicitly authorized matrix state did not restore the original backup bytes.'
+    }
+    $checks++
+    [IO.File]::WriteAllText($previousPath, '{"schemaVersion":11,"teleportation-spells":true,"unrelated":true}')
+    $rejected = $false
+    try { Restore-PersistenceSidecars -AuthorizedSettingsStates @($exactMatrix) } catch { $rejected = $true }
+    if (-not $rejected) { throw 'An unlisted matrix tuple was accepted.' }
+    $checks++
 } finally {
     $resolved = (Resolve-Path -LiteralPath $testRoot).Path
     $allowed = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $PSScriptRoot) 'artifacts\tests')) + '\'

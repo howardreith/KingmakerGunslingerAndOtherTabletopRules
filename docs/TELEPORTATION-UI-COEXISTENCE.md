@@ -31,7 +31,7 @@ Run from Windows PowerShell after deploying the pinned qualified artifact:
 
 ```powershell
 .\scripts\Invoke-TeleportationHardeningQualification.ps1 `
-  -Scope Coexistence -ExpectedVersion 0.0.118 `
+  -Scope Coexistence -ExpectedVersion 0.0.119 `
   -DeploymentManifestPath <exact-deployment.json> -PackagePath <exact-package.zip> `
   -Confirm:$false
 ```
@@ -49,3 +49,12 @@ installed UMM 0.33.0.0 stack. No production UI defect was reproduced and no
 production UI adapter was changed. Exact IDs and rejected probes are recorded
 in `TELEPORTATION-HARDENING-REPORT.md`. Final release qualification must rerun
 these scenarios against the exact clean committed release artifact.
+
+`-Scope Boundary` covers all 26 current module configurations with exact runtime
+parameters and reversible settings. Its final original-configuration startup
+lets `ZFavoredClass.Main.LibraryScriptableObject_LoadDictionary_Patch.Postfix`
+call `CallOfTheWild.Helpers.GuidStorage.dump` normally to regenerate its
+`loaded_blueprints.txt` diagnostic. A matrix changes that diagnostic's contents
+because it lists currently published blueprints. The final native startup was
+proven to regenerate the original bytes; no third-party file is manually edited.
+The original cleanup failure and native recovery remain separate evidence.

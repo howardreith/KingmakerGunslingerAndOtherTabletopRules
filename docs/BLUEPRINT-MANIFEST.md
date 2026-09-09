@@ -422,3 +422,14 @@ controls player spell-list publication and contextual world-map runtime hooks.
 The exploration guard and familiarity ledger add no blueprint identity. No
 existing GUID or published release identity is changed. Complete qualification
 and the next unused release version remain pending in the implementation report.
+
+## 0.0.119 preservation statement
+
+The hardening patch adds no blueprint and preserves the entire published
+0.0.118 manifest: 1,872 entries, 1,870 active. The SHA-256 of all entries encoded
+as sorted-key compact JSON is
+`fd72d5656989033d57ec7bb9b07aee8295c4b0790e58ffccb2219f3d9e47556f`.
+All three strategic spell IDs, publication levels and the module-12/schema-11
+contract are unchanged. The current validator checks the full manifest as well
+as the retained 0.0.117 prefix. Historical qualification statements above retain
+their original scope; current evidence is in TELEPORTATION-HARDENING-REPORT.md.

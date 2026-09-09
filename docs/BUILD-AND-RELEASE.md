@@ -2,10 +2,10 @@
 
 ## Supported release baseline
 
-Kingmaker Gunslinger `0.0.118-contextual-world-map-teleportation` targets:
+Kingmaker Gunslinger `0.0.119-contextual-world-map-teleportation` targets:
 
 - Pathfinder: Kingmaker Enhanced Plus Edition 2.1.7b;
-- Unity Mod Manager 0.32.4 API contracts; guarded 0.0.118 runtime testing uses
+- Unity Mod Manager 0.32.4 API contracts; guarded 0.0.119 runtime testing uses
   UMM 0.33.0.0, with 0.32.4 runtime acceptance deferred to owner testing;
 - Harmony 1.2 through `0Harmony12.dll`;
 - .NET Framework 4.7;
@@ -72,7 +72,22 @@ dependency-free test suite, production compilation, strict build-output
 validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
-## Guarded GitHub release publisher
+## Current 0.0.119 release gates
+
+The owner authorized a normal public patch from the dedicated repair branch,
+without merging or modifying master. Use the existing provenance-checked
+`Publish-Release.ps1` with `-ReleaseBranch codex/teleportation-post-release-hardening`
+and `-AllowNonDefaultReleaseBranch` only after the same clean committed artifact
+passes all 45 required fresh-process launches and the original-configuration
+restoration startup. Build twice with the exact reference bundle and compare
+ZIP/DLL bytes; the publisher repeats both builds. Recheck public releases before
+publication, preserving all historical tags/assets. Download the public ZIP,
+checksums and manifest again, independently compare them with the runtime-tested
+artifact, validate the strict package and install that exact public ZIP while
+preserving existing settings. Curated final evidence belongs in the hardening
+report; raw saves/packages/runtime artifacts remain ignored.
+
+## Historical release authorizations
 
 The public master 0.0.115 Share Transmutation fix is incorporated into this
 branch. Its authorized publication and its NOT-RUN save-backed gameplay

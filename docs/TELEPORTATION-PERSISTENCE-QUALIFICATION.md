@@ -6,14 +6,14 @@ Build-Local package and its verified deployment manifest:
 
 ```powershell
 .\scripts\Invoke-TeleportationPersistenceQualification.ps1 `
-  -ExpectedVersion 0.0.118 `
+  -ExpectedVersion 0.0.119 `
   -DeploymentManifestPath <exact-deployment-json> `
   -PackagePath <exact-tested-package-zip> `
   -Confirm:$false
 ```
 
-Version 0.0.118 above identifies the development checkpoint. The final release
-must repeat this gate with its actual committed package/version. No manual UI
+Development checkpoints used 0.0.118. The final 0.0.119 release must repeat this
+gate with its exact clean committed package/version. No manual UI
 operation is needed or authorized by this procedure. Never substitute another
 campaign for `KMG_AUTOMATION_WORKING`.
 

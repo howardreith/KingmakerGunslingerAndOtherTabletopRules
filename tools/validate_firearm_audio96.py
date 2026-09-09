@@ -86,7 +86,7 @@ def validate(root: Path) -> None:
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
     release_suffix = ("contextual-world-map-teleportation"
-        if VERSION == "0.0.118" else "elemental-char-gen-stabilization"
+        if VERSION in {"0.0.118", "0.0.119"} else "elemental-char-gen-stabilization"
         if VERSION == "0.0.117" else "elemental-feats"
         if VERSION == "0.0.116" else "elemental-heritages"
         if VERSION == "0.0.115" else "elemental-races"

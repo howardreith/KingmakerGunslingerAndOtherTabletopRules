@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.118-contextual-world-map-teleportation",
-  "version": "0.0.118",
+  "milestone": "0.0.119-contextual-world-map-teleportation",
+  "version": "0.0.119",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1156,5 +1156,26 @@
     "allOriginalRuntimeGatesPassed": false,
     "remainingQualificationAssignedToOwnerTesting": true,
     "retainedPublishedMaster": "8e5eeae7973c71ca4b78dc8216d00d815af7ea26"
+  },
+  "teleportation119": {
+    "deterministicTestCount": 1550,
+    "featureModuleCount": 12,
+    "featureModuleSchemaVersion": 11,
+    "defaultOn": true,
+    "strategicSpellCount": 3,
+    "nativePointContextOnly": true,
+    "realSpellbookExpenditure": true,
+    "ownerReleaseAuthorized": true,
+    "retainedPublishedMaster": "8e5eeae7973c71ca4b78dc8216d00d815af7ea26",
+    "ledgerAuthoritativeAfterMigration": true,
+    "legacyFormatAndCountsPreserved": true,
+    "movementObserverUnchanged": true,
+    "duplicateArrivalDefectReproduced": false,
+    "freshProcessPersistencePhases": 4,
+    "coexistenceControllerModuleConfigurations": 4,
+    "moduleBoundaryConfigurations": 26,
+    "mandatoryInstalledStackQualificationRequired": true,
+    "ownerHighLevelCampaignPlaytestPending": true,
+    "optionalModAndOtherUmmQualificationComplete": false
   }
 }

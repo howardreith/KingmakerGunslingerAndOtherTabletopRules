@@ -1255,3 +1255,10 @@ The observed host is UMM 0.33.0.0. Current native casting passes on the installe
 stack; the available save's Craft Magic Items data remains the independently
 proven impediment to isolated save-backed profiles. These limits are published
 in the release notes and have not been converted into success claims.
+
+## Post-release hardening
+
+The 0.0.118 evidence above retains its historical scope. Current native visit
+forensics, ledger authority, fresh-process persistence and UI coexistence are
+recorded in TELEPORTATION-HARDENING-REPORT.md and
+docs/TELEPORTATION-HARDENING-NATIVE-VISITS.md.

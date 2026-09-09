@@ -1,25 +1,27 @@
 # Installation, updates, removal, and compatibility
 
-Current release identity is `0.0.118-contextual-world-map-teleportation`.
-Install `KingmakerGunslinger-0.0.118-contextual-world-map-teleportation.zip`
-from the [0.0.118 release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.118)
+Current release identity is `0.0.119-contextual-world-map-teleportation`.
+Install `KingmakerGunslinger-0.0.119-contextual-world-map-teleportation.zip`
+from the [0.0.119 release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.119)
 through Unity Mod Manager and restart Kingmaker. Preserve FeatureModules.json.
-UMM displays 0.0.118. World-Map Teleportation Spells defaults ON; its schema-11
+UMM displays 0.0.119. World-Map Teleportation Spells defaults ON; its schema-11
 migration preserves explicit settings for all twelve modules. The published
 0.0.117 Elemental Races content and its persistent identities are included.
 
 The owner authorized this release for testing in an existing high-level game.
-See the [release notes](docs/RELEASE-NOTES-0.0.118.md) and
+See the [release notes](docs/RELEASE-NOTES-0.0.119.md) and
 [player smoke test](docs/TELEPORTATION-SPELLS-SMOKE-TEST.md). Spells must be learned
 and prepared through normal game mechanisms. Spellbook availability controls
 whether destination actions appear; there is no separate travel window.
 
-Current save-backed casting evidence uses the installed mod stack. The disposable
-working save contains Craft Magic Items data and cannot validate an isolated
-profile without that mod. Standalone and Toggle Custom Soundpacks 1.0.0 startup
-and spell publication passed; complete save-backed compatibility, Arms and Armor,
-campaign disk persistence and UMM 0.32.4 remain unqualified. The guarded runtime
-installation uses UMM 0.33.0.0. This release does not repair third-party save data.
+Fresh-process campaign persistence, native casting and desktop/gamepad
+coexistence use the installed Kingmaker 2.1.7b / UMM 0.33.0.0 stack. The automation
+save contains Craft Magic Items data and cannot validate an isolated profile
+without that mod. Complete isolated optional-mod compatibility, Arms and Armor,
+UMM 0.32.4 and unusual late-campaign states remain unqualified. Earlier standalone
+and Soundpacks startup results belong to their original artifacts. This patch
+does not repair third-party save data. See the
+[hardening report](TELEPORTATION-HARDENING-REPORT.md).
 
 The retained 0.0.117 public content is documented in its
 [release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md).
