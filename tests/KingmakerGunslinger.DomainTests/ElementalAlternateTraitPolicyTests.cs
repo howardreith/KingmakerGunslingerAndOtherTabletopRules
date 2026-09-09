@@ -124,7 +124,7 @@ namespace KingmakerGunslinger.DomainTests
                 { ElementalHeritageRace.Ifrit, 21 },
                 { ElementalHeritageRace.Oread, 8 },
                 { ElementalHeritageRace.Sylph, 28 },
-                { ElementalHeritageRace.Undine, 3 }
+                { ElementalHeritageRace.Undine, 4 }
             };
 
             foreach (ElementalHeritageRace race in Enum.GetValues(
@@ -305,12 +305,12 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void DeferredMarkersRemainRegisteredWithoutReplacingSlots()
         {
-            Assertions.Equal(19, ElementalAlternateTraitPolicy.Ordered().Count(value => value.IsPublished),
-                "Only the 19 implemented candidates may be published.");
-            Assertions.Equal(19, ElementalAlternateTraitPolicy.OrderedSelections()
+            Assertions.Equal(20, ElementalAlternateTraitPolicy.Ordered().Count(value => value.IsPublished),
+                "The nineteen released traits and qualified Nereid mechanic must be published.");
+            Assertions.Equal(20, ElementalAlternateTraitPolicy.OrderedSelections()
                 .SelectMany(value => value.PublishedChoices).Select(value => value.Id).Distinct().Count(),
                 "Every implemented marker must be published exactly once.");
-            foreach (var id in new[] { ElementalAlternateTraitId.TreacherousEarth, ElementalAlternateTraitId.NereidFascination })
+            foreach (var id in new[] { ElementalAlternateTraitId.TreacherousEarth })
             {
                 var definition = ElementalAlternateTraitPolicy.Find(id);
                 Assertions.False(definition.IsPublished, "Deferred identity must stay registered but unpublished.");
@@ -337,6 +337,120 @@ namespace KingmakerGunslinger.DomainTests
                     }
                 }
             }
+            foreach (var id in new[] { ElementalAlternateTraitId.NereidFascination, ElementalAlternateTraitId.TreacherousEarth })
+            {
+                Assertions.False(ElementalAlternateTraitPolicy.MarkerRevisionIsEffective(id, 0),
+                    "An old ignored marker must not acquire replacement authority.");
+                Assertions.True(ElementalAlternateTraitPolicy.MarkerRevisionIsEffective(id, 1),
+                    "Only a marker activated by the new mechanic may replace the heritage SLA.");
+                Assertions.False(ElementalAlternateTraitPolicy.MarkerRevisionIsEffective(id, 2),
+                    "Unknown future revision must not acquire replacement authority.");
+                Assertions.True(ElementalAlternateTraitPolicy.RetireDeferredMarker(id, 0, true),
+                    "Retire only the old inert marker when the mechanic becomes active.");
+                Assertions.False(ElementalAlternateTraitPolicy.RetireDeferredMarker(id, 1, true),
+                    "A legitimate new trait must survive reconstruction.");
+                Assertions.False(ElementalAlternateTraitPolicy.RetireDeferredMarker(id, 0, false),
+                    "A still-deferred marker retains its released behavior.");
+            }
+            var released = ElementalAlternateTraitPolicy.Ordered().Where(value => value.IsPublished &&
+                !ElementalAlternateTraitPolicy.UsesCompletionRevision(value.Id)).ToArray();
+            Assertions.Equal(19, released.Length, "The released marker revision contract must remain unchanged.");
+            foreach (var definition in released)
+                Assertions.True(ElementalAlternateTraitPolicy.MarkerRevisionIsEffective(definition.Id, 0),
+                    "The nineteen released traits do not require a new revision field.");
+            Assertions.False(ElementalAlternateTraitPolicy.NereidQualificationActive, "Ordinary publication must not require instrumentation.");
+            Assertions.True(ElementalAlternateTraitPolicy.Find(ElementalAlternateTraitId.NereidFascination).IsPublished,
+                "The qualified Nereid mechanic must be available before guarded observation is enabled.");
+            try
+            {
+                ElementalAlternateTraitPolicy.NereidQualificationActive = true;
+                var choices = ElementalAlternateTraitPolicy.SelectionsForRace(ElementalHeritageRace.Undine)
+                    .Single(value => value.Slot == ElementalRacialTraitSlot.RacialSpellLikeAbility).PublishedChoices;
+                Assertions.True(choices.Select(value => value.Id).SequenceEqual(new[] { ElementalAlternateTraitId.AcidBreath,
+                    ElementalAlternateTraitId.NereidFascination, ElementalAlternateTraitId.OozeBreath }),
+                    "Guarded native selector order must be retain, Acid, Nereid, Ooze.");
+                foreach (var heritage in ElementalHeritagePolicy.ForRace(ElementalHeritageRace.Undine))
+                {
+                    var state = ElementalAlternateTraitPolicy.Resolve(ElementalHeritageRace.Undine, heritage.Id,
+                        new[] { ElementalAlternateTraitId.NereidFascination });
+                    Assertions.True(state.RacialSlaAbilitySymbol == null && state.EnergyResistanceProviderSymbol != null &&
+                        state.ElementalAffinityProviderSymbol == heritage.AffinityFeatureSymbol,
+                        "Nereid replaces only the active heritage SLA for all three heritages.");
+                    foreach (var breath in new[] { ElementalAlternateTraitId.AcidBreath, ElementalAlternateTraitId.OozeBreath })
+                        Assertions.False(ElementalAlternateTraitPolicy.IsLegal(ElementalHeritageRace.Undine,
+                            new[] { breath, ElementalAlternateTraitId.NereidFascination }),
+                            "All three Undine alternatives must remain mutually exclusive.");
+                }
+                for (int character = 0; character < 6; character++)
+                {
+                    var route = KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRegressionPlan.NereidRoute(character);
+                    Assertions.Equal(character % 3, route.Last(), "Native creator commits all heritages for both sexes.");
+                    for (int revision = 0; revision < route.Length; revision++)
+                        Assertions.Equal(revision == 0 || revision == 3 ? 0 : 1,
+                            KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRegressionPlan.NereidTraits(
+                                character, revision, false).Length, "Native route includes retain-to-trait and trait-to-retain.");
+                }
+                int commits = 0, cancellations = 0;
+                for (int sex = 0; sex < 2; sex++)
+                {
+                    bool originalHasNereid = false;
+                    var committedHeritages = new HashSet<int>();
+                    for (int local = 0; local < 10; local++)
+                    {
+                        int visit = sex * 10 + local;
+                        bool desired = KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRegressionPlan
+                            .NereidTraits(visit, 0, true).Length == 1;
+                        bool cancel = KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRegressionPlan
+                            .NereidRespecCanceled(visit);
+                        if (cancel)
+                        {
+                            cancellations++;
+                            Assertions.True(originalHasNereid != desired,
+                                "Canceled native respec must preview an actual replacement change in each direction.");
+                        }
+                        else
+                        {
+                            commits++; originalHasNereid = desired;
+                            if (desired) committedHeritages.Add(KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRegressionPlan
+                                .NereidRespecChoice(visit));
+                        }
+                    }
+                    Assertions.True(committedHeritages.SetEquals(new[] { 0, 1, 2 }),
+                        "Both native respec sexes must commit Nereid on every heritage.");
+                }
+                foreach (string sex in new[] { "Male", "Female" })
+                    Assertions.True(KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRegressionPlan.IsAllowedNereidRespecSex(sex),
+                        "Each exact sex has a bounded native respec request.");
+                foreach (string sex in new[] { "male", "Both", "", null })
+                    Assertions.False(KingmakerGunslinger.RuntimeTesting.ElementalCharacterCreationRegressionPlan.IsAllowedNereidRespecSex(sex),
+                        "A respec request cannot silently choose or combine sexes.");
+                int nereidRows = 0;
+                var scopedTraits = new System.Collections.Generic.HashSet<ElementalAlternateTraitId>();
+                foreach (ElementalHeritageRace race in Enum.GetValues(typeof(ElementalHeritageRace)))
+                    for (int sex = 0; sex < 2; sex++)
+                        for (int heritage = 0; heritage < 3; heritage++)
+                        {
+                            var prior = ElementalVisibleTraitPersistencePolicy.Traits(race, sex, heritage);
+                            var scoped = ElementalVisibleTraitPersistencePolicy.Traits(race, sex, heritage, true);
+                            scopedTraits.UnionWith(scoped);
+                            if (race == ElementalHeritageRace.Undine)
+                            {
+                                nereidRows++;
+                                Assertions.True(scoped.SequenceEqual(new[] { ElementalAlternateTraitId.NereidFascination }),
+                                    "All six bounded Undine persistence rows use the same exact Nereid alternative.");
+                                Assertions.True(prior.All(value => value == ElementalAlternateTraitId.AcidBreath || value == ElementalAlternateTraitId.OozeBreath),
+                                    "The original released persistence matrix stays unchanged.");
+                            }
+                            else Assertions.True(prior.SequenceEqual(scoped), "The other eighteen persistence rows remain exact.");
+                        }
+                Assertions.Equal(6, nereidRows, "The scoped transaction exercises six new native-selected Nereid fixtures.");
+                Assertions.Equal(18, scopedTraits.Count, "Scoped coverage is eighteen distinct traits, not an invented twenty-trait pass.");
+                Assertions.Equal(16, commits, "The native respec route has sixteen actual commits.");
+                Assertions.Equal(4, cancellations, "The native respec route cancels four complete previews.");
+            }
+            finally { ElementalAlternateTraitPolicy.NereidQualificationActive = false; }
+            Assertions.True(ElementalAlternateTraitPolicy.Find(ElementalAlternateTraitId.NereidFascination).IsPublished,
+                "Ending guarded observation must not disable a legitimate published trait.");
             var oreadSla = ElementalAlternateTraitPolicy.SelectionsForRace(ElementalHeritageRace.Oread)
                 .Single(value => value.Slot == ElementalRacialTraitSlot.RacialSpellLikeAbility);
             Assertions.Equal(0, oreadSla.PublishedChoices.Count,

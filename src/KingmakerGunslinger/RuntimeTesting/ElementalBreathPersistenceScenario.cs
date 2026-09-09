@@ -306,6 +306,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             private void RecordBreathSavedCondition(int expectedCasterLevel, string phase)
             {
+                if (_nereidPersistence) {
+                    RecordNereidSavedCondition(expectedCasterLevel, phase);
+                    RecordTreacherousSavedArea(expectedCasterLevel, phase);
+                    return;
+                }
                 if (_legacyMigration) return;
                 UnitEntityData[] units = Snapshot(_allUnits).OfType<UnitEntityData>().ToArray();
                 var conditions = units.SelectMany(unit => BreathConditionBuffs(unit).Select(buff => new { unit, buff })).ToArray();

@@ -48,6 +48,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly RuntimeTestRequest _request;
         private readonly WorkingSaveSmokeEvidence _loaded;
         private readonly bool _disabledControl;
+        private readonly bool _elementalOff;
         private readonly bool _canCommit;
         private readonly bool _useRoll;
         private readonly string _classGuid;
@@ -76,6 +77,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _advancePending;
         private int _viewWait;
         private bool _committed;
+        private readonly bool _nereidQualification;
+        private readonly bool _nativeProfile;
+        private ElementalNativeProfileCreatorFixture _profileFixture;
+        private readonly List<string> _profileDiagnostics = new List<string>();
+        private int CreationVisitCount => _nereidQualification ? (_nativeRespec ? ElementalCharacterCreationRegressionPlan.NereidRespecVisitsPerSex : 6) :
+            (_nativeRespec ? ElementalCharacterCreationRegressionPlan.NativeRespecVisits : 3);
+        private Kingmaker.Blueprints.Gender NereidGender => (_nativeRespec
+            ? (string)_request.Parameters["sex"] == "Female" : _raceIndex >= 3)
+                ? Kingmaker.Blueprints.Gender.Female : Kingmaker.Blueprints.Gender.Male;
         private bool _successCallback;
         private bool _traitsCaptured;
         private bool _started;
@@ -89,26 +99,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase &&
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl &&
                 request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation &&
-                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression &&
-                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                !RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario)))
                 throw new InvalidOperationException("Exact guarded creator-baseline request required.");
             _disabledControl = request.Scenario == RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl;
-            _nativeRespec = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec;
-            _regression = _nativeRespec || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression;
+            _nereidQualification = RuntimeTestScenarioCatalog.IsNereidQualificationScenario(request.Scenario);
+            _elementalOff = RuntimeTestRequestParser.IsElementalOffCreatorScope(request);
+            _nativeProfile = _elementalOff || RuntimeTestScenarioCatalog.IsNereidProfileScenario(request.Scenario);
+            _nativeRespec = RuntimeTestScenarioCatalog.IsElementalNativeRespecScenario(request.Scenario);
+            _regression = RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario);
             _canCommit = _regression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation;
-            if (_canCommit && (request.Parameters == null || (string)request.Parameters["saveName"] != WorkingSaveSmokeScenario.ExpectedName ||
+            if (_canCommit && !_nativeProfile && (request.Parameters == null || (string)request.Parameters["saveName"] != WorkingSaveSmokeScenario.ExpectedName ||
                 loaded == null || !loaded.CompletionCallbackObserved || !loaded.DescriptorReferenceCorrelated ||
                 string.IsNullOrEmpty(loaded.StableFingerprint) || loaded.SaveWritingApiObserved || !loaded.HooksRemoved))
                 throw new InvalidOperationException("Qualified exact working-save load must precede character creation.");
             _context = context;
             _request = request;
             _loaded = loaded;
-            if (!_disabledControl && (!context.FeatureModules.Active.ElementalRaces || BlueprintBootstrap.ElementalRaces == null))
+            if (_elementalOff && (context.FeatureModules.Active.ElementalRaces || BlueprintBootstrap.ElementalRaces == null || !request.ExitAfterCompletion))
+                throw new InvalidOperationException("The exact Elemental-only OFF creator case requires registered save identities and automatic exit.");
+            if (!_disabledControl && !_elementalOff && (!context.FeatureModules.Active.ElementalRaces || BlueprintBootstrap.ElementalRaces == null))
                 throw new InvalidOperationException("Elemental race prerequisites unavailable.");
-            _races = _disabledControl ? new[] { BlueprintRoot.Instance.Progression.CharacterRaces.Single(race =>
+            _races = _disabledControl || _elementalOff ? new[] { BlueprintRoot.Instance.Progression.CharacterRaces.Single(race =>
                 race.AssetGuid == "0a5d473ead98b0646b94495af250fdc4" && race.name == "HumanRace") }
                 : BlueprintBootstrap.ElementalRaces.OrderedRaces().OrderBy(race =>
                     ReferenceEquals(race, BlueprintBootstrap.ElementalRaces.Sylph.Race) ? 1 : 0).ToArray();
+            if (_elementalOff) _races = Enumerable.Repeat(_races.Single(), 2).ToArray();
             _classGuid = "48ac8db94d5de7645906c7d0ad3bcfbd";
             if (_regression || request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase)
             {
@@ -117,7 +132,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _useRoll = (string)request.Parameters["allocation"] == "roll";
                 if ((string)request.Parameters["class"] == "Gunslinger")
                     _classGuid = "abca4797366d4df0831a418eee39069a";
-                if (_regression) _races = Enumerable.Repeat(_races[0], _nativeRespec ? ElementalCharacterCreationRegressionPlan.NativeRespecVisits : 3).ToArray();
+                if (_regression) _races = Enumerable.Repeat(_races[0], CreationVisitCount).ToArray();
             }
         }
 
@@ -170,7 +185,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Advance(); break;
                     case CharBPhase.Type.Race:
                         _build.SetRace(_races[_raceIndex]);
-                        _build.SetGender(Kingmaker.Blueprints.Gender.Male);
+                        if (_nereidQualification) RecordDollRamps("before-sex-selection");
+                        _build.SetGender(_nereidQualification ? NereidGender : _elementalOff && _raceIndex == 1
+                            ? Kingmaker.Blueprints.Gender.Female : Kingmaker.Blueprints.Gender.Male);
                         RecordDollRamps("race-selected");
                         Advance(); break;
                     case CharBPhase.Type.Class:
@@ -222,13 +239,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             // Save-free profiles prove their complete native selection contract,
                             // then cancel. Only the exact working-save scenario may commit.
-                            bool traits = !_disabledControl || ((bool?)_character["firstGlobalTraitObserved"] == true &&
+                            var favored = AidAnotherOptionalExtensionCoordinator.FavoredClassContract;
+                            bool requireTraits = _disabledControl || (_elementalOff && favored != null && favored.TraitsEnabled);
+                            bool traits = !requireTraits || ((bool?)_character["firstGlobalTraitObserved"] == true &&
                                 (bool?)_character["secondGlobalTraitObserved"] == true);
+                            if (_elementalOff) {
+                                _character["optionalBackgroundTraits"] = requireTraits ? "native-required" : "NOT-RUN";
+                                _character["finalGender"] = _controller.Preview.Gender.ToString();
+                            }
                             _character["selectionContractComplete"] = traits;
                             _character["nativeCommitPerformed"] = false;
                             if (!traits) AcceptanceFailure("Both ordinary Trait selections were not observed.");
                             EndCharacter(); break;
                         }
+                        if (_nereidQualification && _nativeRespec &&
+                            ElementalCharacterCreationRegressionPlan.NereidRespecCanceled(_raceIndex))
+                        { QualifyCanceledNereidRespec(); EndCharacter(); break; }
                         CommitOwnedCreator();
                         _committed = true;
                         _character["nativeCommitPerformed"] = true;
@@ -267,10 +293,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (Game.Instance == null || Game.Instance.UI == null || Game.Instance.Player == null ||
                 Game.Instance.UI.CharacterBuildController == null) return;
+            if (_nativeProfile && _profileFixture == null)
+            {
+                ArmSaveGuard();
+                _profileFixture = new ElementalNativeProfileCreatorFixture(_profileDiagnostics);
+                _profileFixture.Initialize();
+                // Prove the host alone restores before running the longer creator
+                // matrix, so fixture failures do not repeat accepted character work.
+                _profileFixture.Dispose();
+                var initialRoundTrip = _profileFixture.Evidence.DeepClone();
+                _profileFixture = new ElementalNativeProfileCreatorFixture(_profileDiagnostics);
+                _profileFixture.Initialize();
+                _profileFixture.Evidence["initialRoundTrip"] = initialRoundTrip;
+            }
             _mainBefore = Game.Instance.Player.MainCharacter.Value;
             _areaBefore = Game.Instance.CurrentlyLoadedArea;
             if (_canCommit && (_mainBefore == null || _areaBefore == null))
-                throw new InvalidOperationException("Creator fixture requires a loaded campaign, never the main-menu scene.");
+                throw new InvalidOperationException("Creator fixture requires a qualified native player and area context.");
             _build = Game.Instance.UI.CharacterBuildController;
             LevelUpController global = Game.Instance.UI.LevelUpController;
             _initialCreatorOwnership = new JObject {
@@ -301,7 +340,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _globalControllerBefore = global;
             _buildUnitBefore = _build.Unit;
             CaptureInitialInnerAssets();
-            ArmSaveGuard();
+            if (_saveGuard == null) ArmSaveGuard();
             _worldBefore = Game.Instance.State.Units.All.ToArray();
             CaptureCreatorMembership();
             VerifyRepeatedHelpfulReconciliation();
@@ -312,15 +351,42 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void CaptureInitialInnerAssets()
         {
             if (BlueprintBootstrap.ElementalRaces == null) return;
-            foreach (var resource in BlueprintBootstrap.ElementalRaces.Visuals.Ordered().SelectMany(value => value.Resources))
-                foreach (var asset in resource.Resource.GetInnerAssets().Where(value => !ReferenceEquals(value, null)))
-                {
-                    if (asset == null) throw new InvalidOperationException("Visual inner asset was already dead before creator start: " + resource.AssetId);
-                    if (_initialInnerAssets.Any(value => ReferenceEquals(value.Key, asset))) continue;
-                    _initialInnerAssets.Add(new KeyValuePair<UnityEngine.Object, JObject>(asset, new JObject {
-                        ["firstOwnerGuid"] = resource.AssetId, ["name"] = asset.name,
-                        ["type"] = asset.GetType().FullName, ["instanceId"] = asset.GetInstanceID() }));
-                }
+            var visuals = BlueprintBootstrap.ElementalRaces.Visuals;
+            var resources = visuals.Ordered().SelectMany(value => value.Resources)
+                .Select(value => new KeyValuePair<string, EquipmentEntity>(value.AssetId, value.Resource)).ToList();
+            if (_nereidQualification)
+            {
+                var links = visuals.Ordered().SelectMany(value => new[] { value.MaleOptions, value.FemaleOptions })
+                    .SelectMany(options => options.Hair.Concat(options.Eyebrows).Concat(options.Beards))
+                    .GroupBy(link => link.AssetId, StringComparer.Ordinal).Select(group => group.First()).ToArray();
+                if (links.Any(link => !visuals.NativeDependencyIds.Contains(link.AssetId)))
+                    throw new InvalidOperationException("A published native customization dependency is not retained.");
+                // Inspect the exact already-bound registry transaction. Calling
+                // WeakResourceLink.Load here can start a native bundle request
+                // during save/creator preload and is not a read-only observation.
+                var retainedIds = new HashSet<string>(StringComparer.Ordinal);
+                var retainedAssets = new List<UnityEngine.Object>();
+                visuals.RetainCharacterCreatorResources(retainedIds, retainedAssets);
+                if (links.Any(link => !retainedIds.Contains(link.AssetId)))
+                    throw new InvalidOperationException("A native customization dependency is absent from the exact retention transaction.");
+                foreach (var asset in retainedAssets)
+                    CaptureVisualInnerAsset(asset, "verified-native-retention-transaction");
+            }
+            foreach (var resource in resources)
+            {
+                if (resource.Value == null)
+                    throw new InvalidOperationException("Owned visual resource was absent before creator start: " + resource.Key);
+                foreach (var asset in resource.Value.GetInnerAssets().Where(value => !ReferenceEquals(value, null)))
+                    CaptureVisualInnerAsset(asset, resource.Key);
+            }
+        }
+        private void CaptureVisualInnerAsset(UnityEngine.Object asset, string identity)
+        {
+            if (asset == null) throw new InvalidOperationException("Visual inner asset was already dead before creator start: " + identity);
+            if (_initialInnerAssets.Any(value => ReferenceEquals(value.Key, asset))) return;
+            _initialInnerAssets.Add(new KeyValuePair<UnityEngine.Object, JObject>(asset, new JObject {
+                ["firstOwnerGuid"] = identity, ["name"] = asset.name,
+                ["type"] = asset.GetType().FullName, ["instanceId"] = asset.GetInstanceID() }));
         }
 
         private void VerifyVisualIntegrity()
@@ -370,7 +436,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["acceptance"] = "NOT-RUN", ["acceptanceFailures"] = new JArray(), ["steps"] = new JArray() };
             _characters.Add(_character);
             _unit = _nativeRespec && _respecOriginal != null ? _respecOriginal :
-                new ChargenUnit(_canCommit && (_useRoll || _nativeRespec) ? BlueprintRoot.Instance.CustomCompanion :
+                new ChargenUnit(_canCommit && (_useRoll || _nativeRespec || _nativeProfile) ? BlueprintRoot.Instance.CustomCompanion :
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
             _character["nativeMercenaryFixture"] = _unit.Descriptor.IsCustomCompanion();
             if (ReferenceEquals(_unit, _mainBefore)) throw new InvalidOperationException("Fixture cannot own the campaign character.");
@@ -396,7 +462,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .StartsWith("e115e1e0a17a4aceb001", StringComparison.Ordinal) ||
                 ((string)row["selectionGuid"] ?? string.Empty).StartsWith("e117e1e0a17a4acec001", StringComparison.Ordinal)).ToArray();
             _character["racialSelectionCount"] = racial.Length;
-            if (_disabledControl)
+            if (_disabledControl || _elementalOff)
             {
                 if (racial.Length != 0) throw new InvalidOperationException("KMG racial selections leaked into disabled control.");
                 return;
@@ -578,7 +644,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void RecordDollRamps(string stage)
         {
-            var evidence = new JObject { ["stage"] = stage };
+            var evidence = new JObject { ["stage"] = stage,
+                ["hairLink"] = _controller.Doll.Hair?.AssetId,
+                ["beardLink"] = _controller.Doll.Beard?.AssetId,
+                ["eyebrowLink"] = _controller.Doll.Eyebrows?.AssetId };
             try
             {
                 foreach (var entry in new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<UnityEngine.Texture2D>> {
@@ -593,6 +662,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             evidence["dollRooms"] = new JArray(UnityEngine.Resources.FindObjectsOfTypeAll<CharGenDollRoom>()
                 .Select(room => DescribeDollRoom(room)));
             _character["dollRamps"] = evidence;
+            if (_nereidQualification)
+            {
+                var history = _character["dollRampHistory"] as JArray;
+                if (history == null) _character["dollRampHistory"] = history = new JArray();
+                history.Add(evidence.DeepClone());
+            }
         }
 
         private static JObject DescribeDollRoom(CharGenDollRoom room)
@@ -625,7 +700,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SingleOrDefault(value => ReferenceEquals(value.Resource, __instance));
                 var shared = _saveGuardOwner._initialInnerAssets.Where(value => __instance.GetInnerAssets()
                     .Any(asset => ReferenceEquals(value.Key, asset))).ToArray();
-                if (owned == null && shared.Length == 0) return;
+                if (owned == null && shared.Length == 0 && !_saveGuardOwner._nereidQualification) return;
                 __state = new JObject { ["stage"] = _saveGuardOwner._stage, ["guid"] = owned?.AssetId,
                     ["sharedAssets"] = new JArray(shared.Select(value => {
                         var item = (JObject)value.Value.DeepClone();
@@ -672,10 +747,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         { Capture("rejected:" + failure); AcceptanceFailure(failure); EndCharacter(); }
         private void EndCharacter()
         {
-            if (_nativeRespec && (bool?)_character["completed"] == true) EndNativeRespecVisit();
+            if (_nativeRespec && ((bool?)_character["completed"] == true ||
+                (bool?)_character["canceledNativeRespec"] == true)) EndNativeRespecVisit();
             else CleanupCharacter();
             _character["acceptance"] = (!_canCommit ? (bool?)_character["selectionContractComplete"] == true :
-                (bool)_character["completed"]) &&
+                ((bool)_character["completed"] || (bool?)_character["canceledNativeRespec"] == true)) &&
                 ((JArray)_character["acceptanceFailures"]).Count == 0 ? "PASS" : "FAIL";
             _raceIndex++; _settle = 12; Write();
         }
@@ -761,6 +837,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new JObject { ["schemaVersion"] = 1, ["runId"] = _request.RunId,
                     ["purpose"] = "diagnostic native creator baseline", ["humanAcceptance"] = "NOT-RUN",
                     ["initialCreatorOwnership"] = _initialCreatorOwnership,
+                    ["ownedNativeProfile"] = _profileFixture?.Evidence.DeepClone(),
                     ["initialInnerAssets"] = new JArray(_initialInnerAssets.Select(value => value.Value)),
                     ["compatibilityRechecks"] = _compatibilityRechecks.DeepClone(),
                     ["characters"] = _characters.DeepClone(), ["assetUnloads"] = _assetUnloads.DeepClone(), ["creatorCleanup"] = _creatorCleanupEvidence?.DeepClone(), ["instrumentationFailures"] = new JArray(_failures) }.ToString(Formatting.Indented));
@@ -778,6 +855,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore) &&
                 ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore) && membershipRestored);
             if (!restored) _failures.Add("Original world unit membership or controller ownership was not restored.");
+            if (_profileFixture != null)
+            {
+                try { _profileFixture.Dispose(); }
+                catch (Exception error) { _failures.Add("native profile cleanup: " + error); }
+            }
             try { DisarmSaveGuard(); }
             catch (Exception error) { _failures.Add("save guard cleanup: " + error); }
             Result = ElementalCharacterCreationRoutingObserver.Run(_context, _request);
@@ -789,10 +871,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Expected = "no instrumentation failures; exact restoration", Observed = string.Join("|", _failures),
                 Status = _failures.Count == 0 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
             if (_regression) Result.Assertions.Add(new RuntimeTestAssertion { Name = _nativeRespec ? "native-elemental-player-respec-callbacks" : "native-elemental-roundtrip-commits",
-                Expected = _nativeRespec ? "eight complete original-identity commits with exact spent resources" : "three complete native commits after exact racial round trips",
+                Expected = _races.Length + (_nereidQualification && _nativeRespec
+                    ? " native final-review visits: eight commits and two cancellations with exact original/spent state; sex=" + NereidGender
+                    : _nativeRespec ? " complete original-identity commits with exact spent resources" : " complete native commits after exact racial round trips"),
                 Observed = string.Join("|", _characters.OfType<JObject>().Select(row => (string)row["acceptance"])),
                 Status = _characters.Count == _races.Length && _characters.OfType<JObject>().All(row =>
-                    (string)row["acceptance"] == "PASS" && (bool?)row["completed"] == true)
+                    (string)row["acceptance"] == "PASS" &&
+                    ((bool?)row["completed"] == true || (_nereidQualification && _nativeRespec &&
+                        (bool?)row["canceledNativeRespec"] == true)))
+                    ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
+            if (_elementalOff) Result.Assertions.Add(new RuntimeTestAssertion {
+                Name = "native-elemental-off-final-reviews", Expected = "two complete Human reviews, both sexes; KMG races unpublished; optional ordinary Traits remain usable",
+                Observed = string.Join("|", _characters.OfType<JObject>().Select(row =>
+                    (string)row["race"] + ":" + (string)row["finalGender"] + ":" + (string)row["acceptance"] + ":traits=" + (string)row["optionalBackgroundTraits"])),
+                Status = !_context.FeatureModules.Active.ElementalRaces && _characters.Count == 2 &&
+                    _characters.OfType<JObject>().Count(row => (string)row["finalGender"] == "Male") == 1 &&
+                    _characters.OfType<JObject>().Count(row => (string)row["finalGender"] == "Female") == 1 &&
+                    _characters.OfType<JObject>().All(row => (string)row["acceptance"] == "PASS" &&
+                        (bool?)row["selectionContractComplete"] == true && (int?)row["racialSelectionCount"] == 0) &&
+                    !BlueprintRoot.Instance.Progression.CharacterRaces.Any(race => BlueprintBootstrap.ElementalRaces.OrderedRaces().Contains(race))
+                    ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
+            if (_nativeProfile) Result.Assertions.Add(new RuntimeTestAssertion {
+                Name = "native-profile-empty-world-restored", Expected = "exact outer Player/scene/world restoration; no save loading",
+                Observed = _profileFixture?.Evidence.ToString(Formatting.None) ?? "fixture unavailable",
+                Status = _profileFixture != null && _profileFixture.Ready && _profileFixture.Restored && restored
                     ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
             Result.Status = Result.Assertions.All(value => value.Status == RuntimeTestStatuses.Pass)
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail;

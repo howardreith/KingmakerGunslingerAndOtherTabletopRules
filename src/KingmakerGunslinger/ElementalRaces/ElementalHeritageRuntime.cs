@@ -115,11 +115,40 @@ namespace KingmakerGunslinger.ElementalRaces
         OwnedGameLogicComponent<UnitDescriptor>
     {
         public int Trait;
+        // Keep this existing component's name unchanged. Native 0.0.117
+        // Fact.PreSave includes its component entry even when Data is null.
+        // PostLoad matches it without running OnFactActivate; revision stays 0.
+        [JsonProperty] private int _completionRevision;
+
+        internal bool IsEffective => ElementalAlternateTraitPolicy.MarkerRevisionIsEffective(
+            (ElementalAlternateTraitId)Trait, _completionRevision);
+
+        public override void OnFactActivate()
+        {
+            var id = (ElementalAlternateTraitId)Trait;
+            if (ElementalAlternateTraitPolicy.UsesCompletionRevision(id) &&
+                ElementalAlternateTraitPolicy.IsPublished(id)) _completionRevision = 1;
+        }
 
         public override void OnTurnOn()
         {
-            ElementalHeritageRuntime.Reconcile(Owner, null, null,
-                (ElementalAlternateTraitId)Trait, null);
+            var id = (ElementalAlternateTraitId)Trait;
+            if (ElementalAlternateTraitPolicy.RetireDeferredMarker(id, _completionRevision,
+                    ElementalAlternateTraitPolicy.IsPublished(id)))
+            {
+                // Retire only the formerly inert development marker. Filtering
+                // it before every reconciliation preserves the active heritage
+                // SLA and its expenditure; no new provider/resource is granted.
+                ModContext context;
+                if (ModContext.TryGet(out context))
+                    context.Logger.Info("elemental-races", "deferred-marker.retired",
+                        "unit=" + Owner.Unit.UniqueId + ";trait=" + id +
+                        ";revision=0;transition=retain-active-heritage-sla");
+                Owner.RemoveFact(Fact);
+                return;
+            }
+            if (!IsEffective) return;
+            ElementalHeritageRuntime.Reconcile(Owner, null, null, id, null);
         }
 
         public override void OnTurnOff()
@@ -223,8 +252,13 @@ namespace KingmakerGunslinger.ElementalRaces
                 ElementalHeritageRace parentRace = ToHeritageRace(
                     race.Definition.Kind);
                 ElementalAlternateTraitId[] observedTraits = race
-                    .AlternateTraits.Traits().Where(value => owner.HasFact(
-                        value.Marker)).Select(value => value.Definition.Id)
+                    .AlternateTraits.Traits().Where(value => {
+                        if (!ElementalAlternateTraitPolicy.UsesCompletionRevision(value.Definition.Id))
+                            return owner.HasFact(value.Marker);
+                        var marker = owner.GetFact(value.Marker);
+                        return marker != null && marker.SelectComponents<ElementalAlternateTraitMarkerController>()
+                            .Any(controller => controller.IsEffective);
+                    }).Select(value => value.Definition.Id)
                     .ToArray();
                 ElementalAlternateTraitId[] effectiveTraits =
                     ElementalAlternateTraitPolicy.TransitionMarkers(

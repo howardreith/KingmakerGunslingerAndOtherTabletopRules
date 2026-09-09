@@ -27,9 +27,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             JObject manifest = JObject.Parse(Read("blueprints", "blueprints.json"));
             JToken[] entries = manifest["entries"].ToArray();
-            Assertions.Equal(1872, entries.Length,
+            Assertions.Equal(1883, entries.Length,
                 "Current blueprint ledger count changed.");
-            Assertions.Equal(1870, entries.Count(value => string.Equals(
+            Assertions.Equal(1881, entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Current active identity count changed.");
             Assertions.Equal(entries.Length, entries.Select(value =>

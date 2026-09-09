@@ -65,6 +65,7 @@ namespace KingmakerGunslinger.ElementalRaces
             }
             foreach (BlueprintAbility ability in trait.Mechanics().OfType<BlueprintAbility>())
             {
+                if (ability.AssetGuid == ElementalNereidFactory.ShakeFreeGuid) continue;
                 Fact[] facts = owner.Abilities.Enumerable.Where(value => value != null &&
                     ReferenceEquals(value.Blueprint, ability)).Cast<Fact>().ToArray();
                 foreach (Fact fact in facts) owner.RemoveFact(fact);
@@ -97,6 +98,7 @@ namespace KingmakerGunslinger.ElementalRaces
                         return false;
                 foreach (BlueprintAbility ability in trait.Mechanics().OfType<BlueprintAbility>())
                 {
+                    if (ability.AssetGuid == ElementalNereidFactory.ShakeFreeGuid) continue;
                     // Only root choices are granted as facts; variants resolve
                     // through their parent, never as extra independent abilities.
                     int expected = active && ability.Parent == null ? 1 : 0;

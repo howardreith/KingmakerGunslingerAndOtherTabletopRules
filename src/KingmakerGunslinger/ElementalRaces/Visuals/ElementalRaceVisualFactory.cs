@@ -71,7 +71,14 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             resourceRegistry.BindNativeDependencies(plans.SelectMany(plan =>
                 plan.Definition.Proxies().Select(spec => new KeyValuePair<string, EquipmentEntity>(
                     (plan.RequireDonor(spec.Symbol).UsedFallback ? spec.Fallback : spec.Donor).AssetId,
-                    plan.RequireDonor(spec.Symbol).Resource)).Concat(plan.PaletteSources)));
+                    plan.RequireDonor(spec.Symbol).Resource)).Concat(plan.PaletteSources)
+                    // Native hair and facial options share color textures across
+                    // sexes. Their resolved links are visual dependencies too.
+                    .Concat(new[] { plan.Male, plan.Female }.SelectMany(options =>
+                        options.Hair.Concat(options.Eyebrows).Concat(options.Beards))
+                        .Distinct(StringComparer.Ordinal).Select(id =>
+                            new KeyValuePair<string, EquipmentEntity>(id,
+                                ResourcesLibrary.TryGetResource<EquipmentEntity>(id, true))))));
             resourceRegistry.EnsureAvailable(definitions.SelectMany(value =>
                 value.Proxies()));
 

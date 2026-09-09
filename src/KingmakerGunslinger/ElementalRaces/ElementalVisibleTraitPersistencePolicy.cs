@@ -5,10 +5,12 @@ namespace KingmakerGunslinger.ElementalRaces
     internal static class ElementalVisibleTraitPersistencePolicy
     {
         internal const string MatrixId = "release-c-visible-nineteen-traits-v5";
-        internal static ElementalAlternateTraitId[] Traits(ElementalHeritageRace race, int genderIndex, int heritageIndex)
+        internal static ElementalAlternateTraitId[] Traits(ElementalHeritageRace race, int genderIndex, int heritageIndex, bool nereidQualification = false)
         {
             if (genderIndex < 0 || genderIndex > 1) throw new ArgumentOutOfRangeException("genderIndex");
             if (heritageIndex < 0 || heritageIndex > 2) throw new ArgumentOutOfRangeException("heritageIndex");
+            if (nereidQualification && race == ElementalHeritageRace.Undine)
+                return new[] { ElementalAlternateTraitId.NereidFascination };
             int row = genderIndex * 3 + heritageIndex;
             switch (race)
             {

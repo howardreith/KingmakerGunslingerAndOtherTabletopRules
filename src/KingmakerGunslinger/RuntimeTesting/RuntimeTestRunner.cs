@@ -141,6 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gunslingerOutfitProductionPersistence;
         private GunslingerOutfitRenderScenario.ElementalRacePersistenceSession
             _elementalRacePersistence;
+        private GunslingerOutfitRenderScenario.ElementalCompletionSceneSession _elementalCompletionScene;
         private ElementalCharacterCreationBaselineScenario _elementalCharacterCreationBaseline;
         private ElementalRaceDevelopmentProbeScenario.Session
             _elementalRaceDevelopmentProbe;
@@ -854,12 +855,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
-                    (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                    RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(_request.Scenario))
                 {
                     if (_elementalCharacterCreationBaseline == null)
                     {
                         if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
-                    (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                            (RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(_request.Scenario) &&
+                                !RuntimeTestScenarioCatalog.IsNereidProfileScenario(_request.Scenario)))
                         { RunWorkingSaveSmoke(); return; }
                         if (ResourcesLibrary.Preloading) return;
                         _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(_context, _request);
@@ -876,6 +878,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (ResourcesLibrary.Preloading) return;
                     Complete(ElementalCharacterCreationRoutingObserver.Run(
                         _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalTreacherous)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalTreacherousScenario.Run(_context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalNereid)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalNereidScenario.Run(_context, _request));
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
@@ -1944,7 +1958,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     : _request.Scenario == RuntimeTestScenarioCatalog
                         .ElementalRaceModuleDisabledPersistence ||
                       _request.Scenario == RuntimeTestScenarioCatalog
-                        .ElementalRaceModuleRestoredPersistence
+                        .ElementalRaceModuleRestoredPersistence ||
+                      _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers
                             ? WorkingSaveSmokeIdentity
                                 .AutomationWorkingWithElementalFixtures
                     : _request.Scenario == RuntimeTestScenarioCatalog
@@ -1965,7 +1980,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog
                             .ElementalRaceModuleDisabledPersistence ||
                         _request.Scenario == RuntimeTestScenarioCatalog
-                            .ElementalRaceModuleRestoredPersistence);
+                            .ElementalRaceModuleRestoredPersistence ||
+                        _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();
@@ -2309,7 +2325,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (IsMidgameWorkingScenario()) { PollWorkingMidgameFirearms(); }
                 else
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
-                    (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                    RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(_request.Scenario))
                 {
                     WorkingSaveSmokeEvidence loaded = _workingSaveSmoke.Stop();
                     _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(
@@ -2581,6 +2597,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_gunslingerOutfitProductionPersistence.Complete)
                         Complete(
                             _gunslingerOutfitProductionPersistence.Result);
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers)
+                {
+                    Complete(GunslingerOutfitRenderScenario.VerifyElementalDeferredMarkers(
+                        _context, _request, _workingSaveSmoke.Stop()));
+                }
+                else if (RuntimeTestRequestParser.IsCompletionSceneScope(_request))
+                {
+                    if (_elementalCompletionScene == null)
+                        _elementalCompletionScene = new GunslingerOutfitRenderScenario.ElementalCompletionSceneSession(
+                            _context, _request, _workingSaveSmoke);
+                    _elementalCompletionScene.Poll();
+                    if (_elementalCompletionScene.Complete) Complete(_elementalCompletionScene.Result);
                 }
                 else if (RuntimeTestScenarioCatalog
                     .IsElementalRacePersistenceScenario(

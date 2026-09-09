@@ -154,6 +154,30 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-elemental-character-creation-baseline";
         internal const string ObserveElementalCharacterCreationRouting =
             "observe-elemental-character-creation-routing";
+        internal const string WorkingSaveElementalDeferredMarkers = "working-save-elemental-deferred-markers";
+        internal const string WorkingSaveNereidCreation = "working-save-elemental-nereid-creation";
+        internal const string WorkingSaveNereidRespec = "working-save-elemental-nereid-respec";
+        internal const string DisposableNereidCreation = "disposable-elemental-nereid-creation";
+        internal const string DisposableNereidRespec = "disposable-elemental-nereid-respec";
+        internal static bool IsNereidProfileScenario(string scenario)
+        {
+            return scenario == DisposableNereidCreation || scenario == DisposableNereidRespec;
+        }
+        internal static bool IsNereidQualificationScenario(string scenario)
+        {
+            return scenario == WorkingSaveNereidCreation || scenario == WorkingSaveNereidRespec || IsNereidProfileScenario(scenario);
+        }
+        internal static bool IsElementalNativeRespecScenario(string scenario)
+        {
+            return scenario == WorkingSaveElementalNativeRespec || scenario == WorkingSaveNereidRespec || scenario == DisposableNereidRespec;
+        }
+        internal static bool IsElementalCreatorRegressionScenario(string scenario)
+        {
+            return scenario == WorkingSaveElementalCharacterCreationRegression ||
+                IsElementalNativeRespecScenario(scenario) || scenario == WorkingSaveNereidCreation || scenario == DisposableNereidCreation;
+        }
+        internal const string DisposableElementalTreacherous = "disposable-elemental-treacherous-earth";
+        internal const string DisposableElementalNereid = "disposable-elemental-nereid";
         internal const string DisposableElementalTraitTurnCosts =
             "disposable-elemental-trait-turn-costs";
         internal const string ObserveElementalAlternateTraitFramework =
@@ -535,6 +559,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveElementalCharacterCreation,
                 WorkingSaveElementalCharacterCreationRegression,
                 WorkingSaveElementalNativeRespec,
+                WorkingSaveElementalDeferredMarkers,
+                WorkingSaveNereidCreation,
+                WorkingSaveNereidRespec,
+                DisposableNereidCreation,
+                DisposableNereidRespec,
+                DisposableElementalTreacherous,
+                DisposableElementalNereid,
                 DisposableElementalTraitTurnCosts,
                 ObserveElementalAlternateTraitFramework,
                 DisposableElementalHeritageMechanics,
@@ -733,10 +764,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal);
         }
 
+        internal static bool IsNereidPersistenceScope(string scenario, string qualificationTrait)
+        {
+            return qualificationTrait == "NereidFascination" &&
+                scenario != ElementalRaceLegacyMigration && scenario != WorkingSaveElementalDeferredMarkers &&
+                IsElementalRacePersistenceScenario(scenario);
+        }
+
         internal static bool IsElementalRacePersistenceScenario(
             string scenario)
         {
-            return string.Equals(scenario,
+            return scenario == WorkingSaveElementalDeferredMarkers || string.Equals(scenario,
                     ElementalRacePersistencePrepare,
                     StringComparison.Ordinal) ||
                 string.Equals(scenario,

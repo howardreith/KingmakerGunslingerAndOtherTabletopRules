@@ -18,17 +18,21 @@ namespace KingmakerGunslinger.DomainTests
             var foreign = new EqualAssets();
             var shared = new EqualAssets();
             var second = new EqualAssets();
+            var hair = new EqualAssets();
             var ids = new HashSet<string>(StringComparer.Ordinal) { "native", "foreign" };
             var assets = new List<EqualAssets> { foreign };
             var plan = new[] {
                 new KeyValuePair<string, EqualAssets[]>("owned-body", new[] { shared, second }),
                 new KeyValuePair<string, EqualAssets[]>("owned-head", new[] { shared }),
-                new KeyValuePair<string, EqualAssets[]>("exact-native-donor", new EqualAssets[0]) };
-            Assertions.Equal(5, ElementalVisualResourceRetentionPolicy.Append(ids, assets, plan),
-                "Owned proxies, their exact donor bundle identity, and both distinct inner-asset references must be retained.");
-            Assertions.True(ids.SetEquals(new[] { "native", "foreign", "owned-body", "owned-head", "exact-native-donor" }) &&
-                assets.Count == 3 && ReferenceEquals(assets[0], foreign) &&
-                ReferenceEquals(assets[1], shared) && ReferenceEquals(assets[2], second),
+                new KeyValuePair<string, EqualAssets[]>("exact-native-donor", new EqualAssets[0]),
+                new KeyValuePair<string, EqualAssets[]>("native-male-eyebrows", new[] { hair }),
+                new KeyValuePair<string, EqualAssets[]>("native-female-hair", new[] { hair }) };
+            Assertions.Equal(8, ElementalVisualResourceRetentionPolicy.Append(ids, assets, plan),
+                "Owned proxies, exact donor identities and shared hair colors across native male/female options must be retained.");
+            Assertions.True(ids.SetEquals(new[] { "native", "foreign", "owned-body", "owned-head", "exact-native-donor",
+                    "native-male-eyebrows", "native-female-hair" }) &&
+                assets.Count == 4 && ReferenceEquals(assets[0], foreign) &&
+                ReferenceEquals(assets[1], shared) && ReferenceEquals(assets[2], second) && ReferenceEquals(assets[3], hair),
                 "Foreign identities, ordered references, and equality-colliding assets must be preserved.");
             Assertions.Equal(0, ElementalVisualResourceRetentionPolicy.Append(ids, assets, plan),
                 "Repeated native doll rebuild callbacks must be idempotent.");

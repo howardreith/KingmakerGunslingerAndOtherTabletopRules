@@ -85,6 +85,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void PollCommittedCreatorCleanup()
         {
+            if (_nativeProfile && !(_nativeRespec && _respecOriginal != null))
+                _profileFixture.CompleteOwnedRegistration(_unit);
             if (!(_nativeRespec && _respecOriginal != null) && _unit.Descriptor.IsCustomCompanion() &&
                 !ReferenceEquals(_unit.HoldingState, Game.Instance.Player.CrossSceneState))
             {
@@ -182,8 +184,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             _racialCheckPending = false; _commitCleanupPending = false; _commitRegistrationWait = 0; _revisionViewWait = 0; _revising = false; _revision = 0; _revisionOperations = 0;
             _revisionChoices.Clear(); _allocatedBases = null; _allocatedDistribution = null;
             if (!_regression) return;
-            _revisionRoute = _nativeRespec ? new[] { ElementalCharacterCreationRegressionPlan.NativeRespecChoice(_raceIndex) } :
-                ElementalCharacterCreationRegressionPlan.Route(_raceIndex);
+            _revisionRoute = _nereidQualification
+                ? (_nativeRespec ? new[] { ElementalCharacterCreationRegressionPlan.NereidRespecChoice(_raceIndex) }
+                    : ElementalCharacterCreationRegressionPlan.NereidRoute(_raceIndex))
+                : _nativeRespec ? new[] { ElementalCharacterCreationRegressionPlan.NativeRespecChoice(_raceIndex) }
+                    : ElementalCharacterCreationRegressionPlan.Route(_raceIndex);
             _character["heritageRevisionRoute"] = new JArray(_revisionRoute);
             _character["racialGraphs"] = new JArray();
             _character["nativeFinalReviews"] = new JArray();
@@ -197,16 +202,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (ReferenceEquals(selection, race.Heritages.Selection)) return race.Heritages.Choices()[choice].Marker;
             var slot = race.AlternateTraits.Selections().SingleOrDefault(value => ReferenceEquals(value.Selection, selection));
             if (slot == null) return null;
-            var wanted = _nativeRespec ? ElementalCharacterCreationRegressionPlan.NativeRespecTraits(race.Heritages.Race, choice)
-                : ElementalCharacterCreationRegressionPlan.Traits(race.Heritages.Race, choice);
+            var wanted = _nereidQualification ? ElementalCharacterCreationRegressionPlan.NereidTraits(
+                    _raceIndex, _revision, _nativeRespec)
+                : _nativeRespec ? ElementalCharacterCreationRegressionPlan.NativeRespecTraits(race.Heritages.Race, choice)
+                    : ElementalCharacterCreationRegressionPlan.Traits(race.Heritages.Race, choice);
             return slot.Choices.SingleOrDefault(value => wanted.Contains(value.Definition.Id))?.Marker ?? slot.RetainMarker;
         }
 
         private static void RejectDeferredChoices(IEnumerable<IFeatureSelectionItem> items)
         {
             if (items.Any(item => item.Feature != null &&
-                (item.Feature.AssetGuid == "e117e1e0a17a4acec001000000000031" ||
-                 item.Feature.AssetGuid == "e117e1e0a17a4acec001000000000040")))
+                ((item.Feature.AssetGuid == "e117e1e0a17a4acec001000000000031" &&
+                    !ElementalAlternateTraitPolicy.IsPublished(ElementalAlternateTraitId.TreacherousEarth)) ||
+                 (item.Feature.AssetGuid == "e117e1e0a17a4acec001000000000040" &&
+                    !ElementalAlternateTraitPolicy.IsPublished(ElementalAlternateTraitId.NereidFascination)))))
                 throw new InvalidOperationException("An exact deferred no-op marker reached the actual native choice list.");
         }
 
@@ -372,6 +381,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             ElementalRacialTraitSlot replaced = traits.Aggregate(ElementalRacialTraitSlot.None, (slots, value) => slots | value.Definition.ReplacedSlots);
             var facts = new JArray(); var resources = new JArray(); var abilities = new JArray();
             bool exact = ReferenceEquals(owner.Progression.Race, race.Race);
+            Gender expectedGender = NereidGender;
+            if (_nereidQualification)
+                exact &= (committedOwner == null ? _controller.Doll.Gender : owner.Gender) == expectedGender;
             int[] committedBases = committedOwner == null ? null : AbilityStats.Select(stat => owner.Stats.GetStat(stat).BaseValue).ToArray();
             if (committedBases != null) exact &= _allocatedBases != null && committedBases.SequenceEqual(_allocatedBases);
             Action<BlueprintFeature, int> fact = (blueprint, expected) => {
@@ -410,7 +422,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 exact &= active == 0 || trait.Definition.IsPublished;
                 fact(trait.Marker, active); fact(trait.Provider, active);
                 foreach (var item in trait.Mechanics().OfType<BlueprintAbilityResource>()) resource(item, active);
-                foreach (var item in trait.Mechanics().OfType<BlueprintAbility>()) ability(item, item.Parent == null ? active : 0);
+                foreach (var item in trait.Mechanics().OfType<BlueprintAbility>()) ability(item, item.Parent == null && item.AssetGuid != ElementalNereidFactory.ShakeFreeGuid ? active : 0);
             }
             foreach (var slot in race.AlternateTraits.Selections())
             {
@@ -424,14 +436,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     exact &= selection.Selection.CanSelect(owner, _controller.State, selection, retain);
                 }
             }
+            var hydraulicPrerequisites = new JArray();
+            if (_nereidQualification)
+                foreach (var id in new[] { ElementalFeatId.HydraulicManeuver, ElementalFeatId.TritonPortal })
+                {
+                    var prerequisite = BlueprintBootstrap.ElementalFeats.RequireFeature(id)
+                        .GetComponents<Kingmaker.Blueprints.Classes.Prerequisites.PrerequisiteFeature>()
+                        .Single(value => ReferenceEquals(value.Feature, race.Heritages.General.SlaFeature));
+                    bool permitted = prerequisite.Check(null, owner, _controller.State);
+                    bool expected = heritage.Definition.IsGeneral &&
+                        (replaced & ElementalRacialTraitSlot.RacialSpellLikeAbility) == 0;
+                    exact &= permitted == expected;
+                    hydraulicPrerequisites.Add(new JObject { ["feat"] = id.ToString(),
+                        ["hydraulicPrerequisiteGuid"] = prerequisite.Feature.AssetGuid,
+                        ["expected"] = expected, ["permitted"] = permitted });
+                }
             exact &= ObserveNativeRespecBlood(checkpoint, owner, committedOwner != null);
             int[] overlay = AbilityStats.Select(stat => owner.Stats.GetStat(stat).ModifiedValue - owner.Stats.GetStat(stat).BaseValue).ToArray();
             int[] expectedOverlay = Enumerable.Range(0, 6).Select(index => heritage.Definition.ModifierFor((ElementalHeritageStat)index)).ToArray();
             exact &= overlay.SequenceEqual(expectedOverlay);
             var graph = new JObject { ["checkpoint"] = checkpoint, ["revision"] = _revision,
-                ["heritage"] = heritage.Definition.Id.ToString(), ["traits"] = new JArray(traits.Select(value => value.Definition.Id.ToString())),
+                ["heritage"] = heritage.Definition.Id.ToString(),
+                ["gender"] = (committedOwner == null ? _controller.Doll.Gender : owner.Gender).ToString(),
+                ["expectedGender"] = _nereidQualification ? expectedGender.ToString() : null, ["traits"] = new JArray(traits.Select(value => value.Definition.Id.ToString())),
                 ["overlay"] = new JArray(overlay), ["expectedOverlay"] = new JArray(expectedOverlay),
                 ["facts"] = facts, ["resources"] = resources, ["abilities"] = abilities,
+                ["hydraulicPrerequisites"] = hydraulicPrerequisites,
                 ["committedBaseValues"] = committedBases == null ? (JToken)JValue.CreateNull() : new JArray(committedBases), ["exact"] = exact };
             ((JArray)_character["racialGraphs"]).Add(graph);
             if (!exact) { Write(); throw new InvalidOperationException("The actual native racial graph diverged at " + checkpoint + "; see racialGraphs."); }

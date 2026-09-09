@@ -3,6 +3,7 @@ param(
     [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
     [string]$PackagePath,
     [string]$QualifiedElementalRaces114DeploymentManifestPath,
+    [string]$QualifiedElementalRaces117DeploymentManifestPath,
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$GameDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     [string[]]$LogPath = @(),
@@ -58,7 +59,8 @@ $builtHash = $null
 $packageVersion = $info.Version
 $packageSha256 = $null
 $qualifiedLegacyRuntimeOverlay = $null
-if ($PackagePath -and $QualifiedElementalRaces114DeploymentManifestPath) {
+if (([int][bool]$PackagePath + [int][bool]$QualifiedElementalRaces114DeploymentManifestPath +
+        [int][bool]$QualifiedElementalRaces117DeploymentManifestPath) -gt 1) {
     throw 'Current-source and qualified-legacy evidence package authorities are mutually exclusive.'
 }
 if ($PackagePath) {
@@ -67,13 +69,15 @@ if ($PackagePath) {
     $packageVersion = $buildManifest.version
     $packageSha256 = $buildManifest.packageSha256
 }
-elseif ($QualifiedElementalRaces114DeploymentManifestPath) {
+elseif ($QualifiedElementalRaces114DeploymentManifestPath -or $QualifiedElementalRaces117DeploymentManifestPath) {
+    $producerVersion = if ($QualifiedElementalRaces117DeploymentManifestPath) { '0.0.117' } else { '0.0.114' }
+    $producerDeployment = if ($QualifiedElementalRaces117DeploymentManifestPath) {
+        $QualifiedElementalRaces117DeploymentManifestPath
+    } else { $QualifiedElementalRaces114DeploymentManifestPath }
+    $identity = Get-KmgQualifiedElementalProducerIdentity -Version $producerVersion -RepositoryRoot $root
     $legacy = Assert-KmgQualifiedElementalRaces114Deployment `
-        -DeploymentManifestPath `
-            $QualifiedElementalRaces114DeploymentManifestPath `
-        -PackagePath (Join-Path $root `
-            'artifacts\release\0.0.114\KingmakerGunslinger-0.0.114-elemental-races.zip') `
-        -RepositoryRoot $root -AllowDirtyGit
+        -DeploymentManifestPath $producerDeployment -PackagePath $identity.PackagePath `
+        -ProducerVersion $producerVersion -RepositoryRoot $root -AllowDirtyGit
     $builtHash = $legacy.DllSha256
     $packageVersion = $legacy.Version
     $packageSha256 = $legacy.Deployment.packageSha256

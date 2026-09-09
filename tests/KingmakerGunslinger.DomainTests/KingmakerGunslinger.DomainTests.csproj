@@ -60,6 +60,10 @@
     <Compile Include="ElementalBloodPolicyTests.cs" />
     <Compile Include="ElementalTraitDailyResourcePolicyTests.cs" />
     <Compile Include="ElementalBreathPolicyTests.cs" />
+    <Compile Include="ElementalTreacherousPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalTreacherousPolicy.cs"><Link>ElementalRaces\ElementalTreacherousPolicy.cs</Link></Compile>
+    <Compile Include="ElementalNereidPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalNereidPolicy.cs"><Link>ElementalRaces\ElementalNereidPolicy.cs</Link></Compile>
     <Compile Include="ElementalBreezeKissedPolicyTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalBreezeKissedPolicy.cs"><Link>ElementalRaces\ElementalBreezeKissedPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalBreathPolicy.cs"><Link>ElementalRaces\ElementalBreathPolicy.cs</Link></Compile>

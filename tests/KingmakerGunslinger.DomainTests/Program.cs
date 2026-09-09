@@ -25,6 +25,13 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("elemental-terrain.total-level-duration", ElementalTreacherousPolicyTests.TotalLevelDuration),
+            Case("elemental-terrain.material-and-reach", ElementalTreacherousPolicyTests.ExactMaterialAndGroundRequirements),
+            Case("elemental-terrain.unknown-closed", ElementalTreacherousPolicyTests.UnknownEvidenceFailsClosed),
+            Case("elemental-nereid.level-charisma", ElementalNereidPolicyTests.LevelAndCharismaBoundaries),
+            Case("elemental-nereid.multiclass-current-stat", ElementalNereidPolicyTests.ChangedCharismaAndMulticlassLevel),
+            Case("elemental-nereid.interruption-terminal", ElementalNereidPolicyTests.SavedOrInterruptedTargetsCannotBeReapplied),
+            Case("elemental-nereid.reentry-expiration", ElementalNereidPolicyTests.ReentryCannotRerollOrExtendExpiredEffects),
             Case("teleportation.scroll.VisibleSelectionDoesNotMoveViewport", TeleportationScrollTests.VisibleSelectionDoesNotMoveViewport),
             Case("teleportation.scroll.SelectionAboveUsesSmallestScroll", TeleportationScrollTests.SelectionAboveUsesSmallestScroll),
             Case("teleportation.scroll.SelectionBelowUsesSmallestScroll", TeleportationScrollTests.SelectionBelowUsesSmallestScroll),

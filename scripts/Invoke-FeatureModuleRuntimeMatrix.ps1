@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.119',
+    [string]$ExpectedVersion = '0.0.120',
     [ValidateSet('observe-feature-module-settings', 'disposable-teleportation-disabled')]
     [string]$Scenario = 'observe-feature-module-settings',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
