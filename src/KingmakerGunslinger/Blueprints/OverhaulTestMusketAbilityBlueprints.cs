@@ -14,25 +14,27 @@ using UnityEngine;
 namespace KingmakerGunslinger.Blueprints
 {
     /// <summary>
-    /// Registers the first player-facing firearm recovery action: a personal,
-    /// extraordinary, full-round same-item overhaul that consumes one repair kit only
-    /// when delivery completes and changes Wrecked to empty/Broken.
+    /// Keeps the historical Overhaul Firearm blueprint identity registered for
+    /// save compatibility with characters that already hold the fact, but the
+    /// blueprint is now hidden and carries the unified repair logic: invoking it
+    /// performs exactly the same reusable-tool Repair Firearm operation. It never
+    /// restores a second maintenance mechanic and never consumes a kit.
     /// </summary>
     internal static class OverhaulTestMusketAbilityBlueprints
     {
         internal const string Symbol = "KMG.Test.OverhaulAbility";
         internal const string InternalName = "KMG_OverhaulTestMusket_Ability";
         internal const string DisplayName = "Overhaul Firearm";
-        internal const string ComponentName = "$KMG_OverhaulTestMusketLogic";
+        internal const string ComponentName = "$KMG_LegacyOverhaulRepairAlias";
 
         private const string Description =
-            "Outside active combat, use one full-round action and consume one Firearm Repair Kit to overhaul the exact equipped empty Wrecked firearm into a Broken firearm. Cancellation before delivery consumes nothing and changes no state. This preserves the same item and does not perform ordinary Broken-to-Normal repair.";
+            "Legacy maintenance action kept for save compatibility. It now performs the unified Repair Firearm operation: one full-round use with a reusable Gunsmith's Kit repairs the exact equipped Broken or Wrecked firearm to Normal, preserving loaded ammunition and consuming nothing.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,
             ModLogger logger,
             BlueprintItemWeapon testMusket,
-            BlueprintItem repairKit)
+            BlueprintItem gunsmithKit)
         {
             if (registry == null)
             {
@@ -44,11 +46,11 @@ namespace KingmakerGunslinger.Blueprints
                 throw new ArgumentNullException("logger");
             }
 
-            if (testMusket == null || repairKit == null)
+            if (testMusket == null || gunsmithKit == null)
             {
                 throw new ArgumentNullException(
                     "testMusket",
-                    "Overhaul ability blueprint dependencies are incomplete.");
+                    "Legacy overhaul alias blueprint dependencies are incomplete.");
             }
 
             BlueprintAbility ability = registry.Register<BlueprintAbility>(
@@ -66,7 +68,7 @@ namespace KingmakerGunslinger.Blueprints
                         LocalizationService.Create(
                             "KMG.Ability.OverhaulTestMusket.Description",
                             Description),
-                        repairKit.Icon ?? testMusket.Icon);
+                        gunsmithKit.Icon ?? testMusket.Icon);
 
                     result.Type = AbilityType.Extraordinary;
                     result.Range = AbilityRange.Personal;
@@ -75,8 +77,8 @@ namespace KingmakerGunslinger.Blueprints
                     result.CanTargetFriends = false;
                     result.CanTargetSelf = true;
                     result.SpellResistance = false;
-                    result.ActionBarAutoFillIgnored = false;
-                    result.Hidden = false;
+                    result.ActionBarAutoFillIgnored = true;
+                    result.Hidden = true;
                     result.NeedEquipWeapons = true;
                     result.EffectOnAlly = AbilityEffectOnUnit.Helpful;
                     result.EffectOnEnemy = AbilityEffectOnUnit.None;
@@ -93,33 +95,32 @@ namespace KingmakerGunslinger.Blueprints
                         "KMG.Ability.OverhaulTestMusket.SavingThrow",
                         "None");
 
-                    OverhaulTestMusketAbilityLogic logic =
-                        OverhaulTestMusketAbilityLogic.Create(
+                    RepairTestMusketAbilityLogic logic =
+                        RepairTestMusketAbilityLogic.Create(
                             testMusket,
-                            repairKit);
+                            gunsmithKit);
                     logic.name = ComponentName;
                     result.ComponentsArray = new BlueprintComponent[] { logic };
-                    Validate(result, testMusket, repairKit);
+                    Validate(result, testMusket, gunsmithKit);
                     return result;
                 });
 
-            Validate(ability, testMusket, repairKit);
+            Validate(ability, testMusket, gunsmithKit);
             logger.Info(
                 "recovery",
-                "overhaul-ability.ready",
+                "overhaul-ability.legacy-alias",
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Registered full-round Overhaul Firearm ability guid={0}; compatibilityItem={1}; repairKit={2}.",
+                    "Registered hidden legacy Overhaul Firearm alias guid={0} delegating to the unified full-round Repair Firearm ability; reusableTool={1}.",
                     registry.ResolveGuid(Symbol),
-                    testMusket.name,
-                    repairKit.name));
+                    gunsmithKit.name));
             return ability;
         }
 
         internal static void Validate(
             BlueprintAbility ability,
             BlueprintItemWeapon testMusket,
-            BlueprintItem repairKit)
+            BlueprintItem gunsmithKit)
         {
             if (ability == null)
             {
@@ -130,7 +131,7 @@ namespace KingmakerGunslinger.Blueprints
                 !string.Equals(ability.Name, DisplayName, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    "Overhaul Firearm has incorrect identity or localization.");
+                    "The legacy Overhaul Firearm alias has incorrect identity or localization.");
             }
 
             if (ability.Type != AbilityType.Extraordinary ||
@@ -142,30 +143,31 @@ namespace KingmakerGunslinger.Blueprints
                 ability.CanTargetEnemies ||
                 ability.CanTargetFriends ||
                 ability.SpellResistance ||
-                ability.Hidden ||
+                !ability.Hidden ||
+                !ability.ActionBarAutoFillIgnored ||
                 !ability.NeedEquipWeapons)
             {
                 throw new InvalidOperationException(
-                    "Overhaul Firearm has incorrect action, target, or ability-type settings.");
+                    "The legacy Overhaul Firearm alias must stay hidden, autofill-ignored, and full-round.");
             }
 
-            OverhaulTestMusketAbilityLogic[] components =
+            RepairTestMusketAbilityLogic[] components =
                 (ability.ComponentsArray ?? Array.Empty<BlueprintComponent>())
-                .OfType<OverhaulTestMusketAbilityLogic>()
+                .OfType<RepairTestMusketAbilityLogic>()
                 .ToArray();
             if (components.Length != 1 ||
                 ability.ComponentsArray.Length != 1 ||
                 !string.Equals(components[0].name, ComponentName, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    "Overhaul Firearm must contain exactly one stable overhaul-logic component.");
+                    "The legacy Overhaul Firearm alias must contain exactly one unified repair-logic component.");
             }
 
             components[0].ValidateConfiguration();
-            if (testMusket == null || repairKit == null)
+            if (testMusket == null || gunsmithKit == null)
             {
                 throw new InvalidOperationException(
-                    "Overhaul Firearm validation received incomplete dependencies.");
+                    "Legacy overhaul alias validation received incomplete dependencies.");
             }
         }
     }

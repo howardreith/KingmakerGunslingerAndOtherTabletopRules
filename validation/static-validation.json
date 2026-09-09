@@ -47,7 +47,7 @@
     "atomicStateAndInventoryRollback": true,
     "deterministicQualificationHarness": true,
     "immediateRegressionRunner": true,
-    "testCount": 899,
+    "testCount": 877,
     "testRuns": 3,
     "testFailures": 0,
     "deterministicCompile": true,
@@ -1180,7 +1180,7 @@
     "remainingFinalArtifactQualificationWaivedByOwner": true
   },
   "elementalCompletion120": {
-    "deterministicTestCount": 1557,
+    "deterministicTestCount": 1542,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,

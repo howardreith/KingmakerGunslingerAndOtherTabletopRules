@@ -16,26 +16,21 @@ namespace KingmakerGunslinger.Blueprints
         internal const string MaintenanceGrantName = "$KMG_GrantGunsmithingMaintenance";
 
         internal static BlueprintFeature Register(BlueprintRegistry registry,
-            BlueprintAbility overhaulAbility, BlueprintAbility repairAbility,
+            BlueprintAbility repairAbility,
             BlueprintAbility craftingAbility, BlueprintAbility paperCraftingAbility)
         {
             if (registry == null) throw new ArgumentNullException("registry");
-            if (overhaulAbility == null) throw new ArgumentNullException("overhaulAbility");
             if (repairAbility == null) throw new ArgumentNullException("repairAbility");
             if (craftingAbility == null) throw new ArgumentNullException("craftingAbility");
             if (paperCraftingAbility == null) throw new ArgumentNullException("paperCraftingAbility");
-            if (ReferenceEquals(overhaulAbility, repairAbility))
-                throw new ArgumentException("Gunsmithing requires distinct maintenance abilities.");
             BlueprintFeature feature = registry.Register<BlueprintFeature>(Symbol,
-                () => Create(overhaulAbility, repairAbility, craftingAbility,
-                    paperCraftingAbility));
-            Validate(feature, overhaulAbility, repairAbility, craftingAbility,
-                paperCraftingAbility);
+                () => Create(repairAbility, craftingAbility, paperCraftingAbility));
+            Validate(feature, repairAbility, craftingAbility, paperCraftingAbility);
             return feature;
         }
 
         internal static void Validate(BlueprintFeature feature,
-            BlueprintAbility overhaulAbility, BlueprintAbility repairAbility,
+            BlueprintAbility repairAbility,
             BlueprintAbility craftingAbility, BlueprintAbility paperCraftingAbility)
         {
             if (feature == null) throw new ArgumentNullException("feature");
@@ -46,16 +41,15 @@ namespace KingmakerGunslinger.Blueprints
             if (feature.ComponentsArray.Length != 1 || grants.Length != 1 ||
                 !string.Equals(grants[0].name, MaintenanceGrantName, StringComparison.Ordinal) ||
                 grants[0].DoNotRestoreMissingFacts || grants[0].Facts == null ||
-                grants[0].Facts.Length != 4 ||
-                !ReferenceEquals(grants[0].Facts[0], overhaulAbility) ||
-                !ReferenceEquals(grants[0].Facts[1], repairAbility) ||
-                !ReferenceEquals(grants[0].Facts[2], craftingAbility) ||
-                !ReferenceEquals(grants[0].Facts[3], paperCraftingAbility))
+                grants[0].Facts.Length != 3 ||
+                !ReferenceEquals(grants[0].Facts[0], repairAbility) ||
+                !ReferenceEquals(grants[0].Facts[1], craftingAbility) ||
+                !ReferenceEquals(grants[0].Facts[2], paperCraftingAbility))
                 throw new InvalidOperationException("Gunsmithing maintenance grant is invalid.");
         }
 
-        private static BlueprintFeature Create(BlueprintAbility overhaulAbility,
-            BlueprintAbility repairAbility, BlueprintAbility craftingAbility,
+        private static BlueprintFeature Create(BlueprintAbility repairAbility,
+            BlueprintAbility craftingAbility,
             BlueprintAbility paperCraftingAbility)
         {
             var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
@@ -66,14 +60,13 @@ namespace KingmakerGunslinger.Blueprints
             var grant = ScriptableObject.CreateInstance<AddFacts>();
             grant.name = MaintenanceGrantName;
             grant.Facts = new BlueprintUnitFact[]
-                { overhaulAbility, repairAbility, craftingAbility,
-                    paperCraftingAbility };
+                { repairAbility, craftingAbility, paperCraftingAbility };
             grant.DoNotRestoreMissingFacts = false;
             feature.ComponentsArray = new BlueprintComponent[] { grant };
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create("KMG.Gunslinger.Gunsmithing.Name", "Gunsmithing"),
                 LocalizationService.Create("KMG.Gunslinger.Gunsmithing.Description",
-                    "You can repair Broken firearms with a Firearm Repair Kit and overhaul Wrecked firearms with a Firearm Overhaul Kit. Once per rest, a non-consumable Gunsmith's Kit lets you choose either 22 gp for 20 Black Powder Charges plus 20 Lead Balls, or 24 gp for 20 Paper Cartridges. The recipes share one entitlement. Gunslingers gain this feature automatically at 1st level."), null);
+                    "You can repair a Broken or Wrecked firearm to Normal with one full-round Repair Firearm action using a reusable Gunsmith's Kit; nothing is consumed and surviving loaded ammunition is preserved. Once per rest, the same kit lets you choose either 22 gp for 20 Black Powder Charges plus 20 Lead Balls, or 24 gp for 20 Paper Cartridges. The recipes share one entitlement. Gunslingers gain this feature automatically at 1st level."), null);
             return feature;
         }
     }

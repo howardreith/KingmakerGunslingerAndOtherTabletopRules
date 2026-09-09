@@ -221,7 +221,7 @@ namespace KingmakerGunslinger.DomainTests
                 blueprints.Contains("pay 24 gp") &&
                 blueprints.Contains("Paper Cartridge craft cost must equal 24 gp."),
                 "paper recipe blueprint");
-            Assertions.True(grants.Contains("Facts.Length != 4") &&
+            Assertions.True(grants.Contains("Facts.Length != 3") &&
                 grants.Contains("paperCraftingAbility") &&
                 grants.Contains("24 gp for 20 Paper Cartridges"),
                 "shared Gunsmithing grants");
@@ -335,8 +335,6 @@ namespace KingmakerGunslinger.DomainTests
                 "57f84fdde3cc2994284fb3acc4a3cb97",
                 "OTP_Bokken_ZeroState",
                 "AmmunitionCount = 100",
-                "RepairKitCount = 5",
-                "OverhaulKitCount = 2",
                 "GunsmithKitCount = 1",
                 "BlueprintLibraryLookup.RequireExact<BlueprintUnitLoot>",
                 "ammunition.BlackPowder",
@@ -351,6 +349,9 @@ namespace KingmakerGunslinger.DomainTests
                 "ReferenceEquals"
             }) Assertions.True(source.Contains(token),
                 "Bokken firearm-supply publication contract missing: " + token);
+            Assertions.False(source.Contains("RepairKitCount") ||
+                    source.Contains("OverhaulKitCount"),
+                "Bokken vendor stock must not publish retired consumable maintenance kits.");
 
             string bootstrap = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));

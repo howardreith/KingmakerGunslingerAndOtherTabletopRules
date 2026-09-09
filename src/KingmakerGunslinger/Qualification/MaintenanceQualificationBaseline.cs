@@ -4,9 +4,9 @@ using KingmakerGunslinger.Firearms;
 namespace KingmakerGunslinger.Qualification
 {
     /// <summary>
-    /// Process-local baseline captured after the deterministic Sprint 29 fixture is
-    /// prepared. It is correlation evidence only and is never used for gameplay
-    /// decisions or persistence.
+    /// Process-local baseline captured after the deterministic unified maintenance
+    /// fixture is prepared. It is correlation evidence only and is never used for
+    /// gameplay decisions or persistence.
     /// </summary>
     internal sealed class MaintenanceQualificationBaseline
     {
@@ -20,10 +20,9 @@ namespace KingmakerGunslinger.Qualification
             int secondRuntimeReferenceHash,
             long secondRevision,
             FirearmState secondItemState,
-            int repairKits,
+            int gunsmithKits,
             int blackPowder,
             int leadBalls,
-            long overhaulCompleted,
             long repairCompleted,
             long reloadCompleted,
             long totalFaults,
@@ -54,13 +53,13 @@ namespace KingmakerGunslinger.Qualification
             }
 
             if (revision < 0 || secondRevision < 0 || visibleFirearms < 2 ||
-                repairKits < 2 || blackPowder < 1 || leadBalls < 1 ||
-                overhaulCompleted < 0 || repairCompleted < 0 ||
+                gunsmithKits < 1 || blackPowder < 1 || leadBalls < 1 ||
+                repairCompleted < 0 ||
                 reloadCompleted < 0 || totalFaults < 0 || totalDuplicates < 0)
             {
                 throw new ArgumentOutOfRangeException(
                     "revision",
-                    "The maintenance baseline requires nonnegative values, at least two visible firearms, two repair kits, and one complete ammunition pair.");
+                    "The maintenance baseline requires nonnegative values, at least two visible firearms, one reusable Gunsmith's Kit, and one complete ammunition pair.");
             }
 
             ExactState = exactState ?? throw new ArgumentNullException("exactState");
@@ -87,10 +86,9 @@ namespace KingmakerGunslinger.Qualification
             SecondRepositoryIdentity = secondRepositoryIdentity;
             SecondRuntimeReferenceHash = secondRuntimeReferenceHash;
             SecondRevision = secondRevision;
-            RepairKits = repairKits;
+            GunsmithKits = gunsmithKits;
             BlackPowder = blackPowder;
             LeadBalls = leadBalls;
-            OverhaulCompleted = overhaulCompleted;
             RepairCompleted = repairCompleted;
             ReloadCompleted = reloadCompleted;
             TotalFaults = totalFaults;
@@ -106,10 +104,9 @@ namespace KingmakerGunslinger.Qualification
         internal int SecondRuntimeReferenceHash { get; private set; }
         internal long SecondRevision { get; private set; }
         internal FirearmState SecondItemState { get; private set; }
-        internal int RepairKits { get; private set; }
+        internal int GunsmithKits { get; private set; }
         internal int BlackPowder { get; private set; }
         internal int LeadBalls { get; private set; }
-        internal long OverhaulCompleted { get; private set; }
         internal long RepairCompleted { get; private set; }
         internal long ReloadCompleted { get; private set; }
         internal long TotalFaults { get; private set; }

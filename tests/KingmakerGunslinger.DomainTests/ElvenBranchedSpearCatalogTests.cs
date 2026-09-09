@@ -471,7 +471,8 @@ namespace KingmakerGunslinger.DomainTests
                 "btsl-spear-vendor-publication",
                 "btslSpearEntries == 12",
                 "invalidBtslSpearCounts == 0",
-                "btslEntries == 24",
+                "btslEntries == 20",
+                "btslRetiredKitRows == 0",
                 "22 + installedSpearHonestGuyTables * 6" })
                 Assertions.True(runtime.Contains(token),
                     "BTSL runtime/module regression coverage lacks: " + token);

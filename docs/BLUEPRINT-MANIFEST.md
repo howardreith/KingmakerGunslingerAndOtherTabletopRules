@@ -186,12 +186,12 @@ one-round mind-affecting Confusion buff. Earlier additions remain append-only:
 Startling Shot, Dead Shot, Gun Training, Utility Shot, Pistol-Whip, Initiative,
 Nimble, the level-one deeds and grit, the production class, and firearms.
 
-- `KMG.Test.RepairAbility` — full-round personal same-item Broken-to-Normal ability.
+- `KMG.Test.RepairAbility` — full-round personal unified repair: Broken or Wrecked to Normal with one reusable shared-inventory Gunsmith's Kit; consumes nothing and preserves loaded ammunition.
 
-The Sprint 28 repair-kit and Overhaul identities remain active:
+The Sprint 28 repair-kit and Overhaul identities remain active for save compatibility but are retired from normal acquisition:
 
-- `KMG.Test.FirearmRepairKitItem` — stackable inert resource shared by Overhaul and Repair.
-- `KMG.Test.OverhaulAbility` — full-round personal same-item Wrecked-to-Broken ability.
+- `KMG.Test.FirearmRepairKitItem` — retired stackable item; no longer sold or consumed.
+- `KMG.Test.OverhaulAbility` — hidden legacy alias that delegates to the unified Repair action for saved characters.
 
 The Sixth Playtest identities are active and append-only:
 
@@ -199,7 +199,7 @@ The Sixth Playtest identities are active and append-only:
 | --- | --- | --- | --- | --- |
 | `KMG.Deeds.DeadeyeArmedBuff` | `88ca4220e3944b65b2b9fb3afea35b08` | `BlueprintBuff` | Active | Visible one-round Deadeye Armed state |
 | `KMG.Gunsmithing.GunsmithKit` | `d52aacb753434691b1ed85a16cc87104` | `BlueprintItem` | Active | Persistent non-consumable Gunsmith's Kit |
-| `KMG.Gunsmithing.OverhaulKit` | `77fddc4f10614481a23f7dc8d1188848` | `BlueprintItem` | Active | Consumable Wrecked-to-Broken maintenance kit |
+| `KMG.Gunsmithing.OverhaulKit` | `77fddc4f10614481a23f7dc8d1188848` | `BlueprintItem` | Active (retired) | Obsolete consumable kit kept for save compatibility |
 | `KMG.Gunsmithing.CraftBasicAmmunition` | `8d7bb3a3e9444600b636fa58076a219b` | `BlueprintAbility` | Active | Once-per-rest basic ammunition crafting action |
 | `KMG.Gunsmithing.CraftedThisRest` | `f14e26a501c3423686d8948e7dd71950` | `BlueprintFeature` | Active | Persisted once-per-rest entitlement marker |
 | `KMG.Firearms.Projectile` | `adcd3d85c18b4db694420cb443c4da99` | `BlueprintProjectile` | Active | Clone-derived native-lifecycle firearm projectile |
@@ -285,8 +285,8 @@ If registration fails after a library mutation, the registry removes only the ex
 | `KMG.Test.BrokenEmptyStateToken` | `5513972dd2624c9f86bc29c850dac736` | `BlueprintWeaponEnchantment` | Active | Empty/Broken state |
 | `KMG.Test.BrokenLoadedStateToken` | `f5fa460f93214458b6f59db24b0dfd12` | `BlueprintWeaponEnchantment` | Active | Loaded/Broken state |
 | `KMG.Test.WreckedStateToken` | `877f65ca3a404f2e98af528b7fb1a2fb` | `BlueprintWeaponEnchantment` | Active | Empty/Wrecked state |
-| `KMG.Test.FirearmRepairKitItem` | `f2b564234b8a4b0d88a7a46128556bef` | `BlueprintItem` | Active | Firearm Repair Kit |
-| `KMG.Test.OverhaulAbility` | `8a0ba821382640b58ec9ff168ed778a5` | `BlueprintAbility` | Active | Full-round same-item Overhaul |
+| `KMG.Test.FirearmRepairKitItem` | `f2b564234b8a4b0d88a7a46128556bef` | `BlueprintItem` | Active (retired) | Obsolete consumable kit kept for save compatibility |
+| `KMG.Test.OverhaulAbility` | `8a0ba821382640b58ec9ff168ed778a5` | `BlueprintAbility` | Active (hidden alias) | Legacy Overhaul identity delegating to unified Repair |
 | `KMG.Test.RepairAbility` | `c914b3c0786463b7a1e17e47447ee5b1` | `BlueprintAbility` | Active | Full-round same-item ordinary Repair |
 | `KMG.Firearms.AdvancedRifleWeaponType` | `df5e6a66bc494514a740b674ef84c5ba` | `BlueprintWeaponType` | Active legacy | Hidden Rifle type retained for old-save/Toy Box recognition; not published or ordinarily acquired |
 | `KMG.Firearms.AdvancedRifleItem` | `a267e7bbc10e425f8adb87844d572b29` | `BlueprintItemWeapon` | Active legacy | Hidden Rifle item retained for old-save/Toy Box recognition; not published or ordinarily acquired |

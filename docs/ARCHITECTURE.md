@@ -112,17 +112,17 @@ does not recreate the source bundle or its riders. Link validity and lifecycle
 belong to the dedicated buff component and pure policy classes; bootstrap and
 the runtime test runner remain orchestration-only.
 
-## Sprint 29 current layer
+## Sprint 29 current layer (unified maintenance design)
 
-Version 0.0.29 retains the accepted token-backed runtime architecture, condition-preserving Broken reload, exact loaded-round enforcement, exact natural-d20 misfire classification, exact-item Normal â†’ Broken â†’ Wrecked transitions, native five-foot Reflex-half second-misfire burst, and same-item Wrecked â†’ Broken Overhaul.
+The runtime retains the accepted token-backed architecture, condition-preserving Broken reload, exact loaded-round enforcement, exact natural-d20 misfire classification, exact-item Normal-to-Broken-to-Wrecked transitions, and the native five-foot Reflex-half second-misfire burst.
 
-Sprint 29 completes the first player-facing Test Musket maintenance loop with a separate full-round personal extraordinary Repair action. Completed Repair consumes exactly one Firearm Repair Kit and atomically changes the exact equipped Broken item to empty/Normal. Any loaded rounds and their ammunition identity are destroyed rather than returned to inventory. It verifies unchanged repository identity and in-process runtime reference, exactly one revision increment, exact one-kit consumption, and rollback of the exact pre-repair loaded state and kit count after a fault. Reload remains a separate operation and the only stage that consumes inventory ammunition.
+The current owner-approved design replaces the historical two-step loop with one full-round personal extraordinary Repair Firearm action. Repair requires one reusable Gunsmith’s Kit in the shared party inventory, consumes nothing, preserves surviving loaded rounds and their ammunition identity exactly (a Wrecked firearm stays empty), and atomically changes the exact equipped Broken or Wrecked item to Normal. It verifies unchanged repository identity and in-process runtime reference, exactly one revision increment, an unchanged tool count, and rollback of the exact pre-repair state after a fault. The separate Overhaul action no longer exists: its identity stays registered as a hidden delegate of this same repair for save compatibility, and the consumable Firearm Repair Kit and Firearm Overhaul Kit are no longer sold or required. Reload remains a separate operation and the only stage that consumes inventory ammunition.
 
 Sprint 29 also adds a deterministic two-item maintenance fixture, a pure process-local PASS/FAIL evaluator, and a one-command immediate transaction runner. These diagnostics accelerate regression checks but never participate in gameplay decisions or persistence; manual action-bar testing still proves full-round delivery and interruption behavior.
 
 The destructive Test Musket cleanup diagnostic still requires a separate arm and confirm action. This is a test-harness safety boundary rather than firearm gameplay.
 
-The active vertical slice includes Firearm Proficiency, twenty-four active blueprints, stackable repair and ammunition resources, atomic Overhaul/Repair/Reload transactions, quicksave token reconciliation, range-limited touch AC, loaded-round attack enforcement, exact-firearm natural-d20 misfire detection, condition transitions, native five-foot burst delivery, and exact-item lifecycle diagnostics.
+The active vertical slice includes Firearm Proficiency, twenty-four active blueprints, stackable ammunition resources and the reusable Gunsmith’s Kit, atomic unified Repair and Reload transactions, quicksave token reconciliation, range-limited touch AC, loaded-round attack enforcement, exact-firearm natural-d20 misfire detection, condition transitions, native five-foot burst delivery, and exact-item lifecycle diagnostics.
 
 The item-owned inert `BlueprintWeaponEnchantment` state token remains authoritative. The runtime-rejected `ItemEntityWeapon.UniqueId` vault remains rejected.
 
@@ -150,7 +150,7 @@ The current Test Musket remains a real weapon using Kingmaker's native attack an
 
 The authoritative runtime state carrier is the exact item's inert enchantment token. The earlier weak repository, direct-reference UnitPart, and `UniqueId` vault implementations remain checked in for test history and migration research, but none is the current runtime source of truth and the rejected `UniqueId` design must not be revived.
 
-Sprint 28 is runtime-accepted from the supplied player-facing Overhaul evidence and explicit user approval. Sprint 29 completes the staged Overhaul â†’ Repair â†’ Reload maintenance loop and adds deterministic qualification automation. Sprint 30 is gated on live proof of the complete action-bar loop, interruption safety, exact resource deltas, same-item identity, second-item isolation, fail-closed rejection, matrix output, and persistence.
+Sprint 28 is runtime-accepted from the supplied player-facing Overhaul evidence and explicit user approval. Sprint 29 completes the staged Overhaul Ã¢â â Repair Ã¢â â Reload maintenance loop and adds deterministic qualification automation. Sprint 30 is gated on live proof of the complete action-bar loop, interruption safety, exact resource deltas, same-item identity, second-item isolation, fail-closed rejection, matrix output, and persistence.
 
 ## 2. Runtime boundaries
 
@@ -379,14 +379,13 @@ Firearms remain real `BlueprintItemWeapon`/`ItemEntityWeapon` instances and use 
 | Weapon attack/damage | Preserve native modifiers, criticals, concealment, cover, damage, and other mod composition |
 | `RuleAttackRoll.set_Roll(RollEntry)` / `IsSuccessRoll(int)` | Observe or deterministically force the exact eligible firearm natural d20, force configured misfires to miss, and apply one exact-item condition transition |
 | Reload ability delivery | Atomically consume one powder plus one Lead Ball and load the exact empty Normal or Broken firearm without changing condition; reject Wrecked |
-| Overhaul ability delivery | Atomically consume one Firearm Repair Kit and change the exact empty/Wrecked firearm to empty/Broken; preserve item identity; reject Normal/Broken/ambiguous targets |
-| Repair ability delivery | Atomically consume one Firearm Repair Kit and change the exact Broken firearm to empty/Normal; discard its loaded rounds without an inventory refund; preserve item identity; reject Normal/Wrecked/ambiguous targets |
+| Repair ability delivery | Require one reusable shared-inventory Gunsmith’s Kit, consume nothing, and change the exact equipped Broken or Wrecked firearm to Normal while preserving loaded ammunition and item identity; reject Normal/ambiguous targets |
 | Maintenance qualification | Observe exact target, second-item isolation, revisions, resources, completions, faults, and duplicates; never mutate gameplay or persistence state |
 | Later class systems | Gun Training, deeds, grit, and class progression |
 
 Loaded Normal and Loaded Broken attacks consume one round at the start of the exact firearm attack roll. Empty, Wrecked, or state-faulted marked firearms are forced to miss. A weak reference-identity gate prevents duplicate callbacks from consuming twice. Firing never consumes shared-inventory ammunition again.
 
-Natural-roll misfire detection, force-next-roll diagnostics, exact-item Normal â†’ Broken â†’ Wrecked transitions, native definition-sized second-misfire burst delivery, player-facing Wrecked â†’ Broken Overhaul, separate Broken â†’ Normal Repair, and the complete Overhaul â†’ Repair â†’ Reload loop are active in 0.0.29. Definition-driven generic actions, scatter triple damage, Quick Clear, and automatic iterative reloads remain outside this version.
+Natural-roll misfire detection, force-next-roll diagnostics, exact-item Normal-to-Broken-to-Wrecked transitions, native definition-sized second-misfire burst delivery, unified one-step Broken-or-Wrecked-to-Normal Repair with a reusable Gunsmith’s Kit, and the complete Repair-then-Reload loop are active in the current design. Scatter damage delivery and other enumerated deferrals are tracked separately.
 
 ## 12. Persistence evidence boundary
 
@@ -425,9 +424,9 @@ Core mechanics have no dependency on custom models or animation controllers. The
 | `KMG.Test.ReloadAbility` | Active | Full-round Test Musket reload ability |
 | `KMG.Test.BlackPowderItem` | Active | Stackable powder component |
 | `KMG.Test.LeadBulletItem` | Active | Stackable Lead Ball component; stable symbol retained |
-| `KMG.Test.FirearmRepairKitItem` | Active | Stackable recovery resource consumed by Overhaul and Repair |
-| `KMG.Test.OverhaulAbility` | Active | Full-round exact-item Wrecked-to-Broken ability |
-| `KMG.Test.RepairAbility` | Active | Full-round exact-item Broken-to-Normal ability |
+| `KMG.Test.FirearmRepairKitItem` | Active (retired) | Obsolete consumable kit kept for save compatibility; no longer sold or consumed |
+| `KMG.Test.OverhaulAbility` | Active (hidden alias) | Legacy identity delegating to unified Repair |
+| `KMG.Test.RepairAbility` | Active | Full-round unified Broken-or-Wrecked-to-Normal repair ability with a reusable Gunsmith’s Kit |
 | `KMG.Test.TouchAcEnchantment` | Reserved | Unused because touch AC is implemented by rule patch |
 
 Stable symbols and GUIDs are never regenerated or repurposed.
@@ -487,9 +486,9 @@ Sprint 28 added the first player-facing same-item recovery transaction on top of
 exactly one equipped empty/Wrecked exact Test Musket
         + one Firearm Repair Kit in shared inventory
         + completed full-round Overhaul Test Musket delivery
-        â†“
+        Ã¢â â
 same runtime item / same process-local repository identity
-        â†“
+        Ã¢â â
 empty/Broken, revision +1, kit count -1
 ```
 
@@ -513,11 +512,11 @@ The Sprint 28 recovery adapter keeps the pure state machine, exact-item reposito
 
 ```text
 BlueprintAbility + AbilityCustomLogic
-        â†“ delivery only
+        Ã¢â â delivery only
 OverhaulTestMusketRuntime
-        â†“ exact equipped item + shared inventory adapters
+        Ã¢â â exact equipped item + shared inventory adapters
 FirearmOverhaulTransactionService
-        â†“ verified writes / best-effort rollback
+        Ã¢â â verified writes / best-effort rollback
 item-owned state token + Firearm Repair Kit stack
 ```
 
@@ -541,11 +540,11 @@ The ordinary Repair path mirrors the accepted Overhaul layering:
 
 ```text
 BlueprintAbility + AbilityCustomLogic
-        â†“ delivery only
+        Ã¢â â delivery only
 RepairTestMusketRuntime
-        â†“ exact equipped item + shared inventory adapters
+        Ã¢â â exact equipped item + shared inventory adapters
 FirearmRepairTransactionService
-        â†“ verified writes / independent best-effort rollback
+        Ã¢â â verified writes / independent best-effort rollback
 item-owned state token + Firearm Repair Kit stack
 ```
 

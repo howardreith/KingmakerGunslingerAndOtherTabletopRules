@@ -91,20 +91,6 @@ namespace KingmakerGunslinger.Development
                 bridge => bridge.ReloadEquippedTestMusketNowForDebug());
         }
 
-        internal static DevelopmentActionResult DescribeOverhaulReadiness()
-        {
-            return Execute(
-                "describe-overhaul-readiness",
-                bridge => bridge.DescribeOverhaulReadiness());
-        }
-
-        internal static DevelopmentActionResult OverhaulEquippedTestMusketNowForDebug()
-        {
-            return Execute(
-                "overhaul-equipped-test-musket-now",
-                bridge => bridge.OverhaulEquippedTestMusketNowForDebug());
-        }
-
         internal static DevelopmentActionResult DescribeRepairReadiness()
         {
             return Execute(
@@ -147,32 +133,25 @@ namespace KingmakerGunslinger.Development
                 bridge => bridge.ResetMaintenanceQualification());
         }
 
-        internal static DevelopmentActionResult AddFirearmRepairKits()
+        internal static DevelopmentActionResult AddGunsmithKit()
         {
             return Execute(
-                "add-firearm-repair-kits",
-                bridge => bridge.AddFirearmRepairKits(5));
+                "add-gunsmith-kit",
+                bridge => bridge.AddGunsmithKits(1));
         }
 
-        internal static DevelopmentActionResult AddOneFirearmRepairKit()
+        internal static DevelopmentActionResult DescribeGunsmithKits()
         {
             return Execute(
-                "add-one-firearm-repair-kit",
-                bridge => bridge.AddFirearmRepairKits(1));
+                "describe-gunsmith-kits",
+                bridge => bridge.DescribeGunsmithKits());
         }
 
-        internal static DevelopmentActionResult DescribeFirearmRepairKits()
+        internal static DevelopmentActionResult RemoveAllGunsmithKits()
         {
             return Execute(
-                "describe-firearm-repair-kits",
-                bridge => bridge.DescribeFirearmRepairKits());
-        }
-
-        internal static DevelopmentActionResult RemoveAllFirearmRepairKits()
-        {
-            return Execute(
-                "remove-all-firearm-repair-kits",
-                bridge => bridge.RemoveAllFirearmRepairKits());
+                "remove-all-gunsmith-kits",
+                bridge => bridge.RemoveAllGunsmithKits());
         }
 
         internal static DevelopmentActionResult ForceNextFirearmNaturalRollOne()
@@ -307,13 +286,6 @@ namespace KingmakerGunslinger.Development
             return Execute("repair-first-equipped-firearm", bridge => bridge.RepairFirstEquippedFirearmForDebug());
         }
 
-        internal static DevelopmentActionResult OverhaulFirstEquippedWreckedFirearmForDebug()
-        {
-            return Execute(
-                "overhaul-first-equipped-wrecked-firearm",
-                bridge => bridge.OverhaulFirstEquippedWreckedFirearmForDebug());
-        }
-
         internal static DevelopmentActionResult ResetFirstEquippedFirearmState()
         {
             return Execute("reset-first-equipped-firearm", bridge => bridge.ResetFirstEquippedFirearmState());
@@ -336,7 +308,7 @@ namespace KingmakerGunslinger.Development
                 BlueprintAbility repairAbility = BlueprintBootstrap.RepairTestMusketAbility;
                 BlueprintItemWeapon testMusket = BlueprintBootstrap.TestMusketItem;
                 BasicAmmunitionBlueprintSet ammunition = BlueprintBootstrap.BasicAmmunition;
-                BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
+                GunsmithingSupplyBlueprintSet supplies = BlueprintBootstrap.GunsmithingSupplies;
                 if (!BlueprintBootstrap.IsInitialized ||
                     proficiency == null ||
                     reloadAbility == null ||
@@ -344,7 +316,8 @@ namespace KingmakerGunslinger.Development
                     repairAbility == null ||
                     testMusket == null ||
                     ammunition == null ||
-                    repairKit == null)
+                    supplies == null ||
+                    supplies.GunsmithKit == null)
                 {
                     return PersistenceEvidenceCaptureResult.Failure(
                         "Blueprint initialization has not completed.");
@@ -358,7 +331,7 @@ namespace KingmakerGunslinger.Development
                     testMusket,
                     ammunition.BlackPowder,
                     ammunition.LeadBall,
-                    repairKit);
+                    supplies.GunsmithKit);
                 PersistenceEvidenceSnapshotData snapshot = bridge.CapturePersistenceEvidenceSnapshot();
                 context.Logger.Info(
                     "persistence-evidence",
@@ -417,7 +390,7 @@ namespace KingmakerGunslinger.Development
                 BlueprintAbility repairAbility = BlueprintBootstrap.RepairTestMusketAbility;
                 BlueprintItemWeapon testMusket = BlueprintBootstrap.TestMusketItem;
                 BasicAmmunitionBlueprintSet ammunition = BlueprintBootstrap.BasicAmmunition;
-                BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
+                GunsmithingSupplyBlueprintSet supplies = BlueprintBootstrap.GunsmithingSupplies;
                 if (!BlueprintBootstrap.IsInitialized ||
                     proficiency == null ||
                     reloadAbility == null ||
@@ -425,7 +398,8 @@ namespace KingmakerGunslinger.Development
                     repairAbility == null ||
                     testMusket == null ||
                     ammunition == null ||
-                    repairKit == null)
+                    supplies == null ||
+                    supplies.GunsmithKit == null)
                 {
                     return DevelopmentActionResult.Failure(
                         "Blueprint initialization has not completed. Return to the main menu or inspect the KMG log for bootstrap errors.");
@@ -439,7 +413,7 @@ namespace KingmakerGunslinger.Development
                     testMusket,
                     ammunition.BlackPowder,
                     ammunition.LeadBall,
-                    repairKit);
+                    supplies.GunsmithKit);
                 DevelopmentActionResult result = action(bridge);
                 context.Logger.Info("development", operation + ".complete", result.Message);
                 return result;

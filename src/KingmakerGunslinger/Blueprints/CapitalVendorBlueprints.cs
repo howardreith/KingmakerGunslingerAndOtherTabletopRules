@@ -57,16 +57,18 @@ namespace KingmakerGunslinger.Blueprints
                 ammunition.BlackPowder,
                 ammunition.LeadBall,
                 ammunition.PaperCartridge,
-                repairKit,
-                gunsmithingSupplies.OverhaulKit,
                 gunsmithingSupplies.GunsmithKit
             };
+            // The obsolete consumable Firearm Repair Kit and Firearm Overhaul Kit are
+            // no longer offered, but they remain in the owned set so this publication
+            // removes any copies injected into an already-generated table by an
+            // earlier version.
             int[] gunslingerCounts =
             {
                 WeaponCount, WeaponCount, WeaponCount, WeaponCount, WeaponCount,
                 WeaponCount,
                 AmmunitionCount, AmmunitionCount, AmmunitionCount,
-                10, 5, WeaponCount
+                WeaponCount
             };
             BlueprintItem[] items = publishGunslinger ? gunslingerItems :
                 Array.Empty<BlueprintItem>();

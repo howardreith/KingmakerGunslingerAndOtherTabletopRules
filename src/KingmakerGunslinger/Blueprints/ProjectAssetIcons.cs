@@ -240,12 +240,8 @@ namespace KingmakerGunslinger.Blueprints
                     ammunition.LeadBall, "lead-ball", craft.LeadBall),
                 new SupplyIconMapping(BasicAmmunitionBlueprints.BlackPowderSymbol,
                     ammunition.BlackPowder, "black-powder", craft.BlackPowder),
-                new SupplyIconMapping(FirearmRepairKitBlueprints.Symbol,
-                    repairKit, "repair-kit", null),
                 new SupplyIconMapping(GunsmithingSupplyBlueprints.GunsmithKitSymbol,
-                    supplies.GunsmithKit, "gunsmith-kit", craft.GunsmithKit),
-                new SupplyIconMapping(GunsmithingSupplyBlueprints.OverhaulKitSymbol,
-                    supplies.OverhaulKit, "overhaul-kit", null)
+                    supplies.GunsmithKit, "gunsmith-kit", craft.GunsmithKit)
             };
             foreach (SupplyIconMapping mapping in mappings)
             {
@@ -265,6 +261,29 @@ namespace KingmakerGunslinger.Blueprints
                         mapping.Item.name, registry.ResolveGuid(mapping.Symbol),
                         mapping.IconKey, expected.name, capitalExact && btslExact,
                         craftExact));
+            }
+            // The consumable maintenance kits are retired from every shop while their
+            // blueprint identities stay registered for save compatibility. Each must
+            // keep its distinct icon but must no longer be offered anywhere.
+            BlueprintItem[] retired =
+            {
+                repairKit,
+                supplies.OverhaulKit
+            };
+            foreach (BlueprintItem item in retired)
+            {
+                if (item.Icon == null ||
+                    capitalVendor.ContainsExact(item) ||
+                    btslVendors.ContainsExact(item))
+                    throw new InvalidOperationException(
+                        "A retired consumable maintenance kit must keep its icon but remain absent from every vendor table: " +
+                        item.name);
+                logger.Info("presentation", "supply-icon.retired",
+                    "name=" + item.name + ";guid=" +
+                    registry.ResolveGuid(item == repairKit
+                        ? FirearmRepairKitBlueprints.Symbol
+                        : GunsmithingSupplyBlueprints.OverhaulKitSymbol) +
+                    ";vendorExact=false");
             }
         }
 

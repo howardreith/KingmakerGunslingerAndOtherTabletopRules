@@ -1,5 +1,33 @@
 # Changelog
 
+## Unreleased — unified firearm maintenance
+
+- One full-round Repair Firearm action now restores a Broken **or** Wrecked
+  firearm directly to Normal. No intermediate step, no separate Overhaul
+  action, and no second player action are required.
+- Repair requires one reusable Gunsmith's Kit (`KMG.Gunsmithing.GunsmithKit`)
+  in the shared party inventory. The kit is never consumed, loses no charges,
+  and does not need to be equipped. Repair spends no gold, grit, ammunition,
+  crafting entitlement, or other resource, and is not connected to the
+  ammunition crafting once-per-rest allowance.
+- Repair no longer requires or consumes the Firearm Repair Kit or Firearm
+  Overhaul Kit; obsolete kits never substitute for a missing Gunsmith's Kit.
+- Surviving loaded ammunition is preserved exactly (count and ammunition
+  identity) when repairing; a Wrecked firearm, which is always empty, stays
+  empty. No rounds are recreated or refunded.
+- The Repair Firearm blueprint identity (`KMG.Test.RepairAbility`), display
+  name, effective icon, and full-round action economy are unchanged. The
+  legacy Overhaul ability identity (`KMG.Test.OverhaulAbility`) remains
+  registered as a hidden delegate of the unified repair for save
+  compatibility, so old saves never restore a second, kit-consuming recovery
+  action. The two consumable kits remain registered as inert obsolete items
+  for player inventories but are removed from every shop (capital blacksmith,
+  Bokken, campaign and standalone Beneath the Stolen Lands tables), including
+  cleanup of already-generated stock; ordinary Gunsmith's Kit availability is
+  unchanged.
+- Crafting abilities, their costs, and their shared once-per-rest entitlement
+  are unchanged.
+
 ## 0.0.120-elemental-races-completion
 
 - Add Nereid Fascination to the existing Undine SLA replacement selector for
