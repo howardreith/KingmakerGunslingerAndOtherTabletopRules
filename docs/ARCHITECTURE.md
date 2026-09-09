@@ -791,3 +791,20 @@ fixed target GUIDs, installed area ownership, live loot matches, and live vendor
 matches; it never grants, teleports, opens, selects, loads, or saves. Static
 blueprint publication deliberately does not rewrite already materialized save
 state.
+
+## Elemental completion candidate 0.0.119
+
+Seven Nereid and four Treacherous Earth auxiliary blueprints extend the ledger
+to 1883 stable IDs: 1881 active and 2 reserved. Existing identities are unchanged.
+Both traits remain unpublished during qualification; current evidence belongs in
+[ELEMENTAL-RACES-COMPLETION.md](../ELEMENTAL-RACES-COMPLETION.md).
+
+
+Treacherous Earth separates a closed material policy from an owned native
+fixed-area graph. Resource, ability, terrain buff and area all appear in
+Mechanics for native respec discovery. Native DifficultTerrain and Ground
+use the existing movement/immunity paths; exact area/caster ownership controls
+cleanup. Native area serialization owns position and the original lifetime.
+The draft uses native supernatural command plumbing for a magical terrain
+effect, with no spell clone, spell resistance, damage or save. Surface,
+command, scene and persistence qualification remain required.

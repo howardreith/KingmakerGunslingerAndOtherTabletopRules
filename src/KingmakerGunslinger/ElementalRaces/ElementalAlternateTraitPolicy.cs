@@ -310,7 +310,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     ElementalRacialTraitSlot.ElementalAffinity),
                 T(ElementalAlternateTraitId.TreacherousEarth,
                     ElementalHeritageRace.Oread, "Treacherous Earth",
-                    "Once per day, create a 10-foot-radius patch of difficult terrain for 1 minute per character level.",
+                    ElementalTreacherousPolicy.Description,
                     ElementalRacialTraitSlot.RacialSpellLikeAbility),
 
                 T(ElementalAlternateTraitId.AirInsight,
@@ -349,7 +349,7 @@ namespace KingmakerGunslinger.ElementalRaces
                     ElementalRacialTraitSlot.RacialSpellLikeAbility),
                 T(ElementalAlternateTraitId.NereidFascination,
                     ElementalHeritageRace.Undine, "Nereid Fascination",
-                    "Once per day, create a 20-foot aura that fascinates humanoids; Will negates.",
+                    ElementalNereidPolicy.Description,
                     ElementalRacialTraitSlot.RacialSpellLikeAbility),
                 T(ElementalAlternateTraitId.OozeBreath,
                     ElementalHeritageRace.Undine, "Ooze Breath",
@@ -424,6 +424,24 @@ namespace KingmakerGunslinger.ElementalRaces
             return result;
         }
 
+        // Observation is enabled only by exact guarded Nereid requests.
+        // Publication follows the qualified mechanic allowlist independently.
+        internal static bool NereidQualificationActive { get; set; }
+
+        internal static bool UsesCompletionRevision(ElementalAlternateTraitId id)
+        {
+            return id == ElementalAlternateTraitId.NereidFascination ||
+                id == ElementalAlternateTraitId.TreacherousEarth;
+        }
+        internal static bool MarkerRevisionIsEffective(ElementalAlternateTraitId id, int revision)
+        {
+            return !UsesCompletionRevision(id) || revision == 1;
+        }
+        internal static bool RetireDeferredMarker(ElementalAlternateTraitId id, int revision, bool mechanicActive)
+        {
+            return UsesCompletionRevision(id) && revision == 0 && mechanicActive;
+        }
+
         internal static bool IsPublished(ElementalAlternateTraitId id)
         {
             switch (id)
@@ -447,6 +465,7 @@ namespace KingmakerGunslinger.ElementalRaces
                 case ElementalAlternateTraitId.WhisperingWind:
                 case ElementalAlternateTraitId.AcidBreath:
                 case ElementalAlternateTraitId.OozeBreath:
+                case ElementalAlternateTraitId.NereidFascination:
                     return true;
                 default:
                     // Deferred identities remain registered for development saves.

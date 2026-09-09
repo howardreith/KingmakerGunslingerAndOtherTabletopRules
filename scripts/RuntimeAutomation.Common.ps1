@@ -86,6 +86,18 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'working-save-elemental-nereid-creation' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'working-save-elemental-nereid-respec' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'working-save-elemental-character-creation' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -93,6 +105,18 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'disposable-elemental-character-creation-baseline' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-nereid-creation' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-nereid-respec' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
@@ -111,6 +135,18 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
     'observe-elemental-character-creation-routing' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-treacherous-earth' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-elemental-nereid' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
@@ -423,6 +459,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'elemental-race-motion' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'working-save-elemental-deferred-markers' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
@@ -1469,6 +1511,35 @@ function Test-KmgSupervisedWorkingSaveEntryReadinessBehavior {
     )
 }
 
+function Test-KmgNereidPersistenceScope {
+    param([string]$Scenario, [hashtable]$Parameters)
+    return $null -ne $Parameters -and $Parameters.ContainsKey('qualificationTrait') -and
+        $Parameters.qualificationTrait -is [string] -and $Parameters.qualificationTrait -ceq 'NereidFascination' -and
+        $Scenario -cin @('elemental-race-persistence-prepare', 'elemental-race-module-disabled-persistence',
+            'elemental-race-module-restored-persistence', 'elemental-race-persistence-verify-absent')
+}
+
+function Test-KmgTreacherousEffectScope {
+    param([string]$Scenario, [hashtable]$Parameters)
+    return (Test-KmgNereidPersistenceScope $Scenario $Parameters) -and
+        $Parameters.ContainsKey('qualificationEffect') -and $Parameters.qualificationEffect -is [string] -and
+        $Parameters.qualificationEffect -ceq 'TreacherousEarth'
+}
+
+function Test-KmgElementalOffCreatorScope {
+    param([string]$Scenario, [hashtable]$Parameters)
+    return $Scenario -ceq 'disposable-elemental-character-creation-baseline' -and $Parameters.Count -eq 1 -and
+        $Parameters.ContainsKey('creatorCase') -and $Parameters.creatorCase -is [string] -and $Parameters.creatorCase -ceq 'module-off'
+}
+
+function Test-KmgCompletionSceneScope {
+    param([string]$Scenario, [hashtable]$Parameters)
+    return (Test-KmgTreacherousEffectScope $Scenario $Parameters) -and
+        $Scenario -cin @('elemental-race-module-disabled-persistence','elemental-race-module-restored-persistence') -and
+        $Parameters.ContainsKey('qualificationOperation') -and $Parameters.qualificationOperation -is [string] -and
+        $Parameters.qualificationOperation -ceq 'scene-roundtrip'
+}
+
 function Assert-KmgRuntimeScenarioPreflight {
     param(
         [Parameter(Mandatory = $true)][string]$Scenario,
@@ -1487,7 +1558,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         [hashtable]$Parameters = @{},
         [switch]$EnforceManualInteraction,
         [switch]$ManualInteractionRequired,
-        [switch]$PermitQualifiedElementalRaces114
+        [switch]$PermitQualifiedElementalRaces114,
+        [switch]$PermitQualifiedElementalRaces117
     )
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
     $qualifiedElementalRaces114 =
@@ -1498,9 +1570,16 @@ function Assert-KmgRuntimeScenarioPreflight {
         -not $qualifiedElementalRaces114) {
         throw 'The qualified 0.0.114 preflight exception is limited to the Elemental Race legacy persistence producer.'
     }
-    if ($ExpectedVersion -cne '0.0.119' -and
-        -not $qualifiedElementalRaces114) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.119.'
+    $qualifiedElementalRaces117 = $PermitQualifiedElementalRaces117 -and
+        -not $PermitQualifiedElementalRaces114 -and
+        $Scenario -ceq 'elemental-race-persistence-prepare' -and $ExpectedVersion -ceq '0.0.117'
+    if ($PermitQualifiedElementalRaces117 -and (-not $qualifiedElementalRaces117 -or
+        $Parameters.Count -ne 1 -or $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING')) {
+        throw 'Public 0.0.117 authority permits only its exact disposable persistence producer, without another producer authority.'
+    }
+    if ($ExpectedVersion -cne '0.0.120' -and
+        -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
+        throw 'ExpectedVersion must be exactly the active version 0.0.120.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -1517,7 +1596,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     if ($metadata.RequiresSaveName) {
-        $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')
+        $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')
         $persistence = $Scenario -ceq 'disposable-teleportation-persistence'
         if ($persistence) {
             if ($Parameters.Count -ne 3 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath') -or
@@ -1546,12 +1625,17 @@ function Assert-KmgRuntimeScenarioPreflight {
             }
             if ($Parameters.saveName -cne $allowedName) { throw 'Persistence input is not owned by this phase transaction.' }
         }
-        $requiredParameterCount = if ($persistence) { 3 } elseif ($creatorRegression) { 4 } else { 1 }
+        $requiredParameterCount = if ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($creatorRegression -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
             (-not $persistence -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
             throw "$Scenario requires its exact working save and allowlisted parameters."
+        }
+        if ($Scenario -ceq 'working-save-elemental-deferred-markers' -and
+            (-not $Parameters.ContainsKey('fixtureCase') -or $Parameters.fixtureCase -isnot [string] -or
+             $Parameters.fixtureCase -cnotin @('public117','deferred117'))) {
+            throw 'The deferred-marker probe requires the exact public117 or deferred117 fixture case.'
         }
         if ($creatorRegression -and (-not $Parameters.ContainsKey('race') -or
             -not $Parameters.ContainsKey('class') -or -not $Parameters.ContainsKey('allocation') -or
@@ -1562,9 +1646,30 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.allocation -cnotin @('point-buy', 'roll'))) {
             throw 'The working creator regression requires exact allowlisted race, class, and allocation parameters.'
         }
-        if ($Scenario -ceq 'working-save-elemental-native-respec' -and
+        if ($Scenario -cin @('working-save-elemental-native-respec', 'working-save-elemental-nereid-respec') -and
             ($Parameters.class -cne 'Fighter' -or $Parameters.allocation -cne 'point-buy')) {
             throw 'The native respec fixture currently requires Fighter and point-buy.'
+        }
+        if ($Scenario -cin @('working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec') -and
+            ($Parameters.race -cne 'Undine' -or $Parameters.class -cne 'Fighter' -or $Parameters.allocation -cne 'point-buy')) {
+            throw 'Guarded Nereid player qualification requires Undine, Fighter and point-buy.'
+        }
+        if ($Scenario -ceq 'working-save-elemental-nereid-respec' -and
+            (-not $Parameters.ContainsKey('sex') -or $Parameters.sex -isnot [string] -or
+             $Parameters.sex -cnotin @('Male','Female'))) {
+            throw 'Guarded Nereid respec requires one exact sex per bounded process.'
+        }
+    }
+    elseif ($Scenario -cin @('disposable-elemental-nereid-creation','disposable-elemental-nereid-respec')) {
+        $respec = $Scenario -ceq 'disposable-elemental-nereid-respec'
+        $count = if ($respec) { 4 } else { 3 }
+        if ($Parameters.Count -ne $count -or $Parameters.race -isnot [string] -or
+            $Parameters.class -isnot [string] -or $Parameters.allocation -isnot [string] -or
+            $Parameters.race -cne 'Undine' -or $Parameters.class -cne 'Fighter' -or
+            $Parameters.allocation -cne 'point-buy' -or
+            ($respec -and (-not $Parameters.ContainsKey('sex') -or $Parameters.sex -isnot [string] -or
+                $Parameters.sex -cnotin @('Male','Female')))) {
+            throw 'Native Nereid profile qualification requires exact save-free Undine/Fighter/point-buy parameters and bounded respec sex.'
         }
     }
     elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {
@@ -1639,7 +1744,7 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw "$Scenario requires exactly one allowlisted assetConfiguration."
         }
     }
-    elseif ($Parameters.Count -ne 0) {
+    elseif ($Parameters.Count -ne 0 -and -not (Test-KmgElementalOffCreatorScope $Scenario $Parameters)) {
         throw "Scenario '$Scenario' does not accept parameters."
     }
     if ($metadata.UsesCatalogTimeout -and
@@ -1695,8 +1800,17 @@ function New-KmgRuntimeRequest {
         [Parameter(Mandatory = $true)][bool]$ExitAfterCompletion,
         [Parameter(Mandatory = $true)][string]$EvidenceDirectory,
         [hashtable]$Parameters = @{},
-        [switch]$PermitQualifiedElementalRaces114
+        [switch]$PermitQualifiedElementalRaces114,
+        [switch]$PermitQualifiedElementalRaces117
     )
+    if ($PermitQualifiedElementalRaces117 -and -not $ExitAfterCompletion) {
+        throw 'The pinned public 117 fixture producer requires automatic process exit.'
+    }
+    if (($Scenario -cin @('working-save-elemental-nereid-creation','working-save-elemental-nereid-respec','working-save-elemental-deferred-markers','disposable-elemental-nereid-creation','disposable-elemental-nereid-respec') -or
+        (Test-KmgNereidPersistenceScope $Scenario $Parameters) -or
+        (Test-KmgElementalOffCreatorScope $Scenario $Parameters)) -and -not $ExitAfterCompletion) {
+        throw 'Guarded Nereid player qualification requires automatic process exit.'
+    }
     $metadata = Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario `
         -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
         -StartupTimeoutSeconds $StartupTimeoutSeconds `
@@ -1710,7 +1824,8 @@ function New-KmgRuntimeRequest {
         -LoadEntryTimeoutSeconds $LoadEntryTimeoutSeconds `
         -FingerprintTimeoutSeconds $FingerprintTimeoutSeconds `
         -Parameters $Parameters `
-        -PermitQualifiedElementalRaces114:$PermitQualifiedElementalRaces114
+        -PermitQualifiedElementalRaces114:$PermitQualifiedElementalRaces114 `
+        -PermitQualifiedElementalRaces117:$PermitQualifiedElementalRaces117
     $evidence = Assert-KmgRuntimeEvidenceDirectory -Path $EvidenceDirectory
     $runId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' +
         [Guid]::NewGuid().ToString('N')
@@ -1733,13 +1848,27 @@ function New-KmgRuntimeRequest {
         descriptorResolutionTimeoutSeconds = $DescriptorResolutionTimeoutSeconds
         loadEntryTimeoutSeconds = $LoadEntryTimeoutSeconds
         fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
-        parameters = if ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')) {
+        parameters = if ($Scenario -ceq 'working-save-elemental-nereid-respec') {
+            [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
+                class = [string]$Parameters.class; allocation = [string]$Parameters.allocation; sex = [string]$Parameters.sex }
+        } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')) {
             [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
                 class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
+        } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
+            [ordered]@{ saveName = [string]$Parameters.saveName; fixtureCase = [string]$Parameters.fixtureCase }
+        } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
+            $scopeArgs = [ordered]@{ saveName = [string]$Parameters.saveName; qualificationTrait = 'NereidFascination' }
+            if (Test-KmgTreacherousEffectScope $Scenario $Parameters) { $scopeArgs.qualificationEffect = 'TreacherousEarth' }
+            if (Test-KmgCompletionSceneScope $Scenario $Parameters) { $scopeArgs.qualificationOperation = 'scene-roundtrip' }
+            $scopeArgs
         } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {
             [ordered]@{ saveName = [string]$Parameters.saveName; phase = [string]$Parameters.phase; planPath = [string]$Parameters.planPath }
         } elseif ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
+        } elseif ($Scenario -cin @('disposable-elemental-nereid-creation','disposable-elemental-nereid-respec')) {
+            $nativeArgs = [ordered]@{ race = [string]$Parameters.race; class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
+            if ($Scenario -ceq 'disposable-elemental-nereid-respec') { $nativeArgs.sex = [string]$Parameters.sex }
+            $nativeArgs
         } elseif ($Scenario -ceq 'disposable-elemental-character-creation-case') {
             [ordered]@{
                 race = [string]$Parameters.race
@@ -1769,6 +1898,8 @@ function New-KmgRuntimeRequest {
             [ordered]@{
                 assetConfiguration = [string]$Parameters.assetConfiguration
             }
+        } elseif (Test-KmgElementalOffCreatorScope $Scenario $Parameters) {
+            [ordered]@{ creatorCase = 'module-off' }
         } else { [ordered]@{} }
     }
 }

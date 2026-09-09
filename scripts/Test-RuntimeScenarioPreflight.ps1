@@ -75,10 +75,17 @@ $expected = @(
     'observe-elemental-character-creation-routing',
     'disposable-elemental-character-creation-baseline',
     'disposable-elemental-character-creation-case',
+    'disposable-elemental-nereid-creation',
+    'disposable-elemental-nereid-respec',
     'disposable-global-traits-kmg-disabled-control',
     'working-save-elemental-character-creation',
     'working-save-elemental-character-creation-regression',
     'working-save-elemental-native-respec',
+    'working-save-elemental-deferred-markers',
+    'working-save-elemental-nereid-creation',
+    'working-save-elemental-nereid-respec',
+    'disposable-elemental-treacherous-earth',
+    'disposable-elemental-nereid',
     'disposable-elemental-trait-turn-costs',
     'observe-elemental-alternate-trait-framework',
     'disposable-elemental-heritage-mechanics',
@@ -318,7 +325,7 @@ Assert-True (-not $cmiPersistence.RequiresManualInteraction -and
     'craft-magic-items-persistence-is-guarded-working-save-only'
 $assetRequest = New-KmgRuntimeRequest `
     -Scenario 'observe-kmg-compatibility-asset-attribution' `
-    -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.120' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
         'kmg-attribution-request-test') `
     -Parameters @{ assetConfiguration = 'firearms-only' }
@@ -327,7 +334,7 @@ Assert-True ($assetRequest.parameters.assetConfiguration -ceq 'firearms-only') `
 Assert-Throws {
     New-KmgRuntimeRequest `
         -Scenario 'observe-kmg-compatibility-asset-attribution' `
-        -ExpectedVersion '0.0.119' -TimeoutSeconds 120 `
+        -ExpectedVersion '0.0.120' -TimeoutSeconds 120 `
         -ExitAfterCompletion $true `
         -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot `
             'kmg-attribution-request-test') `
@@ -793,7 +800,7 @@ Assert-True (-not $humanRepro.RequiresManualInteraction -and
 
 $valid = @{
     Scenario = 'observe-working-save-entry-action'
-    ExpectedVersion = '0.0.119'
+    ExpectedVersion = '0.0.120'
     TimeoutSeconds = 120
     StartupTimeoutSeconds = 180
     CatalogTimeoutSeconds = 180
@@ -826,7 +833,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @missingManual } `
     'missing-manual-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'unsupported-regression-fixture' `
-        -ExpectedVersion '0.0.119' -TimeoutSeconds 120
+        -ExpectedVersion '0.0.120' -TimeoutSeconds 120
 } 'unsupported-fails-pure-preflight'
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight -Scenario 'mod-load-smoke' `
@@ -861,6 +868,44 @@ $legacyWithoutAuthority.Remove('PermitQualifiedElementalRaces114')
 Assert-Throws {
     Assert-KmgRuntimeScenarioPreflight @legacyWithoutAuthority
 } 'elemental-races-114-without-qualified-authority-rejected'
+
+$pin114 = Get-KmgQualifiedElementalProducerIdentity -Version '0.0.114' -RepositoryRoot $root
+Assert-True ($pin114.Version -ceq '0.0.114' -and $pin114.Commit -ceq '6874dc15a27ded132456dbdd480f47c794543a05' -and
+    $pin114.PackageSha256 -ceq 'b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694' -and
+    $pin114.DllSha256 -ceq '09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262' -and
+    $pin114.DllMvid -ceq 'dcd73856-39d4-40ce-9b05-77bf249103d7' -and
+    $pin114.Authority -ceq 'qualified-elemental-races-0.0.114-release') 'legacy-public-114-identity-exact'
+$pin117 = Get-KmgQualifiedElementalProducerIdentity -Version '0.0.117' -RepositoryRoot $root
+Assert-True ($pin117.Version -ceq '0.0.117' -and $pin117.Commit -ceq 'f8a2fd996752afb0e361a53bec175328ace5435a' -and
+    $pin117.PackageSha256 -ceq '9368c1ff2c82b76574bab5ed75868d7eb633e759f925e82a1c0da7e861f62f6f' -and
+    $pin117.DllSha256 -ceq 'fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f' -and
+    $pin117.DllMvid -ceq '18f5eaaa-3021-4836-8763-9ba22965b958' -and
+    $pin117.Authority -ceq 'qualified-elemental-races-0.0.117-release') 'public-117-identity-exact'
+
+$public117 = $legacyValid.Clone()
+$public117.Remove('PermitQualifiedElementalRaces114')
+$public117.PermitQualifiedElementalRaces117 = $true
+$public117.ExpectedVersion = '0.0.117'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @public117)) 'pinned-public-117-producer-permitted'
+$request117 = New-KmgRuntimeRequest @public117 -ExitAfterCompletion $true `
+    -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-pinned-117-producer-request-test')
+Assert-True ($request117.expectedModVersion -ceq '0.0.117' -and $request117.exitAfterCompletion -and
+    $request117.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING') 'pinned-public-117-request-exact'
+Assert-Throws { New-KmgRuntimeRequest @public117 -ExitAfterCompletion $false `
+    -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-pinned-117-producer-request-test') } 'pinned-public-117-rejects-no-exit'
+foreach ($case in @('wrong-scenario','wrong-version','without-authority','mixed-authority','baseline','extra-parameter')) {
+    $bad117 = $public117.Clone()
+    switch ($case) {
+        'wrong-scenario' { $bad117.Scenario='elemental-race-persistence-verify-absent' }
+        'wrong-version' { $bad117.ExpectedVersion='0.0.120' }
+        'without-authority' { $bad117.Remove('PermitQualifiedElementalRaces117') }
+        'mixed-authority' { $bad117.PermitQualifiedElementalRaces114=$true }
+        'baseline' { $bad117.Parameters=@{saveName='KMG_AUTOMATION_BASELINE'} }
+        'extra-parameter' { $bad117.Parameters=@{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination'} }
+    }
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @bad117 } ("pinned-public-117-rejects-"+$case)
+}
+Assert-Throws { Get-KmgQualifiedElementalProducerIdentity -Version '0.0.120' -RepositoryRoot $root } 'pinned-producer-rejects-current-candidate'
 
 $orchestrator = Get-Content -LiteralPath $orchestratorPath -Raw
 $preflightIndex = $orchestrator.IndexOf('Assert-KmgRuntimeScenarioPreflight')
@@ -899,7 +944,7 @@ $moduleParameters = @{}
 foreach ($module in $modules) { $moduleParameters[$module.RuntimeParameter] = $false }
 Assert-True ($modules.Count -eq 12) 'teleportation-twelve-module-catalog'
 $moduleRequest = New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
-    -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.120' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `
     -Parameters $moduleParameters
 Assert-True ($moduleRequest.parameters.teleportationSpells -ceq $false) `
@@ -909,7 +954,7 @@ foreach ($module in $modules) {
     $incomplete.Remove($module.RuntimeParameter)
     Assert-Throws {
         New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
-            -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+            -ExpectedVersion '0.0.120' -TimeoutSeconds 120 -ExitAfterCompletion $true `
             -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `
             -Parameters $incomplete
     } ('module-request-rejects-missing-' + $module.RuntimeParameter)
@@ -917,7 +962,7 @@ foreach ($module in $modules) {
 $moduleParameters.teleportationSpells = 'false'
 Assert-Throws {
     New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
-        -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+        -ExpectedVersion '0.0.120' -TimeoutSeconds 120 -ExitAfterCompletion $true `
         -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `
         -Parameters $moduleParameters
 } 'teleportation-request-rejects-untyped-boolean'
@@ -952,7 +997,7 @@ function global:Start-Process { $script:startProcessCalls++; throw 'Unexpected p
 try {
     Assert-Throws {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
-            -ExpectedVersion '0.0.119' -WhatIf -Confirm:$false
+            -ExpectedVersion '0.0.120' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
 }
 finally {
@@ -983,14 +1028,14 @@ $disabledTimeouts = @{
     DescriptorResolutionTimeoutSeconds = 120; LoadEntryTimeoutSeconds = 120; FingerprintTimeoutSeconds = 120
 }
 $disabledRequest = New-KmgRuntimeRequest @disabledTimeouts -Scenario 'disposable-teleportation-disabled' `
-    -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+    -ExpectedVersion '0.0.120' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'disabled-request-test') `
     -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
 Assert-True ($disabledRequest.parameters.Count -eq 1 -and $disabledRequest.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING') 'disabled-map-request-preserves-exact-save'
 foreach ($invalidSave in @('', 'KMG_AUTOMATION_BASELINE')) {
     Assert-Throws {
         New-KmgRuntimeRequest @disabledTimeouts -Scenario 'disposable-teleportation-disabled' `
-            -ExpectedVersion '0.0.119' -TimeoutSeconds 120 -ExitAfterCompletion $true `
+            -ExpectedVersion '0.0.120' -TimeoutSeconds 120 -ExitAfterCompletion $true `
             -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'disabled-request-test') `
             -Parameters @{ saveName = $invalidSave }
     } ('disabled-map-rejects-save-' + $invalidSave)
@@ -1003,11 +1048,11 @@ Assert-True ($creatorBaseline.RequiresSaveName -and $creatorBaseline.PermittedSa
 foreach ($race in @('Ifrit', 'Oread', 'Sylph', 'Undine')) {
     foreach ($allocation in @('point-buy', 'roll')) {
         [void](Assert-KmgRuntimeScenarioPreflight -Scenario 'disposable-elemental-character-creation-case' `
-            -ExpectedVersion '0.0.119' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 `
+            -ExpectedVersion '0.0.120' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 `
             -Parameters @{ race = $race; class = 'Fighter'; allocation = $allocation })
         foreach ($characterClass in @('Fighter', 'Gunslinger')) {
             $request = New-KmgRuntimeRequest -Scenario 'disposable-elemental-character-creation-case' `
-                -ExpectedVersion '0.0.119' -TimeoutSeconds 600 -ExitAfterCompletion $true `
+                -ExpectedVersion '0.0.120' -TimeoutSeconds 600 -ExitAfterCompletion $true `
                 -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-creator-request-test') `
                 -Parameters @{race=$race;class=$characterClass;allocation=$allocation}
             $serialized = $request | ConvertTo-Json -Depth 8 | ConvertFrom-Json
@@ -1026,7 +1071,7 @@ foreach ($invalid in @(
     @{race='Ifrit';class='Fighter';allocation='roll';saveName='KMG_AUTOMATION_WORKING'})) {
     Assert-Throws {
         Assert-KmgRuntimeScenarioPreflight -Scenario 'disposable-elemental-character-creation-case' `
-            -ExpectedVersion '0.0.119' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 -Parameters $invalid
+            -ExpectedVersion '0.0.120' -TimeoutSeconds 600 -StartupTimeoutSeconds 180 -Parameters $invalid
     } 'creator-case-rejects-unscoped-parameters'
 }
 
@@ -1091,6 +1136,229 @@ foreach ($invalid in @(
     $persistenceArgs.Parameters = $invalid
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @persistenceArgs } 'persistence-rejects-unguarded-input-before-launch'
 }
+
+foreach ($profileScenario in @('disposable-elemental-nereid-creation','disposable-elemental-nereid-respec')) {
+    $profileArgs = @{ Scenario=$profileScenario; ExpectedVersion='0.0.120'; TimeoutSeconds=600; StartupTimeoutSeconds=300
+        Parameters=@{race='Undine';class='Fighter';allocation='point-buy'} }
+    if ($profileScenario -ceq 'disposable-elemental-nereid-respec') { $profileArgs.Parameters.sex='Male' }
+    $profileRequest = New-KmgRuntimeRequest @profileArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-nereid-profile-request-test')
+    $profileJson = $profileRequest | ConvertTo-Json -Depth 8 | ConvertFrom-Json
+    Assert-True ($profileJson.exitAfterCompletion -and $profileJson.catalogTimeoutSeconds -eq 0 -and
+        $profileJson.selectionTimeoutSeconds -eq 0 -and $profileJson.completionTimeoutSeconds -eq 0 -and
+        @($profileJson.parameters.PSObject.Properties | Where-Object Name -eq 'saveName').Count -eq 0 -and
+        @($profileJson.parameters.PSObject.Properties).Count -eq $profileArgs.Parameters.Count) "nereid-profile-exact-save-free-json-$profileScenario"
+    Assert-Throws { New-KmgRuntimeRequest @profileArgs -ExitAfterCompletion $false `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-nereid-profile-request-test') } "nereid-profile-rejects-no-exit-$profileScenario"
+    $outerOutput = & $orchestratorPath -Scenario $profileScenario -ExpectedVersion '0.0.120' -Parameters $profileArgs.Parameters `
+        -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false 6>&1 | Out-String
+    Assert-True ($outerOutput.Contains('Source-only/WhatIf validation passed.')) "nereid-profile-outer-save-free-$profileScenario"
+    foreach ($invalid in @(
+        @{race='Oread';class='Fighter';allocation='point-buy'},
+        @{race='Undine';class='Gunslinger';allocation='point-buy'},
+        @{race='Undine';class='Fighter';allocation='roll'},
+        @{race='Undine';class='Fighter';allocation='point-buy';saveName='KMG_AUTOMATION_WORKING'},
+        @{race='Undine';class='Fighter';allocation='point-buy';saveName='KMG_AUTOMATION_BASELINE'},
+        @{race='Undine';class='Fighter';allocation='point-buy';extra=$true},
+        @{race=$true;class='Fighter';allocation='point-buy'})) {
+        if ($profileScenario -ceq 'disposable-elemental-nereid-respec') { $invalid.sex='Male' }
+        $profileArgs.Parameters=$invalid
+        Assert-Throws { Assert-KmgRuntimeScenarioPreflight @profileArgs } "nereid-profile-rejects-unscoped-$profileScenario"
+    }
+}
+$profileArgs.Scenario='disposable-elemental-nereid-respec'
+foreach ($sex in @('Male','Female')) {
+    $profileArgs.Parameters=@{race='Undine';class='Fighter';allocation='point-buy';sex=$sex}
+    $profileRequest = New-KmgRuntimeRequest @profileArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-nereid-profile-request-test')
+    Assert-True ($profileRequest.parameters.sex -ceq $sex -and $profileRequest.parameters.Count -eq 4) "nereid-profile-respec-exact-sex-$sex"
+}
+foreach ($sex in @('male','Both','',1,$null)) {
+    $profileArgs.Parameters=@{race='Undine';class='Fighter';allocation='point-buy';sex=$sex}
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @profileArgs } 'nereid-profile-respec-invalid-sex'
+}
+$profileArgs.Parameters.Remove('sex')
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @profileArgs } 'nereid-profile-respec-missing-sex'
+
+foreach ($nereidScenario in @('working-save-elemental-nereid-creation','working-save-elemental-nereid-respec')) {
+    $creatorArgs.Scenario = $nereidScenario
+    $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';race='Undine';class='Fighter';allocation='point-buy'}
+    if ($nereidScenario -ceq 'working-save-elemental-nereid-respec') { $creatorArgs.Parameters.sex = 'Male' }
+    $request = New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-nereid-player-request-test')
+    $serialized = $request | ConvertTo-Json -Depth 8 | ConvertFrom-Json
+    Assert-True ($serialized.scenario -ceq $nereidScenario -and $serialized.exitAfterCompletion -and
+        @($serialized.parameters.PSObject.Properties).Count -eq $(if ($nereidScenario -ceq 'working-save-elemental-nereid-respec') { 5 } else { 4 }) -and
+        $serialized.parameters.race -ceq 'Undine' -and $serialized.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING') `
+        "nereid-player-exact-json-$nereidScenario"
+    Assert-Throws { New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $false `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-nereid-player-request-test') } `
+        "nereid-player-rejects-no-exit-$nereidScenario"
+    foreach ($invalid in @(
+        @{saveName='KMG_AUTOMATION_BASELINE';race='Undine';class='Fighter';allocation='point-buy'},
+        @{saveName='KMG_AUTOMATION_WORKING';race='Oread';class='Fighter';allocation='point-buy'},
+        @{saveName='KMG_AUTOMATION_WORKING';race='Undine';class='Gunslinger';allocation='point-buy'},
+        @{saveName='KMG_AUTOMATION_WORKING';race='Undine';class='Fighter';allocation='roll'},
+        @{saveName='KMG_AUTOMATION_WORKING';race='Undine';class='Fighter';allocation='point-buy';extra=$true})) {
+        $creatorArgs.Parameters = $invalid
+        Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } "nereid-player-rejects-unscoped-$nereidScenario"
+    }
+}
+
+$creatorArgs.Scenario = 'working-save-elemental-nereid-respec'
+foreach ($sex in @('Male','Female')) {
+    $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';race='Undine';class='Fighter';allocation='point-buy';sex=$sex}
+    $request = New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-nereid-player-request-test')
+    Assert-True ($request.parameters.sex -ceq $sex -and $request.parameters.Count -eq 5) "nereid-respec-bounded-sex-$sex"
+    $outerOutput = & $orchestratorPath -Scenario 'working-save-elemental-nereid-respec' -ExpectedVersion '0.0.120' `
+        -SaveName 'KMG_AUTOMATION_WORKING' -Parameters @{race='Undine';class='Fighter';allocation='point-buy';sex=$sex} `
+        -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false 6>&1 | Out-String
+    Assert-True ($outerOutput.Contains('Source-only/WhatIf validation passed.')) "nereid-respec-outer-invocation-$sex"
+}
+foreach ($sex in @('male','Both','',1,$null)) {
+    $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';race='Undine';class='Fighter';allocation='point-buy';sex=$sex}
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } 'nereid-respec-rejects-invalid-sex'
+}
+$creatorArgs.Parameters.Remove('sex')
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } 'nereid-respec-rejects-missing-sex'
+
+foreach ($phase in @('elemental-race-persistence-prepare','elemental-race-module-disabled-persistence',
+    'elemental-race-module-restored-persistence','elemental-race-persistence-verify-absent')) {
+    $creatorArgs.Scenario = $phase
+    $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination'}
+    $request = New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-nereid-persistence-request-test')
+    Assert-True ($request.parameters.Count -eq 2 -and $request.parameters.qualificationTrait -ceq 'NereidFascination') "nereid-persistence-exact-request-$phase"
+    $outerOutput = & $orchestratorPath -Scenario $phase -ExpectedVersion '0.0.120' -SaveName 'KMG_AUTOMATION_WORKING' `
+        -Parameters @{qualificationTrait='NereidFascination'} -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false 6>&1 | Out-String
+    Assert-True ($outerOutput.Contains('Source-only/WhatIf validation passed.')) "nereid-persistence-outer-invocation-$phase"
+    Assert-Throws { New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $false `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-nereid-persistence-request-test') } "nereid-persistence-rejects-no-exit-$phase"
+    foreach ($invalid in @(
+        @{saveName='KMG_AUTOMATION_BASELINE';qualificationTrait='NereidFascination'},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='TreacherousEarth'},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait=$true},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';extra=$true})) {
+        $creatorArgs.Parameters = $invalid
+        Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } "nereid-persistence-rejects-unscoped-$phase"
+    }
+}
+foreach ($phase in @('elemental-race-persistence-prepare','elemental-race-module-disabled-persistence',
+    'elemental-race-module-restored-persistence','elemental-race-persistence-verify-absent')) {
+    $creatorArgs.Scenario=$phase
+    $creatorArgs.Parameters=@{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth'}
+    $terrainRequest=New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-treacherous-effect-request-test')
+    Assert-True ($terrainRequest.parameters.Count -eq 3 -and $terrainRequest.parameters.qualificationEffect -ceq 'TreacherousEarth') "treacherous-effect-exact-json-$phase"
+    Assert-Throws { New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $false `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-treacherous-effect-request-test') } "treacherous-effect-rejects-no-exit-$phase"
+    $outerOutput = & $orchestratorPath -Scenario $phase -ExpectedVersion '0.0.120' -SaveName 'KMG_AUTOMATION_WORKING' `
+        -Parameters @{qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth'} `
+        -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false 6>&1 | Out-String
+    Assert-True ($outerOutput.Contains('Source-only/WhatIf validation passed.')) "treacherous-effect-exact-outer-$phase"
+    foreach ($invalid in @(
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationEffect='TreacherousEarth'},
+        @{saveName='KMG_AUTOMATION_BASELINE';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth'},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='TreacherousEarth';qualificationEffect='TreacherousEarth'},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect=$true},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect='AnyGround'},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth';extra=$true})) {
+        $creatorArgs.Parameters=$invalid
+        Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } "treacherous-effect-rejects-unscoped-$phase"
+    }
+}
+foreach ($phase in @('elemental-race-legacy-migration','working-save-smoke','working-save-elemental-deferred-markers')) {
+    $creatorArgs.Scenario=$phase
+    $creatorArgs.Parameters=@{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth'}
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } "treacherous-effect-rejects-unscoped-phase-$phase"
+}
+
+foreach ($phase in @('elemental-race-module-disabled-persistence','elemental-race-module-restored-persistence')) {
+    $creatorArgs.Scenario=$phase
+    $creatorArgs.Parameters=@{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth';qualificationOperation='scene-roundtrip'}
+    $sceneRequest=New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-completion-scene-request-test')
+    Assert-True ($sceneRequest.parameters.Count -eq 4 -and $sceneRequest.parameters.qualificationOperation -ceq 'scene-roundtrip') "completion-scene-exact-json-$phase"
+    Assert-Throws { New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $false `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-completion-scene-request-test') } "completion-scene-rejects-no-exit-$phase"
+    $outerOutput = & $orchestratorPath -Scenario $phase -ExpectedVersion '0.0.120' -SaveName 'KMG_AUTOMATION_WORKING' `
+        -Parameters @{qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth';qualificationOperation='scene-roundtrip'} `
+        -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false 6>&1 | Out-String
+    Assert-True ($outerOutput.Contains('Source-only/WhatIf validation passed.')) "completion-scene-exact-outer-$phase"
+    foreach ($invalid in @(
+        @{saveName='KMG_AUTOMATION_BASELINE';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth';qualificationOperation='scene-roundtrip'},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationOperation='scene-roundtrip'},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationEffect='TreacherousEarth';qualificationOperation='scene-roundtrip'},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth';qualificationOperation=$true},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth';qualificationOperation='scene-travel'},
+        @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth';qualificationOperation='scene-roundtrip';extra=$true})) {
+        $creatorArgs.Parameters=$invalid
+        Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } "completion-scene-rejects-unscoped-$phase"
+    }
+}
+foreach ($phase in @('elemental-race-persistence-prepare','elemental-race-persistence-verify-absent','working-save-smoke')) {
+    $creatorArgs.Scenario=$phase
+    $creatorArgs.Parameters=@{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth';qualificationOperation='scene-roundtrip'}
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } "completion-scene-rejects-unscoped-phase-$phase"
+}
+
+foreach ($phase in @('elemental-race-legacy-migration','working-save-smoke','working-save-elemental-nereid-creation')) {
+    $creatorArgs.Scenario = $phase
+    $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination'}
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } "nereid-persistence-rejects-other-scenario-$phase"
+}
+
+$creatorArgs.Scenario = 'working-save-elemental-deferred-markers'
+foreach ($fixtureCase in @('public117','deferred117')) {
+    $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';fixtureCase=$fixtureCase}
+    $request = New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-deferred-marker-request-test')
+    Assert-True ($request.parameters.Count -eq 2 -and $request.parameters.fixtureCase -ceq $fixtureCase) "deferred-marker-exact-request-$fixtureCase"
+    $outerOutput = & $orchestratorPath -Scenario $creatorArgs.Scenario -ExpectedVersion '0.0.120' -SaveName 'KMG_AUTOMATION_WORKING' `
+        -Parameters @{fixtureCase=$fixtureCase} -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false 6>&1 | Out-String
+    Assert-True ($outerOutput.Contains('Source-only/WhatIf validation passed.')) "deferred-marker-outer-invocation-$fixtureCase"
+    Assert-Throws { New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $false `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-deferred-marker-request-test') } "deferred-marker-rejects-no-exit-$fixtureCase"
+}
+foreach ($invalid in @(
+    @{saveName='KMG_AUTOMATION_BASELINE';fixtureCase='deferred117'},
+    @{saveName='KMG_AUTOMATION_WORKING';fixtureCase='unknown'},
+    @{saveName='KMG_AUTOMATION_WORKING';fixtureCase=$true},
+    @{saveName='KMG_AUTOMATION_WORKING'},
+    @{saveName='KMG_AUTOMATION_WORKING';qualificationTrait='NereidFascination'},
+    @{saveName='KMG_AUTOMATION_WORKING';fixtureCase='deferred117';extra=$true})) {
+    $creatorArgs.Parameters = $invalid
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } 'deferred-marker-rejects-unscoped-case'
+}
+
+$offCreatorArgs=@{Scenario='disposable-elemental-character-creation-baseline';ExpectedVersion='0.0.120';TimeoutSeconds=600;Parameters=@{creatorCase='module-off'}}
+$offRequest=New-KmgRuntimeRequest @offCreatorArgs -ExitAfterCompletion $true `
+    -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-elemental-off-creator-request-test')
+Assert-True ($offRequest.parameters.Count -eq 1 -and $offRequest.parameters.creatorCase -ceq 'module-off') 'elemental-off-creator-exact-json'
+Assert-Throws { New-KmgRuntimeRequest @offCreatorArgs -ExitAfterCompletion $false `
+    -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-elemental-off-creator-request-test') } 'elemental-off-creator-rejects-no-exit'
+$outerOutput = & $orchestratorPath -Scenario 'disposable-elemental-character-creation-baseline' -ExpectedVersion '0.0.120' `
+    -Parameters @{creatorCase='module-off'} -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false 6>&1 | Out-String
+Assert-True ($outerOutput.Contains('Source-only/WhatIf validation passed.')) 'elemental-off-creator-exact-outer'
+Assert-Throws { & $orchestratorPath -Scenario 'disposable-elemental-character-creation-baseline' -ExpectedVersion '0.0.120' `
+    -Parameters @{creatorCase='module-off'} -ExitAfterCompletion:$false -AllowDirtyGit -WhatIf -Confirm:$false } 'elemental-off-creator-rejects-no-exit-before-deployment'
+foreach ($invalid in @(@{creatorCase='module-on'},@{creatorCase=$true},@{creatorCase='Module-Off'},
+    @{creatorCase='module-off';saveName='KMG_AUTOMATION_WORKING'},@{creatorCase='module-off';saveName='KMG_AUTOMATION_BASELINE'},
+    @{creatorCase='module-off';extra=$true})) {
+    $offCreatorArgs.Parameters=$invalid
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @offCreatorArgs } 'elemental-off-creator-rejects-unscoped-parameters'
+}
+foreach ($phase in @('working-save-smoke','disposable-elemental-character-creation-case','disposable-global-traits-kmg-disabled-control')) {
+    $offCreatorArgs.Scenario=$phase
+    $offCreatorArgs.Parameters=@{creatorCase='module-off'}
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @offCreatorArgs } "elemental-off-creator-rejects-unscoped-phase-$phase"
+}
+$offCreatorArgs.Scenario='disposable-elemental-character-creation-baseline'
+$offCreatorArgs.Parameters=@{creatorCase='module-off'}
+$offCreatorArgs.MainMenuTimeoutSeconds=30
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @offCreatorArgs } 'elemental-off-creator-rejects-load-stage-timeout'
+$offCreatorArgs.MainMenuTimeoutSeconds=0
 
 if ($failures.Count -ne 0) {
     throw "Runtime scenario preflight tests failed: $($failures -join ', ')"

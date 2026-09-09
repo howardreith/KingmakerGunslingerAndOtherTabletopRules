@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.120-elemental-races-completion
+
+- Add Nereid Fascination to the existing Undine SLA replacement selector for
+  all three heritages: once per ordinary rest, standard supernatural aura,
+  total-level/Charisma scaling, source-owned fascination and threat handling.
+- Implement Treacherous Earth's native difficult terrain, touch-ground checker,
+  daily action/resource graph and saved-area ownership. It remains hidden pending
+  native Player/save integration qualification; it is not a selectable feature.
+- Preserve public 0.0.119 Teleportation, the accepted Heritage/background-Trait
+  separation, prior save identities and unrelated released content.
+- Owner authorized merge/publication and waived the repetitive final matrix.
+  [Exact evidence and remaining limits](ELEMENTAL-RACES-COMPLETION.md).
+
 ## 0.0.119-contextual-world-map-teleportation
 
 - Requires a positive persisted ordinary/migrated visit for both Teleport and

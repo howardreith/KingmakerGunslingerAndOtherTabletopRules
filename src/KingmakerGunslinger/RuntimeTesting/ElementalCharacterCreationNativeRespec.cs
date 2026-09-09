@@ -29,6 +29,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly Dictionary<string, int> _respecSpent = new Dictionary<string, int>(StringComparer.Ordinal);
         private readonly JArray _respecPreviewMismatches = new JArray();
         private int _respecCallbacks;
+        private JObject _nereidOriginalBeforeRespec;
         private readonly Dictionary<ElementalAlternateTraitId, int> _respecBloodSpent = new Dictionary<ElementalAlternateTraitId, int>();
 
         private UnitDescriptor CommittedCreatorOwner => _nativeRespec && _respecOriginal != null
@@ -59,6 +60,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             _character["spentBeforeNativeRespec"] = spent;
             SpendNativeRespecBlood();
+            if (_nereidQualification) _nereidOriginalBeforeRespec = DescribeNereidOriginal();
             Game.Instance.Player.RespecCompanion(_respecOriginal, () => {
                 ++_respecCallbacks; _successCallback = true;
                 _character["nativeRespecCallback"] = new JObject {
@@ -79,6 +81,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["distinctOriginalReplacement"] = !ReferenceEquals(_unit, _respecOriginal),
                 ["distinctOriginalPreview"] = !ReferenceEquals(_controller.Preview, _respecOriginal.Descriptor),
                 ["mode"] = _controller.State.Mode.ToString() };
+        }
+
+        private JObject DescribeNereidOriginal()
+        {
+            var owner = _respecOriginal.Descriptor;
+            var remembered = owner.Get<UnitPartElementalHeritageState>()?.CopyResourceAmounts();
+            return new JObject {
+                ["unitId"] = _respecOriginal.UniqueId,
+                ["race"] = owner.Progression.Race.AssetGuid,
+                ["gender"] = owner.Gender.ToString(),
+                ["level"] = owner.Progression.CharacterLevel,
+                ["stats"] = new JArray(AbilityStats.Select(stat => new JObject {
+                    ["base"] = owner.Stats.GetStat(stat).BaseValue,
+                    ["modified"] = owner.Stats.GetStat(stat).ModifiedValue })),
+                ["racialFacts"] = new JArray(RegressionRace.Heritages.Choices().SelectMany(value =>
+                    new[] { value.Marker, value.Affinity, value.SlaFeature }).Concat(RegressionRace.AlternateTraits.Traits()
+                    .SelectMany(value => new[] { value.Marker, value.Provider }))
+                    .Select(value => new JObject { ["guid"] = value.AssetGuid,
+                        ["rank"] = owner.Progression.Features.GetRank(value) })),
+                ["resources"] = new JArray(OwnedRacialResources().Select(value => new JObject {
+                    ["guid"] = value.AssetGuid, ["count"] = owner.Resources.PersistantResources.Count(entry =>
+                        entry != null && ReferenceEquals(entry.Blueprint, value)),
+                    ["amount"] = owner.Resources.GetResourceAmount(value) })),
+                ["remembered"] = new JArray((remembered ?? new Dictionary<string, int>())
+                    .OrderBy(value => value.Key, StringComparer.Ordinal).Select(value =>
+                        new JObject { ["guid"] = value.Key, ["amount"] = value.Value })),
+                ["remote"] = Game.Instance.Player.RemoteCompanions.Count(value => ReferenceEquals(value.Value, _respecOriginal)),
+                ["crossScene"] = ReferenceEquals(_respecOriginal.HoldingState, Game.Instance.Player.CrossSceneState)
+            };
+        }
+
+        private void QualifyCanceledNereidRespec()
+        {
+            if (!_nereidQualification || !_nativeRespec || _respecOriginal == null ||
+                _nereidOriginalBeforeRespec == null || !_controller.State.IsComplete() ||
+                _controller.State.RemainingSelections() != 0 || _respecCallbacks != 0)
+                throw new InvalidOperationException("Exact native Nereid cancellation prerequisites are absent.");
+            CloseOwnedCreatorController(); // invokes this actual Player-respec controller's native Cancel
+            var after = DescribeNereidOriginal();
+            bool exact = _respecCallbacks == 0 && !_successCallback &&
+                JToken.DeepEquals(_nereidOriginalBeforeRespec, after);
+            _character["nativeRespecCancellation"] = new JObject {
+                ["before"] = _nereidOriginalBeforeRespec.DeepClone(), ["after"] = after,
+                ["exact"] = exact, ["successCallbacks"] = _respecCallbacks };
+            _character["canceledNativeRespec"] = exact;
+            _character["nativeCommitPerformed"] = false;
+            if (!exact) throw new InvalidOperationException("Canceled native Nereid respec changed the original character or its spent resource ledger.");
+            if (_raceIndex == _races.Length - 1) QualifyOrdinaryRestAfterNativeRespec(_respecOriginal.Descriptor);
         }
 
         private void EndNativeRespecVisit()
@@ -255,7 +305,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void QualifyOrdinaryRestAfterNativeRespec(UnitDescriptor owner)
         {
-            if (_raceIndex != ElementalCharacterCreationRegressionPlan.NativeRespecVisits - 1) return;
+            if (_raceIndex != _races.Length - 1) return;
             var resources = OwnedRacialResources().Where(resource => owner.Resources.PersistantResources.Any(value =>
                 value != null && ReferenceEquals(value.Blueprint, resource))).ToArray();
             RestController.ApplyRest(owner);

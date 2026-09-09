@@ -75,6 +75,7 @@ namespace KingmakerGunslinger
                 // Commit guarded binary identity before request parsing,
                 // patches, blueprint work, UI attachment, or asset loading.
                 RuntimeTestRunner.RecordEarlyIdentity(context);
+                ElementalNereidQualificationControl.TryActivateEarly(context);
                 CompatibilityAttributionRuntimeControl.TryActivateEarly(context);
                 if (CompatibilityAttributionRuntimeControl.IsAssetFamilyEnabled(
                     Compatibility.CompatibilityAssetFamily.Firearms))

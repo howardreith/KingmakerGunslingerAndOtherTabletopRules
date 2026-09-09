@@ -1565,9 +1565,15 @@ namespace KingmakerGunslinger.DomainTests
                 "b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694",
                 "09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262",
                 "dcd73856-39d4-40ce-9b05-77bf249103d7",
+                "release-manifest.json"
+            })
+                Assertions.True(Read("scripts", "RuntimeHarness.Common.ps1").Contains(token),
+                    "Centralized pinned 0.0.114 identity lost exact provenance: " + token);
+            foreach (string token in new[]
+            {
+                "Get-KmgQualifiedElementalProducerIdentity -Version $ProducerVersion",
                 "$expectedEntryCount = 135",
-                "qualified-elemental-races-0.0.114-release",
-                "release-manifest.json",
+                "authority = $identity.Authority",
                 "Backup-Live-Mod.ps1",
                 "ReadAllBytes($settings)",
                 "WriteAllBytes($settingsTemporary, $settingsBytes)",
@@ -1659,7 +1665,9 @@ namespace KingmakerGunslinger.DomainTests
                 harness.Contains(
                     "function Assert-KmgQualifiedLegacyRuntimeOverlay") &&
                 harness.Contains(
-                    "qualified-elemental-races-0.0.114-release") &&
+                    "qualified-elemental-races-$Version-release") &&
+                harness.Contains(
+                    "[ValidateSet('0.0.114','0.0.117')][string]$ProducerVersion = '0.0.114'") &&
                 harness.Contains(
                     "^KingmakerGunslinger\\.dll\\.[1-9][0-9]*\\.cache$") &&
                 harness.Contains(

@@ -1035,8 +1035,19 @@
     <Compile Include="RuntimeTesting\ElementalBreathScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalBreezeKissedScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalNativeTurnScope.cs" />
+    <Compile Include="RuntimeTesting\ElementalTreacherousScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalTreacherousGroundScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalTreacherousActionScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalNativeProfileCreatorFixture.cs" />
+    <Compile Include="RuntimeTesting\ElementalNereidScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalNereidQualificationControl.cs" />
+    <Compile Include="RuntimeTesting\ElementalNereidThreatScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalTraitNativeTurnScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalBreathPersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalNereidPersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalTreacherousPersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalCompletionSceneScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalDeferredMarkerScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalEfreetiPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalComponentIdentityScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitWeaponInteractionScenario.cs" />
@@ -1063,6 +1074,14 @@
     <Compile Include="ElementalRaces\ElementalEfreetiMagicFactory.cs" />
     <Compile Include="ElementalRaces\ElementalBreathFactory.cs" />
     <Compile Include="ElementalRaces\ElementalBreathPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalTreacherousPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalTreacherousGroundRuntime.cs" />
+    <Compile Include="ElementalRaces\ElementalTreacherousMechanics.cs" />
+    <Compile Include="ElementalRaces\ElementalTreacherousFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalNereidPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalNereidMechanics.cs" />
+    <Compile Include="ElementalRaces\ElementalNereidFactory.cs" />
+
     <Compile Include="ElementalRaces\ElementalBreezeKissedPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalBreezeKissedFactory.cs" />
     <Compile Include="ElementalRaces\ElementalBreezeKissedMechanics.cs" />

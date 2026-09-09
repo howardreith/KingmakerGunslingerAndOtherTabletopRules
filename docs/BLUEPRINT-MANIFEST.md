@@ -14,9 +14,14 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1872 stable identifiers: 1870 active and 2 reserved.
-The 1,869 published 0.0.117 entries remain an immutable prefix; three stable
-Teleportation ability identities are appended for 0.0.118.
+Validator contract: 1883 stable identifiers: 1881 active and 2 reserved.
+
+The 1,869 published 0.0.117 entries and three 0.0.118 Teleportation identities
+remain an immutable prefix. The 0.0.120 completion candidate appends seven
+Nereid Fascination and four Treacherous Earth auxiliary identities.
+It owns 240 active elemental identities. Both traits remain unpublished
+pending qualification; earlier inventory and checkpoint descriptions below
+are historical. See the [current completion ledger](../ELEMENTAL-RACES-COMPLETION.md).
 
 The second reservation, `KMG.ElementalRaces.Diagnostics.ProbeRace`
 (`57005fca40ab4775ae2fea5613214054`), is development-only. Ordinary bootstrap

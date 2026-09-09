@@ -268,8 +268,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
 
                 string[] deferredMarkerGuids = {
-                    "e117e1e0a17a4acec001000000000031", // Treacherous Earth
-                    "e117e1e0a17a4acec001000000000040"  // Nereid Fascination
+                    "e117e1e0a17a4acec001000000000031" // Treacherous Earth
                 };
                 foreach (string guid in deferredMarkerGuids)
                 {
@@ -284,6 +283,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         marker != null && marker.HideInUI && marker.HideInCharacterSheetAndLevelUp && leaking.Length == 0,
                         "all live Features and AllFeatures arrays by exact marker GUID");
                 }
+
+                var nereid = set.Undine.AlternateTraits.Require(ElementalAlternateTraitId.NereidFascination);
+                var undineSla = set.Undine.AlternateTraits.Selections().Single(value =>
+                    value.Definition.Slot == ElementalRacialTraitSlot.RacialSpellLikeAbility);
+                var nereidChoices = new[] { undineSla.RetainMarker,
+                    set.Undine.AlternateTraits.Require(ElementalAlternateTraitId.AcidBreath).Marker,
+                    nereid.Marker, set.Undine.AlternateTraits.Require(ElementalAlternateTraitId.OozeBreath).Marker };
+                var nereidConsumers = library.BlueprintsByAssetId.Values.OfType<BlueprintFeatureSelection>().Distinct()
+                    .Where(selection => (selection.Features ?? new BlueprintFeature[0]).Concat(selection.AllFeatures ?? new BlueprintFeature[0])
+                        .Any(choice => ReferenceEquals(choice, nereid.Marker))).ToArray();
+                Add(assertions, "nereid-ordinary-publication-exact-native-selector",
+                    "ordinary publication; retain, Acid, Nereid, Ooze in the sole existing Undine SLA selector",
+                    "guardedObservation=" + ElementalAlternateTraitPolicy.NereidQualificationActive +
+                        ";consumers=" + nereidConsumers.Length + ";selector=" + undineSla.Selection.AssetGuid,
+                    !ElementalAlternateTraitPolicy.NereidQualificationActive && nereid.Definition.IsPublished &&
+                        !nereid.Marker.HideInUI && !nereid.Marker.HideInCharacterSheetAndLevelUp &&
+                        undineSla.Selection.Features.SequenceEqual(nereidChoices) &&
+                        undineSla.Selection.AllFeatures.SequenceEqual(nereidChoices) && nereidConsumers.Length == 1 &&
+                        ReferenceEquals(nereidConsumers[0], undineSla.Selection) && ElementalNereidFactory.IsExact(nereid),
+                    "live registered BlueprintFeatureSelection arrays and exact supernatural mechanic with no early publication override");
 
                 evidence.FrameworkIdentityCount = owned.Count;
                 evidence.RegisteredIdentityCount = owned.Count(value =>

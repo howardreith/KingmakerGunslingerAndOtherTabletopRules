@@ -14983,6 +14983,94 @@
       "status": "active",
       "milestone": "Contextual world-map teleportation",
       "notes": "Real spellbook-backed strategic spell; no functional local-map target or effect."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.Resource",
+      "guid": "e118e1e0a17a4acec001000000000001",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Nereid Resource; registered regardless of module state; trait publication awaits qualification."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.Ability",
+      "guid": "e118e1e0a17a4acec001000000000002",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Nereid Ability; registered regardless of module state; trait publication awaits qualification."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.FascinatedBuff",
+      "guid": "e118e1e0a17a4acec001000000000003",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Nereid FascinatedBuff; registered regardless of module state; trait publication awaits qualification."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.ShakeFreeAbility",
+      "guid": "e118e1e0a17a4acec001000000000004",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Nereid ShakeFreeAbility; registered regardless of module state; trait publication awaits qualification."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.AssistanceBuff",
+      "guid": "e118e1e0a17a4acec001000000000005",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Nereid AssistanceBuff; registered regardless of module state; trait publication awaits qualification."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.AuraBuff",
+      "guid": "e118e1e0a17a4acec001000000000006",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Nereid AuraBuff; registered regardless of module state; trait publication awaits qualification."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.Area",
+      "guid": "e118e1e0a17a4acec001000000000007",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Nereid Area; registered regardless of module state; trait publication awaits qualification."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth.Resource",
+      "guid": "e118e1e0a17a4acec001000000000008",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Treacherous Earth Resource; native effect graph registered in both module states; material eligibility and publication remain closed."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth.Ability",
+      "guid": "e118e1e0a17a4acec001000000000009",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Treacherous Earth Ability; native effect graph registered in both module states; material eligibility and publication remain closed."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth.TerrainBuff",
+      "guid": "e118e1e0a17a4acec001000000000010",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Treacherous Earth TerrainBuff; native effect graph registered in both module states; material eligibility and publication remain closed."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth.Area",
+      "guid": "e118e1e0a17a4acec001000000000011",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Elemental completion 0.0.118",
+      "notes": "Owned Treacherous Earth Area; native effect graph registered in both module states; material eligibility and publication remain closed."
     }
   ]
 }

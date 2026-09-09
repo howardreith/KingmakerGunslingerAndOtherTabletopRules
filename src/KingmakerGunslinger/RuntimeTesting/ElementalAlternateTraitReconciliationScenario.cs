@@ -180,11 +180,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 }
                 Check(assertions, "trait-matrix-completeness",
-                    evidence.LegalCombinations == 60 &&
-                    evidence.HeritageCombinationRows == 180 &&
-                    evidence.ActivationOrderRows == 360 &&
+                    evidence.LegalCombinations == 61 &&
+                    evidence.HeritageCombinationRows == 183 &&
+                    evidence.ActivationOrderRows == 366 &&
                     evidence.MarkerFirstRows == 21,
-                    "60 published legal sets, 180 heritage rows, 360 order rows, 21 retained marker-first rows");
+                    "61 published legal sets, 183 heritage rows, 366 order rows, 21 retained marker-first rows");
             }
             finally
             {

@@ -22,7 +22,8 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("contextual-world-map-teleportation"
+    effective_suffix = ("elemental-races-completion"
+        if VERSION == "0.0.120" else "contextual-world-map-teleportation"
         if VERSION in {"0.0.118", "0.0.119"} else "elemental-char-gen-stabilization"
         if VERSION == "0.0.117" else "elemental-feats"
         if VERSION == "0.0.116" else "elemental-heritages"

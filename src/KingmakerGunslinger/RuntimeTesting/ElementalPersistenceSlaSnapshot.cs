@@ -72,7 +72,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.Data = RequireAbility(owner.Unit, result.Ability);
                 result.Executable = ResolveExecutableAbility(result.Data);
                 result.CasterLevel = result.Executable.CreateExecutionContext(new TargetWrapper(owner.Unit)).Params.CasterLevel;
-                AbilityType type = IsBreathTrait(PersistenceSlaTrait(fixture, heritage)) ? AbilityType.Supernatural : AbilityType.SpellLike;
+                var trait = PersistenceSlaTrait(fixture, heritage);
+                bool nereid = trait?.Definition.Id == ElementalAlternateTraitId.NereidFascination;
+                AbilityType type = nereid || IsBreathTrait(trait) ? AbilityType.Supernatural : AbilityType.SpellLike;
                 result.Exact = owner.Unit.Blueprint != null && !owner.Unit.Blueprint.IsCheater &&
                     owner.Resources.PersistantResources.Count(value => value != null && ReferenceEquals(value.Blueprint, result.Resource)) == 1 &&
                     owner.Abilities.Enumerable.Count(value => ReferenceEquals(value.Blueprint, result.Ability)) == 1 &&
@@ -84,7 +86,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !result.Data.IsAffectedByArcaneSpellFailure && !result.Executable.IsAffectedByArcaneSpellFailure &&
                     result.AvailableCount == expectedAmount && result.Available == (expectedAmount > 0) &&
                     (expectedLevel == 0 || result.CasterLevel == expectedLevel &&
-                        BreathParametersExact(fixture, heritage, result.Executable, expectedLevel));
+                        BreathParametersExact(fixture, heritage, result.Executable, expectedLevel)) &&
+                    (!nereid || result.Executable.CalculateParams().DC ==
+                        ElementalNereidPolicy.DifficultyClass(owner.Progression.CharacterLevel, owner.Stats.Charisma.Bonus));
                 return result;
             }
         }

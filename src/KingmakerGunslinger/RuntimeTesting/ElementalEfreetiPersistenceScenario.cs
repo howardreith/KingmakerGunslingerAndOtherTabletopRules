@@ -103,6 +103,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     InvokeAbilitySpend(root, resource);
                     return;
                 }
+                if (trait.Definition.Id == ElementalAlternateTraitId.NereidFascination)
+                {
+                    SpendNereidForPersistence(fixture, unit, root, phase, false);
+                    return;
+                }
                 if (IsBreathTrait(trait))
                 {
                     SpendBreathForPersistence(fixture, unit, root, phase);

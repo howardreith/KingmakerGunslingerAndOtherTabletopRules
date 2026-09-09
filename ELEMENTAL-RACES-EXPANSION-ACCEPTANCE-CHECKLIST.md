@@ -1,5 +1,7 @@
 # Elemental Races expansion acceptance checklist
 
+Current 0.0.120 scope, status and evidence: [completion ledger](ELEMENTAL-RACES-COMPLETION.md). Nereid is selectable; Treacherous remains hidden. The owner authorized release with the final repetitive matrix waived. Historical pending statements below do not supersede public 0.0.117 acceptance.
+
 ## Character-creation stabilization (2026-09-07)
 
 - [x] Four heritage and ten alternate-racial-slot selections use the actual native

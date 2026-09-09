@@ -1,12 +1,19 @@
 # Installation, updates, removal, and compatibility
 
-Current release identity is `0.0.119-contextual-world-map-teleportation`.
-Install `KingmakerGunslinger-0.0.119-contextual-world-map-teleportation.zip`
-from the [0.0.119 release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.119)
-through Unity Mod Manager and restart Kingmaker. Preserve FeatureModules.json.
-UMM displays 0.0.119. World-Map Teleportation Spells defaults ON; its schema-11
-migration preserves explicit settings for all twelve modules. The published
-0.0.117 Elemental Races content and its persistent identities are included.
+Current release identity is `0.0.120-elemental-races-completion`.
+Install `KingmakerGunslinger-0.0.120-elemental-races-completion.zip` from the
+[0.0.120 release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.120)
+through Unity Mod Manager and restart Kingmaker. Back up the installed mod first
+and preserve FeatureModules.json. UMM displays 0.0.120; the twelve-module,
+schema-11 configuration inherited from 0.0.119 is unchanged.
+
+Nereid Fascination is selectable; Treacherous Earth remains hidden. Final
+repetitive qualification was waived by the owner. Historical 0.0.114/117 save
+checks and current-artifact checks are separated in the
+[completion ledger](ELEMENTAL-RACES-COMPLETION.md). Actual installed or packaged
+status and exact hashes are recorded there after delivery.
+
+### Retained 0.0.119 Teleportation qualification and limits
 
 The owner authorized this release for testing in an existing high-level game.
 See the [release notes](docs/RELEASE-NOTES-0.0.119.md) and

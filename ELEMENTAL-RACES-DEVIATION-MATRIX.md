@@ -1,5 +1,7 @@
 # Elemental Races deviation matrix
 
+Current 0.0.120 status and evidence: [completion ledger](ELEMENTAL-RACES-COMPLETION.md). Nereid is selectable; sound-only threat recognition is unrepresented and disclosed. Treacherous uses the owner-delegated walkable-ground adaptation but remains hidden pending native Player/save integration qualification. The owner authorized this partial release and waived final repetitive tests. Public 0.0.117 acceptance supersedes earlier pending status below.
+
 These adaptations are owner-approved. Local engine evidence may reject an
 unsafe mechanism, but must not silently change the player-facing rule.
 

@@ -33,6 +33,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 id == ElementalAlternateTraitId.AirInsight ? ElementalAlternateTraitId.StormInTheBlood : id).ToArray();
         }
 
+        internal const int NereidRespecVisitsPerSex = 10;
+        internal static bool IsAllowedNereidRespecSex(string sex) => sex == "Male" || sex == "Female";
+        internal static bool NereidRespecCanceled(int visit)
+        {
+            if (visit < 0 || visit >= 2 * NereidRespecVisitsPerSex) throw new ArgumentOutOfRangeException("visit");
+            return visit % NereidRespecVisitsPerSex == 5 || visit % NereidRespecVisitsPerSex == 9;
+        }
+        internal static int NereidRespecChoice(int visit)
+        {
+            if (visit < 0 || visit >= 2 * NereidRespecVisitsPerSex) throw new ArgumentOutOfRangeException("visit");
+            return new[] { 0, 0, 1, 2, 0, 2, 2, 1, 0, 2 }[visit % NereidRespecVisitsPerSex];
+        }
+
+        internal static int[] NereidRoute(int character)
+        {
+            if (character < 0 || character >= 6) throw new ArgumentOutOfRangeException("character");
+            int heritage = character % 3;
+            return new[] { heritage, (heritage + 1) % 3, heritage, heritage, heritage };
+        }
+        internal static ElementalAlternateTraitId[] NereidTraits(int visit, int revision, bool nativeRespec)
+        {
+            if (visit < 0 || visit >= (nativeRespec ? 2 * NereidRespecVisitsPerSex : 6) || revision < 0 ||
+                revision >= (nativeRespec ? 1 : 5)) throw new ArgumentOutOfRangeException("visit");
+            int local = visit % NereidRespecVisitsPerSex;
+            bool retain = nativeRespec ? local == 2 || local == 4 || local == 9 : revision == 0 || revision == 3;
+            return retain ? new ElementalAlternateTraitId[0] : new[] { ElementalAlternateTraitId.NereidFascination };
+        }
+
         internal static int[] Route(int character)
         {
             switch (character)

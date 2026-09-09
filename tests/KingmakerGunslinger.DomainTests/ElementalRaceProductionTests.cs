@@ -122,11 +122,11 @@ namespace KingmakerGunslinger.DomainTests
                     "KMG.ElementalRaces.", StringComparison.Ordinal) &&
                 string.Equals((string)value["status"], "active",
                     StringComparison.Ordinal)).ToArray();
-            Assertions.Equal(229, elemental.Length,
+            Assertions.Equal(240, elemental.Length,
                 "Production elemental identity count changed.");
-            Assertions.Equal(1872, all.Length,
-                "Manifest total must include 229 production elemental identities.");
-            Assertions.Equal(1870, all.Count(value => string.Equals(
+            Assertions.Equal(1883, all.Length,
+                "Manifest total must include 240 production elemental identities.");
+            Assertions.Equal(1881, all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
             Assertions.Equal(all.Length, all.Select(value =>

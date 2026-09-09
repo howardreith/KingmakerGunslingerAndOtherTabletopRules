@@ -17,6 +17,9 @@ INFORMATIONAL_VERSION = "0.0.119-contextual-world-map-teleportation"
 PACKAGE = "KingmakerGunslinger-0.0.119-local-runtime.zip"
 PACKAGE_SUFFIX = "contextual-world-map-teleportation"
 DETERMINISTIC_TEST_COUNT = 1550
+STATIC_KEY = "teleportation118InheritedContracts"
+MANIFEST_TOTAL = 1872
+MANIFEST_ACTIVE = 1870
 PUBLISHED_117_PREFIX_SHA256 = "c648ebdad613e50c36b97f3337e8247a870d5ec24abc8df55b4f9e9a6a33519b"
 SPELL_IDS = {
     "KMG.Spells.Teleport.Ability": "82e3fb1dce1647b58d3b7169c8520af0",
@@ -43,10 +46,10 @@ def validate(root: Path) -> None:
                    "validate_icon_overhaul107", "validate_icon_polish108",
                    "validate_martial_repair_notifications109",
                    "validate_protection_from_alignment110", "validate_gunslinger_outfit_kitbash111"):
-        importlib.import_module(module).STATIC_KEY = "teleportation118InheritedContracts"
-    baseline.STATIC_KEY = "teleportation118InheritedContracts"
-    baseline.MANIFEST_TOTAL = 1872
-    baseline.MANIFEST_ACTIVE = 1870
+        importlib.import_module(module).STATIC_KEY = STATIC_KEY
+    baseline.STATIC_KEY = STATIC_KEY
+    baseline.MANIFEST_TOTAL = MANIFEST_TOTAL
+    baseline.MANIFEST_ACTIVE = MANIFEST_ACTIVE
     baseline.validate(root)
 
     entries = json.loads((root / "blueprints/blueprints.json").read_text(
@@ -55,9 +58,9 @@ def validate(root: Path) -> None:
         separators=(",", ":")).encode()).hexdigest()
     if digest != PUBLISHED_117_PREFIX_SHA256:
         raise AssertionError("Published 0.0.117 manifest prefix changed")
-    if hashlib.sha256(json.dumps(entries, sort_keys=True, separators=(",", ":")).encode()).hexdigest() != "fd72d5656989033d57ec7bb9b07aee8295c4b0790e58ffccb2219f3d9e47556f":
+    if hashlib.sha256(json.dumps(entries[:1872], sort_keys=True, separators=(",", ":")).encode()).hexdigest() != "fd72d5656989033d57ec7bb9b07aee8295c4b0790e58ffccb2219f3d9e47556f":
         raise AssertionError("Published 0.0.118 blueprint manifest changed")
-    spells = entries[1869:]
+    spells = entries[1869:1872]
     if {entry["symbol"]: entry["guid"] for entry in spells} != SPELL_IDS or any(
             entry["status"] != "active" or entry["plannedType"] != "BlueprintAbility"
             for entry in spells):
@@ -90,10 +93,10 @@ def validate(root: Path) -> None:
         if path.name not in project:
             raise AssertionError(f"Uncompiled Teleportation source: {path.name}")
     require_tokens(root / "scripts/Publish-Release.ps1",
-        r"docs\RELEASE-NOTES-0.0.119.md", "AllowNonDefaultReleaseBranch",
+        rf"docs\RELEASE-NOTES-{VERSION}.md", "AllowNonDefaultReleaseBranch",
         "ConfirmReleaseReady")
     require_tokens(root / "docs/RELEASE-NOTES-0.0.119.md",
-        INFORMATIONAL_VERSION, "real spellbook", "owner authorized",
+        "0.0.119-contextual-world-map-teleportation", "real spellbook", "owner authorized",
         "remain unqualified", "1,550", "0.0.118")
     require_tokens(src / "Spells/Teleportation/TeleportDestinationPolicy.cs",
         "EvaluateSafety", "p.OrdinaryArrivals < 0 || (requireArrival && p.OrdinaryArrivals == 0)")
@@ -114,7 +117,7 @@ def validate(root: Path) -> None:
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))["teleportation119"]
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": 1550,
         "featureModuleCount": 12, "featureModuleSchemaVersion": 11,
         "defaultOn": True, "strategicSpellCount": 3, "nativePointContextOnly": True,
         "realSpellbookExpenditure": True, "ownerReleaseAuthorized": True,

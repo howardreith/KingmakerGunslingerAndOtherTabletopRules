@@ -1,6 +1,15 @@
 # Kingmaker Gunslinger
 
-Current version: **`0.0.119-contextual-world-map-teleportation`** (UMM: **0.0.119**).
+Current version: **0.0.120-elemental-races-completion** (UMM 0.0.120).
+Nereid Fascination is available in the existing Undine Heritage selection.
+The inventory is four races, twelve heritages, eleven racial feats and twenty
+selectable alternate racial traits. Treacherous Earth's mechanic is implemented
+but remains hidden pending native Player/save integration qualification.
+This is a **partial completion release** with the remaining final test repeats
+waived by the owner. See the [release notes](docs/RELEASE-NOTES-0.0.120.md) and
+[current completion ledger](ELEMENTAL-RACES-COMPLETION.md) for exact evidence and limits.
+
+### Retained public 0.0.119 Teleportation behavior
 
 Teleport, Greater Teleport and Word of Recall now appear in native world-map
 point actions when an active party caster has a real available prepared use or

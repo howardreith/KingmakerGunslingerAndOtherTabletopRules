@@ -259,6 +259,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request = request ?? throw new ArgumentNullException("request");
                 _workingSaveSmoke = workingSaveSmoke ??
                     throw new ArgumentNullException("workingSaveSmoke");
+                _nereidPersistence = RuntimeTestScenarioCatalog.IsNereidPersistenceScope(request.Scenario,
+                    (string)request.Parameters?["qualificationTrait"]);
                 _prepare = string.Equals(request.Scenario,
                     RuntimeTestScenarioCatalog
                         .ElementalRacePersistencePrepare,
@@ -385,6 +387,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (_prepare)
                         {
                             _stage = "activate-feat-state-before-save";
+                            if (_nereidPersistence) PrepareNereidSavedRest(1);
                             _preparedFeatTransientState =
                                 PrepareFeatPersistenceTransientState();
                             if (!_preparedFeatTransientState.Value<bool>(
@@ -2987,6 +2990,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _stage = "elemental-persistence-cleanup";
                 try
                 {
+                    // End only the exact fixed fixture areas while their caster
+                    // and scene still exist, including a failed preparation.
+                    if (TreacherousPersistence) CleanupTreacherousFixtureAreas();
                     ResetPhysicalLifecycle();
                     if (!RestorePrepareFeatPersistencePause())
                         throw new InvalidOperationException(
@@ -3063,7 +3069,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void PollCleanup()
             {
                 if (string.IsNullOrWhiteSpace(_exceptionSummary))
+                {
                     Game.Instance.EntityCreator.Tick();
+                    if (_nereidPersistence) { DrainNereidCleanupAreas(); CleanupTreacherousFixtureAreas(); }
+                }
                 object[] expectedUnits = _unitsBefore.Where(value =>
                     !HasFixtureIdentity(value)).ToArray();
                 object[] expectedParty = _partyBefore.Where(value =>
@@ -3072,8 +3081,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Where(value => !HasFixtureIdentity(value)).ToArray();
                 object[] expectedRemote = _remoteBefore.Where(value =>
                     !HasFixtureIdentity(value)).ToArray();
+                // A saved attached aura is an owned cross-scene entity too.
+                // Exclude only exact area references proven at the fresh-load
+                // boundary, and still require their absence from the live pool.
                 object[] expectedCross = _crossBefore.Where(value =>
-                    !HasFixtureIdentity(value)).ToArray();
+                    !HasFixtureIdentity(value) && !IsCompletionSavedAreaFixture(value)).ToArray();
                 object[] currentUnits = Snapshot(_allUnits);
                 object[] currentParty = Snapshot(_party);
                 object[] currentPartyCharacters = _player.PartyCharacters
@@ -3106,6 +3118,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CatalogFixtureIdentityCount(Snapshot(_remote)) == 0 &&
                     CatalogFixtureIdentityCount(Snapshot(_cross)) == 0;
                 _settleUpdates++;
+                if (_nereidPersistence && (_settleUpdates == 1 || cleaned || _settleUpdates == MaximumSettleUpdates))
+                    RecordNereidCleanupBoundary(cleaned);
                 if (!cleaned && _settleUpdates < MaximumSettleUpdates)
                     return;
                 _structuralCleaned = cleaned;
@@ -3145,6 +3159,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Elemental persistence refused to save after starting inventory drift.");
                 RequireFixtureStagingOutOfCombat("before-exact-working-save");
+                if (_normalPathComplete && _nereidPersistence && (_prepare || !_moduleRestored && !_cleanupStarted))
+                {
+                    PrepareNereidSavedCondition(_prepare ? 1 : 2);
+                    PrepareTreacherousSavedArea(_prepare ? 1 : 2);
+                }
                 if (_normalPathComplete)
                     RecordBreathSavedCondition(_prepare ? 1 : _moduleRestored || _cleanupStarted ? 0 : 2,
                         "immediately-before-save");
@@ -3399,6 +3418,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "physicalLifecycleRecords", _physicalLifecycleRecords.DeepClone() },
                     { "efreetiPersistenceRecords", _efreetiPersistenceRecords.DeepClone() },
                     { "breathPersistenceRecords", _breathPersistenceRecords.DeepClone() },
+                    { "nereidPersistenceQualification", _nereidPersistence },
+                    { "nereidPersistenceRecords", _nereidPersistenceRecords.DeepClone() },
                     { "featIdentityCount",
                         ElementalRaceIdentityCatalog.FeatIdentityCount },
                     { "featCount", ElementalFeatPolicy.FeatCount },
