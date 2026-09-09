@@ -22,7 +22,8 @@ Both Teleport families require a positive saved ordinary/migrated visit. A newly
 revealed point remains unavailable until ordinary arrival. A visit made with the
 module OFF may require a normal revisit ON. Check a save/reload on your separate
 high-level campaign; automated fresh-process persistence is qualified on the
-installed stack. Isolated optional-mod profiles and unusual late-campaign states
+installed stack using development artifacts. The owner waived remaining
+final-artifact runtime repeats. Isolated optional-mod profiles and unusual late-campaign states
 remain unqualified. See TELEPORTATION-HARDENING-REPORT.md for exact evidence.
 
 ## Historical maintenance-loop guide

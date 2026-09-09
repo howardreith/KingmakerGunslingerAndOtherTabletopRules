@@ -43,5 +43,6 @@ once during legacy migration; later reveals/unlocks do not create visits.
 For a newly revealed point, verify both spells stay absent until ordinary travel
 arrives there. A visit with the module OFF may require an ordinary revisit ON.
 Save and reload your separate high-level campaign and compare familiarity and
-resource counts. Automated disk persistence is qualified on the installed stack;
-this checklist covers the owner's additional campaign conditions.
+resource counts. Automated disk persistence passed on development artifacts;
+the owner waived remaining final-artifact runtime repeats.
+This checklist covers the owner's additional campaign conditions.

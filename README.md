@@ -22,8 +22,9 @@ See the [release notes](docs/RELEASE-NOTES-0.0.119.md),
 This patch makes persisted visits authoritative for both Teleport families.
 Late revelation or route unlocking alone does not establish a visit. Existing
 counts are retained; older saves receive one explicit legacy inference.
-Fresh-process campaign save/reload and desktop/gamepad coexistence are qualified
-on the installed stack. The owner's high-level campaign playtest, other UMM
+Fresh-process campaign save/reload passed on development artifacts, and
+desktop/gamepad coexistence passed on the committed 0.0.119 candidate. The owner
+authorized publication without the remaining final-artifact runtime repeats. The owner's high-level campaign playtest, other UMM
 versions and complete isolated optional-mod profiles remain unqualified.
 See the [hardening evidence](TELEPORTATION-HARDENING-REPORT.md).
 

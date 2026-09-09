@@ -14,8 +14,10 @@ See the [release notes](docs/RELEASE-NOTES-0.0.119.md) and
 and prepared through normal game mechanisms. Spellbook availability controls
 whether destination actions appear; there is no separate travel window.
 
-Fresh-process campaign persistence, native casting and desktop/gamepad
-coexistence use the installed Kingmaker 2.1.7b / UMM 0.33.0.0 stack. The automation
+Fresh-process campaign persistence passed on development artifacts; native
+casting and desktop/gamepad coexistence passed on the committed 0.0.119 candidate
+using Kingmaker 2.1.7b / UMM 0.33.0.0. The owner explicitly waived remaining
+final-artifact runtime repeats and authorized publication. The automation
 save contains Craft Magic Items data and cannot validate an isolated profile
 without that mod. Complete isolated optional-mod compatibility, Arms and Armor,
 UMM 0.32.4 and unusual late-campaign states remain unqualified. Earlier standalone

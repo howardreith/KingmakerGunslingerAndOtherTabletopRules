@@ -12,7 +12,8 @@
   remain read-only; only uniquely owned disposable saves are written/deleted.
 - Repeats all native teleportation gates and 26 module boundaries. The earlier
   duplicate-arrival concern and a production UI defect were not reproduced;
-  movement and UI implementations remain unchanged.
+  movement and UI implementations remain unchanged. The owner subsequently
+  waived remaining final-artifact runtime repeats and authorized publication.
 - Retains all published 0.0.118 content and blueprint identities. Installed-stack
   qualification does not establish every optional-mod profile, UMM 0.32.4 or
   unusual late-campaign behavior. See the hardening report for exact evidence.

@@ -72,7 +72,16 @@ dependency-free test suite, production compilation, strict build-output
 validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
-## Current 0.0.119 release gates
+## Current 0.0.119 publication authorization
+
+The owner subsequently instructed: "You can forego the remaining tests. Please
+wrap things up, commit, push to origin, and cut the release." This supersedes
+the remaining native-repeat requirements in the original plan below. Preserve
+completed results with their exact artifact identities; do not claim the sealed
+release binary passed runtime tests that were waived. The existing publisher's
+built-in deterministic build/package/provenance checks remain in use.
+
+## Original 0.0.119 release gate plan
 
 The owner authorized a normal public patch from the dedicated repair branch,
 without merging or modifying master. Use the existing provenance-checked
