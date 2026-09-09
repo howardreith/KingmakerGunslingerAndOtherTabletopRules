@@ -1,11 +1,11 @@
 # Elemental Races completion - 0.0.120
 
-**Both traits are implemented and selectable: 21 alternate racial traits total.
-The owner explicitly approved merge and release after being asked about the
-AGENTS exception and Treacherous publication without its remaining native
-Player/respec/save qualification. Final repetitive runtime tests are waived;
-qualification remains partial. Release execution and exact identities are
-recorded below after success.**
+**[v0.0.120 is public](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.120),
+published 2026-09-09T12:11:13Z from `df81bb85c949fd2848454d0f925061387b815ef1`.
+Both traits are implemented and selectable: 21 alternate racial traits total.
+The owner explicitly approved the AGENTS merge exception and publication with
+Treacherous's remaining native Player/respec/save qualification and final runtime
+repetitions waived. Qualification remains partial; installation remains 0.0.117.**
 Only Nereid Fascination and Treacherous Earth are in scope. This ledger supersedes
 historical candidate-only status. Favored-class bonuses and the deliberate
 expansion deferrals remain separate work.
@@ -353,7 +353,7 @@ formatting correction, not a validator/gameplay change or waived failure.
 `final-local-build-01.log` retains the 1,556 PASS / one FAIL result; the corrected
 build is recorded separately. Production `src` remains exact to the feature commit.
 
-## Approved final integration and delivery
+## Approved final integration and public release
 
 The fresh approval authorizes completion of the prepared master merge and public
 0.0.120 release, including Treacherous ordinary publication without its remaining
@@ -393,5 +393,44 @@ concurrent build artifact changes; it failed. The normal non-elevated, source-on
 preflight then passed 464 checks. No new game launch was attempted from this
 write-capable elevated context; the runtime guard is unchanged. Additional runtime
 qualification remains owner-waived, not PASS. The existing installation remains
-0.0.117; no final 0.0.120 installation is claimed. Publication identity will be
-recorded after the approved merge, wrapper push and deterministic release workflow.
+0.0.117; no final 0.0.120 installation was performed.
+
+The merge was committed and pushed through the unchanged authorized wrapper.
+`scripts/Publish-Release.ps1 -Publish -ConfirmReleaseReady` then built twice from
+the exact committed source using the qualified private reference bundle. Both runs
+passed all 1,557 tests, clean Release and strict 135-file UMM validation and
+produced identical ZIP/DLL hashes. The first publisher invocation stopped before
+building because the outer PowerShell caller treated ordinary Git fetch progress
+on stderr as an error; the retry used the native exit code and passed unchanged
+publisher checks. `publication.log` and `publication-02.log` retain those results.
+
+| Published identity | Value |
+|---|---|
+| Version | 0.0.120-elemental-races-completion |
+| Source / peeled tag | df81bb85c949fd2848454d0f925061387b815ef1 |
+| Annotated tag object | 51a749e36d08644f52a509cad0a46cbd23721d78 |
+| ZIP SHA-256 | bcb946539cfeb288991b18f42bf49192ab161c5c949a47a22cc73d689c9e20e7 |
+| DLL SHA-256 | 95448ad8a91d17ec446e65229e1dde76a435a63bd260380af7e263333560c2e0 |
+| DLL MVID | 4b2a5094-14d6-4229-8d39-b58c28487697 |
+| Source fingerprint | a091286c98e420f71a9eea40a1d3e65a938afdd2a3e3834be071c154ea9c900b |
+| ZIP bytes / entries | 23,677,327 / 135 |
+| Final installation | Not installed; existing 0.0.117 retained |
+
+GitHub confirms a public, non-prerelease v0.0.120 with three uploaded assets:
+the installable ZIP, SHA256SUMS.txt and release-manifest.json. Each remote SHA-256
+digest and size matches its local file. The final ZIP's non-DLL entries exactly
+match the passing payload comparison. Evidence:
+`artifacts/qualification/0.0.120/public-release-verification.json` and
+`published-payload-comparison.json`. The published
+[release manifest](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.120/release-manifest.json)
+records the source and hashes. Public117/118/119 tags and assets are unchanged.
+The later verification-record commit changes this ledger only; it does not
+rebuild, retag or replace the published payload.
+
+Owner checks are limited to the two new traits: use a disposable Undine/Oread
+character of the desired heritage, confirm selection/retain and background Traits,
+then exercise one use, rest, threat interruption or terrain expiry. For Treacherous,
+check native respec and spent-use/remaining-area lifetime through a fresh save load;
+these are the explicit qualification gap, not an executed PASS. No rules decision
+remains outstanding. Favored-class bonuses and all original scope deferrals remain
+separate missions.
