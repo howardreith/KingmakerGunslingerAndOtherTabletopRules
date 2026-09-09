@@ -1058,47 +1058,28 @@ namespace KingmakerGunslinger.DomainTests
             Case("reload.result.unknown-status", ReloadResultUnknownStatus),
             Case("reload.result.null-values", ReloadResultNullValues),
             Case("reload.result.format", ReloadResultFormat),
-            Case("overhaul-kit.snapshot.valid", OverhaulKitSnapshotValid),
-            Case("overhaul-kit.snapshot.capture", OverhaulKitSnapshotCapture),
-            Case("overhaul-kit.snapshot.equality", OverhaulKitSnapshotEquality),
-            Case("overhaul-kit.snapshot.format", OverhaulKitSnapshotFormat),
-            Case("overhaul-kit.snapshot.negative", OverhaulKitSnapshotNegativeRejected),
-            Case("overhaul-kit.snapshot.null-inventory", OverhaulKitSnapshotNullInventoryRejected),
-            Case("overhaul-kit.snapshot.negative-store-count", OverhaulKitSnapshotNegativeStoreCountRejected),
-            Case("overhaul.transaction.success", OverhaulTransactionSuccess),
-            Case("overhaul.transaction.normal-rejected", OverhaulTransactionNormalRejected),
-            Case("overhaul.transaction.broken-rejected", OverhaulTransactionBrokenRejected),
-            Case("overhaul.transaction.missing-kit", OverhaulTransactionMissingKit),
-            Case("overhaul.transaction.null-state-store", OverhaulTransactionNullStateStore),
-            Case("overhaul.transaction.null-inventory", OverhaulTransactionNullInventory),
-            Case("overhaul.transaction.null-state", OverhaulTransactionNullState),
-            Case("overhaul.transaction.state-write-failure-restores-kit", OverhaulTransactionStateWriteFailureRestoresKit),
-            Case("overhaul.transaction.post-state-mutation-failure-restores-both", OverhaulTransactionPostStateMutationFailureRestoresBoth),
-            Case("overhaul.transaction.state-rollback-failure-surfaced", OverhaulTransactionStateRollbackFailureSurfaced),
-            Case("overhaul.transaction.inventory-rollback-failure-surfaced", OverhaulTransactionInventoryRollbackFailureSurfaced),
-            Case("overhaul.transaction.post-remove-failure-restores-kit", OverhaulTransactionPostRemoveFailureRestoresKit),
-            Case("overhaul.result.success", OverhaulResultSuccess),
-            Case("overhaul.result.rejected", OverhaulResultRejected),
-            Case("overhaul.result.unknown-status", OverhaulResultUnknownStatus),
-            Case("overhaul.result.null-snapshots", OverhaulResultNullSnapshots),
-            Case("overhaul.runtime-result.success", OverhaulRuntimeResultSuccess),
-            Case("overhaul.runtime-result.identity-mismatch", OverhaulRuntimeResultIdentityMismatch),
-            Case("overhaul.runtime-result.revision-mismatch", OverhaulRuntimeResultRevisionMismatch),
+            Case("gunsmith-kit.snapshot.valid", GunsmithKitSnapshotValid),
+            Case("gunsmith-kit.snapshot.capture", GunsmithKitSnapshotCapture),
+            Case("gunsmith-kit.snapshot.equality", GunsmithKitSnapshotEquality),
+            Case("gunsmith-kit.snapshot.format", GunsmithKitSnapshotFormat),
+            Case("gunsmith-kit.snapshot.negative", GunsmithKitSnapshotNegativeRejected),
+            Case("gunsmith-kit.snapshot.null-inventory", GunsmithKitSnapshotNullInventoryRejected),
+            Case("gunsmith-kit.snapshot.negative-store-count", GunsmithKitSnapshotNegativeStoreCountRejected),
             Case("repair.transaction.success", RepairTransactionSuccess),
             Case("repair.transaction.normal-rejected", RepairTransactionNormalRejected),
-            Case("repair.transaction.wrecked-rejected", RepairTransactionWreckedRejected),
+            Case("repair.transaction.wrecked-to-normal", RepairTransactionWreckedToNormal),
             Case("repair.transaction.loaded-single-shot-success", RepairTransactionLoadedSingleShotSuccess),
             Case("repair.transaction.loaded-multi-round-success", RepairTransactionLoadedMultiRoundSuccess),
             Case("repair.transaction.missing-kit", RepairTransactionMissingKit),
             Case("repair.transaction.null-state-store", RepairTransactionNullStateStore),
             Case("repair.transaction.null-inventory", RepairTransactionNullInventory),
             Case("repair.transaction.null-state", RepairTransactionNullState),
-            Case("repair.transaction.state-write-failure-restores-kit", RepairTransactionStateWriteFailureRestoresKit),
+            Case("repair.transaction.state-write-failure-leaves-inventory", RepairTransactionStateWriteFailureLeavesInventory),
             Case("repair.transaction.post-state-mutation-failure-restores-both", RepairTransactionPostStateMutationFailureRestoresBoth),
             Case("repair.transaction.verification-failure-restores-loaded-state", RepairTransactionVerificationFailureRestoresLoadedState),
             Case("repair.transaction.state-rollback-failure-surfaced", RepairTransactionStateRollbackFailureSurfaced),
-            Case("repair.transaction.inventory-rollback-failure-surfaced", RepairTransactionInventoryRollbackFailureSurfaced),
-            Case("repair.transaction.post-remove-failure-restores-kit", RepairTransactionPostRemoveFailureRestoresKit),
+            Case("repair.transaction.repeated-cycles-reuse-tool", RepairTransactionRepeatedCyclesReuseTool),
+            Case("repair.transaction.external-tool-drift-fails-closed", RepairTransactionExternalToolDriftFailsClosed),
             Case("repair.result.success", RepairResultSuccess),
             Case("repair.result.rejected", RepairResultRejected),
             Case("repair.result.unknown-status", RepairResultUnknownStatus),
@@ -1106,12 +1087,19 @@ namespace KingmakerGunslinger.DomainTests
             Case("repair.runtime-result.success", RepairRuntimeResultSuccess),
             Case("repair.runtime-result.identity-mismatch", RepairRuntimeResultIdentityMismatch),
             Case("repair.runtime-result.revision-mismatch", RepairRuntimeResultRevisionMismatch),
+            Case("unified-repair.ability-contract", UnifiedFirearmRepairTests.UnifiedRepairAbilityContract),
+            Case("unified-repair.effective-icon", UnifiedFirearmRepairTests.UnifiedRepairEffectiveIconPreserved),
+            Case("unified-repair.gunsmithing-grant", UnifiedFirearmRepairTests.UnifiedGunsmithingGrantContract),
+            Case("unified-repair.legacy-alias", UnifiedFirearmRepairTests.UnifiedLegacyOverhaulAliasContract),
+            Case("unified-repair.vendor-retirement", UnifiedFirearmRepairTests.UnifiedVendorRetirementContract),
+            Case("unified-repair.manifest-compatibility", UnifiedFirearmRepairTests.UnifiedManifestCompatibilityContract),
+            Case("unified-repair.kit-item-text", UnifiedFirearmRepairTests.UnifiedKitItemTextContract),
             Case("maintenance.fixture-pass", MaintenanceFixturePass),
-            Case("maintenance.overhaul-pass", MaintenanceOverhaulPass),
+            Case("maintenance.overhaul-removed-rejected", MaintenanceRemovedOverhaulStageRejected),
             Case("maintenance.repair-pass", MaintenanceRepairPass),
             Case("maintenance.loop-pass", MaintenanceLoopPass),
             Case("maintenance.second-item-mutation-fails", MaintenanceSecondItemMutationFails),
-            Case("maintenance.resource-drift-fails", MaintenanceResourceDriftFails),
+            Case("maintenance.tool-spending-fails", MaintenanceToolSpendingFails),
             Case("maintenance.fault-delta-fails", MaintenanceFaultDeltaFails),
             Case("maintenance.duplicate-delta-fails", MaintenanceDuplicateDeltaFails),
             Case("maintenance.identity-change-fails", MaintenanceIdentityChangeFails),
@@ -1277,10 +1265,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("state.misfire.wrecked-rejected", StateMisfireWreckedRejected),
             Case("state.repair.broken-to-normal", StateRepairBrokenToNormal),
             Case("state.repair.normal-rejected", StateRepairNormalRejected),
-            Case("state.repair.wrecked-rejected", StateRepairWreckedRejected),
-            Case("state.overhaul.wrecked-to-broken", StateOverhaulWreckedToBroken),
-            Case("state.overhaul.normal-rejected", StateOverhaulNormalRejected),
-            Case("state.overhaul.broken-rejected", StateOverhaulBrokenRejected),
+            Case("state.repair.wrecked-to-normal", StateRepairWreckedToNormal),
             Case("state.wreck.normal-clears-load", StateWreckNormalClearsLoad),
             Case("state.wreck.idempotent", StateWreckIsIdempotent),
             Case("state.codec.empty-roundtrip", StateCodecEmptyRoundTrip),
@@ -1577,8 +1562,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("generic.reload-wrecked-rejected", GenericReloadWreckedRejected),
             Case("generic.reload-loaded-rejected", GenericReloadLoadedRejected),
             Case("generic.reload-missing-resources", GenericReloadMissingResourcesRejected),
-            Case("generic.overhaul-wrecked", GenericOverhaulWrecked),
-            Case("generic.overhaul-broken-rejected", GenericOverhaulBrokenRejected),
+            Case("generic.repair.wrecked-available", GenericRepairWreckedAvailable),
+            Case("generic.repair.normal-rejected", GenericRepairNormalRejected),
             Case("generic.repair-broken", GenericRepairBroken),
             Case("generic.repair-loaded-available", GenericRepairLoadedAvailable),
             Case("generic.repair-missing-kit", GenericRepairMissingKitRejected),
@@ -1871,20 +1856,29 @@ namespace KingmakerGunslinger.DomainTests
         private static void FourthPlaytestOverhaulMaintenance()
         {
             string logic = ThirdPlaytestSource(
-                "src/KingmakerGunslinger/Recovery/OverhaulTestMusketAbilityLogic.cs");
+                "src/KingmakerGunslinger/Recovery/RepairTestMusketAbilityLogic.cs");
             string runtime = ThirdPlaytestSource(
-                "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs");
+                "src/KingmakerGunslinger/Recovery/RepairTestMusketRuntime.cs");
             string blueprint = ThirdPlaytestSource(
+                "src/KingmakerGunslinger/Blueprints/RepairTestMusketAbilityBlueprints.cs");
+            string legacy = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Blueprints/OverhaulTestMusketAbilityBlueprints.cs");
             Assertions.True(logic.Contains("DeliverPromptly") &&
                 !logic.Contains("WorkDurationSeconds") &&
                 !logic.Contains("TimeController.GameTime") &&
                 !logic.Contains("yield return null") &&
                 logic.Contains("ReferenceEquals(completed.Weapon, start.Weapon)") &&
-                runtime.Contains("caster.Unit.IsInCombat") &&
-                blueprint.Contains("Outside active combat") &&
-                blueprint.Contains("\"Instantaneous\""),
-                "Overhaul is not a prompt, out-of-combat, exact-item atomic action.");
+                runtime.Contains("Broken or Wrecked firearm") &&
+                runtime.Contains("Gunsmith's Kit") &&
+                blueprint.Contains("\"Instantaneous\"") &&
+                blueprint.Contains("Wrecked"),
+                "Repair is not a prompt, exact-item, unified Broken-or-Wrecked atomic action.");
+            Assertions.True(legacy.Contains("Hidden = true") &&
+                legacy.Contains("ActionBarAutoFillIgnored = true") &&
+                legacy.Contains("RepairTestMusketAbilityLogic.Create") &&
+                !legacy.Contains("OverhaulTestMusketAbilityLogic") &&
+                !legacy.Contains("Firearm Repair Kit is required"),
+                "The legacy Overhaul identity is not a hidden delegate of the unified repair.");
         }
 
         private static void FourthPlaytestConditionPresentation()
@@ -1898,9 +1892,10 @@ namespace KingmakerGunslinger.DomainTests
                 broken.Contains("Quick Clear") && broken.Contains("Repair Firearm"),
                 "Broken firearm condition presentation omits mechanical recovery guidance.");
             Assertions.True(wrecked.Contains("Wrecked") && wrecked.Contains("cannot fire or reload") &&
-                wrecked.Contains("outside active combat") &&
-                !wrecked.Contains("minute"),
-                "Wrecked firearm condition presentation omits restrictions or Overhaul guidance.");
+                wrecked.Contains("Repair Firearm") &&
+                wrecked.Contains("Gunsmith's Kit") &&
+                !wrecked.Contains("minute") && !wrecked.Contains("Overhaul"),
+                "Wrecked firearm condition presentation omits unified recovery guidance.");
             Assertions.Throws<ArgumentOutOfRangeException>(
                 () => FirearmConditionPresentation.Describe((FirearmCondition)99),
                 "Unknown firearm conditions must fail closed.");
@@ -1930,7 +1925,7 @@ namespace KingmakerGunslinger.DomainTests
                 "src/KingmakerGunslinger/Deeds/QuickClearAbilityLogic.cs");
             Assertions.True(quickClear.Contains("exactly one Broken firearm") &&
                 quickClear.Contains("at least 1 Grit") &&
-                quickClear.Contains("Wrecked firearms require Overhaul Firearm"),
+                quickClear.Contains("Wrecked firearms require Repair Firearm"),
                 "Quick Clear unavailable guidance is not player-readable.");
             string combatLog = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Firearms/FirearmConditionCombatLog.cs");
@@ -1946,8 +1941,6 @@ namespace KingmakerGunslinger.DomainTests
                 "src/KingmakerGunslinger/Deeds/QuickClearRuntime.cs");
             string repair = ThirdPlaytestSource(
                 "src/KingmakerGunslinger/Recovery/RepairTestMusketRuntime.cs");
-            string overhaul = ThirdPlaytestSource(
-                "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs");
             Assertions.True(combatLog.Contains(
                     "NativeCombatLog.Publish(\"firearm\"") &&
                 !combatLog.Contains("IWarningNotificationUIHandler") &&
@@ -1958,8 +1951,7 @@ namespace KingmakerGunslinger.DomainTests
                 deadShot.Contains("PublishAfterCommittedDegradation") &&
                 scatter.Contains("PublishAfterCommittedDegradation") &&
                 quickClearRuntime.Contains("FirearmConditionCombatLog.Publish") &&
-                repair.Contains("FirearmConditionCombatLog.Publish") &&
-                overhaul.Contains("FirearmConditionCombatLog.Publish"),
+                repair.Contains("FirearmConditionCombatLog.Publish"),
                 "Not every production condition transition publishes one native combat-log notification.");
         }
 
@@ -3089,357 +3081,63 @@ namespace KingmakerGunslinger.DomainTests
 
         private static FirearmState BrokenState()
         {
-            return FirearmStateMachine.OverhaulWrecked(WreckedState());
+            return FirearmStateMachine.ApplyMisfireDamage(FirearmState.CreateEmpty());
         }
 
-        private static FirearmOverhaulResult Overhaul(
-            FakeFirearmOverhaulStateStore stateStore,
-            FakeRepairKitInventory inventory)
-        {
-            return new FirearmOverhaulTransactionService()
-                .TryOverhaulWreckedToBroken(stateStore, inventory);
-        }
-
-        private static void OverhaulKitSnapshotValid()
+        private static void GunsmithKitSnapshotValid()
         {
             var snapshot = new RepairKitInventorySnapshot(2);
-            Assertions.Equal(2, snapshot.RepairKits, "Repair-kit count mismatch.");
-            Assertions.True(snapshot.HasOneKit, "A positive repair-kit count must satisfy the one-kit requirement.");
+            Assertions.Equal(2, snapshot.RepairKits, "Reusable-tool count mismatch.");
+            Assertions.True(snapshot.HasOneKit, "A positive tool count must satisfy the one-tool requirement.");
         }
 
-        private static void OverhaulKitSnapshotCapture()
+        private static void GunsmithKitSnapshotCapture()
         {
             var inventory = new FakeRepairKitInventory(3);
             RepairKitInventorySnapshot snapshot = RepairKitInventorySnapshot.Capture(inventory);
-            Assertions.Equal(3, snapshot.RepairKits, "Captured repair-kit count mismatch.");
+            Assertions.Equal(3, snapshot.RepairKits, "Captured reusable-tool count mismatch.");
             Assertions.Equal(1, inventory.CountCalls, "Snapshot capture must read inventory exactly once.");
         }
 
-        private static void OverhaulKitSnapshotEquality()
+        private static void GunsmithKitSnapshotEquality()
         {
             var first = new RepairKitInventorySnapshot(4);
             var second = new RepairKitInventorySnapshot(4);
             var different = new RepairKitInventorySnapshot(3);
-            Assertions.True(first.Equals(second), "Equal repair-kit snapshots were not value-equal.");
+            Assertions.True(first.Equals(second), "Equal tool snapshots were not value-equal.");
             Assertions.Equal(first.GetHashCode(), second.GetHashCode(), "Equal snapshots must share a hash code.");
-            Assertions.False(first.Equals(different), "Different repair-kit snapshots were treated as equal.");
-            Assertions.False(first.Equals(null), "A repair-kit snapshot must not equal null.");
+            Assertions.False(first.Equals(different), "Different tool snapshots were treated as equal.");
+            Assertions.False(first.Equals(null), "A tool snapshot must not equal null.");
         }
 
-        private static void OverhaulKitSnapshotFormat()
+        private static void GunsmithKitSnapshotFormat()
         {
             Assertions.Equal(
                 "repairKits=5",
                 new RepairKitInventorySnapshot(5).ToString(),
-                "Repair-kit snapshot formatting changed.");
+                "Reusable-tool snapshot formatting changed.");
         }
 
-        private static void OverhaulKitSnapshotNegativeRejected()
+        private static void GunsmithKitSnapshotNegativeRejected()
         {
             Assertions.Throws<ArgumentOutOfRangeException>(
                 () => new RepairKitInventorySnapshot(-1),
-                "Negative repair-kit counts must be rejected.");
+                "Negative reusable-tool counts must be rejected.");
         }
 
-        private static void OverhaulKitSnapshotNullInventoryRejected()
+        private static void GunsmithKitSnapshotNullInventoryRejected()
         {
             Assertions.Throws<ArgumentNullException>(
                 () => RepairKitInventorySnapshot.Capture(null),
-                "A null repair-kit inventory must be rejected.");
+                "A null tool inventory must be rejected.");
         }
 
-        private static void OverhaulKitSnapshotNegativeStoreCountRejected()
+        private static void GunsmithKitSnapshotNegativeStoreCountRejected()
         {
             var inventory = new FakeRepairKitInventory(0) { ReportNegativeCount = true };
             Assertions.Throws<InvalidOperationException>(
                 () => RepairKitInventorySnapshot.Capture(inventory),
                 "A negative inventory adapter count must fail closed.");
-        }
-
-        private static void OverhaulTransactionSuccess()
-        {
-            FirearmState wrecked = WreckedState();
-            var stateStore = new FakeFirearmOverhaulStateStore(wrecked);
-            var inventory = new FakeRepairKitInventory(2);
-            FirearmOverhaulResult result = Overhaul(stateStore, inventory);
-            Assertions.True(result.Succeeded, "A Wrecked firearm with one kit must overhaul successfully.");
-            Assertions.Equal(FirearmOverhaulStatus.Overhauled, result.Status, "Overhaul status mismatch.");
-            Assertions.Equal(FirearmCondition.Broken, stateStore.State.Condition, "Overhaul did not stop at Broken.");
-            Assertions.True(stateStore.State.IsEmpty, "Overhaul created ammunition unexpectedly.");
-            Assertions.Equal(1, inventory.Kits, "Overhaul did not consume exactly one repair kit.");
-            Assertions.Equal(1, stateStore.ReplaceCalls, "Successful overhaul must write exact-item state once.");
-            Assertions.Equal(1, inventory.RemoveCalls, "Successful overhaul must consume inventory once.");
-        }
-
-        private static void OverhaulTransactionNormalRejected()
-        {
-            var stateStore = new FakeFirearmOverhaulStateStore(FirearmState.CreateEmpty());
-            var inventory = new FakeRepairKitInventory(2);
-            FirearmOverhaulResult result = Overhaul(stateStore, inventory);
-            Assertions.Equal(FirearmOverhaulStatus.NotWrecked, result.Status, "Normal rejection status mismatch.");
-            Assertions.Equal(0, stateStore.ReplaceCalls, "Normal rejection wrote firearm state.");
-            Assertions.Equal(0, inventory.RemoveCalls, "Normal rejection consumed a repair kit.");
-        }
-
-        private static void OverhaulTransactionBrokenRejected()
-        {
-            FirearmState broken = BrokenState();
-            var stateStore = new FakeFirearmOverhaulStateStore(broken);
-            var inventory = new FakeRepairKitInventory(2);
-            FirearmOverhaulResult result = Overhaul(stateStore, inventory);
-            Assertions.Equal(FirearmOverhaulStatus.NotWrecked, result.Status, "Broken rejection status mismatch.");
-            Assertions.Equal(broken, stateStore.State, "Broken rejection changed state.");
-            Assertions.Equal(2, inventory.Kits, "Broken rejection consumed a kit.");
-        }
-
-        private static void OverhaulTransactionMissingKit()
-        {
-            FirearmState wrecked = WreckedState();
-            var stateStore = new FakeFirearmOverhaulStateStore(wrecked);
-            var inventory = new FakeRepairKitInventory(0);
-            FirearmOverhaulResult result = Overhaul(stateStore, inventory);
-            Assertions.Equal(FirearmOverhaulStatus.InsufficientRepairKit, result.Status, "Missing-kit status mismatch.");
-            Assertions.Equal(wrecked, stateStore.State, "Missing-kit rejection changed firearm state.");
-            Assertions.Equal(0, stateStore.ReplaceCalls, "Missing-kit rejection wrote state.");
-        }
-
-        private static void OverhaulTransactionNullStateStore()
-        {
-            Assertions.Throws<ArgumentNullException>(
-                () => new FirearmOverhaulTransactionService().TryOverhaulWreckedToBroken(
-                    null,
-                    new FakeRepairKitInventory(1)),
-                "A null overhaul state store must be rejected.");
-        }
-
-        private static void OverhaulTransactionNullInventory()
-        {
-            Assertions.Throws<ArgumentNullException>(
-                () => new FirearmOverhaulTransactionService().TryOverhaulWreckedToBroken(
-                    new FakeFirearmOverhaulStateStore(WreckedState()),
-                    null),
-                "A null overhaul inventory must be rejected.");
-        }
-
-        private static void OverhaulTransactionNullState()
-        {
-            var stateStore = new FakeFirearmOverhaulStateStore(WreckedState()) { ReturnNullOnRead = true };
-            Assertions.Throws<InvalidOperationException>(
-                () => Overhaul(stateStore, new FakeRepairKitInventory(1)),
-                "A null exact-item state must fail closed.");
-        }
-
-        private static void OverhaulTransactionStateWriteFailureRestoresKit()
-        {
-            FirearmState wrecked = WreckedState();
-            var stateStore = new FakeFirearmOverhaulStateStore(wrecked) { ThrowOnReplaceCall = 1 };
-            var inventory = new FakeRepairKitInventory(2);
-            FirearmOverhaulTransactionException exception = Assertions.Throws<FirearmOverhaulTransactionException>(
-                () => Overhaul(stateStore, inventory),
-                "A state-write failure must surface as a transaction failure.");
-            Assertions.True(exception.RollbackSucceeded, "Pre-mutation state failure should restore inventory cleanly.");
-            Assertions.Equal(wrecked, stateStore.State, "State-write failure changed firearm state.");
-            Assertions.Equal(2, inventory.Kits, "State-write failure did not restore the repair kit.");
-        }
-
-        private static void OverhaulTransactionPostStateMutationFailureRestoresBoth()
-        {
-            FirearmState wrecked = WreckedState();
-            var stateStore = new FakeFirearmOverhaulStateStore(wrecked)
-            {
-                ThrowOnReplaceCall = 1,
-                MutateBeforeReplaceFailure = true
-            };
-            var inventory = new FakeRepairKitInventory(2);
-            FirearmOverhaulTransactionException exception = Assertions.Throws<FirearmOverhaulTransactionException>(
-                () => Overhaul(stateStore, inventory),
-                "A post-mutation state failure must roll back both resources.");
-            Assertions.True(exception.RollbackSucceeded, "Both resources should have rolled back successfully.");
-            Assertions.Equal(wrecked, stateStore.State, "Firearm state was not rolled back.");
-            Assertions.Equal(2, inventory.Kits, "Repair-kit count was not rolled back.");
-            Assertions.Equal(2, stateStore.ReplaceCalls, "State rollback should perform one compensating replacement.");
-        }
-
-        private static void OverhaulTransactionStateRollbackFailureSurfaced()
-        {
-            var stateStore = new FakeFirearmOverhaulStateStore(WreckedState())
-            {
-                ThrowOnReplaceCall = 1,
-                MutateBeforeReplaceFailure = true,
-                ThrowOnSecondReplace = true
-            };
-            var inventory = new FakeRepairKitInventory(2);
-            FirearmOverhaulTransactionException exception = Assertions.Throws<FirearmOverhaulTransactionException>(
-                () => Overhaul(stateStore, inventory),
-                "A state rollback failure must be surfaced.");
-            Assertions.True(exception.StateRollbackException != null, "State rollback failure was not retained.");
-            Assertions.True(exception.InventoryRollbackException == null, "Inventory should still restore.");
-            Assertions.False(exception.RollbackSucceeded, "Rollback success must be false.");
-            Assertions.Equal(2, inventory.Kits, "Inventory did not restore after state rollback failure.");
-        }
-
-        private static void OverhaulTransactionInventoryRollbackFailureSurfaced()
-        {
-            var stateStore = new FakeFirearmOverhaulStateStore(WreckedState()) { ThrowOnReplaceCall = 1 };
-            var inventory = new FakeRepairKitInventory(2) { ThrowOnAdd = true };
-            FirearmOverhaulTransactionException exception = Assertions.Throws<FirearmOverhaulTransactionException>(
-                () => Overhaul(stateStore, inventory),
-                "An inventory rollback failure must be surfaced.");
-            Assertions.True(exception.InventoryRollbackException != null, "Inventory rollback failure was not retained.");
-            Assertions.True(exception.StateRollbackException == null, "Unchanged firearm state should not fail rollback.");
-            Assertions.False(exception.RollbackSucceeded, "Rollback success must be false.");
-            Assertions.Equal(WreckedState(), stateStore.State, "Inventory rollback failure changed firearm state.");
-        }
-
-        private static void OverhaulTransactionPostRemoveFailureRestoresKit()
-        {
-            FirearmState wrecked = WreckedState();
-            var stateStore = new FakeFirearmOverhaulStateStore(wrecked);
-            var inventory = new FakeRepairKitInventory(2)
-            {
-                ThrowOnRemoveCall = 1,
-                MutateBeforeRemoveFailure = true
-            };
-            FirearmOverhaulTransactionException exception = Assertions.Throws<FirearmOverhaulTransactionException>(
-                () => Overhaul(stateStore, inventory),
-                "A post-remove failure must be surfaced.");
-            Assertions.True(exception.RollbackSucceeded, "Post-remove failure should restore inventory.");
-            Assertions.Equal(2, inventory.Kits, "Post-remove failure did not restore the kit.");
-            Assertions.Equal(wrecked, stateStore.State, "Post-remove failure changed firearm state.");
-            Assertions.Equal(0, stateStore.ReplaceCalls, "State should not be written after inventory failure.");
-        }
-
-        private static void OverhaulResultSuccess()
-        {
-            FirearmState wrecked = WreckedState();
-            FirearmState broken = FirearmStateMachine.OverhaulWrecked(wrecked);
-            var result = new FirearmOverhaulResult(
-                FirearmOverhaulStatus.Overhauled,
-                wrecked,
-                broken,
-                new RepairKitInventorySnapshot(2),
-                new RepairKitInventorySnapshot(1));
-            Assertions.True(result.Succeeded, "Successful result did not report success.");
-            Assertions.True(result.ToString().Contains("status=Overhauled"), "Success format lost status.");
-            Assertions.Throws<ArgumentException>(
-                () => new FirearmOverhaulResult(
-                    FirearmOverhaulStatus.Overhauled,
-                    wrecked,
-                    FirearmState.CreateEmpty(),
-                    new RepairKitInventorySnapshot(2),
-                    new RepairKitInventorySnapshot(1)),
-                "Success must require empty/Broken final state.");
-        }
-
-        private static void OverhaulResultRejected()
-        {
-            FirearmState state = BrokenState();
-            var inventory = new RepairKitInventorySnapshot(3);
-            var result = new FirearmOverhaulResult(
-                FirearmOverhaulStatus.NotWrecked,
-                state,
-                state,
-                inventory,
-                inventory);
-            Assertions.False(result.Succeeded, "Rejected result reported success.");
-            Assertions.Throws<ArgumentException>(
-                () => new FirearmOverhaulResult(
-                    FirearmOverhaulStatus.NotWrecked,
-                    state,
-                    WreckedState(),
-                    inventory,
-                    inventory),
-                "Rejected result must preserve exact state.");
-        }
-
-        private static void OverhaulResultUnknownStatus()
-        {
-            FirearmState state = WreckedState();
-            var inventory = new RepairKitInventorySnapshot(1);
-            Assertions.Throws<ArgumentOutOfRangeException>(
-                () => new FirearmOverhaulResult(
-                    (FirearmOverhaulStatus)99,
-                    state,
-                    state,
-                    inventory,
-                    inventory),
-                "Unknown overhaul status must be rejected.");
-        }
-
-        private static void OverhaulResultNullSnapshots()
-        {
-            FirearmState state = WreckedState();
-            var inventory = new RepairKitInventorySnapshot(1);
-            Assertions.Throws<ArgumentNullException>(
-                () => new FirearmOverhaulResult(
-                    FirearmOverhaulStatus.NotWrecked,
-                    null,
-                    state,
-                    inventory,
-                    inventory),
-                "Null before state must be rejected.");
-            Assertions.Throws<ArgumentNullException>(
-                () => new FirearmOverhaulResult(
-                    FirearmOverhaulStatus.NotWrecked,
-                    state,
-                    state,
-                    null,
-                    inventory),
-                "Null before inventory must be rejected.");
-        }
-
-        private static void OverhaulRuntimeResultSuccess()
-        {
-            FirearmState wrecked = WreckedState();
-            FirearmState broken = FirearmStateMachine.OverhaulWrecked(wrecked);
-            var transaction = new FirearmOverhaulResult(
-                FirearmOverhaulStatus.Overhauled,
-                wrecked,
-                broken,
-                new RepairKitInventorySnapshot(1),
-                new RepairKitInventorySnapshot(0));
-            FirearmItemStateSnapshot before = OverhaulRuntimeSnapshot(12, 7, 0x1234, wrecked);
-            FirearmItemStateSnapshot after = OverhaulRuntimeSnapshot(12, 8, 0x1234, broken);
-            var result = new FirearmOverhaulRuntimeResult(transaction, before, after);
-            Assertions.True(result.Succeeded, "Runtime result did not report success.");
-            Assertions.True(result.ToString().Contains("revision=7->8"), "Runtime result lost revision proof.");
-            Assertions.True(result.ToString().Contains("exactItemPreserved=True"), "Runtime result lost exact-item proof.");
-        }
-
-        private static void OverhaulRuntimeResultIdentityMismatch()
-        {
-            FirearmState wrecked = WreckedState();
-            FirearmState broken = FirearmStateMachine.OverhaulWrecked(wrecked);
-            var transaction = new FirearmOverhaulResult(
-                FirearmOverhaulStatus.Overhauled,
-                wrecked,
-                broken,
-                new RepairKitInventorySnapshot(1),
-                new RepairKitInventorySnapshot(0));
-            Assertions.Throws<ArgumentException>(
-                () => new FirearmOverhaulRuntimeResult(
-                    transaction,
-                    OverhaulRuntimeSnapshot(12, 7, 0x1234, wrecked),
-                    OverhaulRuntimeSnapshot(13, 8, 0x1234, broken)),
-                "Changed repository identity must be rejected.");
-        }
-
-        private static void OverhaulRuntimeResultRevisionMismatch()
-        {
-            FirearmState wrecked = WreckedState();
-            FirearmState broken = FirearmStateMachine.OverhaulWrecked(wrecked);
-            var transaction = new FirearmOverhaulResult(
-                FirearmOverhaulStatus.Overhauled,
-                wrecked,
-                broken,
-                new RepairKitInventorySnapshot(1),
-                new RepairKitInventorySnapshot(0));
-            Assertions.Throws<ArgumentException>(
-                () => new FirearmOverhaulRuntimeResult(
-                    transaction,
-                    OverhaulRuntimeSnapshot(12, 7, 0x1234, wrecked),
-                    OverhaulRuntimeSnapshot(12, 9, 0x1234, broken)),
-                "Revision jumps other than one must be rejected.");
         }
 
         private static FirearmItemStateSnapshot OverhaulRuntimeSnapshot(
@@ -5746,9 +5444,9 @@ namespace KingmakerGunslinger.DomainTests
             FirearmState repaired = FirearmStateMachine.Repair(original);
             Assertions.Equal(FirearmCondition.Broken, original.Condition, "Repair mutated original state.");
             Assertions.Equal(FirearmCondition.Normal, repaired.Condition, "Broken firearm did not become normal.");
-            Assertions.Equal(0, repaired.LoadedRounds, "Repair must discard every loaded round.");
-            Assertions.Equal<AmmunitionId>(null, repaired.LoadedAmmunition,
-                "Repair must clear loaded-ammunition identity.");
+            Assertions.Equal(1, repaired.LoadedRounds, "Unified repair must preserve surviving loaded rounds.");
+            Assertions.Equal(LeadBall(), repaired.LoadedAmmunition,
+                "Unified repair must preserve loaded-ammunition identity.");
         }
 
         private static void StateRepairNormalRejected()
@@ -5759,41 +5457,15 @@ namespace KingmakerGunslinger.DomainTests
                 "Repairing a normal firearm must fail.");
         }
 
-        private static void StateRepairWreckedRejected()
-        {
-            AssertTransitionError(
-                FirearmStateTransitionError.Wrecked,
-                () => FirearmStateMachine.Repair(
-                    LoadedState(0, null, FirearmCondition.Wrecked)),
-                "A wrecked firearm must not silently repair to normal.");
-        }
-
-        private static void StateOverhaulWreckedToBroken()
+        private static void StateRepairWreckedToNormal()
         {
             FirearmState original = LoadedState(0, null, FirearmCondition.Wrecked);
-            FirearmState overhauled = FirearmStateMachine.OverhaulWrecked(original);
-            Assertions.Equal(FirearmCondition.Wrecked, original.Condition, "Overhaul mutated the original state.");
-            Assertions.True(original.IsEmpty, "Original Wrecked state must remain empty.");
-            Assertions.Equal(FirearmCondition.Broken, overhauled.Condition, "Wrecked firearm did not become Broken.");
-            Assertions.True(overhauled.IsEmpty, "Overhauled firearm must remain empty.");
-            Assertions.Equal<AmmunitionId>(null, overhauled.LoadedAmmunition, "Overhaul must not manufacture ammunition.");
-        }
-
-        private static void StateOverhaulNormalRejected()
-        {
-            AssertTransitionError(
-                FirearmStateTransitionError.NotWrecked,
-                () => FirearmStateMachine.OverhaulWrecked(FirearmState.CreateEmpty()),
-                "Overhauling a Normal firearm must fail.");
-        }
-
-        private static void StateOverhaulBrokenRejected()
-        {
-            AssertTransitionError(
-                FirearmStateTransitionError.NotWrecked,
-                () => FirearmStateMachine.OverhaulWrecked(
-                    LoadedState(0, null, FirearmCondition.Broken)),
-                "Overhauling a Broken firearm must fail.");
+            FirearmState repaired = FirearmStateMachine.Repair(original);
+            Assertions.Equal(FirearmCondition.Wrecked, original.Condition, "Repair mutated original state.");
+            Assertions.Equal(FirearmCondition.Normal, repaired.Condition, "Wrecked firearm did not repair straight to Normal.");
+            Assertions.True(repaired.IsEmpty, "A repaired Wrecked firearm must stay empty.");
+            Assertions.Equal<AmmunitionId>(null, repaired.LoadedAmmunition,
+                "Repair must not manufacture ammunition in a Wrecked firearm.");
         }
 
         private static void StateWreckNormalClearsLoad()
@@ -9832,57 +9504,6 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        private sealed class FakeFirearmOverhaulStateStore : IFirearmOverhaulStateStore
-        {
-            private FirearmState _state;
-
-            internal FakeFirearmOverhaulStateStore(FirearmState state)
-            {
-                _state = state ?? throw new ArgumentNullException("state");
-            }
-
-            internal FirearmState State { get { return _state; } }
-            internal int ReadCalls { get; private set; }
-            internal int ReplaceCalls { get; private set; }
-            internal int ThrowOnReplaceCall { get; set; }
-            internal bool MutateBeforeReplaceFailure { get; set; }
-            internal bool ThrowOnSecondReplace { get; set; }
-            internal bool ReturnNullOnRead { get; set; }
-
-            public FirearmState Read()
-            {
-                ReadCalls++;
-                return ReturnNullOnRead ? null : _state;
-            }
-
-            public void Replace(FirearmState expectedCurrent, FirearmState replacement)
-            {
-                if (expectedCurrent == null || replacement == null)
-                {
-                    throw new ArgumentNullException(expectedCurrent == null ? "expectedCurrent" : "replacement");
-                }
-
-                ReplaceCalls++;
-                if (_state != expectedCurrent)
-                {
-                    throw new InvalidOperationException("Synthetic overhaul expected-current mismatch.");
-                }
-
-                bool shouldThrow = ReplaceCalls == ThrowOnReplaceCall ||
-                    (ReplaceCalls == 2 && ThrowOnSecondReplace);
-                if (shouldThrow && !MutateBeforeReplaceFailure)
-                {
-                    throw new InvalidOperationException("Synthetic overhaul state-replace failure.");
-                }
-
-                _state = replacement;
-                if (shouldThrow)
-                {
-                    throw new InvalidOperationException("Synthetic overhaul post-mutation state-replace failure.");
-                }
-            }
-        }
-
         private sealed class FakeRepairKitInventory : IRepairKitInventory
         {
             private int _kits;
@@ -9905,10 +9526,16 @@ namespace KingmakerGunslinger.DomainTests
             internal bool MutateBeforeRemoveFailure { get; set; }
             internal bool ThrowOnAdd { get; set; }
             internal bool ReportNegativeCount { get; set; }
+            internal int RemoveSilentlyAfterReads { get; set; }
 
             public int Count()
             {
                 CountCalls++;
+                if (RemoveSilentlyAfterReads > 0 && CountCalls > RemoveSilentlyAfterReads)
+                {
+                    _kits = 0;
+                }
+
                 return ReportNegativeCount ? -1 : _kits;
             }
 

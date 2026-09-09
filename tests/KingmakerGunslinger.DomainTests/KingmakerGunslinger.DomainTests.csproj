@@ -152,6 +152,7 @@
     <Compile Include="WeaponPresentationMissionTests.cs" />
     <Compile Include="FirearmFitAssetTests.cs" />
     <Compile Include="RepairRuntimePolicyTests.cs" />
+    <Compile Include="UnifiedFirearmRepairTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="MidgameFirearmTests.cs" />
     <Compile Include="TeleportationContextTests.cs" />
@@ -580,24 +581,6 @@
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Reloading\IFirearmReloadStateStore.cs">
       <Link>Reloading\IFirearmReloadStateStore.cs</Link>
-    </Compile>
-    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulResult.cs">
-      <Link>Recovery\FirearmOverhaulResult.cs</Link>
-    </Compile>
-    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulRuntimeResult.cs">
-      <Link>Recovery\FirearmOverhaulRuntimeResult.cs</Link>
-    </Compile>
-    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulStatus.cs">
-      <Link>Recovery\FirearmOverhaulStatus.cs</Link>
-    </Compile>
-    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulTransactionException.cs">
-      <Link>Recovery\FirearmOverhaulTransactionException.cs</Link>
-    </Compile>
-    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\FirearmOverhaulTransactionService.cs">
-      <Link>Recovery\FirearmOverhaulTransactionService.cs</Link>
-    </Compile>
-    <Compile Include="..\..\src\KingmakerGunslinger\Recovery\IFirearmOverhaulStateStore.cs">
-      <Link>Recovery\IFirearmOverhaulStateStore.cs</Link>
     </Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Recovery\IRepairKitInventory.cs">
       <Link>Recovery\IRepairKitInventory.cs</Link>

@@ -72,25 +72,24 @@ def validate(root: Path) -> None:
     state_machine = require_tokens(root / (
         "src/KingmakerGunslinger/Firearms/FirearmStateMachine.cs"),
         "internal static FirearmState Repair(FirearmState state)",
-        "Only a broken firearm can use the ordinary repair transition.",
+        "Only a Broken or Wrecked firearm can be repaired.",
         "FirearmCondition.Normal")
     repair_block = state_machine.split(
         "internal static FirearmState Repair(FirearmState state)", 1)[1]
     repair_block = repair_block.split(
-        "internal static FirearmState OverhaulWrecked", 1)[0]
-    for token in ("0,", "null,", "FirearmCondition.Normal"):
+        "internal static FirearmState Wreck", 1)[0]
+    for token in ("state.LoadedRounds,", "state.LoadedAmmunition,", "FirearmCondition.Normal"):
         if token not in repair_block:
             raise AssertionError(
-                "Broken-to-Normal repair does not authoritatively return empty")
+                "Unified repair does not preserve loaded ammunition")
 
     transaction = require_tokens(root / (
         "src/KingmakerGunslinger/Recovery/"
         "FirearmRepairTransactionService.cs"),
         "RepairKitInventorySnapshot.Capture",
-        "inventory.Remove(1)",
         "stateStore.Replace(beforeState, repairedState)",
         "RestoreState(stateStore, beforeState, repairedState)",
-        "RestoreInventory(inventory, beforeInventory)")
+        "count changed during a repair that consumes nothing")
     if "FirearmRepairStatus.Loaded" in transaction:
         raise AssertionError(
             "Ordinary repair still rejects a loaded firearm")

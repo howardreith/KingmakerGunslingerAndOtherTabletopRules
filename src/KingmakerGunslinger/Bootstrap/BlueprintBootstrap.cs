@@ -640,7 +640,7 @@ namespace KingmakerGunslinger.Bootstrap
                 context.Logger.Info(
                     "blueprints",
                     "initialize.complete",
-                    "Blueprint lifecycle initialization completed exactly once; all active custom blueprints were registered transactionally, the production firearm catalog and item-token state carrier were configured, basic ammunition and Firearm Repair Kit items were published, Firearm Proficiency granted Reload, and Gunsmithing granted Overhaul and Repair.");
+                    "Blueprint lifecycle initialization completed exactly once; all active custom blueprints were registered transactionally, the production firearm catalog and item-token state carrier were configured, basic ammunition and the obsolete legacy kit items were published, Firearm Proficiency granted Reload, and Gunsmithing granted the unified full-round Repair action. The legacy Overhaul ability identity remains registered as a hidden repair alias for save compatibility.");
                 return true;
             }
             catch (Exception exception)
@@ -954,14 +954,14 @@ namespace KingmakerGunslinger.Bootstrap
                         registry,
                         context.Logger,
                         testMusket.Item,
-                        gunsmithingSupplies.OverhaulKit);
+                        gunsmithingSupplies.GunsmithKit);
 
                 BlueprintAbility repairTestMusketAbility =
                     RepairTestMusketAbilityBlueprints.Register(
                         registry,
                         context.Logger,
                         testMusket.Item,
-                        firearmRepairKit);
+                        gunsmithingSupplies.GunsmithKit);
 
                 BlueprintAbility scatterShotAbility =
                     ScatterShotBlueprints.Register(library, registry);
@@ -982,7 +982,7 @@ namespace KingmakerGunslinger.Bootstrap
                     paperCartridgeMode.Ability);
 
                 BlueprintFeature gunsmithing = GunsmithingBlueprints.Register(
-                    registry, overhaulTestMusketAbility, repairTestMusketAbility,
+                    registry, repairTestMusketAbility,
                     gunsmithingCrafting.BasicAbility,
                     gunsmithingCrafting.PaperAbility);
 

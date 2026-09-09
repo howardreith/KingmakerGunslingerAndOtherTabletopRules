@@ -5214,7 +5214,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "qualified receiver-bound working-save path"),
                 Assertion("generic-maintenance-loop", "MaintenanceLoopPassed",
                     maintenance.Message, completeLoop,
-                    "definition-driven exact-equipped Overhaul, Repair, and Reload diagnostics"),
+                    "definition-driven exact-equipped unified Repair and Reload diagnostics"),
                 Assertion("native-heavy-crossbow-isolation",
                     "nativeMarkers=0;markedMarkers=1",
                     "nativeMarkers=" + nativeMarkerCount +
@@ -7132,11 +7132,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility repair = BlueprintBootstrap.RepairTestMusketAbility;
             bool productionActions = reload != null && overhaul != null && repair != null &&
                 reload.Name == "Reload Firearm" &&
-                overhaul.Name == "Overhaul Firearm" &&
                 repair.Name == "Repair Firearm" &&
                 !reload.Description.Contains("Test Musket") &&
+                !repair.Description.Contains("Test Musket") &&
+                repair.Description.Contains("Gunsmith's Kit") &&
+                repair.Description.Contains("Wrecked") &&
+                repair.ComponentsArray.OfType<RepairTestMusketAbilityLogic>()
+                    .Count() == 1 &&
+                overhaul.Hidden && overhaul.ActionBarAutoFillIgnored &&
+                overhaul.Name == "Overhaul Firearm" &&
                 !overhaul.Description.Contains("Test Musket") &&
-                !repair.Description.Contains("Test Musket");
+                !overhaul.Description.Contains("Firearm Repair Kit") &&
+                overhaul.ComponentsArray.OfType<RepairTestMusketAbilityLogic>()
+                    .Count() == 1;
             bool itemPresentationExact;
             string itemPresentation = ObserveProjectItemPresentation(
                 out itemPresentationExact);
@@ -7187,7 +7195,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rapidPresentation && rapidKindIsolation,
                     "native feat catalogs, exact icon references, and disposable fact grants"),
                 Assertion("production-firearm-actions-presentation",
-                    "Reload Firearm, Overhaul Firearm, Repair Firearm; no Test Musket descriptions",
+                    "Reload Firearm and Repair Firearm with reusable-tool text; hidden legacy Overhaul alias delegates to unified repair; no Test Musket descriptions",
                     observed, productionActions,
                     "Firearm Proficiency AddFacts reachable stable ability blueprints"),
                 Assertion("project-item-player-facing-presentation",
@@ -8499,28 +8507,31 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunDisposableOverhaulMaintenance()
         {
-            BlueprintAbility blueprint = BlueprintBootstrap.OverhaulTestMusketAbility;
-            OverhaulTestMusketAbilityLogic logic = blueprint.ComponentsArray
-                .OfType<OverhaulTestMusketAbilityLogic>().Single();
-            BlueprintItemWeapon pistol = typeof(OverhaulTestMusketAbilityLogic)
+            // Historical scenario key retained for documented command compatibility;
+            // the body now exercises the unified full-round Repair Firearm action.
+            BlueprintAbility blueprint = BlueprintBootstrap.RepairTestMusketAbility;
+            RepairTestMusketAbilityLogic logic = blueprint.ComponentsArray
+                .OfType<RepairTestMusketAbilityLogic>().Single();
+            BlueprintItemWeapon pistol = typeof(RepairTestMusketAbilityLogic)
                 .GetField("m_TestMusket", BindingFlags.Instance |
                     BindingFlags.NonPublic).GetValue(logic) as BlueprintItemWeapon;
             if (pistol == null) throw new InvalidOperationException(
-                "Overhaul ability exposed no exact configured firearm.");
-            BlueprintItem overhaulKit = typeof(OverhaulTestMusketAbilityLogic)
-                .GetField("m_RepairKit", BindingFlags.Instance |
-                    BindingFlags.NonPublic).GetValue(logic) as BlueprintItem;
-            if (overhaulKit == null) throw new InvalidOperationException(
-                "Overhaul ability exposed no exact configured kit.");
+                "Repair ability exposed no exact configured firearm.");
+            BlueprintItem gunsmithKit = logic.GunsmithKit;
+            if (gunsmithKit == null) throw new InvalidOperationException(
+                "Repair ability exposed no exact configured reusable tool.");
             BlueprintItemWeapon magicPistol =
                 BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
+            BlueprintItem overhaulKit =
+                BlueprintBootstrap.GunsmithingSupplies.OverhaulKit;
             Player player = Game.Instance.Player;
             Kingmaker.UI.Selection.SelectionManager selection = null;
             GameObject selectionFixtureObject = null;
             UnitEntityData[] selectionBefore = null;
             UnitEntityData[] partyBefore = null;
-            int kitsBefore = player.Inventory.Count(repairKit);
+            int toolsBefore = player.Inventory.Count(gunsmithKit);
+            int repairKitsBefore = player.Inventory.Count(repairKit);
             int overhaulKitsBefore = player.Inventory.Count(overhaulKit);
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
             ItemEntityWeapon weapon = null;
@@ -8528,24 +8539,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool availableOutOfCombat = false, promptCompletion = false,
                 noWorldTimeMutation = false, noLingeringDelivery = false,
                 changedContextAtomic = false, repeatedIdempotent = false,
-                combatBlocked = false, exactCompletion = false,
+                exactCompletion = false, secondCycleCompleted = false,
                 repairCompletion = false, repairAvailable = false,
                 repairDeliveryCompleted = false,
                 repairNoAmmunitionRefund = false,
+                obsoleteKitsUntouched = false,
                 diagnosticBreak = false,
                 diagnosticWreck = false, diagnosticRepeatRejected = false,
-                diagnosticOverhaulRecognized = false,
+                diagnosticRepairRecognized = false,
                 selectionRestored = false, partyRestored = false,
                 cleaned = false;
             TimeSpan gameTimeBefore = default(TimeSpan);
             TimeSpan gameTimeAfter = default(TimeSpan);
-            int staticBefore = -1, staticAfterOverhaul = -1,
+            int staticBefore = -1, staticAfterWreckedRepair = -1,
                 staticAfterRepair = -1, repairRoundsBefore = -1,
                 repairRoundsAfter = -1;
             string repairAmmunitionBefore = null,
                 repairAmmunitionAfter = null;
             long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
-            string overhaulLog = null, repairLog = null,
+            string wreckedRepairLog = null, repairLog = null,
                 diagnosticBreakResult = null, diagnosticWreckResult = null,
                 repairAvailabilityReason = null;
             try
@@ -8553,15 +8565,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 object ignored;
                 string method;
                 if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
-                    new[] { new object[] { repairKit, 2 }, new object[] { repairKit } },
+                    new[] { new object[] { gunsmithKit, 1 }, new object[] { gunsmithKit } },
                     out ignored, out method))
                     throw new InvalidOperationException(
-                        "Temporary Firearm Repair Kit could not be added.");
-                if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
-                    new[] { new object[] { overhaulKit, 2 },
-                        new object[] { overhaulKit } }, out ignored, out method))
-                    throw new InvalidOperationException(
-                        "Temporary Overhaul Kit could not be added.");
+                        "Temporary reusable Gunsmith's Kit could not be added.");
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 weapon = new ItemEntityWeapon(pistol);
@@ -8591,9 +8598,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 FirearmItemStateSnapshot diagnosticBefore =
                     FirearmRuntimeState.Service.GetOrCreate(weapon);
-                int diagnosticOverhaulKits = player.Inventory.Count(
-                    overhaulKit);
+                int diagnosticTools = player.Inventory.Count(gunsmithKit);
                 int diagnosticRepairKits = player.Inventory.Count(repairKit);
+                int diagnosticOverhaulKits = player.Inventory.Count(overhaulKit);
                 int diagnosticPowder = player.Inventory.Count(
                     BlueprintBootstrap.BasicAmmunition.BlackPowder);
                 int diagnosticLead = player.Inventory.Count(
@@ -8640,9 +8647,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         diagnosticBefore.Repository.RuntimeReferenceHash &&
                     wreckResult.Message.Contains(
                         "before=Broken; after=Wrecked") &&
-                    player.Inventory.Count(overhaulKit) ==
-                        diagnosticOverhaulKits &&
+                    player.Inventory.Count(gunsmithKit) == diagnosticTools &&
                     player.Inventory.Count(repairKit) == diagnosticRepairKits &&
+                    player.Inventory.Count(overhaulKit) == diagnosticOverhaulKits &&
                     player.Inventory.Count(
                         BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
                             diagnosticPowder &&
@@ -8660,16 +8667,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.Descriptor.Abilities.GetAbility(blueprint);
                 if (granted == null)
                     throw new InvalidOperationException(
-                        "Kingmaker did not retain the granted Overhaul Firearm fact.");
+                        "Kingmaker did not retain the granted Repair Firearm fact.");
                 var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
                 var context = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
                     data, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
                     new TargetWrapper(unit), null);
-                int kitsAtStart = player.Inventory.Count(repairKit);
+                int toolsAtStart = player.Inventory.Count(gunsmithKit);
+                int repairKitsAtStart = player.Inventory.Count(repairKit);
                 int overhaulKitsAtStart = player.Inventory.Count(overhaulKit);
 
                 availableOutOfCombat = !unit.IsInCombat && logic.IsAvailableFor(data);
-                diagnosticOverhaulRecognized = diagnosticBreak &&
+                diagnosticRepairRecognized = diagnosticBreak &&
                     diagnosticWreck && diagnosticRepeatRejected &&
                     availableOutOfCombat;
 
@@ -8683,28 +8691,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Body.PrimaryHand.InsertItem(weapon);
                 changedContextAtomic = changedContextTick &&
                     changedContextTarget != null && changedContextEnded &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart &&
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart &&
                     FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
                         .Condition == FirearmCondition.Wrecked;
-
-                var combat = new Kingmaker.Controllers.Combat.UnitCombatState(unit);
-                SetExactField(combat, "m_InCombat", true);
-                SetExactProperty(unit, "CombatState", combat);
-                delivery = logic.Deliver(context, new TargetWrapper(unit));
-                bool combatTick = delivery.MoveNext();
-                AbilityDeliveryTarget combatTarget = delivery.Current;
-                bool combatEnded = !delivery.MoveNext();
-                delivery.Dispose();
-                delivery = null;
-                combatBlocked = unit.IsInCombat && !logic.IsAvailableFor(data) &&
-                    combatTick && combatTarget != null && combatEnded &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart &&
-                    FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
-                        .Condition == FirearmCondition.Wrecked &&
-                    OverhaulTestMusketRuntime.Evaluate(unit.Descriptor, pistol,
-                        overhaulKit).Reason.IndexOf("active combat",
-                            StringComparison.OrdinalIgnoreCase) >= 0;
-                SetExactProperty(unit, "CombatState", null);
 
                 string exactRuntimeId = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .ItemRuntimeId;
@@ -8722,25 +8711,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 promptCompletion = noLingeringDelivery &&
                     ReferenceEquals(unit.Body.PrimaryHand.MaybeWeapon, weapon) &&
                     promptAfter.ItemRuntimeId == exactRuntimeId &&
-                    promptAfter.Repository.State.Condition == FirearmCondition.Broken &&
+                    promptAfter.Repository.State.Condition == FirearmCondition.Normal &&
                     promptAfter.Repository.State.LoadedRounds == 0 &&
                     promptAfter.Repository.State.LoadedAmmunition == null &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart - 1;
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart &&
+                    player.Inventory.Count(repairKit) == repairKitsAtStart &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart;
                 noWorldTimeMutation = gameTimeAfter == gameTimeBefore;
 
-                int repeatKits = player.Inventory.Count(overhaulKit);
+                int repeatTools = player.Inventory.Count(gunsmithKit);
                 long repeatLogs = FirearmConditionCombatLog.Attempts;
+                bool repeatAvailable = logic.IsAvailableFor(data);
                 delivery = logic.Deliver(context, new TargetWrapper(unit));
                 bool repeatTick = delivery.MoveNext();
                 AbilityDeliveryTarget repeatTarget = delivery.Current;
                 bool repeatEnded = !delivery.MoveNext();
                 delivery.Dispose();
                 delivery = null;
-                repeatedIdempotent = repeatTick && repeatTarget != null &&
-                    repeatEnded && player.Inventory.Count(overhaulKit) == repeatKits &&
+                repeatedIdempotent = !repeatAvailable &&
+                    repeatTick && repeatTarget != null &&
+                    repeatEnded && player.Inventory.Count(gunsmithKit) == repeatTools &&
                     FirearmConditionCombatLog.Attempts == repeatLogs &&
                     FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
-                        .Condition == FirearmCondition.Broken;
+                        .Condition == FirearmCondition.Normal;
 
                 FirearmRuntimeState.Service.Forget(weapon);
                 unit.Body.PrimaryHand.RemoveItem(false);
@@ -8753,16 +8746,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Wrecked));
 
-                FirearmOverhaulRuntimeResult completed =
-                    OverhaulTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
-                        overhaulKit);
+                FirearmRepairRuntimeResult completed =
+                    RepairTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
+                        gunsmithKit);
                 exactCompletion = completed.Succeeded &&
                     completed.BeforeFirearm.Repository.State.Condition == FirearmCondition.Wrecked &&
-                    completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Broken &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart - 2;
-                staticAfterOverhaul = weapon.Enchantments.Count(value =>
+                    completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Normal &&
+                    completed.AfterFirearm.Repository.State.IsEmpty &&
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart;
+                staticAfterWreckedRepair = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
-                overhaulLog = FirearmConditionCombatLog.LastMessage;
+                wreckedRepairLog = FirearmConditionCombatLog.LastMessage;
+
+                // A second damage/repair cycle must reuse the same tool without
+                // spending or creating anything, including obsolete kits.
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Broken));
+                FirearmRepairRuntimeResult secondCycle =
+                    RepairTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
+                        gunsmithKit);
+                secondCycleCompleted = secondCycle.Succeeded &&
+                    secondCycle.AfterFirearm.Repository.State.Condition ==
+                        FirearmCondition.Normal &&
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart &&
+                    player.Inventory.Count(repairKit) == repairKitsAtStart &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart;
 
                 AmmunitionId loadedIdentity =
                     FirearmStateTokenCatalog.DiagnosticLeadBall;
@@ -8784,33 +8793,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.BasicAmmunition.LeadBall);
                 FirearmRepairAvailability availability =
                     RepairTestMusketRuntime.Evaluate(
-                        unit.Descriptor, magicPistol, repairKit);
+                        unit.Descriptor, magicPistol, gunsmithKit);
                 repairAvailabilityReason = availability.Reason;
 
-                BlueprintAbility repairBlueprint =
-                    BlueprintBootstrap.RepairTestMusketAbility;
-                RepairTestMusketAbilityLogic repairLogic =
-                    repairBlueprint.ComponentsArray.OfType<
-                        RepairTestMusketAbilityLogic>().Single();
-                unit.Descriptor.AddFact(repairBlueprint);
-                Kingmaker.UnitLogic.Abilities.Ability repairGranted =
-                    unit.Descriptor.Abilities.GetAbility(repairBlueprint);
-                if (repairGranted == null)
-                    throw new InvalidOperationException(
-                        "Kingmaker did not retain the granted Repair Firearm fact.");
-                var repairData =
-                    new Kingmaker.UnitLogic.Abilities.AbilityData(
-                        repairGranted);
-                var repairContext =
-                    new Kingmaker.UnitLogic.Abilities
-                        .AbilityExecutionContext(
-                            repairData,
-                            new Kingmaker.UnitLogic.Abilities.AbilityParams(),
-                            new TargetWrapper(unit), null);
                 repairAvailable = availability.IsAvailable &&
-                    repairLogic.IsAvailableFor(repairData);
-                delivery = repairLogic.Deliver(
-                    repairContext, new TargetWrapper(unit));
+                    logic.IsAvailableFor(data);
+                delivery = logic.Deliver(
+                    context, new TargetWrapper(unit));
                 bool repairTick = delivery.MoveNext();
                 AbilityDeliveryTarget repairTarget = delivery.Current;
                 bool repairEnded = !delivery.MoveNext();
@@ -8832,6 +8821,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .BasicAmmunition.BlackPowder) == powderAtRepair &&
                     player.Inventory.Count(BlueprintBootstrap
                         .BasicAmmunition.LeadBall) == leadAtRepair;
+                obsoleteKitsUntouched =
+                    player.Inventory.Count(repairKit) == repairKitsBefore &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsBefore;
                 repairCompletion = repairAvailable &&
                     repairDeliveryCompleted &&
                     loadedBefore.Repository.State.Condition ==
@@ -8842,10 +8834,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         loadedIdentity) &&
                     repaired.Repository.State.Condition ==
                         FirearmCondition.Normal &&
-                    repairRoundsAfter == 0 &&
-                    repaired.Repository.State.LoadedAmmunition == null &&
-                    player.Inventory.Count(repairKit) == kitsAtStart - 1 &&
-                    repairNoAmmunitionRefund;
+                    repairRoundsAfter == 1 &&
+                    repaired.Repository.State.LoadedAmmunition != null &&
+                    repaired.Repository.State.LoadedAmmunition.Equals(
+                        loadedIdentity) &&
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart &&
+                    repairNoAmmunitionRefund &&
+                    obsoleteKitsUntouched;
                 staticAfterRepair = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 repairLog = FirearmConditionCombatLog.LastMessage;
@@ -8885,14 +8880,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             partyBefore.Length &&
                         player.Party.SequenceEqual(partyBefore);
                 }
-                int excess = player.Inventory.Count(repairKit) - kitsBefore;
-                if (excess > 0) player.Inventory.Remove(repairKit, excess);
+                int toolExcess = player.Inventory.Count(gunsmithKit) -
+                    toolsBefore;
+                if (toolExcess > 0) player.Inventory.Remove(gunsmithKit, toolExcess);
+                int repairExcess = player.Inventory.Count(repairKit) -
+                    repairKitsBefore;
+                if (repairExcess > 0) player.Inventory.Remove(repairKit, repairExcess);
                 int overhaulExcess = player.Inventory.Count(overhaulKit) -
                     overhaulKitsBefore;
                 if (overhaulExcess > 0)
                     player.Inventory.Remove(overhaulKit, overhaulExcess);
                 if (unit != null) unit.Dispose();
-                cleaned = player.Inventory.Count(repairKit) == kitsBefore &&
+                cleaned = player.Inventory.Count(gunsmithKit) == toolsBefore &&
+                    player.Inventory.Count(repairKit) == repairKitsBefore &&
                     player.Inventory.Count(overhaulKit) == overhaulKitsBefore &&
                     selectionRestored && partyRestored;
             }
@@ -8902,13 +8902,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";gameTime=" + gameTimeBefore + "->" + gameTimeAfter +
                 ";noLingering=" + noLingeringDelivery +
                 ";changedContextAtomic=" + changedContextAtomic +
-                ";repeatIdempotent=" + repeatedIdempotent +
-                ";combatBlocked=" + combatBlocked + ";completed=" + exactCompletion +
+                ";repeatRejected=" + repeatedIdempotent +
+                ";completed=" + exactCompletion +
+                ";secondCycle=" + secondCycleCompleted +
                 ";diagnosticBreak=" + diagnosticBreak +
                 ";diagnosticWreck=" + diagnosticWreck +
                 ";diagnosticRepeatRejected=" + diagnosticRepeatRejected +
-                ";diagnosticOverhaulRecognized=" +
-                diagnosticOverhaulRecognized +
+                ";diagnosticRepairRecognized=" +
+                    diagnosticRepairRecognized +
                 ";diagnosticBreakResult=" + diagnosticBreakResult +
                 ";diagnosticWreckResult=" + diagnosticWreckResult +
                 ";selectionRestored=" + selectionRestored +
@@ -8917,20 +8918,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";repairAvailabilityReason=" + repairAvailabilityReason +
                 ";repairDelivery=" + repairDeliveryCompleted +
                 ";repairRounds=" + repairRoundsBefore + "->" +
-                repairRoundsAfter + ";repairAmmo=" +
+                    repairRoundsAfter + ";repairAmmo=" +
                 repairAmmunitionBefore + "->" +
                 repairAmmunitionAfter + ";repairNoRefund=" +
                 repairNoAmmunitionRefund +
+                ";obsoleteKitsUntouched=" + obsoleteKitsUntouched +
                 ";repaired=" + repairCompletion + ";cleaned=" + cleaned +
-                ";static=" + staticBefore + "," + staticAfterOverhaul + "," +
+                ";static=" + staticBefore + "," + staticAfterWreckedRepair + "," +
                 staticAfterRepair +
                 ";conditionLogs=" +
                 (FirearmConditionCombatLog.Attempts - conditionLogsBefore) +
-                ";overhaulLog=" + overhaulLog + ";repairLog=" + repairLog;
+                ";wreckedRepairLog=" + wreckedRepairLog + ";repairLog=" + repairLog;
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("overhaul-available-out-of-combat",
-                    "production ability is available with one exact equipped empty Wrecked firearm and a kit",
+                Assertion("repair-available-out-of-combat",
+                    "production ability is available with one exact equipped Wrecked firearm and one reusable Gunsmith's Kit",
                     observed, availableOutOfCombat,
                     "production IAbilityAvailabilityProvider with exact runtime fixtures"),
                 Assertion("development-control-break",
@@ -8945,66 +8947,72 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "a repeated Wreck diagnostic is rejected without another revision",
                     observed, diagnosticRepeatRejected,
                     "fixture policy precondition before repository transition"),
-                Assertion("development-fixture-player-overhaul",
-                    "the production Overhaul ability recognizes the exact Wrecked item produced by the UMM bridge",
-                    observed, diagnosticOverhaulRecognized &&
+                Assertion("development-fixture-player-repair",
+                    "the production Repair Firearm ability recognizes the exact Wrecked item produced by the UMM bridge",
+                    observed, diagnosticRepairRecognized &&
                         promptCompletion,
                     "same runtime item flows from DevelopmentControls through production ability delivery"),
-                Assertion("overhaul-prompt-delivery",
+                Assertion("repair-prompt-delivery",
                     "one production delivery completes immediately with no pending iterator",
                     observed, blueprint.LocalizedDuration.ToString() == "Instantaneous" &&
                         promptCompletion && noLingeringDelivery,
-                    "actual OverhaulTestMusketAbilityLogic delivery enumerator"),
-                Assertion("overhaul-no-world-time-mutation",
-                    "Overhaul Firearm does not advance GameTime",
+                    "actual RepairTestMusketAbilityLogic delivery enumerator"),
+                Assertion("repair-no-world-time-mutation",
+                    "Repair Firearm does not advance GameTime",
                     observed, noWorldTimeMutation,
                     "TimeController.GameTime sampled around production delivery"),
-                Assertion("overhaul-changed-context-atomic",
-                    "unequipping the exact firearm before delivery consumes nothing",
+                Assertion("repair-changed-context-atomic",
+                    "unequipping the exact firearm before delivery changes nothing",
                     observed, changedContextAtomic,
                     "production delivery-boundary prerequisite revalidation"),
-                Assertion("overhaul-repeated-callback-idempotent",
-                    "a repeated delivery does not consume another kit or transition twice",
+                Assertion("repair-repeated-callback-rejected",
+                    "a repeated delivery against the now-Normal firearm is rejected without mutation or logging",
                     observed, repeatedIdempotent,
                     "post-success production delivery against the same exact item"),
-                Assertion("overhaul-combat-gate", "unavailable while unit is in combat",
-                    observed, combatBlocked,
-                    "UnitEntityData.IsInCombat availability and attempted delivery recheck"),
-                Assertion("overhaul-atomic-completion", "same item Wrecked->Broken; one kit; no ammunition",
+                Assertion("repair-atomic-completion",
+                    "same item Wrecked->Normal; tool not spent; empty stays empty; obsolete kits untouched",
                     observed, promptCompletion,
-                    "production ability plus existing exact-item atomic transaction"),
+                    "production ability plus exact-item atomic transaction"),
+                Assertion("repair-second-cycle-tool-reuse",
+                    "a second damage/repair cycle reuses the same Gunsmith's Kit without spending or creating anything",
+                    observed, secondCycleCompleted,
+                    "live inventory counts around repeated production repairs"),
                 Assertion("loaded-repair-ability-available",
-                    "the production Repair Firearm ability is available for one exact equipped loaded Broken firearm and one kit",
+                    "the production Repair Firearm ability is available for one exact equipped loaded Broken firearm and one reusable Gunsmith's Kit",
                     observed, repairAvailable,
                     "production IAbilityAvailabilityProvider and exact runtime item state"),
                 Assertion("loaded-repair-atomic-completion",
-                    "same item Broken with one loaded round -> Normal with zero rounds and no ammunition identity; one kit",
+                    "same item Broken with one loaded round -> Normal with the same round and ammunition identity; nothing consumed",
                     observed, repairCompletion,
                     "actual RepairTestMusketAbilityLogic delivery and exact item-owned repository"),
                 Assertion("loaded-repair-no-ammunition-refund",
-                    "destroyed loaded ammunition does not increase shared powder or lead-ball inventory",
+                    "preserved loaded ammunition does not change shared powder or lead-ball inventory",
                     observed, repairNoAmmunitionRefund,
                     "live player inventory counts sampled around committed delivery"),
+                Assertion("obsolete-kits-never-consumed",
+                    "Firearm Repair Kits and Firearm Overhaul Kits are never required or consumed by unified repair",
+                    observed, obsoleteKitsUntouched,
+                    "live player inventory counts of both retired kit blueprints"),
                 Assertion("magic-static-maintenance-lifecycle",
-                    "The Last Word retains +5, Reliable, and Seeking through Overhaul and loaded Repair",
-                    observed, staticBefore == 3 && staticAfterOverhaul == 3 &&
+                    "The Last Word retains +5, Reliable, and Seeking through Wrecked repair, a second cycle, and loaded repair",
+                    observed, staticBefore == 3 && staticAfterWreckedRepair == 3 &&
                         staticAfterRepair == 3,
                     "exact runtime static-enchantment identities across state-token replacement"),
-                Assertion("overhaul-condition-combat-log",
-                    "one concise combat-log attempt only after completed Wrecked -> Broken",
-                    observed,
-                    overhaulLog != null && overhaulLog.Contains(
-                        ": Broken (Overhaul Firearm)."),
-                    "native BattleLogView Combat-channel API; save-free sink failure is contained"),
                 Assertion("repair-condition-combat-log",
-                    "completed loaded Broken -> empty Normal consumes one repair kit and logs once",
+                    "one concise combat-log attempt only after completed Wrecked -> Normal",
+                    observed,
+                    wreckedRepairLog != null && wreckedRepairLog.Contains(
+                        ": Normal (Repair Firearm)."),
+                    "native BattleLogView Combat-channel API; save-free sink failure is contained"),
+                Assertion("loaded-repair-condition-combat-log",
+                    "completed loaded Broken -> Normal preserves its round and logs once",
                     observed,
                     repairCompletion &&
                     FirearmConditionCombatLog.Attempts == conditionLogsBefore + 3 &&
                     repairLog != null && repairLog.Contains(
                         ": Normal (Repair Firearm)."),
                     "exact repair transaction and native combat-log attempt"),
-                Assertion("request-local-cleanup", "repair-kit inventory and fixture restored",
+                Assertion("request-local-cleanup", "Gunsmith's Kit inventory and fixture restored",
                     observed, cleaned, "guaranteed finally cleanup; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
@@ -9036,7 +9044,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var enchantmentRecords = new List<string>();
             var lootCandidateRecords = new List<string>();
             int projectEntries = 0, invalidProjectCounts = 0, blunderbussEntries = 0;
+            int capitalRetiredKitRows = 0;
             int btslTables = 0, btslEntries = 0, invalidBtslCounts = 0;
+            int btslRetiredKitRows = 0;
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
             int olegRepairRows = -1, olegRepairCount = -1,
                 olegOverhaulRows = -1, olegOverhaulCount = -1,
@@ -9362,8 +9372,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                     { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
                     { BlueprintBootstrap.BasicAmmunition.PaperCartridge, 200 },
-                    { BlueprintBootstrap.FirearmRepairKit, 10 },
-                    { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
                     { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
                 };
                 foreach (LootItemsPackFixed component in
@@ -9373,7 +9381,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintItem item = CapitalVendorBlueprints.ReadItem(component);
                     int expectedCount;
                     if (item != null && expectedProjectItems.TryGetValue(item,
-                        out expectedCount))
+                            out expectedCount))
                     {
                         projectEntries++;
                         if (CapitalVendorBlueprints.ReadCount(component) != expectedCount)
@@ -9382,6 +9390,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (ReferenceEquals(item,
                         BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item))
                         blunderbussEntries++;
+                    if (ReferenceEquals(item, BlueprintBootstrap.FirearmRepairKit) ||
+                        ReferenceEquals(item,
+                            BlueprintBootstrap.GunsmithingSupplies.OverhaulKit))
+                        capitalRetiredKitRows++;
                 }
             }
             var btslEquipmentExpected = new Dictionary<BlueprintItem, int>
@@ -9400,12 +9412,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                 { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
                 { BlueprintBootstrap.BasicAmmunition.PaperCartridge, 200 },
-                { BlueprintBootstrap.FirearmRepairKit, 10 },
-                { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
                 { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
             };
+            BlueprintItem[] btslRetiredKits =
+            {
+                BlueprintBootstrap.FirearmRepairKit,
+                BlueprintBootstrap.GunsmithingSupplies.OverhaulKit
+            };
             BlueprintItem[] btslOwned = btslEquipmentExpected.Keys.Concat(
-                btslSupportExpected.Keys).ToArray();
+                btslSupportExpected.Keys).Concat(btslRetiredKits).ToArray();
             foreach (string guid in BeneathStolenLandsVendorBlueprints.TableGuids)
             {
                 BlueprintSharedVendorTable table = tables.SingleOrDefault(value =>
@@ -9427,6 +9442,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (matches.Length != 1 || CapitalVendorBlueprints.ReadCount(
                         matches[0]) != expected.Value) invalidBtslCounts++;
                 }
+                btslRetiredKitRows += fixedRows.Count(value => btslRetiredKits
+                    .Contains(CapitalVendorBlueprints.ReadItem(value)));
                 invalidBtslCounts += fixedRows.Count(value =>
                     btslOwned.Contains(CapitalVendorBlueprints.ReadItem(value)) &&
                     !desired.ContainsKey(CapitalVendorBlueprints.ReadItem(value)));
@@ -9702,6 +9719,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 associations + ";invalid=" + invalidAssociations +
                 ";supplementalLoot=" + supplementalLoot + ";projectEntries=" +
                 projectEntries + ";invalidProjectCounts=" + invalidProjectCounts +
+                ";capitalRetiredKitRows=" + capitalRetiredKitRows +
                 ";blunderbussEntries=" + blunderbussEntries +
                 ";olegTable=" + (olegTable == null ? "<missing>" :
                     olegTable.name + ":" + olegTable.AssetGuid) +
@@ -9713,6 +9731,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";olegOwners=" + string.Join(",", olegReferences) +
                 ";btslTables=" + btslTables + ";btslEntries=" + btslEntries +
                     ";invalidBtslCounts=" + invalidBtslCounts +
+                    ";btslRetiredKitRows=" + btslRetiredKitRows +
                 ";btslSpearTables=" + btslSpearTables +
                     ";btslSpearEntries=" + btslSpearEntries +
                     ";invalidBtslSpearCounts=" + invalidBtslSpearCounts +
@@ -9803,10 +9822,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "twelve exact early/+1/supply entries including Paper and one Blunderbuss",
-                    observed, projectEntries == 12 && invalidProjectCounts == 0 &&
-                        blunderbussEntries == 1,
-                    "registered early and +1 firearms, ammunition, and supplies"),
+                    "ten exact early/+1/supply entries including Paper, one Blunderbuss, and zero retired maintenance kits",
+                    observed, projectEntries == 10 && invalidProjectCounts == 0 &&
+                        blunderbussEntries == 1 && capitalRetiredKitRows == 0,
+                    "registered early and +1 firearms, ammunition, and the reusable Gunsmith's Kit"),
                 Assertion("oleg-firearm-supplies-absent",
                     "exact Oleg table contains zero project-owned firearm-supply rows",
                     observed, olegTable != null && string.Equals(olegTable.name,
@@ -9819,7 +9838,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, olegOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
                 Assertion("bokken-firearm-supply-stock",
-                    "exact Bokken unit-loot table contains the six required fixed firearm-supply rows",
+                    "exact Bokken unit-loot table contains the four stocked firearm-supply rows and zero retired kit rows",
                     observed, bokkenTable != null && string.Equals(bokkenTable.name,
                         BokkenFirearmSupplyVendorBlueprints.ExpectedTableName,
                         StringComparison.Ordinal) && bokkenPowderRows == 1 &&
@@ -9829,10 +9848,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
                         bokkenPaperRows == 1 && bokkenPaperCount ==
                             BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
-                        bokkenRepairRows == 1 && bokkenRepairCount ==
-                            BokkenFirearmSupplyVendorBlueprints.RepairKitCount &&
-                        bokkenOverhaulRows == 1 && bokkenOverhaulCount ==
-                            BokkenFirearmSupplyVendorBlueprints.OverhaulKitCount &&
+                        bokkenRepairRows == 0 && bokkenOverhaulRows == 0 &&
                         bokkenGunsmithRows == 1 && bokkenGunsmithCount ==
                             BokkenFirearmSupplyVendorBlueprints.GunsmithKitCount,
                     "exact BlueprintUnitLoot and project-owned item references"),
@@ -9841,14 +9857,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, bokkenOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
                 Assertion("btsl-vendor-publication",
-                    "four exact standalone/campaign tables; six equipment rows on Honest Guy and six support rows on Xelliren",
-                    observed, btslTables == 4 && btslEntries == 24 &&
-                        invalidBtslCounts == 0,
+                    "four exact standalone/campaign tables; six equipment rows on Honest Guy and four support rows on Xelliren; zero retired kits",
+                    observed, btslTables == 4 && btslEntries == 20 &&
+                        invalidBtslCounts == 0 && btslRetiredKitRows == 0,
                     "exact discovered DLC shared-vendor table GUID contracts"),
                 Assertion("btsl-spear-vendor-publication",
                     "six singular generic spear entries on each Honest Guy table and zero on Xelliren",
                     observed, btslSpearTables == 4 && btslSpearEntries == 12 &&
-                        invalidBtslSpearCounts == 0 && btslEntries == 24 &&
+                        invalidBtslSpearCounts == 0 && btslEntries == 20 &&
                         invalidBtslCounts == 0,
                     "exact installed shared-vendor table identities and additive fixed-item rows"),
                 Assertion("eastern-vendor-publication",
@@ -9866,7 +9882,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "module OFF publishes zero Eastern BTSL rows while retaining firearm and spear rows",
                     observed, easternBtslTables == 4 && easternBtslRows ==
                         (expectedEasternCommerce ? 24 : 0) &&
-                        easternNamedBtslRows == 0 && btslEntries == 24 &&
+                        easternNamedBtslRows == 0 && btslEntries == 20 &&
                         invalidBtslCounts == 0 && btslSpearEntries == 12 &&
                         invalidBtslSpearCounts == 0,
                     "four exact DLC table identities and item-reference cardinality"),

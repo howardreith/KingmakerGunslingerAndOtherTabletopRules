@@ -191,7 +191,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "DevelopmentControls\n                    .BreakSelectedEquippedFirearmForDebug()",
                 "DevelopmentControls\n                    .WreckSelectedEquippedFirearmForDebug()",
-                "diagnosticOverhaulRecognized",
+                "diagnosticRepairRecognized",
                 "development-control-repeat-rejected",
                 "new GameObject(\n                        \"KMG Disposable SelectionManager Fixture\")",
                 "AddComponent<\n                        Kingmaker.UI.Selection.SelectionManager>()",
@@ -199,7 +199,7 @@ namespace KingmakerGunslinger.DomainTests
                 "selection.SelectedUnits.AddRange(selectionBefore)",
                 "player.Party.AddRange(partyBefore)" })
                 Assertions.True(runner.Contains(token),
-                    "The guarded Overhaul scenario does not exercise or restore the UMM bridge contract: " +
+                    "The guarded unified repair scenario does not exercise or restore the UMM bridge contract: " +
                     token);
         }
 

@@ -19,10 +19,9 @@ namespace KingmakerGunslinger.Qualification
             int secondRuntimeReferenceHash,
             long secondRevision,
             FirearmState secondItemState,
-            int repairKits,
+            int gunsmithKits,
             int blackPowder,
             int leadBalls,
-            long overhaulCompleted,
             long repairCompleted,
             long reloadCompleted,
             long totalFaults,
@@ -43,8 +42,8 @@ namespace KingmakerGunslinger.Qualification
             }
 
             if (revision < 0 || secondRevision < 0 || visibleFirearms < 0 ||
-                repairKits < 0 || blackPowder < 0 || leadBalls < 0 ||
-                overhaulCompleted < 0 || repairCompleted < 0 ||
+                gunsmithKits < 0 || blackPowder < 0 || leadBalls < 0 ||
+                repairCompleted < 0 ||
                 reloadCompleted < 0 || totalFaults < 0 || totalDuplicates < 0)
             {
                 throw new ArgumentOutOfRangeException(
@@ -61,10 +60,9 @@ namespace KingmakerGunslinger.Qualification
             SecondRuntimeReferenceHash = secondRuntimeReferenceHash;
             SecondRevision = secondRevision;
             SecondItemState = secondItemState ?? throw new ArgumentNullException("secondItemState");
-            RepairKits = repairKits;
+            GunsmithKits = gunsmithKits;
             BlackPowder = blackPowder;
             LeadBalls = leadBalls;
-            OverhaulCompleted = overhaulCompleted;
             RepairCompleted = repairCompleted;
             ReloadCompleted = reloadCompleted;
             TotalFaults = totalFaults;
@@ -80,10 +78,9 @@ namespace KingmakerGunslinger.Qualification
         internal int SecondRuntimeReferenceHash { get; private set; }
         internal long SecondRevision { get; private set; }
         internal FirearmState SecondItemState { get; private set; }
-        internal int RepairKits { get; private set; }
+        internal int GunsmithKits { get; private set; }
         internal int BlackPowder { get; private set; }
         internal int LeadBalls { get; private set; }
-        internal long OverhaulCompleted { get; private set; }
         internal long RepairCompleted { get; private set; }
         internal long ReloadCompleted { get; private set; }
         internal long TotalFaults { get; private set; }

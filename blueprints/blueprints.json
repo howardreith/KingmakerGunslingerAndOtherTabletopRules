@@ -286,7 +286,7 @@
       "plannedType": "BlueprintItem",
       "status": "active",
       "milestone": "Sprint 28",
-      "notes": "Stackable inert Firearm Repair Kit consumed by the full-round exact-item Wrecked-to-Broken overhaul ability."
+      "notes": "Retired stackable Firearm Repair Kit kept registered for save compatibility; no longer sold or consumed. Unified Repair Firearm uses the reusable Gunsmith's Kit instead."
     },
     {
       "symbol": "KMG.Test.OverhaulAbility",
@@ -294,7 +294,7 @@
       "plannedType": "BlueprintAbility",
       "status": "active",
       "milestone": "Sprint 28",
-      "notes": "Full-round personal extraordinary ability that consumes one Firearm Repair Kit and changes exactly one equipped empty Wrecked Test Musket to empty Broken without item replacement."
+      "notes": "Hidden legacy alias kept for save compatibility; delegates to the unified full-round Repair Firearm operation using the reusable Gunsmith's Kit."
     },
     {
       "symbol": "KMG.Test.RepairAbility",
@@ -302,7 +302,7 @@
       "plannedType": "BlueprintAbility",
       "status": "active",
       "milestone": "Sprint 29",
-      "notes": "Full-round personal extraordinary ability that consumes one Firearm Repair Kit and changes exactly one equipped empty Broken Test Musket to empty Normal without loading or replacing the item."
+      "notes": "Full-round personal extraordinary ability that repairs a Broken or Wrecked firearm straight to Normal with one reusable shared-inventory Gunsmith's Kit; consumes nothing, preserves surviving loaded ammunition, and never replaces the item."
     },
     {
       "symbol": "KMG.Firearms.EarlyPistolWeaponType",
@@ -414,7 +414,7 @@
       "plannedType": "BlueprintFeature",
       "status": "active",
       "milestone": "Sprint 84",
-      "notes": "Visible level-one Gunsmithing feature that exclusively grants firearm Repair and Overhaul."
+      "notes": "Visible level-one Gunsmithing feature that grants the unified full-round Repair action plus the two crafting abilities."
     },
     {
       "symbol": "KMG.Classes.GunslingerGritResource",
@@ -1662,7 +1662,7 @@
       "plannedType": "BlueprintItem",
       "status": "active",
       "milestone": "Sixth Playtest 0.0.66",
-      "notes": "Stable non-consumable Gunsmith's Kit required for basic ammunition crafting."
+      "notes": "Stable non-consumable Gunsmith's Kit required for basic ammunition crafting and for unified Broken-or-Wrecked-to-Normal firearm repair."
     },
     {
       "symbol": "KMG.Gunsmithing.OverhaulKit",
@@ -1670,7 +1670,7 @@
       "plannedType": "BlueprintItem",
       "status": "active",
       "milestone": "Sixth Playtest 0.0.66",
-      "notes": "Consumable Firearm Overhaul Kit for Wrecked-to-Broken maintenance."
+      "notes": "Retired consumable Firearm Overhaul Kit kept registered for save compatibility; no longer sold or consumed."
     },
     {
       "symbol": "KMG.Gunsmithing.CraftBasicAmmunition",

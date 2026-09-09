@@ -110,7 +110,7 @@ namespace KingmakerGunslinger.Development
         private readonly BlueprintItemWeapon _testMusketItem;
         private readonly BlueprintItem _blackPowderItem;
         private readonly BlueprintItem _leadBallItem;
-        private readonly BlueprintItem _repairKitItem;
+        private readonly BlueprintItem _gunsmithKitItem;
         private readonly FirearmItemStateService _stateService;
         private readonly IFirearmItemIdentityProvider _identityProvider;
 
@@ -122,7 +122,7 @@ namespace KingmakerGunslinger.Development
             BlueprintItemWeapon testMusketItem,
             BlueprintItem blackPowderItem,
             BlueprintItem leadBallItem,
-            BlueprintItem repairKitItem)
+            BlueprintItem gunsmithKitItem)
         {
             _firearmProficiency = firearmProficiency ??
                 throw new ArgumentNullException("firearmProficiency");
@@ -138,14 +138,14 @@ namespace KingmakerGunslinger.Development
                 throw new ArgumentNullException("blackPowderItem");
             _leadBallItem = leadBallItem ??
                 throw new ArgumentNullException("leadBallItem");
-            _repairKitItem = repairKitItem ??
-                throw new ArgumentNullException("repairKitItem");
+            _gunsmithKitItem = gunsmithKitItem ??
+                throw new ArgumentNullException("gunsmithKitItem");
             if (ReferenceEquals(_blackPowderItem, _leadBallItem) ||
-                ReferenceEquals(_blackPowderItem, _repairKitItem) ||
-                ReferenceEquals(_leadBallItem, _repairKitItem))
+                ReferenceEquals(_blackPowderItem, _gunsmithKitItem) ||
+                ReferenceEquals(_leadBallItem, _gunsmithKitItem))
             {
                 throw new ArgumentException(
-                    "Black Powder Charge, Lead Ball, and Firearm Repair Kit must use distinct item blueprints.");
+                    "Black Powder Charge, Lead Ball, and the Gunsmith's Kit must use distinct item blueprints.");
             }
 
             _stateService = FirearmRuntimeState.Service;
@@ -179,18 +179,16 @@ namespace KingmakerGunslinger.Development
             }
 
             Ability reloadAbility = EnsureReloadAbility(descriptor);
-            Ability overhaulAbility = EnsureOverhaulAbility(descriptor);
             Ability repairAbility = EnsureRepairAbility(descriptor);
             return DevelopmentActionResult.Success(
                 string.Format(
                     CultureInfo.InvariantCulture,
                     alreadyHadProficiency
-                        ? "{0} already had Firearm Proficiency; verified rank={1}; Reload restored={2}; Overhaul restored={3}; Repair restored={4}; abilityType={5}."
-                        : "Granted Firearm Proficiency to {0}; verified rank={1}; Reload restored={2}; Overhaul restored={3}; Repair restored={4}; factType={5}.",
+                        ? "{0} already had Firearm Proficiency; verified rank={1}; Reload restored={2}; Repair restored={3}; abilityType={4}."
+                        : "Granted Firearm Proficiency to {0}; verified rank={1}; Reload restored={2}; Repair restored={3}; factType={4}.",
                     runtime.UnitName,
                     rank,
                     reloadAbility != null,
-                    overhaulAbility != null,
                     repairAbility != null,
                     alreadyHadProficiency
                         ? reloadAbility.GetType().FullName
@@ -258,63 +256,6 @@ namespace KingmakerGunslinger.Development
         }
 
 
-        internal DevelopmentActionResult DescribeOverhaulReadiness()
-        {
-            RuntimeContext runtime = ResolveRuntime(requireUnit: true);
-            UnitDescriptor descriptor = runtime.UnitDescriptor as UnitDescriptor;
-            if (descriptor == null)
-            {
-                throw new InvalidOperationException(
-                    "The selected unit did not expose a concrete Kingmaker UnitDescriptor.");
-            }
-
-            Ability ability = descriptor.Abilities.GetAbility(_overhaulAbility);
-            FirearmOverhaulAvailability availability = OverhaulTestMusketRuntime.Evaluate(
-                descriptor,
-                _testMusketItem,
-                _repairKitItem);
-            return DevelopmentActionResult.Success(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "Selected unit={0}; hasOverhaulAbility={1}; readiness=[{2}]; runtime=[{3}].",
-                    runtime.UnitName,
-                    ability != null,
-                    availability,
-                    OverhaulRuntimeDiagnostics.Describe()));
-        }
-
-        internal DevelopmentActionResult OverhaulEquippedTestMusketNowForDebug()
-        {
-            RuntimeContext runtime = ResolveRuntime(requireUnit: true);
-            UnitDescriptor descriptor = runtime.UnitDescriptor as UnitDescriptor;
-            if (descriptor == null)
-            {
-                throw new InvalidOperationException(
-                    "The selected unit did not expose a concrete Kingmaker UnitDescriptor.");
-            }
-
-            EnsureOverhaulAbility(descriptor);
-            FirearmOverhaulAvailability availability = OverhaulTestMusketRuntime.Evaluate(
-                descriptor,
-                _testMusketItem,
-                _repairKitItem);
-            if (!availability.IsAvailable)
-            {
-                return DevelopmentActionResult.Failure(
-                    "Immediate diagnostic overhaul was rejected without mutation: " +
-                    availability.Reason);
-            }
-
-            FirearmOverhaulRuntimeResult result = OverhaulTestMusketRuntime.Execute(
-                descriptor,
-                _testMusketItem,
-                _repairKitItem);
-            OverhaulRuntimeDiagnostics.Record(result);
-            return DevelopmentActionResult.Success(
-                "Immediate diagnostic overhaul completed; this bypassed full-round action economy: " +
-                result + ".");
-        }
-
         internal DevelopmentActionResult AddTestMusket()
         {
             RuntimeContext runtime = ResolveRuntime(requireUnit: false);
@@ -355,7 +296,7 @@ namespace KingmakerGunslinger.Development
                     Math.Max(after, before + 1)));
         }
 
-        internal DevelopmentActionResult AddFirearmRepairKits(int amount)
+        internal DevelopmentActionResult AddGunsmithKits(int amount)
         {
             if (amount <= 0)
             {
@@ -365,43 +306,42 @@ namespace KingmakerGunslinger.Development
                     "The amount to add must be positive.");
             }
 
-            KingmakerRepairKitInventory inventory = ResolveRepairKitInventory();
+            KingmakerRepairKitInventory inventory = ResolveToolInventory();
             RepairKitInventorySnapshot before = RepairKitInventorySnapshot.Capture(inventory);
             inventory.Add(amount);
             RepairKitInventorySnapshot after = RepairKitInventorySnapshot.Capture(inventory);
             if (after.RepairKits != before.RepairKits + amount)
             {
                 throw new InvalidOperationException(
-                    "Kingmaker did not retain the exact requested Firearm Repair Kit quantity.");
+                    "Kingmaker did not retain the exact requested Gunsmith's Kit quantity.");
             }
 
             return DevelopmentActionResult.Success(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Added {0} Firearm Repair Kit item(s); before=[{1}]; after=[{2}].",
+                    "Added {0} Gunsmith's Kit item(s); before=[{1}]; after=[{2}].",
                     amount,
                     before,
                     after));
         }
 
-        internal DevelopmentActionResult DescribeFirearmRepairKits()
+        internal DevelopmentActionResult DescribeGunsmithKits()
         {
-            KingmakerRepairKitInventory inventory = ResolveRepairKitInventory();
+            KingmakerRepairKitInventory inventory = ResolveToolInventory();
             RepairKitInventorySnapshot snapshot = RepairKitInventorySnapshot.Capture(inventory);
             return DevelopmentActionResult.Success(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Shared-inventory Firearm Repair Kits: {0}; blueprint={1}/{2}; overhaulRuntime=[{3}]; repairRuntime=[{4}].",
+                    "Shared-inventory Gunsmith's Kits: {0}; blueprint={1}/{2}; repairRuntime=[{3}].",
                     snapshot,
-                    _repairKitItem.name,
-                    _repairKitItem.AssetGuid,
-                    OverhaulRuntimeDiagnostics.Describe(),
+                    _gunsmithKitItem.name,
+                    _gunsmithKitItem.AssetGuid,
                     RepairRuntimeDiagnostics.Describe()));
         }
 
-        internal DevelopmentActionResult RemoveAllFirearmRepairKits()
+        internal DevelopmentActionResult RemoveAllGunsmithKits()
         {
-            KingmakerRepairKitInventory inventory = ResolveRepairKitInventory();
+            KingmakerRepairKitInventory inventory = ResolveToolInventory();
             RepairKitInventorySnapshot before = RepairKitInventorySnapshot.Capture(inventory);
             if (before.RepairKits > 0)
             {
@@ -412,11 +352,11 @@ namespace KingmakerGunslinger.Development
             if (after.RepairKits != 0)
             {
                 throw new InvalidOperationException(
-                    "Some Firearm Repair Kits remained after the remove-all operation.");
+                    "Some Gunsmith's Kits remained after the remove-all operation.");
             }
 
             return DevelopmentActionResult.Success(
-                "Removed all Firearm Repair Kits from shared inventory; before=[" +
+                "Removed all Gunsmith's Kits from shared inventory; before=[" +
                 before + "]; after=[" + after + "].");
         }
 
@@ -568,7 +508,7 @@ namespace KingmakerGunslinger.Development
                     after));
         }
 
-        private KingmakerRepairKitInventory ResolveRepairKitInventory()
+        private KingmakerRepairKitInventory ResolveToolInventory()
         {
             RuntimeContext runtime = ResolveRuntime(requireUnit: false);
             Player player = runtime.Player as Player;
@@ -580,7 +520,7 @@ namespace KingmakerGunslinger.Development
 
             return new KingmakerRepairKitInventory(
                 player.Inventory,
-                _repairKitItem);
+                _gunsmithKitItem);
         }
 
         private KingmakerBasicAmmunitionInventory ResolveBasicAmmunitionInventory()
@@ -1002,58 +942,26 @@ namespace KingmakerGunslinger.Development
         {
             RuntimeContext runtime = ResolveRuntime(requireUnit: true);
             object item;
-            RequireFirstEquippedFirearm(runtime, out item);
+            FirearmItemStateSnapshot before = RequireFirstEquippedFirearm(runtime, out item);
             FirearmItemStateSnapshot updated = _stateService.Transition(
                 item,
                 FirearmStateMachine.Repair);
+            if (updated.Repository.State.Condition != FirearmCondition.Normal ||
+                updated.Repository.State.LoadedRounds !=
+                    before.Repository.State.LoadedRounds ||
+                updated.Repository.State.LoadedAmmunition !=
+                    before.Repository.State.LoadedAmmunition)
+            {
+                throw new InvalidOperationException(
+                    "The unified repair diagnostic did not preserve loaded ammunition while restoring Normal.");
+            }
+
             return DevelopmentActionResult.Success(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Applied the ordinary repair transition to {0}'s first equipped firearm: {1}.",
+                    "Applied the unified repair transition to {0}'s first equipped firearm: {1}.",
                     runtime.UnitName,
                     updated));
-        }
-
-        internal DevelopmentActionResult OverhaulFirstEquippedWreckedFirearmForDebug()
-        {
-            RuntimeContext runtime = ResolveRuntime(requireUnit: true);
-            object item;
-            RequireFirstEquippedFirearm(runtime, out item);
-
-            FirearmItemStateSnapshot before = _stateService.GetOrCreate(item);
-            FirearmItemStateSnapshot after = _stateService.Transition(
-                item,
-                FirearmStateMachine.OverhaulWrecked);
-
-            if (!string.Equals(
-                    before.Repository.RepositoryIdentity,
-                    after.Repository.RepositoryIdentity,
-                    StringComparison.Ordinal) ||
-                before.Repository.RuntimeReferenceHash != after.Repository.RuntimeReferenceHash)
-            {
-                throw new InvalidOperationException(
-                    "The same-item overhaul changed repository or runtime-reference identity.");
-            }
-
-            if (after.Repository.Revision != before.Repository.Revision + 1 ||
-                !after.Repository.State.IsEmpty ||
-                after.Repository.State.Condition != FirearmCondition.Broken)
-            {
-                throw new InvalidOperationException(
-                    "The same-item overhaul did not produce exactly one empty/Broken revision.");
-            }
-
-            return DevelopmentActionResult.Success(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "Applied the development-only same-item Wrecked-to-Broken overhaul to {0}'s first equipped firearm; repositoryIdentity={1}; referenceHash=0x{2:x8}; revision={3}->{4}; stateBefore=[{5}]; stateAfter=[{6}]. The item was not removed, replaced, or silently repaired to Normal.",
-                    runtime.UnitName,
-                    after.Repository.RepositoryIdentity,
-                    after.Repository.RuntimeReferenceHash,
-                    before.Repository.Revision,
-                    after.Repository.Revision,
-                    before.Repository.State,
-                    after.Repository.State));
         }
 
         internal DevelopmentActionResult ResetFirstEquippedFirearmState()
@@ -1584,35 +1492,6 @@ namespace KingmakerGunslinger.Development
             {
                 throw new InvalidOperationException(
                     "Kingmaker did not retain the Reload Test Musket ability after the grant.");
-            }
-
-            return ability;
-        }
-
-        private Ability EnsureOverhaulAbility(UnitDescriptor descriptor)
-        {
-            if (descriptor == null)
-            {
-                throw new ArgumentNullException("descriptor");
-            }
-
-            if (descriptor.Abilities == null)
-            {
-                throw new InvalidOperationException(
-                    "The selected unit has no AbilityCollection.");
-            }
-
-            Ability ability = descriptor.Abilities.GetAbility(_overhaulAbility);
-            if (ability == null)
-            {
-                descriptor.Abilities.AddFact(_overhaulAbility, null);
-                ability = descriptor.Abilities.GetAbility(_overhaulAbility);
-            }
-
-            if (ability == null)
-            {
-                throw new InvalidOperationException(
-                    "Kingmaker did not retain the Overhaul Test Musket ability after the grant.");
             }
 
             return ability;

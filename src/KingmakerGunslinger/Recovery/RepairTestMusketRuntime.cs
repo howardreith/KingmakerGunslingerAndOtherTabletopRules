@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -12,23 +10,25 @@ using KingmakerGunslinger.Actions;
 namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
-    /// Typed Kingmaker adapter for player-facing ordinary repair. It resolves one exact
-    /// equipped firearm, requires Broken state and one repair kit, and executes
-    /// the atomic same-item Broken-to-Normal transaction only during ability delivery.
+    /// Typed Kingmaker adapter for the player-facing unified Repair Firearm action.
+    /// It resolves one exact equipped firearm, requires a Broken or Wrecked state and
+    /// one reusable Gunsmith's Kit in the shared inventory, and executes the atomic
+    /// same-item repair to Normal only during ability delivery. The tool is never
+    /// consumed and surviving loaded ammunition is preserved.
     /// </summary>
     internal static class RepairTestMusketRuntime
     {
         internal static FirearmRepairAvailability Evaluate(
             UnitDescriptor caster,
             BlueprintItemWeapon testMusket,
-            BlueprintItem repairKit)
+            BlueprintItem gunsmithKit)
         {
             if (caster == null)
             {
                 return Unavailable("No concrete caster descriptor is available.");
             }
 
-            if (testMusket == null || repairKit == null)
+            if (testMusket == null || gunsmithKit == null)
             {
                 return Unavailable("Repair blueprint dependencies are not initialized.");
             }
@@ -46,7 +46,7 @@ namespace KingmakerGunslinger.Recovery
             KingmakerRepairKitInventory inventoryAdapter;
             string inventoryReason;
             if (!TryResolveInventory(
-                repairKit,
+                gunsmithKit,
                 out inventoryAdapter,
                 out inventoryReason))
             {
@@ -71,29 +71,9 @@ namespace KingmakerGunslinger.Recovery
                 return Rejected(action.Reason, weapon, firearm, inventory);
             }
 
-            if (state.Condition != FirearmCondition.Broken)
-            {
-                return Rejected(
-                    state.Condition == FirearmCondition.Wrecked
-                        ? "A Wrecked firearm must be Overhauled to Broken before ordinary repair."
-                        : "Only an equipped Broken firearm can use ordinary repair.",
-                    weapon,
-                    firearm,
-                    inventory);
-            }
-
-            if (inventory.RepairKits == 0)
-            {
-                return Rejected(
-                    "One Firearm Repair Kit is required.",
-                    weapon,
-                    firearm,
-                    inventory);
-            }
-
             return new FirearmRepairAvailability(
                 true,
-                "Ready to consume one Firearm Repair Kit and repair this exact Broken firearm to empty/Normal. Every loaded round will be destroyed; the item will not be replaced.",
+                "Ready to repair this exact Broken or Wrecked firearm to Normal with the reusable Gunsmith's Kit. Nothing is consumed and every surviving loaded round is preserved; the item will not be replaced.",
                 weapon,
                 firearm,
                 inventory);
@@ -102,12 +82,12 @@ namespace KingmakerGunslinger.Recovery
         internal static FirearmRepairRuntimeResult Execute(
             UnitDescriptor caster,
             BlueprintItemWeapon testMusket,
-            BlueprintItem repairKit)
+            BlueprintItem gunsmithKit)
         {
             FirearmRepairAvailability availability = Evaluate(
                 caster,
                 testMusket,
-                repairKit);
+                gunsmithKit);
             if (!availability.IsAvailable)
             {
                 throw new InvalidOperationException(availability.Reason);
@@ -122,13 +102,13 @@ namespace KingmakerGunslinger.Recovery
 
             var inventory = new KingmakerRepairKitInventory(
                 game.Player.Inventory,
-                repairKit);
+                gunsmithKit);
             var stateStore = new FirearmItemRepairStateStore(
                 FirearmRuntimeState.Service,
                 availability.Weapon);
             FirearmRepairResult transaction =
                 new FirearmRepairTransactionService()
-                .TryRepairBrokenToNormal(stateStore, inventory);
+                .TryRepairToNormal(stateStore, inventory);
             FirearmItemStateSnapshot after =
                 FirearmRuntimeState.Service.GetOrCreate(availability.Weapon);
             var result = new FirearmRepairRuntimeResult(
@@ -144,54 +124,8 @@ namespace KingmakerGunslinger.Recovery
             return result;
         }
 
-        private static bool TryResolveSingleEquippedTestMusket(
-            UnitDescriptor caster,
-            BlueprintItemWeapon testMusket,
-            out ItemEntityWeapon weapon,
-            out string reason)
-        {
-            weapon = null;
-            reason = null;
-            if (caster.Body == null)
-            {
-                reason = "The caster has no equipment body.";
-                return false;
-            }
-
-            var candidates = new List<ItemEntityWeapon>();
-            AddDistinct(
-                candidates,
-                caster.Body.PrimaryHand == null
-                    ? null
-                    : caster.Body.PrimaryHand.MaybeWeapon);
-            AddDistinct(
-                candidates,
-                caster.Body.SecondaryHand == null
-                    ? null
-                    : caster.Body.SecondaryHand.MaybeWeapon);
-
-            ItemEntityWeapon[] matches = candidates
-                .Where(candidate => candidate != null &&
-                    ReferenceEquals(candidate.Blueprint, testMusket))
-                .ToArray();
-            if (matches.Length == 0)
-            {
-                reason = "Equip exactly one Broken firearm before repairing.";
-                return false;
-            }
-
-            if (matches.Length != 1)
-            {
-                reason = "More than one distinct firearm is equipped; repair target selection is ambiguous.";
-                return false;
-            }
-
-            weapon = matches[0];
-            return true;
-        }
-
         private static bool TryResolveInventory(
-            BlueprintItem repairKit,
+            BlueprintItem gunsmithKit,
             out KingmakerRepairKitInventory inventory,
             out string reason)
         {
@@ -206,7 +140,7 @@ namespace KingmakerGunslinger.Recovery
 
             inventory = new KingmakerRepairKitInventory(
                 game.Player.Inventory,
-                repairKit);
+                gunsmithKit);
             return true;
         }
 
@@ -232,26 +166,6 @@ namespace KingmakerGunslinger.Recovery
                 weapon,
                 firearm,
                 inventory);
-        }
-
-        private static void AddDistinct(
-            ICollection<ItemEntityWeapon> candidates,
-            ItemEntityWeapon candidate)
-        {
-            if (candidate == null)
-            {
-                return;
-            }
-
-            foreach (ItemEntityWeapon existing in candidates)
-            {
-                if (ReferenceEquals(existing, candidate))
-                {
-                    return;
-                }
-            }
-
-            candidates.Add(candidate);
         }
     }
 }

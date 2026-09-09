@@ -28,7 +28,7 @@ namespace KingmakerGunslinger.Deeds
         public string GetReason()
         {
             return "Unavailable: equip exactly one Broken firearm created by a misfire " +
-                "and have at least 1 Grit. Wrecked firearms require Overhaul Firearm.";
+                "and have at least 1 Grit. Wrecked firearms require Repair Firearm.";
         }
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
             AbilityExecutionContext context, TargetWrapper target)

@@ -57,7 +57,7 @@ namespace KingmakerGunslinger.Development
             }
 
             ImmediateModeGui.Label(
-                "Sprint 28 is runtime-accepted. Version 0.0.29 completes the player-facing maintenance loop: Overhaul changes one exact empty/Wrecked Test Musket to empty/Broken, Repair changes that same exact Broken item to empty/Normal and destroys any loaded rounds, and Reload then consumes one powder-and-ball pair to load it. Overhaul and Repair are separate full-round actions and each consumes one Firearm Repair Kit only when delivery completes. The accelerated fixture below prints one concise identity, resource, fault, duplicate, and second-item PASS/FAIL matrix after every stage.");
+                "Unified firearm maintenance is active. Repair Firearm is one full-round action that changes the exact equipped Broken or Wrecked Test Musket (or other project firearm) straight to Normal using one reusable Gunsmith's Kit in the shared inventory; nothing is consumed and any loaded rounds are preserved. Reload then consumes one powder-and-ball pair to load it. The accelerated fixture below prints one concise identity, resource, fault, duplicate, and second-item PASS/FAIL matrix after every stage.");
 
             bool tracingWasEnabled = CombatTraceSettings.Enabled;
             bool tracingIsEnabled = ImmediateModeGui.Toggle(
@@ -87,7 +87,6 @@ namespace KingmakerGunslinger.Development
                     FirearmArmorClassRuntime.FaultCount));
 
             ImmediateModeGui.Label("Reload runtime: " + ReloadRuntimeDiagnostics.Describe());
-            ImmediateModeGui.Label("Overhaul runtime: " + OverhaulRuntimeDiagnostics.Describe());
             ImmediateModeGui.Label("Repair runtime: " + RepairRuntimeDiagnostics.Describe());
             ImmediateModeGui.Label("Firearm attack enforcement: " + FirearmDischargeRuntimeDiagnostics.Describe());
             ImmediateModeGui.Label("Natural-roll misfires: " + FirearmMisfireRuntime.Describe());
@@ -105,7 +104,7 @@ namespace KingmakerGunslinger.Development
                 ImmediateModeGui.Label(
                     string.Format(
                         System.Globalization.CultureInfo.InvariantCulture,
-                        "State carrier: {0}; entriesCreated={1}; mutations={2}; removals={3}; save/restart proof=PASSED; quicksave reconciliation repair=ACTIVE; player-facing Overhaul + ordinary Repair=ACTIVE; accelerated maintenance qualification=ACTIVE.",
+                        "State carrier: {0}; entriesCreated={1}; mutations={2}; removals={3}; save/restart proof=PASSED; quicksave reconciliation repair=ACTIVE; player-facing unified Repair=ACTIVE; accelerated maintenance qualification=ACTIVE.",
                         FirearmRuntimeState.CarrierDescription,
                         repository.CreatedEntryCount,
                         repository.MutationCount,
@@ -283,19 +282,9 @@ namespace KingmakerGunslinger.Development
             }
 
             ImmediateModeGui.Space(8f);
-            ImmediateModeGui.Label("Player-facing Overhaul and Repair controls");
+            ImmediateModeGui.Label("Player-facing unified Repair controls");
             ImmediateModeGui.Label(
-                "Granting Firearm Proficiency grants Reload Test Musket, Overhaul Test Musket, and Repair Test Musket. Overhaul is a full-round empty Wrecked-to-Broken action; Repair is a separate full-round Broken-to-empty Normal action that destroys every loaded round. Each consumes one Firearm Repair Kit only when delivery completes. Neither action loads ammunition or replaces the item. Immediate controls bypass action economy and are diagnostics only.");
-
-            if (ImmediateModeGui.Button("Print Overhaul Test Musket readiness"))
-            {
-                Run(DevelopmentControls.DescribeOverhaulReadiness);
-            }
-
-            if (ImmediateModeGui.Button("Overhaul equipped Test Musket immediately (diagnostic)"))
-            {
-                Run(DevelopmentControls.OverhaulEquippedTestMusketNowForDebug);
-            }
+                "Granting Firearm Proficiency grants Reload Test Musket and Repair Test Musket. Repair Firearm is one full-round action that changes the exact equipped Broken or Wrecked firearm straight to Normal using a reusable Gunsmith's Kit in the shared inventory; nothing is consumed, loaded rounds are preserved, and the item is never replaced. The legacy Overhaul ability stays hidden and delegates to this same repair. Immediate controls bypass action economy and are diagnostics only.");
 
             if (ImmediateModeGui.Button("Print Repair Test Musket readiness"))
             {
@@ -307,33 +296,28 @@ namespace KingmakerGunslinger.Development
                 Run(DevelopmentControls.RepairEquippedTestMusketNowForDebug);
             }
 
-            if (ImmediateModeGui.Button("Add five Firearm Repair Kits"))
+            if (ImmediateModeGui.Button("Add one Gunsmith's Kit"))
             {
-                Run(DevelopmentControls.AddFirearmRepairKits);
+                Run(DevelopmentControls.AddGunsmithKit);
             }
 
-            if (ImmediateModeGui.Button("Add one Firearm Repair Kit"))
+            if (ImmediateModeGui.Button("Print Gunsmith's Kit count"))
             {
-                Run(DevelopmentControls.AddOneFirearmRepairKit);
+                Run(DevelopmentControls.DescribeGunsmithKits);
             }
 
-            if (ImmediateModeGui.Button("Print Firearm Repair Kit count"))
+            if (ImmediateModeGui.Button("Remove all Gunsmith's Kits from shared inventory"))
             {
-                Run(DevelopmentControls.DescribeFirearmRepairKits);
-            }
-
-            if (ImmediateModeGui.Button("Remove all Firearm Repair Kits from shared inventory"))
-            {
-                Run(DevelopmentControls.RemoveAllFirearmRepairKits);
+                Run(DevelopmentControls.RemoveAllGunsmithKits);
             }
 
 
             ImmediateModeGui.Space(8f);
-            ImmediateModeGui.Label("Sprint 29 accelerated maintenance qualification");
+            ImmediateModeGui.Label("Accelerated unified maintenance qualification");
             ImmediateModeGui.Label(
-                "Equip exactly one Test Musket. Prepare creates or normalizes a second independent Test Musket, sets the equipped exact item to empty/Wrecked, sets the second to empty/Normal, ensures two repair kits plus one powder-and-ball pair, and captures a process-local baseline. Then use the action-bar Overhaul ability, print the matrix, use Repair, print the matrix, use Reload, and print the final matrix. Preparation is destructive to the equipped firearm state and is for a disposable campaign only.");
+                "Equip exactly one Test Musket. Prepare creates or normalizes a second independent Test Musket, sets the equipped exact item to empty/Wrecked, sets the second to empty/Normal, ensures one reusable Gunsmith's Kit plus one powder-and-ball pair, and captures a process-local baseline. Then use the action-bar Repair Firearm ability, print the matrix, use Reload, and print the final matrix. Preparation is destructive to the equipped firearm state and is for a disposable campaign only.");
 
-            if (ImmediateModeGui.Button("Prepare Sprint 29 maintenance qualification fixture"))
+            if (ImmediateModeGui.Button("Prepare maintenance qualification fixture"))
             {
                 Run(DevelopmentControls.PrepareMaintenanceQualificationFixture);
             }
@@ -343,12 +327,12 @@ namespace KingmakerGunslinger.Development
                 Run(DevelopmentControls.RunMaintenanceQualificationImmediately);
             }
 
-            if (ImmediateModeGui.Button("Print Sprint 29 maintenance PASS/FAIL matrix"))
+            if (ImmediateModeGui.Button("Print maintenance PASS/FAIL matrix"))
             {
                 Run(DevelopmentControls.DescribeMaintenanceQualification);
             }
 
-            if (ImmediateModeGui.Button("Clear Sprint 29 qualification baseline (no item mutation)"))
+            if (ImmediateModeGui.Button("Clear qualification baseline (no item mutation)"))
             {
                 Run(DevelopmentControls.ResetMaintenanceQualification);
             }
@@ -356,7 +340,7 @@ namespace KingmakerGunslinger.Development
             ImmediateModeGui.Space(8f);
             ImmediateModeGui.Label("Natural-roll, burst, and item-lifecycle diagnostic controls");
             ImmediateModeGui.Label(
-                "The Test Musket retains the accepted natural 1-2 misfire path, native 5-foot second-misfire burst, and recoverable Wrecked item state. Forced rolls and direct condition mutations below remain diagnostics for deterministic setup. Use the action-bar abilities—not the immediate diagnostic buttons—to qualify player-facing Overhaul, Repair, and Reload delivery and interruption behavior.");
+                "The Test Musket retains the accepted natural 1-2 misfire path, native 5-foot second-misfire burst, and recoverable Wrecked item state. Forced rolls and direct condition mutations below remain diagnostics for deterministic setup. Use the action-bar abilities—not the immediate diagnostic buttons—to qualify player-facing Repair and Reload delivery and interruption behavior.");
 
             if (ImmediateModeGui.Button("Force next eligible firearm natural d20 to 1"))
             {
@@ -454,14 +438,9 @@ namespace KingmakerGunslinger.Development
                 Run(DevelopmentControls.WreckSelectedEquippedFirearmForDebug);
             }
 
-            if (ImmediateModeGui.Button("Repair first equipped Broken firearm to Normal (diagnostic)"))
+            if (ImmediateModeGui.Button("Repair first equipped Broken or Wrecked firearm to Normal (direct contract diagnostic)"))
             {
                 Run(DevelopmentControls.RepairFirstEquippedFirearmForDebug);
-            }
-
-            if (ImmediateModeGui.Button("Overhaul first equipped Wrecked firearm to Broken (direct contract diagnostic)"))
-            {
-                Run(DevelopmentControls.OverhaulFirstEquippedWreckedFirearmForDebug);
             }
 
             if (ImmediateModeGui.Button("Reset first equipped firearm to empty / normal"))

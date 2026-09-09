@@ -31,14 +31,14 @@ namespace KingmakerGunslinger.DomainTests
             AssertRejected(FirearmActionKind.Reload, FirearmState.CreateEmpty(), false);
         }
 
-        private static void GenericOverhaulWrecked()
+        private static void GenericRepairWreckedAvailable()
         {
-            AssertAvailable(FirearmActionKind.Overhaul, Empty(FirearmCondition.Wrecked), true);
+            AssertAvailable(FirearmActionKind.Repair, Empty(FirearmCondition.Wrecked), true);
         }
 
-        private static void GenericOverhaulBrokenRejected()
+        private static void GenericRepairNormalRejected()
         {
-            AssertRejected(FirearmActionKind.Overhaul, Empty(FirearmCondition.Broken), true);
+            AssertRejected(FirearmActionKind.Repair, FirearmState.CreateEmpty(), true);
         }
 
         private static void GenericRepairBroken()

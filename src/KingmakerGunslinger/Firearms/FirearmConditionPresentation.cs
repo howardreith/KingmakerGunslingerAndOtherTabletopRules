@@ -16,7 +16,7 @@ namespace KingmakerGunslinger.Firearms
                         "It can still fire and reload; Quick Clear or Repair Firearm restores Normal.";
                 case FirearmCondition.Wrecked:
                     return "Firearm condition: Wrecked — it cannot fire or reload. " +
-                        "Use Overhaul Firearm outside active combat to restore Broken.";
+                        "Repair Firearm with a reusable Gunsmith's Kit restores Normal.";
                 default:
                     throw new ArgumentOutOfRangeException("condition");
             }

@@ -20,7 +20,7 @@ DETERMINISTIC_TEST_COUNT = 1550
 STATIC_KEY = "teleportation118InheritedContracts"
 MANIFEST_TOTAL = 1872
 MANIFEST_ACTIVE = 1870
-PUBLISHED_117_PREFIX_SHA256 = "c648ebdad613e50c36b97f3337e8247a870d5ec24abc8df55b4f9e9a6a33519b"
+PUBLISHED_117_PREFIX_SHA256 = "3e4f39cba12da23d142ed3e49a3b56e319c7ad894887038ba0a4522c94512713"
 SPELL_IDS = {
     "KMG.Spells.Teleport.Ability": "82e3fb1dce1647b58d3b7169c8520af0",
     "KMG.Spells.GreaterTeleport.Ability": "73d19adfe18743e0a2a3a21abf4af5f3",
@@ -58,7 +58,7 @@ def validate(root: Path) -> None:
         separators=(",", ":")).encode()).hexdigest()
     if digest != PUBLISHED_117_PREFIX_SHA256:
         raise AssertionError("Published 0.0.117 manifest prefix changed")
-    if hashlib.sha256(json.dumps(entries[:1872], sort_keys=True, separators=(",", ":")).encode()).hexdigest() != "fd72d5656989033d57ec7bb9b07aee8295c4b0790e58ffccb2219f3d9e47556f":
+    if hashlib.sha256(json.dumps(entries[:1872], sort_keys=True, separators=(",", ":")).encode()).hexdigest() != "af821f3920497c228bfdaa98c226578163a1d6d163eeddf05ca3bee4f4924dee":
         raise AssertionError("Published 0.0.118 blueprint manifest changed")
     spells = entries[1869:1872]
     if {entry["symbol"]: entry["guid"] for entry in spells} != SPELL_IDS or any(
