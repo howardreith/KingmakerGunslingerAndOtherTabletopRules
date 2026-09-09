@@ -267,23 +267,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "live parent race and policy inventory");
                 }
 
-                string[] deferredMarkerGuids = {
-                    "e117e1e0a17a4acec001000000000031", // Treacherous Earth
-                    "e117e1e0a17a4acec001000000000040"  // Nereid Fascination
-                };
-                foreach (string guid in deferredMarkerGuids)
-                {
-                    var marker = library.BlueprintsByAssetId[guid] as BlueprintFeature;
-                    var leaking = library.BlueprintsByAssetId.Values.OfType<BlueprintFeatureSelection>()
-                        .Where(selection => (selection.Features ?? new BlueprintFeature[0])
-                            .Concat(selection.AllFeatures ?? new BlueprintFeature[0])
-                            .Any(choice => choice != null && choice.AssetGuid == guid)).ToArray();
-                    Add(assertions, "deferred-marker-registered-unpublished-" + guid,
-                        "exact registered hidden marker; absent from every selection array",
-                        "leakingSelectors=" + string.Join("|", leaking.Select(value => value.AssetGuid)),
-                        marker != null && marker.HideInUI && marker.HideInCharacterSheetAndLevelUp && leaking.Length == 0,
-                        "all live Features and AllFeatures arrays by exact marker GUID");
-                }
+                var treacherous = set.Oread.AlternateTraits.Require(ElementalAlternateTraitId.TreacherousEarth);
+                var oreadSla = set.Oread.AlternateTraits.Selections().Single(value =>
+                    value.Definition.Slot == ElementalRacialTraitSlot.RacialSpellLikeAbility);
+                var earthChoices = new[] { oreadSla.RetainMarker, treacherous.Marker };
+                var earthConsumers = library.BlueprintsByAssetId.Values.OfType<BlueprintFeatureSelection>().Distinct()
+                    .Where(selection => (selection.Features ?? new BlueprintFeature[0]).Concat(selection.AllFeatures ?? new BlueprintFeature[0])
+                        .Any(choice => ReferenceEquals(choice, treacherous.Marker))).ToArray();
+                Add(assertions, "treacherous-ordinary-publication-exact-native-selector",
+                    "retain and Treacherous in the sole existing Oread SLA selector",
+                    "consumers=" + earthConsumers.Length + ";selector=" + oreadSla.Selection.AssetGuid,
+                    treacherous.Definition.IsPublished && !treacherous.Marker.HideInUI && !treacherous.Marker.HideInCharacterSheetAndLevelUp &&
+                        oreadSla.Selection.Features.SequenceEqual(earthChoices) && oreadSla.Selection.AllFeatures.SequenceEqual(earthChoices) &&
+                        earthConsumers.Length == 1 && ReferenceEquals(earthConsumers[0], oreadSla.Selection) &&
+                        treacherous.Marker.AssetGuid == "e117e1e0a17a4acec001000000000031" &&
+                        ElementalAlternateTraitBlueprintFactory.HasTraitSpecificMechanic(treacherous),
+                    "exact registered marker, native selection arrays and complete owned mechanic graph");
+
+                var nereid = set.Undine.AlternateTraits.Require(ElementalAlternateTraitId.NereidFascination);
+                var undineSla = set.Undine.AlternateTraits.Selections().Single(value =>
+                    value.Definition.Slot == ElementalRacialTraitSlot.RacialSpellLikeAbility);
+                var nereidChoices = new[] { undineSla.RetainMarker,
+                    set.Undine.AlternateTraits.Require(ElementalAlternateTraitId.AcidBreath).Marker,
+                    nereid.Marker, set.Undine.AlternateTraits.Require(ElementalAlternateTraitId.OozeBreath).Marker };
+                var nereidConsumers = library.BlueprintsByAssetId.Values.OfType<BlueprintFeatureSelection>().Distinct()
+                    .Where(selection => (selection.Features ?? new BlueprintFeature[0]).Concat(selection.AllFeatures ?? new BlueprintFeature[0])
+                        .Any(choice => ReferenceEquals(choice, nereid.Marker))).ToArray();
+                Add(assertions, "nereid-ordinary-publication-exact-native-selector",
+                    "ordinary publication; retain, Acid, Nereid, Ooze in the sole existing Undine SLA selector",
+                    "guardedObservation=" + ElementalAlternateTraitPolicy.NereidQualificationActive +
+                        ";consumers=" + nereidConsumers.Length + ";selector=" + undineSla.Selection.AssetGuid,
+                    !ElementalAlternateTraitPolicy.NereidQualificationActive && nereid.Definition.IsPublished &&
+                        !nereid.Marker.HideInUI && !nereid.Marker.HideInCharacterSheetAndLevelUp &&
+                        undineSla.Selection.Features.SequenceEqual(nereidChoices) &&
+                        undineSla.Selection.AllFeatures.SequenceEqual(nereidChoices) && nereidConsumers.Length == 1 &&
+                        ReferenceEquals(nereidConsumers[0], undineSla.Selection) && ElementalNereidFactory.IsExact(nereid),
+                    "live registered BlueprintFeatureSelection arrays and exact supernatural mechanic with no early publication override");
 
                 evidence.FrameworkIdentityCount = owned.Count;
                 evidence.RegisteredIdentityCount = owned.Count(value =>

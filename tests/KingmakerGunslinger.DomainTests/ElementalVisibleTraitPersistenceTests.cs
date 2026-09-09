@@ -7,7 +7,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ElementalVisibleTraitPersistenceTests
     {
-        internal static void AllPublishedTraitsHaveLegalPersistenceCoverage()
+        internal static void PublishedInventoryDistinguishesHistoricalAndWaivedPersistenceCoverage()
         {
             var rows = new List<ElementalAlternateTraitId[]>();
             foreach (ElementalHeritageRace race in Enum.GetValues(typeof(ElementalHeritageRace)))
@@ -30,9 +30,22 @@ namespace KingmakerGunslinger.DomainTests
             var published = Enum.GetValues(typeof(ElementalAlternateTraitId)).Cast<ElementalAlternateTraitId>()
                 .Where(ElementalAlternateTraitPolicy.IsPublished).OrderBy(value => value).ToArray();
             Assertions.Equal(24, rows.Count, "All fixed race/gender/heritage fixture identities must remain.");
-            Assertions.Equal(19, published.Length, "Visible content inventory changed without an explicit qualification matrix update.");
-            Assertions.True(rows.SelectMany(value => value).Distinct().OrderBy(value => value).SequenceEqual(published),
-                "A player-visible trait lacks fresh-process persistence coverage.");
+            Assertions.Equal(21, published.Length, "Visible content inventory changed without an explicit qualification matrix update.");
+            var releasedCoverage = rows.SelectMany(value => value).Distinct().ToArray();
+            Assertions.Equal(19, releasedCoverage.Length, "The original nineteen-trait fixture must remain intact.");
+            var nereidCoverage = new List<ElementalAlternateTraitId>();
+            for (int gender = 0; gender < 2; ++gender)
+                for (int index = 0; index < 3; ++index)
+                {
+                    var traits = ElementalVisibleTraitPersistencePolicy.Traits(ElementalHeritageRace.Undine, gender, index, true);
+                    Assertions.True(traits.SequenceEqual(new[] { ElementalAlternateTraitId.NereidFascination }),
+                        "The separately qualified Nereid fixture must cover every heritage and sex.");
+                    nereidCoverage.AddRange(traits);
+                }
+            Assertions.Equal(6, nereidCoverage.Count, "All six committed Nereid persistence rows must remain represented.");
+            Assertions.True(releasedCoverage.Concat(nereidCoverage).Concat(new[] { ElementalAlternateTraitId.TreacherousEarth })
+                .Distinct().OrderBy(value => value).SequenceEqual(published),
+                "Published inventory must equal historical coverage plus Treacherous, whose full Player/save qualification was explicitly waived.");
             Assertions.Equal(17, rows.Count(value => value.Length > 1), "Combined-slot fixtures were lost.");
             var blood = new[] { ElementalAlternateTraitId.FireInTheBlood, ElementalAlternateTraitId.StoneInTheBlood, ElementalAlternateTraitId.StormInTheBlood };
             Assertions.Equal(7, rows.Count(value => value.Any(blood.Contains)), "Partial blood-expenditure fixtures changed.");

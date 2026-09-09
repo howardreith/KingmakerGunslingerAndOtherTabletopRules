@@ -82,6 +82,25 @@ namespace KingmakerGunslinger.RuntimeTesting
 
     internal static class RuntimeTestRequestParser
     {
+        internal static bool IsElementalOffCreatorScope(RuntimeTestRequest request)
+        {
+            return request != null && request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline &&
+                request.Parameters != null && request.Parameters.Count == 1 &&
+                request.Parameters["creatorCase"]?.Type == JTokenType.String && (string)request.Parameters["creatorCase"] == "module-off";
+        }
+
+        internal static bool IsCompletionSceneScope(RuntimeTestRequest request)
+        {
+            return request != null && (request.Scenario == RuntimeTestScenarioCatalog.ElementalRaceModuleDisabledPersistence ||
+                request.Scenario == RuntimeTestScenarioCatalog.ElementalRaceModuleRestoredPersistence) &&
+                request.Parameters?["qualificationTrait"]?.Type == Newtonsoft.Json.Linq.JTokenType.String &&
+                (string)request.Parameters["qualificationTrait"] == "NereidFascination" &&
+                request.Parameters?["qualificationEffect"]?.Type == Newtonsoft.Json.Linq.JTokenType.String &&
+                (string)request.Parameters["qualificationEffect"] == "TreacherousEarth" &&
+                request.Parameters?["qualificationOperation"]?.Type == Newtonsoft.Json.Linq.JTokenType.String &&
+                (string)request.Parameters["qualificationOperation"] == "scene-roundtrip";
+        }
+
         private static readonly string[] AllowedMembers =
         {
             "schemaVersion", "enabled", "runId", "scenario",
@@ -220,7 +239,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
-                (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec) ||
+                (RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario) &&
+                    !RuntimeTestScenarioCatalog.IsNereidProfileScenario(request.Scenario)) ||
                 RuntimeTestScenarioCatalog.IsMidgameWorkingScenario(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog
                     .GunslingerOutfitCandidateRender ||
@@ -260,6 +280,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistence ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistenceGamepad ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatiguePrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatigueVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatigueVerifyAbsent ||
@@ -321,8 +356,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ValidStageTimeout(request.LoadEntryTimeoutSeconds) ||
                     !ValidStageTimeout(request.FingerprintTimeoutSeconds))
                     return "scenario-timeout-invalid";
-                bool creatorRegression = (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec);
-                if (request.Parameters == null || request.Parameters.Count != (creatorRegression ? 4 : 1) ||
+                bool persistence = request.Scenario == TeleportPersistenceIdentity.Scenario;
+                if (persistence && (!request.ExitAfterCompletion || !TeleportPersistencePlan.ValidParameters(request.Parameters)))
+                    return "persistence-plan-parameters-invalid";
+                bool deferredMarkers = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers;
+                if (deferredMarkers && (request.Parameters?["fixtureCase"]?.Type != JTokenType.String ||
+                    ((string)request.Parameters["fixtureCase"] != "public117" && (string)request.Parameters["fixtureCase"] != "deferred117") ||
+                    !request.ExitAfterCompletion)) return "deferred-marker-case-not-allowed";
+                bool creatorRegression = RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario);
+                bool nereidPersistence = request.Parameters?["qualificationTrait"]?.Type == JTokenType.String &&
+                    RuntimeTestScenarioCatalog.IsNereidPersistenceScope(request.Scenario,
+                        (string)request.Parameters["qualificationTrait"]);
+                if (nereidPersistence && !request.ExitAfterCompletion) return "nereid-qualification-case-not-allowed";
+                bool treacherousEffect = nereidPersistence && request.Parameters?["qualificationEffect"]?.Type == JTokenType.String &&
+                    (string)request.Parameters["qualificationEffect"] == "TreacherousEarth";
+                bool sceneRoundtrip = IsCompletionSceneScope(request);
+                if (request.Parameters == null || request.Parameters.Count != (persistence ? 3 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
@@ -332,10 +381,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ElementalCharacterCreationRegressionPlan.IsAllowedCase((string)request.Parameters["race"],
                         (string)request.Parameters["class"], (string)request.Parameters["allocation"])))
                     return "character-creation-case-not-allowed";
-                if (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec &&
+                if (RuntimeTestScenarioCatalog.IsElementalNativeRespecScenario(request.Scenario) &&
                     !ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase((string)request.Parameters["race"],
                         (string)request.Parameters["class"], (string)request.Parameters["allocation"]))
                     return "native-respec-case-not-allowed";
+                if (RuntimeTestScenarioCatalog.IsNereidQualificationScenario(request.Scenario) &&
+                    ((string)request.Parameters["race"] != "Undine" ||
+                     (string)request.Parameters["class"] != "Fighter" ||
+                     (string)request.Parameters["allocation"] != "point-buy" || !request.ExitAfterCompletion))
+                    return "nereid-qualification-case-not-allowed";
+                if (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec &&
+                    (request.Parameters["sex"]?.Type != JTokenType.String ||
+                     !ElementalCharacterCreationRegressionPlan.IsAllowedNereidRespecSex((string)request.Parameters["sex"])))
+                    return "nereid-respec-sex-not-allowed";
                 string saveName = (string)request.Parameters["saveName"];
                 string expectedSaveName = request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad
@@ -347,11 +405,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? RuntimeTestScenarioCatalog
                                 .InHarmsWayHumanReproSaveName
                         : ManualSaveLoadObservation.WorkingSave;
-                if (!string.Equals(saveName, expectedSaveName,
+                if (!persistence && !string.Equals(saveName, expectedSaveName,
                     StringComparison.Ordinal))
                     return string.Equals(saveName, ManualSaveLoadObservation.BaselineSave,
                         StringComparison.Ordinal)
                         ? "baseline-save-forbidden" : "save-name-not-allowed";
+            }
+            else if (RuntimeTestScenarioCatalog.IsNereidProfileScenario(request.Scenario))
+            {
+                if (request.MainMenuTimeoutSeconds != 0 || request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 || request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 || request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                bool respec = request.Scenario == RuntimeTestScenarioCatalog.DisposableNereidRespec;
+                if (!request.ExitAfterCompletion || request.Parameters == null || request.Parameters.Count != (respec ? 4 : 3) ||
+                    request.Parameters["race"]?.Type != JTokenType.String || (string)request.Parameters["race"] != "Undine" ||
+                    request.Parameters["class"]?.Type != JTokenType.String || (string)request.Parameters["class"] != "Fighter" ||
+                    request.Parameters["allocation"]?.Type != JTokenType.String || (string)request.Parameters["allocation"] != "point-buy" ||
+                    (respec && (request.Parameters["sex"]?.Type != JTokenType.String ||
+                        !ElementalCharacterCreationRegressionPlan.IsAllowedNereidRespecSex((string)request.Parameters["sex"]))))
+                    return "nereid-profile-case-not-allowed";
             }
             else if (request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase)
             {
@@ -395,7 +468,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.LoadEntryTimeoutSeconds != 0 ||
                     request.FingerprintTimeoutSeconds != 0)
                     return "scenario-timeouts-not-allowed";
-                if (request.Parameters == null || request.Parameters.Count != 11 ||
+                if (request.Parameters == null || request.Parameters.Count != 12 ||
                     request.Parameters.Property("gunslinger") == null ||
                     request.Parameters["gunslinger"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("acadamaeGraduate") == null ||
@@ -425,7 +498,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         JTokenType.Boolean ||
                     request.Parameters.Property("elementalRaces") == null ||
                     request.Parameters["elementalRaces"].Type !=
-                        JTokenType.Boolean)
+                        JTokenType.Boolean ||
+                    request.Parameters.Property("teleportationSpells") == null ||
+                    request.Parameters["teleportationSpells"].Type != JTokenType.Boolean)
                     return "module-states-required";
             }
             else if (request.Scenario == RuntimeTestScenarioCatalog
@@ -457,7 +532,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.LoadEntryTimeoutSeconds != 0 ||
                     request.FingerprintTimeoutSeconds != 0)
                     return "scenario-timeouts-not-allowed";
-                if (request.Parameters == null || request.Parameters.Count != 0)
+                bool elementalOffCreator = IsElementalOffCreatorScope(request);
+                if (elementalOffCreator && !request.ExitAfterCompletion) return "elemental-off-creator-exit-required";
+                if (!elementalOffCreator && (request.Parameters == null || request.Parameters.Count != 0))
                     return "parameters-not-allowed";
             }
 

@@ -66,6 +66,10 @@ namespace KingmakerGunslinger.Bootstrap
         private static AcadamaeGraduateModeBlueprintSet _acadamaeGraduateMode;
         private static BodyguardFeatBlueprintSet _bodyguardFeats;
         private static BlueprintItemEquipmentBelt _cordOfStubbornResolve;
+        private static TeleportationSpellBlueprintSet _teleportation;
+        private static TeleportationSpellListPublication _teleportationPublication;
+        internal static TeleportationSpellBlueprintSet Teleportation { get { return _teleportation; } }
+        internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }
         private static ShieldOtherBlueprintSet _shieldOther;
         private static ShieldOtherSpellListPublication _shieldOtherPublication;
         private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;
@@ -611,6 +615,8 @@ namespace KingmakerGunslinger.Bootstrap
                     _acadamaeGraduateMode = result.AcadamaeGraduateMode;
                     _bodyguardFeats = result.BodyguardFeats;
                     _cordOfStubbornResolve = result.CordOfStubbornResolve;
+                    _teleportation = result.Teleportation;
+                    _teleportationPublication = result.TeleportationPublication;
                     _shieldOther = result.ShieldOther;
                     _shieldOtherPublication = result.ShieldOtherPublication;
                     _elvenBranchedSpears = result.ElvenBranchedSpears;
@@ -713,6 +719,9 @@ namespace KingmakerGunslinger.Bootstrap
             FirearmFeatCatalogPublication featPublication = null;
             AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;
             BodyguardFeatCatalogPublication bodyguardFeatPublication = null;
+            var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);
+            TeleportationSpellBlueprintSet teleportation = null;
+            TeleportationSpellListPublication teleportationPublication = null;
             ShieldOtherSpellListPublication shieldOtherPublication = null;
             ExpandedSummoningPublication expandedSummoningPublication = null;
             ProtectionFromAlignmentPublication protectionFromAlignmentPublication =
@@ -811,6 +820,35 @@ namespace KingmakerGunslinger.Bootstrap
                             "Required base spell-list publication failed and was rolled back; Shield Other identities remain registered and other modules will continue.",
                             shieldOtherPublicationException);
                     }
+                }
+
+                try
+                {
+                    teleportation = TeleportationSpellBlueprints.Register(library, teleportationRegistry);
+                    if (publicationPlan.TeleportationSpellLists)
+                    {
+                        try {
+                            teleportationPublication = TeleportationSpellListPublication.Publish(library, teleportation);
+                            context.Logger.Info("teleportation-spells", "publication.complete",
+                                "Three strategic spell identities validated; native base publication complete; optionalTravelDomain=" +
+                                teleportationPublication.TravelDomainPublished + "; local casting has no effect; contextual casting qualification pending.");
+                        }
+                        catch (Exception publicationException) {
+                            context.Logger.Failure("teleportation-spells", "publication.failed",
+                                "Teleportation publication failed and rolled back; strategic casting is disabled; other modules continue.", publicationException);
+                        }
+                    }
+                }
+                catch (Exception registrationException)
+                {
+                    teleportation = null;
+                    try { teleportationRegistry.RollbackAll(); }
+                    catch (Exception rollbackException) {
+                        context.Logger.Failure("teleportation-spells", "registration.rollback-failed",
+                            "Exact identity rollback could not complete; Teleportation remains disabled.", rollbackException);
+                    }
+                    context.Logger.Failure("teleportation-spells", "registration.failed",
+                        "Teleportation identities failed validation; other module transactions are preserved.", registrationException);
                 }
 
                 BlueprintFeature acadamaeGraduate =
@@ -1118,6 +1156,8 @@ namespace KingmakerGunslinger.Bootstrap
                     cordOfStubbornResolve,
                     shieldOther,
                     shieldOtherPublication,
+                    teleportation,
+                    teleportationPublication,
                     elvenBranchedSpears,
                     easternWeapons,
                     urbanBarbarian,
@@ -1126,11 +1166,19 @@ namespace KingmakerGunslinger.Bootstrap
                     elementalFeats,
                     elementalFeatPublication,
                     martialPerformancePublication,
-                    registry.RegisteredCount,
-                    expectedRegisteredBlueprintCount);
+                    registry.RegisteredCount + teleportationRegistry.RegisteredCount,
+                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount);
             }
             catch (Exception initializationException)
             {
+                try {
+                    if (teleportationPublication != null) teleportationPublication.Rollback();
+                    teleportationRegistry.RollbackAll();
+                }
+                catch (Exception teleportationRollbackException) {
+                    context.Logger.Failure("teleportation-spells", "bootstrap.rollback-failed",
+                        "Core initialization failed; Teleportation exact rollback was refused.", teleportationRollbackException);
+                }
                 if (martialPerformancePublication != null)
                 {
                     try { martialPerformancePublication.Rollback(); }
@@ -1474,6 +1522,8 @@ namespace KingmakerGunslinger.Bootstrap
                 BlueprintItemEquipmentBelt cordOfStubbornResolve,
                 ShieldOtherBlueprintSet shieldOther,
                 ShieldOtherSpellListPublication shieldOtherPublication,
+                TeleportationSpellBlueprintSet teleportation,
+                TeleportationSpellListPublication teleportationPublication,
                 ElvenBranchedSpearBlueprintSet elvenBranchedSpears,
                 EasternWeaponBlueprintSet easternWeapons,
                 UrbanBarbarianBlueprintSet urbanBarbarian,
@@ -1519,6 +1569,8 @@ namespace KingmakerGunslinger.Bootstrap
                     throw new ArgumentNullException("cordOfStubbornResolve");
                 ShieldOther = shieldOther ?? throw new ArgumentNullException("shieldOther");
                 ShieldOtherPublication = shieldOtherPublication;
+                Teleportation = teleportation;
+                TeleportationPublication = teleportationPublication;
                 ElvenBranchedSpears = elvenBranchedSpears ??
                     throw new ArgumentNullException("elvenBranchedSpears");
                 EasternWeapons = easternWeapons ??
@@ -1589,6 +1641,8 @@ namespace KingmakerGunslinger.Bootstrap
             internal AcadamaeGraduateModeBlueprintSet AcadamaeGraduateMode { get; private set; }
             internal BodyguardFeatBlueprintSet BodyguardFeats { get; private set; }
             internal BlueprintItemEquipmentBelt CordOfStubbornResolve { get; private set; }
+            internal TeleportationSpellBlueprintSet Teleportation { get; private set; }
+            internal TeleportationSpellListPublication TeleportationPublication { get; private set; }
             internal ShieldOtherBlueprintSet ShieldOther { get; private set; }
             internal ShieldOtherSpellListPublication ShieldOtherPublication
             { get; private set; }

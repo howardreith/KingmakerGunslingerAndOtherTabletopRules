@@ -341,3 +341,138 @@ owner's eleven-mod stack each passed 103 assertions on candidate 11; exact
 artifact and restoration evidence is in
 [ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md](../ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION.md).
 This does not establish human full-screen character-creator acceptance.
+
+## 0.0.118 Nereid core qualification
+
+The guarded save-free `disposable-elemental-nereid` scenario tests the registered
+supernatural ability and native attached area on request-local disposable units.
+It uses the existing native scene/Player fixture and exact cleanup checks. The
+request-local provider omits only selector reconciliation so the mechanic can
+be tested while the production choice remains hidden. Evidence explicitly
+excludes native creator, replacement, respec and persistence acceptance. No
+save is selected, loaded, written or used as a source fixture. Use the current
+candidate ExpectedVersion `0.0.118` through the ordinary Steam guard.
+
+
+The 0.0.118 `disposable-elemental-treacherous-earth` request separately tests
+the owned native difficult-terrain effect on save-free request-local actors.
+It checks native radius, speed, actual movement-controller costs, overlap,
+Feather Step/released flight, expiry, ownership and RTWP/turn-based commitment.
+Its two request-owned ground points are temporary fixture checkers, restored
+exactly. It does not qualify material classification, authored-scene path search,
+native character selection/respec or fresh-process persistence.
+The production material gate and selector remain closed. No save name or
+normal save selection is permitted for this scenario.
+
+### Guarded Nereid player-path qualification (0.0.118 candidate)
+
+The two creator scenarios `working-save-elemental-nereid-creation` and
+`working-save-elemental-nereid-respec` temporarily expose the unpublished
+Nereid option during a guarded fresh process. They require exact
+`KMG_AUTOMATION_WORKING`, Undine, Fighter, point-buy and automatic exit.
+The early control uses the complete existing request parser before blueprint
+registration. It adds no setting or schema field. Ordinary launches retain
+nineteen choices. The normal module publication transaction still governs
+whether race selectors are offered.
+
+Both scenarios reuse the qualified native creator/Player-respec harness after
+its correlated working-save load. The creator route commits all three heritages
+for both sexes after retain/trait/heritage back-navigation. Across both sexes,
+respec makes fourteen actual Player.RespecCompanion commits after two initial
+native companion-creator commits, plus four full-review cancellations. It covers
+all three heritages, removal/reselection and ordinary rest. Neither scenario
+saves its disposable actors. Exact qualified runs are in the completion ledger.
+Use a profile-appropriate save; the installed combined-stack working save is
+never loaded under a stripped profile.
+
+The guarded `working-save-elemental-nereid-respec` request also requires an exact
+`sex` parameter, `Male` or `Female`. Each fresh process runs all ten visits for
+that sex (one initial creator commit, seven Player-respec commits and two full-review cancellations). Run both sexes
+for complete respec coverage; the 1800-second guard is unchanged.
+
+The save-free scenarios `disposable-elemental-nereid-creation` and
+`disposable-elemental-nereid-respec` use the same native choice/commit/respec
+path after registering one request-owned native Player character and scene
+service fixture. They require an initially empty world, no campaign, no active
+creator, Undine/Fighter/point-buy, and automatic exit; respec also requires one
+exact sex. Save names and every catalog/load timeout are rejected. The native
+save-writing guard is armed before registration. This is a profile-appropriate
+native player fixture, not a save-backed campaign or detached LevelUpState.
+Its outer Player/scene/world restoration is asserted separately from every
+actual creator result. Qualification evidence, including any failure, belongs
+in the current completion ledger.
+
+The four ordinary elemental race persistence phases also accept the explicit
+`qualificationTrait=NereidFascination` parameter with `KMG_AUTOMATION_WORKING`
+and automatic exit. This guarded mode uses the existing 24-fixture transaction:
+six Undine rows select Nereid; the other eighteen rows remain unchanged. It is
+separate evidence from the nineteen-trait baseline matrix. The legacy 0.0.114
+migration scenario does not accept this scope. The scoped probe observes a
+native command-created aura with an explicitly shortened fixture deadline,
+then checks remaining time, saved response state and ownership on fresh OFF/ON
+loads before ordinary lifecycle tests and final native cleanup/absence.
+
+### Immutable public 0.0.117 fixture producer
+
+The completion mission also permits the exact published 0.0.117 package as a
+save producer. `Deploy-QualifiedElementalRaces114.ps1 -ProducerVersion 0.0.117`
+uses pinned ZIP/DLL/MVID/commit identities and backup-first installation; the
+existing script path and default 0.0.114 behavior are retained. Launch only
+`elemental-race-persistence-prepare` with `-ExpectedVersion 0.0.117`,
+`-ReuseQualifiedElementalRaces117Release`, the exact deployment manifest/package,
+`-SaveName KMG_AUTOMATION_WORKING`, and automatic exit. No qualificationTrait
+parameter, alternative save, mixed artifact authority or arbitrary old version
+is permitted. Evidence collection uses the pinned public identity, never the
+current candidate build manifest. The public package/tag/assets are unchanged.
+This producer extension is not authorization to release 0.0.118.
+
+### Read-only public117 and old deferred markers
+
+`working-save-elemental-deferred-markers` requires `-ExpectedVersion 0.0.118`,
+`-SaveName KMG_AUTOMATION_WORKING`, exactly `-Parameters @{fixtureCase='public117'}`
+or `@{fixtureCase='deferred117'}`, and automatic exit. It accepts no qualificationTrait,
+additional parameter or baseline save. This precise scope temporarily enables Nereid's
+future publication policy before native hydration, while the ordinary module transaction
+still governs selector publication. It never enables Treacherous Earth.
+
+Use only the hash-pinned native public117 fixture or its separately audited disposable
+copy with twelve inert old markers. Back up and restore WORKING bytes and mtime before
+and after each case. Observe the correlated native load, the pre-PostLoad legacy component
+payload and twelve actual saved Oread/Undine graphs. The probe makes no save-writing calls,
+changes no serialized component data, adds no facts and invokes no reconciliation manually.
+Test ON and OFF in separate fresh guarded Steam processes; a PASS requires sixteen exact
+assertions and an archive audit allowing only the one native LoadedTimes increment.
+
+This gate proves preservation of the public producer's graphs: all Oread heritage SLAs
+and the six Undine published breath replacements. It does not claim a deferred-marker
+fixture with every possible Undine retain-base combination. The independent pinned114
+markerless-General migration covers the legacy General SLA graph.
+
+The private 0.0.118 completion persistence probe may additionally name
+`qualificationEffect=TreacherousEarth` with `qualificationTrait=NereidFascination`,
+only for the four existing prepare/OFF/ON/absence phases and exact
+`KMG_AUTOMATION_WORKING`, with automatic exit. This is an independent fixed-area
+effect probe; it does not authorize material eligibility, publication, arbitrary
+save names, unscoped area mutation or a different save-loading path. The external
+driver must compare the original native archive with fresh-load area identity,
+position, caster and remaining duration before claiming persistence qualification.
+
+The same fixed-area scope may add the exact fourth parameter
+`qualificationOperation=scene-roundtrip` only for OFF/ON persistence requests.
+The scope requires the pinned native completion fixture, automatic exit, and the
+existing working-save sentinels through one native `ReloadArea` with
+`AutoSaveMode.None`. It never arms save writes. The probe records actual native
+scene unloading/loading, original area position/owner/deadline, aura responses,
+condition ownership and spent resources. Its external driver must prove unchanged
+archive entries and header fields except the single native LoadedTimes increment.
+This is same-area scene reconstruction evidence, not travel or material classification.
+
+The private completion OFF creator control uses the existing
+`disposable-elemental-character-creation-baseline` scenario with only
+`creatorCase=module-off`, automatic exit and no save name or load-stage parameters.
+It requires Elemental Races OFF, registered save identities and the qualified disposable
+native Player/scene host. Two Human final reviews/cancellations cover both sexes, no
+published KMG racial selectors, and the native ordinary Trait roots when the installed
+optional contract enables them. KMG and Helpful reconciliation remain active. Missing
+optional background Traits are NOT-RUN. This control does not claim new trait commits;
+those use the separately qualified ON creator and native Player-respec scenarios.

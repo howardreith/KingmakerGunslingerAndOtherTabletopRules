@@ -6,6 +6,22 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
+        internal const string DisposableTeleportationResources = "disposable-teleportation-resources";
+        internal const string DisposableTeleportationDisabled = "disposable-teleportation-disabled";
+        internal const string DisposableTeleportationDestinations = "disposable-teleportation-destinations";
+        internal const string DisposableTeleportationLevelUp = "disposable-teleportation-level-up";
+        internal const string DisposableTeleportationSpellbookUi = "disposable-teleportation-spellbook-ui";
+        internal const string DisposableTeleportationGamepad = "disposable-teleportation-gamepad";
+        internal const string DisposableTeleportationTravelers = "disposable-teleportation-travelers";
+        internal const string DisposableTeleportationInteraction = "disposable-teleportation-interaction";
+        internal const string DisposableTeleportationCasting = "disposable-teleportation-casting";
+        internal const string DisposableTeleportationContext = "disposable-teleportation-context";
+        internal const string DisposableTeleportationCoexistence = "disposable-teleportation-coexistence";
+        internal const string DisposableTeleportationCoexistenceGamepad = "disposable-teleportation-coexistence-gamepad";
+        internal const string DisposableTeleportationPersistence = "disposable-teleportation-persistence";
+        internal const string DisposableTeleportationFamiliarity = "disposable-teleportation-familiarity";
+        internal const string ObserveTeleportationWorldMap = "observe-teleportation-world-map";
+        internal const string ObserveTeleportationNativeContracts = "observe-teleportation-native-contracts";
         internal const string ObserveKmgCompatibilityAssetAttribution =
             "observe-kmg-compatibility-asset-attribution";
         internal const string ObserveFeatureModuleSettings =
@@ -138,6 +154,30 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-elemental-character-creation-baseline";
         internal const string ObserveElementalCharacterCreationRouting =
             "observe-elemental-character-creation-routing";
+        internal const string WorkingSaveElementalDeferredMarkers = "working-save-elemental-deferred-markers";
+        internal const string WorkingSaveNereidCreation = "working-save-elemental-nereid-creation";
+        internal const string WorkingSaveNereidRespec = "working-save-elemental-nereid-respec";
+        internal const string DisposableNereidCreation = "disposable-elemental-nereid-creation";
+        internal const string DisposableNereidRespec = "disposable-elemental-nereid-respec";
+        internal static bool IsNereidProfileScenario(string scenario)
+        {
+            return scenario == DisposableNereidCreation || scenario == DisposableNereidRespec;
+        }
+        internal static bool IsNereidQualificationScenario(string scenario)
+        {
+            return scenario == WorkingSaveNereidCreation || scenario == WorkingSaveNereidRespec || IsNereidProfileScenario(scenario);
+        }
+        internal static bool IsElementalNativeRespecScenario(string scenario)
+        {
+            return scenario == WorkingSaveElementalNativeRespec || scenario == WorkingSaveNereidRespec || scenario == DisposableNereidRespec;
+        }
+        internal static bool IsElementalCreatorRegressionScenario(string scenario)
+        {
+            return scenario == WorkingSaveElementalCharacterCreationRegression ||
+                IsElementalNativeRespecScenario(scenario) || scenario == WorkingSaveNereidCreation || scenario == DisposableNereidCreation;
+        }
+        internal const string DisposableElementalTreacherous = "disposable-elemental-treacherous-earth";
+        internal const string DisposableElementalNereid = "disposable-elemental-nereid";
         internal const string DisposableElementalTraitTurnCosts =
             "disposable-elemental-trait-turn-costs";
         internal const string ObserveElementalAlternateTraitFramework =
@@ -519,6 +559,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveElementalCharacterCreation,
                 WorkingSaveElementalCharacterCreationRegression,
                 WorkingSaveElementalNativeRespec,
+                WorkingSaveElementalDeferredMarkers,
+                WorkingSaveNereidCreation,
+                WorkingSaveNereidRespec,
+                DisposableNereidCreation,
+                DisposableNereidRespec,
+                DisposableElementalTreacherous,
+                DisposableElementalNereid,
                 DisposableElementalTraitTurnCosts,
                 ObserveElementalAlternateTraitFramework,
                 DisposableElementalHeritageMechanics,
@@ -583,6 +630,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveRareFirearmBlueprintContracts,
                 MagicFirearmNativeProperties,
                 DisposableMidgameFirearms,
+                ObserveTeleportationNativeContracts,
+                ObserveTeleportationWorldMap,
+                DisposableTeleportationCoexistence,
+                DisposableTeleportationCoexistenceGamepad,
+                DisposableTeleportationPersistence,
+                DisposableTeleportationFamiliarity,
+                DisposableTeleportationResources,
+                DisposableTeleportationContext,
+                DisposableTeleportationCasting,
+                DisposableTeleportationInteraction,
+                DisposableTeleportationTravelers,
+                DisposableTeleportationGamepad,
+                DisposableTeleportationSpellbookUi,
+                DisposableTeleportationLevelUp,
+                DisposableTeleportationDestinations,
+                DisposableTeleportationDisabled,
                 ReliableFirearmMisfireMatrix,
                 BlunderbussThunderingScatter,
                 ObserveProductionFirearmFallbacks,
@@ -701,10 +764,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal);
         }
 
+        internal static bool IsNereidPersistenceScope(string scenario, string qualificationTrait)
+        {
+            return qualificationTrait == "NereidFascination" &&
+                scenario != ElementalRaceLegacyMigration && scenario != WorkingSaveElementalDeferredMarkers &&
+                IsElementalRacePersistenceScenario(scenario);
+        }
+
         internal static bool IsElementalRacePersistenceScenario(
             string scenario)
         {
-            return string.Equals(scenario,
+            return scenario == WorkingSaveElementalDeferredMarkers || string.Equals(scenario,
                     ElementalRacePersistencePrepare,
                     StringComparison.Ordinal) ||
                 string.Equals(scenario,

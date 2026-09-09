@@ -1,6 +1,48 @@
 # Kingmaker Gunslinger
 
-Current version: **`0.0.117-elemental-char-gen-stabilization`** (UMM: **0.0.117**).
+**0.0.120-elemental-races-completion** (UMM 0.0.120) adds Nereid Fascination
+and Treacherous Earth to the existing Undine and Oread SLA replacement selectors.
+The inventory is four races, twelve heritages, eleven racial feats and twenty-one
+selectable alternate racial traits. Both traits replace the active heritage SLA.
+Treacherous uses the disclosed walkable-ground adaptation; Nereid's threat
+handling does not recognize sound alone.
+
+The owner authorized merge and public release with remaining qualification waived.
+Treacherous's full native Player/respec/save integration remains unqualified;
+final-artifact runtime repetitions were not performed. See the
+[release notes](docs/RELEASE-NOTES-0.0.120.md) and
+[current completion ledger](ELEMENTAL-RACES-COMPLETION.md) for evidence and delivery status.
+
+### Retained public 0.0.119 Teleportation behavior
+
+Teleport, Greater Teleport and Word of Recall now appear in native world-map
+point actions when an active party caster has a real available prepared use or
+spell slot. Select the destination first. Native Travel remains available; with
+no usable spell, the normal interaction is unchanged. Confirmation identifies
+the caster and cost, and Teleport shows its exact familiarity-based odds.
+Magical travel moves the party token without entering the destination's area.
+
+The new **World-Map Teleportation Spells** module defaults ON. Learn and prepare
+these spells normally; existing characters receive no automatic grant. Teleport
+is Wizard/Sorcerer 5, Greater Teleport 7, and Word of Recall is Cleric 6 / Druid 8.
+Recall goes to Oleg's world-map point before the capital is established and the
+capital's point afterward. Existing spontaneous casters use level-up or respec.
+
+Download the [0.0.119 release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.119).
+See the [release notes](docs/RELEASE-NOTES-0.0.119.md),
+[player smoke test](docs/TELEPORTATION-SPELLS-SMOKE-TEST.md) and
+[implementation evidence](TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md).
+This patch makes persisted visits authoritative for both Teleport families.
+Late revelation or route unlocking alone does not establish a visit. Existing
+counts are retained; older saves receive one explicit legacy inference.
+Fresh-process campaign save/reload passed on development artifacts, and
+desktop/gamepad coexistence passed on the committed 0.0.119 candidate. The owner
+authorized publication without the remaining final-artifact runtime repeats. The owner's high-level campaign playtest, other UMM
+versions and complete isolated optional-mod profiles remain unqualified.
+See the [hardening evidence](TELEPORTATION-HARDENING-REPORT.md).
+
+## Retained 0.0.117 content and historical qualification
+
 Elemental heritage and alternate racial traits now use the native Heritage
 route before ability allocation and skills. The 12 heritages and 19 implemented
 alternate racial traits retain their identities; Treacherous Earth and Nereid
@@ -8,8 +50,8 @@ Fascination remain registered but unpublished. Helpful preserves ZFavoredClass's
 empty `Features` contract while appending once to its Combat `AllFeatures`.
 Native creator/back-navigation, real respec, spent resources, turn-based actions
 and all visible traits' persistence/physical lifecycles have focused passing
-qualification. The owner accepted the installed candidate and explicitly
-authorized this public release. Download the installable ZIP from
+qualification. The owner accepted the installed 0.0.117 candidate and explicitly
+authorized that public release. Download the installable ZIP from
 [release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.117).
 See the [release notes](docs/RELEASE-NOTES-0.0.117.md) and
 [release verification](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md).
@@ -353,23 +395,50 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find eleven checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find twelve checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
 Transmuter -- requires Call of the Wild**, **Urban Barbarian**, **Bodyguard
 and In Harms Way**, **Protection from Alignment: control immunity**, and
-**Elemental Races: Ifrit, Oread, Sylph, and Undine**. All eleven modules
-default enabled. Older settings migrate to schema 10 while preserving every
-explicit value. Any absent module key, including Elemental Races, migrates ON.
+**Elemental Races: Ifrit, Oread, Sylph, and Undine**, plus
+**World-Map Teleportation Spells**. All twelve modules
+default enabled. Older settings migrate to schema 11 while preserving every
+explicit value. Any absent module key, including Teleportation, migrates ON.
+
+The current exploration-guard checkpoint has passed all 26 module boundary
+configurations (897 assertions), plus desktop/gamepad casting and
+native resource, traveler, familiarity and working-save regressions.
+
+The Teleportation setting is under development on the contextual teleportation
+branch. The native desktop and gamepad destination panels now append usable spellbook
+sources and open a native confirmation. Guarded casts have verified real slot
+expenditure, exact and alternate arrival, Recall switching, and repeated mishaps.
+Native Travel, Escape, live source counts, repeated selection and long source
+lists also have structured evidence across actual UI frames. Native pet death,
+unconsciousness and reroll exclusion now have guarded evidence, and protected
+state comparisons reject deliberate time/map/resource changes.
+Native desktop spellbook rows, descriptions, preparation and action-bar auto-fill
+now have 31 passing guarded assertions with exact fixture cleanup.
+Native Wizard/Sorcerer level-up choices at spell levels 5 and 7 now pass 18
+guarded preview/selection/cancellation assertions. No character level is committed.
+A 68-assertion special-point audit now covers 22 actual casts across all five
+stable native point types and preserves 19 native campaign exclusions. A saved
+arrival boundary prevents delayed map exploration after teleportation; native
+Travel resumes exploration. Full campaign persistence, mod-provided mounts,
+other campaign/map contexts and required compatibility profiles remain under qualification. See the
+[native forensics](docs/TELEPORTATION-NATIVE-FORENSICS.md) and
+[implementation report](TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md). The
+[player smoke guide](docs/TELEPORTATION-SPELLS-SMOKE-TEST.md) covers destination
+selection, confirmation and slot checks.
 
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All eleven modules
+items, summons, ammunition state, or equipment from a save. All twelve modules
 publish independently. Brown-Fur is the only CotW-dependent module: absent or
 incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
-publication while the other ten modules continue. Urban Barbarian and
+publication while the other eleven modules continue. Urban Barbarian and
 Protection from Alignment remain available regardless of CotW compatibility.
 Keep the whole mod installed
 for any campaign that has used project content.
@@ -457,7 +526,7 @@ loaded-round enforcement, misfire condition transitions, and same-item
 maintenance. Historical Test Musket fixtures remain development-only.
 
 The retained Test Musket diagnostic fixture has one round, a 40-foot range
-increment, natural 1–2 misfire, full-round reload requiring a free hand, and a
+increment, natural 1â€“2 misfire, full-round reload requiring a free hand, and a
 5-foot misfire burst. It is not distributed as production equipment.
 
 A first misfire consumes the loaded round, forces a miss, and changes only the exact firearm from Normal to Broken. A second misfire from Broken changes the exact firearm to Wrecked and resolves a native Reflex DC 12 plus base weapon-damage burst against every unique qualified unit in five feet, with the exact wielder included once and last.
@@ -467,9 +536,9 @@ A first misfire consumes the loaded round, forces a miss, and changes only the e
 Firearm Proficiency now grants three separate full-round abilities:
 
 ```text
-Overhaul Firearm: empty/Wrecked + one Repair Kit → empty/Broken
-Repair Firearm:   empty/Broken + one Repair Kit → empty/Normal
-Reload Firearm:   empty + powder + Lead Ball → loaded
+Overhaul Firearm: empty/Wrecked + one Repair Kit â†’ empty/Broken
+Repair Firearm:   empty/Broken + one Repair Kit â†’ empty/Normal
+Reload Firearm:   empty + powder + Lead Ball â†’ loaded
 ```
 
 Overhaul and Repair are distinct personal extraordinary actions. Each mutates
@@ -485,7 +554,7 @@ Reload remains a separate full-round operation and is the only maintenance-loop 
 Sprint 29 adds a deterministic development fixture and PASS/FAIL matrix. It prepares one exact equipped Test Musket as empty/Wrecked, preserves or creates a second independent empty/Normal Test Musket, ensures two Repair Kits plus one powder-and-ball pair, captures process-local identities and counters, and validates each checkpoint:
 
 ```text
-FixtureReady → OverhaulPassed → RepairPassed → MaintenanceLoopPassed
+FixtureReady â†’ OverhaulPassed â†’ RepairPassed â†’ MaintenanceLoopPassed
 ```
 
 A one-command immediate diagnostic runs the entire transaction loop without action economy for fast regression checks. The action-bar abilities must still be tested separately for real full-round delivery and interruption behavior.

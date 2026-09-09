@@ -4,7 +4,8 @@ param(
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$BackupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod',
     [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence',
-    [switch]$PassThru
+    [switch]$PassThru,
+    [ValidateSet('0.0.114','0.0.117')][string]$ProducerVersion = '0.0.114'
 )
 
 Set-StrictMode -Version Latest
@@ -13,22 +14,23 @@ $deploymentWhatIfRequested = [bool]$WhatIfPreference
 $WhatIfPreference = $false
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 
-$expectedVersion = '0.0.114'
-$expectedCommit = '6874dc15a27ded132456dbdd480f47c794543a05'
-$expectedPackageSha = 'b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694'
-$expectedDllSha = '09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262'
-$expectedDllMvid = 'dcd73856-39d4-40ce-9b05-77bf249103d7'
-$expectedEntryCount = 135
+# The established script path/default preserves the qualified 114 caller.
+# Version 117 requires the explicit pinned-producer selection.
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
-$expectedPackage = [IO.Path]::GetFullPath((Join-Path $root `
-    'artifacts\release\0.0.114\KingmakerGunslinger-0.0.114-elemental-races.zip'))
+$identity = Get-KmgQualifiedElementalProducerIdentity -Version $ProducerVersion -RepositoryRoot $root
+$expectedVersion = $identity.Version
+$expectedCommit = $identity.Commit
+$expectedPackageSha = $identity.PackageSha256
+$expectedDllSha = $identity.DllSha256
+$expectedDllMvid = $identity.DllMvid
+$expectedEntryCount = 135
+$expectedPackage = $identity.PackagePath
 $package = (Resolve-Path -LiteralPath $PackagePath).Path
 if (-not $package.Equals($expectedPackage,
         [StringComparison]::OrdinalIgnoreCase)) {
     throw "The qualified legacy producer must be the exact repository release artifact: $expectedPackage"
 }
-$releaseManifestPath = Join-Path $root `
-    'artifacts\release\0.0.114\release-manifest.json'
+$releaseManifestPath = $identity.ReleaseManifestPath
 $release = Get-Content -LiteralPath $releaseManifestPath -Raw |
     ConvertFrom-Json
 if ($release.schemaVersion -ne 1 -or
@@ -39,10 +41,10 @@ if ($release.schemaVersion -ne 1 -or
     $release.packageSha256 -cne $expectedPackageSha -or
     $release.dllSha256 -cne $expectedDllSha -or
     $release.packageValidated -ne $true) {
-    throw 'The authoritative 0.0.114 release manifest does not match the pinned migration producer.'
+    throw 'The authoritative pinned public release manifest does not match the pinned migration producer.'
 }
 if ((Get-KmgSha256 -Path $package) -cne $expectedPackageSha) {
-    throw 'The authoritative 0.0.114 package SHA-256 is not exact.'
+    throw 'The authoritative pinned public package SHA-256 is not exact.'
 }
 
 Assert-KmgNotRunning
@@ -77,7 +79,7 @@ try {
         })
         if ($entries.Count -ne $expectedEntryCount -or
             $unsafeEntries.Count -ne 0) {
-            throw 'The pinned 0.0.114 archive entry catalog is unsafe or incomplete.'
+            throw 'The pinned public archive entry catalog is unsafe or incomplete.'
         }
         $archiveRelativeFiles = @($entries | ForEach-Object {
             $_.FullName.Substring('KingmakerGunslinger/'.Length)
@@ -100,12 +102,12 @@ try {
         (Get-KmgDllMvid -Path $dll) -cne $expectedDllMvid -or
         ($actualSourceFiles -join "`n") -cne
             (($archiveRelativeFiles -replace '/', '\') -join "`n")) {
-        throw 'The extracted 0.0.114 package identity or file catalog is not exact.'
+        throw 'The extracted pinned public package identity or file catalog is not exact.'
     }
 
     $WhatIfPreference = $deploymentWhatIfRequested
     if (-not $PSCmdlet.ShouldProcess($live,
-            'back up the live mod and deploy the pinned 0.0.114 migration producer')) {
+            'back up the live mod and deploy the explicitly pinned public elemental producer')) {
         $WhatIfPreference = $false
         Write-Host 'Dry run only; the pinned package was validated and no deployment occurred.'
         return
@@ -154,7 +156,7 @@ try {
         (Get-KmgSha256 -Path $deployedDll) -cne $expectedDllSha -or
         (Get-KmgDllMvid -Path $deployedDll) -cne $expectedDllMvid -or
         ($actualLiveFiles -join "`n") -cne ($expectedLiveFiles -join "`n")) {
-        throw 'Pinned 0.0.114 deployment verification failed; use the recorded explicit backup.'
+        throw 'Pinned public deployment verification failed; use the recorded explicit backup.'
     }
 
     $deploymentDirectory = Join-Path $EvidenceRoot (
@@ -163,7 +165,7 @@ try {
     New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
     $deployment = [ordered]@{
         schemaVersion = 1
-        authority = 'qualified-elemental-races-0.0.114-release'
+        authority = $identity.Authority
         deployedAtUtc = [DateTime]::UtcNow.ToString('o')
         packagePath = $package
         packageSha256 = $expectedPackageSha
@@ -185,14 +187,15 @@ try {
         files = $actualLiveFiles
     }
     $deploymentPath = Join-Path $deploymentDirectory `
-        'qualified-elemental-races-0.0.114-deployment.json'
+        ("qualified-elemental-races-$expectedVersion-deployment.json")
     $deployment | ConvertTo-Json -Depth 5 | Set-Content `
         -LiteralPath $deploymentPath -Encoding UTF8
-    Write-Host "Pinned 0.0.114 deployment verified; manifest: $deploymentPath"
+    Write-Host "Pinned public $expectedVersion deployment verified; manifest: $deploymentPath"
     if ($PassThru) { Write-Output $deploymentPath }
 }
 finally {
     if (Test-Path -LiteralPath $temporary) {
+        [void](Assert-KmgPathWithin -Path $temporary -Root ([IO.Path]::GetTempPath()))
         Remove-Item -LiteralPath $temporary -Recurse -Force
     }
 }

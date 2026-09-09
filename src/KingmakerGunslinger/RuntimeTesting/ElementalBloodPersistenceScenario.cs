@@ -44,13 +44,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int traitFixtures = _fixtures.Count(value => ExpectedPersistenceTraits(value, value.Heritage).Length != 0);
                 int combinedFixtures = _fixtures.Count(value => ExpectedPersistenceTraits(value, value.Heritage).Length > 1);
                 int bloodFixtures = _fixtures.Count(value => PersistenceBloodTrigger(value) != null);
-                Add(_assertions, "elemental-traits-nineteen-trait-save-inventory",
-                    "24 native-selected trait fixtures, 17 legal combined rows, seven partially spent blood buffs, 19 published traits",
+                Add(_assertions, _nereidPersistence ? "elemental-traits-nereid-save-inventory" : "elemental-traits-nineteen-trait-save-inventory",
+                    _nereidPersistence ? "24 fixtures: six Nereid and eighteen baseline rows; 18 distinct exercised traits"
+                        : "24 native-selected trait fixtures, 17 legal combined rows, seven partially spent blood buffs, 19 exercised released traits",
                     "traitFixtures=" + traitFixtures + ";combinedFixtures=" + combinedFixtures + ";bloodFixtures=" + bloodFixtures,
                     traitFixtures == 24 && combinedFixtures == 17 && bloodFixtures == 7 && _fixtures
                         .SelectMany(value => ExpectedPersistenceTraits(value, value.Heritage))
-                        .Select(value => value.Definition.Id).Distinct().Count() == 19,
-                    "pure nineteen-trait matrix, native selections/commands and blood ticks; native consent and command-created breath conditions");
+                        .Select(value => value.Definition.Id).Distinct().Count() == (_nereidPersistence ? 18 : 19),
+                    _nereidPersistence ? "explicit scoped matrix; native selections/commands and blood ticks; Nereid is observed separately"
+                        : "pure nineteen-trait matrix, native selections/commands and blood ticks; native consent and command-created breath conditions");
             }
 
             private ElementalBloodDamageTrigger PersistenceBloodTrigger(ElementalPersistenceFixture fixture)

@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Choices().ToArray(), heritage);
                 ElementalAlternateTraitId[] ids = ElementalVisibleTraitPersistencePolicy.Traits(
                     fixture.Blueprints.AlternateTraits.Race,
-                    fixture.Gender == Gender.Male ? 0 : 1, heritageIndex);
+                    fixture.Gender == Gender.Male ? 0 : 1, heritageIndex, _nereidPersistence);
                 return ids.Select(fixture.Blueprints.AlternateTraits.Require).ToArray();
             }
 
@@ -42,7 +42,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 ElementalAlternateTraitBlueprints trait = PersistenceSlaTrait(fixture, heritage);
                 return trait == null ? heritage.SlaAbility : trait.Mechanics()
-                    .OfType<BlueprintAbility>().SingleOrDefault(value => value.Parent == null);
+                    .OfType<BlueprintAbility>().SingleOrDefault(value => value.Parent == null &&
+                        value.AssetGuid != ElementalNereidFactory.ShakeFreeGuid);
             }
 
             private BlueprintAbilityResource PersistenceSlaResource(ElementalPersistenceFixture fixture,

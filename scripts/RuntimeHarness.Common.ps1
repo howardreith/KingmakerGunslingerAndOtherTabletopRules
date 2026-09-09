@@ -248,25 +248,54 @@ function Assert-KmgQualifiedLegacyRuntimeOverlay {
     }
 }
 
+function Get-KmgQualifiedElementalProducerIdentity {
+    param(
+        [Parameter(Mandatory = $true)][ValidateSet('0.0.114','0.0.117')][string]$Version,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot
+    )
+    # Only these two immutable public producers are authorized by the current
+    # save-compatibility mission. No caller-supplied hash or arbitrary version.
+    if ($Version -ceq '0.0.114') {
+        $commit = '6874dc15a27ded132456dbdd480f47c794543a05'
+        $packageName = 'KingmakerGunslinger-0.0.114-elemental-races.zip'
+        $packageSha = 'b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694'
+        $dllSha = '09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262'
+        $mvid = 'dcd73856-39d4-40ce-9b05-77bf249103d7'
+    } else {
+        $commit = 'f8a2fd996752afb0e361a53bec175328ace5435a'
+        $packageName = 'KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip'
+        $packageSha = '9368c1ff2c82b76574bab5ed75868d7eb633e759f925e82a1c0da7e861f62f6f'
+        $dllSha = 'fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f'
+        $mvid = '18f5eaaa-3021-4836-8763-9ba22965b958'
+    }
+    return [pscustomobject]@{
+        Version=$Version; Commit=$commit; PackageSha256=$packageSha; DllSha256=$dllSha; DllMvid=$mvid
+        PackagePath=[IO.Path]::GetFullPath((Join-Path $RepositoryRoot ("artifacts/release/$Version/$packageName")))
+        ReleaseManifestPath=Join-Path $RepositoryRoot ("artifacts/release/$Version/release-manifest.json")
+        Authority="qualified-elemental-races-$Version-release"
+    }
+}
+
 function Assert-KmgQualifiedElementalRaces114Deployment {
     param(
         [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
         [Parameter(Mandatory = $true)][string]$PackagePath,
         [Parameter(Mandatory = $true)][string]$RepositoryRoot,
-        [switch]$AllowDirtyGit
+        [switch]$AllowDirtyGit,
+        [ValidateSet('0.0.114','0.0.117')][string]$ProducerVersion = '0.0.114'
     )
-    $expectedVersion = '0.0.114'
-    $expectedCommit = '6874dc15a27ded132456dbdd480f47c794543a05'
-    $expectedPackageSha = 'b5c88113624879cc3c8a718d37ff39acb03f839ff41978f49f7716f9fefb6694'
-    $expectedDllSha = '09af96b95e2abfa39e45f30c8ccb4cb1e8772981dd3be17846f07cbbd2dd8262'
-    $expectedDllMvid = 'dcd73856-39d4-40ce-9b05-77bf249103d7'
-    $expectedPackage = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot `
-        'artifacts\release\0.0.114\KingmakerGunslinger-0.0.114-elemental-races.zip'))
+    $identity = Get-KmgQualifiedElementalProducerIdentity -Version $ProducerVersion -RepositoryRoot $RepositoryRoot
+    $expectedVersion = $identity.Version
+    $expectedCommit = $identity.Commit
+    $expectedPackageSha = $identity.PackageSha256
+    $expectedDllSha = $identity.DllSha256
+    $expectedDllMvid = $identity.DllMvid
+    $expectedPackage = $identity.PackagePath
     $package = (Resolve-Path -LiteralPath $PackagePath).Path
     if (-not $package.Equals($expectedPackage,
             [StringComparison]::OrdinalIgnoreCase) -or
         (Get-KmgSha256 -Path $package) -cne $expectedPackageSha) {
-        throw 'Qualified legacy reuse requires the exact pinned 0.0.114 release package.'
+        throw 'Qualified legacy reuse requires the exact pinned public elemental release package.'
     }
     $deploymentPath = (Resolve-Path -LiteralPath `
         $DeploymentManifestPath).Path
@@ -281,7 +310,7 @@ function Assert-KmgQualifiedElementalRaces114Deployment {
     }
     if ($deployment.schemaVersion -ne 1 -or
         $deployment.authority -cne
-            'qualified-elemental-races-0.0.114-release' -or
+            $identity.Authority -or
         $deployment.packagePath -cne $package -or
         $deployment.packageSha256 -cne $expectedPackageSha -or
         $deployment.commit -cne $expectedCommit -or
@@ -305,7 +334,7 @@ function Assert-KmgQualifiedElementalRaces114Deployment {
     if ($info.Version -cne $expectedVersion -or
         (Get-KmgSha256 -Path $dll) -cne $expectedDllSha -or
         (Get-KmgDllMvid -Path $dll) -cne $expectedDllMvid) {
-        throw 'Installed 0.0.114 version or DLL identity differs from its qualified deployment.'
+        throw 'Installed pinned public version or DLL identity differs from its qualified deployment.'
     }
     $overlay = Assert-KmgQualifiedLegacyRuntimeOverlay `
         -LiveDirectory $live -ExpectedFiles @($deployment.files) `

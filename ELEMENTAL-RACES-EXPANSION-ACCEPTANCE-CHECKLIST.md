@@ -1,5 +1,7 @@
 # Elemental Races expansion acceptance checklist
 
+Current 0.0.120 status and evidence: [completion ledger](ELEMENTAL-RACES-COMPLETION.md). Both new traits are implemented and selectable (21 total). Treacherous uses the delegated walkable-ground adaptation; Nereid sound-only threat recognition is unrepresented and disclosed. The owner explicitly approved merge/release with Treacherous full native Player/save qualification and final repetitive testing waived. Historical pending statements below retain their original attribution.
+
 ## Character-creation stabilization (2026-09-07)
 
 - [x] Four heritage and ten alternate-racial-slot selections use the actual native

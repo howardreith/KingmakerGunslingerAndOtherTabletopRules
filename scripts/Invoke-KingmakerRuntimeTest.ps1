@@ -22,10 +22,6 @@ param(
 
     [bool]$ExitAfterCompletion = $true,
     [hashtable]$Parameters = @{},
-    [ValidateSet(
-        'KMG_AUTOMATION_WORKING',
-        'KMG_P0_FOCUSED_AIM_AFFECTED_COPY',
-        'KMG_IHW_HUMAN_REPRO_COPY')]
     [string]$SaveName,
     [ValidateSet(
         'gunslinger-only',
@@ -45,6 +41,7 @@ param(
     [switch]$ManualInteractionRequired,
     [switch]$ReuseInstalledArtifact,
     [switch]$ReuseQualifiedElementalRaces114Release,
+    [switch]$ReuseQualifiedElementalRaces117Release,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
     [string]$SteamPath = 'C:\Program Files (x86)\Steam\steam.exe',
@@ -61,16 +58,44 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 
 $scenarioMetadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
+if (($Scenario -cin @('working-save-elemental-nereid-creation','working-save-elemental-nereid-respec','working-save-elemental-deferred-markers','disposable-elemental-nereid-creation','disposable-elemental-nereid-respec') -or
+    (Test-KmgNereidPersistenceScope $Scenario $Parameters) -or
+    (Test-KmgElementalOffCreatorScope $Scenario $Parameters)) -and -not $ExitAfterCompletion) {
+    throw 'Guarded Nereid player qualification requires automatic process exit.'
+}
 if ($scenarioMetadata.RequiresSaveName) {
     if ([string]::IsNullOrWhiteSpace($SaveName)) {
         throw "$Scenario requires explicit -SaveName $($scenarioMetadata.PermittedSaveName)."
     }
-    if ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec')) {
-        if ($Parameters.Count -ne 3 -or $Parameters.ContainsKey('saveName')) {
-            throw 'Use typed -SaveName plus exactly race, class, and allocation in -Parameters.'
+    if ($Scenario -ceq 'disposable-teleportation-persistence') {
+        if ($Parameters.Count -ne 2 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath')) {
+            throw 'Persistence requires typed -SaveName plus exactly phase and planPath.'
         }
         $Parameters = $Parameters.Clone()
         $Parameters.saveName = $SaveName
+    } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')) {
+        $creatorParameterCount = if ($Scenario -ceq 'working-save-elemental-nereid-respec') { 4 } else { 3 }
+        if ($Parameters.Count -ne $creatorParameterCount -or $Parameters.ContainsKey('saveName')) {
+            throw 'Use typed -SaveName plus the exact creator parameters; bounded Nereid respec also requires sex.'
+        }
+        $Parameters = $Parameters.Clone()
+        $Parameters.saveName = $SaveName
+    } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
+        if ($Parameters.Count -ne 1 -or -not $Parameters.ContainsKey('fixtureCase')) {
+            throw 'The deferred-marker probe requires typed -SaveName and only fixtureCase.'
+        }
+        $Parameters = @{saveName=$SaveName;fixtureCase=$Parameters.fixtureCase}
+    } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
+        if (Test-KmgTreacherousEffectScope $Scenario $Parameters) {
+            $sceneRoundtrip = Test-KmgCompletionSceneScope $Scenario $Parameters
+            $scopeCount = if ($sceneRoundtrip) { 3 } else { 2 }
+            if ($Parameters.Count -ne $scopeCount) { throw 'The fixed terrain effect scope permits only its exact effect and optional scene-roundtrip operation.' }
+            $Parameters = @{saveName=$SaveName;qualificationTrait='NereidFascination';qualificationEffect='TreacherousEarth'}
+            if ($sceneRoundtrip) { $Parameters.qualificationOperation = 'scene-roundtrip' }
+        } else {
+            if ($Parameters.Count -ne 1) { throw 'Nereid persistence requires typed -SaveName and only qualificationTrait.' }
+            $Parameters = @{saveName=$SaveName;qualificationTrait='NereidFascination'}
+        }
     } else {
         if ($Parameters.Count -ne 0) {
             throw 'Use the strictly typed -SaveName parameter, not -Parameters.'
@@ -136,7 +161,8 @@ $requestFingerprintTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
     -FingerprintTimeoutSeconds $requestFingerprintTimeout `
     -Parameters $Parameters -EnforceManualInteraction `
     -ManualInteractionRequired:$ManualInteractionRequired `
-    -PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release)
+    -PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release `
+    -PermitQualifiedElementalRaces117:$ReuseQualifiedElementalRaces117Release)
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -148,10 +174,11 @@ Assert-KmgSteamAppId -AppId $SteamAppId
 Assert-KmgUnelevated
 $SteamPath = Assert-KmgSteamExecutable -SteamPath $SteamPath
 
-$artifactReuse = $ReuseInstalledArtifact -or
-    $ReuseQualifiedElementalRaces114Release
-if ($ReuseInstalledArtifact -and
-    $ReuseQualifiedElementalRaces114Release) {
+$qualifiedProducerReuse = $ReuseQualifiedElementalRaces114Release -or $ReuseQualifiedElementalRaces117Release
+$producerVersion = if ($ReuseQualifiedElementalRaces117Release) { '0.0.117' } else { '0.0.114' }
+$artifactReuse = $ReuseInstalledArtifact -or $qualifiedProducerReuse
+if (([int][bool]$ReuseInstalledArtifact + [int][bool]$ReuseQualifiedElementalRaces114Release +
+        [int][bool]$ReuseQualifiedElementalRaces117Release) -gt 1) {
     throw 'Current-source and qualified-legacy artifact reuse are mutually exclusive.'
 }
 if ($artifactReuse -and
@@ -171,6 +198,12 @@ if ($ReuseQualifiedElementalRaces114Release -and
     throw 'Qualified 0.0.114 reuse permits only elemental-race-persistence-prepare on KMG_AUTOMATION_WORKING with ExpectedVersion 0.0.114.'
 }
 
+if ($ReuseQualifiedElementalRaces117Release -and
+    ($Scenario -cne 'elemental-race-persistence-prepare' -or $ExpectedVersion -cne '0.0.117' -or
+     $SaveName -cne 'KMG_AUTOMATION_WORKING' -or -not $ExitAfterCompletion)) {
+    throw 'Pinned 117 reuse requires its exact working-save producer and automatic exit.'
+}
+
 if (-not $PSCmdlet.ShouldProcess(
     "Steam App ID $SteamAppId",
     $(if ($artifactReuse) {
@@ -188,10 +221,10 @@ if (-not $PSCmdlet.ShouldProcess(
 # their own ShouldProcess behavior.
 $ConfirmPreference = 'None'
 $WhatIfPreference = $false
-if ($ReuseQualifiedElementalRaces114Release) {
+if ($qualifiedProducerReuse) {
     $reuse = Assert-KmgQualifiedElementalRaces114Deployment `
         -DeploymentManifestPath $DeploymentManifestPath `
-        -PackagePath $PackagePath -RepositoryRoot $root `
+        -PackagePath $PackagePath -RepositoryRoot $root -ProducerVersion $producerVersion `
         -AllowDirtyGit:$AllowDirtyGit
     $package = $reuse.PackagePath
     $deploymentManifestPath = $reuse.DeploymentManifestPath
@@ -231,7 +264,8 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
     -DescriptorResolutionTimeoutSeconds $requestDescriptorResolutionTimeout `
     -LoadEntryTimeoutSeconds $requestLoadEntryTimeout `
     -FingerprintTimeoutSeconds $requestFingerprintTimeout `
-    -PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release
+    -PermitQualifiedElementalRaces114:$ReuseQualifiedElementalRaces114Release `
+    -PermitQualifiedElementalRaces117:$ReuseQualifiedElementalRaces117Release
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
 $requestPath = $initialized.requestPath
@@ -564,6 +598,18 @@ try {
         'summon-same-turn-rtwp-control',
         'disposable-expanded-summoning-visual-contracts',
         'disposable-brown-fur-native-cast',
+        'observe-teleportation-world-map',
+        'disposable-teleportation-familiarity',
+        'disposable-teleportation-resources',
+        'disposable-teleportation-context',
+        'disposable-teleportation-casting',
+        'disposable-teleportation-interaction',
+        'disposable-teleportation-travelers',
+        'disposable-teleportation-gamepad',
+        'disposable-teleportation-spellbook-ui',
+        'disposable-teleportation-level-up',
+        'disposable-teleportation-destinations',
+        'disposable-teleportation-disabled',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
         'weapon-presentation-spear-motion-evidence',
@@ -716,7 +762,11 @@ try {
     $orchestration.completedAtUtc = [DateTime]::UtcNow.ToString('o')
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence -Record $orchestration)
     $terminalOutcomeRecorded = $true
-    if ($ReuseQualifiedElementalRaces114Release) {
+    if ($ReuseQualifiedElementalRaces117Release) {
+        & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
+            -EvidenceDirectory $evidence -QualifiedElementalRaces117DeploymentManifestPath $deploymentManifestPath
+    }
+    elseif ($ReuseQualifiedElementalRaces114Release) {
         & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
             -EvidenceDirectory $evidence `
             -QualifiedElementalRaces114DeploymentManifestPath `

@@ -129,12 +129,17 @@ namespace KingmakerGunslinger.DomainTests
                 "Alternate traits require the installed racial presentation contract and retain plus published choices.");
             Assertions.False(source.Contains("result.Group = FeatureGroup.None;") ||
                 source.Contains("result.Group = FeatureGroup.Racial;"), "Racial traits cannot enter generic Abilities.");
-            string runtime = File.ReadAllText(Path.Combine(FindRoot(), "src", "KingmakerGunslinger",
-                "RuntimeTesting", "ElementalAlternateTraitFrameworkScenario.cs"));
-            Assertions.True(runtime.Contains("e117e1e0a17a4acec001000000000031") &&
-                runtime.Contains("e117e1e0a17a4acec001000000000040") &&
-                runtime.Contains("HasTraitSpecificMechanic(trait)") && runtime.Contains("leaking.Length == 0"),
-                "Live qualification must reject both exact no-op GUIDs in every player-facing selection array.");
+            var sla = ElementalAlternateTraitPolicy.SelectionsForRace(ElementalHeritageRace.Undine)
+                .Single(value => value.Choices.Any(choice => choice.Id == ElementalAlternateTraitId.NereidFascination));
+            Assertions.True(sla.PublishedChoices.Select(value => value.Id).SequenceEqual(new[] {
+                ElementalAlternateTraitId.AcidBreath, ElementalAlternateTraitId.NereidFascination,
+                ElementalAlternateTraitId.OozeBreath }),
+                "The existing Undine SLA selector publishes Acid, Nereid and Ooze in order after retain-base.");
+            var oreadSla = ElementalAlternateTraitPolicy.SelectionsForRace(ElementalHeritageRace.Oread)
+                .Single(value => value.Slot == ElementalRacialTraitSlot.RacialSpellLikeAbility);
+            Assertions.True(oreadSla.PublishedChoices.Select(value => value.Id)
+                .SequenceEqual(new[] { ElementalAlternateTraitId.TreacherousEarth }),
+                "The existing Oread SLA selector publishes Treacherous Earth after retain-base.");
         }
 
         internal static void NativeRevisionPlansCoverLegalTransitionsAndAllHeritages()
