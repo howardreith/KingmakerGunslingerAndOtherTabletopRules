@@ -221,7 +221,11 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 if (dependency.Value == null || !cache.Contains(dependency.Key) ||
                     !ReferenceEquals(CurrentResource(cache[dependency.Key]), dependency.Value))
                     throw new InvalidOperationException("Native visual donor was unloaded: " + dependency.Key);
-                plan.Add(new KeyValuePair<string, UnityEngine.Object[]>(dependency.Key, new UnityEngine.Object[0]));
+                UnityEngine.Object[] inner = dependency.Value.GetInnerAssets()
+                    .Where(value => !ReferenceEquals(value, null)).ToArray();
+                if (inner.Any(value => value == null))
+                    throw new InvalidOperationException("Native visual dependency inner asset was destroyed: " + dependency.Key);
+                plan.Add(new KeyValuePair<string, UnityEngine.Object[]>(dependency.Key, inner));
             }
             int additions = ElementalVisualResourceRetentionPolicy.Append(ids, assets, plan);
             if (additions != 0)

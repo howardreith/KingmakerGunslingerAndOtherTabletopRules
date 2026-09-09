@@ -10,7 +10,8 @@ from pathlib import Path
 
 VERSION = "0.0.116"
 INFORMATIONAL_VERSION = "0.0.116-midgame-firearms-and-protection"
-DETERMINISTIC_TEST_COUNT = 1398
+# Current deterministic suite includes contextual teleportation; historical release evidence below remains 1398.
+DETERMINISTIC_TEST_COUNT = 1490
 STATIC_KEY = "midgameFirearms116"
 
 
@@ -49,13 +50,22 @@ def validate(root: Path) -> None:
     entries = manifest.get("entries", [])
     active = [entry for entry in entries if entry.get("status") == "active"]
     reserved = [entry for entry in entries if entry.get("status") == "reserved"]
-    if (len(entries), len(active), len(reserved)) != (1708, 1706, 2):
+    if (len(entries), len(active), len(reserved)) != (1711, 1709, 2):
         raise AssertionError("Authoritative blueprint manifest arithmetic drifted")
 
     baseline_hash = hashlib.sha256(json.dumps(entries[:1706], sort_keys=True,
         separators=(",", ":")).encode()).hexdigest()
     if baseline_hash != "ae89fe54c51ecd174867e7bc37389745420e6d706bfa8cc129235768b7093259":
-        raise AssertionError("Published baseline identity ledger changed; only two appends allowed")
+        raise AssertionError("Published baseline identity ledger changed; published prefix is immutable")
+    published116_hash = hashlib.sha256(json.dumps(entries[:1708], sort_keys=True,
+        separators=(",", ":")).encode()).hexdigest()
+    if published116_hash != "6c4bb61fb4ccfeb705bbeaf0902638b9a24aaffe45ca370e70962376affc448d":
+        raise AssertionError("Published 0.0.116 identity ledger changed")
+    strategic = entries[1708:]
+    if {entry["symbol"] for entry in strategic} != {
+        "KMG.Spells.Teleport.Ability", "KMG.Spells.GreaterTeleport.Ability",
+        "KMG.Spells.WordOfRecall.Ability"}:
+        raise AssertionError("Only the three assigned strategic spell identities may be appended")
     if len({entry["guid"] for entry in entries}) != len(entries) or \
             len({entry["symbol"] for entry in entries}) != len(entries):
         raise AssertionError("Duplicate blueprint GUID or symbol")

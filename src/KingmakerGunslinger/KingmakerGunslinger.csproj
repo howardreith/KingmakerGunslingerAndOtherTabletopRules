@@ -261,6 +261,8 @@
     </Reference>
     <Reference Include="UnityModManager">
       <HintPath>$(UnityModManagerDir)\UnityModManager.dll</HintPath>
+      <!-- UMM owns its private Harmony 2 dependency; this plugin uses the explicit Harmony 1.2 reference. -->
+      <ExternallyResolved>true</ExternallyResolved>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -311,6 +313,8 @@
     <Compile Include="Blueprints\BodyguardModeBlueprints.cs" />
     <Compile Include="Blueprints\BodyguardFeatCatalogPublication.cs" />
     <Compile Include="Blueprints\ShieldOtherBlueprints.cs" />
+    <Compile Include="Blueprints\TeleportationSpellBlueprints.cs" />
+    <Compile Include="Blueprints\TeleportationSpellListPublication.cs" />
     <Compile Include="Blueprints\ShieldOtherSpellListPublication.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\ProtectionAlignment.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\MentalControlBlueprintKind.cs" />
@@ -866,6 +870,64 @@
     <Compile Include="Persistence\PersistenceRuntimePreflightProbeData.cs" />
     <Compile Include="Persistence\PersistenceRuntimePreflightReport.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Spells\Teleportation\TeleportDestinationPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportForbiddenDestinationCatalog.cs" />
+    <Compile Include="Spells\Teleportation\WordOfRecallDestinationPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportCastAvailabilityPolicy.cs" />
+    <Compile Include="Spells\Teleportation\WorldMapPointSpellActionComposer.cs" />
+    <Compile Include="Spells\Teleportation\TeleportAlternateDestinationPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportCastTransaction.cs" />
+    <Compile Include="Spells\Teleportation\TeleportOutcomeResolver.cs" />
+    <Compile Include="Spells\Teleportation\TeleportSpellKind.cs" />
+    <Compile Include="Spells\Teleportation\TeleportRollTable.cs" />
+    <Compile Include="Spells\Teleportation\TeleportFailureSeverityPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportFamiliarityState.cs" />
+    <Compile Include="Spells\Teleportation\TeleportOrdinaryArrivalPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportPreparedPoolPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationSpellbookAdapter.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationWorldMapAdapter.cs" />
+    <Compile Include="Spells\Teleportation\TeleportTravelerRosterPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationTravelers.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationWorldSnapshot.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationDiagnosticJson.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationDistanceAdapter.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationOutcomeWorld.cs" />
+    <Compile Include="Spells\Teleportation\TeleportMishapDamagePolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationMishapDamageTarget.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationCastExecution.cs" />
+    <Compile Include="Spells\Teleportation\TeleportContextPresentation.cs" />
+    <Compile Include="Spells\Teleportation\TeleportContextLayoutPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportContextScrollPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationConfirmationSurface.cs" />
+    <Compile Include="Spells\Teleportation\WorldMapPointConsoleSpellActionPatches.cs" />
+    <Compile Include="Spells\Teleportation\WorldMapPointConsoleSpellActionRuntime.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationGamepad.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpellbookUi.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationLevelUp.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDestinations.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDisabled.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationLoadDiagnostics.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationText.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationCombatLog.cs" />
+    <Compile Include="Spells\Teleportation\WorldMapPointSpellActionPatches.cs" />
+    <Compile Include="Spells\Teleportation\WorldMapPointSpellActionRuntime.cs" />
+    <Compile Include="Spells\Teleportation\TeleportContextConfirmationPresenter.cs" />
+    <Compile Include="Spells\Teleportation\WordOfRecallCapitalState.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationNativeCastResource.cs" />
+    <Compile Include="Spells\Teleportation\UnitPartTeleportFamiliarity.cs" />
+    <Compile Include="Spells\Teleportation\TeleportExplorationBoundary.cs" />
+    <Compile Include="Spells\Teleportation\TeleportExplorationGuardPatches.cs" />
+    <Compile Include="Spells\Teleportation\TeleportFamiliarityRuntime.cs" />
+    <Compile Include="Spells\Teleportation\TeleportFamiliarityPatches.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInventory.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPublication.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationWorldMapForensics.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationFamiliarity.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationResources.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationContext.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationCasting.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInteraction.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationTravelers.cs" />
     <Compile Include="Compatibility\EasternWeaponArmsArmorCompatibility.cs" />
     <Compile Include="Blueprints\RepairTestMusketAbilityBlueprints.cs" />
     <Compile Include="Development\KingmakerDevelopmentBridge.Sprint29.cs" />
@@ -973,8 +1035,19 @@
     <Compile Include="RuntimeTesting\ElementalBreathScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalBreezeKissedScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalNativeTurnScope.cs" />
+    <Compile Include="RuntimeTesting\ElementalTreacherousScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalTreacherousGroundScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalTreacherousActionScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalNativeProfileCreatorFixture.cs" />
+    <Compile Include="RuntimeTesting\ElementalNereidScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalNereidQualificationControl.cs" />
+    <Compile Include="RuntimeTesting\ElementalNereidThreatScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalTraitNativeTurnScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalBreathPersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalNereidPersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalTreacherousPersistenceScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalCompletionSceneScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalDeferredMarkerScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalEfreetiPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalComponentIdentityScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitWeaponInteractionScenario.cs" />
@@ -1001,6 +1074,14 @@
     <Compile Include="ElementalRaces\ElementalEfreetiMagicFactory.cs" />
     <Compile Include="ElementalRaces\ElementalBreathFactory.cs" />
     <Compile Include="ElementalRaces\ElementalBreathPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalTreacherousPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalTreacherousGroundRuntime.cs" />
+    <Compile Include="ElementalRaces\ElementalTreacherousMechanics.cs" />
+    <Compile Include="ElementalRaces\ElementalTreacherousFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalNereidPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalNereidMechanics.cs" />
+    <Compile Include="ElementalRaces\ElementalNereidFactory.cs" />
+
     <Compile Include="ElementalRaces\ElementalBreezeKissedPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalBreezeKissedFactory.cs" />
     <Compile Include="ElementalRaces\ElementalBreezeKissedMechanics.cs" />
@@ -1086,6 +1167,17 @@
     <Compile Include="RuntimeTesting\SaveCatalogProviderObservation.cs" />
     <Compile Include="RuntimeTesting\LoadGameButtonActionObservation.cs" />
     <Compile Include="RuntimeTesting\WorkingSaveSmokeScenario.cs" />
+    <Compile Include="RuntimeTesting\TeleportCoexistenceForeignAction.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationCoexistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationCoexistenceModals.cs" />
+    <Compile Include="RuntimeTesting\TeleportPersistenceIdentity.cs" />
+    <Compile Include="RuntimeTesting\TeleportPersistencePlan.cs" />
+    <Compile Include="RuntimeTesting\GuardedDisposableSaveLease.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPersistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPersistenceMovement.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPersistenceSave.cs" />
+    <Compile Include="RuntimeTesting\GuardedReadOnlySave.cs" />
+    <Compile Include="RuntimeTesting\GuardedSaveLoadCounter.cs" />
   </ItemGroup>
 
   <ItemGroup>

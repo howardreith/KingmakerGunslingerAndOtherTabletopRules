@@ -71,6 +71,19 @@ param(
         'working-save-eastern-weapons-prepare',
         'working-save-eastern-weapons-verify-cleanup',
         'working-save-eastern-weapons-verify-absent',
+        'observe-teleportation-native-contracts',
+        'observe-teleportation-world-map',
+        'disposable-teleportation-familiarity',
+        'disposable-teleportation-resources',
+        'disposable-teleportation-context',
+        'disposable-teleportation-casting',
+        'disposable-teleportation-interaction',
+        'disposable-teleportation-travelers',
+        'disposable-teleportation-gamepad',
+        'disposable-teleportation-spellbook-ui',
+        'disposable-teleportation-level-up',
+        'disposable-teleportation-destinations',
+        'disposable-teleportation-disabled',
         'observe-expanded-summoning-inventory',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
@@ -92,6 +105,7 @@ param(
     [switch]$ReuseInstalledArtifact,
     [string]$DeploymentManifestPath,
     [string]$PackagePath,
+    [string]$ReferenceRoot = 'C:\Dev\KingmakerGunslingerLab\examples',
     [string]$KingmakerInstallDir =
         'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     [string]$StateRoot = 'C:\Dev\KingmakerGunslingerLab\compatibility-state'
@@ -99,6 +113,12 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
+. (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
+$expectedVersion = [string](Read-KmgCompatibilityJson (Join-Path $root 'Info.json')).Version
+if (-not $PackagePath) { $PackagePath = Get-KmgCompatibilityDefaultPackage $root }
+if ((Get-KmgCompatibilityPackageVersion $PackagePath) -cne $expectedVersion) {
+    throw 'Compatibility package version does not match the current repository; no profile was entered.'
+}
 $runId = 'compat-' + [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ') + '-' +
     [Guid]::NewGuid().ToString('N').Substring(0, 12)
 $entered = $false
@@ -168,7 +188,7 @@ if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
 }
 if ($moduleScenario) {
     $keys = @($Parameters.Keys | Sort-Object)
-    if ($keys.Count -ne 11 -or $keys[0] -cne 'acadamaeGraduate' -or
+    if ($keys.Count -ne 12 -or $keys[0] -cne 'acadamaeGraduate' -or
         $keys[1] -cne 'bodyguardFeats' -or
         $keys[2] -cne 'brownFurTransmuter' -or
         $keys[3] -cne 'easternWeapons' -or
@@ -176,7 +196,8 @@ if ($moduleScenario) {
         $keys[5] -cne 'elvenBranchedSpears' -or
         $keys[6] -cne 'expandedSummoning' -or $keys[7] -cne 'gunslinger' -or
         $keys[8] -cne 'protectionFromAlignmentControlImmunity' -or
-        $keys[9] -cne 'shieldOther' -or $keys[10] -cne 'urbanBarbarian' -or
+        $keys[9] -cne 'shieldOther' -or $keys[10] -cne 'teleportationSpells' -or
+        $keys[11] -cne 'urbanBarbarian' -or
         $Parameters.gunslinger -isnot [bool] -or
         $Parameters.acadamaeGraduate -isnot [bool] -or
         $Parameters.shieldOther -isnot [bool] -or
@@ -187,8 +208,9 @@ if ($moduleScenario) {
         $Parameters.urbanBarbarian -isnot [bool] -or
         $Parameters.bodyguardFeats -isnot [bool] -or
         $Parameters.protectionFromAlignmentControlImmunity -isnot [bool] -or
-        $Parameters.elementalRaces -isnot [bool]) {
-        throw 'Feature-module profile observation requires exactly eleven Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, and elementalRaces.'
+        $Parameters.elementalRaces -isnot [bool] -or
+        $Parameters.teleportationSpells -isnot [bool]) {
+        throw 'Feature-module profile observation requires exactly twelve Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, and teleportationSpells.'
     }
 } elseif ($assetAttributionScenario) {
     $keys = @($Parameters.Keys)
@@ -207,7 +229,7 @@ if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
 try {
     & (Join-Path $PSScriptRoot 'Enter-KingmakerCompatibilityProfile.ps1') `
         -ProfileId $ProfileId -RunId $runId -KingmakerInstallDir $KingmakerInstallDir `
-        -StateRoot $StateRoot -Confirm:$false | Out-Host
+        -StateRoot $StateRoot -ReferenceRoot $ReferenceRoot -PackagePath $PackagePath -Confirm:$false | Out-Host
     $entered = $true
     if ($CotwProgressionMode -cne 'unchanged') {
         if (-not (Test-Path -LiteralPath $cotwSettingsPath -PathType Leaf)) {
@@ -281,7 +303,7 @@ try {
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
-        $settings = [ordered]@{ schemaVersion = 10
+        $settings = [ordered]@{ schemaVersion = 11
             gunslinger = [bool]$Parameters.gunslinger
             'acadamae-graduate' = [bool]$Parameters.acadamaeGraduate
             'shield-other' = [bool]$Parameters.shieldOther
@@ -293,7 +315,8 @@ try {
             'bodyguard-feats' = [bool]$Parameters.bodyguardFeats
             'protection-from-alignment-control-immunity' =
                 [bool]$Parameters.protectionFromAlignmentControlImmunity
-            'elemental-races' = [bool]$Parameters.elementalRaces }
+            'elemental-races' = [bool]$Parameters.elementalRaces
+            'teleportation-spells' = [bool]$Parameters.teleportationSpells }
         $temporary = $settingsPath + '.kmg-profile.tmp'
         [IO.File]::WriteAllText($temporary,
             ($settings | ConvertTo-Json -Depth 4),
@@ -304,7 +327,7 @@ try {
         $before = [DateTime]::UtcNow
         $arguments = @{
             Scenario = $name
-            ExpectedVersion = '0.0.117'
+            ExpectedVersion = $expectedVersion
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = $RuntimeTimeoutSeconds
@@ -332,6 +355,17 @@ try {
         }
         if ($name -in @('musket-master-mechanics-and-starter',
             'working-save-smoke', 'disposable-brown-fur-native-cast',
+            'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
+            'disposable-teleportation-resources',
+            'disposable-teleportation-context',
+            'disposable-teleportation-casting',
+            'disposable-teleportation-interaction',
+            'disposable-teleportation-travelers',
+            'disposable-teleportation-gamepad',
+            'disposable-teleportation-spellbook-ui',
+            'disposable-teleportation-level-up',
+            'disposable-teleportation-destinations',
+            'disposable-teleportation-disabled',
             'summon-same-turn-activation', 'summon-same-turn-acadamae',
             'summon-same-turn-multiple', 'summon-same-turn-native-control',
             'summon-same-turn-rtwp-control')) {

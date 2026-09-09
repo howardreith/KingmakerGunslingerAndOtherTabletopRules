@@ -141,6 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _gunslingerOutfitProductionPersistence;
         private GunslingerOutfitRenderScenario.ElementalRacePersistenceSession
             _elementalRacePersistence;
+        private GunslingerOutfitRenderScenario.ElementalCompletionSceneSession _elementalCompletionScene;
         private ElementalCharacterCreationBaselineScenario _elementalCharacterCreationBaseline;
         private ElementalRaceDevelopmentProbeScenario.Session
             _elementalRaceDevelopmentProbe;
@@ -632,6 +633,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
+                    !IsTeleportationCoexistenceFixture &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationPersistence &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationResources &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationCasting &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationInteraction &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationTravelers &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationGamepad &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationDestinations &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationDisabled &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationContext &&
                     !IsExpandedSummoningPersistenceScenario() &&
                     !IsElvenBranchedSpearPersistenceScenario() &&
                     !IsEasternWeaponsPersistenceScenario() &&
@@ -840,12 +855,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
-                    (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                    RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(_request.Scenario))
                 {
                     if (_elementalCharacterCreationBaseline == null)
                     {
                         if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
-                    (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                            (RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(_request.Scenario) &&
+                                !RuntimeTestScenarioCatalog.IsNereidProfileScenario(_request.Scenario)))
                         { RunWorkingSaveSmoke(); return; }
                         if (ResourcesLibrary.Preloading) return;
                         _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(_context, _request);
@@ -862,6 +878,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (ResourcesLibrary.Preloading) return;
                     Complete(ElementalCharacterCreationRoutingObserver.Run(
                         _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalTreacherous)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalTreacherousScenario.Run(_context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalNereid)
+                {
+                    if (ResourcesLibrary.Preloading) return;
+                    Complete(ElementalNereidScenario.Run(_context, _request));
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
@@ -1254,6 +1282,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuntimeTestScenarioCatalog.ObserveRareFirearmBlueprintContracts)
                 {
                     Complete(RunRareFirearmBlueprintContracts());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationNativeContracts)
+                {
+                    Complete(RunTeleportationNativeInventory());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMidgameFirearms)
@@ -1744,6 +1777,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
+                    IsTeleportationCoexistenceFixture ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
@@ -1820,6 +1867,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
+                    IsTeleportationCoexistenceFixture ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
@@ -1875,6 +1936,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
                 _trace.Record("scenario-activated",
                     _request.Scenario);
+                if (_request.Scenario == TeleportPersistenceIdentity.Scenario)
+                    _teleportPersistencePlan = new TeleportPersistencePlan(_request);
                 _workingSaveSmoke = new WorkingSaveSmokeScenario(
                     _context, _elapsed, _request.RunId, _trace.Record,
                     _request.Scenario ==
@@ -1887,6 +1950,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction,
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction,
+                    _teleportPersistencePlan != null ? _teleportPersistencePlan.Identity :
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .GunslingerOutfitProductionPersistence
                             ? WorkingSaveSmokeIdentity
@@ -1894,7 +1958,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     : _request.Scenario == RuntimeTestScenarioCatalog
                         .ElementalRaceModuleDisabledPersistence ||
                       _request.Scenario == RuntimeTestScenarioCatalog
-                        .ElementalRaceModuleRestoredPersistence
+                        .ElementalRaceModuleRestoredPersistence ||
+                      _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers
                             ? WorkingSaveSmokeIdentity
                                 .AutomationWorkingWithElementalFixtures
                     : _request.Scenario == RuntimeTestScenarioCatalog
@@ -1915,10 +1980,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog
                             .ElementalRaceModuleDisabledPersistence ||
                         _request.Scenario == RuntimeTestScenarioCatalog
-                            .ElementalRaceModuleRestoredPersistence);
+                            .ElementalRaceModuleRestoredPersistence ||
+                        _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
                 _workingSaveSmoke.Install();
+                StartTeleportationLoadDiagnostics();
                 _workingStartupStage = "hooks-install-complete";
                 WriteLifecycleStage(_workingStartupStage);
                 _manualElapsed = Stopwatch.StartNew();
@@ -2258,7 +2325,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (IsMidgameWorkingScenario()) { PollWorkingMidgameFirearms(); }
                 else
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
-                    (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec))
+                    RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(_request.Scenario))
                 {
                     WorkingSaveSmokeEvidence loaded = _workingSaveSmoke.Stop();
                     _elementalCharacterCreationBaseline = new ElementalCharacterCreationBaselineScenario(
@@ -2344,6 +2411,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningVisualContracts)
                 {
                     Complete(RunDisposableExpandedSummoningVisualContracts());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting)
+                {
+                    PollTeleportationContext();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad || IsTeleportationDestinationsFixture || IsTeleportationDisabledFixture)
+                {
+                    PollTeleportationInteraction();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi || IsTeleportationLevelUpFixture)
+                {
+                    PollTeleportationSpellbookUi();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources)
+                {
+                    PollTeleportationResources();
+                }
+                else if (IsTeleportationCoexistenceFixture)
+                {
+                    PollTeleportationInteraction();
+                }
+                else if (_request.Scenario == TeleportPersistenceIdentity.Scenario)
+                {
+                    PollTeleportationPersistence();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity)
+                {
+                    PollTeleportationFamiliarity();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap)
+                {
+                    PollTeleportationWorldMapForensics();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableBrownFurNativeCast)
@@ -2495,6 +2597,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_gunslingerOutfitProductionPersistence.Complete)
                         Complete(
                             _gunslingerOutfitProductionPersistence.Result);
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers)
+                {
+                    Complete(GunslingerOutfitRenderScenario.VerifyElementalDeferredMarkers(
+                        _context, _request, _workingSaveSmoke.Stop()));
+                }
+                else if (RuntimeTestRequestParser.IsCompletionSceneScope(_request))
+                {
+                    if (_elementalCompletionScene == null)
+                        _elementalCompletionScene = new GunslingerOutfitRenderScenario.ElementalCompletionSceneSession(
+                            _context, _request, _workingSaveSmoke);
+                    _elementalCompletionScene.Poll();
+                    if (_elementalCompletionScene.Complete) Complete(_elementalCompletionScene.Result);
                 }
                 else if (RuntimeTestScenarioCatalog
                     .IsElementalRacePersistenceScenario(
@@ -4943,6 +5058,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
+                IsTeleportationCoexistenceFixture ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ProductionFirearmCatalog;
             receiverBoundPath = receiverBoundPath ||
@@ -13155,6 +13284,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedProtectionFromAlignmentControlImmunity ? 15 : 0) &&
                     protectionObservation.InvalidDescriptions == 0,
                     "exact terminal-buff component and player-description inventories"),
+                Assertion("feature-module-teleportation-restart-snapshot",
+                    _request.Parameters["teleportationSpells"].ToString(),
+                    _context.FeatureModules.Active.TeleportationSpells.ToString(),
+                    _context.FeatureModules.Active.TeleportationSpells == (bool)_request.Parameters["teleportationSpells"],
+                    "immutable restart-bound Teleportation publication intent; casting qualification is separate"),
                 Assertion("feature-module-elemental-races-restart-snapshot",
                     expectedElementalRaces ? "enabled" : "disabled",
                     activeElementalRaces ? "enabled" : "disabled",
@@ -13298,6 +13432,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Unity Mod Manager ModEntry.Info.Version")
             };
             MidgamePublicationContracts(assertions, expectedGunslinger);
+            ObserveTeleportationSpellPublication(assertions);
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
         }
@@ -29538,6 +29673,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            StopTeleportPersistence(result);
+            StopTeleportationInteraction(result);
+            StopTeleportationSpellbookUi(result);
+            StopTeleportationLoadDiagnostics(result);
             if (_saveLoadObservation != null && result.SaveLoadObservation == null)
                 result.SaveLoadObservation = _saveLoadObservation.Stop();
             if (_catalogObservation != null && result.SaveCatalogObservation == null)

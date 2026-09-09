@@ -1,5 +1,8 @@
 # Elemental Races expansion: manual-test handoff
 
+Current continuation: [two-trait completion ledger](ELEMENTAL-RACES-COMPLETION.md).
+The records below retain their original release and candidate attribution.
+
 ## Owner-accepted public release (2026-09-08)
 
 The owner accepted the installed stabilization candidate and explicitly authorized

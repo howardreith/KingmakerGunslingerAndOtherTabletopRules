@@ -75,6 +75,7 @@ namespace KingmakerGunslinger
                 // Commit guarded binary identity before request parsing,
                 // patches, blueprint work, UI attachment, or asset loading.
                 RuntimeTestRunner.RecordEarlyIdentity(context);
+                ElementalNereidQualificationControl.TryActivateEarly(context);
                 CompatibilityAttributionRuntimeControl.TryActivateEarly(context);
                 if (CompatibilityAttributionRuntimeControl.IsAssetFamilyEnabled(
                     Compatibility.CompatibilityAssetFamily.Firearms))
@@ -101,6 +102,10 @@ namespace KingmakerGunslinger
                 // A missing/invalid bank must never disable firearm mechanics.
                 Audio.FirearmSoundRuntime.Configure(context);
                 context.InstallPatches();
+                Spells.Teleportation.TeleportFamiliarityPatches.Install(context);
+                Spells.Teleportation.TeleportExplorationGuardPatches.Install(context);
+                Spells.Teleportation.WorldMapPointSpellActionPatches.Install(context);
+                Spells.Teleportation.WorldMapPointConsoleSpellActionPatches.Install(context);
                 EasternWeaponArmsArmorCompatibility.Install(context.Harmony);
                 BrownFurOptionalExtensionCoordinator.Install(context);
                 AidAnotherOptionalExtensionCoordinator.Install(context);

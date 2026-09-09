@@ -72,14 +72,22 @@ deliberately invokes no save-writing or migration method. Unexpected native
 write activity is recorded and prevents PASS. It sends no UI input and performs
 no gameplay action.
 
-Ordinary native `SaveManager.LoadRoutine` nevertheless increments the exact
-loaded save's `header.json.LoadedTimes` and rewrites that header. Therefore
-whole-ZIP SHA-256 equality is not a valid non-mutation assertion for a loaded
-working save. The 117
-[integration repeat](ELEMENTAL-RACES-0.0.117-MASTER-INTEGRATION-CHECKPOINT.md)
-proves every non-header entry unchanged, every other header byte unchanged,
-and exactly one counter increment per load. This narrow native bookkeeping
-does not authorize gameplay SaveRoutine calls or any protected-baseline change.
+Native `SaveManager.LoadRoutine` increments `LoadedTimes` and ordinarily rewrites
+`header.json`. The historical 0.0.117 integration tolerated that native counter
+change. The current autonomous receiver-bound loader instead installs a
+request-owned read-through `ISaver` on the exact captured descriptor. It
+suppresses exactly one proven counter update and its commit, rejects any other
+write, and restores the native saver at load completion. Reads, deserialization,
+owner reconstruction and area loading remain native. Supervised observation
+modes retain their read-only instrumentation contract.
+
+Teleportation hardening additionally holds OS read leases on every pre-existing
+save and verifies complete ZIP hashes and metadata before/after each launch.
+Whole-file identity is now the preservation assertion. The three initial
+protected runtime runs are recorded in
+[`TELEPORTATION-HARDENING-REPORT.md`](../TELEPORTATION-HARDENING-REPORT.md).
+This does not authorize writing the working save. Fresh disk persistence uses
+only separately authorized, transaction-owned disposable names.
 
 Results are `PASS`, `FAIL`, `AMBIGUOUS`, `ERROR`, or `TIMEOUT`. Timeout evidence
 names the stage. Atomic structured evidence covers readiness, UI action,

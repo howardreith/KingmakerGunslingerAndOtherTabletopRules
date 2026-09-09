@@ -25,6 +25,7 @@ MANIFEST_ACTIVE = 1867
 MANIFEST_RESERVED = 2
 ELEMENTAL_TOTAL = 230
 ELEMENTAL_ACTIVE = 229
+TRAIT_MECHANICS_IMPLEMENTATION_PENDING = True
 
 
 def require_tokens(path: Path, *tokens: str) -> str:
@@ -140,14 +141,14 @@ def validate(root: Path) -> None:
         "Kingmaker Gunslinger 0.0.117", "elemental-traits",
         "Release C remains in progress")
     require_tokens(root / "docs/RELEASE-NOTES-0.0.117.md",
-        "Kingmaker Gunslinger 0.0.117", INFORMATIONAL_VERSION,
+        "Kingmaker Gunslinger 0.0.117", "0.0.117-elemental-char-gen-stabilization",
         "nineteen implemented alternate racial traits", "Treacherous Earth",
         "Nereid Fascination", "owner accepted the installed candidate",
         "explicitly authorized", "1,458", "13,847")
     require_tokens(root / "README.md", INFORMATIONAL_VERSION,
         "alternate racial traits", "Release C remains in progress")
     require_tokens(root / "INSTALLATION-COMPATIBILITY.md",
-        "KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip")
+        f"KingmakerGunslinger-{VERSION}-{PACKAGE_SUFFIX}.zip")
     require_tokens(root / "ELEMENTAL-RACES-DEVIATION-MATRIX.md",
         "Replacement-slot framework", "RELEASE C IN PROGRESS")
 
@@ -165,7 +166,7 @@ def validate(root: Path) -> None:
         "moduleSchemaChanged": False,
         "unconditionalIdentityRegistration": True,
         "dynamicSaveBearingGuidGeneration": False,
-        "traitMechanicsImplementationPending": True,
+        "traitMechanicsImplementationPending": TRAIT_MECHANICS_IMPLEMENTATION_PENDING,
         "traitRuntimeQualificationPending": True,
         "traitPersistenceQualificationPending": True,
         "traitCompatibilityQualificationPending": True,

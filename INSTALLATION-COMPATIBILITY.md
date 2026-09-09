@@ -1,21 +1,39 @@
 # Installation, updates, removal, and compatibility
 
-Current release identity is
-`0.0.117-elemental-char-gen-stabilization`; its installable UMM archive is
-`KingmakerGunslinger-0.0.117-elemental-char-gen-stabilization.zip`.
-Download this file from the
-[0.0.117 release assets](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.117)
-and install it through Unity Mod Manager. Preserve your FeatureModules.json
-settings and restart the game after updating. UMM displays the numeric version
-0.0.117. Elemental Races uses its existing setting and defaults ON.
+Version: `0.0.120-elemental-races-completion`.
+The installable archive is `KingmakerGunslinger-0.0.120-elemental-races-completion.zip`.
+Back up the installed mod and preserve FeatureModules.json before installing
+through Unity Mod Manager. The twelve-module, schema-11 configuration inherited
+from 0.0.119 is unchanged.
 
-The owner accepted the installed candidate and authorized publication. All
-nineteen visible alternate racial traits are qualified; Treacherous Earth and
-Nereid Fascination remain unavailable. The two global ZFavoredClass Trait
-selections retain their category choices with Bodyguard OFF or ON. Existing
-ZFavoredClass custom-data exceptions are recorded separately and are not repaired
-by this release. See the [release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md)
-for exact artifacts, compatibility coverage and retained limitations.
+Nereid Fascination and Treacherous Earth are selectable. The owner authorized
+release with remaining qualification waived, including Treacherous's full native
+Player/respec/save integration and final-artifact runtime repetitions.
+Historical 0.0.114/117 save checks and current-artifact checks remain separate in
+the [completion ledger](ELEMENTAL-RACES-COMPLETION.md). Exact publication,
+installation status and hashes are recorded there after delivery.
+
+### Retained 0.0.119 Teleportation qualification and limits
+
+The owner authorized this release for testing in an existing high-level game.
+See the [release notes](docs/RELEASE-NOTES-0.0.119.md) and
+[player smoke test](docs/TELEPORTATION-SPELLS-SMOKE-TEST.md). Spells must be learned
+and prepared through normal game mechanisms. Spellbook availability controls
+whether destination actions appear; there is no separate travel window.
+
+Fresh-process campaign persistence passed on development artifacts; native
+casting and desktop/gamepad coexistence passed on the committed 0.0.119 candidate
+using Kingmaker 2.1.7b / UMM 0.33.0.0. The owner explicitly waived remaining
+final-artifact runtime repeats and authorized publication. The automation
+save contains Craft Magic Items data and cannot validate an isolated profile
+without that mod. Complete isolated optional-mod compatibility, Arms and Armor,
+UMM 0.32.4 and unusual late-campaign states remain unqualified. Earlier standalone
+and Soundpacks startup results belong to their original artifacts. This patch
+does not repair third-party save data. See the
+[hardening report](TELEPORTATION-HARDENING-REPORT.md).
+
+The retained 0.0.117 public content is documented in its
+[release report](docs/ELEMENTAL-RACES-0.0.117-PUBLIC-RELEASE.md).
 
 ## Historical candidate qualification
 

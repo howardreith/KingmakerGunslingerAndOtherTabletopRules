@@ -1,3 +1,33 @@
+# Kingmaker Gunslinger 0.0.119 player smoke test
+
+Keep a save before testing. Enable World-Map Teleportation Spells and restart.
+Learn and prepare the spells normally; existing characters receive no free grant.
+Teleport is Wizard/Sorcerer 5, Greater Teleport 7, and Word of Recall Cleric 6 or
+Druid 8. Existing spontaneous casters use normal level-up or respecialization.
+
+1. Stop on the world map and select a different, previously visited destination.
+   With no real available spell use, confirm the native interaction is unchanged.
+2. With a usable spell, choose native Travel first and verify no slot is spent.
+3. Select a Teleport source and inspect its caster, use count, familiarity and
+   exact odds. Cancel to verify no cost, then reopen and confirm a cast.
+4. Verify exactly one prepared use or correct-level spontaneous slot is spent.
+   Check the party stays on the world map, together, with no travel time advance.
+   Teleport failures may choose another visited legal point or cause mishap damage.
+5. Greater Teleport should arrive exactly at the selected point. Word of Recall
+   appears on Oleg's point before capital establishment and the capital afterward.
+6. Verify no local area opens. Reopen the point panel and check updated counts
+   and absence of duplicate rows. The party's current point offers no spell row.
+
+Both Teleport families require a positive saved ordinary/migrated visit. A newly
+revealed point remains unavailable until ordinary arrival. A visit made with the
+module OFF may require a normal revisit ON. Check a save/reload on your separate
+high-level campaign; automated fresh-process persistence is qualified on the
+installed stack using development artifacts. The owner waived remaining
+final-artifact runtime repeats. Isolated optional-mod profiles and unusual late-campaign states
+remain unqualified. See TELEPORTATION-HARDENING-REPORT.md for exact evidence.
+
+## Historical maintenance-loop guide
+
 # Kingmaker Gunslinger 0.0.30 smoke-test guide
 
 The current focused gate is maintained in `SMOKE-TEST-GUIDE-0.0.30.md`.
@@ -12,11 +42,11 @@ This gate qualifies the complete same-item maintenance loop and the accelerated 
 
 ```text
 empty/Wrecked
-  → Overhaul + one Firearm Repair Kit
+  â†’ Overhaul + one Firearm Repair Kit
 empty/Broken
-  → Repair + one Firearm Repair Kit
+  â†’ Repair + one Firearm Repair Kit
 empty/Normal
-  → Reload + one Black Powder Charge and one Lead Ball
+  â†’ Reload + one Black Powder Charge and one Lead Ball
 loaded/Normal
 ```
 
@@ -154,7 +184,7 @@ stage=OverhaulPassed
 Required transaction evidence:
 
 ```text
-exact state: empty/Wrecked → empty/Broken
+exact state: empty/Wrecked â†’ empty/Broken
 repair kits: -1
 target revision: +1
 overhaul completed: +1
@@ -203,7 +233,7 @@ stage=RepairPassed
 Required transaction evidence:
 
 ```text
-exact state: empty/Broken → empty/Normal
+exact state: empty/Broken â†’ empty/Normal
 repair kits: another -1, total -2 from fixture
 target revision: another +1, total +2
 repair completed: +1

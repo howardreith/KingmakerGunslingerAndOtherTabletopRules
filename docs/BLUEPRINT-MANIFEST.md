@@ -14,7 +14,14 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1869 stable identifiers: 1867 active and 2 reserved.
+Validator contract: 1883 stable identifiers: 1881 active and 2 reserved.
+
+The 1,869 published 0.0.117 entries and three 0.0.118 Teleportation identities
+remain an immutable prefix. The 0.0.120 completion candidate appends seven
+Nereid Fascination and four Treacherous Earth auxiliary identities.
+It owns 240 active elemental identities. Both completion traits are selectable
+under owner approval; remaining native Player/save qualification is explicitly waived. Earlier inventory and checkpoint descriptions below
+are historical. See the [current completion ledger](../ELEMENTAL-RACES-COMPLETION.md).
 
 The second reservation, `KMG.ElementalRaces.Diagnostics.ProbeRace`
 (`57005fca40ab4775ae2fea5613214054`), is development-only. Ordinary bootstrap
@@ -403,3 +410,31 @@ project-owned presentation assets. The 30-item acquisition inventory in
 `planning/PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md` maps existing stable item
 GUIDs to exact installed base-campaign loot GUIDs; target GUIDs are references
 to native Kingmaker blueprints and are not project-owned manifest entries.
+
+
+## Contextual Teleportation identities (qualification branch)
+
+The standalone feature appends three project-owned stable spell identities:
+
+| Symbol | GUID |
+|---|---|
+| `KMG.Spells.Teleport.Ability` | `82e3fb1dce1647b58d3b7169c8520af0` |
+| `KMG.Spells.GreaterTeleport.Ability` | `73d19adfe18743e0a2a3a21abf4af5f3` |
+| `KMG.Spells.WordOfRecall.Ability` | `596d85a666204d6ea5c0188e53f4b4de` |
+
+All register and validate independently of publication. Module 12, schema 11,
+controls player spell-list publication and contextual world-map runtime hooks.
+The exploration guard and familiarity ledger add no blueprint identity. No
+existing GUID or published release identity is changed. Complete qualification
+and the next unused release version remain pending in the implementation report.
+
+## 0.0.119 preservation statement
+
+The hardening patch adds no blueprint and preserves the entire published
+0.0.118 manifest: 1,872 entries, 1,870 active. The SHA-256 of all entries encoded
+as sorted-key compact JSON is
+`fd72d5656989033d57ec7bb9b07aee8295c4b0790e58ffccb2219f3d9e47556f`.
+All three strategic spell IDs, publication levels and the module-12/schema-11
+contract are unchanged. The current validator checks the full manifest as well
+as the retained 0.0.117 prefix. Historical qualification statements above retain
+their original scope; current evidence is in TELEPORTATION-HARDENING-REPORT.md.

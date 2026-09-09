@@ -1,6 +1,8 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.117',
+    [string]$ExpectedVersion = '0.0.120',
+    [ValidateSet('observe-feature-module-settings', 'disposable-teleportation-disabled')]
+    [string]$Scenario = 'observe-feature-module-settings',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
     [string]$Combination = 'all',
     [bool]$ExitAfterCompletion = $true,
@@ -38,7 +40,7 @@ try {
 $moduleCatalog = @(Get-KmgFeatureModuleCatalog)
 $boundaryRequested = $Combination -ceq 'all'
 if ($Boundary14) {
-    Write-Warning '-Boundary14 is obsolete; it now selects the complete generic boundary matrix (24 states for eleven modules).'
+    Write-Warning '-Boundary14 is obsolete; it now selects the complete generic boundary matrix (26 states for twelve modules).'
 }
 if (($Boundary -or $Boundary14) -and $Combination -ne 'all') {
     throw 'A boundary matrix cannot be combined with a single -Combination.'
@@ -56,6 +58,10 @@ if ($boundaryRequested) {
     }
     $combinations = $selected
 }
+if ($Scenario -ceq 'disposable-teleportation-disabled' -and ($boundaryRequested -or -not $ExitAfterCompletion -or
+    @($combinations).Count -ne 1 -or $combinations[0].Values['teleportationSpells'])) {
+    throw 'Disabled world-map qualification requires one Teleportation-OFF configuration and automatic exit.'
+}
 if ($ReuseInstalledArtifact -and
     ([string]::IsNullOrWhiteSpace($DeploymentManifestPath) -or
      [string]::IsNullOrWhiteSpace($PackagePath))) {
@@ -66,7 +72,7 @@ $failure = $null
 try {
     foreach ($entry in $combinations) {
         $configuration = [ordered]@{
-            schemaVersion = 10
+            schemaVersion = 11
         }
         $runtimeParameters = @{}
         foreach ($module in $moduleCatalog) {
@@ -79,13 +85,17 @@ try {
         [IO.File]::WriteAllText($temporary, $json, (New-Object Text.UTF8Encoding($false)))
         Move-Item -LiteralPath $temporary -Destination $settings -Force
         $invokeArguments = @{
-            Scenario = 'observe-feature-module-settings'
+            Scenario = $Scenario
             ExpectedVersion = $ExpectedVersion
             TimeoutSeconds = $TimeoutSeconds
             Parameters = $runtimeParameters
             ExitAfterCompletion = $ExitAfterCompletion
             Confirm = [bool]$ConfirmEach
             AllowDirtyGit = [bool]$AllowDirtyGit
+        }
+        if ($Scenario -ceq 'disposable-teleportation-disabled') {
+            $invokeArguments.Parameters = @{}
+            $invokeArguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
         if ($ReuseInstalledArtifact) {
             $invokeArguments.ReuseInstalledArtifact = $true

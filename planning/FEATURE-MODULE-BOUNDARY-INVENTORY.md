@@ -23,3 +23,43 @@ The bootstrap publication plan now binds the class catalog; basic and Fighter fe
 Runtime qualification proved every listed boundary in all four standalone combinations and exact Call of the Wild ON/ON and Gunslinger-OFF/Acadamae-ON configurations. The registered identity count remained 250, second reconciliation was a no-op, and native/foreign fixture entries were preserved.
 
 Next concrete action: retain this inventory as the guard list for final 0.0.75 validation and future player-facing additions.
+
+## Contextual Teleportation module checkpoint
+
+The standalone teleportation feature adds default-ON module 12 / schema 11.
+Its three spell identities always register, while native spell-list publication
+and all contextual/arrival hooks require the module to be enabled. Desktop and
+gamepad destination hooks are 4 each; ordinary-arrival/load hooks are 2 and the
+saved-arrival exploration hook is 1. OFF installs zero of these hooks and
+preserves already serialized familiarity and arrival-boundary fields.
+
+The preceding desktop source ba32ac2 passed all 26 module boundary states
+(845 assertions). The gamepad addition passed all ON, all OFF, only Teleportation
+ON and only Teleportation OFF (134 assertions), including native publication,
+exact rollback and actual hook counts. Settings bytes were restored exactly.
+These are feature checkpoints; complete release qualification remains open.
+Exact run IDs and limits are in the [teleportation report](../TELEPORTATION-SPELLS-IMPLEMENTATION-REPORT.md).
+
+
+The exploration-guard source checkpoint passes all 26 current boundaries with
+897 assertions. Hooks are counted from the actual Harmony registry,
+including absent unpatched targets OFF. All publication, duplicate/rollback and
+settings restoration checks pass. The report records every run ID and the exact
+immutable deployed artifact; other mod profiles and disk persistence remain open.
+
+
+0.0.118 preserves the module-12/schema-11 contracts while incorporating the
+published 0.0.117 Elemental content. The owner explicitly authorized release and
+accepted the remaining campaign/compatibility qualification for manual testing.
+Historical boundary counts above retain their original artifact scope.
+
+## 0.0.119 hardening gate
+
+ModuleCount remains 12 and settings schema remains 11. The complete domain
+matrix retains 4,096 configurations; native qualification covers all 26 boundary
+states. The final clean committed artifact must repeat every state, followed by
+one startup using the exact original settings to let native optional-mod
+blueprint diagnostics regenerate. This restores the complete Mods inventory
+without manually editing another mod's files. Exact plan-to-settings bindings
+and restoration ownership are covered by focused script tests. See the
+[hardening report](../TELEPORTATION-HARDENING-REPORT.md) for current results.

@@ -109,7 +109,8 @@ def validate(root: Path) -> None:
             raise AssertionError(f"Bodyguard static validation mismatch: {key}")
 
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleSettingsStore.cs",
-        "CurrentSchemaVersion = 10", "BodyguardFeatsId", "ElementalRacesId")
+        ("CurrentSchemaVersion = 11" if VERSION in {"0.0.118", "0.0.119", "0.0.120"}
+            else "CurrentSchemaVersion = 10"), "BodyguardFeatsId", "ElementalRacesId")
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleConfiguration.cs",
         'BodyguardFeatsId = "bodyguard-feats"', "BodyguardFeats ? 256 : 0",
         '";bodyguard-feats=" + BodyguardFeats')
@@ -130,7 +131,9 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("elemental-char-gen-stabilization"
+    package_suffix = ("elemental-races-completion"
+        if VERSION == "0.0.120" else "contextual-world-map-teleportation"
+        if VERSION in {"0.0.118", "0.0.119"} else "elemental-char-gen-stabilization"
         if VERSION == "0.0.117" else "elemental-feats"
         if VERSION == "0.0.116" else "elemental-heritages"
         if VERSION == "0.0.115" else "elemental-races"

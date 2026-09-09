@@ -36,7 +36,9 @@ namespace KingmakerGunslinger.ElementalRaces
                     registry, definition, icon);
                 ElementalTraitDailyAbilityBlueprints daily = ElementalEfreetiMagicFactory.Register(
                     library, registry, definition.Id) ?? ElementalBreathFactory.Register(
-                        library, registry, definition.Id);
+                        library, registry, definition.Id) ?? ElementalNereidFactory.Register(
+                            library, registry, definition.Id, icon) ?? ElementalTreacherousFactory.Register(
+                                registry, definition.Id, icon);
                 ElementalCrystallineFormBlueprints crystalline = ElementalCrystallineFormFactory.Register(
                     registry, definition.Id, icon);
                 ElementalBreezeKissedBlueprints breeze = ElementalBreezeKissedFactory.Register(
@@ -48,6 +50,8 @@ namespace KingmakerGunslinger.ElementalRaces
                     definition.MarkerSymbol,
                     () => CreateMarker(definition, icon));
                 ElementalBloodBlueprintFactory.Bind(bloodBuff, provider, marker);
+                ElementalNereidFactory.Bind(daily, marker);
+                ElementalTreacherousFactory.Bind(daily, marker);
                 traits.Add(new ElementalAlternateTraitBlueprints(definition,
                     marker, provider, (bloodBuff == null ?
                         Array.Empty<BlueprintScriptableObject>() :
@@ -313,6 +317,10 @@ namespace KingmakerGunslinger.ElementalRaces
                 case ElementalAlternateTraitId.StormInTheBlood:
                     return components.OfType<ElementalBloodDamageTrigger>().Any(value =>
                         value.Trait == (int)trait.Definition.Id);
+                case ElementalAlternateTraitId.TreacherousEarth:
+                    return ElementalTreacherousFactory.IsExactEffect(trait);
+                case ElementalAlternateTraitId.NereidFascination:
+                    return ElementalNereidFactory.IsExact(trait);
                 case ElementalAlternateTraitId.EfreetiMagic:
                 case ElementalAlternateTraitId.AcidBreath:
                 case ElementalAlternateTraitId.OozeBreath:

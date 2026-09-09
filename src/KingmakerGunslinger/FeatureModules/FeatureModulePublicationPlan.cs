@@ -14,6 +14,7 @@ namespace KingmakerGunslinger.FeatureModules
             AcadamaeFeat = active.AcadamaeGraduate;
             CordCampaignLoot = active.AcadamaeGraduate;
             ShieldOtherSpellLists = active.ShieldOther;
+            TeleportationSpellLists = active.TeleportationSpells;
             ExpandedSummoningParents = active.ExpandedSummoning;
             ElvenBranchedSpearSelectors = active.ElvenBranchedSpears;
             ElvenBranchedSpearCommerce = active.ElvenBranchedSpears;
@@ -38,6 +39,7 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool SkeletalSalesmanStock { get; private set; }
         internal bool AcadamaeFeat { get; private set; }
         internal bool CordCampaignLoot { get; private set; }
+        internal bool TeleportationSpellLists { get; private set; }
         internal bool ShieldOtherSpellLists { get; private set; }
         internal bool ExpandedSummoningParents { get; private set; }
         internal bool ElvenBranchedSpearSelectors { get; private set; }

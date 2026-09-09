@@ -87,6 +87,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _physicalOriginalArmor = _physicalActor.Body.Armor.MaybeItem;
                     _physicalBuffsBefore = _physicalActor.Buffs.Enumerable.ToArray();
                     _physicalImmortality = _physicalActor.Descriptor.State.Immortality.Count;
+                    // The paused harness owns the ordinary buff phase as well as
+                    // the life controller. Tick alive first so native death-edge
+                    // tracking is established before applying lethal damage.
+                    if (_nereidPersistence) _physicalActor.Buffs.Tick();
                     RecordPhysicalLifecycle("before-death", false, false, false);
                     _physicalActor.Descriptor.State.Immortality.ReleaseAll();
                     int lethal = _physicalActor.MaxHP + Math.Max(1, _physicalActor.Stats.Constitution.ModifiedValue) + 10;
@@ -211,7 +215,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return new JObject { ["raceGuid"] = owner.Progression.Race.AssetGuid,
                     ["features"] = new JArray(_physicalOwned.OfType<BlueprintFeature>().Select(value =>
                         new JObject { ["guid"] = value.AssetGuid, ["rank"] = owner.Progression.Features.GetRank(value) })),
-                    ["abilities"] = new JArray(_physicalOwned.OfType<BlueprintAbility>().Select(value =>
+                    ["abilities"] = new JArray(_physicalOwned.OfType<BlueprintAbility>().Where(value =>
+                        !_nereidPersistence || value.AssetGuid != ElementalNereidFactory.ShakeFreeGuid).Select(value =>
                         new JObject { ["guid"] = value.AssetGuid, ["count"] = owner.Abilities.Enumerable.Count(fact => ReferenceEquals(fact.Blueprint, value)) })),
                     ["resources"] = new JArray(_physicalOwned.OfType<BlueprintAbilityResource>().Select(value =>
                         new JObject { ["guid"] = value.AssetGuid, ["count"] = owner.Resources.PersistantResources.Count(resource => ReferenceEquals(resource.Blueprint, value)),
@@ -268,12 +273,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 bool exact = stableExact && statsExact && graphExact && dollExact && appearanceExact &&
                     _physicalActor.Descriptor.State.IsDead == dead && _physicalActor.Body.IsPolymorphed == polymorphed;
+                JObject nereidTransient = _nereidPersistence ? RecordNereidPhysicalTransientState(phase) : null;
                 var row = new JObject { ["fixture"] = fixture.Label, ["phase"] = phase, ["step"] = _physicalStep,
                     ["updates"] = _physicalUpdates, ["traits"] = new JArray(ExpectedPersistenceTraits(fixture, fixture.Heritage).Select(value => value.Definition.Id.ToString())),
                     ["nativeDead"] = _physicalActor.Descriptor.State.IsDead, ["nativePolymorphed"] = _physicalActor.Body.IsPolymorphed,
                     ["wounds"] = _physicalActor.Damage, ["maxHP"] = _physicalActor.MaxHP, ["immortalityCount"] = _physicalActor.Descriptor.State.Immortality.Count,
                     ["stableExact"] = stableExact, ["statsExact"] = statsExact, ["graphExact"] = graphExact, ["dollExact"] = dollExact,
                     ["appearanceExact"] = appearanceExact, ["appearanceObservation"] = appearanceEvidence, ["stable"] = stable, ["stats"] = stats, ["visibleMechanics"] = visible,
+                    ["nereidTransient"] = nereidTransient,
                     ["buffsRetained"] = new JArray(_physicalActor.Buffs.Enumerable.Select(value => value.Blueprint.AssetGuid)),
                     ["nativeRemovedBuffs"] = new JArray(_physicalBuffsBefore.Where(value => !_physicalActor.Buffs.Enumerable.Contains(value)).Select(value => value.Blueprint.AssetGuid)),
                     ["exact"] = exact };
@@ -302,7 +309,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Select(value => value.Value<string>("phase")).SequenceEqual(phases)) &&
                     rows.SelectMany(value => value["traits"].Values<string>()).Distinct().OrderBy(value => value, StringComparer.Ordinal)
                         .SequenceEqual(Enum.GetValues(typeof(ElementalAlternateTraitId)).Cast<ElementalAlternateTraitId>()
-                            .Where(ElementalAlternateTraitPolicy.IsPublished).Select(value => value.ToString()).OrderBy(value => value, StringComparer.Ordinal));
+                            .Where(ElementalAlternateTraitPolicy.IsPublished)
+                            // This explicit scope substitutes all six Undine SLA
+                            // fixtures with Nereid; breath lifecycle coverage stays
+                            // in the unchanged ordinary nineteen-trait matrix.
+                            .Where(value => !_nereidPersistence ||
+                                (value != ElementalAlternateTraitId.AcidBreath && value != ElementalAlternateTraitId.OozeBreath))
+                            .Select(value => value.ToString()).OrderBy(value => value, StringComparer.Ordinal));
             }
 
             private string PhysicalWaitDiagnostic()
@@ -320,6 +333,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     null, new[] { typeof(UnitEntityData) }, null);
                 if (tick == null) throw new MissingMethodException("Native UnitLifeController.TickOnUnit");
                 tick.Invoke(new UnitLifeController(), new object[] { _physicalActor });
+                // Native BuffCollection.Tick consumes StayOnDeath and removes
+                // AddFacts grants. Life-state events alone do not own that phase.
+                if (_nereidPersistence) _physicalActor.Buffs.Tick();
             }
 
             private void RestorePhysicalImmortality()

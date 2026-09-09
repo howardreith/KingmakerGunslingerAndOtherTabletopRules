@@ -114,7 +114,7 @@ the runtime test runner remain orchestration-only.
 
 ## Sprint 29 current layer
 
-Version 0.0.29 retains the accepted token-backed runtime architecture, condition-preserving Broken reload, exact loaded-round enforcement, exact natural-d20 misfire classification, exact-item Normal → Broken → Wrecked transitions, native five-foot Reflex-half second-misfire burst, and same-item Wrecked → Broken Overhaul.
+Version 0.0.29 retains the accepted token-backed runtime architecture, condition-preserving Broken reload, exact loaded-round enforcement, exact natural-d20 misfire classification, exact-item Normal â†’ Broken â†’ Wrecked transitions, native five-foot Reflex-half second-misfire burst, and same-item Wrecked â†’ Broken Overhaul.
 
 Sprint 29 completes the first player-facing Test Musket maintenance loop with a separate full-round personal extraordinary Repair action. Completed Repair consumes exactly one Firearm Repair Kit and atomically changes the exact equipped Broken item to empty/Normal. Any loaded rounds and their ammunition identity are destroyed rather than returned to inventory. It verifies unchanged repository identity and in-process runtime reference, exactly one revision increment, exact one-kit consumption, and rollback of the exact pre-repair loaded state and kit count after a fault. Reload remains a separate operation and the only stage that consumes inventory ammunition.
 
@@ -150,7 +150,7 @@ The current Test Musket remains a real weapon using Kingmaker's native attack an
 
 The authoritative runtime state carrier is the exact item's inert enchantment token. The earlier weak repository, direct-reference UnitPart, and `UniqueId` vault implementations remain checked in for test history and migration research, but none is the current runtime source of truth and the rejected `UniqueId` design must not be revived.
 
-Sprint 28 is runtime-accepted from the supplied player-facing Overhaul evidence and explicit user approval. Sprint 29 completes the staged Overhaul → Repair → Reload maintenance loop and adds deterministic qualification automation. Sprint 30 is gated on live proof of the complete action-bar loop, interruption safety, exact resource deltas, same-item identity, second-item isolation, fail-closed rejection, matrix output, and persistence.
+Sprint 28 is runtime-accepted from the supplied player-facing Overhaul evidence and explicit user approval. Sprint 29 completes the staged Overhaul â†’ Repair â†’ Reload maintenance loop and adds deterministic qualification automation. Sprint 30 is gated on live proof of the complete action-bar loop, interruption safety, exact resource deltas, same-item identity, second-item isolation, fail-closed rejection, matrix output, and persistence.
 
 ## 2. Runtime boundaries
 
@@ -386,7 +386,7 @@ Firearms remain real `BlueprintItemWeapon`/`ItemEntityWeapon` instances and use 
 
 Loaded Normal and Loaded Broken attacks consume one round at the start of the exact firearm attack roll. Empty, Wrecked, or state-faulted marked firearms are forced to miss. A weak reference-identity gate prevents duplicate callbacks from consuming twice. Firing never consumes shared-inventory ammunition again.
 
-Natural-roll misfire detection, force-next-roll diagnostics, exact-item Normal → Broken → Wrecked transitions, native definition-sized second-misfire burst delivery, player-facing Wrecked → Broken Overhaul, separate Broken → Normal Repair, and the complete Overhaul → Repair → Reload loop are active in 0.0.29. Definition-driven generic actions, scatter triple damage, Quick Clear, and automatic iterative reloads remain outside this version.
+Natural-roll misfire detection, force-next-roll diagnostics, exact-item Normal â†’ Broken â†’ Wrecked transitions, native definition-sized second-misfire burst delivery, player-facing Wrecked â†’ Broken Overhaul, separate Broken â†’ Normal Repair, and the complete Overhaul â†’ Repair â†’ Reload loop are active in 0.0.29. Definition-driven generic actions, scatter triple damage, Quick Clear, and automatic iterative reloads remain outside this version.
 
 ## 12. Persistence evidence boundary
 
@@ -487,9 +487,9 @@ Sprint 28 added the first player-facing same-item recovery transaction on top of
 exactly one equipped empty/Wrecked exact Test Musket
         + one Firearm Repair Kit in shared inventory
         + completed full-round Overhaul Test Musket delivery
-        ↓
+        â†“
 same runtime item / same process-local repository identity
-        ↓
+        â†“
 empty/Broken, revision +1, kit count -1
 ```
 
@@ -513,11 +513,11 @@ The Sprint 28 recovery adapter keeps the pure state machine, exact-item reposito
 
 ```text
 BlueprintAbility + AbilityCustomLogic
-        ↓ delivery only
+        â†“ delivery only
 OverhaulTestMusketRuntime
-        ↓ exact equipped item + shared inventory adapters
+        â†“ exact equipped item + shared inventory adapters
 FirearmOverhaulTransactionService
-        ↓ verified writes / best-effort rollback
+        â†“ verified writes / best-effort rollback
 item-owned state token + Firearm Repair Kit stack
 ```
 
@@ -541,11 +541,11 @@ The ordinary Repair path mirrors the accepted Overhaul layering:
 
 ```text
 BlueprintAbility + AbilityCustomLogic
-        ↓ delivery only
+        â†“ delivery only
 RepairTestMusketRuntime
-        ↓ exact equipped item + shared inventory adapters
+        â†“ exact equipped item + shared inventory adapters
 FirearmRepairTransactionService
-        ↓ verified writes / independent best-effort rollback
+        â†“ verified writes / independent best-effort rollback
 item-owned state token + Firearm Repair Kit stack
 ```
 
@@ -592,7 +592,7 @@ the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
 Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
 identities, plus the released Roadwarden and Dead Reckoning firearms, extend
-the append-only ledger to 1869 stable IDs: 1867 active and 2 reserved. The
+the append-only ledger to 1883 stable IDs: 1881 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native
@@ -791,3 +791,20 @@ fixed target GUIDs, installed area ownership, live loot matches, and live vendor
 matches; it never grants, teleports, opens, selects, loads, or saves. Static
 blueprint publication deliberately does not rewrite already materialized save
 state.
+
+## Elemental completion candidate 0.0.119
+
+Seven Nereid and four Treacherous Earth auxiliary blueprints extend the ledger
+to 1883 stable IDs: 1881 active and 2 reserved. Existing identities are unchanged.
+Both traits remain unpublished during qualification; current evidence belongs in
+[ELEMENTAL-RACES-COMPLETION.md](../ELEMENTAL-RACES-COMPLETION.md).
+
+
+Treacherous Earth separates a closed material policy from an owned native
+fixed-area graph. Resource, ability, terrain buff and area all appear in
+Mechanics for native respec discovery. Native DifficultTerrain and Ground
+use the existing movement/immunity paths; exact area/caster ownership controls
+cleanup. Native area serialization owns position and the original lifetime.
+The draft uses native supernatural command plumbing for a magical terrain
+effect, with no spell clone, spell resistance, damage or save. Surface,
+command, scene and persistence qualification remain required.
