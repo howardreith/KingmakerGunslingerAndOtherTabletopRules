@@ -111,3 +111,14 @@ is fixture setup after all cast assertions, never a teleport effect.
 Full raw evidence remains under
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260908T1330037500523Z-disposable-teleportation-destinations`.
 No additional unconditional deny-catalog entry is justified by these results.
+
+## 0.0.119 candidate re-audit
+
+Run `20260909T0039289742629Z-a7d39df407804ba0985b927e456ac0cc` on clean source
+`c6e291af6d90cecde013ab06cbaf4fc94d8b2c3a` repeats all 611 current unique anchors
+and the 41 selected special points. All 68 assertions pass: 22 actual contextual
+Greater Teleport casts, 19 native campaign rejections, all five point types, ten
+book events and six component-bearing arrivals, with zero destination exceptions.
+Type counts and stable identities match the inventory above. The empty explicit
+deny catalog remains justified. The owner subsequently waived remaining final
+artifact repeats; see TELEPORTATION-HARDENING-REPORT.md for exact source limits.

@@ -1174,8 +1174,9 @@
     "freshProcessPersistencePhases": 4,
     "coexistenceControllerModuleConfigurations": 4,
     "moduleBoundaryConfigurations": 26,
-    "mandatoryInstalledStackQualificationRequired": true,
+    "mandatoryInstalledStackQualificationRequired": false,
     "ownerHighLevelCampaignPlaytestPending": true,
-    "optionalModAndOtherUmmQualificationComplete": false
+    "optionalModAndOtherUmmQualificationComplete": false,
+    "remainingFinalArtifactQualificationWaivedByOwner": true
   }
 }

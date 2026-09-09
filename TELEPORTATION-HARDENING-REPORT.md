@@ -1,6 +1,6 @@
 # Contextual teleportation post-release hardening
 
-Status: implementation and automated qualification in progress. No new release is qualified or published by this repair pass yet.
+Status: the owner explicitly authorized stopping remaining tests and publishing 0.0.119. Completed checks and waived final-artifact repeats are distinguished below; public sealing/verification follows.
 
 ## Source inventory before editing
 
@@ -248,3 +248,96 @@ Ignored logs are `artifacts/teleportation/release119-*.log`. Metadata preparatio
 briefly rejected a non-UTF-8 copyright byte and stale schema/release-note tokens;
 these were corrected before any 0.0.119 runtime launch. No gameplay defect was
 inferred from those validation failures. Final committed-artifact tests follow.
+
+## Owner-authorized stop and release sealing
+
+The owner instructed: "You can forego the remaining tests. Please wrap things
+up, commit, push to origin, and cut the release." This supersedes the remaining
+runtime gates in the original plan. No additional approval or manual test on
+this machine is required. All gameplay source remains identical to the tested
+candidate; final documentation/validation sealing changes the embedded source
+commit and therefore the final DLL/package identity. Do not claim byte identity
+between that rebuilt release and the earlier native-tested candidate.
+
+The clean committed candidate `c6e291af6d90cecde013ab06cbaf4fc94d8b2c3a` passed two
+clean exact-reference builds with identical ZIP and DLL bytes:
+
+- ZIP SHA-256: `63cabeaed77399ad2ff36f91122055676ec950d4aa4e693ba492c372cc96b718`.
+- DLL SHA-256: `70b8708a362fc53b48d3c020c7ef8abac580119a958bd6f0156ab1f7822b745c`.
+- MVID: `aa5a8953-5c6e-4354-902b-5f1f8590ce00`.
+- Source-state SHA-256: `191045e6297b877e20460b3c910bed8224facb68bea34a4412768363890d17d7`.
+- Deployment: `deployments/20260909T0024510161139Z/deployment.json`.
+- Deterministic receipt: ignored `artifacts/teleportation/release119-deterministic-20260909T0022210499184Z/deterministic-result.json`.
+
+All four coexistence runs and all eleven existing native scenarios passed on
+that candidate: 15 fresh Steam processes, 386 assertions. Both transactions
+preserved all 85 original saves, restored settings and all 1,008 Mods entries,
+and left no game process. The cast gate proves the corrected live-flag invariant
+and exact Recall sanctuary exception. Ordinary exact-once credit remains passing;
+no movement or production UI implementation was changed.
+
+| Scenario/configuration | Run ID | Assertions |
+| --- | --- | --- |
+| disposable-teleportation-coexistence | `20260909T0026320402533Z-0565004c9bfa4891a4d71b3da301eeec` | 23 PASS |
+| disposable-teleportation-coexistence-gamepad | `20260909T0028066248060Z-77e074d7515e44789685983ab296c296` | 25 PASS |
+| disposable-teleportation-coexistence OFF | `20260909T0029444646822Z-c5911ac3009749a4b468af974c46d6d3` | 15 PASS |
+| disposable-teleportation-coexistence-gamepad OFF | `20260909T0031180656311Z-7cf355d4df3342f396b5e02ca6c261a9` | 17 PASS |
+| disposable-teleportation-casting | `20260909T0033012624714Z-252c4f3974fd408385bb180f998f5146` | 46 PASS |
+| disposable-teleportation-interaction | `20260909T0034399730579Z-ddb2741dfa354a4d86a908158b58305c` | 29 PASS |
+| disposable-teleportation-gamepad | `20260909T0036123537730Z-6ee552b953234f35ac4aff20582420bd` | 39 PASS |
+| disposable-teleportation-familiarity | `20260909T0037594733102Z-80fc0bea8d0a4d539da13129c815792b` | 9 PASS |
+| disposable-teleportation-destinations | `20260909T0039289742629Z-a7d39df407804ba0985b927e456ac0cc` | 68 PASS |
+| disposable-teleportation-travelers | `20260909T0041162272352Z-bf9e1d714b094083bf086dbd650c6b87` | 15 PASS |
+| disposable-teleportation-resources | `20260909T0042487004172Z-b8c23fefca924e88ab14fc4969b41101` | 19 PASS |
+| disposable-teleportation-spellbook-ui | `20260909T0044183613904Z-82693f646dbd457fb0a06e92028d21f7` | 31 PASS |
+| disposable-teleportation-level-up | `20260909T0045498799203Z-24c5a11c9e794de890e82c1fed6349a7` | 31 PASS |
+| disposable-teleportation-disabled OFF | `20260909T0047428476826Z-3397a4fe5a8249ecb06e7346c3575c49` | 8 PASS |
+| working-save-smoke | `20260909T0048594246943Z-1c0665c9a1d148a9a7c00daa68c90cf7` | 11 PASS |
+
+Exact result paths are in `runs.json` inside transactions
+`teleportation-hardening-coexistence-20260909T0026303625465Z` and
+`teleportation-hardening-native-20260909T0032598349026Z` beneath the evidence root.
+The current inventory again contains 611 unique anchors: 304 Waypoints, 12
+Landmarks, 99 HiddenLocations, 85 Locations and 111 SystemWaypoints. The 41-point
+special audit casts at 22 permitted points (all five types, ten book events and
+six component-bearing points) and rejects 19 native campaign restrictions.
+There were zero destination exceptions; no deny entry is warranted.
+
+Fresh-process persistence already passed A/B/C/D twice during development;
+the integrated artifact's four phases are recorded below. Its 26 module native
+runs also passed, with the separate original-settings diagnostic recovery
+already documented. These are development evidence, not final release-binary
+runtime qualification. The owner waived remaining persistence and module-matrix
+repeats, including the automated original-configuration restoration startup.
+
+| Integrated development persistence phase | Run ID | Assertions |
+| --- | --- | --- |
+| A | `20260908T2306074909414Z-49ec85628bbd4974882bf0880790f7a0` | 12 PASS |
+| B | `20260908T2307484125595Z-cb13127c84d64ade848a8ed6f831e689` | 11 PASS |
+| C | `20260908T2309171520479Z-a21b2c242f4949898686f76d1b85a1c3` | 7 PASS |
+| D | `20260908T2310444471339Z-372b2d2da77f40c89a5139e9453beb1b` | 2 PASS |
+
+The queued final persistence transaction
+`teleportation-persistence-20260909T0050260910859Z_8e782fc8a67e4f088cebe30fd4faf97a`
+was stopped before native launch by the existing clean-source guard when the
+owner-authorized release notes were updated. Zero phases ran, zero disposable
+saves were created, every existing save/settings/Mods file remained intact, and
+no game process remained. Its failure receipt is retained as an owner-requested
+cancellation, not a mechanics failure or a persistence PASS.
+
+Additional rejected orchestration probe: run
+`20260909T0024591125573Z-61c9979dfd0d4c38b3790dc7c301b949` stopped before launch
+because a script-test stub leaked into an ad hoc shared PowerShell driver.
+The fixture checks were rerun in separate Windows PowerShell processes; the same
+unmodified candidate then passed all 15 native runs. The rejected transaction
+preserved all original saves/settings/Mods. No production change was warranted.
+Automatic review also rejected a broad commit command before execution. A byte
+comparison proved 24 older launcher/metadata files changed only the authorized
+0.0.118-to-0.0.119 identity, and an explicit audited file list was approved,
+committed and pushed through the policy wrapper. This is resolved.
+
+Public refs were fetched again: master remains `8e5eeae7973c71ca4b78dc8216d00d815af7ea26`,
+teleportation remains `d8c53c68fa8e4dc45407e6a35e16f2c5a46b0fa6`, latest public release
+is v0.0.118 and v0.0.119 remains unused. Historical content will not be replaced.
+The publisher's existing deterministic build/package/provenance checks remain
+required. No additional native launches are planned under the owner's waiver.

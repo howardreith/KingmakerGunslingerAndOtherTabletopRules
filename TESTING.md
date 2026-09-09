@@ -1,5 +1,13 @@
 # Testing
 
+For 0.0.119, the owner explicitly waived remaining runtime tests and authorized
+publication after the completed candidate checks. The original full gate plan
+below is retained for future qualification; it is not a claim that every final
+release-artifact repeat passed. See the hardening report for exact artifact
+boundaries. Run script tests in separate `powershell.exe -NoProfile
+-ExecutionPolicy Bypass -File <script>` processes so fixture stubs cannot affect
+a later native launch in the calling session.
+
 Current release preparation is 0.0.119. The mandatory gates are recorded in
 [TELEPORTATION-HARDENING-REPORT.md](TELEPORTATION-HARDENING-REPORT.md). All final
 runtime gates must use the same clean committed package. The four fresh-process

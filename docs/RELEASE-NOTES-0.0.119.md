@@ -19,20 +19,24 @@ A point first visited with the module OFF can require one ordinary revisit ON.
 Word of Recall keeps its separate exact Oleg/capital sanctuary rule, with no
 fallback when capital state is ambiguous.
 
-Four fresh Steam processes qualify real native campaign disk save/load,
-disabled-module save retention and re-enabled restoration. Desktop/gamepad
-coexistence regressions preserve a request-local foreign control and callback,
+Development qualification passed four fresh Steam processes using real native
+campaign disk save/load, disabled-module save retention and re-enabled restoration.
+Desktop/gamepad coexistence regressions on the 0.0.119 candidate preserve a
+request-local foreign control and callback,
 native Travel, navigation/input layers and dismissal/modal ownership. No
 production UI defect was reproduced, so production UI behavior was retained.
 The earlier duplicate-arrival concern was not reproduced; the movement observer
 and transpiler are unchanged.
 
-The owner authorized this normal public patch after the mandatory installed-stack
-gates: 1,550 domain tests, clean deterministic Release/package validation,
-guarded preflight, settings/profile transaction checks, all existing native
-teleportation scenarios, working-save smoke, persistence/coexistence and all
-26 current module boundaries. Exact final source/package identities and run IDs
-are recorded in the hardening report and public verification evidence. All
+The owner authorized stopping the remaining tests and publishing now.
+Completed evidence includes 1,550 domain tests, clean deterministic Release/package
+validation, guarded preflight, settings/profile transaction checks, development
+fresh-process persistence and all 26 development module boundaries, plus native
+teleportation and four coexistence runs on the committed 0.0.119 candidate.
+Repeating persistence and the complete matrix on the final release artifact was
+waived. Final metadata sealing is not additional native gameplay qualification.
+Exact source/package identities, run IDs and qualification limits are recorded
+in the hardening report and public verification evidence. All
 pre-existing saves, including KMG_AUTOMATION_BASELINE and KMG_AUTOMATION_WORKING,
 remain unchanged. Only transaction-owned disposable saves were written/deleted.
 
