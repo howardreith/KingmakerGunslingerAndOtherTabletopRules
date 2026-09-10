@@ -19,7 +19,7 @@ current progress, evidence, and exact resumption instructions only.
 | 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
 | 2 Conjuration specialist slots | NATIVE-VERIFIED (publication + behavioral scenario; two consecutive PASS runs) |
 | 3 Compact UI + settlement coexistence | NATIVE-VERIFIED (coexistence 26/26, interaction 29/29, casting 44/44, gamepad PASS) |
-| 4 Scrolls: items, vendors, learning, casting | IN PROGRESS — native forensics complete; implementation next |
+| 4 Scrolls: items, vendors, learning, casting | IN PROGRESS — items NATIVE-VERIFIED; vendors/adapter/casting next |
 | 5 Persistence + final install candidate | TODO |
 
 Gate 1 remaining breadth (mission §3): Recall cast + arrow; scroll source (after
@@ -27,6 +27,24 @@ Gate 4); off-target/mishap arrival arrow; saved magical-arrival fresh-process
 reload before workaround; cancellation/no-relocation controls (arrow state
 unchanged); repeat casts. Desktop path verified; controller arrows via gamepad
 scenario events verified (compass events are shared).
+
+## Gate 4 progress
+
+DONE (commits b9fca66 + observer, native-verified 2026-09-10):
+- Scroll ITEMS registered and native-verified: KMG_ScrollOfTeleport
+  (2c283c99...), KMG_ScrollOfGreaterTeleport (2a2b0185...),
+  KMG_ScrollOfWordOfRecall (42d3daeb...) — BlueprintItemEquipmentUsable
+  clones of verified native donors with EXACT approved economics
+  (1125/CL9/L5, 2275/CL13/L7, 1650/CL11/L6), Ability AND CopyScroll
+  CustomSpell both referencing the canonical spell GUIDs. Observer PASS
+  (12 assertions incl. new teleportation-scroll-items).
+- Ledger append-only respected: 3 identities APPENDED (order preserved —
+  sorting the entries broke the pinned 0.0.117 prefix hash; reverted).
+  1886 total / 1884 active. Updated: validate_unified_repair121,
+  validate_elemental_completion120, validate_playtest66 (teleportation
+  symbol set), validate_summoning78 (teleportation filter), docs
+  ARCHITECTURE/BLUEPRINT-MANIFEST, static-validation.json, two C# domain
+  ledger-count tests, domain count 1558.
 
 ## Gate 4 native forensics (verified 2026-09-10, observe-teleportation-native-contracts)
 
