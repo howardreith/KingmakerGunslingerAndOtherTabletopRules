@@ -79,18 +79,18 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 // --- Scroll sources from real party items ---
                 var bookReader = party[0]; var umdReader = party[1];
+                // Native player characters share ONE party inventory (stash,
+                // carried and equipped items alike), so both adds land in the
+                // same collection and the stock must count it exactly once.
                 party[0].Inventory.Add(scrolls.Teleport, 2);
                 party[1].Inventory.Add(scrolls.Teleport, 1);
-                // Stash exclusion control: the shared player inventory is never a
-                // traveling-party inventory.
-                player.Inventory.Add(scrolls.Teleport, 4);
                 // UMD-only reader: no book knows the spell; the trained skill alone
                 // qualifies the reader.
                 var umdStat = umdReader.Descriptor.Stats.GetStat(StatType.SkillUseMagicDevice);
                 originalUmdbase[umdReader.UniqueId] = umdStat.BaseValue;
                 umdStat.BaseValue = 1;
                 int sharedStock = TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport);
-                ScrollsAssert("shared-stock-counts-all-party-items", "the shared stock aggregates both members' items and excludes the stash",
+                ScrollsAssert("shared-stock-counts-distinct-collections", "the shared native party inventory is counted exactly once",
                     "stock=" + sharedStock, sharedStock == 3);
                 var scrollSources = TeleportationScrollAdapter.Enumerate(player)
                     .Where(value => value.Spell == TeleportSpellKind.Teleport).ToArray();
@@ -181,8 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         arrival.Edges.Contains(ArrowLabelEdge(label)))),
                     labels.Length > 0 && labels.All(label => ArrowLabelEdge(label) != null && arrival.Edges.Contains(ArrowLabelEdge(label))));
                 CaptureTeleportScrolls("scroll-cast", new { committed, stockBefore = 3, stockAfter, labels = labels.Length,
-                    movementBookRows = bookRowsBefore, stashStillExcluded = player.Inventory.Count(value =>
-                        value != null && ReferenceEquals(value.Blueprint, scrolls.Teleport)) == 4 });
+                    movementBookRows = bookRowsBefore });
 
                 // --- Vendor migration behaviors on the shared priest table ---
                 var priestTable = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(
@@ -247,9 +246,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int remaining = TeleportationScrollAdapter.Stock(new[] { unit }, scrolls.Teleport);
                     if (remaining > 0) unit.Inventory.Remove((BlueprintItem)scrolls.Teleport, remaining);
                 }
-                if (player.Inventory != null)
-                    player.Inventory.Remove((BlueprintItem)scrolls.Teleport, player.Inventory.Count(value =>
-                        value != null && ReferenceEquals(value.Blueprint, scrolls.Teleport)));
                 foreach (var entry in originalUmdbase)
                 {
                     var unit = player.AllCharacters.FirstOrDefault(value => value != null && value.UniqueId == entry.Key);

@@ -63,9 +63,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
             // order, then collection order. Equivalent stacks aggregate; the
             // choice never switches material variants because the blueprint is
             // part of the source key.
+            var seen = new HashSet<ItemsCollection>();
             foreach (var unit in player.Party)
             {
-                if (unit == null || unit.Inventory == null) continue;
+                if (unit == null || unit.Inventory == null || !seen.Add(unit.Inventory)) continue;
                 foreach (var entity in unit.Inventory)
                 {
                     if (entity != null && entity.Count > 0 && ReferenceEquals(entity.Blueprint, scroll))
@@ -83,12 +84,17 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 snapshot.Spell == TeleportSpellKind.GreaterTeleport ? scrolls.GreaterTeleport : scrolls.WordOfRecall;
         }
 
+        // Native player characters share one party inventory (the stash and every
+        // member's carried/equipped items live in the same collection), so the
+        // stock is counted once per DISTINCT collection. Non-party units keep
+        // separate inventories and are never enumerated.
         internal static int Stock(IReadOnlyList<Kingmaker.EntitySystem.Entities.UnitEntityData> party, BlueprintItem blueprint)
         {
             int total = 0;
+            var counted = new HashSet<ItemsCollection>();
             foreach (var unit in party)
             {
-                if (unit == null || unit.Inventory == null) continue;
+                if (unit == null || unit.Inventory == null || !counted.Add(unit.Inventory)) continue;
                 foreach (var entity in unit.Inventory)
                     if (entity != null && entity.Count > 0 && ReferenceEquals(entity.Blueprint, blueprint))
                         total += entity.Count;
@@ -196,9 +202,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
         {
             var player = Game.Instance == null ? null : Game.Instance.Player;
             if (player == null) return null;
+            var seen = new HashSet<ItemsCollection>();
             foreach (var unit in player.Party)
             {
-                if (unit == null || unit.Inventory == null) continue;
+                if (unit == null || unit.Inventory == null || !seen.Add(unit.Inventory)) continue;
                 foreach (var entity in unit.Inventory)
                     if (entity != null && entity.Count > 0 && ReferenceEquals(entity.Blueprint, source.Scroll))
                         return entity;
