@@ -20,7 +20,6 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private static readonly Dictionary<GlobalMapMessageBox, TextMeshProUGUI> RelabeledSettlement = new Dictionary<GlobalMapMessageBox, TextMeshProUGUI>();
         private static readonly Dictionary<TextMeshProUGUI, string> SettlementLabelBefore = new Dictionary<TextMeshProUGUI, string>();
         private static readonly HashSet<string> Reported = new HashSet<string>(StringComparer.Ordinal);
-        private static float NativeLineHeight;
         internal static void Append(GlobalMapMessageBox panel)
         {
             try
@@ -123,6 +122,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private bool _ready;
         internal ITeleportationRolls QualificationRolls { private get; set; }
         private float RowExtent { get { return _rowHeight * 2; } }
+        private static float NativeLineHeight;
         internal IReadOnlyList<WorldMapPointSpellAction> Actions { get { return _rows.Select(value => value.Action).ToArray(); } }
         internal IReadOnlyList<Button> Buttons { get { return _rows.Select(value => value.Button).ToArray(); } }
 
