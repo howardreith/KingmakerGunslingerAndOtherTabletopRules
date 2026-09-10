@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -324,6 +324,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RunTeleportInteractionTravel(panel, origin, middle, target, ledger, movement, "augmented", slots);
                 rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition(); player.GameTime = originalTime;
                 for (int frame = 0; frame < 4; frame++) yield return 0;
+                int castStarts = movement.Starts, castStops = movement.Stops;
                 var cast = OpenTeleportationFixtureConfirmation(panel, target, TeleportSpellKind.GreaterTeleport,
                     TeleportCastSourceKind.Spontaneous, new TeleportationFixtureRolls(new int[0]));
                 for (int frame = 0; frame < 20; frame++) yield return 0;
@@ -331,10 +332,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 CaptureTeleportInteraction("cast-after-frames", new { transaction = cast.Transaction.State.ToString(), cast.Transaction.Diagnostic,
                     evidence = cast.Execution.LastEvidence, movement.Starts, movement.Stops });
-                TeleportInteractionAssert("cast-after-frames", "real native Cast after UI updates spends one slot and completes exact relocation with no new native movement start",
+                TeleportInteractionAssert("cast-after-frames", "real native Cast after UI updates spends one slot and completes exact relocation raising exactly the native pawn-notification pair",
                     "state=" + cast.Transaction.State, cast.Transaction.State == TeleportTransactionState.Completed &&
                     cast.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && map.PartyLocation == target.Blueprint &&
-                    movement.Starts == 2 && !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown && map.TravelData == null);
+                    movement.Starts == castStarts + 1 && movement.Stops == castStops + 1 && !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown && map.TravelData == null);
 
                 rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                 var druid = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
