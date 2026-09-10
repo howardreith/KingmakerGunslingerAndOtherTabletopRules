@@ -19,7 +19,7 @@ current progress, evidence, and exact resumption instructions only.
 | 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
 | 2 Conjuration specialist slots | NATIVE-VERIFIED (publication + behavioral scenario; two consecutive PASS runs) |
 | 3 Compact UI + settlement coexistence | NATIVE-VERIFIED (coexistence 26/26, interaction 29/29, casting 44/44, gamepad PASS) |
-| 4 Scrolls: items, vendors, learning, casting | TODO |
+| 4 Scrolls: items, vendors, learning, casting | IN PROGRESS — native forensics complete; implementation next |
 | 5 Persistence + final install candidate | TODO |
 
 Gate 1 remaining breadth (mission §3): Recall cast + arrow; scroll source (after
@@ -27,6 +27,65 @@ Gate 4); off-target/mishap arrival arrow; saved magical-arrival fresh-process
 reload before workaround; cancellation/no-relocation controls (arrow state
 unchanged); repeat casts. Desktop path verified; controller arrows via gamepad
 scenario events verified (compass events are shared).
+
+## Gate 4 native forensics (verified 2026-09-10, observe-teleportation-native-contracts)
+
+All identities below are VERIFIED at runtime (new scrollDonors/vendorUnits/
+vendorStocks sections in RuntimeTestRunner.TeleportationInventory.cs; latest
+evidence dir under runtime-evidence/ ends ...T16*Z-observe-teleportation-
+native-contracts):
+
+Scroll structure: scrolls are BlueprintItemEquipmentUsable, ItemType Usable,
+single component CopyScroll, with Cost/CasterLevel matching tabletop pairs.
+Verified donors by approved cost/CL pair:
+- Teleport scroll pair (1125 gp, CL 9): ScrollOfShadowEvocationFireball
+  (02086fbb...), ScrollOfHoldPersonMassAbility has the Greater pair (2275/13,
+  0033529d...), ScrollOfPlantShapeIISpell has the Recall pair (1650/11,
+  00843bdd...). Full 32-char GUIDs are in the evidence JSON (scrollDonors).
+- CopyScroll component + Ability reference = the scroll->spell association.
+
+Vendors:
+- ZarcieClone dcf8a96c...: ONE AddVendorItems -> BlueprintUnitLoot
+  "ArcaneScrollsVendorTableI" 5450d563... (265 LootItemsPackFixed entries
+  { m_Item: LootItem, m_Count }). There is NO Arcane III table on Zarcie —
+  the mission's provisional tier names are inaccurate; the nearest verified
+  equivalent is this single Arcane I table IF it contains level-7 scrolls
+  (still to confirm by resolving LootItem entries), else Hassuf.
+- HassufClone bd9607a0...: AddVendorItems -> "FirstVendorTable" 8c17a31b...
+  (56 entries).
+- ArsinoeClone ae8de86d...: AddVendorItems -> "C11_JhodVendorTable"
+  afa2c7f2...; EVERY Jhod unit (OTP/Capital/CityGates/FirstWorld/TRC/...) uses
+  AddSharedVendor -> the SAME C11_JhodVendorTable (shared reference confirmed;
+  one table mutation covers the family — this is also the aliasing the mission
+  warns about: grant ONCE via one path).
+- AddVendorItems.m_Loot / AddSharedVendor.m_Table are PRIVATE fields
+  (reflection, NonPublic|Public both needed — NonPublic-only returns null).
+- Runtime vendor state: Kingmaker.UnitLogic.Parts.SharedVendorTables (unit
+  part) — saved-stock migration target for already-generated inventories.
+
+## Gate 4 implementation plan (next session)
+
+1. Items: TeleportationScrollBlueprints (clone the verified donors via
+   BlueprintCloneService; set Cost 1125/2275/1650, CasterLevel 9/13/11,
+   Ability = the canonical KMG spell abilities, CopyScroll component kept).
+   Register in BlueprintRegistry; publish under the existing Teleportation
+   module transaction; manifest + domain tests (cost/CL/level/identity,
+   CopyScroll present, canonical ability association).
+2. Vendors: append LootItemsPackFixed { LootItem(scroll), count } entries to
+   ArcaneScrollsVendorTableI (5 Teleport; 3 Greater IF table contains L7
+   scrolls, else FirstVendorTable on HassufClone) and C11_JhodVendorTable
+   (5 Recall), through the VendorCatalogPublication transaction
+   (idempotent, rollback); one grant identity per table (no double-grant).
+   Then saved-stock migration for already-generated vendor states + the
+   never-refill rule (existing repo patterns: SkeletalSalesmanStockCatalog,
+   RetiredVendorStockPolicy).
+3. Scroll source adapter: TeleportCastSourceKind.Scroll; enumerate traveling
+   party scroll items (equipped incl.), dedupe, exclude stash/inactive;
+   compose compact row "Use Teleport Scroll / caster · n shared scrolls"
+   (Title variant); native scroll activation path + one-scroll cost accounting.
+4. Guarded scenario disposable-teleportation-scrolls: buy/copy/prepare/cast
+   flow + first-arrow (Gate 1 integration), UMD reader, failures,
+   cancellation, persistence across module OFF/ON.
 
 ## Gate 2 diagnosis and fix (publication native-verified 2026-09-10)
 
