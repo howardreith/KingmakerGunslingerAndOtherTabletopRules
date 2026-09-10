@@ -64,7 +64,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 var controllers = WorldMapPointSpellActionPatches.TeleportControllersField.GetValue(panel) as Component;
                 ModContext context;
                 ModContext.TryGet(out context);
-                if (controllers == null || !controllers.gameObject.activeInHierarchy)
+                // Native FillDialogInfoLocation gates this exact control with its
+                // own activeSelf (CanTeleportSomewhere); mirror that gate rather
+                // than the whole-hierarchy state.
+                if (controllers == null || !controllers.gameObject.activeSelf)
                 { if (context != null) context.Logger.Info("teleportation", "settlement-relabel-skip", "reason=controllers-inactive"); return; }
                 var button = controllers.GetComponentsInChildren<Button>(true).FirstOrDefault(value =>
                 {
