@@ -164,9 +164,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static readonly System.Reflection.FieldInfo VendorItemsLootField = typeof(Kingmaker.UnitLogic.FactLogic.AddVendorItems)
-            .GetField("m_Loot", BindingFlags.Instance | BindingFlags.NonPublic);
+            .GetField("m_Loot", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
         private static readonly System.Reflection.FieldInfo SharedVendorTableField = typeof(Kingmaker.UnitLogic.FactLogic.AddSharedVendor)
-            .GetField("m_Table", BindingFlags.Instance | BindingFlags.NonPublic);
+            .GetField("m_Table", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
         private static Kingmaker.Blueprints.Loot.BlueprintUnitLoot VendorItemsLoot(Kingmaker.UnitLogic.FactLogic.AddVendorItems component)
         { return VendorItemsLootField == null ? null : VendorItemsLootField.GetValue(component) as Kingmaker.Blueprints.Loot.BlueprintUnitLoot; }
         private static Kingmaker.Blueprints.Items.BlueprintSharedVendorTable SharedVendorTable(Kingmaker.UnitLogic.FactLogic.AddSharedVendor component)
