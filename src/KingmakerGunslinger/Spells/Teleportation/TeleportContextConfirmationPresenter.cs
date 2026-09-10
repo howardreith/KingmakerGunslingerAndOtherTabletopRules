@@ -34,7 +34,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (Pending || action == null || context == null || !context.Usable) return;
             var surface = TeleportationConfirmationSurface.Available();
             if (surface == null) return;
-            Spellbook openedBook = null;
+            Kingmaker.UnitLogic.Spellbook openedBook = null;
             if (action.Source.Kind == TeleportCastSourceKind.Scroll)
             {
                 // Inventory-backed sources bind the shared stock, not a book;
@@ -79,6 +79,16 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var point = ResourcesLibrary.TryGetBlueprint<BlueprintLocation>(_action.Destination.Id);
             var fresh = TeleportationWorldMapAdapter.Compose(context, point).SingleOrDefault(value => value.Key == _action.Key);
             var source = fresh == null ? null : TeleportationSpellbookAdapter.Resolve(fresh.Source);
+            if (fresh != null && fresh.Source.Kind == TeleportCastSourceKind.Scroll)
+            {
+                // Inventory-backed sources stay valid while their shared stock is
+                // unchanged; no physical book identity participates.
+                return TeleportationScrollAdapter.Resolve(fresh.Source) != null &&
+                    fresh.Source.Uses == _action.Source.Uses && fresh.Source.Kind == _action.Source.Kind &&
+                    fresh.Source.SpellLevel == _action.Source.SpellLevel &&
+                    fresh.Destination.OrdinaryArrivals == _action.Destination.OrdinaryArrivals &&
+                    TeleportationCastExecution.FamiliarityFor(context, point.AssetGuid) == _familiarity;
+            }
             return source != null && ReferenceEquals(source.Book, _openedBook) && fresh.Source.Uses == _action.Source.Uses && fresh.Source.Kind == _action.Source.Kind &&
                 fresh.Source.SpellLevel == _action.Source.SpellLevel && fresh.Destination.OrdinaryArrivals == _action.Destination.OrdinaryArrivals &&
                 TeleportationCastExecution.FamiliarityFor(context, point.AssetGuid) == _familiarity;
