@@ -136,7 +136,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 var self = container.AddComponent<TeleportDestinationRows>();
                 self._panel = panel;
                 self._location = (GlobalMapLocation)WorldMapPointSpellActionPatches.LocationField.GetValue(panel);
-                self._rowHeight = Math.Max(LayoutUtility.GetPreferredHeight((RectTransform)donor.transform), ((RectTransform)donor.transform).rect.height);
+                // The donor's live rect can be stretched by the dialog layout once
+                // taller rows exist; the native preferred height is the stable
+                // per-line measure.
+                self._rowHeight = LayoutUtility.GetPreferredHeight((RectTransform)donor.transform);
                 if (self._rowHeight <= 0) throw new InvalidOperationException("Native action height is unproven.");
                 self._viewportLayout = container.AddComponent<LayoutElement>();
                 float width = ((RectTransform)dialog.transform).rect.width - dialog.GetComponent<LayoutGroup>().padding.horizontal;

@@ -317,7 +317,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return TeleportationDiagnosticJson.Serialize(panel.GetComponentsInChildren<Button>(true).Where(value => value.GetComponentInParent<TeleportDestinationRows>() == null)
                 .Select(value => new { name = value.name, active = value.gameObject.activeSelf, interactable = value.interactable,
                     labels = value.GetComponentsInChildren<TextMeshProUGUI>(true).Select(label => label.text).ToArray(),
-                    callbacks = Enumerable.Range(0, value.onClick.GetPersistentEventCount()).Select(value.onClick.GetPersistentMethodName).ToArray() }).ToArray());
+                    callbacks = Enumerable.Range(0, value.onClick.GetPersistentEventCount()).Select(value.onClick.GetPersistentMethodName).ToArray() }).ToArray())
+                .Replace(TeleportContextPresentation.SettlementTeleportLabel(TeleportationText.Get), "Teleport");
         }
         private static void CloseTeleportationFixturePanels()
         {
