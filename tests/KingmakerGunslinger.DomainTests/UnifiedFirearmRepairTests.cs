@@ -61,8 +61,10 @@ namespace KingmakerGunslinger.DomainTests
                     "items.SetIcon(supplies.OverhaulKit, Require(\"overhaul-kit\"));"),
                 "Retired kit icons must remain loaded for save-compatibility blueprints.");
             Assertions.True(icons.Contains("supply-icon.retired") &&
-                icons.Contains("remain absent from every vendor table"),
-                "Supply-icon validation no longer proves retired kits are absent from shops.");
+                icons.Contains("CountPublishedRows") &&
+                icons.Contains("RequireTableAbsent") &&
+                !icons.Contains("retired.ContainsExact"),
+                "Supply-icon validation no longer proves retired kits have zero actual rows in every vendor table.");
         }
 
         internal static void UnifiedGunsmithingGrantContract()
@@ -200,6 +202,29 @@ namespace KingmakerGunslinger.DomainTests
                 "A retired consumable kit is not clearly marked obsolete.");
             Assertions.True(kit.Contains("BasicAmmunitionBlueprints.NativeDiamondDustGuid"),
                 "The obsolete kit lost its native template isolation.");
+        }
+
+        internal static void UnifiedVendorStockCleanupContract()
+        {
+            string cleanup = Read("src/KingmakerGunslinger/Acquisition",
+                "RetiredKitVendorStockCleanup.cs");
+            Assertions.True(cleanup.Contains(
+                    "[HarmonyPatch(typeof(VendorLogic), \"BeginTrading\"") &&
+                cleanup.Contains("ReferenceEquals(inventory, player.Inventory)") &&
+                cleanup.Contains("retired.Contains(item.Blueprint)"),
+                "The retired-kit sweep must hook trade-open, match exact retired blueprints, and guard the player inventory.");
+            string policy = Read("src/KingmakerGunslinger/Acquisition",
+                "RetiredVendorStockPolicy.cs");
+            Assertions.True(policy.Contains("isSharedPlayerInventory") &&
+                policy.Contains("Array.Empty<int>()"),
+                "The sweep policy must select nothing from the shared player inventory.");
+            string capital = Read("src/KingmakerGunslinger/Blueprints",
+                "CapitalVendorBlueprints.cs");
+            Assertions.True(capital.Contains(
+                    "internal int CountPublishedRows(BlueprintItem item)") &&
+                capital.Contains(
+                    "independent of the intended offered-stock list"),
+                "The capital publication must expose a direct table-row count for absence checks.");
         }
 
         private static void AssertOwnedRetainsKits(string ownedWindow, string vendor)

@@ -19,6 +19,10 @@ namespace KingmakerGunslinger.Blueprints
         internal int Count { get { return _tables.Count; } }
         internal bool ContainsExact(BlueprintItem item)
         { return _tables.Any(table => table.ContainsExact(item)); }
+        internal int CountPublishedRows(BlueprintItem item)
+        {
+            return _tables.Sum(table => table.CountPublishedRows(item));
+        }
     }
 
     internal static class BeneathStolenLandsVendorBlueprints

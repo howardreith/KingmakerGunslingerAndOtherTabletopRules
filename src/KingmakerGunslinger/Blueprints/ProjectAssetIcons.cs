@@ -11,6 +11,7 @@ using Kingmaker.Blueprints.Items;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Acquisition;
 using KingmakerGunslinger.Gunsmithing;
 using KingmakerGunslinger.EasternWeapons;
 using UnityEngine;
@@ -264,7 +265,9 @@ namespace KingmakerGunslinger.Blueprints
             }
             // The consumable maintenance kits are retired from every shop while their
             // blueprint identities stay registered for save compatibility. Each must
-            // keep its distinct icon but must no longer be offered anywhere.
+            // keep its distinct icon and every published table must expose zero
+            // actual rows for it; CountPublishedRows inspects the real table
+            // contents, so one leftover row or many leftovers both fail here.
             BlueprintItem[] retired =
             {
                 repairKit,
@@ -272,18 +275,23 @@ namespace KingmakerGunslinger.Blueprints
             };
             foreach (BlueprintItem item in retired)
             {
-                if (item.Icon == null ||
-                    capitalVendor.ContainsExact(item) ||
-                    btslVendors.ContainsExact(item))
+                if (item.Icon == null)
                     throw new InvalidOperationException(
-                        "A retired consumable maintenance kit must keep its icon but remain absent from every vendor table: " +
+                        "A retired consumable maintenance kit lost its save-compatibility icon: " +
                         item.name);
+                string identity = ReferenceEquals(item, repairKit)
+                    ? FirearmRepairKitBlueprints.Symbol
+                    : GunsmithingSupplyBlueprints.OverhaulKitSymbol;
+                RetiredVendorStockPolicy.RequireTableAbsent(
+                    "capital-blacksmith", identity,
+                    capitalVendor.CountPublishedRows(item));
+                RetiredVendorStockPolicy.RequireTableAbsent(
+                    "btsl-vendors", identity,
+                    btslVendors.CountPublishedRows(item));
                 logger.Info("presentation", "supply-icon.retired",
                     "name=" + item.name + ";guid=" +
-                    registry.ResolveGuid(item == repairKit
-                        ? FirearmRepairKitBlueprints.Symbol
-                        : GunsmithingSupplyBlueprints.OverhaulKitSymbol) +
-                    ";vendorExact=false");
+                    registry.ResolveGuid(identity) +
+                    ";publishedRows=0");
             }
         }
 
