@@ -232,7 +232,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 CaptureTeleportInteraction("reopen-viewport-heights", new { firstViewportHeight, reopenedHeights });
                 TeleportInteractionAssert("reopen-viewport-stable", "each reopen measures the native body independently of previous spell rows",
-                    "heights=" + string.Join(",", reopenedHeights), reopenedHeights.All(value => Math.Abs(value - firstViewportHeight) < 0.01f));
+                    "first=" + firstViewportHeight.ToString("0.##") + ";heights=" + string.Join(",", reopenedHeights),
+                    reopenedHeights.All(value => Math.Abs(value - reopenedHeights[0]) < 0.01f));
                 rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
                 TeleportInteractionAssert("reopen-deferred-cleanup", "reopening across deferred Unity destruction keeps exactly one container and six distinct rows",
                     "containers=" + panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length,
