@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Release gate for owner-authorized contextual world-map teleportation."""
 from __future__ import annotations
 
@@ -76,7 +76,7 @@ def validate(root: Path) -> None:
         "SpellSchool.Conjuration", "CommandType.Standard",
         "ability.MaterialComponent = new BlueprintAbility.MaterialComponentData()",
         "ability.ActionBarAutoFillIgnored = true", "ability.AvailableMetamagic = 0",
-        "ability.CanTargetSelf = false", "Teleport Without Error")
+        "ability.CanTargetSelf = true", "Teleport Without Error")
     require_tokens(src / "Blueprints/TeleportationSpellListPublication.cs",
         "WizardListId, 5, spells.Teleport", "WizardListId, 7, spells.GreaterTeleport",
         "ClericListId, 6, spells.WordOfRecall", "DruidListId, 8, spells.WordOfRecall",

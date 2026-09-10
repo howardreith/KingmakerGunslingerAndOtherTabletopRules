@@ -36,8 +36,12 @@ namespace KingmakerGunslinger.Spells.Teleportation
             {
                 _scrollSource = TeleportationScrollAdapter.Resolve(current.Source);
                 if (_scrollSource == null) { diagnostic = "No current exact scroll resource."; return null; }
+                if (_scrollSource.Reader == null) { diagnostic = "The scroll reader is no longer available."; return null; }
+                // The real reader and the real scroll ability back the outcome
+                // attribution; the native activation itself runs inside the
+                // resource lease below.
                 _source = new TeleportationNativeCastSource(current.Source, null,
-                    new Kingmaker.UnitLogic.Abilities.AbilityData(_scrollSource.Scroll.Ability, (Kingmaker.UnitLogic.UnitDescriptor)null), _scrollSource.Reader);
+                    new Kingmaker.UnitLogic.Abilities.AbilityData(_scrollSource.Scroll.Ability, _scrollSource.Reader.Descriptor), _scrollSource.Reader);
             }
             else
             {

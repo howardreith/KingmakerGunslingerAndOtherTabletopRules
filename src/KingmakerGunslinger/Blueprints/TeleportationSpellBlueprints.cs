@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -71,7 +71,11 @@ namespace KingmakerGunslinger.Blueprints
             ability.CanTargetPoint = false;
             ability.CanTargetEnemies = false;
             ability.CanTargetFriends = false;
-            ability.CanTargetSelf = false;
+            // The native scroll activation boundary gives scroll abilities a
+            // Personal anchor targeting the reader; self-targeting must be
+            // allowed or a genuine scroll can never be activated. The world-map
+            // caster checker still forbids every local use.
+            ability.CanTargetSelf = true;
             ability.SpellResistance = false;
             ability.ActionBarAutoFillIgnored = true;
             ability.Hidden = false;

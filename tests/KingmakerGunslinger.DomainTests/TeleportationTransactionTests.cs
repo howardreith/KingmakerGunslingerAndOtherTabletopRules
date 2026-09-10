@@ -9,6 +9,7 @@ namespace KingmakerGunslinger.DomainTests
         private sealed class Resource : ITeleportCastResource
         {
             public object Evidence() { return new { kind = "fake" }; }
+            public TeleportActivationOutcome ActivationOutcome { get { return TeleportActivationOutcome.NotAttempted; } }
             internal bool[] Prepared = { true, true };
             internal int Slots = 2;
             internal int SpendCalls, RefundCalls;

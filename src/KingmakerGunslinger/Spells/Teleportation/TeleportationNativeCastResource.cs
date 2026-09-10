@@ -109,6 +109,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             return ObserveExpenditure() == TeleportExpenditure.None;
         }
 
+        public TeleportActivationOutcome ActivationOutcome
+        { get { return TeleportActivationOutcome.NotAttempted; } }
+
         public object Evidence()
         {
             return new { casterId = _book.Owner.Unit.UniqueId, spellbookId = _book.Blueprint.AssetGuid,
