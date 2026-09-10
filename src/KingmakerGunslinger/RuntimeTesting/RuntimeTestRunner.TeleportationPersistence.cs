@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -100,6 +100,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             JObject initial = CaptureTeleportPersistence();
             if (plan.Phase != "A") PersistenceAssert("fresh-owner-payload", "Fresh native load restores exact owner, migration, counts and exploration boundary",
                 JToken.DeepEquals(initial, plan.Expected), new { expected = plan.Expected, actual = initial });
+            if (plan.Phase != "A")
+            {
+                // Gate 1 breadth: a fresh-process reload of the post-teleport save
+                // presents working arrows immediately, before any workaround.
+                var reloadArrival = rules.GetLocationObject(map.PartyLocation);
+                var reloadLabels = ArrowCompassLabels();
+                PersistenceAssert("reload-arrows-immediate",
+                    "a fresh reload presents compass arrows bound to the loaded arrival point",
+                    reloadArrival != null && reloadLabels.Length > 0 && reloadLabels.All(label =>
+                        ArrowLabelEdge(label) != null && reloadArrival.Edges.Contains(ArrowLabelEdge(label))),
+                    new { point = map.PartyLocation == null ? null : map.PartyLocation.AssetGuid, labels = reloadLabels.Length });
+            }
+            if (plan.Phase == "A")
+            {
+                // A stable probe grant proves the vendor-grant markers persist
+                // through reload and module OFF/ON alongside the other fields.
+                ledger.RecordScrollVendorGrant("shared:persistence-probe");
+            }
             if (plan.Phase == "D") { _teleportPersistenceFinal = initial; yield break; }
             var panel = TeleportationFixturePanel();
             if (plan.Phase == "C")

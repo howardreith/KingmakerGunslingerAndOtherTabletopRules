@@ -120,6 +120,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "labels=" + labels.Length + ";started=" + arrowStartedTravel,
                     labels.Length > 0 && arrowStartedTravel);
             }
+            // Gate 1 breadth: an off-target/similar Teleport arrival still
+            // refreshes the arrows for the ACTUAL arrival point. A forced worst
+            // d100 reproduces a conditional outcome deterministically.
+            rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+            book.Rest();
+            var conditionalRolls = new TeleportationFixtureRolls(new[] { 1, 1, 1, 1 });
+            SelectTeleportationCastingPoint(panel, target);
+            foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                var offRows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                var offAction = offRows == null ? null : offRows.Actions.FirstOrDefault(value =>
+                    value.Source.Spell == TeleportSpellKind.Teleport);
+                if (offAction != null)
+                {
+                    offRows.QualificationRolls = conditionalRolls;
+                    offRows.Buttons[offRows.Actions.ToList().FindIndex(value => value.Key == offAction.Key)].onClick.Invoke();
+                    var offRequest = TeleportContextConfirmationPresenter.Current;
+                    if (offRequest != null && DialogMessageBox.Instance.IsShown)
+                    {
+                        TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                        for (int frame = 0; frame < 12; frame++) yield return 0;
+                        var offArrival = rules.GetLocationObject(map.PartyLocation);
+                        var offLabels = ArrowCompassLabels();
+                        CaptureTeleportInteraction("arrow-offtarget-arrival", new {
+                            transaction = offRequest.Transaction.State.ToString(),
+                            result = offRequest.Execution.LastEvidence == null ? null : TeleportationDiagnosticJson.Serialize(offRequest.Execution.LastEvidence).Length.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                            actualArrival = map.PartyLocation == null ? null : map.PartyLocation.AssetGuid,
+                            requestedArrival = target.Blueprint.AssetGuid,
+                            labels = offLabels.Length });
+                        TeleportInteractionAssert("arrow-offtarget-arrival",
+                            "an off-target arrival rebuilds the arrows bound to the ACTUAL arrival point",
+                            "actual=" + (map.PartyLocation == null ? "none" : map.PartyLocation.AssetGuid) +
+                                ";labels=" + offLabels.Length,
+                            offRequest.Transaction.State == TeleportTransactionState.Completed && offArrival != null &&
+                                offLabels.Length > 0 && offLabels.All(label => ArrowLabelEdge(label) != null &&
+                                offArrival.Edges.Contains(ArrowLabelEdge(label))));
+                        break;
+                    }
+                }
+                for (int frame = 0; frame < 30; frame++) yield return 0;
+            }
             // Boundary 4: the owner's recovery workaround on the final arrival.
             // Clicking another revealed dot, moving briefly and stopping must be
             // captured so the differing state is explicit.
