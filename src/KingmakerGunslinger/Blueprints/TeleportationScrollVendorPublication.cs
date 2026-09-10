@@ -15,10 +15,11 @@ namespace KingmakerGunslinger.Blueprints
     internal sealed class TeleportationScrollVendorPublication
     {
         // Verified native merchant tables (observe-teleportation-native-contracts).
-        // Zarcie's single Arcane I table natively stocks seventh-level scrolls, so
-        // both arcane batches use her verified tier. Arsinoe and every Jhod unit
-        // share C11_JhodVendorTable: one table grant covers the whole family and
-        // can never double-grant through the aliased references.
+        // Both are BlueprintSharedVendorTable assets: Zarcie's AddVendorItems
+        // carries her Arcane I shared table (the single tier she sells, which
+        // natively stocks seventh-level scrolls), and Arsinoe plus every Jhod
+        // unit reference C11_JhodVendorTable. One table grant covers each whole
+        // aliased family and can never double-grant.
         internal const string ArcaneTableId = "5450d563aab78134196ee9a932e88671";
         internal const string PriestTableId = "afa2c7f292b8e1c4d9c835f0e8047dd3";
         internal const string ArcaneTableName = "ArcaneScrollsVendorTableI";
@@ -27,8 +28,8 @@ namespace KingmakerGunslinger.Blueprints
         internal const int GreaterTeleportStock = 3;
         internal const int WordOfRecallStock = 5;
 
-        private readonly Dictionary<BlueprintUnitLoot, BlueprintComponent[]> _before =
-            new Dictionary<BlueprintUnitLoot, BlueprintComponent[]>();
+        private readonly Dictionary<BlueprintSharedVendorTable, BlueprintComponent[]> _before =
+            new Dictionary<BlueprintSharedVendorTable, BlueprintComponent[]>();
         internal int ChangedTableCount { get { return _before.Count; } }
 
         internal static TeleportationScrollVendorPublication Publish(LibraryScriptableObject library,
@@ -67,7 +68,7 @@ namespace KingmakerGunslinger.Blueprints
             }
         }
 
-        private void Apply(BlueprintUnitLoot table, BlueprintItem[] items, int[] counts, BlueprintItem[] owned)
+        private void Apply(BlueprintSharedVendorTable table, BlueprintItem[] items, int[] counts, BlueprintItem[] owned)
         {
             var existing = table.ComponentsArray ?? Array.Empty<BlueprintComponent>();
             bool exact = items.Select((item, index) => existing.OfType<LootItemsPackFixed>()
@@ -93,7 +94,7 @@ namespace KingmakerGunslinger.Blueprints
             table.ComponentsArray = transaction.Published;
         }
 
-        private void Validate(BlueprintUnitLoot arcane, BlueprintUnitLoot priest,
+        private void Validate(BlueprintSharedVendorTable arcane, BlueprintSharedVendorTable priest,
             TeleportationScrollBlueprintSet scrolls, bool publish)
         {
             if (publish)
@@ -112,7 +113,7 @@ namespace KingmakerGunslinger.Blueprints
             }
         }
 
-        private static void RequireExact(BlueprintUnitLoot table, BlueprintItem item, int count)
+        private static void RequireExact(BlueprintSharedVendorTable table, BlueprintItem item, int count)
         {
             var found = table.ComponentsArray.OfType<LootItemsPackFixed>()
                 .Where(component => ReferenceEquals(CapitalVendorBlueprints.ReadItem(component), item)).ToArray();
@@ -120,9 +121,9 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException("Scroll stock normalization differs on " + table.name);
         }
 
-        private static BlueprintUnitLoot RequireTable(LibraryScriptableObject library, string guid, string expectedName)
+        private static BlueprintSharedVendorTable RequireTable(LibraryScriptableObject library, string guid, string expectedName)
         {
-            var table = BlueprintLibraryLookup.RequireExact<BlueprintUnitLoot>(library, guid, "native teleportation scroll vendor table");
+            var table = BlueprintLibraryLookup.RequireExact<BlueprintSharedVendorTable>(library, guid, "native teleportation scroll vendor table");
             if (!string.Equals(table.name, expectedName, StringComparison.Ordinal))
                 throw new InvalidOperationException("Vendor table GUID/name mismatch: " + table.name + ":" + guid);
             return table;
