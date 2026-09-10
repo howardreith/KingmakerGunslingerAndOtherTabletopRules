@@ -245,19 +245,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new { id = TeleportationScrollBlueprints.GreaterTeleportDonorId, ours = BlueprintBootstrap.TeleportationScrolls.GreaterTeleport },
                     new { id = TeleportationScrollBlueprints.WordOfRecallDonorId, ours = BlueprintBootstrap.TeleportationScrolls.WordOfRecall }
                 };
+                var canonicalIds = new HashSet<string>(StringComparer.Ordinal)
+                {
+                    BlueprintBootstrap.Teleportation.Teleport.AssetGuid,
+                    BlueprintBootstrap.Teleportation.GreaterTeleport.AssetGuid,
+                    BlueprintBootstrap.Teleportation.WordOfRecall.AssetGuid
+                };
                 foreach (var donor in donors)
                 {
                     var donorScroll = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>(
                         BlueprintBootstrap.Library, donor.id, "native scroll donor");
                     var donorCopy = donorScroll.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
                     var ourCopy = donor.ours.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
+                    // Intactness: the donor's own teaching target must NOT have
+                    // been redirected to any canonical strategic spell (the exact
+                    // corruption the shared-instance clone produced before).
+                    bool donorIntact = donorCopy.CustomSpell == null ||
+                        !canonicalIds.Contains(donorCopy.CustomSpell.AssetGuid);
                     assertions.Add(Assertion("teleportation-scroll-copyscroll-isolation-" + donor.ours.name,
-                        "the donor's CopyScroll still teaches its own spell and ours is a distinct isolated instance teaching the canonical spell",
+                        "the donor's CopyScroll keeps its own teaching target and ours is a distinct isolated instance teaching the canonical spell",
                         "donorSpell=" + (donorCopy.CustomSpell == null ? "null" : donorCopy.CustomSpell.AssetGuid) +
-                            ";donorIntact=" + (donorCopy.CustomSpell == donorScroll.Ability) +
+                            ";donorIntact=" + donorIntact +
                             ";distinctInstance=" + (!ReferenceEquals(donorCopy, ourCopy)) +
                             ";oursSpell=" + ourCopy.CustomSpell.AssetGuid,
-                        donorCopy.CustomSpell == donorScroll.Ability && !ReferenceEquals(donorCopy, ourCopy), path));
+                        donorIntact && !ReferenceEquals(donorCopy, ourCopy), path));
                 }
             }
             ObserveTeleportationSpellPublication(assertions);
