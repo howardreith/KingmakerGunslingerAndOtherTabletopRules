@@ -73,8 +73,8 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(source.Contains(token), "Vendor stock contract missing " + token);
             string migration = File.ReadAllText("src/KingmakerGunslinger/Spells/Teleportation/TeleportationScrollVendorMigration.cs");
             foreach (string token in new[] {
-                "\"shared:\" + TeleportationScrollVendorPublication.PriestTableId",
-                "\"own:\" + vendorUnit.UniqueId",
+                "\"shared:\" + sharedTable.AssetGuid",
+                "player.SharedVendorTables.GetTable(sharedTable)",
                 "HasScrollVendorGrant(target)", "RecordScrollVendorGrant(target)",
                 "if (absent)", "else if (!complete)" })
                 Assertions.True(migration.Contains(token), "Migration contract missing " + token);
