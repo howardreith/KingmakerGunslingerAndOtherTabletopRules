@@ -1,4 +1,4 @@
-# Teleportation completion handoff (Z mission, 2026-09-10)
+﻿# Teleportation completion handoff (Z mission, 2026-09-10)
 
 This is the §10 final handoff for the five completion gates in
 `Z-TELEPORTATION-MISSION.md`. Progress detail lives in
@@ -87,13 +87,49 @@ copy, activation, arrows, compact menu).
 - Owner `FeatureModules.json` preserved/restored; all pre-existing saves
   hash-protected in every run.
 
+## PR #12 review corrections (2026-09-10, heads through the correction commits)
+
+- **Reader eligibility** now runs per reader and per spell through the native
+  pathway (class spell list or trained UMD); the broken ability-vs-item
+  blueprint comparison is gone. Controlled fixtures with zeroed party UMD
+  prove the wizard/druid class-list readers, per-spell negatives, the
+  ineligible control, and the UMD-only reader.
+- **Activation** is the real native boundary (`ItemEntity.TryUseFromInventory`
+  with the actual reader and item, RuleCastSpell UMD roll observed by a
+  request-local handler, native SpendCharges consumption). A failed UMD check
+  refuses with nothing spent; a failed cast stays consumed; no teleport
+  without successful activation; the adapter never removes items itself.
+- **Variant discovery** matches genuine scrolls by type + canonical ability
+  association; equivalent variants aggregate, distinct caster levels stay
+  separate rows, and activation spends the chosen variant.
+- **Vendor publication** is atomic per run (a fault on any supplier restores
+  every changed table), resolves the approved Hassuf fallback when Zarcie's
+  content is genuinely absent, and publishes the priest supplier
+  independently.
+- **CopyScroll donor corruption** (real: shared component instances) was
+  found by the new native isolation check and fixed with project-owned
+  isolated components; donors keep their own teaching targets.
+- **First legal arrow after scroll activation** is now actually clicked and
+  starts real native travel, separate from the label-presence check.
+
 ## Known limitations
 
 - Purchase and copy are driven through the exact native action boundaries
   (`VendorLogic.Deal`, `CopyScroll.DoCopy/RemoveItem`), not pointer-driven
   shop/spellbook screens; structured evidence only, no screenshots.
-- Crafted-scroll variants (Craft Magic Items) and non-16:10 aspect ratios
-  were not separately exercised; both use the same item/table/UI contracts.
+- Crafted-scroll variants are covered by a fixture distinct-variant scroll;
+  the Craft Magic Items creation path itself was not exercised.
+- Non-16:10 aspect ratios were not separately exercised.
+- A guarded fresh-process persistence cycle that buys, copies, prepares and
+  activates REAL scrolls across reload/module-OFF-ON is NOT RUN: the
+  persistence phases prove serializer round-trip of the ledger (including
+  the vendor-grant markers) and spellbook establishment, not the full
+  acquisition lifecycle. The synthetic shared:persistence-probe marker is
+  serializer coverage, not bought-out persistence.
+- Genuine Hassuf fallback need (Zarcie's content actually absent in a live
+  area) is NOT RUN — her table loads at the main menu in this environment;
+  fallback identity and code path are verified, the absence condition is not.
 - Cleric/Druid Word of Recall activation eligibility follows the published
-  class lists (Cleric 6 / Druid 8) and is covered by list publication
-  checks, not a separate divine caster scenario.
+  class lists (Cleric 6 / Druid 8) and is proven by the druid-list reader
+  fixture in the scrolls scenario; a dedicated divine-caster end-to-end case
+  beyond that list check is not run.
