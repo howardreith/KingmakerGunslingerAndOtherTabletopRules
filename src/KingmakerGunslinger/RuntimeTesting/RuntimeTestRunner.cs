@@ -8536,7 +8536,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
             ItemEntityWeapon weapon = null;
             IEnumerator<AbilityDeliveryTarget> delivery = null;
-            Kingmaker.EntitySystem.Entities.UnitEntityData vendorUnitFixture = null;
             bool availableOutOfCombat = false, promptCompletion = false,
                 noWorldTimeMutation = false, noLingeringDelivery = false,
                 changedContextAtomic = false, repeatedIdempotent = false,
@@ -8559,6 +8558,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int staticBefore = -1, staticAfterWreckedRepair = -1,
                 staticAfterRepair = -1, repairRoundsBefore = -1,
                 repairRoundsAfter = -1;
+            string vendorStockCounts = "not-run";
             string repairAmmunitionBefore = null,
                 repairAmmunitionAfter = null;
             long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
@@ -8906,8 +8906,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     player.Inventory.Count(BlueprintBootstrap
                         .BasicAmmunition.LeadBall) == leadAtRepair;
                 obsoleteKitsUntouched =
-                    player.Inventory.Count(repairKit) == repairKitsBefore &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsBefore;
+                    player.Inventory.Count(repairKit) == repairKitsAtStart &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart;
                 repairCompletion = repairAvailable &&
                     repairDeliveryCompleted &&
                     loadedBefore.Repository.State.Condition ==
@@ -8931,19 +8931,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 repairLog = FirearmConditionCombatLog.LastMessage;
 
-                // Materialized merchant stock regression: a second detached unit
-                // receiver stands in for a vendor whose saved inventory an
-                // earlier version already materialized. It is loaded with both
+                // Materialized merchant stock regression: a standalone detached
+                // ItemsCollection stands in for a vendor's saved inventory that
+                // an earlier version already materialized (player-character
+                // unit fixtures expose the shared stash, so a bare collection
+                // is the exact disposable receiver). It is loaded with both
                 // obsolete kits beside protected stock, swept twice, and the
                 // exact retired identities must disappear while the reusable
                 // kit, unrelated stock, and the shared player inventory remain
-                // unchanged. (The production hook supplies the real vendor unit
-                // through VendorLogic.BeginTrading; the sweep function itself
-                // is what this regression exercises.)
-                vendorUnitFixture = new Kingmaker.UI.LevelUp.ChargenUnit(
-                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
-                ItemsCollection vendorInventory =
-                    vendorUnitFixture.Descriptor.Inventory;
+                // unchanged. The shared stash itself is then submitted to the
+                // sweep and must be refused.
+                ItemsCollection vendorInventory = new ItemsCollection();
+                bool vendorInventoryIsShared =
+                    Game.Instance != null && Game.Instance.Player != null &&
+                    ReferenceEquals(vendorInventory,
+                        Game.Instance.Player.Inventory);
+                vendorStockCounts = "shared=" + vendorInventoryIsShared;
                 int playerRepairKitsAtVendorTest =
                     player.Inventory.Count(repairKit);
                 int playerOverhaulKitsAtVendorTest =
@@ -8988,8 +8991,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }, out ignored, out method))
                     throw new InvalidOperationException(
                         "The disposable vendor fixture stock could not be materialized.");
-                Acquisition.RetiredKitVendorStockCleanup.CleanVendorInventory(
-                    vendorUnitFixture);
+                vendorStockCounts = "shared=" + vendorInventoryIsShared +
+                    ";loaded=r" + vendorInventory.Count(repairKit) +
+                    ",o" + vendorInventory.Count(overhaulKit) +
+                    ",g" + vendorInventory.Count(gunsmithKit) +
+                    ",p" + vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                Acquisition.RetiredKitVendorStockCleanup.Sweep(
+                    vendorInventory, "disposable-vendor-fixture");
                 int vendorRepairKitsAfterFirst =
                     vendorInventory.Count(repairKit);
                 int vendorOverhaulKitsAfterFirst =
@@ -9000,16 +9009,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     vendorInventory.Count(gunsmithKit) == 1 &&
                     vendorInventory.Count(
                         BlueprintBootstrap.BasicAmmunition.BlackPowder) == 3;
+                vendorStockCounts += ";swept1=r" + vendorRepairKitsAfterFirst +
+                    ",o" + vendorOverhaulKitsAfterFirst +
+                    ",g" + vendorInventory.Count(gunsmithKit) +
+                    ",p" + vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder);
                 int secondSweepRemoved =
-                    Acquisition.RetiredKitVendorStockCleanup.CleanVendorInventory(
-                        vendorUnitFixture);
+                    Acquisition.RetiredKitVendorStockCleanup.Sweep(
+                        vendorInventory, "disposable-vendor-fixture");
                 vendorStockCleanupIdempotent = secondSweepRemoved == 0 &&
                     vendorInventory.Count(repairKit) == 0 &&
                     vendorInventory.Count(overhaulKit) == 0 &&
                     vendorInventory.Count(gunsmithKit) == 1 &&
                     vendorInventory.Count(
                         BlueprintBootstrap.BasicAmmunition.BlackPowder) == 3;
+                vendorStockCounts += ";swept2=r" +
+                    vendorInventory.Count(repairKit) +
+                    ",o" + vendorInventory.Count(overhaulKit) +
+                    ",g" + vendorInventory.Count(gunsmithKit) +
+                    ",p" + vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                // The shared stash itself, submitted directly to the sweep
+                // with legacy obsolete kits inside, must be refused.
+                int sharedSweepRemoved =
+                    Acquisition.RetiredKitVendorStockCleanup.Sweep(
+                        player.Inventory, "shared-player-stash");
                 vendorStockCleanupScoped =
+                    sharedSweepRemoved == 0 &&
                     player.Inventory.Count(repairKit) ==
                         playerRepairKitsAtVendorTest &&
                     player.Inventory.Count(overhaulKit) ==
@@ -9019,6 +9045,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     player.Inventory.Count(
                         BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
                         playerPowderAtVendorTest;
+                vendorStockCounts += ";sharedSweep=" + sharedSweepRemoved;
             }
             finally
             {
@@ -9065,7 +9092,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     overhaulKitsBefore;
                 if (overhaulExcess > 0)
                     player.Inventory.Remove(overhaulKit, overhaulExcess);
-                if (vendorUnitFixture != null) vendorUnitFixture.Dispose();
                 if (unit != null) unit.Dispose();
                 cleaned = player.Inventory.Count(gunsmithKit) == toolsBefore &&
                     player.Inventory.Count(repairKit) == repairKitsBefore &&
@@ -9109,6 +9135,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";vendorStockCleaned=" + vendorStockCleaned +
                 ";vendorStockIdempotent=" + vendorStockCleanupIdempotent +
                 ";vendorStockScoped=" + vendorStockCleanupScoped +
+                ";vendorStockCounts=" + vendorStockCounts +
                 ";repaired=" + repairCompletion + ";cleaned=" + cleaned +
                 ";static=" + staticBefore + "," + staticAfterWreckedRepair + "," +
                 staticAfterRepair +
@@ -9221,9 +9248,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, vendorStockCleanupIdempotent,
                     "second RetiredKitVendorStockCleanup pass over the same vendor receiver"),
                 Assertion("vendor-materialized-retired-stock-cleanup-scoped",
-                    "the sweep never touches the shared player inventory, including its legacy obsolete kits",
+                    "the sweep refuses the shared player inventory submitted directly, leaving legacy obsolete kits in place",
                     observed, vendorStockCleanupScoped,
-                    "live player inventory counts sampled around both vendor sweeps"),
+                    "live player inventory counts around a direct shared-stash sweep submission"),
                 Assertion("request-local-cleanup", "Gunsmith's Kit inventory and fixture restored",
                     observed, cleaned, "guaranteed finally cleanup; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,

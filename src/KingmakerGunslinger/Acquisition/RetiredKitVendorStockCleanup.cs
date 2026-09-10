@@ -61,6 +61,21 @@ namespace KingmakerGunslinger.Acquisition
                 throw new ArgumentNullException("vendorUnit");
             }
 
+            ItemsCollection inventory = vendorUnit.Descriptor == null
+                ? null
+                : vendorUnit.Descriptor.Inventory;
+            return Sweep(inventory, ResolveVendorName(vendorUnit));
+        }
+
+        /// <summary>
+        /// Core sweep over one inventory collection. Player-character units
+        /// can expose the shared stash through Descriptor.Inventory, so the
+        /// shared-player guard lives here as well as at every caller.
+        /// </summary>
+        internal static int Sweep(
+            ItemsCollection inventory,
+            string vendorName)
+        {
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
             GunsmithingSupplyBlueprintSet supplies =
                 BlueprintBootstrap.GunsmithingSupplies;
@@ -72,13 +87,6 @@ namespace KingmakerGunslinger.Acquisition
                 return 0;
             }
 
-            var retired = new HashSet<BlueprintItem>();
-            retired.Add(repairKit);
-            retired.Add(supplies.OverhaulKit);
-
-            ItemsCollection inventory = vendorUnit.Descriptor == null
-                ? null
-                : vendorUnit.Descriptor.Inventory;
             if (inventory == null || !ReflectionAccess.CanEnumerate(inventory))
             {
                 return 0;
@@ -91,6 +99,10 @@ namespace KingmakerGunslinger.Acquisition
                 // never a sweep target, even if a caller supplies it.
                 return 0;
             }
+
+            var retired = new HashSet<BlueprintItem>();
+            retired.Add(repairKit);
+            retired.Add(supplies.OverhaulKit);
 
             ItemEntity[] matches = ReflectionAccess.Enumerate(inventory)
                 .OfType<ItemEntity>()
@@ -118,7 +130,7 @@ namespace KingmakerGunslinger.Acquisition
                     "acquisition",
                     "retired-kit-sweep.removed",
                     RetiredVendorStockPolicy.DescribeSweep(
-                        ResolveVendorName(vendorUnit),
+                        vendorName,
                         matches.Length,
                         removed));
             }
