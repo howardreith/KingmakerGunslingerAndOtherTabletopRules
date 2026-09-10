@@ -15,13 +15,12 @@ using KingmakerGunslinger.Blueprints;
 
 namespace KingmakerGunslinger.Spells.Teleportation
 {
-    // Native AddVendorItems/AddSharedVendor components only generate stock when a
-    // vendor entity is CREATED, so merchants already materialized in an existing
-    // campaign never see the published scroll rows. This idempotent sweep runs
-    // when trading begins and adds the finite batch exactly once per target,
-    // tracked by a save-owned grant marker:
-    // - one marker per shared table (the whole priest family receives one batch);
-    // - one marker per own-inventory vendor entity (Zarcie's clone).
+    // Native stock components only generate inventory when a vendor entity is
+    // CREATED, so merchants already materialized in an existing campaign never
+    // see the published scroll rows. This idempotent sweep runs when trading
+    // begins and adds the finite batch exactly once per shared vendor table,
+    // tracked by a save-owned grant marker — one grant identity per shared
+    // table, so the whole aliased family receives exactly one batch.
     // A target that already stocked the batch natively only records its marker.
     // Bought-out stock is never replenished: the marker, not the current count,
     // decides. The sweep runs only with the module ON and touches nothing else.
@@ -74,20 +73,21 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var ledger = TeleportFamiliarityRuntime.EnsureLedger(player);
             var part = vendorUnit.Descriptor == null ? null : vendorUnit.Descriptor.Get<UnitPartVendor>();
             if (ledger == null || part == null) return;
-            if (IsSharedPriest(part))
-            {
-                // One grant identity for the shared table: the first family member
-                // to open trading materializes the batch for the whole table.
-                var table = player.SharedVendorTables.GetTable(SharedPriestTable());
-                if (table != null) EnsureBatch(ledger, "shared:" + TeleportationScrollVendorPublication.PriestTableId,
-                    table, BatchFor(vendorUnit, divine: true));
-            }
-            else if (UsesArcaneTable(vendorUnit))
-            {
-                var inventory = part.Inventory;
-                if (inventory != null) EnsureBatch(ledger, "own:" + vendorUnit.UniqueId,
-                    inventory, BatchFor(vendorUnit, divine: false));
-            }
+            // Both mission families use shared vendor tables (Zarcie's
+            // AddVendorItems carries the Arcane I shared table; Arsinoe and the
+            // Jhod units reference C11_JhodVendorTable). One grant identity per
+            // shared table: the first family member to open trading materializes
+            // the batch for the whole aliased family.
+            var sharedTable = SharedInventoryTable(part);
+            if (sharedTable == null) return;
+            bool priest = string.Equals(sharedTable.AssetGuid,
+                TeleportationScrollVendorPublication.PriestTableId, StringComparison.Ordinal);
+            bool arcane = string.Equals(sharedTable.AssetGuid,
+                TeleportationScrollVendorPublication.ArcaneTableId, StringComparison.Ordinal);
+            if (!priest && !arcane) return;
+            var table = player.SharedVendorTables.GetTable(sharedTable);
+            if (table != null) EnsureBatch(ledger, "shared:" + sharedTable.AssetGuid,
+                table, BatchFor(vendorUnit, priest));
         }
 
         private static IEnumerable<KeyValuePair<BlueprintItemEquipmentUsable, int>> BatchFor(
@@ -146,46 +146,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             return total;
         }
 
-        private static bool IsSharedPriest(UnitPartVendor part)
-        {
-            var table = SharedInventoryTable(part);
-            return table != null && string.Equals(table.AssetGuid,
-                TeleportationScrollVendorPublication.PriestTableId, StringComparison.Ordinal);
-        }
-
-        private static bool UsesArcaneTable(UnitEntityData vendorUnit)
-        {
-            var blueprint = vendorUnit == null ? null : vendorUnit.Blueprint as BlueprintUnit;
-            if (blueprint == null) return false;
-            var loot = VendorItemsLoot(blueprint);
-            return loot != null && string.Equals(loot.AssetGuid,
-                TeleportationScrollVendorPublication.ArcaneTableId, StringComparison.Ordinal);
-        }
-
-        private static readonly FieldInfo VendorItemsLootField = typeof(Kingmaker.UnitLogic.FactLogic.AddVendorItems)
-            .GetField("m_Loot", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-        private static BlueprintUnitLoot VendorItemsLoot(BlueprintUnit unit)
-        {
-            if (unit == null || VendorItemsLootField == null) return null;
-            foreach (var component in unit.ComponentsArray)
-            {
-                var items = component as Kingmaker.UnitLogic.FactLogic.AddVendorItems;
-                if (items == null) continue;
-                var loot = VendorItemsLootField.GetValue(items) as BlueprintUnitLoot;
-                if (loot != null) return loot;
-            }
-            return null;
-        }
-
         private static readonly FieldInfo SharedInventoryField = typeof(UnitPartVendor)
             .GetField("m_SharedInventory", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
         private static BlueprintSharedVendorTable SharedInventoryTable(UnitPartVendor part)
         { return SharedInventoryField == null ? null : SharedInventoryField.GetValue(part) as BlueprintSharedVendorTable; }
-
-        private static BlueprintSharedVendorTable SharedPriestTable()
-        {
-            return ResourcesLibrary.TryGetBlueprint<BlueprintSharedVendorTable>(
-                TeleportationScrollVendorPublication.PriestTableId);
-        }
     }
 }

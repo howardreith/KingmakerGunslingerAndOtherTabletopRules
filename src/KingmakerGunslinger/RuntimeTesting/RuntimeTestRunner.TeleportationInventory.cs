@@ -163,12 +163,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (int)scrolls[2]["cost"] == 1650 && (int)scrolls[2]["casterLevel"] == 11 && (int)scrolls[2]["spellLevel"] == 6, path));
             // Gate 4: the published finite vendor stock on both verified tables.
             var arcaneTable = BlueprintBootstrap.TeleportationScrollVendors == null ? null :
-                BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Loot.BlueprintUnitLoot>(BlueprintBootstrap.Library,
+                BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(BlueprintBootstrap.Library,
                     "5450d563aab78134196ee9a932e88671", "arcane scroll vendor table");
             var priestTable = BlueprintBootstrap.TeleportationScrollVendors == null ? null :
-                BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Loot.BlueprintUnitLoot>(BlueprintBootstrap.Library,
+                BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(BlueprintBootstrap.Library,
                     "afa2c7f292b8e1c4d9c835f0e8047dd3", "priest scroll vendor table");
-            System.Func<Kingmaker.Blueprints.Loot.BlueprintUnitLoot, Kingmaker.Blueprints.Items.BlueprintItem, int> stock =
+            System.Func<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable, Kingmaker.Blueprints.Items.BlueprintItem, int> stock =
                 (table, item) => table == null || item == null ? -1 : table.ComponentsArray
                     .OfType<Kingmaker.Blueprints.Loot.LootItemsPackFixed>()
                     .Where(component => ReferenceEquals(CapitalVendorBlueprints.ReadItem(component), item))
