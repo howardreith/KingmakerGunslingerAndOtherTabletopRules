@@ -223,6 +223,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TeleportContextPresentation.CompactRow(rows.Actions[index], TeleportationText.Get)).All(value => value));
                 TeleportInteractionAssert("native-actions-retained", "native action order, labels, flags and serialized callbacks unchanged",
                     "same=" + (nativeActions == TeleportationNativeButtons(panel)), nativeActions == TeleportationNativeButtons(panel));
+                // Settle the camera before measuring reopen geometry: the native
+                // camera lerps toward the selected point, and a still-moving
+                // anchor legitimately changes the available viewport each reopen.
+                var settledPosition = rig.GetPosition();
+                for (int settle = 0; settle < 120; settle++)
+                {
+                    yield return 0;
+                    var nowPosition = rig.GetPosition();
+                    if ((nowPosition - settledPosition).magnitude < 0.0005f) break;
+                    settledPosition = nowPosition;
+                }
                 float firstViewportHeight = rows.GetComponent<ScrollRect>().viewport.rect.height;
                 var reopenedHeights = new List<float>();
                 for (int repeat = 0; repeat < 8; repeat++)
