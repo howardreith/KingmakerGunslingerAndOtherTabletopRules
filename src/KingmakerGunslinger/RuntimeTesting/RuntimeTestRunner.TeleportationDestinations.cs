@@ -149,6 +149,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (arrivalBoundary == null || hidden == null || hidden.Data.IsRevealed || hidden.Data.LastPerceptionRolled != 0)
                 throw new InvalidOperationException("The native deferred exploration positive control lost its unvisited/unchecked state.");
             string beforeTravelSlots = TeleportResourceFingerprint(book);
+            int travelStartsBase = movement.Starts;
             var arrival = rules.GetLocationObject(map.PartyLocation);
             var ordinaryEdge = arrival.Edges.Where(value => value != null && !value.IsLocked && value.Spline != null &&
                 value.Spline.WorldLength > 0 && value.GetOppositeLocation(arrival) != hidden &&
@@ -174,7 +175,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             TeleportInteractionAssert("ordinary-travel-releases-exploration", "native Travel resumes the real exploration tick with no spell expenditure",
                 "boundaryCleared=" + (ledger.ReadExplorationBoundary() == null) + ";nativePerception=" + hidden.Data.LastPerceptionRolled,
                 ledger.ReadExplorationBoundary() == null && hidden.Data.LastPerceptionRolled > 0 &&
-                beforeTravelSlots == TeleportResourceFingerprint(book) && movement.Starts == 1);
+                beforeTravelSlots == TeleportResourceFingerprint(book) && movement.Starts == travelStartsBase + 1);
             CaptureTeleportInteraction("ordinary-exploration-control", new { arrivalBoundary = arrivalBoundary.Serialize(),
                 targetId = hidden.Blueprint.AssetGuid, hidden.Data.LastPerceptionRolled, hidden.Data.IsRevealed, movement.Starts });
             rules.OnBreak();
@@ -198,7 +199,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             TeleportInteractionAssert("ordinary-travel-recovers-corrupt-boundary", "invalid spell state hides casting and cannot permanently block native exploration",
                 "invalidCastAbsent=" + invalidCastAbsent + ";nativePerception=" + hidden.Data.LastPerceptionRolled,
                 invalidCastAbsent && ledger.ReadExplorationBoundary() == null && hidden.Data.LastPerceptionRolled > 0 &&
-                beforeTravelSlots == TeleportResourceFingerprint(book) && movement.Starts == 2);
+                beforeTravelSlots == TeleportResourceFingerprint(book) && movement.Starts == travelStartsBase + 2);
             CaptureTeleportInteraction("corrupt-boundary-ordinary-control", new { invalidCastAbsent,
                 hidden.Data.LastPerceptionRolled, movement.Starts, exactResources = beforeTravelSlots == TeleportResourceFingerprint(book) });
             rules.OnBreak();
