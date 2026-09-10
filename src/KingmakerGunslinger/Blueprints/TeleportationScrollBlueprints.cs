@@ -90,10 +90,16 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException("Native scroll donor item type differs: " + key);
             // The scroll/copy learning association must resolve to the same
             // canonical strategic spell, never a scroll-only duplicate.
-            var copies = scroll.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().ToArray();
-            if (copies.Length != 1)
+            // The clone shares the donor's serialized component instances; mutating
+            // the inherited CopyScroll would corrupt the donor's own teaching
+            // target. Replace it with a project-owned isolated instance.
+            var components = scroll.ComponentsArray.ToList();
+            var inherited = components.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().ToArray();
+            if (inherited.Length != 1)
                 throw new InvalidOperationException("Native scroll CopyScroll contract differs: " + key);
-            copies[0].CustomSpell = spell;
+            foreach (var component in inherited) components.Remove(component);
+            components.Add(new Kingmaker.Blueprints.Items.Components.CopyScroll { CustomSpell = spell });
+            scroll.ComponentsArray = components.ToArray();
             return scroll;
         }
 

@@ -52,7 +52,7 @@ namespace KingmakerGunslinger.DomainTests
                 "cost: 1125, casterLevel: 9, spellLevel: 5",
                 "cost: 2275, casterLevel: 13, spellLevel: 7",
                 "cost: 1650, casterLevel: 11, spellLevel: 6",
-                "scroll.Ability = spell", "copies[0].CustomSpell = spell",
+                "scroll.Ability = spell", "new Kingmaker.Blueprints.Items.Components.CopyScroll { CustomSpell = spell }",
                 "donor.Cost != cost || donor.CasterLevel != casterLevel" })
                 Assertions.True(source.Contains(token), "Scroll contract missing " + token);
             string bootstrap = File.ReadAllText("src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs");
