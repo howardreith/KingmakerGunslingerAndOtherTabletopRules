@@ -24,18 +24,35 @@ namespace KingmakerGunslinger.Acquisition
     /// </summary>
     internal static class RetiredKitVendorStockCleanup
     {
+        private static long _postfixRuns;
+        private static long _postfixFaults;
+
+        /// <summary>Process-local count of BeginTrading postfix invocations.</summary>
+        internal static long PostfixRuns
+        {
+            get { return System.Threading.Interlocked.Read(ref _postfixRuns); }
+        }
+
+        /// <summary>Process-local count of BeginTrading postfix faults.</summary>
+        internal static long PostfixFaults
+        {
+            get { return System.Threading.Interlocked.Read(ref _postfixFaults); }
+        }
+
         [HarmonyPatch(typeof(VendorLogic), "BeginTrading",
             new Type[] { typeof(UnitEntityData) })]
         internal static class RetiredKitVendorTradeOpenPatch
         {
             private static void Postfix(UnitEntityData __0)
             {
+                System.Threading.Interlocked.Increment(ref _postfixRuns);
                 try
                 {
                     CleanVendorInventory(__0);
                 }
                 catch (Exception exception)
                 {
+                    System.Threading.Interlocked.Increment(ref _postfixFaults);
                     ModContext context;
                     if (ModContext.TryGet(out context))
                     {

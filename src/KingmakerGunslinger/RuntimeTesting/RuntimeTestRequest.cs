@@ -271,6 +271,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
                 request.Scenario == RuntimeTestScenarioCatalog
+                    .WorkingSaveUnifiedRepairAlias ||
+                request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableInHarmsWayHumanRepro ||
                 request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableInHarmsWayOffTurnEconomy ||

@@ -1766,6 +1766,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _request.Scenario) ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .DisposableInHarmsWayHumanRepro ||
                     _request.Scenario == RuntimeTestScenarioCatalog
@@ -1856,6 +1858,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _request.Scenario) ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .DisposableInHarmsWayHumanRepro ||
                     _request.Scenario == RuntimeTestScenarioCatalog
@@ -5036,6 +5040,103 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Unity Mod Manager ModEntry.Info.Version")
             };
             RuntimeTestResult result = CreateResult(status, assertions, null);
+            if (_request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias)
+            {
+                // Old-save compatibility: this working save was written by the
+                // two-fact era and genuinely persists the Overhaul ability fact
+                // and a saved action-bar slot for it (verified in the save
+                // archive before this scenario ran). After native load, exactly
+                // one visible maintenance action may remain and the saved
+                // Overhaul references may only resolve to the hidden delegate.
+                BlueprintAbility repairBp = BlueprintBootstrap.RepairTestMusketAbility;
+                BlueprintAbility overhaulBp = BlueprintBootstrap.OverhaulTestMusketAbility;
+                bool aliasIsHiddenDelegate = overhaulBp != null &&
+                    overhaulBp.Hidden && overhaulBp.ActionBarAutoFillIgnored &&
+                    overhaulBp.ComponentsArray != null &&
+                    overhaulBp.ComponentsArray
+                        .OfType<RepairTestMusketAbilityLogic>().Count() == 1;
+                int overhaulFactUnits = 0, hiddenOverhaulFacts = 0,
+                    visibleMaintenanceFacts = 0, savedOverhaulSlots = 0,
+                    savedVisibleMaintenanceSlots = 0;
+                if (Game.Instance != null && Game.Instance.Player != null &&
+                    Game.Instance.Player.Party != null)
+                {
+                    foreach (Kingmaker.EntitySystem.Entities.UnitEntityData
+                        partyUnit in Game.Instance.Player.Party.ToArray())
+                    {
+                        UnitDescriptor descriptor = partyUnit.Descriptor;
+                        if (descriptor == null || descriptor.Abilities == null)
+                            continue;
+                        bool unitHoldsOverhaul = false;
+                        foreach (object fact in ReflectionAccess.Enumerate(
+                            descriptor.Abilities))
+                        {
+                            var ability = fact as
+                                Kingmaker.UnitLogic.Abilities.Ability;
+                            BlueprintAbility factBp =
+                                ability == null ? null : ability.Blueprint;
+                            if (ReferenceEquals(factBp, overhaulBp))
+                            {
+                                unitHoldsOverhaul = true;
+                                hiddenOverhaulFacts++;
+                            }
+                            else if (ReferenceEquals(factBp, repairBp) &&
+                                !repairBp.Hidden)
+                            {
+                                visibleMaintenanceFacts++;
+                            }
+                        }
+                        if (unitHoldsOverhaul) overhaulFactUnits++;
+                        object unitSettings;
+                        string settingsMember;
+                        if (ReflectionAccess.TryGetFirstNonNullMember(partyUnit,
+                            new[] { "UISettings" }, out unitSettings,
+                            out settingsMember) && unitSettings != null)
+                        {
+                            foreach (object slot in CollectActionBarSlots(
+                                unitSettings))
+                            {
+                                BlueprintAbility slotBp =
+                                    ReadSlotAbilityBlueprint(slot);
+                                if (ReferenceEquals(slotBp, overhaulBp))
+                                    savedOverhaulSlots++;
+                                else if (ReferenceEquals(slotBp, repairBp) &&
+                                    !repairBp.Hidden)
+                                    savedVisibleMaintenanceSlots++;
+                            }
+                        }
+                    }
+                }
+                string aliasObserved = "overhaulFactUnits=" +
+                    overhaulFactUnits + ";hiddenOverhaulFacts=" +
+                    hiddenOverhaulFacts + ";visibleMaintenanceFacts=" +
+                    visibleMaintenanceFacts + ";savedOverhaulSlots=" +
+                    savedOverhaulSlots + ";savedVisibleMaintenanceSlots=" +
+                    savedVisibleMaintenanceSlots + ";aliasHiddenDelegate=" +
+                    aliasIsHiddenDelegate;
+                assertions.Add(Assertion("old-save-overhaul-fact-persisted",
+                    "the loaded save genuinely persists at least one Overhaul ability fact",
+                    aliasObserved, overhaulFactUnits >= 1,
+                    "native save deserialization of a two-fact-era party"));
+                assertions.Add(Assertion("legacy-alias-hidden-delegate",
+                    "the Overhaul blueprint resolves as hidden, autofill-ignored, with exactly one unified repair-logic component",
+                    aliasObserved, aliasIsHiddenDelegate,
+                    "live blueprint flags and component array after load"));
+                assertions.Add(Assertion("exactly-one-visible-maintenance-action",
+                    "exactly one non-hidden maintenance ability fact exists across the loaded party",
+                    aliasObserved, visibleMaintenanceFacts == 1,
+                    "live ability-fact enumeration filtered to the two maintenance blueprints"));
+                assertions.Add(Assertion("saved-overhaul-slot-not-usable",
+                    "every saved action-bar slot referencing Overhaul resolves to the hidden delegate blueprint",
+                    aliasObserved, savedOverhaulSlots >= 1 && aliasIsHiddenDelegate,
+                    "bounded reflection over loaded unit UISettings action-bar slots"));
+                assertions.Add(Assertion("no-duplicate-maintenance-slot",
+                    "no second visible maintenance action-bar slot exists beyond Repair Firearm",
+                    aliasObserved, savedVisibleMaintenanceSlots <= 1,
+                    "bounded reflection over loaded unit UISettings action-bar slots"));
+                result.Diagnostics.Add("unifiedRepairAlias=" + aliasObserved);
+            }
             bool supervisedEntry = _request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction;
             bool selectionLoadObservation = _request.Scenario ==
@@ -5047,6 +5148,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsMidgameWorkingScenario() ||
                 _request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                _request.Scenario ==
+                    RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableInHarmsWayHumanRepro ||
                 _request.Scenario == RuntimeTestScenarioCatalog
@@ -5973,6 +6076,97 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new MissingMemberException(
                     "The exact shared inventory is not enumerable.");
             return ReflectionAccess.Enumerate(inventory).ToList();
+        }
+
+        /// <summary>
+        /// Bounded reflection walk collecting persisted action-bar slot objects
+        /// (Kingmaker.UI.UnitSettings.MechanicActionBarSlotAbility) from one
+        /// loaded unit's UI settings graph.
+        /// </summary>
+        private static List<object> CollectActionBarSlots(object root)
+        {
+            var slots = new List<object>();
+            var visited = new HashSet<object>();
+            var queue = new Queue<object>();
+            queue.Enqueue(root);
+            visited.Add(root);
+            for (int depth = 0; depth < 4 && queue.Count > 0 &&
+                    slots.Count < 64; depth++)
+            {
+                int levelCount = queue.Count;
+                for (int level = 0; level < levelCount && slots.Count < 64;
+                    level++)
+                {
+                    object node = queue.Dequeue();
+                    if (node == null) continue;
+                    Type type = node.GetType();
+                    if (string.Equals(type.FullName,
+                        "Kingmaker.UI.UnitSettings.MechanicActionBarSlotAbility",
+                        StringComparison.Ordinal))
+                    {
+                        slots.Add(node);
+                        continue;
+                    }
+                    if (node is IEnumerable<object> ||
+                        type == typeof(string) ||
+                        node is UnityEngine.Object)
+                        continue;
+                    for (Type current = type; current != null;
+                        current = current.BaseType)
+                    {
+                        foreach (FieldInfo field in current.GetFields(
+                            BindingFlags.Instance | BindingFlags.Public |
+                            BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                        {
+                            object value;
+                            try { value = field.GetValue(node); }
+                            catch { continue; }
+                            CollectActionBarSlotCandidates(value, queue,
+                                visited, slots);
+                        }
+                    }
+                }
+            }
+            return slots;
+        }
+
+        private static void CollectActionBarSlotCandidates(object value,
+            Queue<object> queue, HashSet<object> visited, List<object> slots)
+        {
+            if (value == null || value is string ||
+                value is UnityEngine.Object) return;
+            if (string.Equals(value.GetType().FullName,
+                "Kingmaker.UI.UnitSettings.MechanicActionBarSlotAbility",
+                StringComparison.Ordinal))
+            {
+                if (!slots.Contains(value)) slots.Add(value);
+                return;
+            }
+            var array = value as Array;
+            if (array != null)
+            {
+                foreach (object element in array)
+                    CollectActionBarSlotCandidates(element, queue, visited,
+                        slots);
+                return;
+            }
+            if (value.GetType().IsPrimitive || value.GetType().IsEnum)
+                return;
+            if (visited.Add(value)) queue.Enqueue(value);
+        }
+
+        private static BlueprintAbility ReadSlotAbilityBlueprint(object slot)
+        {
+            if (slot == null) return null;
+            const BindingFlags Flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            FieldInfo abilityField = slot.GetType().GetField("Ability", Flags);
+            object abilityData = abilityField == null ? null :
+                abilityField.GetValue(slot);
+            PropertyInfo blueprintProperty = abilityData == null ? null :
+                abilityData.GetType().GetProperty("Blueprint", Flags);
+            return blueprintProperty == null ? null :
+                blueprintProperty.GetValue(abilityData, null) as BlueprintAbility;
         }
 
         private static BlueprintUnit FindVendorUnit(string tableGuid, string unitGuid)
@@ -8536,6 +8730,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
             ItemEntityWeapon weapon = null;
             IEnumerator<AbilityDeliveryTarget> delivery = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData vendorUnitFixture = null;
             bool availableOutOfCombat = false, promptCompletion = false,
                 noWorldTimeMutation = false, noLingeringDelivery = false,
                 changedContextAtomic = false, repeatedIdempotent = false,
@@ -8548,6 +8743,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 obsoleteKitsUntouched = false,
                 vendorStockCleaned = false, vendorStockCleanupIdempotent = false,
                 vendorStockCleanupScoped = false,
+                beginTradingPostfixRan = false,
+                beginTradingReceiverNotShared = false,
+                beginTradingRetiredRemoved = false,
+                beginTradingProtectedRetained = false,
+                beginTradingPlayerUntouched = false,
+                beginTradingIdempotent = false,
                 diagnosticBreak = false,
                 diagnosticWreck = false, diagnosticRepeatRejected = false,
                 diagnosticRepairRecognized = false,
@@ -9046,6 +9247,163 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
                         playerPowderAtVendorTest;
                 vendorStockCounts += ";sharedSweep=" + sharedSweepRemoved;
+
+                // Real VendorLogic.BeginTrading integration: a genuine merchant
+                // blueprint unit (found by exact table ownership through the
+                // deep reference index) receives a detached receiver. Legacy
+                // retired-kit stock is materialized into the receiver's own
+                // persisted inventory before trading begins, and the production
+                // postfix must sweep it through the real BeginTrading path.
+                long postfixRunsBefore =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixRuns;
+                long postfixFaultsBefore =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixFaults;
+                BlueprintUnitLoot bokkenLootTable = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintUnitLoot>()
+                    .SingleOrDefault(value => string.Equals(value.AssetGuid,
+                        BokkenFirearmSupplyVendorBlueprints.TableGuid,
+                        StringComparison.Ordinal));
+                Dictionary<string, List<string>> bokkenOwners =
+                    BuildDirectBlueprintReferenceIndex(
+                        BlueprintBootstrap.Library.GetAllBlueprints()
+                            .ToArray(),
+                        bokkenLootTable == null
+                            ? Array.Empty<BlueprintScriptableObject>()
+                            : new BlueprintScriptableObject[] { bokkenLootTable });
+                List<string> bokkenOwnerList;
+                string[] ownerRecords = bokkenLootTable != null &&
+                    bokkenOwners.TryGetValue(bokkenLootTable.AssetGuid,
+                        out bokkenOwnerList)
+                        ? bokkenOwnerList.ToArray()
+                        : Array.Empty<string>();
+                string expectedBokkenReceiver = typeof(BlueprintUnit).FullName +
+                    ":" + BokkenFirearmSupplyVendorBlueprints.BokkenOwnerName +
+                    ":" + BokkenFirearmSupplyVendorBlueprints.BokkenOwnerGuid +
+                    "*1";
+                vendorUnitFixture = ownerRecords.Contains(expectedBokkenReceiver)
+                    ? new Kingmaker.UI.LevelUp.ChargenUnit(
+                        (BlueprintUnit)BlueprintLibraryLookup.RequireExact<
+                            BlueprintUnit>(
+                            BlueprintBootstrap.Library,
+                            BokkenFirearmSupplyVendorBlueprints.BokkenOwnerGuid,
+                            "native OTP_Bokken merchant receiver")).Unit
+                    : null;
+                if (vendorUnitFixture == null)
+                    throw new InvalidOperationException(
+                        "The genuine OTP_Bokken merchant receiver was not " +
+                        "resolvable by exact loot-table ownership; observed=[" +
+                        string.Join(",", ownerRecords) + "].");
+                ItemsCollection merchantInventory =
+                    vendorUnitFixture.Descriptor.Inventory;
+                bool merchantInventoryIsShared =
+                    Game.Instance != null && Game.Instance.Player != null &&
+                    ReferenceEquals(merchantInventory,
+                        Game.Instance.Player.Inventory);
+                int playerRepairKitsAtTrade =
+                    player.Inventory.Count(repairKit);
+                int playerOverhaulKitsAtTrade =
+                    player.Inventory.Count(overhaulKit);
+                int playerToolsAtTrade =
+                    player.Inventory.Count(gunsmithKit);
+                int playerPowderAtTrade = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                if (!ReflectionAccess.TryInvokeAny(merchantInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { repairKit, 2 },
+                            new object[] { repairKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(merchantInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { overhaulKit, 2 },
+                            new object[] { overhaulKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(merchantInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { gunsmithKit, 1 },
+                            new object[] { gunsmithKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(merchantInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[]
+                            {
+                                BlueprintBootstrap.BasicAmmunition.BlackPowder, 3
+                            },
+                            new object[]
+                            {
+                                BlueprintBootstrap.BasicAmmunition.BlackPowder
+                            }
+                        }, out ignored, out method))
+                    throw new InvalidOperationException(
+                        "Legacy retired-kit stock could not be materialized " +
+                        "into the genuine merchant receiver inventory.");
+                long postfixRunsAtTrade =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixRuns;
+                VendorLogic merchantTrade = new VendorLogic();
+                merchantTrade.BeginTrading(vendorUnitFixture);
+                long postfixRunsAfterTrade =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixRuns;
+                int merchantRepairKitsAfterTrade =
+                    merchantInventory.Count(repairKit);
+                int merchantOverhaulKitsAfterTrade =
+                    merchantInventory.Count(overhaulKit);
+                beginTradingPostfixRan =
+                    postfixRunsAfterTrade == postfixRunsAtTrade + 1 &&
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixFaults ==
+                        postfixFaultsBefore;
+                beginTradingReceiverNotShared = !merchantInventoryIsShared;
+                beginTradingRetiredRemoved =
+                    merchantRepairKitsAfterTrade == 0 &&
+                    merchantOverhaulKitsAfterTrade == 0;
+                beginTradingProtectedRetained =
+                    merchantInventory.Count(gunsmithKit) >= 1 &&
+                    merchantInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) >= 3;
+                beginTradingPlayerUntouched =
+                    player.Inventory.Count(repairKit) == playerRepairKitsAtTrade &&
+                    player.Inventory.Count(overhaulKit) ==
+                        playerOverhaulKitsAtTrade &&
+                    player.Inventory.Count(gunsmithKit) == playerToolsAtTrade &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
+                        playerPowderAtTrade;
+                int protectedToolsBeforeSecondTrade =
+                    merchantInventory.Count(gunsmithKit);
+                int protectedPowderBeforeSecondTrade =
+                    merchantInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                merchantTrade.BeginTrading(vendorUnitFixture);
+                beginTradingIdempotent =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixRuns ==
+                        postfixRunsAfterTrade + 1 &&
+                    merchantInventory.Count(repairKit) == 0 &&
+                    merchantInventory.Count(overhaulKit) == 0 &&
+                    merchantInventory.Count(gunsmithKit) ==
+                        protectedToolsBeforeSecondTrade &&
+                    merchantInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
+                        protectedPowderBeforeSecondTrade;
+                vendorStockCounts += ";beginTrading=ran" +
+                    beginTradingPostfixRan + ",notShared" +
+                    beginTradingReceiverNotShared + ",removed" +
+                    beginTradingRetiredRemoved + ",protected" +
+                    beginTradingProtectedRetained + ",player" +
+                    beginTradingPlayerUntouched + ",idempotent" +
+                    beginTradingIdempotent + ",runs" +
+                    postfixRunsBefore + "->" + postfixRunsAfterTrade;
+                object ignoredReturn;
+                string returnMethod;
+                ReflectionAccess.TryInvokeAny(merchantTrade,
+                    new[] { "ReturnItems" },
+                    new[] { Array.Empty<object>() },
+                    out ignoredReturn, out returnMethod);
             }
             finally
             {
@@ -9092,6 +9450,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     overhaulKitsBefore;
                 if (overhaulExcess > 0)
                     player.Inventory.Remove(overhaulKit, overhaulExcess);
+                if (vendorUnitFixture != null) vendorUnitFixture.Dispose();
                 if (unit != null) unit.Dispose();
                 cleaned = player.Inventory.Count(gunsmithKit) == toolsBefore &&
                     player.Inventory.Count(repairKit) == repairKitsBefore &&
@@ -9251,6 +9610,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "the sweep refuses the shared player inventory submitted directly, leaving legacy obsolete kits in place",
                     observed, vendorStockCleanupScoped,
                     "live player inventory counts around a direct shared-stash sweep submission"),
+                Assertion("begin-trading-postfix-runs",
+                    "the production VendorLogic.BeginTrading postfix executes exactly once per genuine merchant trade open",
+                    observed, beginTradingPostfixRan,
+                    "RetiredKitVendorStockCleanup.PostfixRuns/Faults counters around real BeginTrading calls on an OTP_Bokken receiver"),
+                Assertion("begin-trading-receiver-is-merchant-stock",
+                    "the postfix receiver inventory is the merchant's own persisted stock, not the shared player inventory",
+                    observed, beginTradingReceiverNotShared,
+                    "ReferenceEquals comparison between the OTP_Bokken receiver inventory and Player.Inventory"),
+                Assertion("begin-trading-removes-retired-stock",
+                    "legacy retired kits materialized into the genuine merchant inventory before trading are removed by the real integration",
+                    observed, beginTradingRetiredRemoved,
+                    "live merchant inventory counts after production BeginTrading"),
+                Assertion("begin-trading-preserves-protected-stock",
+                    "the merchant's reusable Gunsmith's Kit and unrelated stock survive the real integration sweep",
+                    observed, beginTradingProtectedRetained,
+                    "live merchant inventory counts after production BeginTrading"),
+                Assertion("begin-trading-preserves-player-kits",
+                    "player-owned legacy kits and all other shared-inventory counts are unchanged by the real integration",
+                    observed, beginTradingPlayerUntouched,
+                    "live shared player inventory counts sampled around both BeginTrading calls"),
+                Assertion("begin-trading-second-invocation-idempotent",
+                    "a second genuine BeginTrading removes nothing further and leaves protected stock exact",
+                    observed, beginTradingIdempotent,
+                    "postfix run counter and merchant inventory counts across two BeginTrading calls"),
                 Assertion("request-local-cleanup", "Gunsmith's Kit inventory and fixture restored",
                     observed, cleaned, "guaranteed finally cleanup; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,

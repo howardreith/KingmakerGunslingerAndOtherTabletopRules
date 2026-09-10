@@ -150,7 +150,7 @@ The current Test Musket remains a real weapon using Kingmaker's native attack an
 
 The authoritative runtime state carrier is the exact item's inert enchantment token. The earlier weak repository, direct-reference UnitPart, and `UniqueId` vault implementations remain checked in for test history and migration research, but none is the current runtime source of truth and the rejected `UniqueId` design must not be revived.
 
-Sprint 28 is runtime-accepted from the supplied player-facing Overhaul evidence and explicit user approval. Sprint 29 completes the staged Overhaul Ã¢â â Repair Ã¢â â Reload maintenance loop and adds deterministic qualification automation. Sprint 30 is gated on live proof of the complete action-bar loop, interruption safety, exact resource deltas, same-item identity, second-item isolation, fail-closed rejection, matrix output, and persistence.
+Sprint 28 was runtime-accepted from the supplied player-facing Overhaul evidence and explicit user approval; that historical acceptance covered the staged Overhaul → Repair → Reload loop of Sprint 29, which the current unified design superseded. Sprint 30 is gated on live proof of the complete action-bar loop, interruption safety, exact resource deltas, same-item identity, second-item isolation, fail-closed rejection, matrix output, and persistence.
 
 ## 2. Runtime boundaries
 
@@ -159,7 +159,7 @@ KingmakerGunslinger/
   Bootstrap/       UMM entry point, logging, Harmony, blueprint lifecycle
   Blueprints/      Blueprint creation, cloning, registration, verification
   Firearms/        Definitions, immutable state, exact-item repository, engine adapters
-  Recovery/        Player-facing Overhaul and Repair availability, delivery, rollback, diagnostics
+  Recovery/        Player-facing unified Repair availability, delivery, rollback, diagnostics
   Qualification/   Pure process-local maintenance baseline, observation, and PASS/FAIL evaluator
   Development/     Manual UMM controls and fail-closed reflection adapters
   Diagnostics/     Marker lookup, event snapshots, correlation, formatting
@@ -192,7 +192,7 @@ The current sequence is:
 7. Initialization waits for both the library and a patch-ready context.
 8. The deployed stable-ID manifest is loaded and validated.
 9. An in-memory `FirearmDefinitionComponent` round-trip proves the marker can be constructed.
-10. One `BlueprintRegistry` transaction registers the diagnostic feature, Firearm Proficiency, Test Musket type/item, four component-only firearm-state token enchantments, Black Powder Charge, Lead Ball, Firearm Repair Kit, Reload Test Musket, Overhaul Test Musket, and Repair Test Musket.
+10. One `BlueprintRegistry` transaction registers the diagnostic feature, Firearm Proficiency, Test Musket type/item, four component-only firearm-state token enchantments, Black Powder Charge, Lead Ball, Firearm Repair Kit, Reload Test Musket, Repair Test Musket, and the hidden legacy Overhaul alias (all still registered).
 11. The Test Musket type is cloned from the native Heavy Crossbow type and receives exactly one firearm marker.
 12. The Test Musket item is cloned from the native Standard Heavy Crossbow, rewired to the custom type, and receives exactly one Firearm Proficiency restriction.
 13. Each firearm-state token blueprint contains exactly one passive marker component and no gameplay components.
@@ -486,9 +486,9 @@ Sprint 28 added the first player-facing same-item recovery transaction on top of
 exactly one equipped empty/Wrecked exact Test Musket
         + one Firearm Repair Kit in shared inventory
         + completed full-round Overhaul Test Musket delivery
-        Ã¢â â
+        →“
 same runtime item / same process-local repository identity
-        Ã¢â â
+        →“
 empty/Broken, revision +1, kit count -1
 ```
 
@@ -512,11 +512,11 @@ The Sprint 28 recovery adapter keeps the pure state machine, exact-item reposito
 
 ```text
 BlueprintAbility + AbilityCustomLogic
-        Ã¢â â delivery only
+        →“ delivery only
 OverhaulTestMusketRuntime
-        Ã¢â â exact equipped item + shared inventory adapters
+        →“ exact equipped item + shared inventory adapters
 FirearmOverhaulTransactionService
-        Ã¢â â verified writes / best-effort rollback
+        →“ verified writes / best-effort rollback
 item-owned state token + Firearm Repair Kit stack
 ```
 
@@ -540,11 +540,11 @@ The ordinary Repair path mirrors the accepted Overhaul layering:
 
 ```text
 BlueprintAbility + AbilityCustomLogic
-        Ã¢â â delivery only
+        →“ delivery only
 RepairTestMusketRuntime
-        Ã¢â â exact equipped item + shared inventory adapters
+        →“ exact equipped item + shared inventory adapters
 FirearmRepairTransactionService
-        Ã¢â â verified writes / independent best-effort rollback
+        →“ verified writes / independent best-effort rollback
 item-owned state token + Firearm Repair Kit stack
 ```
 
@@ -562,9 +562,9 @@ the next exact firearm attack consumes the marker, and an eligible hit spends
 grit and applies a persistent native-descriptor Bleed fact whose per-round
 component dispatches native direct HP or stat damage.
 
-Availability remains read-only. Repair starts no transaction before `Deliver`, accepts only one exact equipped Broken Test Musket, consumes one kit, writes empty/Normal once, verifies both resources, and restores the exact pre-operation loaded state and kit count after a mutation-time failure when possible. `FirearmRepairRuntimeResult` requires unchanged process-local item identity and one revision increment.
+Availability remains read-only. Unified Repair starts no transaction before `Deliver`, accepts one exact equipped Broken or Wrecked project firearm plus one reusable shared-inventory Gunsmith's Kit, consumes nothing, preserves surviving loaded ammunition, writes Normal once, verifies the unchanged tool count, and restores the exact pre-operation loaded state after a mutation-time failure when possible. `FirearmRepairRuntimeResult` requires unchanged process-local item identity and one revision increment.
 
-The qualification harness remains outside gameplay. `MaintenanceQualificationBaseline` captures one target, one independent second item, resources, completion counters, fault totals, and duplicate totals. `MaintenanceQualificationService` compares later observations and emits one of four checkpoints: `FixtureReady`, `OverhaulPassed`, `RepairPassed`, or `MaintenanceLoopPassed`. The one-command runner uses immediate runtime adapters only for fast transaction regression; actual action-bar delivery and interruption remain live-test obligations.
+The qualification harness remains outside gameplay. `MaintenanceQualificationBaseline` captures one target, one independent second item, resources, completion counters, fault totals, and duplicate totals. `MaintenanceQualificationService` compares later observations and emits one of three checkpoints: `FixtureReady`, `RepairPassed`, or `MaintenanceLoopPassed`. The one-command runner uses immediate runtime adapters only for fast transaction regression; actual action-bar delivery and interruption remain live-test obligations.
 
 The blueprint ledger contains 233 stable IDs: 232 active and one reserved. Sixth-playtest additions are append-only: a visible Deadeye Armed buff, Gunsmith's Kit, Firearm Overhaul Kit, basic-ammunition crafting action, once-per-rest marker, and clone-derived renderer-free firearm projectile. The Mysterious Stranger extension adds one subordinate Gunslinger archetype and sixteen supporting feature, ability, buff, and resource identities. The Pistolero/Musket Master foundation appends stable scoped firearm-proficiency facts, visible archetype proficiency grants, Exotic Weapon Proficiency (Firearms), rankable Pistol/Musket Training facts, both native archetypes, truthful archetype deed summaries, Steady Aim's owner-scoped action/marker, Up Close and Deadly's owner-scoped action/marker, Twin Shot Knockdown's targeted action, and four deed-ownership-gated True Grit choices, while preserving the existing full-proficiency identity and behavior. Existing firearm, feat, item, resource, and save identities remain unchanged. The standalone package continues to contain exactly one project-owned binary and no private reference assembly.
 
