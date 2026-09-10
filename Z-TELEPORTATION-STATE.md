@@ -17,7 +17,7 @@ current progress, evidence, and exact resumption instructions only.
 | Gate | Status |
 |---|---|
 | 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
-| 2 Conjuration specialist slots | TODO |
+| 2 Conjuration specialist slots | IMPLEMENTED (publication native-verified); behavioral UI test pending |
 | 3 Compact UI + settlement coexistence | TODO |
 | 4 Scrolls: items, vendors, learning, casting | TODO |
 | 5 Persistence + final install candidate | TODO |
@@ -27,6 +27,45 @@ Gate 4); off-target/mishap arrival arrow; saved magical-arrival fresh-process
 reload before workaround; cancellation/no-relocation controls (arrow state
 unchanged); repeat casts. Desktop path verified; controller arrows via gamepad
 scenario events verified (compass events are shared).
+
+## Gate 2 diagnosis and fix (publication native-verified 2026-09-10)
+
+Cause: the specialist/favorite preparation slot accepts only spells in the
+book's special lists (`Spellbook.GetMemorizeSlots` requires
+`GetSpecialSpells(level)` membership). The school special list is a separate
+BlueprintSpellList attached per school by `AddSpecialSpellList` components
+(`SpecializationSchoolConjuration` for Wizard/Arcanist). The mod published
+only into WizardSpellList, so the Conjuration favorite slot rejected Teleport.
+
+Verified identity (runtime inventory, observe-teleportation-native-contracts
+with the new `specialSpellLists` section): WizardConjurationSpellList =
+`69a6eba12bc77ea4191f573d63c9df12` (also attached by
+ThassilonianConjurationFeature and TeleprotationSchoolBaseFeature; Travel
+domain list `ab90308d…` publication confirmed present at L5/L7).
+
+Fix (commit "Publish Teleport spells into the native Conjuration school
+list"): Teleport@5 and GreaterTeleport@7 added as required targets of the
+existing reversible/idempotent TeleportationSpellListPublication. Word of
+Recall stays out of Wizard lists. Existing characters: the school feature
+re-activates on load → `AddSpecialList` re-derives `m_SpecialSpells`, so no
+respec is needed (IL: Spellbook.AddSpecialList adds every list spell).
+
+Native verification: observe-teleportation-native-contracts PASS (11
+assertions); inventory shows KMG Teleport/Greater in the Conjuration list at
+L5/L7 across all three attaching features. Build/repository validation/1,554
+domain tests PASS.
+
+### Gate 2 remaining (behavioral proof, next session slice)
+
+- New/focused guarded scenario: fixture wizard with Conjuration specialization
+  (reuse TeleportResourceFixtureOwner + school feature attach — see how the
+  spellbook-ui scenario builds books), prepare Teleport in the FIFTH-level
+  favorite slot through the real spellbook UI (SpellItem.Memorize path), rest,
+  verify preparation count and world-map spend consumes exactly the favorite
+  preparation (mixed ordinary+specialist counting, opposition/native order).
+- Negative controls: other-school favorite slots reject; universalist unchanged;
+  wrong-level/unrelated Conjuration spell behavior; module OFF/ON without free
+  restoration; rest/reload persistence (fresh-process via persistence harness).
 
 ## Gate 1 root cause and fix (native-verified 2026-09-10)
 
