@@ -79,8 +79,17 @@ namespace KingmakerGunslinger.Blueprints
             var arcane = supplier.Arcane;
             var arcaneFallback = supplier.ArcaneFallback;
             var priest = supplier.Priest;
-            // Owned covers every project scroll so module OFF normalizes all rows
-            // away; stocked is the finite batch the mission approved.
+            // Module OFF publishes nothing new and strips nothing: removing the
+            // granted rows would wipe the native shared-table purchase memory,
+            // and re-enabling would then refill bought-out stock — violating the
+            // finite-batch contract. Existing rows are preserved untouched.
+            if (!publish)
+            {
+                LogPublished(logger, publish, arcaneFallback, arcane, priest, new TeleportationScrollVendorPublication(), unchanged: true);
+                return new TeleportationScrollVendorPublication();
+            }
+            // Owned covers every project scroll; stocked is the finite batch the
+            // mission approved.
             var owned = new BlueprintItem[] { scrolls.Teleport, scrolls.GreaterTeleport, scrolls.WordOfRecall };
             var result = new TeleportationScrollVendorPublication();
             var batches = new List<KeyValuePair<BlueprintSharedVendorTable, KeyValuePair<BlueprintItem[], int[]>>>();
