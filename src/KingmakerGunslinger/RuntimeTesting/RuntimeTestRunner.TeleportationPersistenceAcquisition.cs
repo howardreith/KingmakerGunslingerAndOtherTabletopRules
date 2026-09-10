@@ -164,13 +164,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     activation = request.Execution.Resource == null ? null : TeleportationDiagnosticJson.Serialize(request.Execution.Resource.Evidence()) });
             if (goldBefore < 5000) player.SpendMoney(player.Money - goldBefore);
             vendorPart.Dispose();
-            // The deterministic acquisition snapshot later fresh processes verify
-            // BEFORE any fixture can reconstruct it.
-            var grantsField = typeof(UnitPartTeleportFamiliarity).GetField("_scrollVendorGrants", BindingFlags.Instance | BindingFlags.NonPublic);
+            _teleportPersistenceAcquisitionReaderId = reader.UniqueId;
+            _teleportPersistenceAcquisition = RefreshTeleportPersistenceAcquisition(reader.UniqueId);
+        }
+
+        // The acquisition snapshot is always RE-DERIVED from the live world state
+        // (including fresh processes) so later phases verify the persisted state
+        // itself, never a captured field value.
+        private string _teleportPersistenceAcquisitionReaderId;
+        private JObject RefreshTeleportPersistenceAcquisition(string readerId)
+        {
+            var player = Game.Instance.Player; var map = GlobalMapRules.State;
+            var scrolls = BlueprintBootstrap.TeleportationScrolls;
+            var supplier = TeleportationScrollVendorPublication.DecideSupplier(BlueprintBootstrap.Library);
+            var reader = player.AllCharacters.FirstOrDefault(value => value != null && value.UniqueId == readerId);
+            var book = reader == null ? null : reader.Descriptor.Spellbooks.FirstOrDefault(candidate =>
+                candidate.GetKnownSpells(5).Any(value => value.Blueprint == scrolls.Teleport.Ability));
+            var stock = supplier.Arcane == null ? null : player.SharedVendorTables.GetTable(supplier.Arcane);
             var ledger = TeleportFamiliarityRuntime.EnsureLedger(player);
-            var grants = (List<string>)grantsField.GetValue(ledger);
-            _teleportPersistenceAcquisition = new JObject {
-                ["supplierTable"] = supplier.Arcane.AssetGuid,
+            var grants = (List<string>)typeof(UnitPartTeleportFamiliarity)
+                .GetField("_scrollVendorGrants", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ledger);
+            return new JObject {
+                ["readerId"] = readerId,
+                ["supplierTable"] = supplier.Arcane == null ? null : supplier.Arcane.AssetGuid,
                 ["supplierFallback"] = supplier.ArcaneFallback,
                 ["priestTable"] = supplier.Priest == null ? null : supplier.Priest.AssetGuid,
                 ["grantMarkers"] = new JArray(grants ?? new List<string>()),
@@ -178,11 +194,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["remainingGreaterStock"] = CountPersistenceItems(stock, scrolls.GreaterTeleport),
                 ["gold"] = player.Money.ToString(System.Globalization.CultureInfo.InvariantCulture),
                 ["carriedTeleportScrolls"] = TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport),
-                ["learnedTeleport"] = book.GetKnownSpells(5).Any(value => value.Blueprint == scrolls.Teleport.Ability),
-                ["acquisitionBookId"] = book.Blueprint.AssetGuid,
-                ["readyFavoriteUses"] = RawSlots(book, 5).Count(value => value.Spell != null &&
+                ["learnedTeleport"] = book != null,
+                ["acquisitionBookId"] = book == null ? null : book.Blueprint.AssetGuid,
+                ["readyFavoriteUses"] = book == null ? -1 : RawSlots(book, 5).Count(value => value.Spell != null &&
                     value.Spell.Blueprint == scrolls.Teleport.Ability && value.Available),
-                ["spentFavoriteUses"] = RawSlots(book, 5).Count(value => value.Spell != null &&
+                ["spentFavoriteUses"] = book == null ? -1 : RawSlots(book, 5).Count(value => value.Spell != null &&
                     value.Spell.Blueprint == scrolls.Teleport.Ability && !value.Available),
                 ["arrivalPoint"] = map.PartyLocation == null ? null : map.PartyLocation.AssetGuid,
                 ["miles"] = map.MilesTravelled.ToString("R", System.Globalization.CultureInfo.InvariantCulture)
