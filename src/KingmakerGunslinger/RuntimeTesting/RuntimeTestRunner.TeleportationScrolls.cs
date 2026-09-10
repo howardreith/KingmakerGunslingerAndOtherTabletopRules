@@ -295,53 +295,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         variantRow2 != null && variantRow2.Uses == 1 && variantRow2.SpellLevel == variant.SpellLevel);
                 rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                 for (int frame = 0; frame < 10; frame++) yield return 0;
-                // R2: the two same-count variants are VISIBLY distinct choices:
-                // rows and confirmation name the caster level.
-                var cl9Row = variantSources.First(value => value.BookId == scrolls.Teleport.AssetGuid);
-                var cl13Row = variantSources.First(value => value.BookId == variant.AssetGuid);
-                var presentation = TeleportationWorldMapAdapter.Capture(false);
-                var presentationPoint = TeleportationWorldMapAdapter.ReadDestination(presentation, target.Blueprint);
-                var cl9Action = new WorldMapPointSpellAction(presentationPoint, origin.Blueprint.AssetGuid, cl9Row, false);
-                var cl13Action = new WorldMapPointSpellAction(presentationPoint, origin.Blueprint.AssetGuid, cl13Row, false);
-                var cl9Text = TeleportContextPresentation.CompactRow(cl9Action, TeleportationText.Get);
-                var cl13Text = TeleportContextPresentation.CompactRow(cl13Action, TeleportationText.Get);
-                ScrollsAssert("variant-rows-visibly-distinct",
-                    "same-count CL9 and CL13 variants carry visibly different rows naming the caster level",
-                    "cl9=" + cl9Text.Replace("\n", " | ") + ";cl13=" + cl13Text.Replace("\n", " | "),
-                    cl9Text.Contains("CL 9") && cl13Text.Contains("CL 13") && cl9Text != cl13Text);
-                // R2: same caster level but a materially different item spell
-                // level is a separate group, never a silent substitution.
-                var spellLevelVariant = UnityEngine.Object.Instantiate(scrolls.Teleport);
-                spellLevelVariant.name = "KMG_Fixture_CraftedTeleportScroll_SL4";
-                typeof(Kingmaker.Blueprints.BlueprintScriptableObject)
-                    .GetField("m_AssetGuid", BindingFlags.Instance | BindingFlags.NonPublic)
-                    .SetValue(spellLevelVariant, "6e277d3f5a1c9e802d3f4a5b6c7d8e9f");
-                spellLevelVariant.SpellLevel = 4;
-                party[1].Inventory.Add(spellLevelVariant, 1);
-                var contractSources = TeleportationScrollAdapter.Enumerate(player)
-                    .Where(value => value.Spell == TeleportSpellKind.Teleport && value.CasterId == bookReader.UniqueId).ToArray();
-                var contractRow = contractSources.FirstOrDefault(value => value.BookId == spellLevelVariant.AssetGuid);
-                ScrollsAssert("variant-spelllevel-not-conflated",
-                    "a same-caster-level variant with a different item spell level stays a distinct choice",
-                    "rows=" + contractSources.Length + ";sl4Level=" + (contractRow == null ? 0 : contractRow.SpellLevel),
-                    contractRow != null && contractRow.SpellLevel == 4 && contractSources.Length == 3);
-                // R2: a teaching/activation mismatch never authorizes spending.
-                var mismatch = UnityEngine.Object.Instantiate(scrolls.Teleport);
-                mismatch.name = "KMG_Fixture_MismatchTeachingScroll";
-                typeof(Kingmaker.Blueprints.BlueprintScriptableObject)
-                    .GetField("m_AssetGuid", BindingFlags.Instance | BindingFlags.NonPublic)
-                    .SetValue(mismatch, "7d388e4f6b2daf913e4f5b6c7d8e9f0a");
-                var mismatchCopy = mismatch.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
-                mismatchCopy.CustomSpell = scrolls.GreaterTeleport.Ability;
-                party[1].Inventory.Add(mismatch, 1);
-                var mismatchSources = TeleportationScrollAdapter.Enumerate(player)
-                    .Where(value => value.CasterId == bookReader.UniqueId).ToArray();
-                var mismatchCount = mismatchSources.Count(value => value.BookId == mismatch.AssetGuid);
-                ScrollsAssert("variant-teaching-mismatch-rejected",
-                    "a scroll whose teaching target differs from its activated spell is never offered",
-                    "rows=" + mismatchCount, mismatchCount == 0);
-                party[1].Inventory.Remove((BlueprintItem)mismatch, 1);
-                party[1].Inventory.Remove((BlueprintItem)spellLevelVariant, 1);
 
                 for (int attempt = 0; attempt < 3; attempt++)
                 {
@@ -399,6 +352,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                         map.PartyLocation.AssetGuid == origin.Blueprint.AssetGuid &&
                         !TeleportationScrollActivationGate.Authorized(bookReader));
 
+                // R2: the two same-count variants are VISIBLY distinct choices:
+                // rows and confirmation name the caster level.
+                var cl9Row = variantSources.First(value => value.BookId == scrolls.Teleport.AssetGuid);
+                var cl13Row = variantSources.First(value => value.BookId == variant.AssetGuid);
+                var presentation = TeleportationWorldMapAdapter.Capture(false);
+                var presentationPoint = TeleportationWorldMapAdapter.ReadDestination(presentation, target.Blueprint);
+                var cl9Action = new WorldMapPointSpellAction(presentationPoint, origin.Blueprint.AssetGuid, cl9Row, false);
+                var cl13Action = new WorldMapPointSpellAction(presentationPoint, origin.Blueprint.AssetGuid, cl13Row, false);
+                var cl9Text = TeleportContextPresentation.CompactRow(cl9Action, TeleportationText.Get);
+                var cl13Text = TeleportContextPresentation.CompactRow(cl13Action, TeleportationText.Get);
+                ScrollsAssert("variant-rows-visibly-distinct",
+                    "same-count CL9 and CL13 variants carry visibly different rows naming the caster level",
+                    "cl9=" + cl9Text.Replace("\n", " | ") + ";cl13=" + cl13Text.Replace("\n", " | "),
+                    cl9Text.Contains("CL 9") && cl13Text.Contains("CL 13") && cl9Text != cl13Text);
+                // R2: same caster level but a materially different item spell
+                // level is a separate group, never a silent substitution.
+                var spellLevelVariant = UnityEngine.Object.Instantiate(scrolls.Teleport);
+                spellLevelVariant.name = "KMG_Fixture_CraftedTeleportScroll_SL4";
+                typeof(Kingmaker.Blueprints.BlueprintScriptableObject)
+                    .GetField("m_AssetGuid", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(spellLevelVariant, "6e277d3f5a1c9e802d3f4a5b6c7d8e9f");
+                spellLevelVariant.SpellLevel = 4;
+                party[1].Inventory.Add(spellLevelVariant, 1);
+                var contractSources = TeleportationScrollAdapter.Enumerate(player)
+                    .Where(value => value.Spell == TeleportSpellKind.Teleport && value.CasterId == bookReader.UniqueId).ToArray();
+                var contractRow = contractSources.FirstOrDefault(value => value.BookId == spellLevelVariant.AssetGuid);
+                ScrollsAssert("variant-spelllevel-not-conflated",
+                    "a same-caster-level variant with a different item spell level stays a distinct choice",
+                    "rows=" + contractSources.Length + ";sl4Level=" + (contractRow == null ? 0 : contractRow.SpellLevel),
+                    contractRow != null && contractRow.SpellLevel == 4 && contractSources.Length == 3);
+                // R2: a teaching/activation mismatch never authorizes spending.
+                var mismatch = UnityEngine.Object.Instantiate(scrolls.Teleport);
+                mismatch.name = "KMG_Fixture_MismatchTeachingScroll";
+                typeof(Kingmaker.Blueprints.BlueprintScriptableObject)
+                    .GetField("m_AssetGuid", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(mismatch, "7d388e4f6b2daf913e4f5b6c7d8e9f0a");
+                var mismatchCopy = mismatch.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
+                mismatchCopy.CustomSpell = scrolls.GreaterTeleport.Ability;
+                party[1].Inventory.Add(mismatch, 1);
+                var mismatchSources = TeleportationScrollAdapter.Enumerate(player)
+                    .Where(value => value.CasterId == bookReader.UniqueId).ToArray();
+                var mismatchCount = mismatchSources.Count(value => value.BookId == mismatch.AssetGuid);
+                ScrollsAssert("variant-teaching-mismatch-rejected",
+                    "a scroll whose teaching target differs from its activated spell is never offered",
+                    "rows=" + mismatchCount, mismatchCount == 0);
+                party[1].Inventory.Remove((BlueprintItem)mismatch, 1);
+                party[1].Inventory.Remove((BlueprintItem)spellLevelVariant, 1);
                 // --- Vendor migration behaviors on the shared tables ---
                 var priestTable = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(
                     BlueprintBootstrap.Library, TeleportationScrollVendorPublication.PriestTableId, "priest shared vendor table");
