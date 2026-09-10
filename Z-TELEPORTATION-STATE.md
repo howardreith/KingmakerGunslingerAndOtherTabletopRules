@@ -16,17 +16,19 @@ current progress, evidence, and exact resumption instructions only.
 
 | Gate | Status |
 |---|---|
-| 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
+| 1 Post-teleport first-arrow movement | NATIVE-VERIFIED incl. breadth (arrows 8/8 with off-target arrival; persistence reload arrows) |
 | 2 Conjuration specialist slots | NATIVE-VERIFIED (publication + behavioral scenario; two consecutive PASS runs) |
 | 3 Compact UI + settlement coexistence | NATIVE-VERIFIED (coexistence 26/26, interaction 29/29, casting 44/44, gamepad PASS) |
 | 4 Scrolls: items, vendors, learning, casting | NATIVE-VERIFIED (disposable-teleportation-scrolls 12/12, two consecutive PASS runs; specialist regression PASS) |
-| 5 Persistence + final install candidate | TODO |
+| 5 Persistence + final install candidate | NATIVE-VERIFIED (four-phase A/B/C/D PASS; validated candidate installed with rollback) |
 
-Gate 1 remaining breadth (mission §3): Recall cast + arrow; scroll source (after
-Gate 4); off-target/mishap arrival arrow; saved magical-arrival fresh-process
-reload before workaround; cancellation/no-relocation controls (arrow state
-unchanged); repeat casts. Desktop path verified; controller arrows via gamepad
-scenario events verified (compass events are shared).
+Gate 1 breadth COMPLETE (2026-09-10): off-target/worst-roll Teleport arrival
+asserts arrows bound to the ACTUAL arrival (arrows scenario 8/8); fresh-process
+reload presents working arrows immediately before any workaround (new
+reload-arrows-immediate assertion in persistence phases B/C/D); scroll-source
+arrow covered by disposable-teleportation-scrolls; Recall shares the same
+relocation completion path (gamepad Recall casts PASS); cancellation and
+repeat casts covered across scenarios.
 
 ## Gate 4 progress
 
@@ -219,6 +221,36 @@ Vendors:
 4. Guarded scenario disposable-teleportation-scrolls: buy/copy/prepare/cast
    flow + first-arrow (Gate 1 integration), UMD reader, failures,
    cancellation, persistence across module OFF/ON.
+
+## Gate 5 (native-verified 2026-09-10)
+
+- Gate 1 breadth: arrows scenario now 8/8 incl. arrow-offtarget-arrival
+  (forced worst d100; labels bind to the ACTUAL arrival); persistence
+  phases assert reload-arrows-immediate on every fresh-process reload.
+- Fresh-process persistence: FOUR phases A/B/C/D PASS (12/12/8/3
+  assertions, distinct PIDs) via Invoke-TeleportationPersistenceQualification
+  with transaction 20260910T1830094932100Z_9c3533f46399407994e5ad1f57d80217.
+  The snapshot now includes scrollVendorGrants (probe grant persisted
+  through reload and module OFF/ON); phase C module-OFF preserved all
+  saved fields; settings/Mods restored exactly; pre-existing saves
+  protected. One harness repair: evidence writer now uses
+  ConvertTo-Json -InputObject (PS5.1 pipeline unwrap could emit empty
+  content).
+- Final candidate installed and verified: deployment
+  20260910T1829195487858Z at commit d634ad1d, package
+  artifacts/local-runtime/0.0.121/KingmakerGunslinger-0.0.121-local-runtime.zip
+  (sha256 33a23dbb...), installed DLL sha256 9ad27a2d... == deployed ==
+  qualification artifact (exact-match guard passed). Full rollback backup at
+  runtime-backups/live-mod/20260910T1829167066166Z. FeatureModules.json
+  restored to owner settings (transaction settingsRestored=true). Final
+  workflow: 1,561 domain tests PASS, repository validation PASS, preflight
+  464 PASS.
+
+Remaining known limitations (documented, non-blocking): native trading-UI
+gold purchase and local-area spellbook copy UI are covered at the seam
+level (published stock + migration sweep + AddKnown(isCopy)) rather than
+full UI automation; screenshots as supporting evidence not captured
+(structured evidence only, per AGENTS.md). No merge/release performed.
 
 ## Gate 2 diagnosis and fix (publication native-verified 2026-09-10)
 
