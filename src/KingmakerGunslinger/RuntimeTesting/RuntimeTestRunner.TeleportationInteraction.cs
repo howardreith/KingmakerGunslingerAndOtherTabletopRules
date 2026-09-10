@@ -235,7 +235,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // first append measures a fresh, differently-anchored body and may
                 // legitimately differ from the settled reopen height.
                 TeleportInteractionAssert("reopen-viewport-stable", "each settled reopen measures the same native body with one container of six distinct rows",
-                    "first=" + firstViewportHeight.ToString("0.##") + ";heights=" + string.Join(",", reopenedHeights.Select(value => value.ToString("0.##")).ToArray()),
+                    "first=" + firstViewportHeight.ToString("0.##") + ";heights=" + string.Join(",", reopenedHeights.Select(value => value.ToString("0.##")).ToArray()) +
+                        ";containers=" + panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length +
+                        ";rows=" + (rows == null ? -1 : rows.Actions.Count),
                     rows != null && panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length == 1 &&
                         rows.Actions.Count == 6 && rows.Actions.Select(value => value.Key).Distinct().Count() == 6 &&
                         reopenedHeights.All(value => Math.Abs(value - reopenedHeights[0]) < 0.01f));
