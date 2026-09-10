@@ -66,6 +66,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
 
         // Test/observer entry point: applies the migration rules to one vendor.
         internal static void Migrate(UnitEntityData vendorUnit)
+        { Migrate(vendorUnit, BlueprintBootstrap.Library == null ? null : TeleportationScrollVendorPublication.DecideSupplier(BlueprintBootstrap.Library)); }
+        // The bounded fixture seam: the SAME shared decision governs migration;
+        // a guarded fixture may establish the genuine-absence condition.
+        internal static void Migrate(UnitEntityData vendorUnit, TeleportationScrollVendorPublication.SupplierDecision decision)
         {
             if (vendorUnit == null || BlueprintBootstrap.TeleportationScrolls == null) return;
             var player = Game.Instance == null ? null : Game.Instance.Player;
@@ -84,7 +88,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             // aliased family.
             var sharedTable = SharedInventoryTable(part);
             if (sharedTable == null) return;
-            var supplier = TeleportationScrollVendorPublication.DecideSupplier(BlueprintBootstrap.Library);
+            var supplier = decision ?? TeleportationScrollVendorPublication.DecideSupplier(BlueprintBootstrap.Library);
             bool priest = supplier.Priest != null && string.Equals(sharedTable.AssetGuid,
                 supplier.Priest.AssetGuid, StringComparison.Ordinal);
             bool arcane = supplier.Arcane != null && string.Equals(sharedTable.AssetGuid,
