@@ -247,7 +247,124 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ledger.HasScrollVendorGrant("shared:" + arcaneTable.AssetGuid));
                 // Restore the request-local vendor part.
                 vendorPart.Dispose();
+                // --- Integrated acquisition chain: real gold purchase from the
+                // native shared vendor stock, native copy-from-scroll, specialist
+                // favorite preparation, cast, first arrow ---
+                var marketVendor = umdReader.Descriptor.Ensure<UnitPartVendor>();
+                var arcaneTable2 = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(
+                    BlueprintBootstrap.Library, TeleportationScrollVendorPublication.ArcaneTableId, "arcane shared vendor table");
+                marketVendor.SetSharedInventory(arcaneTable2);
+                var marketStock = player.SharedVendorTables.GetTable(arcaneTable2);
+                int marketBefore = CountItems(marketStock, scrolls.Teleport);
+                long goldBefore = player.Money;
+                if (goldBefore < 5000) player.Money = 5000;
+                long goldBase = player.Money;
+                var trade = new VendorLogic();
+                trade.BeginTrading(umdReader);
+                var forSale = default(ItemEntity);
+                foreach (var entity in trade.StoreItems)
+                    if (entity != null && entity.Count > 0 && ReferenceEquals(entity.Blueprint, scrolls.Teleport)) { forSale = entity; break; }
+                if (forSale == null) throw new InvalidOperationException("The native vendor stock offers no Teleport scroll to buy.");
+                long price = trade.GetItemBuyPrice(forSale);
+                trade.AddForBuy(forSale, 1);
+                trade.Deal();
+                trade.EndTraiding();
+                long goldAfter = player.Money;
+                int partyPurchased = TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport);
+                ScrollsAssert("market-purchase-native",
+                    "a real native gold purchase buys one scroll at the exact native price from the shared vendor stock",
+                    "price=" + price + ";goldDelta=" + (goldBase - goldAfter) + ";stockDelta=" + (CountItems(marketStock, scrolls.Teleport) - marketBefore) +
+                        ";party=" + partyPurchased,
+                    price > 0 && goldBase - goldAfter == price &&
+                        CountItems(marketStock, scrolls.Teleport) == marketBefore - 1 &&
+                        partyPurchased == 3 /* 2 after the cast + 1 purchased */);
+                // Native copy-from-scroll: the exact component action the inventory
+                // context menu invokes.
+                var purchased = default(ItemEntity);
+                foreach (var unit in party)
+                {
+                    if (unit == null || unit.Inventory == null) continue;
+                    foreach (var entity in unit.Inventory)
+                        if (entity != null && entity.Count > 0 && ReferenceEquals(entity.Blueprint, scrolls.Teleport)) { purchased = entity; break; }
+                    if (purchased != null) break;
+                }
+                if (purchased == null) throw new InvalidOperationException("The purchased scroll did not reach the party inventory.");
+                var copyComponent = scrolls.Teleport.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
+                bool canCopy = copyComponent.CanCopy(purchased, bookReader);
+                ScrollsAssert("market-copy-eligible", "the purchased scroll is natively copyable by the wizard",
+                    "canCopy=" + canCopy, canCopy);
+                int knownBefore = book.GetKnownSpells(5).Count(value => value.Blueprint == scrolls.Teleport.Ability);
+                // DoCopy is the exact private native boundary the inventory
+                // context action reaches; invoke it through the same method.
+                var doCopy = typeof(Kingmaker.Blueprints.Items.Components.CopyScroll).GetMethod("DoCopy",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                if (doCopy == null) throw new InvalidOperationException("Native copy boundary differs.");
+                doCopy.Invoke(copyComponent, new object[] { purchased, bookReader });
+                int knownAfter = book.GetKnownSpells(5).Count(value => value.Blueprint == scrolls.Teleport.Ability);
+                int partyAfterCopy = TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport);
+                ScrollsAssert("market-copy-native",
+                    "the native copy action learns the canonical spell and consumes the purchased scroll",
+                    "known=" + knownBefore + "->" + knownAfter + ";party=" + partyAfterCopy,
+                    knownAfter == knownBefore + 1 && partyAfterCopy == partyPurchased - 1);
+                // Specialist favorite preparation on the copied spell, then rest.
+                var conjurationList = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellList>(BlueprintBootstrap.Library,
+                    "69a6eba12bc77ea4191f573d63c9df12", "Conjuration special list");
+                book.AddSpecialList(conjurationList);
+                book.UpdateAllSlotsSize(false);
+                var favorite = RawSlots(book, 5).SingleOrDefault(value => value.Type == Kingmaker.UnitLogic.SpellSlotType.Favorite);
+                if (favorite == null) throw new InvalidOperationException("The copy wizard lost its favorite slot.");
+                if (!book.Memorize(new AbilityData(scrolls.Teleport.Ability, book), favorite))
+                    throw new InvalidOperationException("Native favorite preparation of the copied spell failed.");
+                book.Rest();
+                var readyFavorite = RawSlots(book, 5).Count(value => value.Spell != null && value.Spell.Blueprint == scrolls.Teleport.Ability && value.Available);
+                ScrollsAssert("market-specialist-prepare", "the copied spell prepares in the Conjuration favorite slot and rest readies it",
+                    "ready=" + readyFavorite, readyFavorite == 1);
+                // Cast from the world map and prove the first arrow at the arrival.
+                rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                rig.ScrollTo(target.transform.position);
+                for (int frame = 0; frame < 30; frame++) yield return 0;
+                TeleportDestinationRows marketRows = null;
+                for (int attempt = 0; attempt < 3 && (marketRows == null || marketRows.Actions.Count == 0); attempt++)
+                {
+                    SelectTeleportationCastingPoint(panel, target);
+                    foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                    for (int frame = 0; frame < 40; frame++)
+                    {
+                        marketRows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                        if (marketRows != null && marketRows.Actions.Count > 0) break;
+                        yield return 0;
+                    }
+                }
+                var bookRow = marketRows == null ? null : marketRows.Actions.SingleOrDefault(value =>
+                    value.Source.Kind != TeleportCastSourceKind.Scroll && value.Source.Spell == TeleportSpellKind.Teleport &&
+                    value.Source.CasterId == bookReader.UniqueId && value.Source.BookId == book.Blueprint.AssetGuid);
+                ScrollsAssert("market-cast-row", "the specialist preparation composes a real world-map source with one use",
+                    "uses=" + (bookRow == null ? "absent" : bookRow.Source.Uses.ToString()), bookRow != null && bookRow.Source.Uses == 1);
+                if (bookRow == null) throw new InvalidOperationException("The copied-and-prepared source was not composed.");
+                marketRows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
+                marketRows.Buttons[marketRows.Actions.ToList().FindIndex(value => value.Key == bookRow.Key)].onClick.Invoke();
+                var marketRequest = TeleportContextConfirmationPresenter.Current;
+                if (marketRequest == null || !DialogMessageBox.Instance.IsShown)
+                    throw new InvalidOperationException("The market chain confirmation did not open.");
+                for (int frame = 0; frame < 8; frame++) yield return 0;
+                TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                for (int frame = 0; frame < 12; frame++) yield return 0;
+                bool marketCommitted = marketRequest.Transaction.State == TeleportTransactionState.Completed &&
+                    marketRequest.Transaction.Result != null && marketRequest.Transaction.Result.Status == TeleportExecutionStatus.Arrived;
+                int readyAfterCast = RawSlots(book, 5).Count(value => value.Spell != null && value.Spell.Blueprint == scrolls.Teleport.Ability && value.Available);
+                var marketArrival = rules.GetLocationObject(map.PartyLocation);
+                var marketLabels = ArrowCompassLabels();
+                ScrollsAssert("market-cast-first-arrow",
+                    "the integrated chain ends with a spent favorite preparation and working arrows at the arrival",
+                    "committed=" + marketCommitted + ";ready=" + readyAfterCast + ";labels=" + marketLabels.Length,
+                    marketCommitted && readyAfterCast == 0 && marketLabels.Length > 0 &&
+                        marketLabels.All(label => ArrowLabelEdge(label) != null && marketArrival.Edges.Contains(ArrowLabelEdge(label))));
+                CaptureTeleportScrolls("market-chain", new { price, goldDelta = goldBase - goldAfter,
+                    knownAfter, readyFavorite, marketCommitted, labels = marketLabels.Length });
+                if (goldBefore < 5000) player.Money = goldBefore;
+                marketVendor.Dispose();
             }
+
             finally
             {
                 // Exact fixture restoration in reverse order.
