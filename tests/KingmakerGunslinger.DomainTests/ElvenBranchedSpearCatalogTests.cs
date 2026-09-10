@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.120\"") &&
-                props.Contains("<KmgVersion>0.0.120</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.120-elemental-races-completion</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.120\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.120\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.120-elemental-races-completion\")"),
-                "Release and assembly identity are not transactionally pinned to the elemental completion candidate.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.121\"") &&
+                props.Contains("<KmgVersion>0.0.121</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.121-unified-firearm-maintenance</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.121\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.121\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.121-unified-firearm-maintenance\")"),
+                "Release and assembly identity are not transactionally pinned to the unified repair candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-elemental-races-completion.zip") &&
+                "$($info.Id)-$($info.Version)-unified-firearm-maintenance.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the elemental completion archive.");
-            Assertions.True(runtime.Contains("active version 0.0.120") &&
-                localBuild.Contains("active version 0.0.120") &&
-                localBuild.Contains("local-runtime\\0.0.120"),
+                "Package identity is not pinned to the unified repair archive.");
+            Assertions.True(runtime.Contains("active version 0.0.121") &&
+                localBuild.Contains("active version 0.0.121") &&
+                localBuild.Contains("local-runtime\\0.0.121"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

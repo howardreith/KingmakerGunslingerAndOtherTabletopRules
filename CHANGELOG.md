@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — unified firearm maintenance
+## 0.0.121-unified-firearm-maintenance
 
 - One full-round Repair Firearm action now restores a Broken **or** Wrecked
   firearm directly to Normal. No intermediate step, no separate Overhaul
