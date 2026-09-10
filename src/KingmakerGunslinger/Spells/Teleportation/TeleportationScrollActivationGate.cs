@@ -58,23 +58,23 @@ namespace KingmakerGunslinger.Spells.Teleportation
         }
 
         // True when the caster currently carries a temporary native ability fact
-        // whose SourceItem is one of the strategic scrolls — the exact state the
-        // native item-use path creates before any availability check. Only in
-        // that state does the caster checker defer to the request-bound gate.
+        // whose SourceItem is a strategic scroll — the exact state the native
+        // item-use path creates before any availability check. Classification
+        // uses the SAME shared contract as source discovery (canonical activated
+        // ability association), so every supported variant — including crafted
+        // nonstandard blueprints — is guarded, never only the three standard
+        // items. Only in this state does the caster checker defer to the
+        // request-bound gate.
         internal static bool HasStrategicScrollFact(UnitEntityData caster)
         {
             if (caster == null || caster.Descriptor == null) return false;
-            var scrolls = BlueprintBootstrap.TeleportationScrolls;
-            if (scrolls == null) return false;
-            var strategic = new[]
-            {
-                (Kingmaker.Blueprints.Items.BlueprintItem)scrolls.Teleport,
-                scrolls.GreaterTeleport, scrolls.WordOfRecall
-            };
+            if (BlueprintBootstrap.Teleportation == null) return false;
             foreach (var ability in caster.Abilities.Enumerable)
             {
                 var sourceItem = ability == null ? null : ability.SourceItem;
-                if (sourceItem != null && strategic.Contains(sourceItem.Blueprint)) return true;
+                if (sourceItem != null &&
+                    Spells.Teleportation.TeleportationScrollAdapter.AssociatedSpell(sourceItem.Blueprint) != null)
+                    return true;
             }
             return false;
         }
