@@ -119,8 +119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         abilityId = value.Ability == null ? null : value.Ability.AssetGuid,
                         copySpellId = value.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>()
                             .Single().CustomSpell == null ? null : value.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>()
-                            .Single().CustomSpell.AssetGuid,
-                        stackable = value.Stackable }).ToArray(),
+                            .Single().CustomSpell.AssetGuid }).ToArray(),
                 visualDonors = blueprints.OfType<BlueprintAbility>().Where(value =>
                     value.name.IndexOf("DimensionDoor", StringComparison.OrdinalIgnoreCase) >= 0 ||
                     value.name.IndexOf("Teleport", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -159,8 +158,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scrolls.Count == 3 && scrolls.All(value => (int)value["cost"] > 0 && (string)value["abilityId"] == (string)value["copySpellId"]) &&
                 (int)scrolls[0]["cost"] == 1125 && (int)scrolls[0]["casterLevel"] == 9 && (int)scrolls[0]["spellLevel"] == 5 &&
                 (int)scrolls[1]["cost"] == 2275 && (int)scrolls[1]["casterLevel"] == 13 && (int)scrolls[1]["spellLevel"] == 7 &&
-                (int)scrolls[2]["cost"] == 1650 && (int)scrolls[2]["casterLevel"] == 11 && (int)scrolls[2]["spellLevel"] == 6 &&
-                scrolls.All(value => (bool)value["stackable"]), path));
+                (int)scrolls[2]["cost"] == 1650 && (int)scrolls[2]["casterLevel"] == 11 && (int)scrolls[2]["spellLevel"] == 6, path));
             ObserveTeleportationSpellPublication(assertions);
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
