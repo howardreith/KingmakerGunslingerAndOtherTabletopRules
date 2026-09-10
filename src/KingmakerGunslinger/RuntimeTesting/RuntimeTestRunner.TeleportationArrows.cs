@@ -37,6 +37,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var fixture = new TeleportResourceFixtureOwner(owner); owners.Add(fixture);
             var book = fixture.AddBook(sorcerer.Spellbook);
             book.AddKnown(7, BlueprintBootstrap.Teleportation.GreaterTeleport, true);
+            book.AddKnown(5, BlueprintBootstrap.Teleportation.Teleport, true);
             // Boundary 1: stationary at the origin before casting, with the
             // native marker/path state the player would see here.
             CaptureTeleportInteraction("arrow-boundary-1-origin", DescribeArrowBoundary(rules, "origin"));
