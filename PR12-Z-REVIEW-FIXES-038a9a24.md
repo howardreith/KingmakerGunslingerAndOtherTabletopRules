@@ -1,4 +1,4 @@
-# PR #12 continuation review (head 038a9a24) — R1–R4
+﻿# PR #12 continuation review (head 038a9a24) — R1–R4
 
 Persisted verbatim summary of the owner's continuation prompt. Full text is in
 the conversation of record; the four acceptance items are:
@@ -33,3 +33,36 @@ domain tests, clean build/package, affected native regressions; correct final
 artifact qualified and installed with the approved backup/rollback workflow;
 state/handoff updated honestly (R1–R4 fixed/proven or precisely blocked);
 commit and push through the approved wrapper; no merge or public release.
+
+
+## Resolution state at this checkpoint (2026-09-10, head = OFF-preserving publication)
+
+- R1 SOLVED and native-verified: request-bound activation gate; ordinary
+  TryUseFromInventory refused before any roll/consumption with the destination
+  guidance; observer attributes to exact reader+SourceItem; casting/specialist/
+  arrows regressions PASS.
+- R2 SOLVED and native-verified: full equivalence contract (spell, caster level,
+  item spell level, charge model) in grouping+binding; snapshot carries
+  CasterLevel; rows/confirmation show CL; same-CL different-spell-level variant
+  separate; teaching/activation mismatch rejected; standard teaching intact.
+- R3 SOLVED at the shared-decision level and native-verified for: fallback
+  identity, decision seam with primary genuinely absent (fallback selected,
+  priest independent), fallback batch-once under its own grant identity,
+  fallback inactive while primary active. NOT RUN: in-area genuine Zarcie
+  absence and kingdom auto-management acquisition (environment cannot
+  establish them at the main menu).
+- R4 PARTIALLY proven, one REAL defect open: phase A now performs the real
+  purchase/copy/prepare/rest/activation/first-arrow chain and phase B
+  verifies the full lifecycle state byte-exact on a fresh process. Phases C/D
+  exposed a genuine contract violation: with the module OFF the process
+  rebuilds blueprints WITHOUT our stock rows (publication plan off), the
+  native shared-table diff then wipes the materialized shelf AND its purchase
+  memory, and re-enabling refills bought-out stock to the full batch.
+  The in-process OFF no-op fix (preserve rows when publish=false) is
+  implemented but cannot fire because Publish is not called at all under OFF.
+  Full fix needs a bootstrap-order-aware design (e.g., publishing the finite
+  rows as campaign-granted data whenever the identities load, gating purchase/
+  activation instead) — a design decision requiring owner review, not a
+  last-minute change. Until then phases C/D of the acquisition lifecycle are
+  NOT RUN/PASS; the earlier serializer-only persistence qualification
+  (transaction 20260910T2038273365319Z) remains valid for its own scope.
