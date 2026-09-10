@@ -1,5 +1,15 @@
 # Known issues and conservative adaptations
 
+- Unified firearm repair has one unresolved owner decision: combat
+  availability for Wrecked recovery. Historically, Broken-to-Normal Repair
+  had no combat gate (usable in combat as a full-round action), while
+  Wrecked-to-Broken Overhaul explicitly rejected active combat. The current
+  unified Repair Firearm has no combat gate, so both Broken and Wrecked
+  firearms can now be repaired during combat; only the Wrecked-in-combat
+  case is a behavior change. No repository decision record establishes the
+  intended unified behavior, so nothing was changed or invented — the owner
+  must decide whether unified Repair should reject active combat for
+  Wrecked (or all) firearms.
 - Brown-Fur `0.0.81` failed human review and is superseded. The repaired
   `0.0.82` artifact passed focused runtime, persistence, optional-mod profiles,
   the authoritative 16-state boundary, and human presentation/play acceptance.
