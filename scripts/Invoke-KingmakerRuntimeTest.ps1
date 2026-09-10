@@ -610,6 +610,7 @@ try {
         'disposable-teleportation-level-up',
         'disposable-teleportation-destinations',
         'disposable-teleportation-arrows',
+        'disposable-teleportation-specialist',
         'disposable-teleportation-disabled',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
