@@ -257,7 +257,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var marketStock = player.SharedVendorTables.GetTable(arcaneTable2);
                 int marketBefore = CountItems(marketStock, scrolls.Teleport);
                 long goldBefore = player.Money;
-                if (goldBefore < 5000) player.Money = 5000;
+                if (goldBefore < 5000) player.GainMoney(5000 - goldBefore);
                 long goldBase = player.Money;
                 var trade = new VendorLogic();
                 trade.BeginTrading(umdReader);
@@ -361,7 +361,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         marketLabels.All(label => ArrowLabelEdge(label) != null && marketArrival.Edges.Contains(ArrowLabelEdge(label))));
                 CaptureTeleportScrolls("market-chain", new { price, goldDelta = goldBase - goldAfter,
                     knownAfter, readyFavorite, marketCommitted, labels = marketLabels.Length });
-                if (goldBefore < 5000) player.Money = goldBefore;
+                if (goldBefore < 5000) player.SpendMoney(player.Money - goldBefore);
                 marketVendor.Dispose();
             }
 
