@@ -131,6 +131,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // covers the point, then re-runs the exact production append.
                     controllers.SetActive(true);
                     WorldMapPointSpellActionRuntime.Append(desktop);
+                    CaptureTeleportInteraction("settlement-relabel-immediate", new {
+                        controllersActiveInHierarchy = controllers.activeInHierarchy,
+                        labelAfterAppend = teleportLabel == null ? null : teleportLabel.text,
+                        labelObjectFound = teleportLabel != null,
+                        desiredLabel = TeleportContextPresentation.SettlementTeleportLabel(TeleportationText.Get),
+                        teleportTextFromGet = TeleportationText.Get("SettlementTeleport", "Settlement Teleport") });
                     yield return 0;
                     TeleportInteractionAssert("settlement-label-coexists",
                         "the native settlement-teleport button is relabeled while spell rows coexist, with its callback untouched",
