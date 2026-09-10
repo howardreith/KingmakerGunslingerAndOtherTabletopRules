@@ -389,8 +389,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 typeof(Kingmaker.Blueprints.BlueprintScriptableObject)
                     .GetField("m_AssetGuid", BindingFlags.Instance | BindingFlags.NonPublic)
                     .SetValue(mismatch, "7d388e4f6b2daf913e4f5b6c7d8e9f0a");
-                var mismatchCopy = mismatch.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
-                mismatchCopy.CustomSpell = scrolls.GreaterTeleport.Ability;
+                // Instantiate shares component instances: replace the inherited
+                // CopyScroll with the variant's own instance before mutating it,
+                // exactly as production does — mutating the shared instance
+                // would corrupt the standard scroll's teaching target.
+                var inheritedCopy = mismatch.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().ToArray();
+                var mismatchComponents = mismatch.ComponentsArray.ToList();
+                foreach (var component in inheritedCopy) mismatchComponents.Remove(component);
+                mismatchComponents.Add(new Kingmaker.Blueprints.Items.Components.CopyScroll { CustomSpell = scrolls.GreaterTeleport.Ability });
+                mismatch.ComponentsArray = mismatchComponents.ToArray();
                 party[1].Inventory.Add(mismatch, 1);
                 var mismatchSources = TeleportationScrollAdapter.Enumerate(player)
                     .Where(value => value.CasterId == bookReader.UniqueId).ToArray();
@@ -399,6 +406,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "a scroll whose teaching target differs from its activated spell is never offered",
                     "rows=" + mismatchCount, mismatchCount == 0);
                 party[1].Inventory.Remove((BlueprintItem)mismatch, 1);
+                // Corruption regression: the standard scroll's own teaching target
+                // must remain the canonical Teleport throughout.
+                ScrollsAssert("variant-standard-teaching-intact",
+                    "the standard scroll keeps teaching its own canonical spell after variant mutations",
+                    "teaches=" + scrolls.Teleport.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>()
+                        .Single().CustomSpell.AssetGuid,
+                    scrolls.Teleport.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>()
+                        .Single().CustomSpell == scrolls.Teleport.Ability);
                 party[1].Inventory.Remove((BlueprintItem)spellLevelVariant, 1);
                 // --- Vendor migration behaviors on the shared tables ---
                 var priestTable = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(
