@@ -215,7 +215,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     payloadState.SetValue(ledger, familiarity.Serialize());
                     rules.StopWhenRevealingNewEdges = false;
                     rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
-                    for (int frame = 0; frame < 30; frame++) yield return 0;
+                    // Real camera updates settle the native point anchor before
+                    // any destination composition, as in the interaction family.
+                    var rig = Resources.FindObjectsOfTypeAll<Kingmaker.View.CameraRig>().Single(value => value != null &&
+                        value.gameObject.activeInHierarchy && value.gameObject.scene.IsValid() && value.gameObject.scene.isLoaded);
+                    rig.ScrollTo(target.transform.position);
+                    for (int frame = 0; frame < 60; frame++) yield return 0;
                     // Favorite-only preparation for the strategic cast: forget
                     // the ordinary preparation from the UI phase, memorize the
                     // favorite slot, then the native rest that readies it.
