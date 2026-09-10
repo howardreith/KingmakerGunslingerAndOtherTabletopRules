@@ -307,6 +307,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 if (doCopy == null) throw new InvalidOperationException("Native copy boundary differs.");
                 doCopy.Invoke(copyComponent, new object[] { purchased, umdReader });
+                // DoCopy learns; the native UI action consumes the item right
+                // after through the same public component method.
+                copyComponent.RemoveItem(purchased, umdReader);
                 int knownAfter = marketBook.GetKnownSpells(5).Count(value => value.Blueprint == scrolls.Teleport.Ability);
                 int partyAfterCopy = TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport);
                 ScrollsAssert("market-copy-native",
