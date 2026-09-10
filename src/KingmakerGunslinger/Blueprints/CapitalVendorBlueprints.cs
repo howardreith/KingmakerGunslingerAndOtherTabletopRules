@@ -220,6 +220,21 @@ namespace KingmakerGunslinger.Blueprints
                         CapitalVendorBlueprints.ReadItem(value), item)) == 1;
         }
 
+        /// <summary>
+        /// Counts the fixed rows actually present in the published table for one
+        /// item, independent of the intended offered-stock list. Retired
+        /// identities must observe zero here; unlike ContainsExact this detects
+        /// any leftover row, including duplicates.
+        /// </summary>
+        internal int CountPublishedRows(BlueprintItem item)
+        {
+            if (item == null) throw new ArgumentNullException("item");
+            return (_table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<LootItemsPackFixed>()
+                .Count(value => ReferenceEquals(
+                    CapitalVendorBlueprints.ReadItem(value), item));
+        }
+
         internal void Rollback()
         {
             if (!Changed) return;

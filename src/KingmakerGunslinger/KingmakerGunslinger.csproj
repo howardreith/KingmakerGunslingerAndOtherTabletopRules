@@ -206,6 +206,8 @@
     <Compile Include="Ammunition\ReloadAmmunitionInventorySnapshot.cs" />
     <Compile Include="Ammunition\ReloadAmmunitionTransactionService.cs" />
     <Compile Include="Acquisition\VendorCatalogPublication.cs" />
+    <Compile Include="Acquisition\RetiredVendorStockPolicy.cs" />
+    <Compile Include="Acquisition\RetiredKitVendorStockCleanup.cs" />
     <Compile Include="Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs" />
     <Compile Include="Presentation\PlayerFacingTextPolicy.cs" />
     <Compile Include="Presentation\GunslingerClassAppearanceCatalog.cs" />

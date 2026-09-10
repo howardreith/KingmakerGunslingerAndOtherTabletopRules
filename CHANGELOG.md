@@ -27,6 +27,18 @@
   unchanged.
 - Crafting abilities, their costs, and their shared once-per-rest entitlement
   are unchanged.
+- Review follow-up: already-materialized merchant inventories are swept as
+  well. `RetiredKitVendorStockCleanup` removes the two exact retired item
+  identities from a vendor's own inventory whenever trading begins —
+  idempotently, without regenerating stock, replenishing purchased
+  merchandise, or touching player-owned legacy kits.
+- Review follow-up: retired-kit absence is validated against the actual
+  published table rows (`CountPublishedRows` + `RetiredVendorStockPolicy`),
+  so one leftover row or many both fail bootstrap; the guarded maintenance
+  runtime scenario now asserts one combat-log attempt per successful repair
+  (four total), zero on rejected deliveries, tool-loss and never-started
+  cancellation rejection, and the materialized vendor-stock sweep on a
+  disposable vendor fixture.
 
 ## 0.0.120-elemental-races-completion
 

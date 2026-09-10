@@ -8536,14 +8536,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
             ItemEntityWeapon weapon = null;
             IEnumerator<AbilityDeliveryTarget> delivery = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData vendorUnitFixture = null;
             bool availableOutOfCombat = false, promptCompletion = false,
                 noWorldTimeMutation = false, noLingeringDelivery = false,
                 changedContextAtomic = false, repeatedIdempotent = false,
+                neverStartedCancelled = false,
+                toolRemovalRejectedWithObsoleteKits = false,
                 exactCompletion = false, secondCycleCompleted = false,
                 repairCompletion = false, repairAvailable = false,
                 repairDeliveryCompleted = false,
                 repairNoAmmunitionRefund = false,
                 obsoleteKitsUntouched = false,
+                vendorStockCleaned = false, vendorStockCleanupIdempotent = false,
+                vendorStockCleanupScoped = false,
                 diagnosticBreak = false,
                 diagnosticWreck = false, diagnosticRepeatRejected = false,
                 diagnosticRepairRecognized = false,
@@ -8557,7 +8562,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             string repairAmmunitionBefore = null,
                 repairAmmunitionAfter = null;
             long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
+            long promptLogsBefore = 0, wreckedRepairLogsBefore = 0,
+                secondCycleLogsBefore = 0, loadedRepairLogsBefore = 0;
+            bool promptLogDeltaExact = false, wreckedRepairLogDeltaExact = false,
+                secondCycleLogDeltaExact = false, loadedRepairLogDeltaExact = false;
             string wreckedRepairLog = null, repairLog = null,
+                toolRemovalReason = null,
                 diagnosticBreakResult = null, diagnosticWreckResult = null,
                 repairAvailabilityReason = null;
             try
@@ -8569,6 +8579,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out ignored, out method))
                     throw new InvalidOperationException(
                         "Temporary reusable Gunsmith's Kit could not be added.");
+                // Obsolete consumable kits are deliberately placed in the shared
+                // inventory: every subsequent rejection and success must ignore
+                // them, and they must never substitute for the reusable tool.
+                if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                    new[] { new object[] { repairKit, 2 }, new object[] { repairKit } },
+                    out ignored, out method))
+                    throw new InvalidOperationException(
+                        "Temporary obsolete Firearm Repair Kits could not be added.");
+                if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                    new[] { new object[] { overhaulKit, 2 }, new object[] { overhaulKit } },
+                    out ignored, out method))
+                    throw new InvalidOperationException(
+                        "Temporary obsolete Firearm Overhaul Kits could not be added.");
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 weapon = new ItemEntityWeapon(pistol);
@@ -8695,9 +8718,61 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
                         .Condition == FirearmCondition.Wrecked;
 
+                // Cancellation before any delivery work: the enumerator is
+                // created and abandoned without one advancement.
+                long cancelLogs = FirearmConditionCombatLog.Attempts;
+                int cancelTools = player.Inventory.Count(gunsmithKit);
+                delivery = logic.Deliver(context, new TargetWrapper(unit));
+                delivery.Dispose();
+                delivery = null;
+                neverStartedCancelled =
+                    FirearmConditionCombatLog.Attempts == cancelLogs &&
+                    player.Inventory.Count(gunsmithKit) == cancelTools &&
+                    FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
+                        .Condition == FirearmCondition.Wrecked;
+
+                // Removing the reusable tool before delivery must reject the
+                // repair without mutation even while obsolete consumable kits
+                // are present; they never substitute for the tool.
+                int toolsForRemovalTest = player.Inventory.Count(gunsmithKit);
+                if (toolsForRemovalTest > 0)
+                    player.Inventory.Remove(gunsmithKit, toolsForRemovalTest);
+                int obsoleteRepairKitsPresent =
+                    player.Inventory.Count(repairKit);
+                int obsoleteOverhaulKitsPresent =
+                    player.Inventory.Count(overhaulKit);
+                long toolRemovalLogs = FirearmConditionCombatLog.Attempts;
+                FirearmRepairAvailability toolRemovedAvailability =
+                    RepairTestMusketRuntime.Evaluate(
+                        unit.Descriptor, pistol, gunsmithKit);
+                toolRemovalReason = toolRemovedAvailability.Reason;
+                delivery = logic.Deliver(context, new TargetWrapper(unit));
+                bool toolRemovedTick = delivery.MoveNext();
+                AbilityDeliveryTarget toolRemovedTarget = delivery.Current;
+                bool toolRemovedEnded = !delivery.MoveNext();
+                delivery.Dispose();
+                delivery = null;
+                toolRemovalRejectedWithObsoleteKits =
+                    !toolRemovedAvailability.IsAvailable &&
+                    toolRemovedTick && toolRemovedTarget != null &&
+                    toolRemovedEnded &&
+                    obsoleteRepairKitsPresent >= 2 &&
+                    obsoleteOverhaulKitsPresent >= 2 &&
+                    player.Inventory.Count(gunsmithKit) == 0 &&
+                    player.Inventory.Count(repairKit) ==
+                        obsoleteRepairKitsPresent &&
+                    player.Inventory.Count(overhaulKit) ==
+                        obsoleteOverhaulKitsPresent &&
+                    FirearmConditionCombatLog.Attempts == toolRemovalLogs &&
+                    FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
+                        .Condition == FirearmCondition.Wrecked;
+                if (toolsForRemovalTest > 0)
+                    player.Inventory.Add(gunsmithKit, toolsForRemovalTest);
+
                 string exactRuntimeId = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .ItemRuntimeId;
                 gameTimeBefore = Game.Instance.TimeController.GameTime;
+                promptLogsBefore = FirearmConditionCombatLog.Attempts;
                 delivery = logic.Deliver(context, new TargetWrapper(unit));
                 bool promptTick = delivery.MoveNext();
                 AbilityDeliveryTarget promptTarget = delivery.Current;
@@ -8718,6 +8793,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     player.Inventory.Count(repairKit) == repairKitsAtStart &&
                     player.Inventory.Count(overhaulKit) == overhaulKitsAtStart;
                 noWorldTimeMutation = gameTimeAfter == gameTimeBefore;
+                promptLogDeltaExact = promptCompletion &&
+                    FirearmConditionCombatLog.Attempts == promptLogsBefore + 1;
 
                 int repeatTools = player.Inventory.Count(gunsmithKit);
                 long repeatLogs = FirearmConditionCombatLog.Attempts;
@@ -8746,6 +8823,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Wrecked));
 
+                wreckedRepairLogsBefore = FirearmConditionCombatLog.Attempts;
                 FirearmRepairRuntimeResult completed =
                     RepairTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
                         gunsmithKit);
@@ -8754,6 +8832,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Normal &&
                     completed.AfterFirearm.Repository.State.IsEmpty &&
                     player.Inventory.Count(gunsmithKit) == toolsAtStart;
+                wreckedRepairLogDeltaExact = exactCompletion &&
+                    FirearmConditionCombatLog.Attempts == wreckedRepairLogsBefore + 1;
                 staticAfterWreckedRepair = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 wreckedRepairLog = FirearmConditionCombatLog.LastMessage;
@@ -8763,6 +8843,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Broken));
+                secondCycleLogsBefore = FirearmConditionCombatLog.Attempts;
                 FirearmRepairRuntimeResult secondCycle =
                     RepairTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
                         gunsmithKit);
@@ -8772,6 +8853,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     player.Inventory.Count(gunsmithKit) == toolsAtStart &&
                     player.Inventory.Count(repairKit) == repairKitsAtStart &&
                     player.Inventory.Count(overhaulKit) == overhaulKitsAtStart;
+                secondCycleLogDeltaExact = secondCycleCompleted &&
+                    FirearmConditionCombatLog.Attempts == secondCycleLogsBefore + 1;
 
                 AmmunitionId loadedIdentity =
                     FirearmStateTokenCatalog.DiagnosticLeadBall;
@@ -8798,6 +8881,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 repairAvailable = availability.IsAvailable &&
                     logic.IsAvailableFor(data);
+                loadedRepairLogsBefore = FirearmConditionCombatLog.Attempts;
                 delivery = logic.Deliver(
                     context, new TargetWrapper(unit));
                 bool repairTick = delivery.MoveNext();
@@ -8841,9 +8925,99 @@ namespace KingmakerGunslinger.RuntimeTesting
                     player.Inventory.Count(gunsmithKit) == toolsAtStart &&
                     repairNoAmmunitionRefund &&
                     obsoleteKitsUntouched;
+                loadedRepairLogDeltaExact = repairCompletion &&
+                    FirearmConditionCombatLog.Attempts == loadedRepairLogsBefore + 1;
                 staticAfterRepair = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 repairLog = FirearmConditionCombatLog.LastMessage;
+
+                // Materialized merchant stock regression: a detached vendor
+                // receiver is loaded with both obsolete kits beside protected
+                // stock, swept twice, and the exact retired identities must
+                // disappear while the reusable kit, unrelated stock, and the
+                // shared player inventory remain unchanged.
+                BlueprintUnit capitalVendorUnit = FindVendorUnit(
+                    CapitalVendorBlueprints.TableGuid,
+                    "c8d4913edee594749b706de35924617e");
+                vendorUnitFixture = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    capitalVendorUnit).Unit;
+                ItemsCollection vendorInventory =
+                    vendorUnitFixture.Descriptor.Inventory;
+                int playerRepairKitsAtVendorTest =
+                    player.Inventory.Count(repairKit);
+                int playerOverhaulKitsAtVendorTest =
+                    player.Inventory.Count(overhaulKit);
+                int playerToolsAtVendorTest =
+                    player.Inventory.Count(gunsmithKit);
+                int playerPowderAtVendorTest = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                if (!ReflectionAccess.TryInvokeAny(vendorInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { repairKit, 2 },
+                            new object[] { repairKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(vendorInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { overhaulKit, 2 },
+                            new object[] { overhaulKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(vendorInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { gunsmithKit, 1 },
+                            new object[] { gunsmithKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(vendorInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[]
+                            {
+                                BlueprintBootstrap.BasicAmmunition.BlackPowder, 3
+                            },
+                            new object[]
+                            {
+                                BlueprintBootstrap.BasicAmmunition.BlackPowder
+                            }
+                        }, out ignored, out method))
+                    throw new InvalidOperationException(
+                        "The disposable vendor fixture stock could not be materialized.");
+                Acquisition.RetiredKitVendorStockCleanup.CleanVendorInventory(
+                    vendorUnitFixture);
+                int vendorRepairKitsAfterFirst =
+                    vendorInventory.Count(repairKit);
+                int vendorOverhaulKitsAfterFirst =
+                    vendorInventory.Count(overhaulKit);
+                vendorStockCleaned =
+                    vendorRepairKitsAfterFirst == 0 &&
+                    vendorOverhaulKitsAfterFirst == 0 &&
+                    vendorInventory.Count(gunsmithKit) == 1 &&
+                    vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) == 3;
+                int secondSweepRemoved =
+                    Acquisition.RetiredKitVendorStockCleanup.CleanVendorInventory(
+                        vendorUnitFixture);
+                vendorStockCleanupIdempotent = secondSweepRemoved == 0 &&
+                    vendorInventory.Count(repairKit) == 0 &&
+                    vendorInventory.Count(overhaulKit) == 0 &&
+                    vendorInventory.Count(gunsmithKit) == 1 &&
+                    vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) == 3;
+                vendorStockCleanupScoped =
+                    player.Inventory.Count(repairKit) ==
+                        playerRepairKitsAtVendorTest &&
+                    player.Inventory.Count(overhaulKit) ==
+                        playerOverhaulKitsAtVendorTest &&
+                    player.Inventory.Count(gunsmithKit) ==
+                        playerToolsAtVendorTest &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
+                        playerPowderAtVendorTest;
             }
             finally
             {
@@ -8890,6 +9064,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     overhaulKitsBefore;
                 if (overhaulExcess > 0)
                     player.Inventory.Remove(overhaulKit, overhaulExcess);
+                if (vendorUnitFixture != null) vendorUnitFixture.Dispose();
                 if (unit != null) unit.Dispose();
                 cleaned = player.Inventory.Count(gunsmithKit) == toolsBefore &&
                     player.Inventory.Count(repairKit) == repairKitsBefore &&
@@ -8902,9 +9077,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";gameTime=" + gameTimeBefore + "->" + gameTimeAfter +
                 ";noLingering=" + noLingeringDelivery +
                 ";changedContextAtomic=" + changedContextAtomic +
+                ";neverStartedCancelled=" + neverStartedCancelled +
+                ";toolRemovalRejected=" + toolRemovalRejectedWithObsoleteKits +
+                ";toolRemovalReason=" + toolRemovalReason +
                 ";repeatRejected=" + repeatedIdempotent +
                 ";completed=" + exactCompletion +
                 ";secondCycle=" + secondCycleCompleted +
+                ";logDeltas=" + promptLogDeltaExact + "," +
+                    wreckedRepairLogDeltaExact + "," +
+                    secondCycleLogDeltaExact + "," +
+                    loadedRepairLogDeltaExact +
                 ";diagnosticBreak=" + diagnosticBreak +
                 ";diagnosticWreck=" + diagnosticWreck +
                 ";diagnosticRepeatRejected=" + diagnosticRepeatRejected +
@@ -8923,6 +9105,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 repairAmmunitionAfter + ";repairNoRefund=" +
                 repairNoAmmunitionRefund +
                 ";obsoleteKitsUntouched=" + obsoleteKitsUntouched +
+                ";vendorStockCleaned=" + vendorStockCleaned +
+                ";vendorStockIdempotent=" + vendorStockCleanupIdempotent +
+                ";vendorStockScoped=" + vendorStockCleanupScoped +
                 ";repaired=" + repairCompletion + ";cleaned=" + cleaned +
                 ";static=" + staticBefore + "," + staticAfterWreckedRepair + "," +
                 staticAfterRepair +
@@ -8965,6 +9150,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "unequipping the exact firearm before delivery changes nothing",
                     observed, changedContextAtomic,
                     "production delivery-boundary prerequisite revalidation"),
+                Assertion("repair-never-started-cancellation",
+                    "a delivery enumerator that is never advanced and then disposed mutates nothing",
+                    observed, neverStartedCancelled,
+                    "abandoned production delivery enumerator without one advancement"),
+                Assertion("repair-tool-removal-before-delivery",
+                    "losing the reusable Gunsmith's Kit before delivery rejects the repair without mutation even with obsolete kits in stock",
+                    observed, toolRemovalRejectedWithObsoleteKits,
+                    "live tool count, obsolete-kit counts, and combat-log counter around a rejected delivery"),
                 Assertion("repair-repeated-callback-rejected",
                     "a repeated delivery against the now-Normal firearm is rejected without mutation or logging",
                     observed, repeatedIdempotent,
@@ -9004,14 +9197,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     wreckedRepairLog != null && wreckedRepairLog.Contains(
                         ": Normal (Repair Firearm)."),
                     "native BattleLogView Combat-channel API; save-free sink failure is contained"),
+                Assertion("repair-log-attempt-deltas",
+                    "each of the four successful repairs advances the attempt counter by exactly one; rejected deliveries advance it by zero",
+                    observed,
+                    promptLogDeltaExact && wreckedRepairLogDeltaExact &&
+                        secondCycleLogDeltaExact && loadedRepairLogDeltaExact,
+                    "FirearmConditionCombatLog.Attempts sampled around every delivery (Attempts = Published + Faults)"),
                 Assertion("loaded-repair-condition-combat-log",
-                    "completed loaded Broken -> Normal preserves its round and logs once",
+                    "the four successful repairs advance the process attempt counter by exactly four",
                     observed,
                     repairCompletion &&
-                    FirearmConditionCombatLog.Attempts == conditionLogsBefore + 3 &&
+                    FirearmConditionCombatLog.Attempts == conditionLogsBefore + 4 &&
                     repairLog != null && repairLog.Contains(
                         ": Normal (Repair Firearm)."),
                     "exact repair transaction and native combat-log attempt"),
+                Assertion("vendor-materialized-retired-stock-cleanup",
+                    "both obsolete kits are swept from a materialized vendor inventory while the reusable kit and unrelated stock remain",
+                    observed, vendorStockCleaned,
+                    "RetiredKitVendorStockCleanup over a detached vendor receiver loaded with exact stock"),
+                Assertion("vendor-materialized-retired-stock-cleanup-idempotent",
+                    "a repeated sweep removes nothing and stock stays exact",
+                    observed, vendorStockCleanupIdempotent,
+                    "second RetiredKitVendorStockCleanup pass over the same vendor receiver"),
+                Assertion("vendor-materialized-retired-stock-cleanup-scoped",
+                    "the sweep never touches the shared player inventory, including its legacy obsolete kits",
+                    observed, vendorStockCleanupScoped,
+                    "live player inventory counts sampled around both vendor sweeps"),
                 Assertion("request-local-cleanup", "Gunsmith's Kit inventory and fixture restored",
                     observed, cleaned, "guaranteed finally cleanup; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -9019,8 +9230,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
-            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
-                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+            RuntimeTestResult unifiedRepairResult = CreateResult(
+                assertions.TrueForAll(value => value.Status == "PASS")
+                    ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+            unifiedRepairResult.Warnings.Add(
+                "The weapon-equality guard revalidates prerequisites at delivery time (two delivery-boundary observations). " +
+                "It does not capture the weapon equipped when the full-round command was initiated; command-start target " +
+                "preservation across equipment changes during the command remains a separate native-command test.");
+            unifiedRepairResult.Warnings.Add(
+                "Old-save action-bar compatibility (a character holding a saved Overhaul fact and toolbar slot) is not " +
+                "exercised by this scenario; the hidden legacy alias is verified only at the blueprint level.");
+            return unifiedRepairResult;
         }
 
         private RuntimeTestResult RunVendorTableContractObservation()
