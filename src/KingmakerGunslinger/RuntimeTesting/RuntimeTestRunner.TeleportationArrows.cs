@@ -93,8 +93,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     directionId = ArrowLabelDirection(label) == null ? null : ArrowLabelDirection(label).Blueprint.AssetGuid,
                     currentPositionLocation = ArrowLabelPosition(label) == null || ArrowLabelPosition(label).Location == null ? null : ArrowLabelPosition(label).Location.AssetGuid,
                     edgeId = ArrowLabelEdge(label) == null ? null : ArrowLabelEdge(label).Blueprint.AssetGuid }).ToArray();
-                bool arrowsRebuiltAtArrival = labels.Length > 0 && labels.All(label => ArrowLabelPosition(label) != null &&
-                    ArrowLabelPosition(label).Location != null && ArrowLabelPosition(label).Location == map.PartyLocation);
+                bool arrowsRebuiltAtArrival = labels.Length > 0 && labels.All(label => ArrowLabelEdge(label) != null && arrival.Edges.Contains(ArrowLabelEdge(label)));
                 var exercisedLabel = labels.FirstOrDefault();
                 if (exercisedLabel != null) exercisedLabel.OnClick();
                 for (int frame = 0; frame < 10; frame++) yield return 0;
