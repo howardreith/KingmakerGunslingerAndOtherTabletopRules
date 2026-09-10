@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Globalmap.Blueprints;
@@ -10,9 +10,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
     {
         private readonly ITeleportationRolls _rolls;
         private TeleportationNativeCastSource _source;
+        private TeleportationScrollCastSource _scrollSource;
         private TeleportationWorldSnapshot _before;
         private TeleportationOutcomeWorld _world;
-        internal TeleportationNativeCastResource Resource { get; private set; }
+        internal ITeleportCastResource Resource { get; private set; }
         internal TeleportFamiliarity Familiarity { get; private set; }
         internal object LastEvidence { get; private set; }
         internal TeleportationCastExecution() : this(new TeleportationCanonicalRolls()) { }
@@ -31,14 +32,25 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (current == null || current.Source.Kind != action.Source.Kind || current.Source.SpellLevel != action.Source.SpellLevel ||
                 current.Destination.OrdinaryArrivals != action.Destination.OrdinaryArrivals)
             { diagnostic = "The selected destination or spellbook source changed before confirmation."; return null; }
-            _source = TeleportationSpellbookAdapter.Resolve(current.Source);
-            if (_source == null) { diagnostic = "No current exact spellbook resource."; return null; }
+            if (current.Source.Kind == TeleportCastSourceKind.Scroll)
+            {
+                _scrollSource = TeleportationScrollAdapter.Resolve(current.Source);
+                if (_scrollSource == null) { diagnostic = "No current exact scroll resource."; return null; }
+                _source = new TeleportationNativeCastSource(current.Source, null,
+                    new Kingmaker.UnitLogic.Abilities.AbilityData(_scrollSource.Scroll.Ability, (Kingmaker.UnitLogic.UnitDescriptor)null), _scrollSource.Reader);
+            }
+            else
+            {
+                _source = TeleportationSpellbookAdapter.Resolve(current.Source);
+                if (_source == null) { diagnostic = "No current exact spellbook resource."; return null; }
+                _scrollSource = null;
+            }
             Familiarity = FamiliarityFor(context, action.Destination.Id);
             if (action.Source.Spell == TeleportSpellKind.Teleport && TeleportRollTable.For(Familiarity).MishapPercent > 0 &&
                 !TeleportationMishapDamageTarget.CanApply(TeleportationTravelers.Read(context.Player)))
             { diagnostic = "Native life-state update is unavailable for a living traveler."; return null; }
             _before = new TeleportationWorldSnapshot(context);
-            Resource = _source.Capture();
+            Resource = _scrollSource != null ? _scrollSource.Capture() : _source.Capture();
             _world = new TeleportationOutcomeWorld(_before, _source, context.OriginId, _rolls);
             Record("cast.before", new { action = ActionEvidence(action), world = _before.State, resource = Resource.Evidence() });
             return Resource;

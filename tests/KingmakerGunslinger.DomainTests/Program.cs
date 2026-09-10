@@ -48,6 +48,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.presentation.CompactRowUsesTitleAndDetailLines", TeleportationContextTests.CompactRowUsesTitleAndDetailLines),
             Case("teleportation.presentation.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous", TeleportationContextTests.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous),
             Case("teleportation.presentation.SettlementLabelDistinguishesNativeTeleport", TeleportationContextTests.SettlementLabelDistinguishesNativeTeleport),
+            Case("teleportation.presentation.ScrollRowsUseSharedStockWording", TeleportationContextTests.ScrollRowsUseSharedStockWording),
+            Case("teleportation.sources.ScrollSourcesNeedNoSpellbookFacts", TeleportationContextTests.ScrollSourcesNeedNoSpellbookFacts),
             Case("teleportation.presentation.SpontaneousRowsIncludeCorrectLevelAndPlural", TeleportationContextTests.SpontaneousRowsIncludeCorrectLevelAndPlural),
             Case("teleportation.presentation.AmbiguousCasterRowsNameTheBook", TeleportationContextTests.AmbiguousCasterRowsNameTheBook),
             Case("teleportation.presentation.ConfirmationShowsExactOddsAndOrdinaryCount", TeleportationContextTests.ConfirmationShowsExactOddsAndOrdinaryCount),

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -25,7 +25,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private bool _nativeSpendInvoked;
         private int _restoreAttempted;
         internal bool? NativeSpendReturned { get; private set; }
-
+        
         internal TeleportationNativeCastResource(TeleportationNativeCastSource source)
         {
             if (source == null || Game.Instance == null) throw new ArgumentException("Current native spell source required.", "source");
@@ -109,7 +109,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             return ObserveExpenditure() == TeleportExpenditure.None;
         }
 
-        internal object Evidence()
+        public object Evidence()
         {
             return new { casterId = _book.Owner.Unit.UniqueId, spellbookId = _book.Blueprint.AssetGuid,
                 spellId = _ability.Blueprint.AssetGuid, level = _level, spontaneous = _spontaneous,

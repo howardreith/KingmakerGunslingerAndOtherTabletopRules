@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 
 namespace KingmakerGunslinger.Spells.Teleportation
@@ -16,6 +16,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         void Spend();
         TeleportExpenditure ObserveExpenditure();
         bool RestoreAndVerifyExactResource();
+        object Evidence();
     }
     internal interface ITeleportCastExecution
     {

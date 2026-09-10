@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
@@ -27,7 +27,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         }
         public void ApplyCanonicalDamage(int amount)
         {
-            Rule = new RuleDealDamage(_source.Book.Owner.Unit, _target,
+            Rule = new RuleDealDamage(_source.Caster, _target,
                 new DamageBundle(new DirectDamage(new DiceFormula(0, DiceType.D10), amount))) {
                 SourceAbility = _source.Ability.Blueprint
             };
