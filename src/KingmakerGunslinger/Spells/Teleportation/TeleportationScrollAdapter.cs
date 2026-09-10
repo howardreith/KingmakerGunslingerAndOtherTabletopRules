@@ -340,7 +340,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
 
     // Request-local rulebook observer around exactly one native activation.
     internal sealed class TeleportScrollActivationObserver :
-        Kingmaker.PubSubSystem.IRulebookHandler<RuleCastSpell>
+        Kingmaker.PubSubSystem.IGlobalRulebookHandler<RuleCastSpell>
     {
         internal RuleCastSpell Event { get; private set; }
         internal bool? Success { get { return Event == null ? (bool?)null : Event.Success; } }
