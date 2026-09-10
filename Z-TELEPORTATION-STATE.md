@@ -245,7 +245,11 @@ Regressions on the corrected artifact (all PASS): arrows, specialist,
 casting, interaction (reopen-viewport invariant corrected: settled
 reopens exactly equal; first append separately anchored; stale rows
 reference removed), travelers, gamepad, coexistence, observer 19/19,
-scrolls 27/27 twice. 1,561 domain tests PASS.
+scrolls 27/27 twice. 1,561 domain tests PASS, repository validation PASS,
+preflight 464 PASS. Fresh-process persistence A/B/C/D on the corrected
+artifact: PASS (12/12/8/3 assertions, transaction
+20260910T2038273365319Z_79b9b142743e4dad81667ec5b6228990, settings
+restored).
 
 ## Gate 4 native forensics (verified 2026-09-10, observe-teleportation-native-contracts)
 
