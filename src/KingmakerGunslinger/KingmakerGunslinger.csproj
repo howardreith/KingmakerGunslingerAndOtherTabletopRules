@@ -318,6 +318,7 @@
     <Compile Include="Blueprints\TeleportationSpellBlueprints.cs" />
     <Compile Include="Blueprints\TeleportationSpellListPublication.cs" />
     <Compile Include="Blueprints\TeleportationScrollBlueprints.cs" />
+    <Compile Include="Blueprints\TeleportationScrollVendorPublication.cs" />
     <Compile Include="Blueprints\ShieldOtherSpellListPublication.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\ProtectionAlignment.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\MentalControlBlueprintKind.cs" />
@@ -911,6 +912,7 @@
     <Compile Include="Spells\Teleportation\UnitPartTeleportFamiliarity.cs" />
     <Compile Include="Spells\Teleportation\TeleportExplorationBoundary.cs" />
     <Compile Include="Spells\Teleportation\TeleportExplorationGuardPatches.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationScrollVendorMigration.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityRuntime.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityPatches.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInventory.cs" />

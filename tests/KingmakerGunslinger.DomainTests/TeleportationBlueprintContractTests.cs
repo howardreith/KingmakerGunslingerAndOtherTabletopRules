@@ -59,6 +59,26 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(bootstrap.Contains("TeleportationScrollBlueprints.Register(library, teleportationRegistry, teleportation)"),
                 "Scrolls register inside the Teleportation module transaction with the canonical spells.");
         }
+        internal static void ScrollVendorStockUsesVerifiedTablesAndFiniteBatches()
+        {
+            string source = File.ReadAllText("src/KingmakerGunslinger/Blueprints/TeleportationScrollVendorPublication.cs");
+            foreach (string token in new[] {
+                "ArcaneTableId = \"5450d563aab78134196ee9a932e88671\"",
+                "PriestTableId = \"afa2c7f292b8e1c4d9c835f0e8047dd3\"",
+                "ArcaneTableName = \"ArcaneScrollsVendorTableI\"",
+                "PriestTableName = \"C11_JhodVendorTable\"",
+                "TeleportStock = 5", "GreaterTeleportStock = 3", "WordOfRecallStock = 5",
+                "string.Equals(table.name, expectedName, StringComparison.Ordinal)",
+                "VendorCatalogPublication<BlueprintComponent>.Create(retained, additions)" })
+                Assertions.True(source.Contains(token), "Vendor stock contract missing " + token);
+            string migration = File.ReadAllText("src/KingmakerGunslinger/Spells/Teleportation/TeleportationScrollVendorMigration.cs");
+            foreach (string token in new[] {
+                "\"shared:\" + TeleportationScrollVendorPublication.PriestTableId",
+                "\"own:\" + vendorUnit.UniqueId",
+                "HasScrollVendorGrant(target)", "RecordScrollVendorGrant(target)",
+                "if (absent)", "else if (!complete)" })
+                Assertions.True(migration.Contains(token), "Migration contract missing " + token);
+        }
         internal static void PublicationUsesExactListsAndDuplicateSafeMerge()
         {
             string publication = File.ReadAllText("src/KingmakerGunslinger/Blueprints/TeleportationSpellListPublication.cs");
