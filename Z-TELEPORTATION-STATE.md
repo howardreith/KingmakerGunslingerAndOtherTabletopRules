@@ -111,6 +111,28 @@ Next smallest discriminating experiment (live, guarded, disposable fixture):
   BrownFurIlDisassembler, loaded the installed Assembly-CSharp with Managed
   deps). Key native files: artifacts/teleportation/native/GlobalMapRules.cs,
   MapMovementController.cs, LocationRevealController.cs. No source changes.
+- 2026-09-10: Implemented guarded diagnostic scenario
+  `disposable-teleportation-arrows` (new
+  `src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationArrows.cs`;
+  registered in RuntimeTestScenarioCatalog.cs, RuntimeTestRunner.cs guard
+  sets, RuntimeTestRunner.TeleportationInteraction.cs dispatch/path/claims,
+  Invoke-KingmakerRuntimeTest.ps1, RuntimeAutomation.Common.ps1 metadata,
+  Test-RuntimeScenarioPreflight.ps1). Scenario captures native direction
+  markers + CalculatePathByMarker results at all four mission boundaries and
+  exercises the first arrow through the real `HandleClick` handler.
+  Checks: Release build PASS; repository validation PASS (0.0.121); full
+  domain suite PASS (1,554 tests); runtime scenario preflight PASS (464).
+- 2026-09-10: Narrow preflight repair (pre-existing 0.0.121 staleness, not
+  caused by this work): bumped 22 positive version literals
+  0.0.120→0.0.121 in Test-RuntimeScenarioPreflight.ps1 (intentional invalid
+  negatives at lines ~901/909/1345 kept), and added missing
+  'working-save-unified-repair-alias' to its $expected list. Preflight was
+  failing on master before this repair.
+- 2026-09-10: guarded native run of disposable-teleportation-arrows in
+  progress (first attempt failed on bash-mangled boolean parameter; rerun
+  with numeric booleans). Result pending — CHECK /tmp/arrows-run.log and the
+  newest runtime-evidence/ directory for teleportation-arrows.json on
+  resume.
 
 ## Next concrete actions
 

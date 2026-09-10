@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -645,6 +645,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationDestinations &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationArrows &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationDisabled &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationContext &&
                     !IsExpandedSummoningPersistenceScenario() &&
@@ -1791,6 +1792,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
@@ -1883,6 +1886,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
@@ -5252,6 +5257,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||
