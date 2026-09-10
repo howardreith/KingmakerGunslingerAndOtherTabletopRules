@@ -900,6 +900,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDestinations.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationArrows.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpecialist.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationScrolls.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDisabled.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationLoadDiagnostics.cs" />
     <Compile Include="Spells\Teleportation\TeleportationText.cs" />
