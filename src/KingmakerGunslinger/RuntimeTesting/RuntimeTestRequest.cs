@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -295,6 +295,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatiguePrepare ||
