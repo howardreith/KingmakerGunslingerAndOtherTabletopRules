@@ -5101,9 +5101,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         visibleMaintenanceUnits++;
                     object unitSettings;
                     string settingsMember;
-                    if (!ReflectionAccess.TryGetFirstNonNullMember(scannedUnit,
-                        new[] { "UISettings" }, out unitSettings,
-                        out settingsMember) || unitSettings == null)
+                    if (!(ReflectionAccess.TryGetFirstNonNullMember(
+                            scannedUnit,
+                            new[] { "UISettings", "m_UISettings" },
+                            out unitSettings, out settingsMember) ||
+                        ReflectionAccess.TryGetFirstNonNullMember(
+                            descriptor,
+                            new[] { "UISettings", "m_UISettings" },
+                            out unitSettings, out settingsMember)) ||
+                        unitSettings == null)
                         continue;
                     object slots;
                     string slotsMember;
