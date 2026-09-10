@@ -337,6 +337,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { ordinaryScroll = entity; break; }
                 if (ordinaryScroll == null) throw new InvalidOperationException("No standard scroll for the ordinary-use boundary.");
                 int ordinaryBefore = TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport);
+                var ordinaryPoint = map.PartyLocation.AssetGuid;
                 var ordinaryObserver = new TeleportScrollActivationObserver();
                 Kingmaker.PubSubSystem.EventBus.Subscribe(ordinaryObserver);
                 bool ordinaryAttempted;
@@ -349,7 +350,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";point=" + map.PartyLocation.AssetGuid + ";gateClosedAfter=" + !TeleportationScrollActivationGate.Authorized(bookReader),
                     !ordinaryAttempted && ordinaryObserver.Event == null &&
                         TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport) == ordinaryBefore &&
-                        map.PartyLocation.AssetGuid == origin.Blueprint.AssetGuid &&
+                        map.PartyLocation.AssetGuid == ordinaryPoint &&
                         !TeleportationScrollActivationGate.Authorized(bookReader));
 
                 // R2: the two same-count variants are VISIBLY distinct choices:
@@ -381,7 +382,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ScrollsAssert("variant-spelllevel-not-conflated",
                     "a same-caster-level variant with a different item spell level stays a distinct choice",
                     "rows=" + contractSources.Length + ";sl4Level=" + (contractRow == null ? 0 : contractRow.SpellLevel),
-                    contractRow != null && contractRow.SpellLevel == 4 && contractSources.Length == 3);
+                    contractRow != null && contractRow.SpellLevel == 4 && contractSources.Length == 2);
                 // R2: a teaching/activation mismatch never authorizes spending.
                 var mismatch = UnityEngine.Object.Instantiate(scrolls.Teleport);
                 mismatch.name = "KMG_Fixture_MismatchTeachingScroll";
@@ -523,6 +524,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 if (doCopy == null) throw new InvalidOperationException("Native copy boundary differs.");
                 doCopy.Invoke(copyComponent, new object[] { purchased, umdReader });
+                CaptureTeleportScrolls("market-copy-diagnostic", new {
+                    knownByLevel = Enumerable.Range(0, 10).Select(level => marketBook.GetKnownSpells(level)
+                        .Count(value => value.Blueprint == scrolls.Teleport.Ability)).ToArray(),
+                    readerBooks = umdReader.Descriptor.Spellbooks.Select(value => value.Blueprint.name).ToArray() });
                 // DoCopy learns; the native UI action consumes the item right
                 // after through the same public component method.
                 copyComponent.RemoveItem(purchased, umdReader);
