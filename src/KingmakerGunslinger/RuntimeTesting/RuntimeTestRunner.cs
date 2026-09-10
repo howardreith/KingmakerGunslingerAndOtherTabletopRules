@@ -8931,16 +8931,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 repairLog = FirearmConditionCombatLog.LastMessage;
 
-                // Materialized merchant stock regression: a detached vendor
-                // receiver is loaded with both obsolete kits beside protected
-                // stock, swept twice, and the exact retired identities must
-                // disappear while the reusable kit, unrelated stock, and the
-                // shared player inventory remain unchanged.
-                BlueprintUnit capitalVendorUnit = FindVendorUnit(
-                    CapitalVendorBlueprints.TableGuid,
-                    "c8d4913edee594749b706de35924617e");
+                // Materialized merchant stock regression: a second detached unit
+                // receiver stands in for a vendor whose saved inventory an
+                // earlier version already materialized. It is loaded with both
+                // obsolete kits beside protected stock, swept twice, and the
+                // exact retired identities must disappear while the reusable
+                // kit, unrelated stock, and the shared player inventory remain
+                // unchanged. (The production hook supplies the real vendor unit
+                // through VendorLogic.BeginTrading; the sweep function itself
+                // is what this regression exercises.)
                 vendorUnitFixture = new Kingmaker.UI.LevelUp.ChargenUnit(
-                    capitalVendorUnit).Unit;
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 ItemsCollection vendorInventory =
                     vendorUnitFixture.Descriptor.Inventory;
                 int playerRepairKitsAtVendorTest =
