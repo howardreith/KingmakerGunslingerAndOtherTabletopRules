@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         copySpellId = value.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>()
                             .Single().CustomSpell == null ? null : value.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>()
                             .Single().CustomSpell.AssetGuid,
-                        stackable = value.IsStackable }).ToArray(),
+                        stackable = value.Stackable }).ToArray(),
                 visualDonors = blueprints.OfType<BlueprintAbility>().Where(value =>
                     value.name.IndexOf("DimensionDoor", StringComparison.OrdinalIgnoreCase) >= 0 ||
                     value.name.IndexOf("Teleport", StringComparison.OrdinalIgnoreCase) >= 0)
