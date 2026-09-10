@@ -80,6 +80,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evoker.Descriptor.AddFact(evocationFeature); evokerFeatureAttached = true;
                 bool conjurerSpecial = bookConjurer.GetSpecialSpells(5).Any(value => value.Blueprint == teleport);
                 bool evokerSpecial = bookEvoker.GetSpecialSpells(5).Any(value => value.Blueprint == teleport);
+                var specialListsField = typeof(Spellbook).GetField("m_SpecialLists", BindingFlags.Instance | BindingFlags.NonPublic);
+                CaptureTeleportationSpecialist("after-feature-attach", new {
+                    conjurerHasFact = conjurer.Descriptor.HasFact(conjurationFeature), evokerHasFact = evoker.Descriptor.HasFact(evocationFeature),
+                    conjurerBooks = conjurer.Descriptor.Spellbooks.Select(value => value.Blueprint.name).ToArray(),
+                    conjurerSpecialLists = ((System.Collections.IList)specialListsField.GetValue(bookConjurer)).Count,
+                    conjurerSpecialNames = bookConjurer.GetSpecialSpells(5).Select(value => value.Blueprint.name).ToArray(),
+                    conjurationListSpells5 = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellList>(BlueprintBootstrap.Library,
+                        "69a6eba12bc77ea4191f573d63c9df12", "Conjuration special list").GetSpells(5).Select(value => value.name).ToArray() });
                 SpecialistAssert("special-list-membership", "the Conjuration special list contains Teleport and the Evocation list does not",
                     "conjurer=" + conjurerSpecial + ";evoker=" + evokerSpecial, conjurerSpecial && !evokerSpecial);
                 var conjurerFavorite = bookConjurer.GetMemorizedSpells(5).SingleOrDefault(value => value.Type == SpellSlotType.Favorite);
