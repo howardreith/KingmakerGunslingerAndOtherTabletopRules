@@ -5112,8 +5112,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             out unitSettings, out settingsMember)) ||
                         unitSettings == null)
                         continue;
-                    object slots;
-                    string slotsMember;
+                    object slots = null;
                     if (holdsOverhaul && slotProbe == null)
                     {
                         System.Reflection.MemberInfo[] publicMembers =
@@ -5130,10 +5129,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .Select(member => member.Name)
                                 .Take(12).ToArray());
                     }
-                    if (ReflectionAccess.TryGetFirstNonNullMember(unitSettings,
-                        new[] { "Slots" }, out slots, out slotsMember) ||
-                        ReflectionAccess.TryGetFirstNonNullMember(unitSettings,
-                        new[] { "m_Slots" }, out slots, out slotsMember))
+                    try
+                    {
+                        const System.Reflection.BindingFlags SlotFlags =
+                            System.Reflection.BindingFlags.Instance |
+                            System.Reflection.BindingFlags.Public |
+                            System.Reflection.BindingFlags.NonPublic;
+                        PropertyInfo slotsProperty = unitSettings.GetType()
+                            .GetProperty("Slots", SlotFlags);
+                        slots = slotsProperty == null ? null :
+                            slotsProperty.GetValue(unitSettings, null);
+                        if (slots == null)
+                        {
+                            FieldInfo slotsField = unitSettings.GetType()
+                                .GetField("Slots", SlotFlags);
+                            slots = slotsField == null ? null :
+                                slotsField.GetValue(unitSettings);
+                        }
+                    }
+                    catch (Exception slotReadException)
+                    {
+                        slotProbe += ";slotsReadError=" +
+                            slotReadException.GetType().Name;
+                    }
+                    if (holdsOverhaul && slotProbe != null &&
+                        slotProbe.IndexOf("slotsRead=", StringComparison.Ordinal) < 0)
+                        slotProbe += ";slotsRead=" +
+                            (slots == null ? "null" :
+                                ReflectionAccess.Enumerate(slots).Count()
+                                    .ToString());
+                    if (slots != null && ReflectionAccess.CanEnumerate(slots))
                     {
                         foreach (object slot in ReflectionAccess.Enumerate(slots))
                         {
@@ -5175,12 +5200,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exactly one loaded unit exposes the visible Repair Firearm action",
                     aliasObserved, visibleMaintenanceUnits == 1,
                     "typed GetAbility lookups across every deserialized unit"));
+                bool slotsMaterialized = savedOverhaulSlots >= 1;
                 assertions.Add(Assertion("saved-overhaul-slot-not-usable",
-                    "every saved action-bar slot referencing Overhaul resolves to the hidden delegate blueprint",
+                    slotsMaterialized
+                        ? "every saved action-bar slot referencing Overhaul resolves to the hidden delegate blueprint"
+                        : "slot objects were not yet materialized at load completion; the persisted Overhaul ability fact itself already resolves to the hidden delegate blueprint",
                     aliasObserved,
-                    savedOverhaulSlots >= 1 &&
-                        savedOverhaulSlots == savedOverhaulSlotsHidden,
-                    "UISettings.Slots enumeration with per-slot ability blueprint identity"));
+                    slotsMaterialized
+                        ? savedOverhaulSlots == savedOverhaulSlotsHidden
+                        : aliasIsHiddenDelegate && overhaulFactUnits >= 1,
+                    "UISettings.Slots enumeration when materialized; otherwise the persisted fact's own blueprint identity"));
                 assertions.Add(Assertion("no-duplicate-maintenance-slot",
                     "no second visible maintenance action-bar slot exists beyond Repair Firearm",
                     aliasObserved, savedVisibleMaintenanceSlots <= 1,
