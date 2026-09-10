@@ -19,7 +19,7 @@ current progress, evidence, and exact resumption instructions only.
 | 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
 | 2 Conjuration specialist slots | NATIVE-VERIFIED (publication + behavioral scenario; two consecutive PASS runs) |
 | 3 Compact UI + settlement coexistence | NATIVE-VERIFIED (coexistence 26/26, interaction 29/29, casting 44/44, gamepad PASS) |
-| 4 Scrolls: items, vendors, learning, casting | IN PROGRESS — items NATIVE-VERIFIED; vendors/adapter/casting next |
+| 4 Scrolls: items, vendors, learning, casting | IN PROGRESS — items + vendor stock NATIVE-VERIFIED; migration-behavior scenario, adapter, casting next |
 | 5 Persistence + final install candidate | TODO |
 
 Gate 1 remaining breadth (mission §3): Recall cast + arrow; scroll source (after
@@ -45,6 +45,41 @@ DONE (commits b9fca66 + observer, native-verified 2026-09-10):
   symbol set), validate_summoning78 (teleportation filter), docs
   ARCHITECTURE/BLUEPRINT-MANIFEST, static-validation.json, two C# domain
   ledger-count tests, domain count 1558.
+
+## Gate 4 progress (cont.)
+
+DONE (commits a66a516..54e0..., native-verified 2026-09-10):
+- Vendor STOCK published and native-verified. KEY NATIVE FACT: BOTH target
+  tables are BlueprintSharedVendorTable assets (NOT BlueprintUnitLoot) —
+  Zarcie's AddVendorItems carries her Arcane I SHARED table (declared field
+  type is BlueprintUnitLoot but the asset is a shared table; AddVendorItems
+  IL checks isinst BlueprintSharedVendorTable). ArcaneScrollsVendorTableI
+  natively stocks 2275gp level-7 scrolls, so Teleport x5 + Greater x3 both
+  go there (verified single tier). C11_JhodVendorTable: Recall x5, one
+  grant for the whole Arsinoe+Jhod aliased family. Published via
+  VendorCatalogPublication transaction (reversible, idempotent,
+  exact-count normalized). Observer PASS 13 assertions incl.
+  teleportation-scroll-vendor-stock (teleport=5;greater=3;recall=5;
+  migration hook installed).
+- SAVED-INVENTORY MIGRATION implemented: module-gated
+  VendorLogic.BeginTrading postfix (TeleportationScrollVendorMigration) —
+  native stock generation only runs at entity CREATION, so
+  already-materialized merchants get the batch exactly once via a
+  save-owned grant marker on UnitPartTeleportFamiliarity
+  (_scrollVendorGrants; one marker per shared table GUID; natively stocked
+  targets only record the marker; partial-without-marker never tops up;
+  bought-out never refills). NOT yet behaviorally proven in a guarded
+  scenario — the disposable scroll-casting scenario must cover: fresh
+  vendor stocking, already-materialized vendor migration, buy-out
+  persistence across reload/module OFF-ON.
+
+REMAINING Gate 4: scroll source adapter (TeleportCastSourceKind.Scroll,
+party scroll enumeration incl. equipped, dedupe, UMD readers, "Use ...
+Scroll" compact row variant, one-scroll cost accounting, block ordinary
+inventory Use without destination) + guarded
+disposable-teleportation-scrolls scenario (buy -> copy -> prepare -> cast
+-> first arrow; migration behaviors above; failures/cancellation;
+persistence). Then Gate 5 and Gate 1 breadth.
 
 ## Gate 4 native forensics (verified 2026-09-10, observe-teleportation-native-contracts)
 
