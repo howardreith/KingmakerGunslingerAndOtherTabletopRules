@@ -296,6 +296,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFatiguePrepare ||
