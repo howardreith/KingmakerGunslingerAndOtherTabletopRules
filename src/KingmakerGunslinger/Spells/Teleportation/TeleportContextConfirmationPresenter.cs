@@ -158,7 +158,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
                         TeleportContextPresentation.SpellName(_action.Source.Spell, TeleportationText.Get), outcome, name);
                 }
             }
-            else message = Transaction.State == TeleportTransactionState.TechnicalFailureCompensated ?
+            else message = Transaction.State == TeleportTransactionState.ActivationRefused ?
+                TeleportationText.Get("Result.ActivationRefused", "{0} could not activate the scroll. Nothing was consumed; you may try again or choose another reader.") :
+                Transaction.State == TeleportTransactionState.ActivationFailedSpent ?
+                TeleportationText.Get("Result.ActivationFailedSpent", "{0} failed to activate the scroll and it was consumed. No teleport occurred.") :
+                Transaction.State == TeleportTransactionState.TechnicalFailureCompensated ?
                 TeleportationText.Get("Result.Compensated", "The cast could not complete. Its exact spell use was restored.") :
                 Transaction.State == TeleportTransactionState.TechnicalFailureSpent || Transaction.State == TeleportTransactionState.AmbiguousExpenditure ?
                 TeleportationText.Get("Result.Uncertain", "The cast encountered a technical failure. Check the party and the selected spellbook; the spell use could not be safely restored.") :

@@ -32,7 +32,7 @@ namespace KingmakerGunslinger.DomainTests
             string factory = File.ReadAllText("src/KingmakerGunslinger/Blueprints/TeleportationSpellBlueprints.cs");
             foreach (string token in new[] { "ability.Parent = null", "SpellSchool.Conjuration", "CommandType.Standard",
                 "ability.ActionBarAutoFillIgnored = true", "ability.MaterialComponent = new BlueprintAbility.MaterialComponentData()",
-                "ability.CanTargetPoint = false", "ability.CanTargetSelf = false", "ability.CanTargetEnemies = false",
+                "ability.CanTargetPoint = false", "ability.CanTargetSelf = true", "ability.CanTargetEnemies = false",
                 "ability.CanTargetFriends = false", "ability.AvailableMetamagic = 0", "ability.SpellResistance = false",
                 "new BlueprintComponent[] { school, checker }", "value.GetType() != typeof(SpellListComponent)", "GameModeType.GlobalMap", "Teleport Without Error" })
                 Assertions.True(factory.Contains(token), "Strategic blueprint contract missing " + token);

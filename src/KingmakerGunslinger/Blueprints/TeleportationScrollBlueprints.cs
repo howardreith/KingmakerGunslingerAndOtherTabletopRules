@@ -77,6 +77,17 @@ namespace KingmakerGunslinger.Blueprints
             scroll.CasterLevel = casterLevel;
             scroll.SpellLevel = spellLevel;
             scroll.Ability = spell;
+            // Exact native scroll activation semantics: one charge, consumed on
+            // a successful activation, never restored by rest, and a UMD check
+            // for readers whose class lists lack the spell.
+            scroll.SpendCharges = true;
+            scroll.Charges = 1;
+            scroll.RestoreChargesOnRest = false;
+            // RequireUMDIfCasterHasNoSpellInSpellList is derived from the item
+            // type; a genuine scroll (Type == Scroll) always requires UMD from
+            // readers whose class lists lack the spell.
+            if (scroll.Type != UsableItemType.Scroll)
+                throw new InvalidOperationException("Native scroll donor item type differs: " + key);
             // The scroll/copy learning association must resolve to the same
             // canonical strategic spell, never a scroll-only duplicate.
             var copies = scroll.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().ToArray();
