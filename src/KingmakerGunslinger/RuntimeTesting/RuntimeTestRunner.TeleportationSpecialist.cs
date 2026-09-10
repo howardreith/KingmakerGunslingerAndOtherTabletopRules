@@ -216,8 +216,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rules.StopWhenRevealingNewEdges = false;
                     rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                     for (int frame = 0; frame < 30; frame++) yield return 0;
-                    // Favorite-only preparation for the strategic cast:
-                    // memorize first, then the native rest that readies it.
+                    // Favorite-only preparation for the strategic cast: forget
+                    // the ordinary preparation from the UI phase, memorize the
+                    // favorite slot, then the native rest that readies it.
+                    foreach (var ordinary in RawSlots(bookConjurer, 5).Where(value =>
+                        value.Spell != null && value.Spell.Blueprint == teleport && value.Type == SpellSlotType.Common).ToArray())
+                        bookConjurer.ForgetMemorized(ordinary);
                     var favoriteForCast = RawSlots(bookConjurer, 5).SingleOrDefault(value => value.Type == SpellSlotType.Favorite);
                     if (favoriteForCast == null) throw new InvalidOperationException("The specialist book lost its favorite slot.");
                     if (!bookConjurer.Memorize(new AbilityData(teleport, bookConjurer), favoriteForCast))
