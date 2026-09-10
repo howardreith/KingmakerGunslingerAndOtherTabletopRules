@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +16,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private Kingmaker.EntitySystem.Entities.UnitEntityData EstablishPersistenceBookOwner;
         private IEnumerable<int> EstablishTeleportPersistence(UnitPartTeleportFamiliarity ledger, GlobalMapLocation[] chain, bool first)
         {
             var game = Game.Instance; var map = GlobalMapRules.State; var rules = GlobalMapRules.Instance;
@@ -25,6 +26,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var caster = game.Player.Party.FirstOrDefault(value => TeleportationSpellbookAdapter.CasterAvailable(value) &&
                 value.Descriptor.GetSpellbook(wizard.Spellbook) == null);
             if (caster == null) throw new InvalidOperationException("No existing active party owner for a temporary native persistence book.");
+            EstablishPersistenceBookOwner = caster;
             var fixture = new TeleportResourceFixtureOwner(caster);
             bool stop = rules.StopWhenRevealingNewEdges;
             try
