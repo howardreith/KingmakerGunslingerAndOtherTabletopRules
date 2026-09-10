@@ -1,4 +1,4 @@
-# Blueprint manifest and registration contract
+﻿# Blueprint manifest and registration contract
 
 The owner-authorized public-master 0.0.115 integration into the 117 expansion
 adds no blueprint identities and changes no elemental manifest entry. Its
@@ -14,7 +14,7 @@ The Rare Firearms continuation appended ten collision-free identities and
 activated Seeking, Reliable, and all eight item identities. Paper Cartridges
 Phase 1 appends the cartridge item plus two item-owned loaded-state tokens. The
 manifest contains 1,375 stable identifiers: 1,374 active and one reserved.
-Validator contract: 1883 stable identifiers: 1881 active and 2 reserved.
+Validator contract: 1886 stable identifiers: 1884 active and 2 reserved.
 
 The 1,869 published 0.0.117 entries and three 0.0.118 Teleportation identities
 remain an immutable prefix. The 0.0.120 completion candidate appends seven

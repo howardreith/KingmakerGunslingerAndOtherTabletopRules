@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Portable validator for the 0.0.66 sixth-playtest repair."""
 from __future__ import annotations
 import argparse
@@ -78,7 +78,9 @@ def validate(root: Path, test_count: int = 865) -> None:
             "KMG.Firearms.DeadReckoningItem"})
     teleportation_count = sum(1 for entry in manifest["entries"]
         if entry.get("symbol") in {"KMG.Spells.Teleport.Ability",
-            "KMG.Spells.GreaterTeleport.Ability", "KMG.Spells.WordOfRecall.Ability"})
+            "KMG.Spells.GreaterTeleport.Ability", "KMG.Spells.WordOfRecall.Ability",
+            "KMG.Spells.Teleport.Scroll", "KMG.Spells.GreaterTeleport.Scroll",
+            "KMG.Spells.WordOfRecall.Scroll"})
     active_count, ledger_count = ((1438 + midgame_count + elven_branched_spear_count +
         eastern_weapons_count + focused_weapon_count + brown_fur_active_count +
         martial_performance_active_count + urban_barbarian_active_count +

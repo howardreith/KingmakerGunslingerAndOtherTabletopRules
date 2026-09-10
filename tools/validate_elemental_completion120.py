@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Validate the two-trait completion candidate while preserving the public baseline."""
 from __future__ import annotations
 import argparse
@@ -11,8 +11,8 @@ import validate_teleportation119 as baseline
 VERSION = "0.0.120"
 INFORMATIONAL_VERSION = "0.0.120-elemental-races-completion"
 DETERMINISTIC_TEST_COUNT = 1554
-MANIFEST_TOTAL = 1883
-MANIFEST_ACTIVE = 1881
+MANIFEST_TOTAL = 1886
+MANIFEST_ACTIVE = 1884
 ELEMENTAL_TOTAL = 241
 ELEMENTAL_ACTIVE = 240
 

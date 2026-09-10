@@ -42,6 +42,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.layout.NativeActionsAndRowsFitAroundSelectedAnchor", TeleportationLayoutTests.NativeActionsAndRowsFitAroundSelectedAnchor),
             Case("teleportation.layout.LongListsScrollBeforeObscuringNativeActions", TeleportationLayoutTests.LongListsScrollBeforeObscuringNativeActions),
             Case("teleportation.layout.UnprovenOrInsufficientGeometryFailsClosed", TeleportationLayoutTests.UnprovenOrInsufficientGeometryFailsClosed),
+            Case("teleportation.scrolls.ScrollItemsUseApprovedEconomicsAndCanonicalSpells", TeleportationBlueprintContractTests.ScrollItemsUseApprovedEconomicsAndCanonicalSpells),
             Case("teleportation.presentation.PreparedRowIncludesCurrentCount", TeleportationContextTests.PreparedRowIncludesCurrentCount),
             Case("teleportation.presentation.CompactRowUsesTitleAndDetailLines", TeleportationContextTests.CompactRowUsesTitleAndDetailLines),
             Case("teleportation.presentation.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous", TeleportationContextTests.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous),

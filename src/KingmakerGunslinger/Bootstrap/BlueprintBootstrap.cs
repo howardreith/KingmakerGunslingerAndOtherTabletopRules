@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using Kingmaker.Blueprints;
@@ -68,7 +68,9 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintItemEquipmentBelt _cordOfStubbornResolve;
         private static TeleportationSpellBlueprintSet _teleportation;
         private static TeleportationSpellListPublication _teleportationPublication;
+        private static TeleportationScrollBlueprintSet _teleportationScrolls;
         internal static TeleportationSpellBlueprintSet Teleportation { get { return _teleportation; } }
+        internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }
         internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }
         private static ShieldOtherBlueprintSet _shieldOther;
         private static ShieldOtherSpellListPublication _shieldOtherPublication;
@@ -825,6 +827,7 @@ namespace KingmakerGunslinger.Bootstrap
                 try
                 {
                     teleportation = TeleportationSpellBlueprints.Register(library, teleportationRegistry);
+                    _teleportationScrolls = TeleportationScrollBlueprints.Register(library, teleportationRegistry, teleportation);
                     if (publicationPlan.TeleportationSpellLists)
                     {
                         try {
@@ -841,7 +844,7 @@ namespace KingmakerGunslinger.Bootstrap
                 }
                 catch (Exception registrationException)
                 {
-                    teleportation = null;
+                    teleportation = null; _teleportationScrolls = null;
                     try { teleportationRegistry.RollbackAll(); }
                     catch (Exception rollbackException) {
                         context.Logger.Failure("teleportation-spells", "registration.rollback-failed",

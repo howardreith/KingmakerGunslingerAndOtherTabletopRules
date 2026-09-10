@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 import argparse
 import json
@@ -114,7 +114,8 @@ def validate(root: Path) -> None:
     midgame_active = [entry for entry in midgame_entries if entry["status"] == "active"]
     teleportation_entries = [entry for entry in manifest["entries"] if entry.get("symbol") in {
         "KMG.Spells.Teleport.Ability", "KMG.Spells.GreaterTeleport.Ability",
-        "KMG.Spells.WordOfRecall.Ability"}]
+        "KMG.Spells.WordOfRecall.Ability", "KMG.Spells.Teleport.Scroll",
+        "KMG.Spells.GreaterTeleport.Scroll", "KMG.Spells.WordOfRecall.Scroll"}]
     if (len(manifest["entries"]) != 1439 + len(midgame_entries) + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
             len(martial_performance_entries) + len(brown_fur_entries) +
