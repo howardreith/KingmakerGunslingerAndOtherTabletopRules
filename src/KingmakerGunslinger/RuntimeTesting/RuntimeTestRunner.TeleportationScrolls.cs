@@ -290,17 +290,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (purchased == null) throw new InvalidOperationException("The purchased scroll did not reach the party inventory.");
                 var copyComponent = scrolls.Teleport.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
-                bool canCopy = copyComponent.CanCopy(purchased, bookReader);
-                ScrollsAssert("market-copy-eligible", "the purchased scroll is natively copyable by the wizard",
+                // The first fixture book already knows the spell, and native copy
+                // rejects known spells; a fresh book on the second member receives
+                // the copied spell exactly as a player's unused wizard would.
+                var marketOwner = new TeleportResourceFixtureOwner(umdReader);
+                _scrollsFixtureOwners.Add(marketOwner);
+                var marketBook = marketOwner.AddBook(wizard.Spellbook);
+                marketBook.UpdateAllSlotsSize(false);
+                bool canCopy = copyComponent.CanCopy(purchased, umdReader);
+                ScrollsAssert("market-copy-eligible", "the purchased scroll is natively copyable into the fresh wizard book",
                     "canCopy=" + canCopy, canCopy);
-                int knownBefore = book.GetKnownSpells(5).Count(value => value.Blueprint == scrolls.Teleport.Ability);
+                int knownBefore = marketBook.GetKnownSpells(5).Count(value => value.Blueprint == scrolls.Teleport.Ability);
                 // DoCopy is the exact private native boundary the inventory
                 // context action reaches; invoke it through the same method.
                 var doCopy = typeof(Kingmaker.Blueprints.Items.Components.CopyScroll).GetMethod("DoCopy",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 if (doCopy == null) throw new InvalidOperationException("Native copy boundary differs.");
-                doCopy.Invoke(copyComponent, new object[] { purchased, bookReader });
-                int knownAfter = book.GetKnownSpells(5).Count(value => value.Blueprint == scrolls.Teleport.Ability);
+                doCopy.Invoke(copyComponent, new object[] { purchased, umdReader });
+                int knownAfter = marketBook.GetKnownSpells(5).Count(value => value.Blueprint == scrolls.Teleport.Ability);
                 int partyAfterCopy = TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport);
                 ScrollsAssert("market-copy-native",
                     "the native copy action learns the canonical spell and consumes the purchased scroll",
@@ -309,14 +316,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Specialist favorite preparation on the copied spell, then rest.
                 var conjurationList = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellList>(BlueprintBootstrap.Library,
                     "69a6eba12bc77ea4191f573d63c9df12", "Conjuration special list");
-                book.AddSpecialList(conjurationList);
-                book.UpdateAllSlotsSize(false);
-                var favorite = RawSlots(book, 5).SingleOrDefault(value => value.Type == Kingmaker.UnitLogic.SpellSlotType.Favorite);
+                marketBook.AddSpecialList(conjurationList);
+                marketBook.UpdateAllSlotsSize(false);
+                var favorite = RawSlots(marketBook, 5).SingleOrDefault(value => value.Type == Kingmaker.UnitLogic.SpellSlotType.Favorite);
                 if (favorite == null) throw new InvalidOperationException("The copy wizard lost its favorite slot.");
-                if (!book.Memorize(new AbilityData(scrolls.Teleport.Ability, book), favorite))
+                if (!marketBook.Memorize(new AbilityData(scrolls.Teleport.Ability, marketBook), favorite))
                     throw new InvalidOperationException("Native favorite preparation of the copied spell failed.");
-                book.Rest();
-                var readyFavorite = RawSlots(book, 5).Count(value => value.Spell != null && value.Spell.Blueprint == scrolls.Teleport.Ability && value.Available);
+                marketBook.Rest();
+                var readyFavorite = RawSlots(marketBook, 5).Count(value => value.Spell != null && value.Spell.Blueprint == scrolls.Teleport.Ability && value.Available);
                 ScrollsAssert("market-specialist-prepare", "the copied spell prepares in the Conjuration favorite slot and rest readies it",
                     "ready=" + readyFavorite, readyFavorite == 1);
                 // Cast from the world map and prove the first arrow at the arrival.
@@ -337,7 +344,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var bookRow = marketRows == null ? null : marketRows.Actions.SingleOrDefault(value =>
                     value.Source.Kind != TeleportCastSourceKind.Scroll && value.Source.Spell == TeleportSpellKind.Teleport &&
-                    value.Source.CasterId == bookReader.UniqueId && value.Source.BookId == book.Blueprint.AssetGuid);
+                    value.Source.CasterId == umdReader.UniqueId && value.Source.BookId == marketBook.Blueprint.AssetGuid);
                 ScrollsAssert("market-cast-row", "the specialist preparation composes a real world-map source with one use",
                     "uses=" + (bookRow == null ? "absent" : bookRow.Source.Uses.ToString()), bookRow != null && bookRow.Source.Uses == 1);
                 if (bookRow == null) throw new InvalidOperationException("The copied-and-prepared source was not composed.");
@@ -351,7 +358,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 bool marketCommitted = marketRequest.Transaction.State == TeleportTransactionState.Completed &&
                     marketRequest.Transaction.Result != null && marketRequest.Transaction.Result.Status == TeleportExecutionStatus.Arrived;
-                int readyAfterCast = RawSlots(book, 5).Count(value => value.Spell != null && value.Spell.Blueprint == scrolls.Teleport.Ability && value.Available);
+                int readyAfterCast = RawSlots(marketBook, 5).Count(value => value.Spell != null && value.Spell.Blueprint == scrolls.Teleport.Ability && value.Available);
                 var marketArrival = rules.GetLocationObject(map.PartyLocation);
                 var marketLabels = ArrowCompassLabels();
                 ScrollsAssert("market-cast-first-arrow",
@@ -395,7 +402,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private TeleportResourceFixtureOwner _scrollsFixtureOwner;
-        private void fixtureOwnerLocalRestore() { if (_scrollsFixtureOwner != null) _scrollsFixtureOwner.Restore(); }
+        private readonly List<TeleportResourceFixtureOwner> _scrollsFixtureOwners = new List<TeleportResourceFixtureOwner>();
+        private void fixtureOwnerLocalRestore()
+        {
+            if (_scrollsFixtureOwner != null) _scrollsFixtureOwner.Restore();
+            foreach (var owner in _scrollsFixtureOwners) owner.Restore();
+        }
 
         private static int CountItems(ItemsCollection collection, BlueprintItem item)
         {
