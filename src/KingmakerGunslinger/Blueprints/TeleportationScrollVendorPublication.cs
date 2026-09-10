@@ -47,12 +47,21 @@ namespace KingmakerGunslinger.Blueprints
         internal static SupplierDecision DecideSupplier(LibraryScriptableObject library)
         {
             if (library == null) throw new ArgumentNullException("library");
+            return DecideSupplier((guid, name) => FindTable(library, guid, name));
+        }
+        // The lookup indirection lets a bounded guarded fixture establish the
+        // exact genuine-absence condition (primary table not in the loaded
+        // library) without mutating the live library; production always passes
+        // the real library lookup.
+        internal static SupplierDecision DecideSupplier(Func<string, string, BlueprintSharedVendorTable> find)
+        {
+            if (find == null) throw new ArgumentNullException("find");
             var decision = new SupplierDecision();
-            decision.Arcane = FindTable(library, ArcaneTableId, ArcaneTableName);
+            decision.Arcane = find(ArcaneTableId, ArcaneTableName);
             decision.ArcaneFallback = decision.Arcane == null;
             if (decision.Arcane == null)
-                decision.Arcane = FindTable(library, FallbackArcaneTableId, FallbackArcaneTableName);
-            decision.Priest = FindTable(library, PriestTableId, PriestTableName);
+                decision.Arcane = find(FallbackArcaneTableId, FallbackArcaneTableName);
+            decision.Priest = find(PriestTableId, PriestTableName);
             return decision;
         }
 
