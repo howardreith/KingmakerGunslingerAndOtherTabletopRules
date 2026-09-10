@@ -62,7 +62,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
             try
             {
                 var controllers = WorldMapPointSpellActionPatches.TeleportControllersField.GetValue(panel) as Component;
-                if (controllers == null || !controllers.gameObject.activeInHierarchy) return;
+                ModContext context;
+                ModContext.TryGet(out context);
+                if (controllers == null || !controllers.gameObject.activeInHierarchy)
+                { if (context != null) context.Logger.Info("teleportation", "settlement-relabel-skip", "reason=controllers-inactive"); return; }
                 var button = controllers.GetComponentsInChildren<Button>(true).FirstOrDefault(value =>
                 {
                     int count = value.onClick.GetPersistentEventCount();
@@ -71,7 +74,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     return false;
                 });
                 var label = button == null ? null : button.GetComponentInChildren<TextMeshProUGUI>(true);
-                if (label == null || RelabeledSettlement.ContainsKey(panel)) return;
+                if (label == null || RelabeledSettlement.ContainsKey(panel))
+                { if (context != null) context.Logger.Info("teleportation", "settlement-relabel-skip", "reason=" + (label == null ? "no-label" : "already-relabeled")); return; }
                 RelabeledSettlement.Add(panel, label);
                 SettlementLabelBefore[label] = label.text;
                 label.text = TeleportContextPresentation.SettlementTeleportLabel(TeleportationText.Get);
