@@ -87,8 +87,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.name.IndexOf("Jhod", StringComparison.OrdinalIgnoreCase) >= 0 ||
                         value.name.IndexOf("Hassuf", StringComparison.OrdinalIgnoreCase) >= 0))
                     .Select(value => new { id = value.AssetGuid, name = value.name,
-                        components = value.ComponentsArray.Select(component => new { type = component == null ? "<null>" : component.GetType().FullName,
-                            lootLists = component is Kingmaker.Blueprints.Loot.BlueprintLoot ? null : null }).ToArray() })
+                        components = value.ComponentsArray.Select(component => component == null ? "<null>" : component.GetType().FullName).ToArray() })
                     .OrderBy(value => value.name, StringComparer.Ordinal).ToArray(),
                 visualDonors = blueprints.OfType<BlueprintAbility>().Where(value =>
                     value.name.IndexOf("DimensionDoor", StringComparison.OrdinalIgnoreCase) >= 0 ||
