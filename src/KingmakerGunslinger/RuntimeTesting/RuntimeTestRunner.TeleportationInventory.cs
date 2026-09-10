@@ -89,6 +89,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Select(value => new { id = value.AssetGuid, name = value.name,
                         components = value.ComponentsArray.Select(component => component == null ? "<null>" : component.GetType().FullName).ToArray() })
                     .OrderBy(value => value.name, StringComparer.Ordinal).ToArray(),
+                vendorStocks = blueprints.OfType<Kingmaker.Blueprints.BlueprintUnit>()
+                    .Where(value => value.name != null && (value.name.IndexOf("Zarcie", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        value.name.IndexOf("Arsinoe", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        value.name.IndexOf("Jhod", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        value.name.IndexOf("Hassuf", StringComparison.OrdinalIgnoreCase) >= 0))
+                    .OrderBy(value => value.name, StringComparer.Ordinal)
+                    .Select(value => new {
+                        id = value.AssetGuid, name = value.name,
+                        vendorItems = value.ComponentsArray.OfType<Kingmaker.UnitLogic.FactLogic.AddVendorItems>()
+                            .Select(component => VendorItemsLoot(component) == null ? null : new {
+                                lootId = VendorItemsLoot(component).AssetGuid, lootName = VendorItemsLoot(component).name,
+                                lootComponents = VendorItemsLoot(component).ComponentsArray.Select(item => new {
+                                    type = item == null ? "<null>" : item.GetType().FullName,
+                                    fields = item == null ? new string[0] : item.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                                        .Select(field => field.Name + "=" + DescribeNativeValue(field.GetValue(item))).ToArray() }).ToArray() }).ToArray(),
+                        sharedTables = value.ComponentsArray.OfType<Kingmaker.UnitLogic.FactLogic.AddSharedVendor>()
+                            .Select(component => SharedVendorTable(component) == null ? null : new {
+                                tableId = SharedVendorTable(component).AssetGuid, tableName = SharedVendorTable(component).name,
+                                tableComponents = SharedVendorTable(component).ComponentsArray.Select(item => new {
+                                    type = item == null ? "<null>" : item.GetType().FullName,
+                                    fields = item == null ? new string[0] : item.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                                        .Select(field => field.Name + "=" + DescribeNativeValue(field.GetValue(item))).ToArray() }).ToArray() }).ToArray() }).ToArray(),
                 visualDonors = blueprints.OfType<BlueprintAbility>().Where(value =>
                     value.name.IndexOf("DimensionDoor", StringComparison.OrdinalIgnoreCase) >= 0 ||
                     value.name.IndexOf("Teleport", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -125,5 +147,29 @@ namespace KingmakerGunslinger.RuntimeTesting
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
         }
+
+        private static string DescribeNativeValue(object value)
+        {
+            if (value == null) return "null";
+            var scriptable = value as Kingmaker.Blueprints.BlueprintScriptableObject;
+            if (scriptable != null) return scriptable.name + ":" + scriptable.AssetGuid;
+            if (value is System.Collections.IEnumerable enumerable && !(value is string))
+            {
+                var items = new List<string>();
+                foreach (var item in enumerable) items.Add(item is Kingmaker.Blueprints.BlueprintScriptableObject ?
+                    ((Kingmaker.Blueprints.BlueprintScriptableObject)item).name : Convert.ToString(item, System.Globalization.CultureInfo.InvariantCulture));
+                return "[" + string.Join(";", items.ToArray()) + "]";
+            }
+            return Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        private static readonly System.Reflection.FieldInfo VendorItemsLootField = typeof(Kingmaker.UnitLogic.FactLogic.AddVendorItems)
+            .GetField("m_Loot", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly System.Reflection.FieldInfo SharedVendorTableField = typeof(Kingmaker.UnitLogic.FactLogic.AddSharedVendor)
+            .GetField("m_Table", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static Kingmaker.Blueprints.Loot.BlueprintUnitLoot VendorItemsLoot(Kingmaker.UnitLogic.FactLogic.AddVendorItems component)
+        { return VendorItemsLootField == null ? null : VendorItemsLootField.GetValue(component) as Kingmaker.Blueprints.Loot.BlueprintUnitLoot; }
+        private static Kingmaker.Blueprints.Items.BlueprintSharedVendorTable SharedVendorTable(Kingmaker.UnitLogic.FactLogic.AddSharedVendor component)
+        { return SharedVendorTableField == null ? null : SharedVendorTableField.GetValue(component) as Kingmaker.Blueprints.Items.BlueprintSharedVendorTable; }
     }
 }
