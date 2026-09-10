@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -34,15 +34,26 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (Pending || action == null || context == null || !context.Usable) return;
             var surface = TeleportationConfirmationSurface.Available();
             if (surface == null) return;
-            var source = TeleportationSpellbookAdapter.Resolve(action.Source);
-            if (source == null) return;
+            Spellbook openedBook = null;
+            if (action.Source.Kind == TeleportCastSourceKind.Scroll)
+            {
+                // Inventory-backed sources bind the shared stock, not a book;
+                // the exact item is re-resolved at capture time.
+                if (TeleportationScrollAdapter.Resolve(action.Source) == null) return;
+            }
+            else
+            {
+                var source = TeleportationSpellbookAdapter.Resolve(action.Source);
+                if (source == null) return;
+                openedBook = source.Book;
+            }
             var self = surface.Host.AddComponent<TeleportContextConfirmationPresenter>();
             try
             {
                 self._surface = surface;
                 self._action = action;
                 self._openedContext = context;
-                self._openedBook = source.Book;
+                self._openedBook = openedBook;
                 self._familiarity = TeleportationCastExecution.FamiliarityFor(context, action.Destination.Id);
                 self.Transaction = new TeleportCastTransaction(action);
                 self.Execution = qualificationRolls == null ? new TeleportationCastExecution() : new TeleportationCastExecution(qualificationRolls);
