@@ -477,6 +477,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                         CountItems(arcaneCollection, scrolls.Teleport) == arcaneTeleport &&
                         CountItems(arcaneCollection, scrolls.GreaterTeleport) == arcaneGreater &&
                         ledger.HasScrollVendorGrant("shared:" + arcaneTable.AssetGuid));
+                // R3: the shared supplier decision governs saved-stock migration.
+                // Primary active: a part bound to the FALLBACK table receives no
+                // arcane batch — it is not the selected supplier.
+                var fallbackTable = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(
+                    BlueprintBootstrap.Library, TeleportationScrollVendorPublication.FallbackArcaneTableId, "Hassuf fallback vendor table");
+                var fallbackPart = umdReader.Descriptor.Ensure<UnitPartVendor>();
+                fallbackPart.SetSharedInventory(fallbackTable);
+                var fallbackCollection = player.SharedVendorTables.GetTable(fallbackTable);
+                int fallbackBase = CountItems(fallbackCollection, scrolls.Teleport);
+                TeleportationScrollVendorMigration.Migrate(umdReader);
+                ScrollsAssert("migration-fallback-inactive-while-primary-active",
+                    "while the primary arcane supplier is selected the fallback table receives no migration batch",
+                    "delta=" + (CountItems(fallbackCollection, scrolls.Teleport) - fallbackBase),
+                    CountItems(fallbackCollection, scrolls.Teleport) == fallbackBase);
+                // Genuine fallback need: the bounded decision seam establishes the
+                // exact condition (primary table absent from the loaded library);
+                // the SAME shared decision then routes the arcane batch to the
+                // fallback table exactly once, under its own grant identity.
+                grantsField.SetValue(ledger, null);
+                var fallbackDecision = TeleportationScrollVendorPublication.DecideSupplier((guid, name) =>
+                    string.Equals(guid, TeleportationScrollVendorPublication.ArcaneTableId, StringComparison.Ordinal) ? null :
+                    BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(BlueprintBootstrap.Library, guid, name));
+                ScrollsAssert("migration-fallback-decision",
+                    "when the primary table is genuinely absent the shared decision selects the Hassuf fallback",
+                    "arcane=" + fallbackDecision.Arcane.name + ";fallback=" + fallbackDecision.ArcaneFallback +
+                        ";priest=" + (fallbackDecision.Priest == null ? "null" : fallbackDecision.Priest.name),
+                    fallbackDecision.ArcaneFallback && string.Equals(fallbackDecision.Arcane.AssetGuid,
+                        TeleportationScrollVendorPublication.FallbackArcaneTableId, StringComparison.Ordinal) &&
+                    fallbackDecision.Priest != null);
+                TeleportationScrollVendorMigration.Migrate(umdReader, fallbackDecision);
+                int fallbackAfter = CountItems(fallbackCollection, scrolls.Teleport);
+                TeleportationScrollVendorMigration.Migrate(umdReader, fallbackDecision);
+                ScrollsAssert("migration-fallback-batch-once",
+                    "the already-materialized fallback merchant receives the arcane batch exactly once under its own grant identity",
+                    "base=" + fallbackBase + ";first=" + fallbackAfter + ";second=" + CountItems(fallbackCollection, scrolls.Teleport),
+                    fallbackAfter == fallbackBase + TeleportationScrollVendorPublication.TeleportStock + 0 /* Greater stock joins the same batch */ &&
+                        CountItems(fallbackCollection, scrolls.Teleport) == fallbackAfter &&
+                        ledger.HasScrollVendorGrant("shared:" + fallbackTable.AssetGuid));
+                fallbackPart.Dispose();
                 // Restore the request-local vendor part.
                 vendorPart.Dispose();
                 // --- Integrated acquisition chain: real gold purchase from the
