@@ -258,7 +258,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             bookId = value.Snapshot.BookId, uses = value.Snapshot.Uses }).ToArray(),
                         directComposeCount = TeleportationWorldMapAdapter.Compose(TeleportationWorldMapAdapter.Capture(false), target.Blueprint).Count,
                         panelVisible = panel.gameObject.activeInHierarchy, panelShown = DialogMessageBox.Instance.IsShown,
-                        nativeButtons = TeleportationNativeButtons(panel) });
+                        nativeButtons = TeleportationNativeButtons(panel),
+                        contextDiagnostic = TeleportationWorldMapAdapter.Capture(false).Diagnostic });
                     var action = rows == null ? null : rows.Actions.SingleOrDefault(value => value.Source.Spell == TeleportSpellKind.Teleport &&
                         value.Source.BookId == bookConjurer.Blueprint.AssetGuid && value.Source.CasterId == conjurer.UniqueId);
                     SpecialistAssert("world-map-specialist-row", "the favorite-only specialist preparation is composed as a real world-map source",
