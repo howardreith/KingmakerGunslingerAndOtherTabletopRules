@@ -128,7 +128,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     currentCharacter = controller.CurrentCharacter == null ? null : controller.CurrentCharacter.UniqueId, conjurerId = conjurer.UniqueId,
                     tabRows = tabs.GetComponentsInChildren<SpellbookClassTab>(true).Select(value => new { value.Index, active = value.gameObject.activeInHierarchy,
                         value.m_ClassLevel.text }).ToArray() });
-                var tab = tabs.GetComponentsInChildren<SpellbookClassTab>(true).SingleOrDefault(value => value.Index == bookIndex && value.gameObject.activeInHierarchy);
+                // The native tab strip refreshes asynchronously after the unit
+                // selection; wait for the specialist book's tab to activate.
+                SpellbookClassTab tab = null;
+                for (int frame = 0; frame < 120 && tab == null; frame++)
+                {
+                    tab = tabs.GetComponentsInChildren<SpellbookClassTab>(true).SingleOrDefault(value =>
+                        value.Index == bookIndex && value.gameObject.activeInHierarchy);
+                    if (tab != null) break;
+                    yield return 0;
+                }
                 if (tab == null) throw new InvalidOperationException("No active native class tab for the specialist book (index " + bookIndex + ").");
                 tab.Toggle.isOn = true;
                 if (!ReferenceEquals(controller.CurrentSpellbook, bookConjurer)) throw new InvalidOperationException("Native class toggle did not select the specialist book.");
