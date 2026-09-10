@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using KingmakerGunslinger.Spells.Teleportation;
 
@@ -8,6 +8,7 @@ namespace KingmakerGunslinger.DomainTests
     {
         private sealed class Resource : ITeleportCastResource
         {
+            public object Evidence() { return new { kind = "fake" }; }
             internal bool[] Prepared = { true, true };
             internal int Slots = 2;
             internal int SpendCalls, RefundCalls;
