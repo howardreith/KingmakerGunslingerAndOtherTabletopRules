@@ -183,57 +183,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CaptureTeleportScrolls("scroll-cast", new { committed, stockBefore = 3, stockAfter, labels = labels.Length,
                     movementBookRows = bookRowsBefore });
 
-                // --- Vendor migration behaviors on the shared priest table ---
+                // --- Vendor migration behaviors on the shared tables ---
                 var priestTable = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(
                     BlueprintBootstrap.Library, TeleportationScrollVendorPublication.PriestTableId, "priest shared vendor table");
                 var sharedTable = player.SharedVendorTables.GetTable(priestTable);
                 if (sharedTable == null) throw new InvalidOperationException("The shared priest table could not materialize.");
+                // The native shared-table diff already stocks our published rows
+                // when the table materializes from the current campaign state.
                 int priestBase = CountItems(sharedTable, scrolls.WordOfRecall);
-                // Fresh natively-stocked target: the batch is already present, so
-                // migration only records the marker.
-                sharedTable.Add(scrolls.WordOfRecall, TeleportationScrollVendorPublication.WordOfRecallStock);
+                ScrollsAssert("migration-fresh-native-stock", "native generation stocks the published batch, and migration records its marker without adding",
+                    "base=" + priestBase + ";marker=false",
+                    priestBase == TeleportationScrollVendorPublication.WordOfRecallStock);
+                // Drive the sweep through a request-local vendor part on the
+                // priest family's shared table.
+                var priestPart = umdReader.Descriptor.Ensure<UnitPartVendor>();
+                priestPart.SetSharedInventory(priestTable);
                 TeleportationScrollVendorMigration.Migrate(umdReader);
-                ScrollsAssert("migration-fresh-native-stock", "a natively stocked target only records its grant marker",
-                    "base=" + priestBase + ";count=" + CountItems(sharedTable, scrolls.WordOfRecall) + ";marker=" + ledger.HasScrollVendorGrant("shared:" + priestTable.AssetGuid),
-                    CountItems(sharedTable, scrolls.WordOfRecall) == priestBase + TeleportationScrollVendorPublication.WordOfRecallStock &&
-                        ledger.HasScrollVendorGrant("shared:" + priestTable.AssetGuid));
-                // Buy-out: removing the stock never refills.
+                int afterPriestMigrate = CountItems(sharedTable, scrolls.WordOfRecall);
+                ScrollsAssert("migration-fresh-marker-only", "a fully stocked target records its marker and adds nothing",
+                    "base=" + priestBase + ";after=" + afterPriestMigrate + ";marker=" + ledger.HasScrollVendorGrant("shared:" + priestTable.AssetGuid),
+                    afterPriestMigrate == priestBase && ledger.HasScrollVendorGrant("shared:" + priestTable.AssetGuid));
+                // Buy-out persistence: the marker, not the count, decides.
                 sharedTable.Remove(scrolls.WordOfRecall, CountItems(sharedTable, scrolls.WordOfRecall));
                 TeleportationScrollVendorMigration.Migrate(umdReader);
                 ScrollsAssert("migration-bought-out-never-refills", "a bought-out target with its marker is never refilled",
-                    "count=" + CountItems(sharedTable, scrolls.WordOfRecall),
-                    CountItems(sharedTable, scrolls.WordOfRecall) == 0);
-                // Already-materialized vendor without a marker: batch exactly once.
+                    "count=" + CountItems(sharedTable, scrolls.WordOfRecall), CountItems(sharedTable, scrolls.WordOfRecall) == 0);
+                // Already-materialized family without a marker: batch exactly once,
+                // shared across every family member.
                 grantsField.SetValue(ledger, null);
-                int beforeGrant = CountItems(sharedTable, scrolls.WordOfRecall);
-                CaptureTeleportScrolls("migration-prebatch", new { beforeGrant,
-                    readerShared = umdReader.Descriptor.Get<UnitPartVendor>() != null });
                 TeleportationScrollVendorMigration.Migrate(umdReader);
-                int afterFirst = CountItems(sharedTable, scrolls.WordOfRecall);
+                int firstGrant = CountItems(sharedTable, scrolls.WordOfRecall);
+                var secondPart = bookReader.Descriptor.Ensure<UnitPartVendor>();
+                secondPart.SetSharedInventory(priestTable);
                 TeleportationScrollVendorMigration.Migrate(bookReader);
-                int afterSecond = CountItems(sharedTable, scrolls.WordOfRecall);
-                ScrollsAssert("migration-batch-once-per-shared-family", "an already-materialized family receives the batch exactly once across members",
-                    "before=" + beforeGrant + ";first=" + afterFirst + ";second=" + afterSecond,
-                    afterFirst == beforeGrant + TeleportationScrollVendorPublication.WordOfRecallStock && afterSecond == afterFirst);
-                // The arcane family batch through a request-local shared part.
+                int secondGrant = CountItems(sharedTable, scrolls.WordOfRecall);
+                ScrollsAssert("migration-batch-once-per-shared-family", "an unmarked family receives the batch exactly once across members",
+                    "first=" + firstGrant + ";second=" + secondGrant,
+                    firstGrant == TeleportationScrollVendorPublication.WordOfRecallStock && secondGrant == firstGrant);
+                secondPart.Dispose();
+                priestPart.Dispose();
+                // The arcane family batch through a fresh request-local part.
                 grantsField.SetValue(ledger, null);
                 var arcaneTable = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(
                     BlueprintBootstrap.Library, TeleportationScrollVendorPublication.ArcaneTableId, "arcane shared vendor table");
                 var vendorPart = umdReader.Descriptor.Ensure<UnitPartVendor>();
-                bool partCreated = vendorPart != null;
                 vendorPart.SetSharedInventory(arcaneTable);
                 var arcaneCollection = player.SharedVendorTables.GetTable(arcaneTable);
                 int arcaneBase = CountItems(arcaneCollection, scrolls.Teleport);
                 TeleportationScrollVendorMigration.Migrate(umdReader);
+                int arcaneTeleport = CountItems(arcaneCollection, scrolls.Teleport);
+                int arcaneGreater = CountItems(arcaneCollection, scrolls.GreaterTeleport);
+                TeleportationScrollVendorMigration.Migrate(umdReader);
                 ScrollsAssert("migration-arcane-batch", "the arcane family receives 5 Teleport and 3 Greater Teleport scrolls exactly once",
-                    "teleport=" + CountItems(arcaneCollection, scrolls.Teleport) + ";greater=" + CountItems(arcaneCollection, scrolls.GreaterTeleport),
-                    CountItems(arcaneCollection, scrolls.Teleport) == arcaneBase + TeleportationScrollVendorPublication.TeleportStock &&
-                        CountItems(arcaneCollection, scrolls.GreaterTeleport) == TeleportationScrollVendorPublication.GreaterTeleportStock);
-                CaptureTeleportScrolls("vendor-migration", new {
-                    priestCount = CountItems(sharedTable, scrolls.WordOfRecall),
-                    arcaneTeleport = CountItems(arcaneCollection, scrolls.Teleport),
-                    arcaneGreater = CountItems(arcaneCollection, scrolls.GreaterTeleport),
-                    grants = ((System.Collections.IList)grantsField.GetValue(ledger)).Count });
+                    "teleport=" + arcaneTeleport + ";greater=" + arcaneGreater,
+                    arcaneTeleport == arcaneBase + TeleportationScrollVendorPublication.TeleportStock &&
+                        arcaneGreater == TeleportationScrollVendorPublication.GreaterTeleportStock &&
+                        CountItems(arcaneCollection, scrolls.Teleport) == arcaneTeleport);
                 // Restore the request-local vendor part.
                 vendorPart.Dispose();
             }
