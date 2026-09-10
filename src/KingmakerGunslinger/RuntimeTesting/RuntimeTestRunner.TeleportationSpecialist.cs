@@ -238,7 +238,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var panel = TeleportationFixturePanel();
                     SelectTeleportationCastingPoint(panel, target);
                     foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
-                    var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                    // The augmentation postfix lands on the native refill; wait
+                    // for the composed rows before reading any source.
+                    TeleportDestinationRows rows = null;
+                    for (int frame = 0; frame < 90; frame++)
+                    {
+                        rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                        if (rows != null && rows.Actions.Count > 0) break;
+                        yield return 0;
+                    }
                     CaptureTeleportationSpecialist("world-map-rows", new {
                         rowsPresent = rows != null, rowCount = rows == null ? 0 : rows.Actions.Count,
                         actions = rows == null ? new object[0] : rows.Actions.Select(value => new {
