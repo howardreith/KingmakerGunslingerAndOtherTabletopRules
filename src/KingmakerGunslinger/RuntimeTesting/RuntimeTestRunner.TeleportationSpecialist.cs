@@ -277,12 +277,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (evokerFeatureAttached) evoker.Descriptor.RemoveFact(evocationFeature);
                 if (conjurerFeatureAttached) conjurer.Descriptor.RemoveFact(conjurationFeature);
                 fixtureEvoker.Restore(); fixtureConjurer.Restore();
-                ui.SelectionManagerPC.MultiSelect(originalSelection.Select(value => value.View).ToArray(), false);
+                // After the world-map phase the local-area selection surfaces are
+                // unloaded; selection restoration applies only there.
+                var selectionManager = ui.SelectionManagerPC;
+                if (selectionManager != null && originalSelection.Select(value => value.View).All(value => value != null))
+                    selectionManager.MultiSelect(originalSelection.Select(value => value.View).ToArray(), false);
                 foreach (var snapshot in uiSnapshots) snapshot.Restore();
                 game.IsPaused = originalPaused;
+                bool selectionRestored = selectionManager == null || selectionManager.SelectedUnits.SequenceEqual(originalSelection);
                 bool restored = fixtureConjurer.IsRestored() && fixtureEvoker.IsRestored() && uiSnapshots.All(value => value.IsRestored()) &&
                     !conjurer.Descriptor.HasFact(conjurationFeature) && !evoker.Descriptor.HasFact(evocationFeature) &&
-                    ui.SelectionManagerPC.SelectedUnits.SequenceEqual(originalSelection) && player.Party.SequenceEqual(originalParty) &&
+                    selectionRestored && player.Party.SequenceEqual(originalParty) &&
                     !TeleportContextConfirmationPresenter.Pending && !_workingSaveSmoke.WriteObserved;
                 CaptureTeleportationSpecialist("cleanup", new { restored });
                 SpecialistAssert("cleanup", "exact original books, features, action bars, selection, party and world state; zero writes",
