@@ -67,7 +67,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Func<IEnumerable<int>> wait = () => console ? WaitTeleportGamepadPanel(pad) : WaitTeleportDisabledPanel(desktop);
                 Action hide = () => { if (console) WorldMapPointConsoleSpellActionPatches.Model(pad)?.Cancel(); else desktop.Hide(); };
                 Func<int> containers = () => console ? host.GetComponentsInChildren<TeleportConsoleDestinationRows>(true).Length : host.GetComponentsInChildren<TeleportDestinationRows>(true).Length;
-                Func<string> native = () => console ? TeleportGamepadNativeButtons(pad) : TeleportationNativeButtons(desktop);
+                // While spell rows coexist, the only authorized native difference is
+                // the settlement button's distinguishing label; normalize it for
+                // exact inventory comparison.
+                Func<string> native = () => console ? TeleportGamepadNativeButtons(pad) :
+                    TeleportationNativeButtons(desktop).Replace(TeleportContextPresentation.SettlementTeleportLabel(TeleportationText.Get), "Teleport");
                 select(); foreach (int tick in wait()) yield return tick;
                 string originalNative = native();
                 TeleportInteractionAssert("foreign-no-source", "Foreign and native controls exist before KMG augmentation; no KMG UI is constructed without a source",
@@ -105,7 +109,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     // Gate 3: compact two-line rows stay within the native inner
                     // content width, and the native settlement-teleport control is
-                    // distinguished while spell rows coexist.
+                    // distinguished while spell rows coexist. The native label is
+                    // captured while the previous dismissal has restored it.
+                    var nativeTeleportControllers = (GameObject)typeof(GlobalMapMessageBox)
+                        .GetField("m_TeleportControllers", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(desktop);
+                    var nativeTeleportButton = nativeTeleportControllers.GetComponentsInChildren<UnityEngine.UI.Button>(true).FirstOrDefault(value => {
+                        int events = value.onClick.GetPersistentEventCount();
+                        for (int index = 0; index < events; index++)
+                            if (string.Equals(value.onClick.GetPersistentMethodName(index), "OnTeleportPressed", StringComparison.Ordinal)) return true;
+                        return false; });
+                    var nativeTeleportLabel = nativeTeleportButton == null ? null : nativeTeleportButton.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+                    string originalTeleportLabel = nativeTeleportLabel == null ? null : nativeTeleportLabel.text;
                     select(); foreach (int tick in wait()) yield return tick;
                     var kmgRows = desktop.GetComponentInChildren<TeleportDestinationRows>(true);
                     float innerWidth = ((RectTransform)kmgRows.transform).rect.width;
@@ -116,16 +130,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             return rowLabel != null && rowLabel.preferredWidth <= innerWidth + 0.5f; }) &&
                         kmgRows.Buttons.Select((value, index) => value.GetComponentInChildren<TMPro.TextMeshProUGUI>(true).text ==
                             TeleportContextPresentation.CompactRow(kmgRows.Actions[index], TeleportationText.Get)).All(value => value));
-                    var controllers = (GameObject)typeof(GlobalMapMessageBox)
-                        .GetField("m_TeleportControllers", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(desktop);
+                    var controllers = nativeTeleportControllers;
                     bool controllersActive = controllers.activeSelf;
-                    var teleportButton = controllers.GetComponentsInChildren<UnityEngine.UI.Button>(true).FirstOrDefault(value => {
-                        int events = value.onClick.GetPersistentEventCount();
-                        for (int index = 0; index < events; index++)
-                            if (string.Equals(value.onClick.GetPersistentMethodName(index), "OnTeleportPressed", StringComparison.Ordinal)) return true;
-                        return false; });
-                    var teleportLabel = teleportButton == null ? null : teleportButton.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
-                    string originalTeleportLabel = teleportLabel == null ? null : teleportLabel.text;
+                    var teleportButton = nativeTeleportButton;
+                    var teleportLabel = nativeTeleportLabel;
                     // The fixture activates the native settlement control the way
                     // native FillDialogInfoLocation does when a settlement circle
                     // covers the point, then re-runs the exact production append.
