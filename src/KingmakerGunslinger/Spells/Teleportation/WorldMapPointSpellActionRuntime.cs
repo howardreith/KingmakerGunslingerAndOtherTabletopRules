@@ -20,6 +20,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private static readonly Dictionary<GlobalMapMessageBox, TextMeshProUGUI> RelabeledSettlement = new Dictionary<GlobalMapMessageBox, TextMeshProUGUI>();
         private static readonly Dictionary<TextMeshProUGUI, string> SettlementLabelBefore = new Dictionary<TextMeshProUGUI, string>();
         private static readonly HashSet<string> Reported = new HashSet<string>(StringComparer.Ordinal);
+        private static float NativeLineHeight;
         internal static void Append(GlobalMapMessageBox panel)
         {
             try
@@ -137,9 +138,15 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 self._panel = panel;
                 self._location = (GlobalMapLocation)WorldMapPointSpellActionPatches.LocationField.GetValue(panel);
                 // The donor's live rect can be stretched by the dialog layout once
-                // taller rows exist; the native preferred height is the stable
-                // per-line measure.
-                self._rowHeight = LayoutUtility.GetPreferredHeight((RectTransform)donor.transform);
+                // taller rows exist; measure the native line height once, from the
+                // pristine first append, and reuse it for every later container.
+                if (NativeLineHeight <= 0)
+                {
+                    float measured = Math.Max(LayoutUtility.GetPreferredHeight((RectTransform)donor.transform), ((RectTransform)donor.transform).rect.height);
+                    if (measured <= 0) throw new InvalidOperationException("Native action height is unproven.");
+                    NativeLineHeight = measured;
+                }
+                self._rowHeight = NativeLineHeight;
                 if (self._rowHeight <= 0) throw new InvalidOperationException("Native action height is unproven.");
                 self._viewportLayout = container.AddComponent<LayoutElement>();
                 float width = ((RectTransform)dialog.transform).rect.width - dialog.GetComponent<LayoutGroup>().padding.horizontal;
