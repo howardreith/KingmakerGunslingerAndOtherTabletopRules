@@ -87,6 +87,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evoker.Descriptor.AddFact(evocationFeature); evokerFeatureAttached = true;
                 bookConjurer.AddSpecialList(conjurationList);
                 bookEvoker.AddSpecialList(evocationList);
+                // The native slot rebuild the level-up path performs after the
+                // school selection changes a book's slot shape.
+                bookConjurer.UpdateAllSlotsSize(false);
+                bookEvoker.UpdateAllSlotsSize(false);
                 bool conjurerSpecial = bookConjurer.GetSpecialSpells(5).Any(value => value.Blueprint == teleport);
                 bool evokerSpecial = bookEvoker.GetSpecialSpells(5).Any(value => value.Blueprint == teleport);
                 var specialListsField = typeof(Spellbook).GetField("m_SpecialLists", BindingFlags.Instance | BindingFlags.NonPublic);
