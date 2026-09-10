@@ -269,7 +269,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static int CountItems(ItemsCollection collection, BlueprintItem item)
         {
-            return collection == null ? 0 : collection.Count(value => value != null && ReferenceEquals(value.Blueprint, item));
+            if (collection == null) return 0;
+            int total = 0;
+            foreach (var entity in collection)
+                if (entity != null && ReferenceEquals(entity.Blueprint, item)) total += entity.Count;
+            return total;
         }
 
         private void ScrollsAssert(string id, string expected, string actual, bool pass)
