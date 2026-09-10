@@ -173,10 +173,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<Kingmaker.Blueprints.Loot.LootItemsPackFixed>()
                     .Where(component => ReferenceEquals(CapitalVendorBlueprints.ReadItem(component), item))
                     .Select(CapitalVendorBlueprints.ReadCount).DefaultIfEmpty(-1).Single();
-            var scrolls = BlueprintBootstrap.TeleportationScrolls;
-            int teleportStock = stock(arcaneTable, scrolls == null ? null : scrolls.Teleport);
-            int greaterStock = stock(arcaneTable, scrolls == null ? null : scrolls.GreaterTeleport);
-            int recallStock = stock(priestTable, scrolls == null ? null : scrolls.WordOfRecall);
+            var scrollSet = BlueprintBootstrap.TeleportationScrolls;
+            int teleportStock = stock(arcaneTable, scrollSet == null ? null : scrollSet.Teleport);
+            int greaterStock = stock(arcaneTable, scrollSet == null ? null : scrollSet.GreaterTeleport);
+            int recallStock = stock(priestTable, scrollSet == null ? null : scrollSet.WordOfRecall);
             assertions.Add(Assertion("teleportation-scroll-vendor-stock",
                 "verified tables carry exactly one finite batch: arcane 5 Teleport + 3 Greater Teleport, priest 5 Word of Recall; hook installed",
                 "teleport=" + teleportStock + ";greater=" + greaterStock + ";recall=" + recallStock +
