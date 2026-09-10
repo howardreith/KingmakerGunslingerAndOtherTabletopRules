@@ -103,7 +103,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 lootComponents = VendorItemsLoot(component).ComponentsArray.Select(item => new {
                                     type = item == null ? "<null>" : item.GetType().FullName,
                                     fields = item == null ? new string[0] : item.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
-                                        .Select(field => field.Name + "=" + DescribeNativeValue(field.GetValue(item))).ToArray() }).ToArray() }).ToArray(),
+                                        .Select(field => field.Name + "=" + DescribeNativeValue(field.GetValue(item))).ToArray(),
+                                    packItem = item is Kingmaker.Blueprints.Loot.LootItemsPackFixed ? PackItemName((Kingmaker.Blueprints.Loot.LootItemsPackFixed)item) : null }).ToArray() }).ToArray(),
                         sharedTables = value.ComponentsArray.OfType<Kingmaker.UnitLogic.FactLogic.AddSharedVendor>()
                             .Select(component => SharedVendorTable(component) == null ? null : new {
                                 tableId = SharedVendorTable(component).AssetGuid, tableName = SharedVendorTable(component).name,
@@ -187,5 +188,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         { return VendorItemsLootField == null ? null : VendorItemsLootField.GetValue(component) as Kingmaker.Blueprints.Loot.BlueprintUnitLoot; }
         private static Kingmaker.Blueprints.Items.BlueprintSharedVendorTable SharedVendorTable(Kingmaker.UnitLogic.FactLogic.AddSharedVendor component)
         { return SharedVendorTableField == null ? null : SharedVendorTableField.GetValue(component) as Kingmaker.Blueprints.Items.BlueprintSharedVendorTable; }
+
+        private static string PackItemName(Kingmaker.Blueprints.Loot.LootItemsPackFixed pack)
+        {
+            var itemField = typeof(Kingmaker.Blueprints.Loot.LootItemsPackFixed).GetField("m_Item", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var lootItem = itemField == null ? null : itemField.GetValue(pack) as Kingmaker.Blueprints.Loot.LootItem;
+            var blueprintField = lootItem == null ? null : typeof(Kingmaker.Blueprints.Loot.LootItem).GetField("m_Item", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var blueprint = blueprintField == null ? null : blueprintField.GetValue(lootItem) as Kingmaker.Blueprints.Items.BlueprintItem;
+            return blueprint == null ? null : blueprint.name + ":" + blueprint.Cost.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
     }
 }
