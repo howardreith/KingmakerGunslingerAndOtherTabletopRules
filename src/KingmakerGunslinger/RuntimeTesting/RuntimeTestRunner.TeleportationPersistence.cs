@@ -82,12 +82,6 @@ namespace KingmakerGunslinger.RuntimeTesting
         private JObject NormalizeAcquisitionForModule(JToken token)
         {
             var normalized = (JObject)token.DeepClone();
-            var acquisition = normalized["acquisition"] as JObject;
-            if (acquisition != null && !_context.FeatureModules.Active.TeleportationSpells)
-            {
-                acquisition["remainingTeleportStock"] = -1;
-                acquisition["remainingGreaterStock"] = -1;
-            }
             return normalized;
         }
         private IEnumerable<int> RunTeleportationPersistence()
