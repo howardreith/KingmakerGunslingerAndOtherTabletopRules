@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Globalmap.Blueprints;
 using Kingmaker.Globalmap.State;
+using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 
 namespace KingmakerGunslinger.Spells.Teleportation
@@ -98,14 +99,20 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!decision.Eligible) throw new InvalidOperationException("Resolved destination changed before placement: " + decision.Diagnostic);
             materialEffectStarting();
             TeleportExplorationGuardPatches.MarkArrival(context, destinationId);
-            // The stationary-point portion of native settlement-circle relocation.
-            // TeleportParty also reveals edges; this narrow boundary does not.
+            // Native TeleportParty raises this exact pair around its relocation
+            // so CompassAvatarController rebuilds the direction arrows at the
+            // arrival point. Without OpenOutgoingEdges there is no reveal:
+            // MapMovementController.OnPawnMovementStopped explores only a
+            // mid-edge stop, and SetCurrentPosition below has already set a
+            // non-null PartyLocation.
+            EventBus.RaiseEvent(delegate(IPawnMovementHandler handler) { handler.OnPawnMovementStarted(); });
             context.Rules.SetCurrentPosition(new MapPosition(destination));
             context.Rules.UpdatePawnPosition();
+            EventBus.RaiseEvent(delegate(IPawnMovementHandler handler) { handler.OnPawnMovementStopped(); });
             _before.Verify(destinationId);
             After = new TeleportationWorldSnapshot(TeleportationWorldMapAdapter.Capture(false));
             Events.Add(new { kind = "relocation", originId = _origin, destinationId = destinationId,
-                nativeSetCurrentPosition = true, nativeUpdatePawnPosition = true, protectedStateUnchanged = true });
+                nativeSetCurrentPosition = true, nativeUpdatePawnPosition = true, nativePawnNotifications = true, protectedStateUnchanged = true });
         }
         internal void VerifyRulesFailure()
         {

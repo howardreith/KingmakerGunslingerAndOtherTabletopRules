@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -100,6 +100,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                 book.Rest();
+                int castStarts = movement.Starts, castStops = movement.Stops;
                 var before = new TeleportationWorldSnapshot(TeleportationWorldMapAdapter.Capture(false));
                 string resourcesBefore = TeleportResourceFingerprint(book);
                 SelectTeleportationCastingPoint(panel, point);
@@ -132,10 +133,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     transaction = request.Transaction.State.ToString(), request.Transaction.Diagnostic, result = request.Execution.LastEvidence,
                     deferredProtectedStateUnchanged = committed, movement.Starts, movement.Stops });
                 TeleportInteractionAssert("contextual-arrival-" + point.Blueprint.AssetGuid,
-                    "native controls retained; actual confirmation spends one real slot; exact dot arrival and all protected state hold across frames",
+                    "native controls retained; actual confirmation spends one real slot; exact dot arrival, exactly one native pawn-notification pair and no other movement hold across frames",
                     "transaction=" + request.Transaction.State + ";nativePreserved=" + nativePreserved,
                     committed && nativePreserved && request.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
-                    dice.D100Count == 0 && dice.D10Count == 0 && movement.Starts == 0 && movement.Stops == 0 &&
+                    dice.D100Count == 0 && dice.D10Count == 0 && movement.Starts == castStarts + 1 && movement.Stops == castStops + 1 &&
                     !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown);
                 if (!committed) throw new InvalidOperationException("Special point cast failed: " + point.Blueprint.AssetGuid + ";" + request.Transaction.Diagnostic);
             }

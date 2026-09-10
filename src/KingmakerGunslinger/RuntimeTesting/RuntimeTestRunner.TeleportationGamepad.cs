@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -380,6 +380,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             RunTeleportGamepadTravel(origin, middle, target, ledger, movement, "augmented", slots, 6);
             rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition(); player.GameTime = time;
             var rolls = new TeleportationFixtureRolls(new[] { 1 });
+            int castStarts = movement.Starts, castStops = movement.Stops;
             var cast = OpenTeleportGamepadSpell(target, TeleportSpellKind.Teleport, TeleportCastSourceKind.Prepared, rolls);
             var duplicate = (Action<DialogMessageBoxBase.BoxButton>)TeleportationConfirmationSurface.ConsoleCallback.GetValue(TeleportGamepadDialogModel());
             for (int frame = 0; frame < 8; frame++) yield return 0;
@@ -388,8 +389,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             CaptureTeleportInteraction("console-teleport-result", new { transaction = cast.Transaction.State.ToString(), cast.Execution.LastEvidence, rolls.D100Count, movement.Starts });
             TeleportInteractionAssert("teleport-real-commit", "native gamepad confirmation spends exactly one preparation and relocates through the production path once",
                 "transaction=" + cast.Transaction.State, cast.Transaction.State == TeleportTransactionState.Completed && cast.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
-                rolls.D100Count == 1 && map.PartyLocation == target.Blueprint && movement.Starts == 2 && map.TravelData == null && player.GameTime == time && GamePad.Instance.Layers.SequenceEqual(baseLayers));
+                rolls.D100Count == 1 && map.PartyLocation == target.Blueprint && movement.Starts == castStarts + 1 && movement.Stops == castStops + 1 && map.TravelData == null && player.GameTime == time && GamePad.Instance.Layers.SequenceEqual(baseLayers));
             rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+            castStarts = movement.Starts; castStops = movement.Stops;
             var exactRolls = new TeleportationFixtureRolls(new int[0]);
             var exact = OpenTeleportGamepadSpell(target, TeleportSpellKind.GreaterTeleport, TeleportCastSourceKind.Spontaneous, exactRolls);
             foreach (int tick in WaitTeleportGamepadModal()) yield return tick;
@@ -398,7 +400,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ConfirmTeleportGamepadSpell(); yield return 0;
             TeleportInteractionAssert("greater-real-commit", "native Greater Teleport uses one seventh-level slot, no destination roll, no route/time change", "transaction=" + exact.Transaction.State,
                 exact.Transaction.State == TeleportTransactionState.Completed && exact.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && exactRolls.D100Count == 0 &&
-                map.PartyLocation == target.Blueprint && movement.Starts == 2 && map.TravelData == null && player.GameTime == time);
+                map.PartyLocation == target.Blueprint && movement.Starts == castStarts + 1 && movement.Stops == castStops + 1 && map.TravelData == null && player.GameTime == time);
             rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
             foreach (var book in books) book.Rest();
             var druid = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, "610d836f3a3a9ed42a4349b62f002e96", "native gamepad long-list Druid");
@@ -449,7 +451,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var oleg = rules.AllLocations.Single(value => value.Blueprint.AssetGuid == WordOfRecallDestinationPolicy.OlegId);
             var capital = rules.AllLocations.Single(value => value.Blueprint.AssetGuid == WordOfRecallDestinationPolicy.CapitalId);
             var panel = TeleportGamepadPanel();
-            int starts = movement.Starts; var time = player.GameTime;
+            var time = player.GameTime;
             try
             {
                 player.Kingdom = kingdom;
@@ -465,6 +467,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Native gamepad Recall preparation failed.");
                 foreach (bool established in new[] { false, true })
                 {
+                    int starts = movement.Starts;
                     setClaimed.Invoke(region, new object[] { established }); book.Rest();
                     rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                     var required = established ? capital : oleg;
@@ -488,7 +491,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "native Recall confirmation spends one preparation, exact world-map point, no dice, route, time or familiarity change",
                         "transaction=" + cast.Transaction.State, displayed && cast.Transaction.State == TeleportTransactionState.Completed &&
                         cast.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && dice.D100Count == 0 && dice.D10Count == 0 &&
-                        map.PartyLocation == required.Blueprint && movement.Starts == starts && map.TravelData == null && player.GameTime == time &&
+                        map.PartyLocation == required.Blueprint && movement.Starts == starts + 1 && map.TravelData == null && player.GameTime == time &&
                         ledger.Read().Serialize() == counts.Serialize());
                 }
             }

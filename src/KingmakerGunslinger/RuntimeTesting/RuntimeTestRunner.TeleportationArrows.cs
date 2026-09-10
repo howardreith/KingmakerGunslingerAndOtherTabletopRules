@@ -7,6 +7,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Globalmap;
 using Kingmaker.Globalmap.State;
 using Kingmaker.UI;
+using Kingmaker.UI.GlobalMap;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Spells.Teleportation;
@@ -45,6 +46,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 book.Rest();
                 string destinationId = destination.Blueprint.AssetGuid;
                 string resourcesBefore = TeleportResourceFingerprint(book);
+                int castStarts = movement.Starts, castStops = movement.Stops;
                 float milesBefore = map.MilesTravelled;
                 var timeBefore = player.GameTime;
                 SelectTeleportationCastingPoint(panel, destination);
@@ -74,48 +76,50 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // before the first arrow action.
                 for (int frame = 0; frame < 30; frame++) yield return 0;
                 TeleportInteractionAssert("arrow-stationary-" + destinationId,
-                    "post-cast waiting frames add no movement, mileage, time or pawn events",
+                    "post-cast waiting frames add no mileage, time or travel beyond the cast single native pawn-notification pair",
                     "starts=" + movement.Starts + ";milesDelta=" + (map.MilesTravelled - milesBefore) + ";travelData=" + (map.TravelData != null),
-                    movement.Starts == 0 && map.MilesTravelled == milesBefore && player.GameTime == timeBefore && map.TravelData == null);
-                // Boundary 3: the first attempted native directional action,
-                // through the actual marker handler. Every currently visible
-                // marker is attempted in stable order until one is exercised.
+                    movement.Starts == castStarts + 1 && movement.Stops == castStops + 1 &&
+                    map.MilesTravelled == milesBefore && player.GameTime == timeBefore && map.TravelData == null);
+                // Boundary 3: the first attempted native directional action.
+                // The native control is CompassAvatarController's rebuilt
+                // CompassDirectionLabel arrows; OnClick is the exact handler a
+                // player click reaches.
                 var arrival = rules.GetLocationObject(map.PartyLocation);
                 if (arrival == null || arrival.Blueprint.AssetGuid != destinationId)
                     throw new InvalidOperationException("The arrow audit arrival point differs from its cast destination.");
-                var markers = ArrowVisibleMarkers(rules).ToArray();
-                var attempted = new List<object>();
-                GlobalMapUiDirectionMarker exercised = null;
-                foreach (var marker in markers)
-                {
-                    var pathBefore = rules.CalculatePathByMarker(marker);
-                    attempted.Add(new { marker = marker.GetInstanceID(),
-                        directionId = marker.DirectionLocation == null ? null : marker.DirectionLocation.Blueprint.AssetGuid,
-                        computedPath = pathBefore == null ? null : DescribeArrowPath(pathBefore) });
-                    if (pathBefore == null || exercised != null) continue;
-                    marker.HandleClick();
-                    exercised = marker;
-                    break;
-                }
+                var labels = ArrowCompassLabels();
+                var labelDetail = labels.Select(label => new {
+                    id = label.GetInstanceID(), active = label.gameObject.activeInHierarchy,
+                    directionId = ArrowLabelDirection(label) == null ? null : ArrowLabelDirection(label).Blueprint.AssetGuid,
+                    currentPositionLocation = ArrowLabelPosition(label) == null || ArrowLabelPosition(label).Location == null ? null : ArrowLabelPosition(label).Location.AssetGuid,
+                    edgeId = ArrowLabelEdge(label) == null ? null : ArrowLabelEdge(label).Blueprint.AssetGuid }).ToArray();
+                bool arrowsRebuiltAtArrival = labels.Length > 0 && labels.All(label => ArrowLabelPosition(label) != null &&
+                    ArrowLabelPosition(label).Location != null && ArrowLabelPosition(label).Location == map.PartyLocation);
+                var exercisedLabel = labels.FirstOrDefault();
+                if (exercisedLabel != null) exercisedLabel.OnClick();
                 for (int frame = 0; frame < 10; frame++) yield return 0;
                 bool arrowStartedTravel = map.TravelData != null && map.TravelData.Walking;
                 CaptureTeleportInteraction("arrow-boundary-3-first-action-" + destinationId, new {
-                    visibleMarkers = markers.Length, attempted,
-                    exercisedMarker = exercised == null ? null : (int?)exercised.GetInstanceID(),
+                    labels = labelDetail, arrowsRebuiltAtArrival,
+                    exercisedLabel = exercisedLabel == null ? null : (int?)exercisedLabel.GetInstanceID(),
                     arrowStartedTravel, travelData = DescribeArrowTravel(map.TravelData),
                     nativeContinueVisible = DescribeArrowButton(continueButton), nativeStopVisible = DescribeArrowButton(stopButton),
-                    movement.Starts, movement.Stops });
+                    markers = DescribeArrowMarkers(rules), movement.Starts, movement.Stops });
                 if (map.TravelData != null)
                 {
-                    // A no-op diagnostic must never leave travel running.
+                    // The diagnostic must never leave travel running.
                     if (map.TravelData.Walking) rules.OnBreak();
                     map.TravelData = null;
                     rules.SetCurrentPosition(new MapPosition(destination.Blueprint)); rules.UpdatePawnPosition();
                 }
-                TeleportInteractionAssert("arrow-handler-bound-" + destinationId,
-                    "a visible marker with a computed path starts real native travel through its actual handler; markers without paths are refused silently",
-                    "visible=" + markers.Length + ";exercised=" + (exercised != null) + ";started=" + arrowStartedTravel,
-                    (exercised == null && !arrowStartedTravel) || (exercised != null && arrowStartedTravel));
+                TeleportInteractionAssert("arrow-rebuilt-at-arrival-" + destinationId,
+                    "the cast's native pawn-notification pair rebuilds the compass arrows bound to the actual arrival point",
+                    "labels=" + labels.Length + ";allAtArrival=" + arrowsRebuiltAtArrival,
+                    arrowsRebuiltAtArrival);
+                TeleportInteractionAssert("arrow-first-action-" + destinationId,
+                    "the first legal arrow through its actual native handler starts real native travel without another player action",
+                    "labels=" + labels.Length + ";started=" + arrowStartedTravel,
+                    labels.Length > 0 && arrowStartedTravel);
             }
             // Boundary 4: the owner's recovery workaround on the final arrival.
             // Clicking another revealed dot, moving briefly and stopping must be
@@ -139,6 +143,35 @@ namespace KingmakerGunslinger.RuntimeTesting
             map.TravelData = null;
             rules.SetCurrentPosition(new MapPosition(lastArrival.Blueprint)); rules.UpdatePawnPosition();
             CaptureTeleportInteraction("arrow-final-state", DescribeArrowBoundary(rules, "restored-arrival"));
+        }
+
+        private static readonly System.Reflection.FieldInfo ArrowLabelDirectionField = typeof(CompassDirectionLabel)
+            .GetField("m_DirLoc", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        private static readonly System.Reflection.FieldInfo ArrowLabelPositionField = typeof(CompassDirectionLabel)
+            .GetField("m_CurrentPosition", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        private static readonly System.Reflection.FieldInfo ArrowLabelEdgeField = typeof(CompassDirectionLabel)
+            .GetField("m_Edge", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        private static GlobalMapLocation ArrowLabelDirection(CompassDirectionLabel label)
+        { return ArrowLabelDirectionField == null ? null : ArrowLabelDirectionField.GetValue(label) as GlobalMapLocation; }
+        private static MapPosition ArrowLabelPosition(CompassDirectionLabel label)
+        { return ArrowLabelPositionField == null ? null : ArrowLabelPositionField.GetValue(label) as MapPosition; }
+        private static Kingmaker.Globalmap.GlobalMapEdge ArrowLabelEdge(CompassDirectionLabel label)
+        { return ArrowLabelEdgeField == null ? null : ArrowLabelEdgeField.GetValue(label) as Kingmaker.Globalmap.GlobalMapEdge; }
+
+        private static CompassDirectionLabel[] ArrowCompassLabels()
+        {
+            var labelsField = typeof(Kingmaker.UI.GlobalMap.CompassAvatarController)
+                .GetField("m_DirectionLabels", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var controllers = UnityEngine.Object.FindObjectsOfType<Kingmaker.UI.GlobalMap.CompassAvatarController>();
+            if (labelsField == null || controllers == null || controllers.Length == 0) return new CompassDirectionLabel[0];
+            var result = new List<CompassDirectionLabel>();
+            foreach (var controller in controllers)
+            {
+                var list = labelsField.GetValue(controller) as List<CompassDirectionLabel>;
+                if (list == null) continue;
+                foreach (var label in list) if (label != null) result.Add(label);
+            }
+            return result.ToArray();
         }
 
         private static IEnumerable<GlobalMapUiDirectionMarker> ArrowVisibleMarkers(GlobalMapRules rules)
