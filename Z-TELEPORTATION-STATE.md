@@ -16,11 +16,52 @@ current progress, evidence, and exact resumption instructions only.
 
 | Gate | Status |
 |---|---|
-| 1 Post-teleport first-arrow movement | TODO |
+| 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
 | 2 Conjuration specialist slots | TODO |
 | 3 Compact UI + settlement coexistence | TODO |
 | 4 Scrolls: items, vendors, learning, casting | TODO |
 | 5 Persistence + final install candidate | TODO |
+
+Gate 1 remaining breadth (mission §3): Recall cast + arrow; scroll source (after
+Gate 4); off-target/mishap arrival arrow; saved magical-arrival fresh-process
+reload before workaround; cancellation/no-relocation controls (arrow state
+unchanged); repeat casts. Desktop path verified; controller arrows via gamepad
+scenario events verified (compass events are shared).
+
+## Gate 1 root cause and fix (native-verified 2026-09-10)
+
+Cause (IL + runtime evidence): the on-screen direction arrows are
+`CompassDirectionLabel` widgets built by `Kingmaker.UI.GlobalMap.CompassAvatarController.Set()`,
+which runs ONLY from the native `IPawnMovementHandler.OnPawnMovementStopped`
+event (subscribers: CompassAvatarController, GlobalMapAttachPointController,
+GlobalMapPathsVisual, GlobalMapUiCommonPartVM, GlobalMapSoundManager,
+GlobalMapUI, MapMovementController). Our relocation raised no events, so stale
+origin arrows remained; `TravelByDirection` from them failed from the new
+position. Diagnostic run 20260910T1242111047323Z-disposable-teleportation-arrows
+proved ZERO GlobalMapUiDirectionMarker objects exist at runtime (that class and
+GlobalMapUI.DirectionMarkerTemplate are unused legacy), ruling out the original
+marker hypotheses; boundary captures showed travelData/partyLocation correct.
+
+Fix (commit 7767b628): `TeleportationOutcomeWorld.Relocate` now raises the
+native pawn-notification pair (OnPawnMovementStarted → SetCurrentPosition →
+UpdatePawnPosition → OnPawnMovementStopped) — exactly native TeleportParty's
+pair without its OpenOutgoingEdges reveal. No exploration occurs:
+MapMovementController.OnPawnMovementStopped explores only mid-edge stops
+(PartyLocation null), and PartyLocation is the arrival.
+
+Verification (all PASS, zero save writes):
+- disposable-teleportation-arrows, run dir 20260910T1258015459079Z: arrows
+  rebuilt at each arrival (labels bound to arrival's edges), first arrow via
+  the real `CompassDirectionLabel.OnClick` starts native travel along a legal
+  edge, stationary frames add no mileage/time, exactly one notification pair
+  per cast, exact cleanup.
+- disposable-teleportation-destinations: 68/68 (20260910T…, /tmp/dest-run2.log).
+- disposable-teleportation-casting, -interaction, -travelers, -gamepad: PASS.
+- disposable-teleportation-disabled run bare = ERROR (requires its dedicated
+  OFF-module orchestration via Invoke-TeleportationHardeningQualification; not
+  caused by this change; rerun under that harness before final handoff).
+- Release build, repository validation, 1,554 domain tests, 464-check preflight
+  all PASS at each commit.
 
 ## Gate 1 investigation notes (IL forensics completed 2026-09-10)
 
@@ -136,15 +177,16 @@ Next smallest discriminating experiment (live, guarded, disposable fixture):
 
 ## Next concrete actions
 
-1. Live guarded reproduction (see discriminating experiment above) via a
-   narrow diagnostic scenario modeled on
-   `RuntimeTestRunner.TeleportationDestinations.cs` (it already drives real
-   casts + native travel); capture marker state + CalculatePathByMarker
-   results at the four boundaries.
-2. Decide the fix from evidence: likely candidates are (a) TeleportParty-parity
-   travel-state cleanup (`TravelData?.Finish(); TravelData = null;`) plus the
-   pawn start/stop events so `GlobalMapUI` clears/rebuilds markers natively —
-   WITHOUT OpenOutgoingEdges; or (b) a narrow marker refresh. One-shot,
-   request-bound, no reveal.
-3. Implement fix + first-legal-arrow regression test through the real
-   `GlobalMapUiDirectionMarker.HandleClick` / `GoToMarker` path.
+1. Gate 1 breadth: add Recall + off-target arrow checks (extend arrows scenario
+   or rely on resolver coverage); fresh-process reload-after-teleport arrow
+   check (needs the persistence harness phase pattern from
+   TeleportPersistence.Common.ps1).
+2. Gate 2 (specialist slots): inspect spellbook specialist-slot filtering.
+   Start from TeleportationSpellbookAdapter and the native Spellbook
+   specialist-slot model in artifacts/teleportation/native/Spellbook.cs; the
+   reported rejection is in the LOCAL spellbook preparation UI, so also inspect
+   SpellBookView/SpellItem Memorize paths and any school filter
+   (BlueprintSpellbook.SpecializedSchool / GetSpecialSpellList).
+3. Gate 3 (compact UI): TeleportContextLayoutPolicy/TeleportContextPresentation.
+4. Gate 4 (scrolls): new item blueprints + vendor grants + scroll adapter.
+5. Gate 5: persistence + final qualification/install of combined candidate.
