@@ -98,8 +98,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             else chain = ((JArray)plan.Expected["chainIds"]).Select(id => rules.AllLocations.Single(value => value.Blueprint.AssetGuid == (string)id)).ToArray();
             _teleportPersistenceChain = chain.Select(value => value.Blueprint.AssetGuid).ToArray();
             JObject initial = CaptureTeleportPersistence();
-            if (plan.Phase != "A") PersistenceAssert("fresh-owner-payload", "Fresh native load restores exact owner, migration, counts and exploration boundary",
-                JToken.DeepEquals(initial, plan.Expected), new { expected = plan.Expected, actual = initial });
+            if (plan.Phase != "A") PersistenceAssert("fresh-owner-payload", "Fresh native load restores exact owner, migration, counts, exploration boundary and acquisition lifecycle state",
+                // Canonical serialization equality: plan values arrive as JSON
+                // longs while live capture builds ints, and JToken.DeepEquals
+                // treats those boxed types as unequal despite identical values.
+                string.Equals(initial.ToString(Newtonsoft.Json.Formatting.None),
+                    plan.Expected.ToString(Newtonsoft.Json.Formatting.None), StringComparison.Ordinal),
+                new { expected = plan.Expected, actual = initial });
             if (plan.Phase != "A")
             {
                 // Gate 1 breadth: a fresh-process reload of the post-teleport save
