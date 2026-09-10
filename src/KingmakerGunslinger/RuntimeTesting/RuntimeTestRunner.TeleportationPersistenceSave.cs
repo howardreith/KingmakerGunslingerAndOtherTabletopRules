@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,6 +30,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Canonical owner graph has a duplicate, detached, preview or missing familiarity part.");
             string payload = (string)typeof(UnitPartTeleportFamiliarity).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(part);
             string boundary = (string)typeof(UnitPartTeleportFamiliarity).GetField("_explorationBoundary", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(part);
+            var grantsValue = typeof(UnitPartTeleportFamiliarity).GetField("_scrollVendorGrants", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(part);
+            var grants = grantsValue as System.Collections.Generic.List<string>;
             var state = part.Read(); part.ReadExplorationBoundary();
             if (!state.LegacyMigrationComplete) throw new InvalidOperationException("Persisted legacy migration is incomplete.");
             return new JObject { ["ownerId"] = main.UniqueId, ["ownerCount"] = owners.Length,
@@ -37,6 +39,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["areaName"] = game.CurrentlyLoadedArea.name, ["party"] = new JArray(game.Player.Party.Select(unit => unit.UniqueId)),
                 ["pointId"] = GlobalMapRules.State.PartyLocation.AssetGuid, ["miles"] = GlobalMapRules.State.MilesTravelled.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
                 ["payload"] = payload, ["boundary"] = boundary, ["migrationComplete"] = state.LegacyMigrationComplete,
+                ["scrollVendorGrants"] = new JArray(grants ?? new System.Collections.Generic.List<string>()),
                 ["canonicalState"] = state.Serialize(), ["chainIds"] = new JArray(_teleportPersistenceChain) };
         }
         private IEnumerable<int> SaveTeleportPersistence()
