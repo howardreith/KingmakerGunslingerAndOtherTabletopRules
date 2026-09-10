@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,6 +12,11 @@ namespace KingmakerGunslinger.Blueprints
     internal sealed class TeleportationSpellListPublication
     {
         internal const string WizardListId = "ba0401fdeb4062f40a7aa95b6f07fe89";
+        // The Conjuration school special list attached by SpecializationSchoolConjuration
+        // (Wizard and Arcanist). Only spells in this list are accepted by the
+        // specialist/favorite preparation slot; verified identity from the guarded
+        // observe-teleportation-native-contracts inventory (2026-09-10).
+        internal const string ConjurationListId = "69a6eba12bc77ea4191f573d63c9df12";
         internal const string TravelListId = "ab90308db82342f47bf0d636fe941434";
         internal const string ClericListId = "8443ce803d2d31347897a3d85cc32f53";
         internal const string DruidListId = "bad8638d40639d04fa2f80a1cac67d6b";
@@ -29,6 +34,8 @@ namespace KingmakerGunslinger.Blueprints
             var targets = new List<Target> {
                 Resolve(library, WizardListId, 5, spells.Teleport),
                 Resolve(library, WizardListId, 7, spells.GreaterTeleport),
+                Resolve(library, ConjurationListId, 5, spells.Teleport),
+                Resolve(library, ConjurationListId, 7, spells.GreaterTeleport),
                 Resolve(library, ClericListId, 6, spells.WordOfRecall),
                 Resolve(library, DruidListId, 8, spells.WordOfRecall)
             };

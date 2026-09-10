@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -48,6 +48,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] { "WizardListId, 5, spells.Teleport", "WizardListId, 7, spells.GreaterTeleport",
                 "ClericListId, 6, spells.WordOfRecall", "DruidListId, 8, spells.WordOfRecall",
                 "TravelListId, 5, spells.Teleport", "TravelListId, 7, spells.GreaterTeleport",
+                "ConjurationListId, 5, spells.Teleport", "ConjurationListId, 7, spells.GreaterTeleport",
                 "if (travelPresent)", "mutation.Level.Spells = mutation.Before", "mutation.CacheBefore",
                 "ReferenceEquals(mutation.Level.Spells, mutation.After)" })
                 Assertions.True(publication.Contains(token), "Publication contract missing " + token);
