@@ -194,7 +194,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 sharedTable.Add(scrolls.WordOfRecall, TeleportationScrollVendorPublication.WordOfRecallStock);
                 TeleportationScrollVendorMigration.Migrate(umdReader);
                 ScrollsAssert("migration-fresh-native-stock", "a natively stocked target only records its grant marker",
-                    "count=" + CountItems(sharedTable, scrolls.WordOfRecall),
+                    "base=" + priestBase + ";count=" + CountItems(sharedTable, scrolls.WordOfRecall) + ";marker=" + ledger.HasScrollVendorGrant("shared:" + priestTable.AssetGuid),
                     CountItems(sharedTable, scrolls.WordOfRecall) == priestBase + TeleportationScrollVendorPublication.WordOfRecallStock &&
                         ledger.HasScrollVendorGrant("shared:" + priestTable.AssetGuid));
                 // Buy-out: removing the stock never refills.
@@ -206,6 +206,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Already-materialized vendor without a marker: batch exactly once.
                 grantsField.SetValue(ledger, null);
                 int beforeGrant = CountItems(sharedTable, scrolls.WordOfRecall);
+                CaptureTeleportScrolls("migration-prebatch", new { beforeGrant,
+                    readerShared = umdReader.Descriptor.Get<UnitPartVendor>() != null });
                 TeleportationScrollVendorMigration.Migrate(umdReader);
                 int afterFirst = CountItems(sharedTable, scrolls.WordOfRecall);
                 TeleportationScrollVendorMigration.Migrate(bookReader);
