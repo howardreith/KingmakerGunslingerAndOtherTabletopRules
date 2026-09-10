@@ -106,7 +106,7 @@ namespace KingmakerGunslinger.Blueprints
             if (ability == null || ability.Parent != null || ability.Type != AbilityType.Spell || ability.Hidden || ability.Icon == null ||
                 ability.ActionType != UnitCommand.CommandType.Standard || ability.MaterialComponent == null ||
                 ability.SpellResistance || ability.AvailableMetamagic != 0 || !ability.ActionBarAutoFillIgnored ||
-                ability.CanTargetPoint || ability.CanTargetEnemies || ability.CanTargetFriends || ability.CanTargetSelf ||
+                ability.CanTargetPoint || ability.CanTargetEnemies || ability.CanTargetFriends || !ability.CanTargetSelf ||
                 ability.ComponentsArray.Any(value => value == null ||
                     (value.GetType() != typeof(SpellComponent) && value.GetType() != typeof(TeleportationWorldMapCasterChecker) &&
                      value.GetType() != typeof(SpellListComponent))) ||
