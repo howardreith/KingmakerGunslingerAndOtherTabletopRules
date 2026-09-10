@@ -261,7 +261,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // A distinct genuine variant carries its own stable identity.
                 typeof(Kingmaker.Blueprints.BlueprintScriptableObject)
                     .GetField("m_AssetGuid", BindingFlags.Instance | BindingFlags.NonPublic)
-                    .SetValue(variant, "5f1x7c2d4e6b8a903c1d2e3f4a5b6c7d");
+                    .SetValue(variant, "5f167c2d4e6b8a903c1d2e3f4a5b6c7d");
                 variant.CasterLevel = 13;
                 party[1].Inventory.Add(variant, 1);
                 var variantSources = TeleportationScrollAdapter.Enumerate(player)
