@@ -19,7 +19,7 @@ current progress, evidence, and exact resumption instructions only.
 | 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
 | 2 Conjuration specialist slots | NATIVE-VERIFIED (publication + behavioral scenario; two consecutive PASS runs) |
 | 3 Compact UI + settlement coexistence | NATIVE-VERIFIED (coexistence 26/26, interaction 29/29, casting 44/44, gamepad PASS) |
-| 4 Scrolls: items, vendors, learning, casting | IN PROGRESS — items/vendor stock/migration sweep/scroll adapter implemented; behavioral scrolls scenario + migration proof next |
+| 4 Scrolls: items, vendors, learning, casting | NATIVE-VERIFIED (disposable-teleportation-scrolls 12/12, two consecutive PASS runs; specialist regression PASS) |
 | 5 Persistence + final install candidate | TODO |
 
 Gate 1 remaining breadth (mission §3): Recall cast + arrow; scroll source (after
@@ -125,6 +125,41 @@ structure, local area then global map):
    re-open; shared table single grant across family members.
 5. Buy->copy->prepare->cast integrated flow (CopyScroll native copy to a
    wizard book; then specialist prepare from Gate 2 machinery).
+
+## Gate 4 behavioral proof (native-verified 2026-09-10)
+
+`disposable-teleportation-scrolls` — TWO consecutive PASS runs, 12/12
+assertions, zero save writes (evidence dirs 2026-09-10T17-18* under
+runtime-evidence). Proven end to end on the real global map:
+1. shared-stock-counts-distinct-collections: native player characters share
+   ONE party inventory (stash/carried/equipped); the stock counts it once
+   (KEY NATIVE FACT — per-unit enumeration triple-counts).
+2. scroll-reader-rows: item-carrying member AND the UMD-only reader
+   (trained SkillUseMagicDevice, no book) both offer the scroll.
+3. scroll-copy-learns-canonical-spell: the native copy association learns
+   the canonical strategic spell into a real book.
+4. scroll-row-composed: compact "Use Teleport Scroll" row, uses=3.
+5. scroll-cancellation-consumes-nothing: native No spends nothing.
+6. scroll-cast-exactly-one: transaction Completed+Arrived, exactly one
+   scroll spent, book fingerprint unchanged (no slot), resource evidence
+   recorded (kind=scroll).
+7. scroll-cast-rebuilds-arrows: Gate-1 compass arrows rebuilt at the
+   arrival point (integrated first-arrow precondition).
+8-12. Vendor migration: native shared-table diff self-stocks the published
+   batch on materialization (base=5 observed for BOTH tables); a fully
+   stocked target records its marker only; bought-out stock with the
+   marker never refills; an unmarked family receives the batch exactly
+   once across members (one grant per shared table); the arcane family
+   holds 5 Teleport + 3 Greater exactly once with its marker.
+
+Production fixes discovered by the scenario: presenter Open/StillValid now
+handle inventory-backed sources (no book identity; stock-based validity);
+scroll stock counts distinct collections.
+
+Remaining Gate 4 breadth for final qualification: full purchase flow
+through the native trading UI (buy with gold) and the local-area spellbook
+copy UI — currently covered by the copy seam + published stock; consider
+covering in Gate 5's final sweep or documenting as limitation.
 
 ## Gate 4 native forensics (verified 2026-09-10, observe-teleportation-native-contracts)
 
