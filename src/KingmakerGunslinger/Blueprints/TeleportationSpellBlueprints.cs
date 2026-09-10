@@ -130,12 +130,18 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (caster == null || Game.Instance == null || Game.Instance.CurrentMode != GameModeType.GlobalMap ||
                 BlueprintBootstrap.TeleportationPublication == null) return false;
-            // A correct caster exists only inside an authorized contextual
-            // request: the gate opens for exactly one reader/item pair around
-            // the single native activation call. Ordinary item use is refused
-            // before any roll or consumption, and the reason text explains the
-            // destination requirement.
-            return Spells.Teleportation.TeleportationScrollActivationGate.Authorized(caster);
+            // Native ACTIVATION of a strategic scroll is only correct inside an
+            // authorized contextual request. The native item-use path creates a
+            // temporary ability fact whose SourceItem IS the scroll before any
+            // availability check; when such a fact exists on the caster the
+            // request-bound activation gate decides, so ordinary inventory or
+            // equipment use is refused before any roll or consumption. Every
+            // other context — menu enumeration, spellbook presentation, pure
+            // availability queries, preparation previews — carries no scroll
+            // fact and stays permitted.
+            if (Spells.Teleportation.TeleportationScrollActivationGate.HasStrategicScrollFact(caster))
+                return Spells.Teleportation.TeleportationScrollActivationGate.Authorized(caster);
+            return true;
         }
         public string GetReason()
         { return LocalizationService.Create("KMG.Teleportation.UseDestinationActions", "Select an eligible world-map destination to use this spell."); }
