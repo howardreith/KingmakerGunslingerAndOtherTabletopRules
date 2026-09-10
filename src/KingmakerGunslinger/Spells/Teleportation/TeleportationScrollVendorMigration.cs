@@ -75,15 +75,20 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (ledger == null || part == null) return;
             // Both mission families use shared vendor tables (Zarcie's
             // AddVendorItems carries the Arcane I shared table; Arsinoe and the
-            // Jhod units reference C11_JhodVendorTable). One grant identity per
-            // shared table: the first family member to open trading materializes
-            // the batch for the whole aliased family.
+            // Jhod units reference C11_JhodVendorTable). The supplier decision is
+            // the SAME one publication used: when the primary arcane table is
+            // genuinely unavailable, the approved Hassuf fallback table is the
+            // arcane supplier and receives the batch exactly once under its own
+            // grant identity. One grant identity per shared table: the first
+            // family member to open trading materializes the batch for the whole
+            // aliased family.
             var sharedTable = SharedInventoryTable(part);
             if (sharedTable == null) return;
-            bool priest = string.Equals(sharedTable.AssetGuid,
-                TeleportationScrollVendorPublication.PriestTableId, StringComparison.Ordinal);
-            bool arcane = string.Equals(sharedTable.AssetGuid,
-                TeleportationScrollVendorPublication.ArcaneTableId, StringComparison.Ordinal);
+            var supplier = TeleportationScrollVendorPublication.DecideSupplier(BlueprintBootstrap.Library);
+            bool priest = supplier.Priest != null && string.Equals(sharedTable.AssetGuid,
+                supplier.Priest.AssetGuid, StringComparison.Ordinal);
+            bool arcane = supplier.Arcane != null && string.Equals(sharedTable.AssetGuid,
+                supplier.Arcane.AssetGuid, StringComparison.Ordinal);
             if (!priest && !arcane) return;
             var table = player.SharedVendorTables.GetTable(sharedTable);
             if (table != null) EnsureBatch(ledger, "shared:" + sharedTable.AssetGuid,

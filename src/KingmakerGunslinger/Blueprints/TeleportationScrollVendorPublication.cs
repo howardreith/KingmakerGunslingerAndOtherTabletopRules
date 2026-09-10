@@ -30,6 +30,32 @@ namespace KingmakerGunslinger.Blueprints
         internal const int GreaterTeleportStock = 3;
         internal const int WordOfRecallStock = 5;
 
+        // The ONE supplier decision shared by publication and saved-stock
+        // migration. The arcane supplier is Zarcie's verified tier when her
+        // content is loaded; the approved Hassuf fallback when it genuinely is
+        // not (the table is absent from the loaded library — unloaded or
+        // not-yet-unlocked content is not proof of absence, and a loaded
+        // blueprint is not proof of availability; the library-presence check is
+        // the exact verified native signal this environment exposes). The priest
+        // supplier always resolves independently.
+        internal sealed class SupplierDecision
+        {
+            internal BlueprintSharedVendorTable Arcane;
+            internal bool ArcaneFallback;
+            internal BlueprintSharedVendorTable Priest;
+        }
+        internal static SupplierDecision DecideSupplier(LibraryScriptableObject library)
+        {
+            if (library == null) throw new ArgumentNullException("library");
+            var decision = new SupplierDecision();
+            decision.Arcane = FindTable(library, ArcaneTableId, ArcaneTableName);
+            decision.ArcaneFallback = decision.Arcane == null;
+            if (decision.Arcane == null)
+                decision.Arcane = FindTable(library, FallbackArcaneTableId, FallbackArcaneTableName);
+            decision.Priest = FindTable(library, PriestTableId, PriestTableName);
+            return decision;
+        }
+
         private readonly Dictionary<BlueprintSharedVendorTable, BlueprintComponent[]> _before =
             new Dictionary<BlueprintSharedVendorTable, BlueprintComponent[]>();
         internal int ChangedTableCount { get { return _before.Count; } }
@@ -40,18 +66,10 @@ namespace KingmakerGunslinger.Blueprints
             if (library == null) throw new ArgumentNullException("library");
             if (scrolls == null) throw new ArgumentNullException("scrolls");
             if (logger == null) throw new ArgumentNullException("logger");
-            // Arcane supplier: Zarcie's verified tier when her content is loaded;
-            // the approved Hassuf fallback when it genuinely is not. Priest supply
-            // resolves independently so one unavailable supplier never blocks the
-            // other.
-            var arcane = FindTable(library, ArcaneTableId, ArcaneTableName);
-            var arcaneFallback = false;
-            if (arcane == null)
-            {
-                arcane = FindTable(library, FallbackArcaneTableId, FallbackArcaneTableName);
-                arcaneFallback = arcane != null;
-            }
-            var priest = FindTable(library, PriestTableId, PriestTableName);
+            var supplier = DecideSupplier(library);
+            var arcane = supplier.Arcane;
+            var arcaneFallback = supplier.ArcaneFallback;
+            var priest = supplier.Priest;
             // Owned covers every project scroll so module OFF normalizes all rows
             // away; stocked is the finite batch the mission approved.
             var owned = new BlueprintItem[] { scrolls.Teleport, scrolls.GreaterTeleport, scrolls.WordOfRecall };

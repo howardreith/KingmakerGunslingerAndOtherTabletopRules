@@ -154,7 +154,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (string.IsNullOrWhiteSpace(bookName)) return null;
             var snapshot = new TeleportCastSourceSnapshot(caster.UniqueId, order, caster.CharacterName, book.Blueprint.AssetGuid,
                 bookName, kind, book.Blueprint.Spontaneous ? TeleportCastSourceKind.Spontaneous : TeleportCastSourceKind.Prepared,
-                level, uses, facts);
+                level, book.CasterLevel, uses, facts);
             return TeleportCastAvailabilityPolicy.Usable(snapshot) ? new TeleportationNativeCastSource(snapshot, book, ability) : null;
         }
     }

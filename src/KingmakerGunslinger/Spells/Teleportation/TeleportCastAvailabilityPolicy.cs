@@ -26,9 +26,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
     {
         internal TeleportCastSourceSnapshot(string casterId, int partyOrder, string casterName,
             string bookId, string bookName, TeleportSpellKind spell, TeleportCastSourceKind kind,
-            int spellLevel, int uses, TeleportCastSourceFacts facts)
+            int spellLevel, int casterLevel, int uses, TeleportCastSourceFacts facts)
         { CasterId = casterId; PartyOrder = partyOrder; CasterName = casterName; BookId = bookId;
-            BookName = bookName; Spell = spell; Kind = kind; SpellLevel = spellLevel; Uses = uses; Facts = facts; }
+            BookName = bookName; Spell = spell; Kind = kind; SpellLevel = spellLevel; CasterLevel = casterLevel;
+            Uses = uses; Facts = facts; }
         internal string CasterId { get; private set; }
         internal int PartyOrder { get; private set; }
         internal string CasterName { get; private set; }
@@ -37,6 +38,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         internal TeleportSpellKind Spell { get; private set; }
         internal TeleportCastSourceKind Kind { get; private set; }
         internal int SpellLevel { get; private set; }
+        internal int CasterLevel { get; private set; }
         internal int Uses { get; private set; }
         internal TeleportCastSourceFacts Facts { get; private set; }
         internal string Key { get { return CasterId + "/" + BookId + "/" + ((int)Spell).ToString(CultureInfo.InvariantCulture); } }

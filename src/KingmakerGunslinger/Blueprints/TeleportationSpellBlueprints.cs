@@ -128,8 +128,14 @@ namespace KingmakerGunslinger.Blueprints
     {
         public bool CorrectCaster(UnitEntityData caster)
         {
-            return caster != null && Game.Instance != null && Game.Instance.CurrentMode == GameModeType.GlobalMap &&
-                BlueprintBootstrap.TeleportationPublication != null;
+            if (caster == null || Game.Instance == null || Game.Instance.CurrentMode != GameModeType.GlobalMap ||
+                BlueprintBootstrap.TeleportationPublication == null) return false;
+            // A correct caster exists only inside an authorized contextual
+            // request: the gate opens for exactly one reader/item pair around
+            // the single native activation call. Ordinary item use is refused
+            // before any roll or consumption, and the reason text explains the
+            // destination requirement.
+            return Spells.Teleportation.TeleportationScrollActivationGate.Authorized(caster);
         }
         public string GetReason()
         { return LocalizationService.Create("KMG.Teleportation.UseDestinationActions", "Select an eligible world-map destination to use this spell."); }
