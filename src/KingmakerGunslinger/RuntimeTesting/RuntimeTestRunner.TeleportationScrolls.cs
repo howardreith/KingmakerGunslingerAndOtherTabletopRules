@@ -145,8 +145,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var book = fixtureOwner.AddBook(wizardClass.Spellbook);
                 book.AddKnown(5, scrolls.Teleport.Ability, true); book.Rest();
                 var copiedKnown = book.GetKnownSpells(5).Any(value => value.Blueprint == scrolls.Teleport.Ability);
-                ScrollsAssert("scroll-copy-learns-canonical-spell", "the native copy association learns the canonical strategic spell",
-                    "copied=" + copiedKnown, copiedKnown);
+                ScrollsAssert("scroll-fixture-book-knows-canonical-spell",
+                    "the fixture book setup registers the canonical spell (native copy proof lives in the market chain below)",
+                    "known=" + copiedKnown, copiedKnown);
                 string bookFingerprint = TeleportResourceFingerprint(book);
 
                 // --- Composition and scroll cast through the native panel ---
@@ -249,6 +250,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "labels=" + labels.Length + ";allAtArrival=" + (labels.Length > 0 && labels.All(label => ArrowLabelEdge(label) != null &&
                         arrival.Edges.Contains(ArrowLabelEdge(label)))),
                     labels.Length > 0 && labels.All(label => ArrowLabelEdge(label) != null && arrival.Edges.Contains(ArrowLabelEdge(label))));
+                // The first legal native arrow must actually MOVE the party, not
+                // merely exist: click the real handler and verify a walking route
+                // along an edge of the arrival point.
+                var firstArrow = labels.FirstOrDefault();
+                if (firstArrow == null) throw new InvalidOperationException("No rebuilt arrow to exercise after the scroll cast.");
+                firstArrow.OnClick();
+                for (int frame = 0; frame < 10; frame++) yield return 0;
+                bool arrowMoved = map.TravelData != null && map.TravelData.Walking;
+                var arrowRoute = map.TravelData == null ? null : map.TravelData.Path.Select(value => value.Blueprint.AssetGuid).ToArray();
+                ScrollsAssert("scroll-first-arrow-moves",
+                    "the first legal arrow after a scroll cast starts real native travel from the arrival point",
+                    "walking=" + arrowMoved + ";edges=" + (arrowRoute == null ? "none" : string.Join(",", arrowRoute)),
+                    arrowMoved && arrowRoute != null && arrowRoute.Length > 0);
+                if (map.TravelData != null)
+                {
+                    if (map.TravelData.Walking) rules.OnBreak();
+                    map.TravelData = null;
+                    rules.SetCurrentPosition(new MapPosition(target.Blueprint)); rules.UpdatePawnPosition();
+                }
                 CaptureTeleportScrolls("scroll-cast", new { committed, stockBefore = 3, stockAfter, labels = labels.Length,
                     movementBookRows = bookRowsBefore });
 
