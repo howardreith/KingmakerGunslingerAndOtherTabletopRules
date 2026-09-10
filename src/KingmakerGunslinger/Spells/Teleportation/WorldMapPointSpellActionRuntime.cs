@@ -61,18 +61,12 @@ namespace KingmakerGunslinger.Spells.Teleportation
         {
             try
             {
-                var controllers = WorldMapPointSpellActionPatches.TeleportControllersField.GetValue(panel) as Component;
                 ModContext context;
                 ModContext.TryGet(out context);
-                // Native FillDialogInfoLocation gates this exact control with its
-                // own activeSelf (CanTeleportSomewhere); mirror that gate rather
-                // than the whole-hierarchy state.
-                if (controllers == null || !controllers.gameObject.activeSelf)
-                { if (context != null) context.Logger.Info("teleportation", "settlement-relabel-skip",
-                    "reason=controllers-inactive;name=" + (controllers == null ? "null" : controllers.gameObject.name) +
-                    ";activeSelf=" + (controllers == null ? "n/a" : controllers.gameObject.activeSelf.ToString()) +
-                    ";inHierarchy=" + (controllers == null ? "n/a" : controllers.gameObject.activeInHierarchy.ToString())); return; }
-                var button = controllers.GetComponentsInChildren<Button>(true).FirstOrDefault(value =>
+                // The settlement teleport button is located through the panel's own
+                // hierarchy by its exact serialized OnTeleportPressed callback; the
+                // control's own active state is the native eligibility gate.
+                var button = panel.GetComponentsInChildren<Button>(true).FirstOrDefault(value =>
                 {
                     int count = value.onClick.GetPersistentEventCount();
                     for (int index = 0; index < count; index++)
@@ -80,8 +74,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     return false;
                 });
                 var label = button == null ? null : button.GetComponentInChildren<TextMeshProUGUI>(true);
-                if (label == null || RelabeledSettlement.ContainsKey(panel))
-                { if (context != null) context.Logger.Info("teleportation", "settlement-relabel-skip", "reason=" + (label == null ? "no-label" : "already-relabeled")); return; }
+                if (label == null || RelabeledSettlement.ContainsKey(panel)) return;
+                if (!button.gameObject.activeSelf) return;
                 RelabeledSettlement.Add(panel, label);
                 SettlementLabelBefore[label] = label.text;
                 label.text = TeleportContextPresentation.SettlementTeleportLabel(TeleportationText.Get);
