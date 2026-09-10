@@ -66,3 +66,42 @@ commit and push through the approved wrapper; no merge or public release.
   last-minute change. Until then phases C/D of the acquisition lifecycle are
   NOT RUN/PASS; the earlier serializer-only persistence qualification
   (transaction 20260910T2038273365319Z) remains valid for its own scope.
+
+
+## C1/C2 closeout (2026-09-10, final commit 0282049)
+
+- C2 FIXED and native-verified: TeleportationScrollActivationGate
+  .HasStrategicScrollFact now classifies through the SAME shared contract as
+  discovery (TeleportationScrollAdapter.AssociatedSpell — canonical activated
+  ability), so every supported variant is guarded. disposable-teleportation-
+  scrolls 36/36 twice: ordinary native use of BOTH the standard scroll AND the
+  distinct crafted variant is refused through the actual TryUseFromInventory
+  boundary (no rulebook event, no consumption, gate closed); contextual use of
+  the variant performs one native activation, consumes only the selected
+  variant, relocates, spends no slot; spellbook casting and unrelated scrolls
+  unaffected (specialist/casting/travelers/gamepad/coexistence regressions
+  PASS).
+- C1 FIXED and native-verified: bootstrap now publishes the finite vendor stock
+  rows whenever the scroll identities load — the rows are save-compatible
+  campaign DEFINITIONS — independently of gameplay enablement; teleport
+  activation, migration and spell-list publication remain module-gated. The
+  full fresh-process acquisition lifecycle qualification PASSED A/B/C/D
+  (transaction 20260910T2328349730573Z_e6f6f244594e420aa9febe777507d087,
+  distinct PIDs, assertions 15/12/8/4): phase A performs the real purchase/
+  copy/prepare/rest/activation/first-arrow chain; B (fresh ON reload) verifies
+  the exact lifecycle state; C (fresh OFF load/save) preserves it; D (fresh ON
+  reload) PASSES module-on-no-refill — shelf restored to the batch minus
+  remembered purchases (3/3), owned items, learned spell and spent/ready
+  preparations intact, no duplicated grant.
+- Final candidate: commit 028204931c51e35de16da716b4137f45ef5a026d, package
+  sha256 24df8242e0a442bf…, installed DLL sha256 a90ff24e2c8386aa… == deployed
+  (deployment 20260910T2352590936980Z); rollback backup
+  runtime-backups/live-mod (latest under that root). The persistence evidence
+  was collected on commit 65262a9 whose PRODUCTION code is identical to
+  0282049 (the later commits changed only guarded test scenarios); the final
+  artifact additionally passed scrolls 36/36, interaction (camera-settle fix
+  in the test), arrows, specialist, casting, travelers, gamepad, coexistence,
+  observer, repository validation, 1,561 domain tests and 464-check preflight.
+- Remaining explicit limitations (follow-up, not passes): in-area genuine
+  Zarcie absence and kingdom auto-management acquisition; broader display/
+  aspect-ratio and optional-mod coverage beyond the qualified profiles.
