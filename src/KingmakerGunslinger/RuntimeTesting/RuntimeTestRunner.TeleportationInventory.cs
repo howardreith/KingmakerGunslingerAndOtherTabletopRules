@@ -70,6 +70,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         level7 = attachment.SpellList == null ? null : attachment.SpellList.GetSpells(7)
                             .Select(spell => new { id = spell.AssetGuid, name = spell.name, school = spell.School.ToString() }).ToArray() }))
                     .OrderBy(value => value.ownerFeatureId, StringComparer.Ordinal).ToArray(),
+                // Gate 4 forensics: verified native scroll donors (type, cost,
+                // caster level, referenced ability) and the exact vendor units
+                // named by the mission, with their native stock structures.
+                scrollDonors = blueprints.OfType<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>()
+                    .Where(value => value.name != null && value.name.IndexOf("Scroll", StringComparison.OrdinalIgnoreCase) >= 0)
+                    .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
+                    .Select(value => new { id = value.AssetGuid, name = value.name, cost = value.Cost,
+                        casterLevel = value.CasterLevel, type = value.ItemType.ToString(),
+                        abilityId = value.Ability == null ? null : value.Ability.AssetGuid, abilityName = value.Ability == null ? null : value.Ability.name,
+                        components = value.ComponentsArray.Select(component => component == null ? "<null>" : component.GetType().FullName).ToArray() })
+                    .Take(40).ToArray(),
+                vendorUnits = blueprints.OfType<Kingmaker.Blueprints.BlueprintUnit>()
+                    .Where(value => value.name != null && (value.name.IndexOf("Zarcie", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        value.name.IndexOf("Arsinoe", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        value.name.IndexOf("Jhod", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        value.name.IndexOf("Hassuf", StringComparison.OrdinalIgnoreCase) >= 0))
+                    .Select(value => new { id = value.AssetGuid, name = value.name,
+                        components = value.ComponentsArray.Select(component => new { type = component == null ? "<null>" : component.GetType().FullName,
+                            lootLists = component is Kingmaker.Blueprints.Loot.BlueprintLoot ? null : null }).ToArray() })
+                    .OrderBy(value => value.name, StringComparer.Ordinal).ToArray(),
                 visualDonors = blueprints.OfType<BlueprintAbility>().Where(value =>
                     value.name.IndexOf("DimensionDoor", StringComparison.OrdinalIgnoreCase) >= 0 ||
                     value.name.IndexOf("Teleport", StringComparison.OrdinalIgnoreCase) >= 0)
