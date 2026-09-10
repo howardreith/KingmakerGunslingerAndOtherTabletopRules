@@ -246,11 +246,26 @@ Vendors:
   workflow: 1,561 domain tests PASS, repository validation PASS, preflight
   464 PASS.
 
-Remaining known limitations (documented, non-blocking): native trading-UI
-gold purchase and local-area spellbook copy UI are covered at the seam
-level (published stock + migration sweep + AddKnown(isCopy)) rather than
-full UI automation; screenshots as supporting evidence not captured
-(structured evidence only, per AGENTS.md). No merge/release performed.
+FINAL UPDATE (2026-09-10, later session): the integrated acquisition chain
+is now NATIVE-VERIFIED. disposable-teleportation-scrolls is 18/18 (two
+consecutive PASS runs) including: market-purchase-native (real gold via
+VendorLogic.BeginTrading/AddForBuy/Deal/EndTraiding — gold delta exactly the
+native price, vendor stock -1, party +1), market-copy-eligible/-native
+(CopyScroll.CanCopy true on a fresh book; private DoCopy invoked through the
+same method the UI reaches; RemoveItem consumes the scroll; canonical spell
+learned), market-specialist-prepare (Conjuration favorite + Rest), and
+market-cast-first-arrow (favorite spent, arrows rebuilt at arrival).
+Key native facts: DoCopy only LEARNS — consumption is the caller's
+RemoveItem; CanCopySpell rejects already-known spells; Player money is
+Money (GainMoney/SpendMoney; property setter private).
+
+Player documentation added: README "Teleportation completion update" and
+SMOKE-TEST-GUIDE "Teleportation completion smoke test". Final §10 handoff:
+TELEPORTATION-COMPLETION-HANDOFF.md (causes, fixes, identities, hashes,
+run inventory, limitations). Remaining limitations: action-boundary-driven
+(not pointer-driven) purchase/copy screens; crafted-scroll variants and
+aspect ratios not separately exercised; divine Recall covered via list
+publication checks. No merge/release performed.
 
 ## Gate 2 diagnosis and fix (publication native-verified 2026-09-10)
 
