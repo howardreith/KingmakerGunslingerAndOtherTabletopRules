@@ -39,7 +39,9 @@ if ($settingsOriginal.schemaVersion -ne 11 -or $settingsOriginal.'teleportation-
 }
 [IO.File]::WriteAllBytes((Join-Path $transactionDirectory 'FeatureModules.original.json'), $settingsBytes)
 function Write-PersistenceEvidence([string]$name, $value) {
-    Write-KmgUtf8NoBom -Path (Join-Path $transactionDirectory $name) -Content ($value | ConvertTo-Json -Depth 100)
+    # -InputObject preserves arrays and single objects under Windows PowerShell
+    # 5.1, where pipeline unwrapping could produce empty content.
+    Write-KmgUtf8NoBom -Path (Join-Path $transactionDirectory $name) -Content (ConvertTo-Json -InputObject $value -Depth 100)
 }
 function Register-PersistenceOwnedSave([string]$runDirectory) {
     $receiptPath = Join-Path $runDirectory 'teleportation-persistence-owned-save.json'
