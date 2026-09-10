@@ -271,8 +271,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         request.Transaction.Result != null && request.Transaction.Result.Status == TeleportExecutionStatus.Arrived &&
                         request.Transaction.Result.DestinationId == target.Blueprint.AssetGuid;
                     var remainingReady = RawSlots(bookConjurer, 5).Count(value => value.Spell != null && value.Spell.Blueprint == teleport && value.Available);
+                    CaptureTeleportationSpecialist("world-map-spend-result", new {
+                        transaction = request.Transaction.State.ToString(), request.Transaction.Diagnostic,
+                        lastEvidence = request.Execution.LastEvidence, committed, remainingReady,
+                        dialogShown = DialogMessageBox.Instance.IsShown });
                     SpecialistAssert("world-map-specialist-spend", "the world map spends exactly the single favorite preparation and relocates",
-                        "committed=" + committed + ";expenditure=" + request.Execution.Resource.ObserveExpenditure() + ";remaining=" + remainingReady,
+                        "committed=" + committed + ";expenditure=" + request.Execution.Resource.ObserveExpenditure() + ";remaining=" + remainingReady +
+                        ";transaction=" + request.Transaction.State + ";diagnostic=" + request.Transaction.Diagnostic,
                         committed && request.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && remainingReady == 0 &&
                         !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown);
                 }
