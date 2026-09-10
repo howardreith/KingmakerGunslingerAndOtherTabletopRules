@@ -49,7 +49,7 @@ private System.Void RuleAttackRoll.set_Roll(Kingmaker.RuleSystem.RulebookEvent+R
 public System.Boolean RuleAttackRoll.IsSuccessRoll(System.Int32)
 ```
 
-`RulebookEvent.RollEntry` must remain a value type with writable `Value : Int32` and `RollHistory : List<Int32>` fields. The existing persistence gate also requires the exact zero-argument `Kingmaker.Items.ItemEntity.ApplyEnchantments()` base method and a concrete `Kingmaker.Items.ItemEntityWeapon` type. Sprint 29 additionally retains the exact inventory and ability contracts already used by Reload and Overhaul while registering the separate full-round Repair ability. The rejected `ItemEntityWeapon.UniqueId` vault is not a build requirement and must not be revived. Do not replace the exact Roll-setter diagnostic with a global dice patch.
+`RulebookEvent.RollEntry` must remain a value type with writable `Value : Int32` and `RollHistory : List<Int32>` fields. The existing persistence gate also requires the exact zero-argument `Kingmaker.Items.ItemEntity.ApplyEnchantments()` base method and a concrete `Kingmaker.Items.ItemEntityWeapon` type. The current design additionally retains the exact inventory and ability contracts already used by Reload while registering the unified full-round Repair ability with its reusable Gunsmith’s Kit dependency. The rejected `ItemEntityWeapon.UniqueId` vault is not a build requirement and must not be revived. Do not replace the exact Roll-setter diagnostic with a global dice patch.
 
 ## Validate and test
 

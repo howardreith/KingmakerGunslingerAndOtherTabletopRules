@@ -57,13 +57,13 @@ The identity can later map to an ammunition blueprint or recipe. No such invento
 | `ApplyMisfireDamage` | Normal | Becomes Broken and preserves its load |
 | `ApplyMisfireDamage` | Broken | Becomes Wrecked and empty |
 | `Repair` | Broken | Becomes Normal and preserves its load |
-| `OverhaulWrecked` | Wrecked | Becomes Broken and empty; exact-item gameplay delivery remains deferred |
+| `Repair` | Wrecked (always empty) | Becomes Normal and stays empty |
 | `Wreck` | Normal or Broken | Becomes Wrecked and empty |
 | `Wreck` | Wrecked | Returns the same state |
 
-Rejected gameplay transitions use typed reason codes such as `Empty`, `Wrecked`, `CapacityExceeded`, `IncompatibleAmmunition`, `MixedAmmunition`, `NotBroken`, and `NotWrecked`.
+Rejected gameplay transitions use typed reason codes such as `Empty`, `Wrecked`, `CapacityExceeded`, `IncompatibleAmmunition`, `MixedAmmunition`, and `NotBroken`. The historical `OverhaulWrecked` Wrecked-to-Broken transition and its `NotWrecked` reason code were removed with the unified maintenance design: one full-round Repair Firearm use now restores a Broken or Wrecked firearm directly to Normal with a reusable Gunsmith's Kit, preserves surviving loaded ammunition, and consumes nothing.
 
-A broken gun remains loadable and fireable at the state-machine layer. Later combat rules determine penalties and misfire consequences. A wrecked gun cannot load, fire, or use ordinary repair.
+A broken gun remains loadable and fireable at the state-machine layer. Later combat rules determine penalties and misfire consequences. A wrecked gun cannot load or fire, but it can be repaired directly to Normal.
 
 ## Serializer DTO
 

@@ -19,6 +19,10 @@ namespace KingmakerGunslinger.Blueprints
         internal int Count { get { return _tables.Count; } }
         internal bool ContainsExact(BlueprintItem item)
         { return _tables.Any(table => table.ContainsExact(item)); }
+        internal int CountPublishedRows(BlueprintItem item)
+        {
+            return _tables.Sum(table => table.CountPublishedRows(item));
+        }
     }
 
     internal static class BeneathStolenLandsVendorBlueprints
@@ -62,11 +66,13 @@ namespace KingmakerGunslinger.Blueprints
                 magicFirearms.Require(MagicFirearmBlueprints.MusketPlus1Symbol).Item,
                 magicFirearms.Require(MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item };
             int[] equipmentCounts = { 1, 1, 1, 1, 1, 1 };
+            // The obsolete consumable Firearm Repair Kit and Firearm Overhaul Kit stay
+            // in the owned set so previously injected rows are cleaned up, but only the
+            // reusable Gunsmith's Kit remains offered.
             BlueprintItem[] support = { ammunition.BlackPowder,
                 ammunition.LeadBall, ammunition.PaperCartridge,
-                repairKit, supplies.OverhaulKit,
                 supplies.GunsmithKit };
-            int[] supportCounts = { 200, 200, 200, 10, 5, 1 };
+            int[] supportCounts = { 200, 200, 200, 1 };
             BlueprintItem[] owned = firearms.Entries.Select(value =>
                 (BlueprintItem)value.Item).Concat(magicFirearms.Entries.Select(value =>
                     (BlueprintItem)value.Item)).Concat(new BlueprintItem[] {

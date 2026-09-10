@@ -60,7 +60,6 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/Blueprints/"
         "BokkenFirearmSupplyVendorBlueprints.cs"),
         "BlueprintUnitLoot", "AmmunitionCount = 100",
-        "RepairKitCount = 5", "OverhaulKitCount = 2",
         "GunsmithKitCount = 1", "supplies.GunsmithKit")
     oleg = require_tokens(root / (
         "src/KingmakerGunslinger/Blueprints/"

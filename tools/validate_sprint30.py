@@ -133,9 +133,10 @@ def validate(
         policy,
         [
             "FirearmActionKind.Reload",
-            "FirearmActionKind.Overhaul",
             "FirearmActionKind.Repair",
             "The firearm has capacity available to reload.",
+            "Only a Broken or Wrecked firearm can be repaired.",
+            "A reusable Gunsmith's Kit is required in the shared inventory.",
         ],
         "Generic action policy",
     )
@@ -149,7 +150,6 @@ def validate(
     )
     for relative in [
         "src/KingmakerGunslinger/Reloading/ReloadTestMusketRuntime.cs",
-        "src/KingmakerGunslinger/Recovery/OverhaulTestMusketRuntime.cs",
         "src/KingmakerGunslinger/Recovery/RepairTestMusketRuntime.cs",
     ]:
         adapter = read(root, relative)
@@ -164,7 +164,7 @@ def validate(
         tests,
         [
             "GenericReloadWreckedRejected",
-            "GenericOverhaulWrecked",
+            "GenericRepairWreckedAvailable",
             "GenericRepairLoadedAvailable",
             "ReloadProfileAmmunitionIdentity",
         ],

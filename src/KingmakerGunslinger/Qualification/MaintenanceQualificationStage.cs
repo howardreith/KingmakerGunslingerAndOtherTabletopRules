@@ -4,8 +4,7 @@ namespace KingmakerGunslinger.Qualification
     {
         Failed = 0,
         FixtureReady = 1,
-        OverhaulPassed = 2,
-        RepairPassed = 3,
-        MaintenanceLoopPassed = 4
+        RepairPassed = 2,
+        MaintenanceLoopPassed = 3
     }
 }

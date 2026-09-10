@@ -2,7 +2,7 @@
 
 Scope: every project-registered `BlueprintItem` and `BlueprintItemWeapon`. Player-facing localizations are reviewed below; internal-only shells and surrogate items with no project-authored localization are separately inventoried at the end. Native Owlcat and third-party descriptions were not changed. This audit treats the normal item card as authoritative for enhancement, material, weapon category, handedness, damage, critical profile, and ordinary enchantments; those traits are no longer repeated in item prose.
 
-`—` means the item deliberately has no extra description because its card already communicates every player-relevant property. Flavor text remains separate. Keys below are the authoritative source keys (some are generated from the listed symbol in the named/generic builders).
+`â` means the item deliberately has no extra description because its card already communicates every player-relevant property. Flavor text remains separate. Keys below are the authoritative source keys (some are generated from the listed symbol in the named/generic builders).
 
 ## Ammunition and supplies
 
@@ -10,10 +10,10 @@ Scope: every project-registered `BlueprintItem` and `BlueprintItemWeapon`. Playe
 | --- | --- | --- | --- | --- |
 | Black Powder Charge | `KMG.Item.BlackPowderCharge.Description` | A measured charge of black powder used with a projectile to load an early firearm. | Use with a lead ball to load early firearms. | Required loose-ammunition pairing. |
 | Lead Ball | `KMG.Item.LeadBall.Description` | A cast lead projectile sized for an early firearm. Loading one also requires a black powder charge. | Use with a black powder charge to load early firearms. | Required loose-ammunition pairing. |
-| Paper Cartridge | `KMG.Item.PaperCartridge.Description` | A prepared paper or cloth bundle…compatible with early pistols, muskets, and blunderbusses. | Combines powder and shot for early firearms. Reduces reload time by one step and increases misfire by 1. | The non-obvious reload and misfire tradeoff. |
-| Gunsmith's Kit | `KMG.Item.GunsmithKit.Description` | A durable, non-consumable set of firearm-cleaning and ammunition-casting tools required to craft basic firearm ammunition. | Required to craft basic firearm ammunition. | Crafting prerequisite. |
-| Firearm Overhaul Kit | `KMG.Item.OverhaulKit.Description` | A consumable set of fitted replacement parts used by Overhaul Firearm to restore one Wrecked firearm to Broken condition. | Consume with Overhaul Firearm to change one wrecked firearm to broken. | Exact use and state change. |
-| Firearm Repair Kit | `KMG.Item.FirearmRepairKit.Description` | A compact set of replacement springs, pins, tools, and fitted parts…ordinary repair is still required afterward. | Consume with Overhaul Firearm to change a wrecked Test Musket to an empty broken firearm. Repair it afterward. | Test-fixture limitation and follow-up repair. |
+| Paper Cartridge | `KMG.Item.PaperCartridge.Description` | A prepared paper or cloth bundleâ¦compatible with early pistols, muskets, and blunderbusses. | Combines powder and shot for early firearms. Reduces reload time by one step and increases misfire by 1. | The non-obvious reload and misfire tradeoff. |
+| Gunsmith’s Kit | `KMG.Item.GunsmithKit.Description` | Required to craft basic firearm ammunition. | Reusable tool. Required in the shared inventory to repair a Broken or Wrecked firearm with Repair Firearm and to craft basic firearm ammunition. It is never consumed. | Repair and crafting prerequisite; explicitly non-consumable. |
+| Firearm Overhaul Kit | `KMG.Item.OverhaulKit.Description` | Consume with Overhaul Firearm to change one wrecked firearm to broken. | Obsolete: no longer used or sold. Firearms are now repaired directly to Normal with a reusable Gunsmith’s Kit. | Clear obsolescence for retained save items. |
+| Firearm Repair Kit | `KMG.Item.FirearmRepairKit.Description` | Consume with Overhaul Firearm to change a wrecked Test Musket to an empty broken firearm. Repair it afterward. | Obsolete: no longer used or sold. Firearms are now repaired directly to Normal with a reusable Gunsmith’s Kit. | Clear obsolescence for retained save items. |
 
 ## Ordinary firearms
 
@@ -33,14 +33,14 @@ All eight entries retain the shared penetration sentence. The old text redundant
 
 | Item | Description key | Old unique text | New unique text | Retained information |
 | --- | --- | --- | --- | --- |
-| Pistol +1 | `KMG.Firearms.PistolPlus1Item.Description` | This masterwork pistol bears a +1 enhancement bonus. | — | The card displays masterwork and +1; penetration remains appended. |
-| Musket +1 | `KMG.Firearms.MusketPlus1Item.Description` | This masterwork musket bears a +1 enhancement bonus. | — | The card displays masterwork and +1; penetration remains appended. |
-| Blunderbuss +1 | `KMG.Firearms.BlunderbussPlus1Item.Description` | This masterwork blunderbuss bears a +1 enhancement bonus. | — | The card displays masterwork and +1; penetration remains appended. |
-| Duelist's Rebuttal | `KMG.Firearms.DuelistsRebuttalItem.Description` | +2 Reliable pistol. Reliable reduces…a natural 1 remains a miss. | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. | Reliable's non-obvious exception. |
-| The River King's Measure | `KMG.Firearms.RiverKingsMeasureItem.Description` | +4 Reliable musket. Reliable reduces…a natural 1 remains a miss. | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. | Reliable's non-obvious exception. |
-| Irovetti's Ovation | `KMG.Firearms.IrovettisOvationItem.Description` | +4 Reliable blunderbuss. Reliable reduces…a natural 1 remains a miss. | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. | Reliable's non-obvious exception. |
-| The Last Word | `KMG.Firearms.TheLastWordItem.Description` | +5 Reliable Seeking pistol. Reliable reduces…Seeking ignores concealment miss chances… | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. Seeking ignores concealment miss chances without revealing unseen creatures or bypassing other defenses. | Reliable and Seeking exceptions. |
-| Watch at the World's End | `KMG.Firearms.WatchAtWorldsEndItem.Description` | +5 Reliable Fey Bane musket. Reliable reduces…Fey Bane is especially effective against Fey creatures. | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. | Reliable exception; Fey Bane remains on the normal enchantment card. |
+| Pistol +1 | `KMG.Firearms.PistolPlus1Item.Description` | This masterwork pistol bears a +1 enhancement bonus. | â | The card displays masterwork and +1; penetration remains appended. |
+| Musket +1 | `KMG.Firearms.MusketPlus1Item.Description` | This masterwork musket bears a +1 enhancement bonus. | â | The card displays masterwork and +1; penetration remains appended. |
+| Blunderbuss +1 | `KMG.Firearms.BlunderbussPlus1Item.Description` | This masterwork blunderbuss bears a +1 enhancement bonus. | â | The card displays masterwork and +1; penetration remains appended. |
+| Duelist's Rebuttal | `KMG.Firearms.DuelistsRebuttalItem.Description` | +2 Reliable pistol. Reliable reducesâ¦a natural 1 remains a miss. | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. | Reliable's non-obvious exception. |
+| The River King's Measure | `KMG.Firearms.RiverKingsMeasureItem.Description` | +4 Reliable musket. Reliable reducesâ¦a natural 1 remains a miss. | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. | Reliable's non-obvious exception. |
+| Irovetti's Ovation | `KMG.Firearms.IrovettisOvationItem.Description` | +4 Reliable blunderbuss. Reliable reducesâ¦a natural 1 remains a miss. | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. | Reliable's non-obvious exception. |
+| The Last Word | `KMG.Firearms.TheLastWordItem.Description` | +5 Reliable Seeking pistol. Reliable reducesâ¦Seeking ignores concealment miss chancesâ¦ | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. Seeking ignores concealment miss chances without revealing unseen creatures or bypassing other defenses. | Reliable and Seeking exceptions. |
+| Watch at the World's End | `KMG.Firearms.WatchAtWorldsEndItem.Description` | +5 Reliable Fey Bane musket. Reliable reducesâ¦Fey Bane is especially effective against Fey creatures. | Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses. | Reliable exception; Fey Bane remains on the normal enchantment card. |
 
 ## Eastern generic weapons
 
@@ -88,7 +88,7 @@ The old generated text was `{enhancement}, {native properties}, {material} {fami
 
 ## Elven Branched Spears
 
-The old generic generator recited cold iron, masterwork, enhancement, two-handed/reach, and weapon identity. The old named generator added the same profile and the repetitive `It remains…` tail. The card now owns standard traits; every spear retains the nonstandard Finesse and movement-provoked attack-of-opportunity rule.
+The old generic generator recited cold iron, masterwork, enhancement, two-handed/reach, and weapon identity. The old named generator added the same profile and the repetitive `It remainsâ¦` tail. The card now owns standard traits; every spear retains the nonstandard Finesse and movement-provoked attack-of-opportunity rule.
 
 | Item | Description key | New text | Retained information |
 | --- | --- | --- | --- |

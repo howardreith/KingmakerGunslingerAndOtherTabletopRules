@@ -16,10 +16,11 @@ using UnityModManagerNet;
 namespace KingmakerGunslinger
 {
     /// <summary>
-    /// Unity Mod Manager composition root. Sprint 29 retains the accepted firearm
-    /// vertical slice and player-facing Wrecked-to-Broken Overhaul, adds a separate
-    /// full-round same-item Broken-to-Normal Repair action, and exposes a deterministic
-    /// process-local qualification fixture for the complete maintenance loop.
+    /// Unity Mod Manager composition root. The unified maintenance design keeps the
+    /// accepted firearm vertical slice and exposes one full-round same-item Repair
+    /// Firearm action that restores a Broken or Wrecked firearm directly to Normal
+    /// with a reusable Gunsmith's Kit, plus a deterministic process-local
+    /// qualification fixture for the complete maintenance loop.
     /// </summary>
     public static class Main
     {
@@ -130,7 +131,7 @@ namespace KingmakerGunslinger
                 logger.Info(
                     "development",
                     "ui.attached",
-                    "Attached Sprint 29 controls for proficiency, item-token persistence, ammunition, condition-preserving full-round reload, player-facing full-round Wrecked-to-Broken Overhaul and Broken-to-Normal Repair with Firearm Repair Kits, the accelerated maintenance qualification fixture and PASS/FAIL matrix, loaded-round attack enforcement, natural-roll misfire and native burst diagnostics, two-step destructive cleanup confirmation, weapon-only token reconciliation, and disabled-by-default firearm combat tracing.");
+                    "Attached controls for proficiency, item-token persistence, ammunition, condition-preserving full-round reload, player-facing unified full-round Broken-or-Wrecked-to-Normal Repair Firearm with a reusable Gunsmith's Kit, the accelerated maintenance qualification fixture and PASS/FAIL matrix, loaded-round attack enforcement, natural-roll misfire and native burst diagnostics, two-step destructive cleanup confirmation, weapon-only token reconciliation, and disabled-by-default firearm combat tracing.");
 
                 lock (LoadGate)
                 {
@@ -143,7 +144,7 @@ namespace KingmakerGunslinger
                     context);
                 ExpandedSummoningAlignmentModeRuntime.Attach(context);
                 RuntimeTestRunner.TryAttach(context);
-                logger.Info("bootstrap", "load.complete", "Lifecycle bootstrap completed; Sprint 29 registered the full-round Repair Test Musket ability and completed the staged same-item maintenance loop while retaining the accepted firearm attack, reload, persistence, natural-d20 misfire, condition, native 5-foot burst, and Overhaul paths. Overhaul changes exactly one equipped empty/Wrecked Test Musket to empty/Broken and Repair changes exactly one equipped Broken Test Musket to empty/Normal, destroying any rounds loaded in that firearm; each consumes exactly one Firearm Repair Kit only during completed delivery, preserves the exact runtime item and item-owned token identity, and advances state exactly once. The process-local qualification fixture prepares a second independent Test Musket and required resources, then reports concise identity, resource, counter, fault, duplicate, and second-item PASS/FAIL evidence through Overhaul, Repair, and Reload. Cancellation before delivery, missing kits, invalid states, ambiguous equipped targets, native Heavy Crossbows, and unrelated firearms remain fail-closed. Generic definition-driven maintenance, Quick Clear, scatter triple damage, class progression, and production firearm content remain deferred.");
+                logger.Info("bootstrap", "load.complete", "Lifecycle bootstrap completed; the unified full-round Repair Firearm ability restores exactly one equipped Broken or Wrecked project firearm straight to Normal while retaining the accepted firearm attack, reload, persistence, natural-d20 misfire, condition, and native 5-foot burst paths. Repair requires one reusable Gunsmith's Kit in the shared inventory, consumes nothing, preserves surviving loaded rounds and the exact runtime item and item-owned token identity, and advances state exactly once. The hidden legacy Overhaul ability identity delegates to this same repair for save compatibility. The process-local qualification fixture prepares a second independent Test Musket and required resources, then reports concise identity, resource, counter, fault, duplicate, and second-item PASS/FAIL evidence through Repair and Reload. Cancellation before delivery, a missing Gunsmith's Kit, invalid states, ambiguous equipped targets, native Heavy Crossbows, and unrelated firearms remain fail-closed.");
                 return true;
             }
             catch (Exception exception)

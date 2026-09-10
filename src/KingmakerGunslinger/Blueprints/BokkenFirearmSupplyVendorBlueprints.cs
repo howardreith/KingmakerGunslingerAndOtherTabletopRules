@@ -20,8 +20,6 @@ namespace KingmakerGunslinger.Blueprints
             "57f84fdde3cc2994284fb3acc4a3cb97";
         internal const string ZeroStateOwnerName = "OTP_Bokken_ZeroState";
         internal const int AmmunitionCount = 100;
-        internal const int RepairKitCount = 5;
-        internal const int OverhaulKitCount = 2;
         internal const int GunsmithKitCount = 1;
 
         internal static BokkenVendorPublication Publish(
@@ -45,6 +43,9 @@ namespace KingmakerGunslinger.Blueprints
                     "Bokken merchant GUID/name mismatch: " + table.name + ":" +
                     TableGuid);
 
+            // The obsolete consumable Firearm Repair Kit and Firearm Overhaul Kit stay
+            // in the owned set so previously injected rows are cleaned up, but they are
+            // never offered again.
             BlueprintItem[] owned =
             {
                 ammunition.BlackPowder,
@@ -54,15 +55,20 @@ namespace KingmakerGunslinger.Blueprints
                 supplies.OverhaulKit,
                 supplies.GunsmithKit
             };
-            BlueprintItem[] items = publish ? owned :
+            BlueprintItem[] stocked =
+            {
+                ammunition.BlackPowder,
+                ammunition.LeadBall,
+                ammunition.PaperCartridge,
+                supplies.GunsmithKit
+            };
+            BlueprintItem[] items = publish ? stocked :
                 Array.Empty<BlueprintItem>();
             int[] counts = publish ? new[]
             {
                 AmmunitionCount,
                 AmmunitionCount,
                 AmmunitionCount,
-                RepairKitCount,
-                OverhaulKitCount,
                 GunsmithKitCount
             } : Array.Empty<int>();
             BlueprintComponent[] existing = table.ComponentsArray ??
@@ -108,11 +114,9 @@ namespace KingmakerGunslinger.Blueprints
                 publication.Validate();
                 logger.Info("acquisition", "bokken-firearm-supplies.published",
                     string.Format(CultureInfo.InvariantCulture,
-                        "Normalized {0} exact firearm-supply rows on {1} ({2}); enabled={3}; ammunition={4}; repair={5}; overhaul={6}; gunsmith={7}.",
+                        "Normalized {0} exact firearm-supply rows on {1} ({2}); enabled={3}; ammunition={4}; gunsmith={5}.",
                         items.Length, table.name, TableGuid, publish,
                         publish ? AmmunitionCount : 0,
-                        publish ? RepairKitCount : 0,
-                        publish ? OverhaulKitCount : 0,
                         publish ? GunsmithKitCount : 0));
                 return publication;
             }

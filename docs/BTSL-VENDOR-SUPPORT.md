@@ -14,10 +14,19 @@ runtime-observed tables. Missing DLC tables are optional and log
 Each Honest Guy table receives one mundane and one +1 Pistol, Musket, and
 Blunderbuss plus module-enabled permanent Eastern weapons and Elven Branched
 Spears. Each Xelliren table receives 200 Black Powder, 200 Lead Balls, 200 Paper
-Cartridges, 10 Repair Kits, 5 Overhaul Kits, and one Gunsmith's Kit. Wrong-owner
+Cartridges, and one reusable Gunsmith's Kit; the retired consumable Firearm
+Repair Kit and Firearm Overhaul Kit are no longer offered, and previously
+injected copies are removed. Wrong-owner
 project rows are removed by exact item reference. Native and foreign rows retain
 their relative order while project rows are inserted by stable item type/name;
 publication is idempotent and rollback restores the exact original arrays.
+
+Blueprint publication only fixes future stock generation. Inventories that an
+earlier version already materialized into a saved merchant are swept separately:
+`RetiredKitVendorStockCleanup` removes the two exact retired item identities
+from a vendor's own inventory every time trading begins, idempotently, without
+touching unrelated merchandise, replenishing purchased stock, or removing
+player-owned legacy kits.
 
 The split applies to static blueprint tables and therefore to new or
 not-yet-materialized merchant stock. Already materialized old-save inventories
