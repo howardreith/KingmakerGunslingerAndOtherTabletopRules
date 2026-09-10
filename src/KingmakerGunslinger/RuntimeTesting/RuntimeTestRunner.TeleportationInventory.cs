@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Globalmap;
 using Kingmaker.Globalmap.Blueprints;
@@ -51,6 +52,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.name.IndexOf("Druid", StringComparison.OrdinalIgnoreCase) >= 0 ||
                     value.name.IndexOf("Cleric", StringComparison.OrdinalIgnoreCase) >= 0)
                     .Select(value => new { id = value.AssetGuid, name = value.name }).ToArray(),
+                // Specialist/favorite-slot sources: every AddSpecialSpellList
+                // attachment with the spells its list offers at the teleportation
+                // levels. Observation only; nothing is published here.
+                specialSpellLists = blueprints.OfType<BlueprintFeature>()
+                    .Select(feature => new { feature, attachments = feature.ComponentsArray
+                        .OfType<Kingmaker.UnitLogic.FactLogic.AddSpecialSpellList>().ToArray() })
+                    .Where(value => value.attachments.Length > 0)
+                    .SelectMany(value => value.attachments.Select(attachment => new {
+                        ownerFeatureId = value.feature.AssetGuid, ownerFeatureName = value.feature.name,
+                        classId = attachment.CharacterClass == null ? null : attachment.CharacterClass.AssetGuid,
+                        className = attachment.CharacterClass == null ? null : attachment.CharacterClass.name,
+                        listId = attachment.SpellList == null ? null : attachment.SpellList.AssetGuid,
+                        listName = attachment.SpellList == null ? null : attachment.SpellList.name,
+                        level5 = attachment.SpellList == null ? null : attachment.SpellList.GetSpells(5)
+                            .Select(spell => new { id = spell.AssetGuid, name = spell.name, school = spell.School.ToString() }).ToArray(),
+                        level7 = attachment.SpellList == null ? null : attachment.SpellList.GetSpells(7)
+                            .Select(spell => new { id = spell.AssetGuid, name = spell.name, school = spell.School.ToString() }).ToArray() }))
+                    .OrderBy(value => value.ownerFeatureId, StringComparer.Ordinal).ToArray(),
                 visualDonors = blueprints.OfType<BlueprintAbility>().Where(value =>
                     value.name.IndexOf("DimensionDoor", StringComparison.OrdinalIgnoreCase) >= 0 ||
                     value.name.IndexOf("Teleport", StringComparison.OrdinalIgnoreCase) >= 0)
