@@ -5047,8 +5047,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // two-fact era and genuinely persists the Overhaul ability fact
                 // and a saved action-bar slot for it (verified in the save
                 // archive before this scenario ran). After native load, exactly
-                // one visible maintenance action may remain and the saved
-                // Overhaul references may only resolve to the hidden delegate.
+                // one visible maintenance action may remain and every saved
+                // Overhaul reference may only resolve to the hidden delegate.
                 BlueprintAbility repairBp = BlueprintBootstrap.RepairTestMusketAbility;
                 BlueprintAbility overhaulBp = BlueprintBootstrap.OverhaulTestMusketAbility;
                 bool aliasIsHiddenDelegate = overhaulBp != null &&
@@ -5056,9 +5056,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     overhaulBp.ComponentsArray != null &&
                     overhaulBp.ComponentsArray
                         .OfType<RepairTestMusketAbilityLogic>().Count() == 1;
-                int overhaulFactUnits = 0, hiddenOverhaulFacts = 0,
-                    visibleMaintenanceFacts = 0, savedOverhaulSlots = 0,
-                    savedVisibleMaintenanceSlots = 0;
                 var scannedUnits = new List<
                     Kingmaker.EntitySystem.Entities.UnitEntityData>();
                 string firstHolderName = null;
@@ -5079,73 +5076,69 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !scannedUnits.Contains(partyMember))
                             scannedUnits.Add(partyMember);
                 }
+                int overhaulFactUnits = 0, visibleMaintenanceUnits = 0,
+                    savedOverhaulSlots = 0, savedVisibleMaintenanceSlots = 0,
+                    savedOverhaulSlotsHidden = 0;
                 foreach (Kingmaker.EntitySystem.Entities.UnitEntityData
-                    partyUnit in scannedUnits)
+                    scannedUnit in scannedUnits)
                 {
-                    UnitDescriptor descriptor = partyUnit.Descriptor;
-                    if (descriptor == null) continue;
-                    bool unitHoldsOverhaul = false;
-                    var maintenanceCandidates = new HashSet<object>();
-                    if (descriptor.Abilities != null)
-                        foreach (object fact in ReflectionAccess.Enumerate(
-                            descriptor.Abilities))
-                            if (fact != null) maintenanceCandidates.Add(fact);
-                    object allFacts;
-                    string factsMember;
-                    if (ReflectionAccess.TryGetFirstNonNullMember(descriptor,
-                        new[] { "Facts" }, out allFacts, out factsMember) &&
-                        allFacts != null)
-                        foreach (object fact in ReflectionAccess.Enumerate(
-                            allFacts))
-                            if (fact != null) maintenanceCandidates.Add(fact);
-                    foreach (object fact in maintenanceCandidates)
+                    UnitDescriptor descriptor = scannedUnit.Descriptor;
+                    if (descriptor == null || descriptor.Abilities == null)
+                        continue;
+                    // Typed single-fact lookups: one Ability fact per blueprint
+                    // per unit is the engine contract the action bar uses.
+                    bool holdsOverhaul =
+                        descriptor.Abilities.GetAbility(overhaulBp) != null;
+                    bool holdsRepair =
+                        descriptor.Abilities.GetAbility(repairBp) != null;
+                    if (holdsOverhaul)
                     {
-                        var ability = fact as
-                            Kingmaker.UnitLogic.Abilities.Ability;
-                        BlueprintAbility factBp =
-                            ability == null ? null : ability.Blueprint;
-                        if (ReferenceEquals(factBp, overhaulBp))
-                        {
-                            unitHoldsOverhaul = true;
-                            hiddenOverhaulFacts++;
-                            if (firstHolderName == null)
-                                firstHolderName = partyUnit.CharacterName;
-                        }
-                        else if (ReferenceEquals(factBp, repairBp) &&
-                            !repairBp.Hidden)
-                        {
-                            visibleMaintenanceFacts++;
-                        }
+                        overhaulFactUnits++;
+                        if (firstHolderName == null)
+                            firstHolderName = scannedUnit.CharacterName;
                     }
-                    if (unitHoldsOverhaul) overhaulFactUnits++;
-                        object unitSettings;
-                        string settingsMember;
-                        if (ReflectionAccess.TryGetFirstNonNullMember(partyUnit,
-                            new[] { "UISettings" }, out unitSettings,
-                            out settingsMember) && unitSettings != null)
+                    if (holdsRepair && !repairBp.Hidden)
+                        visibleMaintenanceUnits++;
+                    object unitSettings;
+                    string settingsMember;
+                    if (!ReflectionAccess.TryGetFirstNonNullMember(scannedUnit,
+                        new[] { "UISettings" }, out unitSettings,
+                        out settingsMember) || unitSettings == null)
+                        continue;
+                    object slots;
+                    string slotsMember;
+                    if (ReflectionAccess.TryGetFirstNonNullMember(unitSettings,
+                        new[] { "Slots" }, out slots, out slotsMember) ||
+                        ReflectionAccess.TryGetFirstNonNullMember(unitSettings,
+                        new[] { "m_Slots" }, out slots, out slotsMember))
+                    {
+                        foreach (object slot in ReflectionAccess.Enumerate(slots))
                         {
-                            foreach (object slot in CollectActionBarSlots(
-                                unitSettings))
+                            BlueprintAbility slotBp =
+                                ReadSlotAbilityBlueprint(slot);
+                            if (ReferenceEquals(slotBp, overhaulBp))
                             {
-                                BlueprintAbility slotBp =
-                                    ReadSlotAbilityBlueprint(slot);
-                                if (ReferenceEquals(slotBp, overhaulBp))
-                                    savedOverhaulSlots++;
-                                else if (ReferenceEquals(slotBp, repairBp) &&
-                                    !repairBp.Hidden)
-                                    savedVisibleMaintenanceSlots++;
+                                savedOverhaulSlots++;
+                                if (overhaulBp.Hidden)
+                                    savedOverhaulSlotsHidden++;
+                            }
+                            else if (ReferenceEquals(slotBp, repairBp) &&
+                                !repairBp.Hidden)
+                            {
+                                savedVisibleMaintenanceSlots++;
                             }
                         }
                     }
+                }
                 string aliasObserved = "unitsScanned=" + scannedUnits.Count +
                     ";firstHolder=" + (firstHolderName ?? "<none>") +
-                    ";overhaulFactUnits=" +
-                    overhaulFactUnits + ";hiddenOverhaulFacts=" +
-                    hiddenOverhaulFacts + ";visibleMaintenanceFacts=" +
-                    visibleMaintenanceFacts + ";savedOverhaulSlots=" +
-                    savedOverhaulSlots + ";savedVisibleMaintenanceSlots=" +
-                    savedVisibleMaintenanceSlots + ";aliasHiddenDelegate=" +
-                    aliasIsHiddenDelegate;
+                    ";overhaulFactUnits=" + overhaulFactUnits +
+                    ";visibleMaintenanceUnits=" + visibleMaintenanceUnits +
+                    ";savedOverhaulSlots=" + savedOverhaulSlots +
+                    ";savedOverhaulSlotsHidden=" + savedOverhaulSlotsHidden +
+                    ";savedVisibleMaintenanceSlots=" +
+                    savedVisibleMaintenanceSlots +
+                    ";aliasHiddenDelegate=" + aliasIsHiddenDelegate;
                 assertions.Add(Assertion("old-save-overhaul-fact-persisted",
                     "the loaded save genuinely persists at least one Overhaul ability fact",
                     aliasObserved, overhaulFactUnits >= 1,
@@ -5155,17 +5148,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     aliasObserved, aliasIsHiddenDelegate,
                     "live blueprint flags and component array after load"));
                 assertions.Add(Assertion("exactly-one-visible-maintenance-action",
-                    "exactly one non-hidden maintenance ability fact exists across the loaded party",
-                    aliasObserved, visibleMaintenanceFacts == 1,
-                    "live ability-fact enumeration filtered to the two maintenance blueprints"));
+                    "exactly one loaded unit exposes the visible Repair Firearm action",
+                    aliasObserved, visibleMaintenanceUnits == 1,
+                    "typed GetAbility lookups across every deserialized unit"));
                 assertions.Add(Assertion("saved-overhaul-slot-not-usable",
                     "every saved action-bar slot referencing Overhaul resolves to the hidden delegate blueprint",
-                    aliasObserved, savedOverhaulSlots >= 1 && aliasIsHiddenDelegate,
-                    "bounded reflection over loaded unit UISettings action-bar slots"));
+                    aliasObserved,
+                    savedOverhaulSlots >= 1 &&
+                        savedOverhaulSlots == savedOverhaulSlotsHidden,
+                    "UISettings.Slots enumeration with per-slot ability blueprint identity"));
                 assertions.Add(Assertion("no-duplicate-maintenance-slot",
                     "no second visible maintenance action-bar slot exists beyond Repair Firearm",
                     aliasObserved, savedVisibleMaintenanceSlots <= 1,
-                    "bounded reflection over loaded unit UISettings action-bar slots"));
+                    "UISettings.Slots enumeration filtered to both maintenance blueprints"));
                 result.Diagnostics.Add("unifiedRepairAlias=" + aliasObserved);
             }
             bool supervisedEntry = _request.Scenario ==
