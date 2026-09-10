@@ -163,6 +163,90 @@ through the native trading UI (buy with gold) and the local-area spellbook
 copy UI — currently covered by the copy seam + published stock; consider
 covering in Gate 5's final sweep or documenting as limitation.
 
+## PR #12 review resolution (2026-09-10, second correction round)
+
+All seven review findings on head aa09a43 addressed; evidence below is from
+the CORRECTED artifact (commit >= 0b3d33c4 line):
+
+F1 [P1] IsReader blueprint mismatch + per-spell eligibility: REWRITTEN.
+Enumerate now evaluates eligibility per reader per spell through the native
+pathway — the canonical ability being in one of the reader's class spell
+lists (IsInSpellListOfUnit; no knowledge/preparation/slot needed) or a
+trained UMD skill (descriptor.HasUMDSkill). Native evidence: reader
+fixtures with ALL party UMD zeroed — wizard-list reader gets Teleport+GT
+but NOT Recall (per-spell negative), druid-list reader gets Recall only,
+UMD-zero non-list member offers nothing, UMD-only member (no relevant
+class) gets all scrolls (scrolls scenario: reader-wizard-classlist-zero-umd
+/ reader-per-spell-negative / reader-druid-recall-zero-umd /
+reader-ineligible-control / reader-umd-only / reader-umd-per-spell PASS).
+
+F2 [P1] Activation: the exact native boundary
+ItemEntity.TryUseFromInventory(reader, reader) runs inside the resource
+lease — temporary SourceItem fact, native availability checks, the
+RuleCastSpell rulebook event with a genuine UMD roll when needed
+(request-local IGlobalRulebookHandler observer), native delivery and
+native SpendCharges consumption. The adapter no longer removes items.
+Transaction gained ActivationRefused (UMD failure: nothing spent, no
+teleport, retryable) and ActivationFailedSpent (failed cast stays
+consumed, no refund). The synthetic null-caster AbilityData was replaced
+with the real reader descriptor. Deterministic native evidence:
+scroll-activation-umd-failure (state=ActivationRefused, stock unchanged,
+party unmoved) and scroll-cast-exactly-one (Completed+Arrived, exactly one
+scroll, book untouched). Spell blueprints now CanTargetSelf=true — the
+native scroll boundary gives scroll abilities a Personal anchor targeting
+the reader; the world-map caster checker still forbids all local use.
+
+F3 [P2] Variant discovery: items matched by verified type (Scroll) +
+canonical ability association (CopyScroll target or item Ability), so
+crafted variants are found; equivalent variants (same spell+caster level)
+aggregate, materially different caster levels are separate rows with
+stable representative identity. Native evidence:
+variant-discovery-separate-row (2 rows, correct uses/levels) and
+variant-activation-spends-chosen-variant (variant 1->0, standard
+untouched, arrival).
+
+F4 [P2] Fallback + supplier independence: the arcane supplier resolves
+Zarcie's table when loaded and the approved Hassuf FirstVendorTable
+(8c17a31b...) when genuinely absent; the priest supplier resolves
+independently; absence = table not in the loaded library (optional
+content), never launch/entitlement inference. Observer:
+teleportation-scroll-vendor-fallback-identity PASS. GENUINE fallback need
+(zarcie content actually absent in a live area) is NOT RUN — the library
+loads her table at the main menu; recorded as a limitation.
+
+F5 [P2] Atomic publication: all mutations + validation inside the
+rollback boundary; per-run logging names the actual suppliers/fallback/
+changed count. Runtime fault test via a request-local seam:
+teleportation-scroll-vendor-atomicity PASS (fault injected on the SECOND
+table after the first mutation; BOTH tables byte-restored; foreign
+entries preserved) + teleportation-scroll-vendor-retry-idempotent PASS
+(changed=0 retry).
+
+F6 [P2] CopyScroll isolation: the new native check found REAL donor
+corruption (Instantiate shares component instances; donor teaching
+targets had been overwritten — evidence run obs1 2026-09-10T20:2x).
+Fixed with project-owned isolated CopyScroll components; observer
+teleportation-scroll-copyscroll-isolation-* PASS (donor keeps its own
+target, distinct instance, ours teaches canonical).
+
+F7 Evidence gaps: stale AddKnown-only claim renamed
+(scroll-fixture-book-knows-canonical-spell; real copy proof remains the
+market chain's CanCopy/DoCopy/RemoveItem). First legal native arrow after
+scroll activation now CLICKED and moving (scroll-first-arrow-moves:
+walking route along a real edge). Reader tests deliberately zero UMD.
+Remaining NOT-RUN limitation: a guarded fresh-process persistence cycle
+that buys/copies/prepares/activates real scrolls and reloads (current
+persistence phases still use the synthetic shared:persistence-probe
+marker plus spellbook establishment; the serializer round-trip is real,
+the acquisition lifecycle is not). In-area genuine fallback need also
+NOT RUN (see F4).
+
+Regressions on the corrected artifact (all PASS): arrows, specialist,
+casting, interaction (reopen-viewport invariant corrected: settled
+reopens exactly equal; first append separately anchored; stale rows
+reference removed), travelers, gamepad, coexistence, observer 19/19,
+scrolls 27/27 twice. 1,561 domain tests PASS.
+
 ## Gate 4 native forensics (verified 2026-09-10, observe-teleportation-native-contracts)
 
 All identities below are VERIFIED at runtime (new scrollDonors/vendorUnits/
