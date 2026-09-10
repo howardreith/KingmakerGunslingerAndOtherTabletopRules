@@ -14,6 +14,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UI.GlobalMap;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -160,6 +161,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (int)scrolls[0]["cost"] == 1125 && (int)scrolls[0]["casterLevel"] == 9 && (int)scrolls[0]["spellLevel"] == 5 &&
                 (int)scrolls[1]["cost"] == 2275 && (int)scrolls[1]["casterLevel"] == 13 && (int)scrolls[1]["spellLevel"] == 7 &&
                 (int)scrolls[2]["cost"] == 1650 && (int)scrolls[2]["casterLevel"] == 11 && (int)scrolls[2]["spellLevel"] == 6, path));
+            // Gate 4: the published finite vendor stock on both verified tables.
+            var arcaneTable = BlueprintBootstrap.TeleportationScrollVendors == null ? null :
+                BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Loot.BlueprintUnitLoot>(BlueprintBootstrap.Library,
+                    "5450d563aab78134196ee9a932e88671", "arcane scroll vendor table");
+            var priestTable = BlueprintBootstrap.TeleportationScrollVendors == null ? null :
+                BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Loot.BlueprintUnitLoot>(BlueprintBootstrap.Library,
+                    "afa2c7f292b8e1c4d9c835f0e8047dd3", "priest scroll vendor table");
+            System.Func<Kingmaker.Blueprints.Loot.BlueprintUnitLoot, Kingmaker.Blueprints.Items.BlueprintItem, int> stock =
+                (table, item) => table == null || item == null ? -1 : table.ComponentsArray
+                    .OfType<Kingmaker.Blueprints.Loot.LootItemsPackFixed>()
+                    .Where(component => ReferenceEquals(CapitalVendorBlueprints.ReadItem(component), item))
+                    .Select(CapitalVendorBlueprints.ReadCount).DefaultIfEmpty(-1).Single();
+            var scrolls = BlueprintBootstrap.TeleportationScrolls;
+            int teleportStock = stock(arcaneTable, scrolls == null ? null : scrolls.Teleport);
+            int greaterStock = stock(arcaneTable, scrolls == null ? null : scrolls.GreaterTeleport);
+            int recallStock = stock(priestTable, scrolls == null ? null : scrolls.WordOfRecall);
+            assertions.Add(Assertion("teleportation-scroll-vendor-stock",
+                "verified tables carry exactly one finite batch: arcane 5 Teleport + 3 Greater Teleport, priest 5 Word of Recall; hook installed",
+                "teleport=" + teleportStock + ";greater=" + greaterStock + ";recall=" + recallStock +
+                    ";migration=" + KingmakerGunslinger.Spells.Teleportation.TeleportationScrollVendorMigration.Installed,
+                teleportStock == 5 && greaterStock == 3 && recallStock == 5 &&
+                    KingmakerGunslinger.Spells.Teleportation.TeleportationScrollVendorMigration.Installed, path));
             ObserveTeleportationSpellPublication(assertions);
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
