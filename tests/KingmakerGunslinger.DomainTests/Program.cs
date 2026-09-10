@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,6 +43,9 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.layout.LongListsScrollBeforeObscuringNativeActions", TeleportationLayoutTests.LongListsScrollBeforeObscuringNativeActions),
             Case("teleportation.layout.UnprovenOrInsufficientGeometryFailsClosed", TeleportationLayoutTests.UnprovenOrInsufficientGeometryFailsClosed),
             Case("teleportation.presentation.PreparedRowIncludesCurrentCount", TeleportationContextTests.PreparedRowIncludesCurrentCount),
+            Case("teleportation.presentation.CompactRowUsesTitleAndDetailLines", TeleportationContextTests.CompactRowUsesTitleAndDetailLines),
+            Case("teleportation.presentation.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous", TeleportationContextTests.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous),
+            Case("teleportation.presentation.SettlementLabelDistinguishesNativeTeleport", TeleportationContextTests.SettlementLabelDistinguishesNativeTeleport),
             Case("teleportation.presentation.SpontaneousRowsIncludeCorrectLevelAndPlural", TeleportationContextTests.SpontaneousRowsIncludeCorrectLevelAndPlural),
             Case("teleportation.presentation.AmbiguousCasterRowsNameTheBook", TeleportationContextTests.AmbiguousCasterRowsNameTheBook),
             Case("teleportation.presentation.ConfirmationShowsExactOddsAndOrdinaryCount", TeleportationContextTests.ConfirmationShowsExactOddsAndOrdinaryCount),

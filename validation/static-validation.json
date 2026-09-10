@@ -1,4 +1,4 @@
-{
+﻿{
   "milestone": "0.0.121-unified-firearm-maintenance",
   "version": "0.0.121",
   "requiredFiles": {
@@ -1334,7 +1334,7 @@
     "treacherousPlayerRespecSaveQualificationWaivedByOwner": true
   },
   "unifiedRepair121": {
-    "deterministicTestCount": 1554,
+    "deterministicTestCount": 1557,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,

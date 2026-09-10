@@ -1,4 +1,4 @@
-using KingmakerGunslinger.Spells.Teleportation;
+﻿using KingmakerGunslinger.Spells.Teleportation;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -25,6 +25,21 @@ namespace KingmakerGunslinger.DomainTests
             var row = new WorldMapPointSpellAction(Point(), Origin, Source(), true);
             Assertions.True(TeleportContextPresentation.Row(row, English).Contains("caster-a, Wizard"), "Distinct book labels disambiguate one caster.");
         }
+        internal static void CompactRowUsesTitleAndDetailLines()
+        {
+            var row = new WorldMapPointSpellAction(Point(), Origin, Source(uses: 2), false);
+            Assertions.Equal("Cast Teleport\ncaster-a · 2 prepared", TeleportContextPresentation.CompactRow(row, English),
+                "Compact desktop row: full spell name title over caster/cost detail.");
+        }
+        internal static void CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous()
+        {
+            var row = new WorldMapPointSpellAction(Point(), Origin,
+                Source(TeleportSpellKind.GreaterTeleport, uses: 2, kind: TeleportCastSourceKind.Spontaneous), true);
+            Assertions.Equal("Cast Greater Teleport\ncaster-a, Wizard · 2 seventh-level slots", TeleportContextPresentation.CompactRow(row, English),
+                "Spontaneous compact row keeps level plural and disambiguating book.");
+        }
+        internal static void SettlementLabelDistinguishesNativeTeleport()
+        { Assertions.Equal("Settlement Teleport", TeleportContextPresentation.SettlementTeleportLabel(English), "Native settlement label text."); }
         internal static void ConfirmationShowsExactOddsAndOrdinaryCount()
         {
             var row = new WorldMapPointSpellAction(Point(visits: 3), Origin, Source(), false);

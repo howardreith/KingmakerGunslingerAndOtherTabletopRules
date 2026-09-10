@@ -220,7 +220,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UIUtility.IsTransformInScreen(dialog.transform) && rows.Buttons.All(value => value.IsActive() && value.IsInteractable()) &&
                     rows.Buttons.Select(value => ((RectTransform)value.transform).anchoredPosition.y).Distinct().Count() == 6 &&
                     rows.Buttons.Select((value, index) => value.GetComponentInChildren<TextMeshProUGUI>(true).text ==
-                        TeleportContextPresentation.Row(rows.Actions[index], TeleportationText.Get)).All(value => value));
+                        TeleportContextPresentation.CompactRow(rows.Actions[index], TeleportationText.Get)).All(value => value));
                 TeleportInteractionAssert("native-actions-retained", "native action order, labels, flags and serialized callbacks unchanged",
                     "same=" + (nativeActions == TeleportationNativeButtons(panel)), nativeActions == TeleportationNativeButtons(panel));
                 float firstViewportHeight = rows.GetComponent<ScrollRect>().viewport.rect.height;
@@ -311,7 +311,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TeleportInteractionAssert("live-source-count", "already-open row reads the current prepared use count after an actual native debit",
                     "before=" + action.Source.Uses + ";after=" + fresh.Source.Uses, fresh.Source.Uses == action.Source.Uses - 1 &&
                     rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == action.Key)].GetComponentInChildren<TextMeshProUGUI>(true).text ==
-                    TeleportContextPresentation.Row(fresh, TeleportationText.Get));
+                    TeleportContextPresentation.CompactRow(fresh, TeleportationText.Get));
                 resource = TeleportationSpellbookAdapter.Resolve(fresh.Source);
                 if (resource == null || !resource.Book.Spend(resource.Ability, false)) throw new InvalidOperationException("Final native prepared fixture debit failed.");
                 for (int frame = 0; frame < 4; frame++) yield return 0;
