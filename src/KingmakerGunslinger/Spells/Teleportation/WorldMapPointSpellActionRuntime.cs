@@ -68,7 +68,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 // own activeSelf (CanTeleportSomewhere); mirror that gate rather
                 // than the whole-hierarchy state.
                 if (controllers == null || !controllers.gameObject.activeSelf)
-                { if (context != null) context.Logger.Info("teleportation", "settlement-relabel-skip", "reason=controllers-inactive"); return; }
+                { if (context != null) context.Logger.Info("teleportation", "settlement-relabel-skip",
+                    "reason=controllers-inactive;name=" + (controllers == null ? "null" : controllers.gameObject.name) +
+                    ";activeSelf=" + (controllers == null ? "n/a" : controllers.gameObject.activeSelf.ToString()) +
+                    ";inHierarchy=" + (controllers == null ? "n/a" : controllers.gameObject.activeInHierarchy.ToString())); return; }
                 var button = controllers.GetComponentsInChildren<Button>(true).FirstOrDefault(value =>
                 {
                     int count = value.onClick.GetPersistentEventCount();
