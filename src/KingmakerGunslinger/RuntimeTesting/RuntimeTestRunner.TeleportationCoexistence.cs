@@ -133,8 +133,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     WorldMapPointSpellActionRuntime.Append(desktop);
                     CaptureTeleportInteraction("settlement-relabel-immediate", new {
                         productionFieldNull = WorldMapPointSpellActionPatches.TeleportControllersField == null,
-                        productionValueNull = WorldMapPointSpellActionPatches.TeleportControllersField == null ?
-                            null : WorldMapPointSpellActionPatches.TeleportControllersField.GetValue(desktop) == null,
+                        productionValueNull = (bool?)(WorldMapPointSpellActionPatches.TeleportControllersField == null ?
+                            null : (bool?)(WorldMapPointSpellActionPatches.TeleportControllersField.GetValue(desktop) == null)),
                         productionFieldType = WorldMapPointSpellActionPatches.TeleportControllersField == null ?
                             null : WorldMapPointSpellActionPatches.TeleportControllersField.FieldType.FullName,
                         controllersActiveInHierarchy = controllers.activeInHierarchy,
