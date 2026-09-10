@@ -73,8 +73,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Negative control: an unspecialized (universalist-shaped) book
                 // has no favorite slot at any level.
                 SpecialistAssert("universalist-no-favorite-slot", "a book without a school special list has no favorite slots",
-                    "favoriteSlots=" + bookConjurer.GetMemorizedSpells(5).Count(value => value.Type == SpellSlotType.Favorite),
-                    bookConjurer.GetMemorizedSpells(5).Count(value => value.Type == SpellSlotType.Favorite) == 0);
+                    "favoriteSlots=" + RawSlots(bookConjurer, 5).Count(value => value.Type == SpellSlotType.Favorite),
+                    RawSlots(bookConjurer, 5).Count(value => value.Type == SpellSlotType.Favorite) == 0);
                 // The school special list is attached through the exact native
                 // seam the specialization feature's OnFactActivate calls. The
                 // feature facts themselves are also attached so the fixture
@@ -102,12 +102,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     conjurationListSpells5 = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellList>(BlueprintBootstrap.Library,
                         "69a6eba12bc77ea4191f573d63c9df12", "Conjuration special list").GetSpells(5).Select(value => value.name).ToArray(),
                     conjurerMaxSpellLevel = bookConjurer.MaxSpellLevel, conjurerCasterLevel = bookConjurer.CasterLevel,
-                    conjurerFavoriteByLevel = Enumerable.Range(0, 10).Select(level => bookConjurer.GetMemorizedSpells(level).Count(value => value.Type == SpellSlotType.Favorite)).ToArray(),
-                    evokerFavoriteByLevel = Enumerable.Range(0, 10).Select(level => bookEvoker.GetMemorizedSpells(level).Count(value => value.Type == SpellSlotType.Favorite)).ToArray() });
+                    conjurerFavoriteByLevel = Enumerable.Range(0, 10).Select(level => RawSlots(bookConjurer, level).Count(value => value.Type == SpellSlotType.Favorite)).ToArray(),
+                    evokerFavoriteByLevel = Enumerable.Range(0, 10).Select(level => RawSlots(bookEvoker, level).Count(value => value.Type == SpellSlotType.Favorite)).ToArray() });
                 SpecialistAssert("special-list-membership", "the Conjuration special list contains Teleport and the Evocation list does not",
                     "conjurer=" + conjurerSpecial + ";evoker=" + evokerSpecial, conjurerSpecial && !evokerSpecial);
-                var conjurerFavorite = bookConjurer.GetMemorizedSpells(5).SingleOrDefault(value => value.Type == SpellSlotType.Favorite);
-                var evokerFavorite = bookEvoker.GetMemorizedSpells(5).SingleOrDefault(value => value.Type == SpellSlotType.Favorite);
+                var conjurerFavorite = RawSlots(bookConjurer, 5).SingleOrDefault(value => value.Type == SpellSlotType.Favorite);
+                var evokerFavorite = RawSlots(bookEvoker, 5).SingleOrDefault(value => value.Type == SpellSlotType.Favorite);
                 if (conjurerFavorite == null || evokerFavorite == null) throw new InvalidOperationException("Native school specializations did not create their favorite slots.");
                 bool coneRejected = !bookConjurer.PosibleMemorize(new AbilityData(coneOfCold, bookConjurer), conjurerFavorite);
                 bool teleportRejectedByEvoker = !bookEvoker.PosibleMemorize(new AbilityData(teleport, bookEvoker), evokerFavorite);
@@ -146,21 +146,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (displayedFavorite == null) throw new InvalidOperationException("Native memorize panel does not display the favorite slot.");
                 controller.MemorizeWithSound(row.SpellData, conjurerFavorite);
                 for (int frame = 0; frame < 4; frame++) yield return 0;
-                var favoritePreparations = bookConjurer.GetMemorizedSpells(5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
+                var favoritePreparations = RawSlots(bookConjurer, 5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
                 SpecialistAssert("favorite-preparation", "native controller preparation lands exactly one unready Teleport in the favorite slot",
                     "count=" + favoritePreparations.Length + ";type=" + (favoritePreparations.Length == 1 ? favoritePreparations[0].Type.ToString() : "none"),
                     favoritePreparations.Length == 1 && favoritePreparations[0].Type == SpellSlotType.Favorite && !favoritePreparations[0].Available);
                 // Mixed counting: one ordinary preparation alongside the favorite one.
                 row.Memorize();
                 for (int frame = 0; frame < 4; frame++) yield return 0;
-                var mixedPreparations = bookConjurer.GetMemorizedSpells(5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
+                var mixedPreparations = RawSlots(bookConjurer, 5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
                 SpecialistAssert("mixed-preparation-count", "favorite plus one ordinary preparation count exactly two unready preparations",
                     "count=" + mixedPreparations.Length + ";types=" + string.Join(",", mixedPreparations.Select(value => value.Type.ToString()).ToArray()),
                     mixedPreparations.Length == 2 && mixedPreparations.Count(value => value.Type == SpellSlotType.Favorite) == 1 &&
                     mixedPreparations.All(value => !value.Available));
                 // Ordinary native rest readies both preparations.
                 bookConjurer.Rest();
-                var rested = bookConjurer.GetMemorizedSpells(5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
+                var rested = RawSlots(bookConjurer, 5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
                 SpecialistAssert("rest-readies-specialist-preparation", "native rest readies the specialist and ordinary preparations",
                     "ready=" + rested.Count(value => value.Available), rested.Length == 2 && rested.All(value => value.Available));
                 ui.ServiceWindow.HandleOpenSpellbook();
@@ -204,10 +204,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 30; frame++) yield return 0;
                     // Favorite-only preparation for the strategic cast.
                     bookConjurer.Rest();
-                    var favoriteForCast = bookConjurer.GetMemorizedSpells(5).Single(value => value.Type == SpellSlotType.Favorite);
+                    var favoriteForCast = RawSlots(bookConjurer, 5).Single(value => value.Type == SpellSlotType.Favorite);
                     if (!bookConjurer.Memorize(new AbilityData(teleport, bookConjurer), favoriteForCast))
                         throw new InvalidOperationException("Native favorite-only preparation failed.");
-                    var onlyPreparation = bookConjurer.GetMemorizedSpells(5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
+                    var onlyPreparation = RawSlots(bookConjurer, 5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
                     if (onlyPreparation.Length != 1 || onlyPreparation[0].Type != SpellSlotType.Favorite || !onlyPreparation[0].Available)
                         throw new InvalidOperationException("The world-map fixture lacks exactly one ready favorite preparation.");
                     var panel = TeleportationFixturePanel();
@@ -233,7 +233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool committed = request.Transaction.State == TeleportTransactionState.Completed &&
                         request.Transaction.Result != null && request.Transaction.Result.Status == TeleportExecutionStatus.Arrived &&
                         request.Transaction.Result.DestinationId == target.Blueprint.AssetGuid;
-                    var remainingReady = bookConjurer.GetMemorizedSpells(5).Count(value => value.Spell != null && value.Spell.Blueprint == teleport && value.Available);
+                    var remainingReady = RawSlots(bookConjurer, 5).Count(value => value.Spell != null && value.Spell.Blueprint == teleport && value.Available);
                     SpecialistAssert("world-map-specialist-spend", "the world map spends exactly the single favorite preparation and relocates",
                         "committed=" + committed + ";expenditure=" + request.Execution.Resource.ObserveExpenditure() + ";remaining=" + remainingReady,
                         committed && request.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && remainingReady == 0 &&
@@ -273,6 +273,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SpecialistAssert("cleanup", "exact original books, features, action bars, selection, party and world state; zero writes",
                     "restored=" + restored, restored);
             }
+        }
+
+        private static readonly MethodInfo SureMemorizedSpellsMethod = typeof(Spellbook)
+            .GetMethod("SureMemorizedSpells", BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(int) }, null);
+        private static List<SpellSlot> RawSlots(Spellbook book, int level)
+        {
+            var list = SureMemorizedSpellsMethod.Invoke(book, new object[] { level }) as List<SpellSlot>;
+            if (list == null) throw new InvalidOperationException("Native memorized slot list differs.");
+            return list;
         }
 
         private void SpecialistAssert(string id, string expected, string actual, bool pass)
