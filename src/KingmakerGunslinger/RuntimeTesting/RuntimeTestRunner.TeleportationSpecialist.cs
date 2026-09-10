@@ -216,12 +216,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rules.StopWhenRevealingNewEdges = false;
                     rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                     for (int frame = 0; frame < 30; frame++) yield return 0;
-                    // Favorite-only preparation for the strategic cast.
-                    bookConjurer.Rest();
+                    // Favorite-only preparation for the strategic cast:
+                    // memorize first, then the native rest that readies it.
                     var favoriteForCast = RawSlots(bookConjurer, 5).SingleOrDefault(value => value.Type == SpellSlotType.Favorite);
-                    if (favoriteForCast == null) throw new InvalidOperationException("The rested specialist book lost its favorite slot.");
+                    if (favoriteForCast == null) throw new InvalidOperationException("The specialist book lost its favorite slot.");
                     if (!bookConjurer.Memorize(new AbilityData(teleport, bookConjurer), favoriteForCast))
                         throw new InvalidOperationException("Native favorite-only preparation failed.");
+                    bookConjurer.Rest();
                     var onlyPreparation = RawSlots(bookConjurer, 5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
                     if (onlyPreparation.Length != 1 || onlyPreparation[0].Type != SpellSlotType.Favorite || !onlyPreparation[0].Available)
                         throw new InvalidOperationException("The world-map fixture lacks exactly one ready favorite preparation.");
