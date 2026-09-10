@@ -527,7 +527,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CaptureTeleportScrolls("market-copy-diagnostic", new {
                     knownByLevel = Enumerable.Range(0, 10).Select(level => marketBook.GetKnownSpells(level)
                         .Count(value => value.Blueprint == scrolls.Teleport.Ability)).ToArray(),
-                    readerBooks = umdReader.Descriptor.Spellbooks.Select(value => value.Blueprint.name).ToArray() });
+                    readerBooks = umdReader.Descriptor.Spellbooks.Select(value => value.Blueprint.name).ToArray(),
+                    wizardListContains = marketBook.Blueprint.SpellList.Contains(scrolls.Teleport.Ability),
+                    wizardGetLevel = marketBook.Blueprint.SpellList.GetLevel(scrolls.Teleport.Ability),
+                    canCopyScrolls = marketBook.Blueprint.CanCopyScrolls,
+                    marketBookKnown = marketBook.GetKnownSpells(5).Count(),
+                    customSpell = copyComponent.CustomSpell == null ? null : copyComponent.CustomSpell.AssetGuid });
                 // DoCopy learns; the native UI action consumes the item right
                 // after through the same public component method.
                 copyComponent.RemoveItem(purchased, umdReader);
