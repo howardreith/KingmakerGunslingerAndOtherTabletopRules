@@ -181,8 +181,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             var book = reader == null ? null : reader.Descriptor.Spellbooks.FirstOrDefault(candidate =>
                 candidate.GetKnownSpells(5).Any(value => value.Blueprint == scrolls.Teleport.Ability));
             var stock = supplier.Arcane == null ? null : player.SharedVendorTables.GetTable(supplier.Arcane);
-            var ledger = TeleportFamiliarityRuntime.EnsureLedger(player);
-            var grants = (List<string>)typeof(UnitPartTeleportFamiliarity)
+            // Read the serialized part directly so module OFF (phase C) still
+            // verifies the persisted grant markers rather than failing on the
+            // disabled runtime helper.
+            var ledger = player.MainCharacter.Value == null ? null :
+                player.MainCharacter.Value.Descriptor.Get<UnitPartTeleportFamiliarity>();
+            var grants = ledger == null ? null : (List<string>)typeof(UnitPartTeleportFamiliarity)
                 .GetField("_scrollVendorGrants", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ledger);
             return new JObject {
                 ["readerId"] = readerId,
