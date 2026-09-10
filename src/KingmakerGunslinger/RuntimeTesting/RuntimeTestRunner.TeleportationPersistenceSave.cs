@@ -40,7 +40,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["pointId"] = GlobalMapRules.State.PartyLocation.AssetGuid, ["miles"] = GlobalMapRules.State.MilesTravelled.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
                 ["payload"] = payload, ["boundary"] = boundary, ["migrationComplete"] = state.LegacyMigrationComplete,
                 ["scrollVendorGrants"] = new JArray(grants ?? new System.Collections.Generic.List<string>()),
-                ["canonicalState"] = state.Serialize(), ["chainIds"] = new JArray(_teleportPersistenceChain) };
+                ["canonicalState"] = state.Serialize(), ["chainIds"] = new JArray(_teleportPersistenceChain),
+                ["acquisition"] = _teleportPersistenceAcquisition };
         }
         private IEnumerable<int> SaveTeleportPersistence()
         {

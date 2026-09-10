@@ -155,6 +155,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             else
             {
                 foreach (int tick in EstablishTeleportPersistence(ledger, chain, plan.Phase == "A")) yield return tick;
+                if (plan.Phase == "A")
+                    foreach (int tick in EstablishTeleportPersistenceAcquisition(chain)) yield return tick;
             }
             _teleportPersistenceFinal = CaptureTeleportPersistence();
             foreach (int tick in SaveTeleportPersistence()) yield return tick;
