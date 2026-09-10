@@ -1,4 +1,4 @@
-# Z teleportation mission — durable state
+﻿# Z teleportation mission — durable state
 
 Companion to `Z-TELEPORTATION-MISSION.md` (the contract). This file records
 current progress, evidence, and exact resumption instructions only.
@@ -18,7 +18,7 @@ current progress, evidence, and exact resumption instructions only.
 |---|---|
 | 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
 | 2 Conjuration specialist slots | NATIVE-VERIFIED (publication + behavioral scenario; two consecutive PASS runs) |
-| 3 Compact UI + settlement coexistence | TODO |
+| 3 Compact UI + settlement coexistence | NATIVE-VERIFIED (coexistence 26/26, interaction 29/29, casting 44/44, gamepad PASS) |
 | 4 Scrolls: items, vendors, learning, casting | TODO |
 | 5 Persistence + final install candidate | TODO |
 
@@ -93,6 +93,45 @@ all levels 1..9 once a special list exists (CalcSlotsLimit), built by
 UpdateAllSlotsSize; a single-book character hides the class-tab strip;
 plain Teleport always consumes one d100 (empty fixture rolls = "Queue empty"
 technical failure); panel augmentation can lag scene load — retry selection.
+
+## Gate 3 compact UI + settlement coexistence (native-verified 2026-09-10)
+
+Changes (commits e6d8737..cleanup, branch codex/z-teleportation-completion):
+- Desktop rows are now ONE focusable two-line control: full spell name title
+  ("Cast Teleport") over a caster · uses detail line
+  (TeleportContextPresentation.Title/Detail/CompactRow). Console/gamepad rows
+  keep the single-line Row(). Row extent = 2× native line height; the native
+  line height is measured ONCE from the pristine first append (the donor's
+  live rect stretches after taller rows exist — see NativeLineHeight).
+- While spell rows coexist with the native settlement-teleport control, its
+  button (found by its exact serialized OnTeleportPressed persistent callback
+  in the panel hierarchy) is relabeled "Settlement Teleport"
+  (TeleportationText key SettlementTeleport) and restored byte-for-byte when
+  the rows are removed (Clear covers Hide/OnLocationSelect/Dispose). Callbacks,
+  ownership, eligibility and shared localization assets untouched; the gate is
+  the button's own activeSelf (mirrors the native control gate). Note: reading
+  m_TeleportControllers via cached FieldInfo returned null at runtime despite
+  the fixture reading it fine — the hierarchy search avoids that entirely.
+- Domain tests: CompactRowUsesTitleAndDetailLines,
+  CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous,
+  SettlementLabelDistinguishesNativeTeleport (suite now 1,557;
+  validate_unified_repair121.py + validation/static-validation.json updated —
+  no stale counts).
+
+Verification (all PASS, zero save writes, latest evidence dirs under
+runtime-evidence/20260910T15-16*Z-disposable-teleportation-*):
+- coexistence 26/26 incl. NEW asserts: compact-rows-fit (every two-line row's
+  preferred width within the native inner content width, exact CompactRow
+  text), settlement-label-coexists (relabel + callbacks intact),
+  settlement-label-restored (exact original label, no leftover containers).
+- interaction 29/29 (reopen stability now compares reopens — the first append
+  measures a fresh, larger native body; reopens are exactly stable at 426).
+- casting 44/44, gamepad PASS (console rows unchanged).
+- Native-inventory comparisons normalize only the authorized settlement label
+  (TeleportationNativeButtons).
+
+Remaining Gate 3 polish for final qualification: before/after screenshots as
+optional supporting evidence; scroll-variant row text arrives with Gate 4.
 
 ## Gate 1 root cause and fix (native-verified 2026-09-10)
 
