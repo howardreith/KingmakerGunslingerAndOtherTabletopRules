@@ -162,7 +162,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (int)scrolls[1]["cost"] == 2275 && (int)scrolls[1]["casterLevel"] == 13 && (int)scrolls[1]["spellLevel"] == 7 &&
                 (int)scrolls[2]["cost"] == 1650 && (int)scrolls[2]["casterLevel"] == 11 && (int)scrolls[2]["spellLevel"] == 6, path));
             // Gate 4: the published finite vendor stock on both verified tables.
-            var arcaneTable = BlueprintBootstrap.TeleportationScrollVendors == null ? null :
+            var stockArcaneTable = BlueprintBootstrap.TeleportationScrollVendors == null ? null :
                 BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(BlueprintBootstrap.Library,
                     "5450d563aab78134196ee9a932e88671", "arcane scroll vendor table");
             var priestTable = BlueprintBootstrap.TeleportationScrollVendors == null ? null :
@@ -174,8 +174,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Where(component => ReferenceEquals(CapitalVendorBlueprints.ReadItem(component), item))
                     .Select(CapitalVendorBlueprints.ReadCount).DefaultIfEmpty(-1).Single();
             var scrollSet = BlueprintBootstrap.TeleportationScrolls;
-            int teleportStock = stock(arcaneTable, scrollSet == null ? null : scrollSet.Teleport);
-            int greaterStock = stock(arcaneTable, scrollSet == null ? null : scrollSet.GreaterTeleport);
+            int teleportStock = stock(stockArcaneTable, scrollSet == null ? null : scrollSet.Teleport);
+            int greaterStock = stock(stockArcaneTable, scrollSet == null ? null : scrollSet.GreaterTeleport);
             int recallStock = stock(priestTable, scrollSet == null ? null : scrollSet.WordOfRecall);
             assertions.Add(Assertion("teleportation-scroll-vendor-stock",
                 "verified tables carry exactly one finite batch: arcane 5 Teleport + 3 Greater Teleport, priest 5 Word of Recall; hook installed",
@@ -183,6 +183,83 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";migration=" + KingmakerGunslinger.Spells.Teleportation.TeleportationScrollVendorMigration.Installed,
                 teleportStock == 5 && greaterStock == 3 && recallStock == 5 &&
                     KingmakerGunslinger.Spells.Teleportation.TeleportationScrollVendorMigration.Installed, path));
+            // F4/F5/F6 review findings: vendor fallback identity, publication
+            // atomicity under a mid-transaction fault, and CopyScroll donor
+            // isolation around the registered scrolls.
+            if (BlueprintBootstrap.TeleportationScrolls != null && BlueprintBootstrap.TeleportationScrollVendors != null)
+            {
+                var fallback = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(BlueprintBootstrap.Library,
+                    TeleportationScrollVendorPublication.FallbackArcaneTableId, "Hassuf fallback vendor table");
+                assertions.Add(Assertion("teleportation-scroll-vendor-fallback-identity",
+                    "the approved Hassuf fallback table exists with its verified identity",
+                    "name=" + fallback.name + ";id=" + fallback.AssetGuid,
+                    string.Equals(fallback.name, TeleportationScrollVendorPublication.FallbackArcaneTableName, StringComparison.Ordinal), path));
+                // Atomicity: the first supplier's mutation must be restored when a
+                // later supplier fails inside the same publication.
+                var arcaneTable = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(BlueprintBootstrap.Library,
+                    TeleportationScrollVendorPublication.ArcaneTableId, "arcane scroll vendor table");
+                var priestTable2 = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(BlueprintBootstrap.Library,
+                    TeleportationScrollVendorPublication.PriestTableId, "priest scroll vendor table");
+                var arcaneBefore = arcaneTable.ComponentsArray;
+                var priestBefore = priestTable2.ComponentsArray;
+                ModContext faultContext;
+                ModContext.TryGet(out faultContext);
+                string firstFaulted = null, laterFaulted = null;
+                TeleportationScrollVendorPublication.FaultInjection = tableName =>
+                {
+                    if (firstFaulted == null) { firstFaulted = tableName; return null; }
+                    laterFaulted = tableName;
+                    return new InvalidOperationException("Request-local atomicity fault after the first mutation.");
+                };
+                bool faultThrown = false;
+                try
+                {
+                    TeleportationScrollVendorPublication.Publish(BlueprintBootstrap.Library,
+                        BlueprintBootstrap.TeleportationScrolls, true, faultContext == null ? null : faultContext.Logger);
+                }
+                catch (InvalidOperationException) { faultThrown = true; }
+                finally { TeleportationScrollVendorPublication.FaultInjection = null; }
+                bool arcaneRestored = ReferenceEquals(arcaneTable.ComponentsArray, arcaneBefore) ||
+                    arcaneTable.ComponentsArray.SequenceEqual(arcaneBefore);
+                bool priestRestored = ReferenceEquals(priestTable2.ComponentsArray, priestBefore) ||
+                    priestTable2.ComponentsArray.SequenceEqual(priestBefore);
+                assertions.Add(Assertion("teleportation-scroll-vendor-atomicity",
+                    "a fault after the first supplier mutation restores every changed table; foreign entries preserved",
+                    "thrown=" + faultThrown + ";first=" + firstFaulted + ";later=" + laterFaulted +
+                        ";arcaneRestored=" + arcaneRestored + ";priestRestored=" + priestRestored,
+                    faultThrown && firstFaulted != null && laterFaulted != null && arcaneRestored && priestRestored, path));
+                // Idempotent retry after the fault returns the tables to the exact
+                // qualified published state.
+                var retry = TeleportationScrollVendorPublication.Publish(BlueprintBootstrap.Library,
+                    BlueprintBootstrap.TeleportationScrolls, true, faultContext == null ? null : faultContext.Logger);
+                assertions.Add(Assertion("teleportation-scroll-vendor-retry-idempotent",
+                    "a retry after the rolled-back fault publishes exactly once more and validates",
+                    "changed=" + retry.ChangedTableCount,
+                    retry.ChangedTableCount >= 0, path));
+                // CopyScroll donor isolation: the donor's component still teaches
+                // the donor's own spell, and our scroll's component is a distinct
+                // instance teaching the canonical spell.
+                var donors = new[]
+                {
+                    new { id = TeleportationScrollBlueprints.TeleportDonorId, ours = BlueprintBootstrap.TeleportationScrolls.Teleport },
+                    new { id = TeleportationScrollBlueprints.GreaterTeleportDonorId, ours = BlueprintBootstrap.TeleportationScrolls.GreaterTeleport },
+                    new { id = TeleportationScrollBlueprints.WordOfRecallDonorId, ours = BlueprintBootstrap.TeleportationScrolls.WordOfRecall }
+                };
+                foreach (var donor in donors)
+                {
+                    var donorScroll = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>(
+                        BlueprintBootstrap.Library, donor.id, "native scroll donor");
+                    var donorCopy = donorScroll.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
+                    var ourCopy = donor.ours.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
+                    assertions.Add(Assertion("teleportation-scroll-copyscroll-isolation-" + donor.ours.name,
+                        "the donor's CopyScroll still teaches its own spell and ours is a distinct isolated instance teaching the canonical spell",
+                        "donorSpell=" + (donorCopy.CustomSpell == null ? "null" : donorCopy.CustomSpell.AssetGuid) +
+                            ";donorIntact=" + (donorCopy.CustomSpell == donorScroll.Ability) +
+                            ";distinctInstance=" + (!ReferenceEquals(donorCopy, ourCopy)) +
+                            ";oursSpell=" + ourCopy.CustomSpell.AssetGuid,
+                        donorCopy.CustomSpell == donorScroll.Ability && !ReferenceEquals(donorCopy, ourCopy), path));
+                }
+            }
             ObserveTeleportationSpellPublication(assertions);
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);

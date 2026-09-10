@@ -68,7 +68,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ArcaneTableName = \"ArcaneScrollsVendorTableI\"",
                 "PriestTableName = \"C11_JhodVendorTable\"",
                 "TeleportStock = 5", "GreaterTeleportStock = 3", "WordOfRecallStock = 5",
-                "string.Equals(table.name, expectedName, StringComparison.Ordinal)",
+                "FallbackArcaneTableId", "FallbackArcaneTableName", "FaultInjection", "result.Rollback()",
                 "VendorCatalogPublication<BlueprintComponent>.Create(retained, additions)" })
                 Assertions.True(source.Contains(token), "Vendor stock contract missing " + token);
             string migration = File.ReadAllText("src/KingmakerGunslinger/Spells/Teleportation/TeleportationScrollVendorMigration.cs");
