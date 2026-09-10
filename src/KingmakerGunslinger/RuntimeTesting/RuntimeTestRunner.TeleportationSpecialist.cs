@@ -75,9 +75,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SpecialistAssert("universalist-no-favorite-slot", "a book without a school special list has no favorite slots",
                     "favoriteSlots=" + bookConjurer.GetMemorizedSpells(5).Count(value => value.Type == SpellSlotType.Favorite),
                     bookConjurer.GetMemorizedSpells(5).Count(value => value.Type == SpellSlotType.Favorite) == 0);
-                // Native feature activation attaches the school special list.
+                // The school special list is attached through the exact native
+                // seam the specialization feature's OnFactActivate calls. The
+                // feature facts themselves are also attached so the fixture
+                // exercises their native activation path.
+                var conjurationList = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellList>(BlueprintBootstrap.Library,
+                    "69a6eba12bc77ea4191f573d63c9df12", "Conjuration special list");
+                var evocationList = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellList>(BlueprintBootstrap.Library,
+                    "79e731172a2dc1f4d92ba229c6216502", "Evocation special list");
                 conjurer.Descriptor.AddFact(conjurationFeature); conjurerFeatureAttached = true;
                 evoker.Descriptor.AddFact(evocationFeature); evokerFeatureAttached = true;
+                bookConjurer.AddSpecialList(conjurationList);
+                bookEvoker.AddSpecialList(evocationList);
                 bool conjurerSpecial = bookConjurer.GetSpecialSpells(5).Any(value => value.Blueprint == teleport);
                 bool evokerSpecial = bookEvoker.GetSpecialSpells(5).Any(value => value.Blueprint == teleport);
                 var specialListsField = typeof(Spellbook).GetField("m_SpecialLists", BindingFlags.Instance | BindingFlags.NonPublic);
