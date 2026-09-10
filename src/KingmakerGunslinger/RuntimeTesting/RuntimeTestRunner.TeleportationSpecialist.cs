@@ -234,6 +234,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SelectTeleportationCastingPoint(panel, target);
                     foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
                     var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                    CaptureTeleportationSpecialist("world-map-rows", new {
+                        rowsPresent = rows != null, rowCount = rows == null ? 0 : rows.Actions.Count,
+                        actions = rows == null ? new object[0] : rows.Actions.Select(value => new {
+                            value.Source.Spell, value.Source.CasterId, value.Source.BookId, value.Source.Uses,
+                            kind = value.Source.GetType().Name }).ToArray(),
+                        enumerateCount = TeleportationSpellbookAdapter.Enumerate(player).Count(),
+                        enumerateSources = TeleportationSpellbookAdapter.Enumerate(player).Select(value => new {
+                            spell = value.Snapshot.Spell.ToString(), casterId = value.Snapshot.CasterId,
+                            bookId = value.Snapshot.BookId, uses = value.Snapshot.Uses }).ToArray() });
                     var action = rows == null ? null : rows.Actions.SingleOrDefault(value => value.Source.Spell == TeleportSpellKind.Teleport &&
                         value.Source.BookId == bookConjurer.Blueprint.AssetGuid && value.Source.CasterId == conjurer.UniqueId);
                     SpecialistAssert("world-map-specialist-row", "the favorite-only specialist preparation is composed as a real world-map source",
