@@ -17,7 +17,7 @@ current progress, evidence, and exact resumption instructions only.
 | Gate | Status |
 |---|---|
 | 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
-| 2 Conjuration specialist slots | IMPLEMENTED (publication native-verified); behavioral UI test pending |
+| 2 Conjuration specialist slots | NATIVE-VERIFIED (publication + behavioral scenario; two consecutive PASS runs) |
 | 3 Compact UI + settlement coexistence | TODO |
 | 4 Scrolls: items, vendors, learning, casting | TODO |
 | 5 Persistence + final install candidate | TODO |
@@ -55,17 +55,44 @@ assertions); inventory shows KMG Teleport/Greater in the Conjuration list at
 L5/L7 across all three attaching features. Build/repository validation/1,554
 domain tests PASS.
 
-### Gate 2 remaining (behavioral proof, next session slice)
+### Gate 2 behavioral proof (native-verified 2026-09-10)
 
-- New/focused guarded scenario: fixture wizard with Conjuration specialization
-  (reuse TeleportResourceFixtureOwner + school feature attach — see how the
-  spellbook-ui scenario builds books), prepare Teleport in the FIFTH-level
-  favorite slot through the real spellbook UI (SpellItem.Memorize path), rest,
-  verify preparation count and world-map spend consumes exactly the favorite
-  preparation (mixed ordinary+specialist counting, opposition/native order).
-- Negative controls: other-school favorite slots reject; universalist unchanged;
-  wrong-level/unrelated Conjuration spell behavior; module OFF/ON without free
-  restoration; rest/reload persistence (fresh-process via persistence harness).
+New guarded scenario `disposable-teleportation-specialist`
+(RuntimeTestRunner.TeleportationSpecialist.cs; registered in the catalog,
+runner dispatch, request validator, Invoke-KingmakerRuntimeTest.ps1,
+RuntimeAutomation.Common.ps1 metadata, and both preflight scenario lists).
+Two consecutive PASS runs (9/9 assertions, zero save writes), e.g. evidence
+dir 20260910T14*Z-disposable-teleportation-specialist (see newest under
+runtime-evidence). Proven, in order:
+
+1. Unsaturated wizard book has NO favorite slot (universalist negative).
+2. Native AddSpecialList seam (exactly what SpecializationSchoolConjuration's
+   OnFactActivate calls) attaches the school list; Conjuration list contains
+   Teleport, Evocation's does not. (Fixture note: descriptor.AddFact of the
+   school feature did NOT run its component in the working save; the fixture
+   uses the public native seam directly. Real characters attach via feature
+   activation at specialization/load.)
+3. The Conjuration favorite slot refuses ConeOfCold (Evocation); the Evocation
+   favorite slot refuses Teleport (other-school negative).
+4. Native controller MemorizeWithSound(data, favoriteSlot) — the drag-drop UI
+   boundary — lands exactly one unready Teleport in the FAVORITE slot; the
+   favorite slot is displayed by the native memorize panel.
+5. Mixed favorite + ordinary preparation counts exactly two; native Rest
+   readies both.
+6. World map (after native area load + camera settle, with bounded repeated
+   selection when the augmentation refill is delayed): the favorite-only
+   preparation composes as a real source (uses=1).
+7. Cast with one request-local d100 roll: transaction Completed, exactly one
+   use spent, arrival at the target, zero remaining ready preparations.
+8. Exact cleanup (books, features, action bars, selection, world state), zero
+   save writes.
+
+Native facts learned: GetMemorizedSpells filters to FILLED slots (use private
+SureMemorizedSpells via reflection for raw slots); favorite slots appear at
+all levels 1..9 once a special list exists (CalcSlotsLimit), built by
+UpdateAllSlotsSize; a single-book character hides the class-tab strip;
+plain Teleport always consumes one d100 (empty fixture rolls = "Queue empty"
+technical failure); panel augmentation can lag scene load — retry selection.
 
 ## Gate 1 root cause and fix (native-verified 2026-09-10)
 
