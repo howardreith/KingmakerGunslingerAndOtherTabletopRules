@@ -2428,7 +2428,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers ||
-                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad || IsTeleportationDestinationsFixture || IsTeleportationDisabledFixture)
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad || IsTeleportationDestinationsFixture || IsTeleportationArrowsFixture || IsTeleportationDisabledFixture)
                 {
                     PollTeleportationInteraction();
                 }
