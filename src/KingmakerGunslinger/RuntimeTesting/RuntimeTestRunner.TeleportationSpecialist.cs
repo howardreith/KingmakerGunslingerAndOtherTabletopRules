@@ -124,7 +124,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 var tabs = controller.SpellBookView.ClassToggle;
                 int bookIndex = tabs.Spellbooks.IndexOf(bookConjurer);
-                var tab = tabs.GetComponentsInChildren<SpellbookClassTab>(true).Single(value => value.Index == bookIndex && value.gameObject.activeInHierarchy);
+                CaptureTeleportationSpecialist("book-tabs", new { bookIndex, tabsSpellbooks = tabs.Spellbooks.Select(value => value.Blueprint.name).ToArray(),
+                    currentCharacter = controller.CurrentCharacter == null ? null : controller.CurrentCharacter.UniqueId, conjurerId = conjurer.UniqueId,
+                    tabRows = tabs.GetComponentsInChildren<SpellbookClassTab>(true).Select(value => new { value.Index, active = value.gameObject.activeInHierarchy,
+                        value.m_ClassLevel.text }).ToArray() });
+                var tab = tabs.GetComponentsInChildren<SpellbookClassTab>(true).SingleOrDefault(value => value.Index == bookIndex && value.gameObject.activeInHierarchy);
+                if (tab == null) throw new InvalidOperationException("No active native class tab for the specialist book (index " + bookIndex + ").");
                 tab.Toggle.isOn = true;
                 if (!ReferenceEquals(controller.CurrentSpellbook, bookConjurer)) throw new InvalidOperationException("Native class toggle did not select the specialist book.");
                 controller.SpellBookView.LevelBookSwitcher.m_Tabs[5].Toggle.isOn = true;
@@ -204,7 +209,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 30; frame++) yield return 0;
                     // Favorite-only preparation for the strategic cast.
                     bookConjurer.Rest();
-                    var favoriteForCast = RawSlots(bookConjurer, 5).Single(value => value.Type == SpellSlotType.Favorite);
+                    var favoriteForCast = RawSlots(bookConjurer, 5).SingleOrDefault(value => value.Type == SpellSlotType.Favorite);
+                    if (favoriteForCast == null) throw new InvalidOperationException("The rested specialist book lost its favorite slot.");
                     if (!bookConjurer.Memorize(new AbilityData(teleport, bookConjurer), favoriteForCast))
                         throw new InvalidOperationException("Native favorite-only preparation failed.");
                     var onlyPreparation = RawSlots(bookConjurer, 5).Where(value => value.Spell != null && value.Spell.Blueprint == teleport).ToArray();
