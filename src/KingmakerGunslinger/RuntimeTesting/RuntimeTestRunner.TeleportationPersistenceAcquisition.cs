@@ -40,8 +40,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             var supplier = TeleportationScrollVendorPublication.DecideSupplier(BlueprintBootstrap.Library);
             if (supplier.Arcane == null || supplier.Priest == null)
                 throw new InvalidOperationException("Both mission suppliers must resolve for the acquisition chain.");
-            var reader = player.Party.FirstOrDefault(TeleportationSpellbookAdapter.CasterAvailable);
-            if (reader == null) throw new InvalidOperationException("No available acquisition reader.");
+            // Scroll eligibility is native class-list membership (Progression
+            // Classes), which a fixture book alone does not create. Pick a
+            // member other than the establish-phase book owner, attach the same
+            // fixture ClassData the scrolls scenario uses, and keep the fixture
+            // book below on that reader. The ClassData persists with the
+            // transaction-owned disposable save.
+            var wizard = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                "ba34257984f4c41408ce1dc2004e342e", "native persistence acquisition Wizard class");
+            var reader = player.Party.FirstOrDefault(value => TeleportationSpellbookAdapter.CasterAvailable(value) &&
+                !ReferenceEquals(value, EstablishPersistenceBookOwner)) ?? player.Party.First();
+            var readerClassData = new ClassData(wizard) { Spellbook = wizard.Spellbook };
+            reader.Descriptor.Progression.Classes.Add(readerClassData);
             // Real gold purchase: the exact native vendor boundary the shop UI
             // drives, against the supplier the shared decision selected.
             var vendorPart = reader.Descriptor.Ensure<UnitPartVendor>();
@@ -67,8 +77,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new { supplier = supplier.Arcane.name, fallback = supplier.ArcaneFallback, price, goldDelta = goldBase - player.Money, carried, remainingStock });
             // Native copy-from-scroll into a fresh book on the reader.
             var fixture = new TeleportResourceFixtureOwner(reader);
-            var wizard = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
-                "ba34257984f4c41408ce1dc2004e342e", "native persistence acquisition Wizard class");
             var book = fixture.AddBook(wizard.Spellbook);
             book.UpdateAllSlotsSize(false);
             var purchased = default(ItemEntity);
