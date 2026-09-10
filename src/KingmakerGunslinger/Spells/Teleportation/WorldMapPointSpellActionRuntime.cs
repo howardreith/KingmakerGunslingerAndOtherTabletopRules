@@ -61,8 +61,6 @@ namespace KingmakerGunslinger.Spells.Teleportation
         {
             try
             {
-                ModContext context;
-                ModContext.TryGet(out context);
                 // The settlement teleport button is located through the panel's own
                 // hierarchy by its exact serialized OnTeleportPressed callback; the
                 // control's own active state is the native eligibility gate.
