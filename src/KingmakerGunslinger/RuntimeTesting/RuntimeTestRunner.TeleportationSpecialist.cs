@@ -100,7 +100,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     conjurerSpecialLists = ((System.Collections.IList)specialListsField.GetValue(bookConjurer)).Count,
                     conjurerSpecialNames = bookConjurer.GetSpecialSpells(5).Select(value => value.Blueprint.name).ToArray(),
                     conjurationListSpells5 = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellList>(BlueprintBootstrap.Library,
-                        "69a6eba12bc77ea4191f573d63c9df12", "Conjuration special list").GetSpells(5).Select(value => value.name).ToArray() });
+                        "69a6eba12bc77ea4191f573d63c9df12", "Conjuration special list").GetSpells(5).Select(value => value.name).ToArray(),
+                    conjurerMaxSpellLevel = bookConjurer.MaxSpellLevel, conjurerCasterLevel = bookConjurer.CasterLevel,
+                    conjurerFavoriteByLevel = Enumerable.Range(0, 10).Select(level => bookConjurer.GetMemorizedSpells(level).Count(value => value.Type == SpellSlotType.Favorite)).ToArray(),
+                    evokerFavoriteByLevel = Enumerable.Range(0, 10).Select(level => bookEvoker.GetMemorizedSpells(level).Count(value => value.Type == SpellSlotType.Favorite)).ToArray() });
                 SpecialistAssert("special-list-membership", "the Conjuration special list contains Teleport and the Evocation list does not",
                     "conjurer=" + conjurerSpecial + ";evoker=" + evokerSpecial, conjurerSpecial && !evokerSpecial);
                 var conjurerFavorite = bookConjurer.GetMemorizedSpells(5).SingleOrDefault(value => value.Type == SpellSlotType.Favorite);
