@@ -1,6 +1,8 @@
-using System;
+﻿using System;
+using System.Linq;
 using Kingmaker.Items;
 using Kingmaker.EntitySystem.Entities;
+using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.Spells.Teleportation
 {
@@ -53,6 +55,28 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var lease = _current;
             return lease != null && reader != null && item != null &&
                 ReferenceEquals(lease.Reader, reader) && ReferenceEquals(lease.Item, item);
+        }
+
+        // True when the caster currently carries a temporary native ability fact
+        // whose SourceItem is one of the strategic scrolls — the exact state the
+        // native item-use path creates before any availability check. Only in
+        // that state does the caster checker defer to the request-bound gate.
+        internal static bool HasStrategicScrollFact(UnitEntityData caster)
+        {
+            if (caster == null || caster.Descriptor == null) return false;
+            var scrolls = BlueprintBootstrap.TeleportationScrolls;
+            if (scrolls == null) return false;
+            var strategic = new[]
+            {
+                (Kingmaker.Blueprints.Items.BlueprintItem)scrolls.Teleport,
+                scrolls.GreaterTeleport, scrolls.WordOfRecall
+            };
+            foreach (var ability in caster.Abilities.Enumerable)
+            {
+                var sourceItem = ability == null ? null : ability.SourceItem;
+                if (sourceItem != null && strategic.Contains(sourceItem.Blueprint)) return true;
+            }
+            return false;
         }
     }
 }
