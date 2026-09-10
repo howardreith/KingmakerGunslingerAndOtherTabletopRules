@@ -114,6 +114,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SpecialistAssert("favorite-slot-rejects-non-school", "the Conjuration favorite slot refuses an Evocation spell and the Evocation favorite slot refuses Teleport",
                     "coneRejected=" + coneRejected + ";teleportRejectedByEvoker=" + teleportRejectedByEvoker, coneRejected && teleportRejectedByEvoker);
                 // Native spellbook UI preparation of Teleport into the favorite slot.
+                // The same double selection change the qualified spellbook-ui
+                // fixture performs: the second one composes the tab strip after
+                // the fixture books exist.
+                ui.SelectionManagerPC.SelectUnit(conjurer.View, true, true, false);
+                for (int frame = 0; frame < 8; frame++) yield return 0;
                 ui.SelectionManagerPC.SelectUnit(conjurer.View, true, true, false);
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 ui.ServiceWindow.HandleOpenSpellbook();
