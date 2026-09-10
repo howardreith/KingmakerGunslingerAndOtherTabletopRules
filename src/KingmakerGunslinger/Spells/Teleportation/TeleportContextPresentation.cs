@@ -31,6 +31,17 @@ namespace KingmakerGunslinger.Spells.Teleportation
         }
         internal static string Row(WorldMapPointSpellAction action, Translate text)
         { return Format(text("ActionRow", "{0}  {1} ({2})"), SpellName(action.Source.Spell, text), Caster(action), Uses(action.Source, text)); }
+        // Compact two-line desktop rows: the full spell name as the title and
+        // caster/cost detail beneath it, so controls stay within the native
+        // parchment's inner content width on compact geometries.
+        internal static string Title(WorldMapPointSpellAction action, Translate text)
+        { return Format(text("ActionTitle", "Cast {0}"), SpellName(action.Source.Spell, text)); }
+        internal static string Detail(WorldMapPointSpellAction action, Translate text)
+        { return Format(text("ActionDetail", "{0} · {1}"), Caster(action), Uses(action.Source, text)); }
+        internal static string CompactRow(WorldMapPointSpellAction action, Translate text)
+        { return Title(action, text) + "\n" + Detail(action, text); }
+        internal static string SettlementTeleportLabel(Translate text)
+        { return text("SettlementTeleport", "Settlement Teleport"); }
         internal static string Confirmation(WorldMapPointSpellAction action, TeleportFamiliarity familiarity, Translate text)
         {
             string spell = SpellName(action.Source.Spell, text);

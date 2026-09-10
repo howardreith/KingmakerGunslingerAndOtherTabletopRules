@@ -17,6 +17,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         internal static readonly FieldInfo DialogField = Field("m_Dialog", typeof(CanvasGroup));
         internal static readonly FieldInfo LocationField = Field("m_Location", typeof(Kingmaker.Globalmap.GlobalMapLocation));
         internal static readonly FieldInfo AcceptTextField = Field("m_AcceptText", typeof(TextMeshProUGUI));
+        internal static readonly FieldInfo TeleportControllersField = Field("m_TeleportControllers", typeof(GameObject));
         internal static readonly FieldInfo ConfirmationCallbackField = typeof(DialogMessageBox).GetField("m_OnClose", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly string[] Methods = { "OnLocationSelect", "FillDialogInfoLocation", "Hide", "Dispose" };
         internal static void Install(ModContext context)
@@ -24,7 +25,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!context.FeatureModules.Active.TeleportationSpells || Installed) return;
             try
             {
-                if (DialogField == null || LocationField == null || AcceptTextField == null ||
+                if (DialogField == null || LocationField == null || AcceptTextField == null || TeleportControllersField == null ||
                     ConfirmationCallbackField == null || ConfirmationCallbackField.FieldType != typeof(Action<DialogMessageBoxBase.BoxButton>))
                     throw new InvalidOperationException("Native destination/confirmation presenter fields differ.");
                 var methods = Methods.Select(name => typeof(GlobalMapMessageBox).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
