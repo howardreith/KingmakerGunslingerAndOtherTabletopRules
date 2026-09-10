@@ -62,6 +62,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Concat(edgeRecords.Select(value => new TeleportNativeFieldSnapshot(value.Value)))
                 .Concat(new[] { new TeleportNativeFieldSnapshot(ledger) }).ToArray();
             var originalUmdbase = new Dictionary<string, int>();
+            BlueprintItemEquipmentUsable variant = null;
             try
             {
                 var chain = FindTeleportInteractionChain(rules);
@@ -79,32 +80,70 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 // --- Scroll sources from real party items ---
                 var bookReader = party[0]; var umdReader = party[1];
-                // Native player characters share ONE party inventory (stash,
-                // carried and equipped items alike), so both adds land in the
-                // same collection and the stock must count it exactly once.
+                // Deliberate reader control: no fixture may inherit a convenient
+                // working-save UMD value. Zero every member's UMD base ranks for
+                // the whole scenario and restore them exactly at cleanup.
+                foreach (var unit in party)
+                {
+                    var stat = unit.Descriptor.Stats.GetStat(Kingmaker.EntitySystem.Stats.StatType.SkillUseMagicDevice);
+                    originalUmdbase[unit.UniqueId] = stat.BaseValue;
+                    stat.BaseValue = 0;
+                }
+                // Controlled class-list readers: a fixture ClassData is the exact
+                // structure the native eligibility check reads
+                // (Progression.Classes -> Spellbook -> SpellList), restored at cleanup.
+                var wizardClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                    "ba34257984f4c41408ce1dc2004e342e", "scrolls fixture Wizard class");
+                var clericClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                    "67819271767a9dd4fbfd4ae700befea0", "scrolls fixture Cleric class");
+                var druidClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                    "610d836f3a3a9ed42a4349b62f002e96", "scrolls fixture Druid class");
+                var wizardReaderData = AddScrollsClassList(bookReader, wizardClass);
+                var druidReaderData = AddScrollsClassList(party.Length > 2 ? party[2] : umdReader, druidClass);
+                CaptureTeleportScrolls("reader-classes", new {
+                    umdRanks = party.Select(value => value.Descriptor.Stats.GetStat(Kingmaker.EntitySystem.Stats.StatType.SkillUseMagicDevice).BaseValue).ToArray(),
+                    wizardQualifies = scrolls.Teleport.Ability.IsInSpellListOfUnit(bookReader.Descriptor),
+                    clericRecall = scrolls.WordOfRecall.Ability.IsInSpellListOfUnit(((Kingmaker.EntitySystem.Entities.UnitEntityData)clericProbe).Descriptor) });
+                // Shared stock: native characters share one party inventory.
                 party[0].Inventory.Add(scrolls.Teleport, 2);
                 party[1].Inventory.Add(scrolls.Teleport, 1);
-                // UMD-only reader: no book knows the spell; the trained skill alone
-                // qualifies the reader.
-                var umdStat = umdReader.Descriptor.Stats.GetStat(StatType.SkillUseMagicDevice);
-                originalUmdbase[umdReader.UniqueId] = umdStat.BaseValue;
-                umdStat.BaseValue = 1;
+                party[1].Inventory.Add(scrolls.WordOfRecall, 2);
                 int sharedStock = TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport);
                 ScrollsAssert("shared-stock-counts-distinct-collections", "the shared native party inventory is counted exactly once",
                     "stock=" + sharedStock, sharedStock == 3);
-                var scrollSources = TeleportationScrollAdapter.Enumerate(player)
-                    .Where(value => value.Spell == TeleportSpellKind.Teleport).ToArray();
-                ScrollsAssert("scroll-reader-rows", "both the item-carrying member and the trained UMD reader offer the scroll",
-                    "readers=" + string.Join(",", scrollSources.Select(value => value.CasterId).ToArray()),
-                    scrollSources.Length == 2 && scrollSources.All(value => value.Uses == 3 && value.Kind == TeleportCastSourceKind.Scroll));
-                var wizard = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
-                    "ba34257984f4c41408ce1dc2004e342e", "scrolls fixture Wizard class");
+                // --- Per-spell native eligibility with zero UMD ranks ---
+                var zeroUmdSources = TeleportationScrollAdapter.Enumerate(player).ToArray();
+                var wizardTeleport = zeroUmdSources.FirstOrDefault(value => value.CasterId == bookReader.UniqueId && value.Spell == TeleportSpellKind.Teleport);
+                ScrollsAssert("reader-wizard-classlist-zero-umd", "a wizard-list reader with zero UMD ranks offers Teleport without knowing or preparing it",
+                    "uses=" + (wizardTeleport == null ? "absent" : wizardTeleport.Uses.ToString()),
+                    wizardTeleport != null && wizardTeleport.Uses == 3);
+                var wizardRecall = zeroUmdSources.FirstOrDefault(value => value.CasterId == bookReader.UniqueId && value.Spell == TeleportSpellKind.WordOfRecall);
+                ScrollsAssert("reader-per-spell-negative", "qualifying for Teleport does not qualify the wizard for Word of Recall",
+                    "recall=" + (wizardRecall == null ? "absent" : wizardRecall.Uses.ToString()), wizardRecall == null);
+                var druidRecallReader = party.Length > 2 ? party[2] : umdReader;
+                var druidRecall = zeroUmdSources.FirstOrDefault(value => value.CasterId == druidRecallReader.UniqueId && value.Spell == TeleportSpellKind.WordOfRecall);
+                ScrollsAssert("reader-druid-recall-zero-umd", "a druid-list reader with zero UMD ranks offers Word of Recall (Cleric 6 / Druid 8 list levels preserved)",
+                    "recall=" + (druidRecall == null ? "absent" : druidRecall.Uses.ToString()),
+                    druidRecall != null && druidRecall.Uses == 2);
+                var ineligibleBeforeUmd = zeroUmdSources.Count(value => value.CasterId == umdReader.UniqueId);
+                ScrollsAssert("reader-ineligible-control", "a member with no relevant class list and zero UMD ranks offers nothing",
+                    "rows=" + ineligibleBeforeUmd, ineligibleBeforeUmd == 0);
+                // UMD-only reader: trained ranks alone qualify an uncertain attempt.
+                umdReader.Descriptor.Stats.GetStat(Kingmaker.EntitySystem.Stats.StatType.SkillUseMagicDevice).BaseValue = 1;
+                var umdSources = TeleportationScrollAdapter.Enumerate(player).ToArray();
+                var umdTeleport = umdSources.FirstOrDefault(value => value.CasterId == umdReader.UniqueId && value.Spell == TeleportSpellKind.Teleport);
+                ScrollsAssert("reader-umd-only", "a UMD-only reader with no relevant class list offers the scroll for an uncertain attempt",
+                    "uses=" + (umdTeleport == null ? "absent" : umdTeleport.Uses.ToString()), umdTeleport != null && umdTeleport.Uses == 3);
+                var umdRecall = umdSources.FirstOrDefault(value => value.CasterId == umdReader.UniqueId && value.Spell == TeleportSpellKind.WordOfRecall);
+                ScrollsAssert("reader-umd-per-spell", "the UMD reader is also offered Word of Recall independently",
+                    "recall=" + (umdRecall == null ? "absent" : umdRecall.Uses.ToString()), umdRecall != null && umdRecall.Uses == 2);
+
+                // The fixture book backs the copy control and the later market chain;
+                // scroll eligibility itself never depends on it.
                 var fixtureOwner = new TeleportResourceFixtureOwner(bookReader);
                 _scrollsFixtureOwner = fixtureOwner;
-                var book = fixtureOwner.AddBook(wizard.Spellbook);
+                var book = fixtureOwner.AddBook(wizardClass.Spellbook);
                 book.AddKnown(5, scrolls.Teleport.Ability, true); book.Rest();
-                // Copy control: a copied scroll association prepares through the
-                // exact native copy seam used by spellbook copying.
                 var copiedKnown = book.GetKnownSpells(5).Any(value => value.Blueprint == scrolls.Teleport.Ability);
                 ScrollsAssert("scroll-copy-learns-canonical-spell", "the native copy association learns the canonical strategic spell",
                     "copied=" + copiedKnown, copiedKnown);
@@ -146,7 +185,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";pending=" + TeleportContextConfirmationPresenter.Pending,
                     TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport) == 3 &&
                     bookFingerprint == TeleportResourceFingerprint(book) && !TeleportContextConfirmationPresenter.Pending);
-                // Commit the scroll cast.
+                // Deterministic native activation FAILURE: the rank-1 UMD reader
+                // cannot pass the genuine UMD check, so the native activation is
+                // refused — nothing consumed, no teleport, no compensation needed.
                 for (int attempt = 0; attempt < 3; attempt++)
                 {
                     SelectTeleportationCastingPoint(panel, target);
@@ -155,7 +196,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (rows != null && rows.Actions.Any(value => value.Key == scrollRow.Key)) break;
                     for (int frame = 0; frame < 30; frame++) yield return 0;
                 }
-                var committedRow = rows.Actions.Single(value => value.Key == scrollRow.Key);
+                var failureRow = rows.Actions.Single(value => value.Key == scrollRow.Key);
+                rows.QualificationRolls = new TeleportationFixtureRolls(new int[0]);
+                rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == failureRow.Key)].onClick.Invoke();
+                var failureRequest = TeleportContextConfirmationPresenter.Current;
+                if (failureRequest == null || !DialogMessageBox.Instance.IsShown)
+                    throw new InvalidOperationException("The UMD-failure confirmation did not open.");
+                for (int frame = 0; frame < 8; frame++) yield return 0;
+                TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                for (int frame = 0; frame < 12; frame++) yield return 0;
+                bool refused = failureRequest.Transaction.State == TeleportTransactionState.ActivationRefused;
+                ScrollsAssert("scroll-activation-umd-failure", "a genuine failed UMD check refuses the activation: nothing consumed, no teleport, no refund attempted",
+                    "state=" + failureRequest.Transaction.State + ";stock=" + TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport) +
+                        ";party=" + map.PartyLocation.AssetGuid,
+                    refused && TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport) == 3 &&
+                        map.PartyLocation.AssetGuid == origin.Blueprint.AssetGuid &&
+                        !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown);
+                // Commit the scroll cast through the class-list reader with ZERO
+                // UMD ranks: the native activation succeeds without any die roll.
+                for (int attempt = 0; attempt < 3; attempt++)
+                {
+                    SelectTeleportationCastingPoint(panel, target);
+                    foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                    rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                    if (rows != null && rows.Actions.Any(value => value.Source.Kind == TeleportCastSourceKind.Scroll &&
+                        value.Source.CasterId == bookReader.UniqueId)) break;
+                    for (int frame = 0; frame < 30; frame++) yield return 0;
+                }
+                var committedRow = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll &&
+                    value.Source.CasterId == bookReader.UniqueId && value.Source.Spell == TeleportSpellKind.Teleport);
                 rows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
                 rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == committedRow.Key)].onClick.Invoke();
                 var request = TeleportContextConfirmationPresenter.Current;
@@ -182,6 +251,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                     labels.Length > 0 && labels.All(label => ArrowLabelEdge(label) != null && arrival.Edges.Contains(ArrowLabelEdge(label))));
                 CaptureTeleportScrolls("scroll-cast", new { committed, stockBefore = 3, stockAfter, labels = labels.Length,
                     movementBookRows = bookRowsBefore });
+
+                // --- Crafted-variant discovery: a distinct genuine scroll blueprint
+                // with the same canonical association but different caster-level
+                // metadata must be discovered as its own row, and activation must
+                // spend the chosen variant, not the standard stock. ---
+                variant = UnityEngine.Object.Instantiate(scrolls.Teleport);
+                variant.name = "KMG_Fixture_CraftedTeleportScroll_CL13";
+                variant.CasterLevel = 13;
+                party[1].Inventory.Add(variant, 1);
+                var variantSources = TeleportationScrollAdapter.Enumerate(player)
+                    .Where(value => value.Spell == TeleportSpellKind.Teleport && value.CasterId == bookReader.UniqueId).ToArray();
+                var standardRow = variantSources.FirstOrDefault(value => value.BookId == scrolls.Teleport.AssetGuid);
+                var variantRow2 = variantSources.FirstOrDefault(value => value.BookId == variant.AssetGuid);
+                ScrollsAssert("variant-discovery-separate-row", "a crafted variant with different caster-level metadata forms its own discovered row",
+                    "rows=" + variantSources.Length + ";standardUses=" + (standardRow == null ? 0 : standardRow.Uses) +
+                        ";variantUses=" + (variantRow2 == null ? 0 : variantRow2.Uses) + ";variantLevel=" + (variantRow2 == null ? 0 : variantRow2.SpellLevel),
+                    variantSources.Length == 2 && standardRow != null && standardRow.Uses == 2 &&
+                        variantRow2 != null && variantRow2.Uses == 1 && variantRow2.SpellLevel == variant.SpellLevel);
+                for (int attempt = 0; attempt < 3; attempt++)
+                {
+                    SelectTeleportationCastingPoint(panel, target);
+                    foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                    rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                    if (rows != null && rows.Actions.Any(value => value.Source.Kind == TeleportCastSourceKind.Scroll &&
+                        value.Source.BookId == variant.AssetGuid && value.Source.CasterId == bookReader.UniqueId)) break;
+                    for (int frame = 0; frame < 30; frame++) yield return 0;
+                }
+                var variantCommitted = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll &&
+                    value.Source.BookId == variant.AssetGuid && value.Source.CasterId == bookReader.UniqueId);
+                rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                rows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
+                rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == variantCommitted.Key)].onClick.Invoke();
+                var variantRequest = TeleportContextConfirmationPresenter.Current;
+                if (variantRequest == null || !DialogMessageBox.Instance.IsShown)
+                    throw new InvalidOperationException("The variant confirmation did not open.");
+                for (int frame = 0; frame < 8; frame++) yield return 0;
+                TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                for (int frame = 0; frame < 12; frame++) yield return 0;
+                bool variantArrived = variantRequest.Transaction.State == TeleportTransactionState.Completed &&
+                    variantRequest.Transaction.Result != null && variantRequest.Transaction.Result.Status == TeleportExecutionStatus.Arrived;
+                ScrollsAssert("variant-activation-spends-chosen-variant",
+                    "activating the variant row consumes exactly the chosen variant and leaves the standard stock untouched",
+                    "variantStock=" + TeleportationScrollAdapter.Stock(player.Party, variant) +
+                        ";standardStock=" + TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport) + ";arrived=" + variantArrived,
+                    variantArrived && TeleportationScrollAdapter.Stock(player.Party, variant) == 0 &&
+                        TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport) == 2);
 
                 // --- Vendor migration behaviors on the shared tables ---
                 var priestTable = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.BlueprintSharedVendorTable>(
@@ -295,7 +410,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // the copied spell exactly as a player's unused wizard would.
                 var marketOwner = new TeleportResourceFixtureOwner(umdReader);
                 _scrollsFixtureOwners.Add(marketOwner);
-                var marketBook = marketOwner.AddBook(wizard.Spellbook);
+                var marketBook = marketOwner.AddBook(wizardClass.Spellbook);
                 marketBook.UpdateAllSlotsSize(false);
                 bool canCopy = copyComponent.CanCopy(purchased, umdReader);
                 ScrollsAssert("market-copy-eligible", "the purchased scroll is natively copyable into the fresh wizard book",
@@ -385,7 +500,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (unit == null || unit.Inventory == null) continue;
                     int remaining = TeleportationScrollAdapter.Stock(new[] { unit }, scrolls.Teleport);
                     if (remaining > 0) unit.Inventory.Remove((BlueprintItem)scrolls.Teleport, remaining);
+                    remaining = TeleportationScrollAdapter.Stock(new[] { unit }, variant);
+                    if (remaining > 0) unit.Inventory.Remove((BlueprintItem)variant, remaining);
+                    remaining = TeleportationScrollAdapter.Stock(new[] { unit }, scrolls.WordOfRecall);
+                    if (remaining > 0) unit.Inventory.Remove((BlueprintItem)scrolls.WordOfRecall, remaining);
                 }
+                for (int index = 0; index < _scrollsFixtureClasses.Count; index++)
+                    _scrollsFixtureClassOwners[index].Descriptor.Progression.Classes.Remove(_scrollsFixtureClasses[index]);
+                _scrollsFixtureClasses.Clear();
                 foreach (var entry in originalUmdbase)
                 {
                     var unit = player.AllCharacters.FirstOrDefault(value => value != null && value.UniqueId == entry.Key);
@@ -402,6 +524,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 map.MilesTravelled = originalMiles; player.GameTime = originalTime;
                 foreach (var snapshot in snapshots) snapshot.Restore();
             }
+        }
+
+
+        private readonly List<Kingmaker.UnitLogic.ClassData> _scrollsFixtureClasses = new List<Kingmaker.UnitLogic.ClassData>();
+        private readonly List<Kingmaker.EntitySystem.Entities.UnitEntityData> _scrollsFixtureClassOwners = new List<Kingmaker.EntitySystem.Entities.UnitEntityData>();
+        private Kingmaker.EntitySystem.Entities.UnitEntityData clericProbe;
+        private Kingmaker.UnitLogic.ClassData AddScrollsClassList(Kingmaker.EntitySystem.Entities.UnitEntityData unit, BlueprintCharacterClass characterClass)
+        {
+            var data = new Kingmaker.UnitLogic.ClassData(characterClass) { Spellbook = characterClass.Spellbook };
+            unit.Descriptor.Progression.Classes.Add(data);
+            _scrollsFixtureClasses.Add(data);
+            _scrollsFixtureClassOwners.Add(unit);
+            clericProbe = unit;
+            return data;
         }
 
         private TeleportResourceFixtureOwner _scrollsFixtureOwner;
