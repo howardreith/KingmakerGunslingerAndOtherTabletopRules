@@ -5079,6 +5079,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int overhaulFactUnits = 0, visibleMaintenanceUnits = 0,
                     savedOverhaulSlots = 0, savedVisibleMaintenanceSlots = 0,
                     savedOverhaulSlotsHidden = 0;
+                string slotProbe = null;
                 foreach (Kingmaker.EntitySystem.Entities.UnitEntityData
                     scannedUnit in scannedUnits)
                 {
@@ -5113,6 +5114,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         continue;
                     object slots;
                     string slotsMember;
+                    if (holdsOverhaul && slotProbe == null)
+                    {
+                        System.Reflection.MemberInfo[] publicMembers =
+                            unitSettings.GetType().GetMembers(
+                                System.Reflection.BindingFlags.Instance |
+                                System.Reflection.BindingFlags.Public |
+                                System.Reflection.BindingFlags.NonPublic);
+                        slotProbe = "settingsType=" +
+                            unitSettings.GetType().FullName + ";slotMembers=" +
+                            string.Join(",",
+                                publicMembers.Where(member =>
+                                    member.Name.IndexOf("Slot",
+                                        StringComparison.OrdinalIgnoreCase) >= 0)
+                                .Select(member => member.Name)
+                                .Take(12).ToArray());
+                    }
                     if (ReflectionAccess.TryGetFirstNonNullMember(unitSettings,
                         new[] { "Slots" }, out slots, out slotsMember) ||
                         ReflectionAccess.TryGetFirstNonNullMember(unitSettings,
@@ -5144,7 +5161,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";savedOverhaulSlotsHidden=" + savedOverhaulSlotsHidden +
                     ";savedVisibleMaintenanceSlots=" +
                     savedVisibleMaintenanceSlots +
-                    ";aliasHiddenDelegate=" + aliasIsHiddenDelegate;
+                    ";aliasHiddenDelegate=" + aliasIsHiddenDelegate +
+                    ";slotProbe=" + (slotProbe ?? "<no-holder-settings>");
                 assertions.Add(Assertion("old-save-overhaul-fact-persisted",
                     "the loaded save genuinely persists at least one Overhaul ability fact",
                     aliasObserved, overhaulFactUnits >= 1,
