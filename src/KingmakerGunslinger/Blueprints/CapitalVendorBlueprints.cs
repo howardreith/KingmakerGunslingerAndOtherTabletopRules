@@ -57,16 +57,18 @@ namespace KingmakerGunslinger.Blueprints
                 ammunition.BlackPowder,
                 ammunition.LeadBall,
                 ammunition.PaperCartridge,
-                repairKit,
-                gunsmithingSupplies.OverhaulKit,
                 gunsmithingSupplies.GunsmithKit
             };
+            // The obsolete consumable Firearm Repair Kit and Firearm Overhaul Kit are
+            // no longer offered, but they remain in the owned set so this publication
+            // removes any copies injected into an already-generated table by an
+            // earlier version.
             int[] gunslingerCounts =
             {
                 WeaponCount, WeaponCount, WeaponCount, WeaponCount, WeaponCount,
                 WeaponCount,
                 AmmunitionCount, AmmunitionCount, AmmunitionCount,
-                10, 5, WeaponCount
+                WeaponCount
             };
             BlueprintItem[] items = publishGunslinger ? gunslingerItems :
                 Array.Empty<BlueprintItem>();
@@ -216,6 +218,21 @@ namespace KingmakerGunslinger.Blueprints
                 (_table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                     .OfType<LootItemsPackFixed>().Count(value => ReferenceEquals(
                         CapitalVendorBlueprints.ReadItem(value), item)) == 1;
+        }
+
+        /// <summary>
+        /// Counts the fixed rows actually present in the published table for one
+        /// item, independent of the intended offered-stock list. Retired
+        /// identities must observe zero here; unlike ContainsExact this detects
+        /// any leftover row, including duplicates.
+        /// </summary>
+        internal int CountPublishedRows(BlueprintItem item)
+        {
+            if (item == null) throw new ArgumentNullException("item");
+            return (_table.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<LootItemsPackFixed>()
+                .Count(value => ReferenceEquals(
+                    CapitalVendorBlueprints.ReadItem(value), item));
         }
 
         internal void Rollback()

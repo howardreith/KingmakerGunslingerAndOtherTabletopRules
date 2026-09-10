@@ -141,8 +141,9 @@ def validate(root: Path) -> None:
         .read_text(encoding="utf-8"))
     contract = static.get(STATIC_KEY, {})
     historical_runtime_pending = RUNTIME_QUALIFICATION_PENDING
-    if VERSION in {"0.0.114", "0.0.115", "0.0.116", "0.0.117", "0.0.118", "0.0.119", "0.0.120"}:
-        release_key = ("elementalCompletion120" if VERSION == "0.0.120"
+    if VERSION in {"0.0.114", "0.0.115", "0.0.116", "0.0.117", "0.0.118", "0.0.119", "0.0.120", "0.0.121"}:
+        release_key = ("unifiedRepair121" if VERSION == "0.0.121"
+            else "elementalCompletion120" if VERSION == "0.0.120"
             else "teleportation118InheritedContracts" if VERSION in {"0.0.118", "0.0.119"}
             else "elementalTraits117" if VERSION == "0.0.117"
             else "elementalFeats116" if VERSION == "0.0.116"

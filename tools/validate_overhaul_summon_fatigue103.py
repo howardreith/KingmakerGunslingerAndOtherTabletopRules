@@ -48,19 +48,18 @@ def validate(root: Path) -> None:
 
     overhaul = root / (
         "src/KingmakerGunslinger/Recovery/"
-        "OverhaulTestMusketAbilityLogic.cs")
+        "RepairTestMusketAbilityLogic.cs")
     require_tokens(overhaul, "DeliverPromptly", "TryPrepare(context",
         "Complete(context, start)",
         "yield return new AbilityDeliveryTarget(target)",
-        "ReferenceEquals(completed.Weapon, start.Weapon)",
-        "no active combat")
+        "ReferenceEquals(completed.Weapon, start.Weapon)")
     reject_tokens(overhaul, "TimeSpan.FromSeconds(60", "GameTime +",
         "yield return null", "completionTime")
     require_tokens(root / (
         "src/KingmakerGunslinger/Blueprints/"
         "OverhaulTestMusketAbilityBlueprints.cs"),
-        '"Instantaneous"', "one full-round action",
-        "Outside active combat")
+        '"Instantaneous"', "one full-round use",
+        "hidden and carries the unified repair logic")
 
     require_tokens(root / (
         "src/KingmakerGunslinger/Summoning/"

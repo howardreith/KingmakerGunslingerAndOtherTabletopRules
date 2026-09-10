@@ -35,7 +35,7 @@ namespace KingmakerGunslinger.Blueprints
                 access.ConfigureNonStackable(clone,
                     LocalizationService.Create("KMG.Item.GunsmithKit.Name", "Gunsmith's Kit"),
                     LocalizationService.Create("KMG.Item.GunsmithKit.Description",
-                        "Required to craft basic firearm ammunition."),
+                        "Reusable tool. Required in the shared inventory to repair a Broken or Wrecked firearm with Repair Firearm and to craft basic firearm ammunition. It is never consumed."),
                     LocalizationService.Create("KMG.Item.GunsmithKit.Flavor",
                         "Molds, measures, files, and compact hand tools in a fitted case."),
                     100, 2f);
@@ -49,7 +49,7 @@ namespace KingmakerGunslinger.Blueprints
                 access.Configure(clone,
                     LocalizationService.Create("KMG.Item.OverhaulKit.Name", "Firearm Overhaul Kit"),
                     LocalizationService.Create("KMG.Item.OverhaulKit.Description",
-                        "Consume with Overhaul Firearm to change one wrecked firearm to broken."),
+                        "Obsolete: no longer used or sold. Firearms are now repaired directly to Normal with a reusable Gunsmith's Kit."),
                     LocalizationService.Create("KMG.Item.OverhaulKit.Flavor",
                         "A complete field replacement set for a badly damaged lock and barrel assembly."),
                     100, 1f);

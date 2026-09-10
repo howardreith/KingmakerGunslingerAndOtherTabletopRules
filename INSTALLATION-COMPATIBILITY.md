@@ -1,7 +1,10 @@
 # Installation, updates, removal, and compatibility
 
-Version: `0.0.120-elemental-races-completion`.
-The installable archive is `KingmakerGunslinger-0.0.120-elemental-races-completion.zip`.
+Version: `0.0.121-unified-firearm-maintenance`.
+The installable archive is `KingmakerGunslinger-0.0.121-unified-firearm-maintenance.zip`.
+
+The retained 0.0.120 archive is
+`KingmakerGunslinger-0.0.120-elemental-races-completion.zip`.
 Back up the installed mod and preserve FeatureModules.json before installing
 through Unity Mod Manager. The twelve-module, schema-11 configuration inherited
 from 0.0.119 is unchanged.

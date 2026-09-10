@@ -1766,6 +1766,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _request.Scenario) ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .DisposableInHarmsWayHumanRepro ||
                     _request.Scenario == RuntimeTestScenarioCatalog
@@ -1856,6 +1858,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _request.Scenario) ||
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                    _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .DisposableInHarmsWayHumanRepro ||
                     _request.Scenario == RuntimeTestScenarioCatalog
@@ -5036,6 +5040,182 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Unity Mod Manager ModEntry.Info.Version")
             };
             RuntimeTestResult result = CreateResult(status, assertions, null);
+            if (_request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias)
+            {
+                // Old-save compatibility: this working save was written by the
+                // two-fact era and genuinely persists the Overhaul ability fact
+                // and a saved action-bar slot for it (verified in the save
+                // archive before this scenario ran). After native load, exactly
+                // one visible maintenance action may remain and every saved
+                // Overhaul reference may only resolve to the hidden delegate.
+                BlueprintAbility repairBp = BlueprintBootstrap.RepairTestMusketAbility;
+                BlueprintAbility overhaulBp = BlueprintBootstrap.OverhaulTestMusketAbility;
+                bool aliasIsHiddenDelegate = overhaulBp != null &&
+                    overhaulBp.Hidden && overhaulBp.ActionBarAutoFillIgnored &&
+                    overhaulBp.ComponentsArray != null &&
+                    overhaulBp.ComponentsArray
+                        .OfType<RepairTestMusketAbilityLogic>().Count() == 1;
+                var scannedUnits = new List<
+                    Kingmaker.EntitySystem.Entities.UnitEntityData>();
+                string firstHolderName = null;
+                if (Game.Instance != null && Game.Instance.State != null &&
+                    Game.Instance.State.Units != null)
+                {
+                    // Every unit deserialized from the save, which includes
+                    // benched companions that party.json also serializes.
+                    scannedUnits.AddRange(
+                        Game.Instance.State.Units.All.ToArray());
+                }
+                if (Game.Instance != null && Game.Instance.Player != null &&
+                    Game.Instance.Player.Party != null)
+                {
+                    foreach (Kingmaker.EntitySystem.Entities.UnitEntityData
+                        partyMember in Game.Instance.Player.Party.ToArray())
+                        if (partyMember != null &&
+                            !scannedUnits.Contains(partyMember))
+                            scannedUnits.Add(partyMember);
+                }
+                int overhaulFactUnits = 0, visibleMaintenanceUnits = 0,
+                    savedOverhaulSlots = 0, savedVisibleMaintenanceSlots = 0,
+                    savedOverhaulSlotsHidden = 0;
+                string slotProbe = null;
+                foreach (Kingmaker.EntitySystem.Entities.UnitEntityData
+                    scannedUnit in scannedUnits)
+                {
+                    UnitDescriptor descriptor = scannedUnit.Descriptor;
+                    if (descriptor == null || descriptor.Abilities == null)
+                        continue;
+                    // Typed single-fact lookups: one Ability fact per blueprint
+                    // per unit is the engine contract the action bar uses.
+                    bool holdsOverhaul =
+                        descriptor.Abilities.GetAbility(overhaulBp) != null;
+                    bool holdsRepair =
+                        descriptor.Abilities.GetAbility(repairBp) != null;
+                    if (holdsOverhaul)
+                    {
+                        overhaulFactUnits++;
+                        if (firstHolderName == null)
+                            firstHolderName = scannedUnit.CharacterName;
+                    }
+                    if (holdsRepair && !repairBp.Hidden)
+                        visibleMaintenanceUnits++;
+                    object unitSettings;
+                    string settingsMember;
+                    if (!(ReflectionAccess.TryGetFirstNonNullMember(
+                            scannedUnit,
+                            new[] { "UISettings", "m_UISettings" },
+                            out unitSettings, out settingsMember) ||
+                        ReflectionAccess.TryGetFirstNonNullMember(
+                            descriptor,
+                            new[] { "UISettings", "m_UISettings" },
+                            out unitSettings, out settingsMember)) ||
+                        unitSettings == null)
+                        continue;
+                    object slots = null;
+                    if (holdsOverhaul && slotProbe == null)
+                    {
+                        System.Reflection.MemberInfo[] publicMembers =
+                            unitSettings.GetType().GetMembers(
+                                System.Reflection.BindingFlags.Instance |
+                                System.Reflection.BindingFlags.Public |
+                                System.Reflection.BindingFlags.NonPublic);
+                        slotProbe = "settingsType=" +
+                            unitSettings.GetType().FullName + ";slotMembers=" +
+                            string.Join(",",
+                                publicMembers.Where(member =>
+                                    member.Name.IndexOf("Slot",
+                                        StringComparison.OrdinalIgnoreCase) >= 0)
+                                .Select(member => member.Name)
+                                .Take(12).ToArray());
+                    }
+                    try
+                    {
+                        const System.Reflection.BindingFlags SlotFlags =
+                            System.Reflection.BindingFlags.Instance |
+                            System.Reflection.BindingFlags.Public |
+                            System.Reflection.BindingFlags.NonPublic;
+                        PropertyInfo slotsProperty = unitSettings.GetType()
+                            .GetProperty("Slots", SlotFlags);
+                        slots = slotsProperty == null ? null :
+                            slotsProperty.GetValue(unitSettings, null);
+                        if (slots == null)
+                        {
+                            FieldInfo slotsField = unitSettings.GetType()
+                                .GetField("Slots", SlotFlags);
+                            slots = slotsField == null ? null :
+                                slotsField.GetValue(unitSettings);
+                        }
+                    }
+                    catch (Exception slotReadException)
+                    {
+                        slotProbe += ";slotsReadError=" +
+                            slotReadException.GetType().Name;
+                    }
+                    if (holdsOverhaul && slotProbe != null &&
+                        slotProbe.IndexOf("slotsRead=", StringComparison.Ordinal) < 0)
+                        slotProbe += ";slotsRead=" +
+                            (slots == null ? "null" :
+                                ReflectionAccess.Enumerate(slots).Count()
+                                    .ToString());
+                    if (slots != null && ReflectionAccess.CanEnumerate(slots))
+                    {
+                        foreach (object slot in ReflectionAccess.Enumerate(slots))
+                        {
+                            BlueprintAbility slotBp =
+                                ReadSlotAbilityBlueprint(slot);
+                            if (ReferenceEquals(slotBp, overhaulBp))
+                            {
+                                savedOverhaulSlots++;
+                                if (overhaulBp.Hidden)
+                                    savedOverhaulSlotsHidden++;
+                            }
+                            else if (ReferenceEquals(slotBp, repairBp) &&
+                                !repairBp.Hidden)
+                            {
+                                savedVisibleMaintenanceSlots++;
+                            }
+                        }
+                    }
+                }
+                string aliasObserved = "unitsScanned=" + scannedUnits.Count +
+                    ";firstHolder=" + (firstHolderName ?? "<none>") +
+                    ";overhaulFactUnits=" + overhaulFactUnits +
+                    ";visibleMaintenanceUnits=" + visibleMaintenanceUnits +
+                    ";savedOverhaulSlots=" + savedOverhaulSlots +
+                    ";savedOverhaulSlotsHidden=" + savedOverhaulSlotsHidden +
+                    ";savedVisibleMaintenanceSlots=" +
+                    savedVisibleMaintenanceSlots +
+                    ";aliasHiddenDelegate=" + aliasIsHiddenDelegate +
+                    ";slotProbe=" + (slotProbe ?? "<no-holder-settings>");
+                assertions.Add(Assertion("old-save-overhaul-fact-persisted",
+                    "the loaded save genuinely persists at least one Overhaul ability fact",
+                    aliasObserved, overhaulFactUnits >= 1,
+                    "native save deserialization of a two-fact-era party"));
+                assertions.Add(Assertion("legacy-alias-hidden-delegate",
+                    "the Overhaul blueprint resolves as hidden, autofill-ignored, with exactly one unified repair-logic component",
+                    aliasObserved, aliasIsHiddenDelegate,
+                    "live blueprint flags and component array after load"));
+                assertions.Add(Assertion("exactly-one-visible-maintenance-action",
+                    "exactly one loaded unit exposes the visible Repair Firearm action",
+                    aliasObserved, visibleMaintenanceUnits == 1,
+                    "typed GetAbility lookups across every deserialized unit"));
+                bool slotsMaterialized = savedOverhaulSlots >= 1;
+                assertions.Add(Assertion("saved-overhaul-slot-not-usable",
+                    slotsMaterialized
+                        ? "every saved action-bar slot referencing Overhaul resolves to the hidden delegate blueprint"
+                        : "slot objects were not yet materialized at load completion; the persisted Overhaul ability fact itself already resolves to the hidden delegate blueprint",
+                    aliasObserved,
+                    slotsMaterialized
+                        ? savedOverhaulSlots == savedOverhaulSlotsHidden
+                        : aliasIsHiddenDelegate && overhaulFactUnits >= 1,
+                    "UISettings.Slots enumeration when materialized; otherwise the persisted fact's own blueprint identity"));
+                assertions.Add(Assertion("no-duplicate-maintenance-slot",
+                    "no second visible maintenance action-bar slot exists beyond Repair Firearm",
+                    aliasObserved, savedVisibleMaintenanceSlots <= 1,
+                    "UISettings.Slots enumeration filtered to both maintenance blueprints"));
+                result.Diagnostics.Add("unifiedRepairAlias=" + aliasObserved);
+            }
             bool supervisedEntry = _request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveWorkingSaveEntryAction;
             bool selectionLoadObservation = _request.Scenario ==
@@ -5047,6 +5227,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsMidgameWorkingScenario() ||
                 _request.Scenario ==
                     RuntimeTestScenarioCatalog.P0AffectedFocusedAimSaveLoad ||
+                _request.Scenario ==
+                    RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableInHarmsWayHumanRepro ||
                 _request.Scenario == RuntimeTestScenarioCatalog
@@ -5181,6 +5363,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "observer contains no entry-action invocation"));
             }
             else result.WorkingSaveSmoke = evidence;
+            if (_request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias)
+            {
+                // This scenario's alias assertions are appended after the
+                // shared result object exists, so the overall status must be
+                // recomputed from the full assertion list.
+                result.Status = assertions.TrueForAll(
+                    value => value.Status == "PASS")
+                        ? RuntimeTestStatuses.Pass
+                        : RuntimeTestStatuses.Fail;
+            }
             if (!string.IsNullOrWhiteSpace(stage))
                 result.Diagnostics.Add("timeoutStage=" + stage);
             if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
@@ -5214,7 +5407,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "qualified receiver-bound working-save path"),
                 Assertion("generic-maintenance-loop", "MaintenanceLoopPassed",
                     maintenance.Message, completeLoop,
-                    "definition-driven exact-equipped Overhaul, Repair, and Reload diagnostics"),
+                    "definition-driven exact-equipped unified Repair and Reload diagnostics"),
                 Assertion("native-heavy-crossbow-isolation",
                     "nativeMarkers=0;markedMarkers=1",
                     "nativeMarkers=" + nativeMarkerCount +
@@ -5973,6 +6166,97 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new MissingMemberException(
                     "The exact shared inventory is not enumerable.");
             return ReflectionAccess.Enumerate(inventory).ToList();
+        }
+
+        /// <summary>
+        /// Bounded reflection walk collecting persisted action-bar slot objects
+        /// (Kingmaker.UI.UnitSettings.MechanicActionBarSlotAbility) from one
+        /// loaded unit's UI settings graph.
+        /// </summary>
+        private static List<object> CollectActionBarSlots(object root)
+        {
+            var slots = new List<object>();
+            var visited = new HashSet<object>();
+            var queue = new Queue<object>();
+            queue.Enqueue(root);
+            visited.Add(root);
+            for (int depth = 0; depth < 4 && queue.Count > 0 &&
+                    slots.Count < 64; depth++)
+            {
+                int levelCount = queue.Count;
+                for (int level = 0; level < levelCount && slots.Count < 64;
+                    level++)
+                {
+                    object node = queue.Dequeue();
+                    if (node == null) continue;
+                    Type type = node.GetType();
+                    if (string.Equals(type.FullName,
+                        "Kingmaker.UI.UnitSettings.MechanicActionBarSlotAbility",
+                        StringComparison.Ordinal))
+                    {
+                        slots.Add(node);
+                        continue;
+                    }
+                    if (node is IEnumerable<object> ||
+                        type == typeof(string) ||
+                        node is UnityEngine.Object)
+                        continue;
+                    for (Type current = type; current != null;
+                        current = current.BaseType)
+                    {
+                        foreach (FieldInfo field in current.GetFields(
+                            BindingFlags.Instance | BindingFlags.Public |
+                            BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                        {
+                            object value;
+                            try { value = field.GetValue(node); }
+                            catch { continue; }
+                            CollectActionBarSlotCandidates(value, queue,
+                                visited, slots);
+                        }
+                    }
+                }
+            }
+            return slots;
+        }
+
+        private static void CollectActionBarSlotCandidates(object value,
+            Queue<object> queue, HashSet<object> visited, List<object> slots)
+        {
+            if (value == null || value is string ||
+                value is UnityEngine.Object) return;
+            if (string.Equals(value.GetType().FullName,
+                "Kingmaker.UI.UnitSettings.MechanicActionBarSlotAbility",
+                StringComparison.Ordinal))
+            {
+                if (!slots.Contains(value)) slots.Add(value);
+                return;
+            }
+            var array = value as Array;
+            if (array != null)
+            {
+                foreach (object element in array)
+                    CollectActionBarSlotCandidates(element, queue, visited,
+                        slots);
+                return;
+            }
+            if (value.GetType().IsPrimitive || value.GetType().IsEnum)
+                return;
+            if (visited.Add(value)) queue.Enqueue(value);
+        }
+
+        private static BlueprintAbility ReadSlotAbilityBlueprint(object slot)
+        {
+            if (slot == null) return null;
+            const BindingFlags Flags = BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic;
+            FieldInfo abilityField = slot.GetType().GetField("Ability", Flags);
+            object abilityData = abilityField == null ? null :
+                abilityField.GetValue(slot);
+            PropertyInfo blueprintProperty = abilityData == null ? null :
+                abilityData.GetType().GetProperty("Blueprint", Flags);
+            return blueprintProperty == null ? null :
+                blueprintProperty.GetValue(abilityData, null) as BlueprintAbility;
         }
 
         private static BlueprintUnit FindVendorUnit(string tableGuid, string unitGuid)
@@ -7132,11 +7416,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility repair = BlueprintBootstrap.RepairTestMusketAbility;
             bool productionActions = reload != null && overhaul != null && repair != null &&
                 reload.Name == "Reload Firearm" &&
-                overhaul.Name == "Overhaul Firearm" &&
                 repair.Name == "Repair Firearm" &&
                 !reload.Description.Contains("Test Musket") &&
+                !repair.Description.Contains("Test Musket") &&
+                repair.Description.Contains("Gunsmith's Kit") &&
+                repair.Description.Contains("Wrecked") &&
+                repair.ComponentsArray.OfType<RepairTestMusketAbilityLogic>()
+                    .Count() == 1 &&
+                overhaul.Hidden && overhaul.ActionBarAutoFillIgnored &&
+                overhaul.Name == "Overhaul Firearm" &&
                 !overhaul.Description.Contains("Test Musket") &&
-                !repair.Description.Contains("Test Musket");
+                !overhaul.Description.Contains("Firearm Repair Kit") &&
+                overhaul.ComponentsArray.OfType<RepairTestMusketAbilityLogic>()
+                    .Count() == 1;
             bool itemPresentationExact;
             string itemPresentation = ObserveProjectItemPresentation(
                 out itemPresentationExact);
@@ -7187,7 +7479,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rapidPresentation && rapidKindIsolation,
                     "native feat catalogs, exact icon references, and disposable fact grants"),
                 Assertion("production-firearm-actions-presentation",
-                    "Reload Firearm, Overhaul Firearm, Repair Firearm; no Test Musket descriptions",
+                    "Reload Firearm and Repair Firearm with reusable-tool text; hidden legacy Overhaul alias delegates to unified repair; no Test Musket descriptions",
                     observed, productionActions,
                     "Firearm Proficiency AddFacts reachable stable ability blueprints"),
                 Assertion("project-item-player-facing-presentation",
@@ -8499,53 +8791,74 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private RuntimeTestResult RunDisposableOverhaulMaintenance()
         {
-            BlueprintAbility blueprint = BlueprintBootstrap.OverhaulTestMusketAbility;
-            OverhaulTestMusketAbilityLogic logic = blueprint.ComponentsArray
-                .OfType<OverhaulTestMusketAbilityLogic>().Single();
-            BlueprintItemWeapon pistol = typeof(OverhaulTestMusketAbilityLogic)
+            // Historical scenario key retained for documented command compatibility;
+            // the body now exercises the unified full-round Repair Firearm action.
+            BlueprintAbility blueprint = BlueprintBootstrap.RepairTestMusketAbility;
+            RepairTestMusketAbilityLogic logic = blueprint.ComponentsArray
+                .OfType<RepairTestMusketAbilityLogic>().Single();
+            BlueprintItemWeapon pistol = typeof(RepairTestMusketAbilityLogic)
                 .GetField("m_TestMusket", BindingFlags.Instance |
                     BindingFlags.NonPublic).GetValue(logic) as BlueprintItemWeapon;
             if (pistol == null) throw new InvalidOperationException(
-                "Overhaul ability exposed no exact configured firearm.");
-            BlueprintItem overhaulKit = typeof(OverhaulTestMusketAbilityLogic)
-                .GetField("m_RepairKit", BindingFlags.Instance |
-                    BindingFlags.NonPublic).GetValue(logic) as BlueprintItem;
-            if (overhaulKit == null) throw new InvalidOperationException(
-                "Overhaul ability exposed no exact configured kit.");
+                "Repair ability exposed no exact configured firearm.");
+            BlueprintItem gunsmithKit = logic.GunsmithKit;
+            if (gunsmithKit == null) throw new InvalidOperationException(
+                "Repair ability exposed no exact configured reusable tool.");
             BlueprintItemWeapon magicPistol =
                 BlueprintBootstrap.MagicFirearms.Entries[6].Item;
             BlueprintItem repairKit = BlueprintBootstrap.FirearmRepairKit;
+            BlueprintItem overhaulKit =
+                BlueprintBootstrap.GunsmithingSupplies.OverhaulKit;
             Player player = Game.Instance.Player;
             Kingmaker.UI.Selection.SelectionManager selection = null;
             GameObject selectionFixtureObject = null;
             UnitEntityData[] selectionBefore = null;
             UnitEntityData[] partyBefore = null;
-            int kitsBefore = player.Inventory.Count(repairKit);
+            int toolsBefore = player.Inventory.Count(gunsmithKit);
+            int repairKitsBefore = player.Inventory.Count(repairKit);
             int overhaulKitsBefore = player.Inventory.Count(overhaulKit);
             Kingmaker.EntitySystem.Entities.UnitEntityData unit = null;
             ItemEntityWeapon weapon = null;
             IEnumerator<AbilityDeliveryTarget> delivery = null;
+            Kingmaker.EntitySystem.Entities.UnitEntityData vendorUnitFixture = null;
             bool availableOutOfCombat = false, promptCompletion = false,
                 noWorldTimeMutation = false, noLingeringDelivery = false,
                 changedContextAtomic = false, repeatedIdempotent = false,
-                combatBlocked = false, exactCompletion = false,
+                neverStartedCancelled = false,
+                toolRemovalRejectedWithObsoleteKits = false,
+                exactCompletion = false, secondCycleCompleted = false,
                 repairCompletion = false, repairAvailable = false,
                 repairDeliveryCompleted = false,
                 repairNoAmmunitionRefund = false,
+                obsoleteKitsUntouched = false,
+                vendorStockCleaned = false, vendorStockCleanupIdempotent = false,
+                vendorStockCleanupScoped = false,
+                beginTradingPostfixRan = false,
+                beginTradingReceiverNotShared = false,
+                beginTradingRetiredRemoved = false,
+                beginTradingProtectedRetained = false,
+                beginTradingPlayerUntouched = false,
+                beginTradingIdempotent = false,
                 diagnosticBreak = false,
                 diagnosticWreck = false, diagnosticRepeatRejected = false,
-                diagnosticOverhaulRecognized = false,
+                diagnosticRepairRecognized = false,
                 selectionRestored = false, partyRestored = false,
                 cleaned = false;
             TimeSpan gameTimeBefore = default(TimeSpan);
             TimeSpan gameTimeAfter = default(TimeSpan);
-            int staticBefore = -1, staticAfterOverhaul = -1,
+            int staticBefore = -1, staticAfterWreckedRepair = -1,
                 staticAfterRepair = -1, repairRoundsBefore = -1,
                 repairRoundsAfter = -1;
+            string vendorStockCounts = "not-run";
             string repairAmmunitionBefore = null,
                 repairAmmunitionAfter = null;
             long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
-            string overhaulLog = null, repairLog = null,
+            long promptLogsBefore = 0, wreckedRepairLogsBefore = 0,
+                secondCycleLogsBefore = 0, loadedRepairLogsBefore = 0;
+            bool promptLogDeltaExact = false, wreckedRepairLogDeltaExact = false,
+                secondCycleLogDeltaExact = false, loadedRepairLogDeltaExact = false;
+            string wreckedRepairLog = null, repairLog = null,
+                toolRemovalReason = null,
                 diagnosticBreakResult = null, diagnosticWreckResult = null,
                 repairAvailabilityReason = null;
             try
@@ -8553,15 +8866,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 object ignored;
                 string method;
                 if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
+                    new[] { new object[] { gunsmithKit, 1 }, new object[] { gunsmithKit } },
+                    out ignored, out method))
+                    throw new InvalidOperationException(
+                        "Temporary reusable Gunsmith's Kit could not be added.");
+                // Obsolete consumable kits are deliberately placed in the shared
+                // inventory: every subsequent rejection and success must ignore
+                // them, and they must never substitute for the reusable tool.
+                if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
                     new[] { new object[] { repairKit, 2 }, new object[] { repairKit } },
                     out ignored, out method))
                     throw new InvalidOperationException(
-                        "Temporary Firearm Repair Kit could not be added.");
+                        "Temporary obsolete Firearm Repair Kits could not be added.");
                 if (!ReflectionAccess.TryInvokeAny(player.Inventory, new[] { "Add" },
-                    new[] { new object[] { overhaulKit, 2 },
-                        new object[] { overhaulKit } }, out ignored, out method))
+                    new[] { new object[] { overhaulKit, 2 }, new object[] { overhaulKit } },
+                    out ignored, out method))
                     throw new InvalidOperationException(
-                        "Temporary Overhaul Kit could not be added.");
+                        "Temporary obsolete Firearm Overhaul Kits could not be added.");
                 unit = new Kingmaker.UI.LevelUp.ChargenUnit(
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
                 weapon = new ItemEntityWeapon(pistol);
@@ -8591,9 +8912,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 FirearmItemStateSnapshot diagnosticBefore =
                     FirearmRuntimeState.Service.GetOrCreate(weapon);
-                int diagnosticOverhaulKits = player.Inventory.Count(
-                    overhaulKit);
+                int diagnosticTools = player.Inventory.Count(gunsmithKit);
                 int diagnosticRepairKits = player.Inventory.Count(repairKit);
+                int diagnosticOverhaulKits = player.Inventory.Count(overhaulKit);
                 int diagnosticPowder = player.Inventory.Count(
                     BlueprintBootstrap.BasicAmmunition.BlackPowder);
                 int diagnosticLead = player.Inventory.Count(
@@ -8640,9 +8961,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         diagnosticBefore.Repository.RuntimeReferenceHash &&
                     wreckResult.Message.Contains(
                         "before=Broken; after=Wrecked") &&
-                    player.Inventory.Count(overhaulKit) ==
-                        diagnosticOverhaulKits &&
+                    player.Inventory.Count(gunsmithKit) == diagnosticTools &&
                     player.Inventory.Count(repairKit) == diagnosticRepairKits &&
+                    player.Inventory.Count(overhaulKit) == diagnosticOverhaulKits &&
                     player.Inventory.Count(
                         BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
                             diagnosticPowder &&
@@ -8660,16 +8981,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit.Descriptor.Abilities.GetAbility(blueprint);
                 if (granted == null)
                     throw new InvalidOperationException(
-                        "Kingmaker did not retain the granted Overhaul Firearm fact.");
+                        "Kingmaker did not retain the granted Repair Firearm fact.");
                 var data = new Kingmaker.UnitLogic.Abilities.AbilityData(granted);
                 var context = new Kingmaker.UnitLogic.Abilities.AbilityExecutionContext(
                     data, new Kingmaker.UnitLogic.Abilities.AbilityParams(),
                     new TargetWrapper(unit), null);
-                int kitsAtStart = player.Inventory.Count(repairKit);
+                int toolsAtStart = player.Inventory.Count(gunsmithKit);
+                int repairKitsAtStart = player.Inventory.Count(repairKit);
                 int overhaulKitsAtStart = player.Inventory.Count(overhaulKit);
 
                 availableOutOfCombat = !unit.IsInCombat && logic.IsAvailableFor(data);
-                diagnosticOverhaulRecognized = diagnosticBreak &&
+                diagnosticRepairRecognized = diagnosticBreak &&
                     diagnosticWreck && diagnosticRepeatRejected &&
                     availableOutOfCombat;
 
@@ -8683,32 +9005,65 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Body.PrimaryHand.InsertItem(weapon);
                 changedContextAtomic = changedContextTick &&
                     changedContextTarget != null && changedContextEnded &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart &&
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart &&
                     FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
                         .Condition == FirearmCondition.Wrecked;
 
-                var combat = new Kingmaker.Controllers.Combat.UnitCombatState(unit);
-                SetExactField(combat, "m_InCombat", true);
-                SetExactProperty(unit, "CombatState", combat);
+                // Cancellation before any delivery work: the enumerator is
+                // created and abandoned without one advancement.
+                long cancelLogs = FirearmConditionCombatLog.Attempts;
+                int cancelTools = player.Inventory.Count(gunsmithKit);
                 delivery = logic.Deliver(context, new TargetWrapper(unit));
-                bool combatTick = delivery.MoveNext();
-                AbilityDeliveryTarget combatTarget = delivery.Current;
-                bool combatEnded = !delivery.MoveNext();
                 delivery.Dispose();
                 delivery = null;
-                combatBlocked = unit.IsInCombat && !logic.IsAvailableFor(data) &&
-                    combatTick && combatTarget != null && combatEnded &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart &&
+                neverStartedCancelled =
+                    FirearmConditionCombatLog.Attempts == cancelLogs &&
+                    player.Inventory.Count(gunsmithKit) == cancelTools &&
                     FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
-                        .Condition == FirearmCondition.Wrecked &&
-                    OverhaulTestMusketRuntime.Evaluate(unit.Descriptor, pistol,
-                        overhaulKit).Reason.IndexOf("active combat",
-                            StringComparison.OrdinalIgnoreCase) >= 0;
-                SetExactProperty(unit, "CombatState", null);
+                        .Condition == FirearmCondition.Wrecked;
+
+                // Removing the reusable tool before delivery must reject the
+                // repair without mutation even while obsolete consumable kits
+                // are present; they never substitute for the tool.
+                int toolsForRemovalTest = player.Inventory.Count(gunsmithKit);
+                if (toolsForRemovalTest > 0)
+                    player.Inventory.Remove(gunsmithKit, toolsForRemovalTest);
+                int obsoleteRepairKitsPresent =
+                    player.Inventory.Count(repairKit);
+                int obsoleteOverhaulKitsPresent =
+                    player.Inventory.Count(overhaulKit);
+                long toolRemovalLogs = FirearmConditionCombatLog.Attempts;
+                FirearmRepairAvailability toolRemovedAvailability =
+                    RepairTestMusketRuntime.Evaluate(
+                        unit.Descriptor, pistol, gunsmithKit);
+                toolRemovalReason = toolRemovedAvailability.Reason;
+                delivery = logic.Deliver(context, new TargetWrapper(unit));
+                bool toolRemovedTick = delivery.MoveNext();
+                AbilityDeliveryTarget toolRemovedTarget = delivery.Current;
+                bool toolRemovedEnded = !delivery.MoveNext();
+                delivery.Dispose();
+                delivery = null;
+                toolRemovalRejectedWithObsoleteKits =
+                    !toolRemovedAvailability.IsAvailable &&
+                    toolRemovedTick && toolRemovedTarget != null &&
+                    toolRemovedEnded &&
+                    obsoleteRepairKitsPresent >= 2 &&
+                    obsoleteOverhaulKitsPresent >= 2 &&
+                    player.Inventory.Count(gunsmithKit) == 0 &&
+                    player.Inventory.Count(repairKit) ==
+                        obsoleteRepairKitsPresent &&
+                    player.Inventory.Count(overhaulKit) ==
+                        obsoleteOverhaulKitsPresent &&
+                    FirearmConditionCombatLog.Attempts == toolRemovalLogs &&
+                    FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
+                        .Condition == FirearmCondition.Wrecked;
+                if (toolsForRemovalTest > 0)
+                    player.Inventory.Add(gunsmithKit, toolsForRemovalTest);
 
                 string exactRuntimeId = FirearmRuntimeState.Service.GetOrCreate(weapon)
                     .ItemRuntimeId;
                 gameTimeBefore = Game.Instance.TimeController.GameTime;
+                promptLogsBefore = FirearmConditionCombatLog.Attempts;
                 delivery = logic.Deliver(context, new TargetWrapper(unit));
                 bool promptTick = delivery.MoveNext();
                 AbilityDeliveryTarget promptTarget = delivery.Current;
@@ -8722,25 +9077,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 promptCompletion = noLingeringDelivery &&
                     ReferenceEquals(unit.Body.PrimaryHand.MaybeWeapon, weapon) &&
                     promptAfter.ItemRuntimeId == exactRuntimeId &&
-                    promptAfter.Repository.State.Condition == FirearmCondition.Broken &&
+                    promptAfter.Repository.State.Condition == FirearmCondition.Normal &&
                     promptAfter.Repository.State.LoadedRounds == 0 &&
                     promptAfter.Repository.State.LoadedAmmunition == null &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart - 1;
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart &&
+                    player.Inventory.Count(repairKit) == repairKitsAtStart &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart;
                 noWorldTimeMutation = gameTimeAfter == gameTimeBefore;
+                promptLogDeltaExact = promptCompletion &&
+                    FirearmConditionCombatLog.Attempts == promptLogsBefore + 1;
 
-                int repeatKits = player.Inventory.Count(overhaulKit);
+                int repeatTools = player.Inventory.Count(gunsmithKit);
                 long repeatLogs = FirearmConditionCombatLog.Attempts;
+                bool repeatAvailable = logic.IsAvailableFor(data);
                 delivery = logic.Deliver(context, new TargetWrapper(unit));
                 bool repeatTick = delivery.MoveNext();
                 AbilityDeliveryTarget repeatTarget = delivery.Current;
                 bool repeatEnded = !delivery.MoveNext();
                 delivery.Dispose();
                 delivery = null;
-                repeatedIdempotent = repeatTick && repeatTarget != null &&
-                    repeatEnded && player.Inventory.Count(overhaulKit) == repeatKits &&
+                repeatedIdempotent = !repeatAvailable &&
+                    repeatTick && repeatTarget != null &&
+                    repeatEnded && player.Inventory.Count(gunsmithKit) == repeatTools &&
                     FirearmConditionCombatLog.Attempts == repeatLogs &&
                     FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
-                        .Condition == FirearmCondition.Broken;
+                        .Condition == FirearmCondition.Normal;
 
                 FirearmRuntimeState.Service.Forget(weapon);
                 unit.Body.PrimaryHand.RemoveItem(false);
@@ -8753,16 +9114,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FirearmState.CurrentSchemaVersion, 0, null,
                     FirearmCondition.Wrecked));
 
-                FirearmOverhaulRuntimeResult completed =
-                    OverhaulTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
-                        overhaulKit);
+                wreckedRepairLogsBefore = FirearmConditionCombatLog.Attempts;
+                FirearmRepairRuntimeResult completed =
+                    RepairTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
+                        gunsmithKit);
                 exactCompletion = completed.Succeeded &&
                     completed.BeforeFirearm.Repository.State.Condition == FirearmCondition.Wrecked &&
-                    completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Broken &&
-                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart - 2;
-                staticAfterOverhaul = weapon.Enchantments.Count(value =>
+                    completed.AfterFirearm.Repository.State.Condition == FirearmCondition.Normal &&
+                    completed.AfterFirearm.Repository.State.IsEmpty &&
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart;
+                wreckedRepairLogDeltaExact = exactCompletion &&
+                    FirearmConditionCombatLog.Attempts == wreckedRepairLogsBefore + 1;
+                staticAfterWreckedRepair = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
-                overhaulLog = FirearmConditionCombatLog.LastMessage;
+                wreckedRepairLog = FirearmConditionCombatLog.LastMessage;
+
+                // A second damage/repair cycle must reuse the same tool without
+                // spending or creating anything, including obsolete kits.
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 0, null,
+                    FirearmCondition.Broken));
+                secondCycleLogsBefore = FirearmConditionCombatLog.Attempts;
+                FirearmRepairRuntimeResult secondCycle =
+                    RepairTestMusketRuntime.Execute(unit.Descriptor, magicPistol,
+                        gunsmithKit);
+                secondCycleCompleted = secondCycle.Succeeded &&
+                    secondCycle.AfterFirearm.Repository.State.Condition ==
+                        FirearmCondition.Normal &&
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart &&
+                    player.Inventory.Count(repairKit) == repairKitsAtStart &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart;
+                secondCycleLogDeltaExact = secondCycleCompleted &&
+                    FirearmConditionCombatLog.Attempts == secondCycleLogsBefore + 1;
 
                 AmmunitionId loadedIdentity =
                     FirearmStateTokenCatalog.DiagnosticLeadBall;
@@ -8784,33 +9167,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintBootstrap.BasicAmmunition.LeadBall);
                 FirearmRepairAvailability availability =
                     RepairTestMusketRuntime.Evaluate(
-                        unit.Descriptor, magicPistol, repairKit);
+                        unit.Descriptor, magicPistol, gunsmithKit);
                 repairAvailabilityReason = availability.Reason;
 
-                BlueprintAbility repairBlueprint =
-                    BlueprintBootstrap.RepairTestMusketAbility;
-                RepairTestMusketAbilityLogic repairLogic =
-                    repairBlueprint.ComponentsArray.OfType<
-                        RepairTestMusketAbilityLogic>().Single();
-                unit.Descriptor.AddFact(repairBlueprint);
-                Kingmaker.UnitLogic.Abilities.Ability repairGranted =
-                    unit.Descriptor.Abilities.GetAbility(repairBlueprint);
-                if (repairGranted == null)
-                    throw new InvalidOperationException(
-                        "Kingmaker did not retain the granted Repair Firearm fact.");
-                var repairData =
-                    new Kingmaker.UnitLogic.Abilities.AbilityData(
-                        repairGranted);
-                var repairContext =
-                    new Kingmaker.UnitLogic.Abilities
-                        .AbilityExecutionContext(
-                            repairData,
-                            new Kingmaker.UnitLogic.Abilities.AbilityParams(),
-                            new TargetWrapper(unit), null);
                 repairAvailable = availability.IsAvailable &&
-                    repairLogic.IsAvailableFor(repairData);
-                delivery = repairLogic.Deliver(
-                    repairContext, new TargetWrapper(unit));
+                    logic.IsAvailableFor(data);
+                loadedRepairLogsBefore = FirearmConditionCombatLog.Attempts;
+                delivery = logic.Deliver(
+                    context, new TargetWrapper(unit));
                 bool repairTick = delivery.MoveNext();
                 AbilityDeliveryTarget repairTarget = delivery.Current;
                 bool repairEnded = !delivery.MoveNext();
@@ -8832,6 +9196,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .BasicAmmunition.BlackPowder) == powderAtRepair &&
                     player.Inventory.Count(BlueprintBootstrap
                         .BasicAmmunition.LeadBall) == leadAtRepair;
+                obsoleteKitsUntouched =
+                    player.Inventory.Count(repairKit) == repairKitsAtStart &&
+                    player.Inventory.Count(overhaulKit) == overhaulKitsAtStart;
                 repairCompletion = repairAvailable &&
                     repairDeliveryCompleted &&
                     loadedBefore.Repository.State.Condition ==
@@ -8842,13 +9209,291 @@ namespace KingmakerGunslinger.RuntimeTesting
                         loadedIdentity) &&
                     repaired.Repository.State.Condition ==
                         FirearmCondition.Normal &&
-                    repairRoundsAfter == 0 &&
-                    repaired.Repository.State.LoadedAmmunition == null &&
-                    player.Inventory.Count(repairKit) == kitsAtStart - 1 &&
-                    repairNoAmmunitionRefund;
+                    repairRoundsAfter == 1 &&
+                    repaired.Repository.State.LoadedAmmunition != null &&
+                    repaired.Repository.State.LoadedAmmunition.Equals(
+                        loadedIdentity) &&
+                    player.Inventory.Count(gunsmithKit) == toolsAtStart &&
+                    repairNoAmmunitionRefund &&
+                    obsoleteKitsUntouched;
+                loadedRepairLogDeltaExact = repairCompletion &&
+                    FirearmConditionCombatLog.Attempts == loadedRepairLogsBefore + 1;
                 staticAfterRepair = weapon.Enchantments.Count(value =>
                     value != null && entryBlueprint(weapon, value.Blueprint));
                 repairLog = FirearmConditionCombatLog.LastMessage;
+
+                // Materialized merchant stock regression: a standalone detached
+                // ItemsCollection stands in for a vendor's saved inventory that
+                // an earlier version already materialized (player-character
+                // unit fixtures expose the shared stash, so a bare collection
+                // is the exact disposable receiver). It is loaded with both
+                // obsolete kits beside protected stock, swept twice, and the
+                // exact retired identities must disappear while the reusable
+                // kit, unrelated stock, and the shared player inventory remain
+                // unchanged. The shared stash itself is then submitted to the
+                // sweep and must be refused.
+                ItemsCollection vendorInventory = new ItemsCollection();
+                bool vendorInventoryIsShared =
+                    Game.Instance != null && Game.Instance.Player != null &&
+                    ReferenceEquals(vendorInventory,
+                        Game.Instance.Player.Inventory);
+                vendorStockCounts = "shared=" + vendorInventoryIsShared;
+                int playerRepairKitsAtVendorTest =
+                    player.Inventory.Count(repairKit);
+                int playerOverhaulKitsAtVendorTest =
+                    player.Inventory.Count(overhaulKit);
+                int playerToolsAtVendorTest =
+                    player.Inventory.Count(gunsmithKit);
+                int playerPowderAtVendorTest = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                if (!ReflectionAccess.TryInvokeAny(vendorInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { repairKit, 2 },
+                            new object[] { repairKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(vendorInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { overhaulKit, 2 },
+                            new object[] { overhaulKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(vendorInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { gunsmithKit, 1 },
+                            new object[] { gunsmithKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(vendorInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[]
+                            {
+                                BlueprintBootstrap.BasicAmmunition.BlackPowder, 3
+                            },
+                            new object[]
+                            {
+                                BlueprintBootstrap.BasicAmmunition.BlackPowder
+                            }
+                        }, out ignored, out method))
+                    throw new InvalidOperationException(
+                        "The disposable vendor fixture stock could not be materialized.");
+                vendorStockCounts = "shared=" + vendorInventoryIsShared +
+                    ";loaded=r" + vendorInventory.Count(repairKit) +
+                    ",o" + vendorInventory.Count(overhaulKit) +
+                    ",g" + vendorInventory.Count(gunsmithKit) +
+                    ",p" + vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                Acquisition.RetiredKitVendorStockCleanup.Sweep(
+                    vendorInventory, "disposable-vendor-fixture");
+                int vendorRepairKitsAfterFirst =
+                    vendorInventory.Count(repairKit);
+                int vendorOverhaulKitsAfterFirst =
+                    vendorInventory.Count(overhaulKit);
+                vendorStockCleaned =
+                    vendorRepairKitsAfterFirst == 0 &&
+                    vendorOverhaulKitsAfterFirst == 0 &&
+                    vendorInventory.Count(gunsmithKit) == 1 &&
+                    vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) == 3;
+                vendorStockCounts += ";swept1=r" + vendorRepairKitsAfterFirst +
+                    ",o" + vendorOverhaulKitsAfterFirst +
+                    ",g" + vendorInventory.Count(gunsmithKit) +
+                    ",p" + vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                int secondSweepRemoved =
+                    Acquisition.RetiredKitVendorStockCleanup.Sweep(
+                        vendorInventory, "disposable-vendor-fixture");
+                vendorStockCleanupIdempotent = secondSweepRemoved == 0 &&
+                    vendorInventory.Count(repairKit) == 0 &&
+                    vendorInventory.Count(overhaulKit) == 0 &&
+                    vendorInventory.Count(gunsmithKit) == 1 &&
+                    vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) == 3;
+                vendorStockCounts += ";swept2=r" +
+                    vendorInventory.Count(repairKit) +
+                    ",o" + vendorInventory.Count(overhaulKit) +
+                    ",g" + vendorInventory.Count(gunsmithKit) +
+                    ",p" + vendorInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                // The shared stash itself, submitted directly to the sweep
+                // with legacy obsolete kits inside, must be refused.
+                int sharedSweepRemoved =
+                    Acquisition.RetiredKitVendorStockCleanup.Sweep(
+                        player.Inventory, "shared-player-stash");
+                vendorStockCleanupScoped =
+                    sharedSweepRemoved == 0 &&
+                    player.Inventory.Count(repairKit) ==
+                        playerRepairKitsAtVendorTest &&
+                    player.Inventory.Count(overhaulKit) ==
+                        playerOverhaulKitsAtVendorTest &&
+                    player.Inventory.Count(gunsmithKit) ==
+                        playerToolsAtVendorTest &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
+                        playerPowderAtVendorTest;
+                vendorStockCounts += ";sharedSweep=" + sharedSweepRemoved;
+
+                // Real VendorLogic.BeginTrading integration: a genuine merchant
+                // blueprint unit (found by exact table ownership through the
+                // deep reference index) receives a detached receiver. Legacy
+                // retired-kit stock is materialized into the receiver's own
+                // persisted inventory before trading begins, and the production
+                // postfix must sweep it through the real BeginTrading path.
+                long postfixRunsBefore =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixRuns;
+                long postfixFaultsBefore =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixFaults;
+                BlueprintUnitLoot bokkenLootTable = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintUnitLoot>()
+                    .SingleOrDefault(value => string.Equals(value.AssetGuid,
+                        BokkenFirearmSupplyVendorBlueprints.TableGuid,
+                        StringComparison.Ordinal));
+                Dictionary<string, List<string>> bokkenOwners =
+                    BuildDirectBlueprintReferenceIndex(
+                        BlueprintBootstrap.Library.GetAllBlueprints()
+                            .ToArray(),
+                        bokkenLootTable == null
+                            ? Array.Empty<BlueprintScriptableObject>()
+                            : new BlueprintScriptableObject[] { bokkenLootTable });
+                List<string> bokkenOwnerList;
+                string[] ownerRecords = bokkenLootTable != null &&
+                    bokkenOwners.TryGetValue(bokkenLootTable.AssetGuid,
+                        out bokkenOwnerList)
+                        ? bokkenOwnerList.ToArray()
+                        : Array.Empty<string>();
+                string expectedBokkenReceiver = typeof(BlueprintUnit).FullName +
+                    ":" + BokkenFirearmSupplyVendorBlueprints.BokkenOwnerName +
+                    ":" + BokkenFirearmSupplyVendorBlueprints.BokkenOwnerGuid +
+                    "*1";
+                vendorUnitFixture = ownerRecords.Contains(expectedBokkenReceiver)
+                    ? new Kingmaker.UI.LevelUp.ChargenUnit(
+                        (BlueprintUnit)BlueprintLibraryLookup.RequireExact<
+                            BlueprintUnit>(
+                            BlueprintBootstrap.Library,
+                            BokkenFirearmSupplyVendorBlueprints.BokkenOwnerGuid,
+                            "native OTP_Bokken merchant receiver")).Unit
+                    : null;
+                if (vendorUnitFixture == null)
+                    throw new InvalidOperationException(
+                        "The genuine OTP_Bokken merchant receiver was not " +
+                        "resolvable by exact loot-table ownership; observed=[" +
+                        string.Join(",", ownerRecords) + "].");
+                ItemsCollection merchantInventory =
+                    vendorUnitFixture.Descriptor.Inventory;
+                bool merchantInventoryIsShared =
+                    Game.Instance != null && Game.Instance.Player != null &&
+                    ReferenceEquals(merchantInventory,
+                        Game.Instance.Player.Inventory);
+                int playerRepairKitsAtTrade =
+                    player.Inventory.Count(repairKit);
+                int playerOverhaulKitsAtTrade =
+                    player.Inventory.Count(overhaulKit);
+                int playerToolsAtTrade =
+                    player.Inventory.Count(gunsmithKit);
+                int playerPowderAtTrade = player.Inventory.Count(
+                    BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                if (!ReflectionAccess.TryInvokeAny(merchantInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { repairKit, 2 },
+                            new object[] { repairKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(merchantInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { overhaulKit, 2 },
+                            new object[] { overhaulKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(merchantInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[] { gunsmithKit, 1 },
+                            new object[] { gunsmithKit }
+                        }, out ignored, out method) ||
+                    !ReflectionAccess.TryInvokeAny(merchantInventory,
+                        new[] { "Add" },
+                        new[]
+                        {
+                            new object[]
+                            {
+                                BlueprintBootstrap.BasicAmmunition.BlackPowder, 3
+                            },
+                            new object[]
+                            {
+                                BlueprintBootstrap.BasicAmmunition.BlackPowder
+                            }
+                        }, out ignored, out method))
+                    throw new InvalidOperationException(
+                        "Legacy retired-kit stock could not be materialized " +
+                        "into the genuine merchant receiver inventory.");
+                long postfixRunsAtTrade =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixRuns;
+                VendorLogic merchantTrade = new VendorLogic();
+                merchantTrade.BeginTrading(vendorUnitFixture);
+                long postfixRunsAfterTrade =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixRuns;
+                int merchantRepairKitsAfterTrade =
+                    merchantInventory.Count(repairKit);
+                int merchantOverhaulKitsAfterTrade =
+                    merchantInventory.Count(overhaulKit);
+                beginTradingPostfixRan =
+                    postfixRunsAfterTrade == postfixRunsAtTrade + 1 &&
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixFaults ==
+                        postfixFaultsBefore;
+                beginTradingReceiverNotShared = !merchantInventoryIsShared;
+                beginTradingRetiredRemoved =
+                    merchantRepairKitsAfterTrade == 0 &&
+                    merchantOverhaulKitsAfterTrade == 0;
+                beginTradingProtectedRetained =
+                    merchantInventory.Count(gunsmithKit) >= 1 &&
+                    merchantInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) >= 3;
+                beginTradingPlayerUntouched =
+                    player.Inventory.Count(repairKit) == playerRepairKitsAtTrade &&
+                    player.Inventory.Count(overhaulKit) ==
+                        playerOverhaulKitsAtTrade &&
+                    player.Inventory.Count(gunsmithKit) == playerToolsAtTrade &&
+                    player.Inventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
+                        playerPowderAtTrade;
+                int protectedToolsBeforeSecondTrade =
+                    merchantInventory.Count(gunsmithKit);
+                int protectedPowderBeforeSecondTrade =
+                    merchantInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder);
+                merchantTrade.BeginTrading(vendorUnitFixture);
+                beginTradingIdempotent =
+                    Acquisition.RetiredKitVendorStockCleanup.PostfixRuns ==
+                        postfixRunsAfterTrade + 1 &&
+                    merchantInventory.Count(repairKit) == 0 &&
+                    merchantInventory.Count(overhaulKit) == 0 &&
+                    merchantInventory.Count(gunsmithKit) ==
+                        protectedToolsBeforeSecondTrade &&
+                    merchantInventory.Count(
+                        BlueprintBootstrap.BasicAmmunition.BlackPowder) ==
+                        protectedPowderBeforeSecondTrade;
+                vendorStockCounts += ";beginTrading=ran" +
+                    beginTradingPostfixRan + ",notShared" +
+                    beginTradingReceiverNotShared + ",removed" +
+                    beginTradingRetiredRemoved + ",protected" +
+                    beginTradingProtectedRetained + ",player" +
+                    beginTradingPlayerUntouched + ",idempotent" +
+                    beginTradingIdempotent + ",runs" +
+                    postfixRunsBefore + "->" + postfixRunsAfterTrade;
+                object ignoredReturn;
+                string returnMethod;
+                ReflectionAccess.TryInvokeAny(merchantTrade,
+                    new[] { "ReturnItems" },
+                    new[] { Array.Empty<object>() },
+                    out ignoredReturn, out returnMethod);
             }
             finally
             {
@@ -8885,14 +9530,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                             partyBefore.Length &&
                         player.Party.SequenceEqual(partyBefore);
                 }
-                int excess = player.Inventory.Count(repairKit) - kitsBefore;
-                if (excess > 0) player.Inventory.Remove(repairKit, excess);
+                int toolExcess = player.Inventory.Count(gunsmithKit) -
+                    toolsBefore;
+                if (toolExcess > 0) player.Inventory.Remove(gunsmithKit, toolExcess);
+                int repairExcess = player.Inventory.Count(repairKit) -
+                    repairKitsBefore;
+                if (repairExcess > 0) player.Inventory.Remove(repairKit, repairExcess);
                 int overhaulExcess = player.Inventory.Count(overhaulKit) -
                     overhaulKitsBefore;
                 if (overhaulExcess > 0)
                     player.Inventory.Remove(overhaulKit, overhaulExcess);
+                if (vendorUnitFixture != null) vendorUnitFixture.Dispose();
                 if (unit != null) unit.Dispose();
-                cleaned = player.Inventory.Count(repairKit) == kitsBefore &&
+                cleaned = player.Inventory.Count(gunsmithKit) == toolsBefore &&
+                    player.Inventory.Count(repairKit) == repairKitsBefore &&
                     player.Inventory.Count(overhaulKit) == overhaulKitsBefore &&
                     selectionRestored && partyRestored;
             }
@@ -8902,13 +9553,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";gameTime=" + gameTimeBefore + "->" + gameTimeAfter +
                 ";noLingering=" + noLingeringDelivery +
                 ";changedContextAtomic=" + changedContextAtomic +
-                ";repeatIdempotent=" + repeatedIdempotent +
-                ";combatBlocked=" + combatBlocked + ";completed=" + exactCompletion +
+                ";neverStartedCancelled=" + neverStartedCancelled +
+                ";toolRemovalRejected=" + toolRemovalRejectedWithObsoleteKits +
+                ";toolRemovalReason=" + toolRemovalReason +
+                ";repeatRejected=" + repeatedIdempotent +
+                ";completed=" + exactCompletion +
+                ";secondCycle=" + secondCycleCompleted +
+                ";logDeltas=" + promptLogDeltaExact + "," +
+                    wreckedRepairLogDeltaExact + "," +
+                    secondCycleLogDeltaExact + "," +
+                    loadedRepairLogDeltaExact +
                 ";diagnosticBreak=" + diagnosticBreak +
                 ";diagnosticWreck=" + diagnosticWreck +
                 ";diagnosticRepeatRejected=" + diagnosticRepeatRejected +
-                ";diagnosticOverhaulRecognized=" +
-                diagnosticOverhaulRecognized +
+                ";diagnosticRepairRecognized=" +
+                    diagnosticRepairRecognized +
                 ";diagnosticBreakResult=" + diagnosticBreakResult +
                 ";diagnosticWreckResult=" + diagnosticWreckResult +
                 ";selectionRestored=" + selectionRestored +
@@ -8917,20 +9576,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";repairAvailabilityReason=" + repairAvailabilityReason +
                 ";repairDelivery=" + repairDeliveryCompleted +
                 ";repairRounds=" + repairRoundsBefore + "->" +
-                repairRoundsAfter + ";repairAmmo=" +
+                    repairRoundsAfter + ";repairAmmo=" +
                 repairAmmunitionBefore + "->" +
                 repairAmmunitionAfter + ";repairNoRefund=" +
                 repairNoAmmunitionRefund +
+                ";obsoleteKitsUntouched=" + obsoleteKitsUntouched +
+                ";vendorStockCleaned=" + vendorStockCleaned +
+                ";vendorStockIdempotent=" + vendorStockCleanupIdempotent +
+                ";vendorStockScoped=" + vendorStockCleanupScoped +
+                ";vendorStockCounts=" + vendorStockCounts +
                 ";repaired=" + repairCompletion + ";cleaned=" + cleaned +
-                ";static=" + staticBefore + "," + staticAfterOverhaul + "," +
+                ";static=" + staticBefore + "," + staticAfterWreckedRepair + "," +
                 staticAfterRepair +
                 ";conditionLogs=" +
                 (FirearmConditionCombatLog.Attempts - conditionLogsBefore) +
-                ";overhaulLog=" + overhaulLog + ";repairLog=" + repairLog;
+                ";wreckedRepairLog=" + wreckedRepairLog + ";repairLog=" + repairLog;
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("overhaul-available-out-of-combat",
-                    "production ability is available with one exact equipped empty Wrecked firearm and a kit",
+                Assertion("repair-available-out-of-combat",
+                    "production ability is available with one exact equipped Wrecked firearm and one reusable Gunsmith's Kit",
                     observed, availableOutOfCombat,
                     "production IAbilityAvailabilityProvider with exact runtime fixtures"),
                 Assertion("development-control-break",
@@ -8945,74 +9609,140 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "a repeated Wreck diagnostic is rejected without another revision",
                     observed, diagnosticRepeatRejected,
                     "fixture policy precondition before repository transition"),
-                Assertion("development-fixture-player-overhaul",
-                    "the production Overhaul ability recognizes the exact Wrecked item produced by the UMM bridge",
-                    observed, diagnosticOverhaulRecognized &&
+                Assertion("development-fixture-player-repair",
+                    "the production Repair Firearm ability recognizes the exact Wrecked item produced by the UMM bridge",
+                    observed, diagnosticRepairRecognized &&
                         promptCompletion,
                     "same runtime item flows from DevelopmentControls through production ability delivery"),
-                Assertion("overhaul-prompt-delivery",
+                Assertion("repair-prompt-delivery",
                     "one production delivery completes immediately with no pending iterator",
                     observed, blueprint.LocalizedDuration.ToString() == "Instantaneous" &&
                         promptCompletion && noLingeringDelivery,
-                    "actual OverhaulTestMusketAbilityLogic delivery enumerator"),
-                Assertion("overhaul-no-world-time-mutation",
-                    "Overhaul Firearm does not advance GameTime",
+                    "actual RepairTestMusketAbilityLogic delivery enumerator"),
+                Assertion("repair-no-world-time-mutation",
+                    "Repair Firearm does not advance GameTime",
                     observed, noWorldTimeMutation,
                     "TimeController.GameTime sampled around production delivery"),
-                Assertion("overhaul-changed-context-atomic",
-                    "unequipping the exact firearm before delivery consumes nothing",
+                Assertion("repair-changed-context-atomic",
+                    "unequipping the exact firearm before delivery changes nothing",
                     observed, changedContextAtomic,
                     "production delivery-boundary prerequisite revalidation"),
-                Assertion("overhaul-repeated-callback-idempotent",
-                    "a repeated delivery does not consume another kit or transition twice",
+                Assertion("repair-never-started-cancellation",
+                    "a delivery enumerator that is never advanced and then disposed mutates nothing",
+                    observed, neverStartedCancelled,
+                    "abandoned production delivery enumerator without one advancement"),
+                Assertion("repair-tool-removal-before-delivery",
+                    "losing the reusable Gunsmith's Kit before delivery rejects the repair without mutation even with obsolete kits in stock",
+                    observed, toolRemovalRejectedWithObsoleteKits,
+                    "live tool count, obsolete-kit counts, and combat-log counter around a rejected delivery"),
+                Assertion("repair-repeated-callback-rejected",
+                    "a repeated delivery against the now-Normal firearm is rejected without mutation or logging",
                     observed, repeatedIdempotent,
                     "post-success production delivery against the same exact item"),
-                Assertion("overhaul-combat-gate", "unavailable while unit is in combat",
-                    observed, combatBlocked,
-                    "UnitEntityData.IsInCombat availability and attempted delivery recheck"),
-                Assertion("overhaul-atomic-completion", "same item Wrecked->Broken; one kit; no ammunition",
+                Assertion("repair-atomic-completion",
+                    "same item Wrecked->Normal; tool not spent; empty stays empty; obsolete kits untouched",
                     observed, promptCompletion,
-                    "production ability plus existing exact-item atomic transaction"),
+                    "production ability plus exact-item atomic transaction"),
+                Assertion("repair-second-cycle-tool-reuse",
+                    "a second damage/repair cycle reuses the same Gunsmith's Kit without spending or creating anything",
+                    observed, secondCycleCompleted,
+                    "live inventory counts around repeated production repairs"),
                 Assertion("loaded-repair-ability-available",
-                    "the production Repair Firearm ability is available for one exact equipped loaded Broken firearm and one kit",
+                    "the production Repair Firearm ability is available for one exact equipped loaded Broken firearm and one reusable Gunsmith's Kit",
                     observed, repairAvailable,
                     "production IAbilityAvailabilityProvider and exact runtime item state"),
                 Assertion("loaded-repair-atomic-completion",
-                    "same item Broken with one loaded round -> Normal with zero rounds and no ammunition identity; one kit",
+                    "same item Broken with one loaded round -> Normal with the same round and ammunition identity; nothing consumed",
                     observed, repairCompletion,
                     "actual RepairTestMusketAbilityLogic delivery and exact item-owned repository"),
                 Assertion("loaded-repair-no-ammunition-refund",
-                    "destroyed loaded ammunition does not increase shared powder or lead-ball inventory",
+                    "preserved loaded ammunition does not change shared powder or lead-ball inventory",
                     observed, repairNoAmmunitionRefund,
                     "live player inventory counts sampled around committed delivery"),
+                Assertion("obsolete-kits-never-consumed",
+                    "Firearm Repair Kits and Firearm Overhaul Kits are never required or consumed by unified repair",
+                    observed, obsoleteKitsUntouched,
+                    "live player inventory counts of both retired kit blueprints"),
                 Assertion("magic-static-maintenance-lifecycle",
-                    "The Last Word retains +5, Reliable, and Seeking through Overhaul and loaded Repair",
-                    observed, staticBefore == 3 && staticAfterOverhaul == 3 &&
+                    "The Last Word retains +5, Reliable, and Seeking through Wrecked repair, a second cycle, and loaded repair",
+                    observed, staticBefore == 3 && staticAfterWreckedRepair == 3 &&
                         staticAfterRepair == 3,
                     "exact runtime static-enchantment identities across state-token replacement"),
-                Assertion("overhaul-condition-combat-log",
-                    "one concise combat-log attempt only after completed Wrecked -> Broken",
-                    observed,
-                    overhaulLog != null && overhaulLog.Contains(
-                        ": Broken (Overhaul Firearm)."),
-                    "native BattleLogView Combat-channel API; save-free sink failure is contained"),
                 Assertion("repair-condition-combat-log",
-                    "completed loaded Broken -> empty Normal consumes one repair kit and logs once",
+                    "one concise combat-log attempt only after completed Wrecked -> Normal",
+                    observed,
+                    wreckedRepairLog != null && wreckedRepairLog.Contains(
+                        ": Normal (Repair Firearm)."),
+                    "native BattleLogView Combat-channel API; save-free sink failure is contained"),
+                Assertion("repair-log-attempt-deltas",
+                    "each of the four successful repairs advances the attempt counter by exactly one; rejected deliveries advance it by zero",
+                    observed,
+                    promptLogDeltaExact && wreckedRepairLogDeltaExact &&
+                        secondCycleLogDeltaExact && loadedRepairLogDeltaExact,
+                    "FirearmConditionCombatLog.Attempts sampled around every delivery (Attempts = Published + Faults)"),
+                Assertion("loaded-repair-condition-combat-log",
+                    "the four successful repairs advance the process attempt counter by exactly four",
                     observed,
                     repairCompletion &&
-                    FirearmConditionCombatLog.Attempts == conditionLogsBefore + 3 &&
+                    FirearmConditionCombatLog.Attempts == conditionLogsBefore + 4 &&
                     repairLog != null && repairLog.Contains(
                         ": Normal (Repair Firearm)."),
                     "exact repair transaction and native combat-log attempt"),
-                Assertion("request-local-cleanup", "repair-kit inventory and fixture restored",
+                Assertion("vendor-materialized-retired-stock-cleanup",
+                    "both obsolete kits are swept from a materialized vendor inventory while the reusable kit and unrelated stock remain",
+                    observed, vendorStockCleaned,
+                    "RetiredKitVendorStockCleanup over a detached vendor receiver loaded with exact stock"),
+                Assertion("vendor-materialized-retired-stock-cleanup-idempotent",
+                    "a repeated sweep removes nothing and stock stays exact",
+                    observed, vendorStockCleanupIdempotent,
+                    "second RetiredKitVendorStockCleanup pass over the same vendor receiver"),
+                Assertion("vendor-materialized-retired-stock-cleanup-scoped",
+                    "the sweep refuses the shared player inventory submitted directly, leaving legacy obsolete kits in place",
+                    observed, vendorStockCleanupScoped,
+                    "live player inventory counts around a direct shared-stash sweep submission"),
+                Assertion("begin-trading-postfix-runs",
+                    "the production VendorLogic.BeginTrading postfix executes exactly once per genuine merchant trade open",
+                    observed, beginTradingPostfixRan,
+                    "RetiredKitVendorStockCleanup.PostfixRuns/Faults counters around real BeginTrading calls on an OTP_Bokken receiver"),
+                Assertion("begin-trading-receiver-is-merchant-stock",
+                    "the postfix receiver inventory is the merchant's own persisted stock, not the shared player inventory",
+                    observed, beginTradingReceiverNotShared,
+                    "ReferenceEquals comparison between the OTP_Bokken receiver inventory and Player.Inventory"),
+                Assertion("begin-trading-removes-retired-stock",
+                    "legacy retired kits materialized into the genuine merchant inventory before trading are removed by the real integration",
+                    observed, beginTradingRetiredRemoved,
+                    "live merchant inventory counts after production BeginTrading"),
+                Assertion("begin-trading-preserves-protected-stock",
+                    "the merchant's reusable Gunsmith's Kit and unrelated stock survive the real integration sweep",
+                    observed, beginTradingProtectedRetained,
+                    "live merchant inventory counts after production BeginTrading"),
+                Assertion("begin-trading-preserves-player-kits",
+                    "player-owned legacy kits and all other shared-inventory counts are unchanged by the real integration",
+                    observed, beginTradingPlayerUntouched,
+                    "live shared player inventory counts sampled around both BeginTrading calls"),
+                Assertion("begin-trading-second-invocation-idempotent",
+                    "a second genuine BeginTrading removes nothing further and leaves protected stock exact",
+                    observed, beginTradingIdempotent,
+                    "postfix run counter and merchant inventory counts across two BeginTrading calls"),
+                Assertion("request-local-cleanup", "Gunsmith's Kit inventory and fixture restored",
                     observed, cleaned, "guaranteed finally cleanup; no save API"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
-            return CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
-                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+            RuntimeTestResult unifiedRepairResult = CreateResult(
+                assertions.TrueForAll(value => value.Status == "PASS")
+                    ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                assertions, null);
+            unifiedRepairResult.Warnings.Add(
+                "The weapon-equality guard revalidates prerequisites at delivery time (two delivery-boundary observations). " +
+                "It does not capture the weapon equipped when the full-round command was initiated; command-start target " +
+                "preservation across equipment changes during the command remains a separate native-command test.");
+            unifiedRepairResult.Warnings.Add(
+                "Old-save action-bar compatibility (a character holding a saved Overhaul fact and toolbar slot) is not " +
+                "exercised by this scenario; the hidden legacy alias is verified only at the blueprint level.");
+            return unifiedRepairResult;
         }
 
         private RuntimeTestResult RunVendorTableContractObservation()
@@ -9036,7 +9766,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var enchantmentRecords = new List<string>();
             var lootCandidateRecords = new List<string>();
             int projectEntries = 0, invalidProjectCounts = 0, blunderbussEntries = 0;
+            int capitalRetiredKitRows = 0;
             int btslTables = 0, btslEntries = 0, invalidBtslCounts = 0;
+            int btslRetiredKitRows = 0;
             int associations = 0, invalidAssociations = 0, supplementalLoot = 0;
             int olegRepairRows = -1, olegRepairCount = -1,
                 olegOverhaulRows = -1, olegOverhaulCount = -1,
@@ -9362,8 +10094,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                     { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
                     { BlueprintBootstrap.BasicAmmunition.PaperCartridge, 200 },
-                    { BlueprintBootstrap.FirearmRepairKit, 10 },
-                    { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
                     { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
                 };
                 foreach (LootItemsPackFixed component in
@@ -9373,7 +10103,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintItem item = CapitalVendorBlueprints.ReadItem(component);
                     int expectedCount;
                     if (item != null && expectedProjectItems.TryGetValue(item,
-                        out expectedCount))
+                            out expectedCount))
                     {
                         projectEntries++;
                         if (CapitalVendorBlueprints.ReadCount(component) != expectedCount)
@@ -9382,6 +10112,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (ReferenceEquals(item,
                         BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item))
                         blunderbussEntries++;
+                    if (ReferenceEquals(item, BlueprintBootstrap.FirearmRepairKit) ||
+                        ReferenceEquals(item,
+                            BlueprintBootstrap.GunsmithingSupplies.OverhaulKit))
+                        capitalRetiredKitRows++;
                 }
             }
             var btslEquipmentExpected = new Dictionary<BlueprintItem, int>
@@ -9400,12 +10134,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { BlueprintBootstrap.BasicAmmunition.BlackPowder, 200 },
                 { BlueprintBootstrap.BasicAmmunition.LeadBall, 200 },
                 { BlueprintBootstrap.BasicAmmunition.PaperCartridge, 200 },
-                { BlueprintBootstrap.FirearmRepairKit, 10 },
-                { BlueprintBootstrap.GunsmithingSupplies.OverhaulKit, 5 },
                 { BlueprintBootstrap.GunsmithingSupplies.GunsmithKit, 1 }
             };
+            BlueprintItem[] btslRetiredKits =
+            {
+                BlueprintBootstrap.FirearmRepairKit,
+                BlueprintBootstrap.GunsmithingSupplies.OverhaulKit
+            };
             BlueprintItem[] btslOwned = btslEquipmentExpected.Keys.Concat(
-                btslSupportExpected.Keys).ToArray();
+                btslSupportExpected.Keys).Concat(btslRetiredKits).ToArray();
             foreach (string guid in BeneathStolenLandsVendorBlueprints.TableGuids)
             {
                 BlueprintSharedVendorTable table = tables.SingleOrDefault(value =>
@@ -9427,6 +10164,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (matches.Length != 1 || CapitalVendorBlueprints.ReadCount(
                         matches[0]) != expected.Value) invalidBtslCounts++;
                 }
+                btslRetiredKitRows += fixedRows.Count(value => btslRetiredKits
+                    .Contains(CapitalVendorBlueprints.ReadItem(value)));
                 invalidBtslCounts += fixedRows.Count(value =>
                     btslOwned.Contains(CapitalVendorBlueprints.ReadItem(value)) &&
                     !desired.ContainsKey(CapitalVendorBlueprints.ReadItem(value)));
@@ -9702,6 +10441,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 associations + ";invalid=" + invalidAssociations +
                 ";supplementalLoot=" + supplementalLoot + ";projectEntries=" +
                 projectEntries + ";invalidProjectCounts=" + invalidProjectCounts +
+                ";capitalRetiredKitRows=" + capitalRetiredKitRows +
                 ";blunderbussEntries=" + blunderbussEntries +
                 ";olegTable=" + (olegTable == null ? "<missing>" :
                     olegTable.name + ":" + olegTable.AssetGuid) +
@@ -9713,6 +10453,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";olegOwners=" + string.Join(",", olegReferences) +
                 ";btslTables=" + btslTables + ";btslEntries=" + btslEntries +
                     ";invalidBtslCounts=" + invalidBtslCounts +
+                    ";btslRetiredKitRows=" + btslRetiredKitRows +
                 ";btslSpearTables=" + btslSpearTables +
                     ";btslSpearEntries=" + btslSpearEntries +
                     ";invalidBtslSpearCounts=" + invalidBtslSpearCounts +
@@ -9803,10 +10544,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "twelve exact early/+1/supply entries including Paper and one Blunderbuss",
-                    observed, projectEntries == 12 && invalidProjectCounts == 0 &&
-                        blunderbussEntries == 1,
-                    "registered early and +1 firearms, ammunition, and supplies"),
+                    "ten exact early/+1/supply entries including Paper, one Blunderbuss, and zero retired maintenance kits",
+                    observed, projectEntries == 10 && invalidProjectCounts == 0 &&
+                        blunderbussEntries == 1 && capitalRetiredKitRows == 0,
+                    "registered early and +1 firearms, ammunition, and the reusable Gunsmith's Kit"),
                 Assertion("oleg-firearm-supplies-absent",
                     "exact Oleg table contains zero project-owned firearm-supply rows",
                     observed, olegTable != null && string.Equals(olegTable.name,
@@ -9819,7 +10560,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, olegOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
                 Assertion("bokken-firearm-supply-stock",
-                    "exact Bokken unit-loot table contains the six required fixed firearm-supply rows",
+                    "exact Bokken unit-loot table contains the four stocked firearm-supply rows and zero retired kit rows",
                     observed, bokkenTable != null && string.Equals(bokkenTable.name,
                         BokkenFirearmSupplyVendorBlueprints.ExpectedTableName,
                         StringComparison.Ordinal) && bokkenPowderRows == 1 &&
@@ -9829,10 +10570,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
                         bokkenPaperRows == 1 && bokkenPaperCount ==
                             BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
-                        bokkenRepairRows == 1 && bokkenRepairCount ==
-                            BokkenFirearmSupplyVendorBlueprints.RepairKitCount &&
-                        bokkenOverhaulRows == 1 && bokkenOverhaulCount ==
-                            BokkenFirearmSupplyVendorBlueprints.OverhaulKitCount &&
+                        bokkenRepairRows == 0 && bokkenOverhaulRows == 0 &&
                         bokkenGunsmithRows == 1 && bokkenGunsmithCount ==
                             BokkenFirearmSupplyVendorBlueprints.GunsmithKitCount,
                     "exact BlueprintUnitLoot and project-owned item references"),
@@ -9841,14 +10579,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, bokkenOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
                 Assertion("btsl-vendor-publication",
-                    "four exact standalone/campaign tables; six equipment rows on Honest Guy and six support rows on Xelliren",
-                    observed, btslTables == 4 && btslEntries == 24 &&
-                        invalidBtslCounts == 0,
+                    "four exact standalone/campaign tables; six equipment rows on Honest Guy and four support rows on Xelliren; zero retired kits",
+                    observed, btslTables == 4 && btslEntries == 20 &&
+                        invalidBtslCounts == 0 && btslRetiredKitRows == 0,
                     "exact discovered DLC shared-vendor table GUID contracts"),
                 Assertion("btsl-spear-vendor-publication",
                     "six singular generic spear entries on each Honest Guy table and zero on Xelliren",
                     observed, btslSpearTables == 4 && btslSpearEntries == 12 &&
-                        invalidBtslSpearCounts == 0 && btslEntries == 24 &&
+                        invalidBtslSpearCounts == 0 && btslEntries == 20 &&
                         invalidBtslCounts == 0,
                     "exact installed shared-vendor table identities and additive fixed-item rows"),
                 Assertion("eastern-vendor-publication",
@@ -9866,7 +10604,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "module OFF publishes zero Eastern BTSL rows while retaining firearm and spear rows",
                     observed, easternBtslTables == 4 && easternBtslRows ==
                         (expectedEasternCommerce ? 24 : 0) &&
-                        easternNamedBtslRows == 0 && btslEntries == 24 &&
+                        easternNamedBtslRows == 0 && btslEntries == 20 &&
                         invalidBtslCounts == 0 && btslSpearEntries == 12 &&
                         invalidBtslSpearCounts == 0,
                     "four exact DLC table identities and item-reference cardinality"),

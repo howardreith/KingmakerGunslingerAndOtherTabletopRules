@@ -1,5 +1,18 @@
 # Kingmaker Gunslinger
 
+**0.0.121-unified-firearm-maintenance** (UMM 0.0.121) unifies firearm
+maintenance into one full-round Repair Firearm action that restores a Broken
+or Wrecked firearm directly to Normal using one reusable shared-inventory
+Gunsmith's Kit: nothing is consumed and surviving loaded ammunition is
+preserved. The separate Overhaul action and both consumable maintenance kits
+are retired (blueprint identities remain as a hidden delegate and inert items
+for save compatibility), already-materialized merchant stock is swept on every
+trade open, and old saves load with exactly one visible maintenance action.
+Whether Wrecked repair should stay available during combat is an open owner
+decision recorded in `KNOWN-ISSUES.md`.
+
+### Retained public 0.0.120 Elemental Races behavior
+
 **0.0.120-elemental-races-completion** (UMM 0.0.120) adds Nereid Fascination
 and Treacherous Earth to the existing Undine and Oread SLA replacement selectors.
 The inventory is four races, twelve heritages, eleven racial feats and twenty-one
@@ -533,28 +546,32 @@ A first misfire consumes the loaded round, forces a miss, and changes only the e
 
 ## Complete maintenance loop
 
-Firearm Proficiency now grants three separate full-round abilities:
+Firearm Proficiency now grants two separate full-round abilities:
 
 ```text
-Overhaul Firearm: empty/Wrecked + one Repair Kit â†’ empty/Broken
-Repair Firearm:   empty/Broken + one Repair Kit â†’ empty/Normal
-Reload Firearm:   empty + powder + Lead Ball â†’ loaded
+Repair Firearm: Broken or Wrecked + shared Gunsmith's Kit â†’ Normal
+Reload Firearm: empty + powder + Lead Ball â†’ loaded
 ```
 
-Overhaul and Repair are distinct personal extraordinary actions. Each mutates
-only during completed delivery, consumes exactly one Firearm Repair Kit,
-preserves the same exact runtime item and item-owned state token, and creates no
-ammunition. Repair rejects Wrecked, Normal, or loaded Broken firearms without
-mutation.
+Repair Firearm is one personal extraordinary action. It mutates only during
+completed delivery, requires one reusable Gunsmith's Kit in the shared party
+inventory, consumes nothing, preserves surviving loaded ammunition exactly
+(a Wrecked firearm, which is always empty, stays empty), preserves the same
+exact runtime item and item-owned state token, and never replaces the item.
+Repair rejects Normal firearms without mutation. The former two-step
+Wrecked-to-Broken Overhaul no longer exists: its blueprint identity stays
+registered as a hidden delegate of this same unified repair for save
+compatibility, and the consumable Firearm Repair Kit and Firearm Overhaul Kit
+are no longer sold or required.
 
 Reload remains a separate full-round operation and is the only maintenance-loop step that consumes Black Powder and a Lead Ball.
 
 ## Accelerated qualification harness
 
-Sprint 29 adds a deterministic development fixture and PASS/FAIL matrix. It prepares one exact equipped Test Musket as empty/Wrecked, preserves or creates a second independent empty/Normal Test Musket, ensures two Repair Kits plus one powder-and-ball pair, captures process-local identities and counters, and validates each checkpoint:
+The development fixture and PASS/FAIL matrix prepare one exact equipped Test Musket as empty/Wrecked, preserve or create a second independent empty/Normal Test Musket, ensure one reusable Gunsmith's Kit plus one powder-and-ball pair, capture process-local identities and counters, and validate each checkpoint:
 
 ```text
-FixtureReady â†’ OverhaulPassed â†’ RepairPassed â†’ MaintenanceLoopPassed
+FixtureReady â†’ RepairPassed â†’ MaintenanceLoopPassed
 ```
 
 A one-command immediate diagnostic runs the entire transaction loop without action economy for fast regression checks. The action-bar abilities must still be tested separately for real full-round delivery and interruption behavior.
@@ -587,10 +604,11 @@ remain loadable for compatibility but are not published or normally acquired.
 
 ## Direction after Sprint 29
 
-Reload, Overhaul, and Repair use one marker-first exact-equipped-firearm context
-and definition-driven policy. Stable historical symbols and compatibility
-adapter type names are retained for save and code compatibility; their visible
-abilities are production-generic.
+Reload and the unified Repair use one marker-first exact-equipped-firearm
+context and definition-driven policy. Stable historical symbols and
+compatibility adapter type names (including the retired Overhaul identity and
+consumable kit items) are retained for save and code compatibility; repair is
+one production-generic action.
 
 ## Deliberate deferrals
 

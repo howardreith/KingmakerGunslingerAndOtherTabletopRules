@@ -14,9 +14,10 @@ using UnityEngine;
 namespace KingmakerGunslinger.Blueprints
 {
     /// <summary>
-    /// Registers player-facing ordinary firearm maintenance: a personal, extraordinary,
-    /// full-round same-item repair that consumes one repair kit only when delivery completes
-    /// and changes Broken to empty/Normal, destroying any loaded ammunition.
+    /// Registers the single player-facing firearm maintenance action: a personal,
+    /// extraordinary, full-round same-item repair that requires one reusable
+    /// Gunsmith's Kit in the shared inventory, consumes nothing, and changes a
+    /// Broken or Wrecked firearm to Normal while preserving loaded ammunition.
     /// </summary>
     internal static class RepairTestMusketAbilityBlueprints
     {
@@ -26,13 +27,13 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ComponentName = "$KMG_RepairTestMusketLogic";
 
         private const string Description =
-            "Spend a full-round action and consume one Firearm Repair Kit to repair the exact equipped Broken firearm to empty Normal. All ammunition loaded in that firearm is destroyed. A Wrecked firearm must be Overhauled first; this action does not replace the item.";
+            "Spend a full-round action to repair the exact equipped Broken or Wrecked firearm to Normal. Requires a reusable Gunsmith's Kit in the shared inventory; the kit is not consumed, nothing is spent, and ammunition still loaded in that firearm is preserved. This action does not replace the item.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,
             ModLogger logger,
             BlueprintItemWeapon testMusket,
-            BlueprintItem repairKit)
+            BlueprintItem gunsmithKit)
         {
             if (registry == null)
             {
@@ -44,7 +45,7 @@ namespace KingmakerGunslinger.Blueprints
                 throw new ArgumentNullException("logger");
             }
 
-            if (testMusket == null || repairKit == null)
+            if (testMusket == null || gunsmithKit == null)
             {
                 throw new ArgumentNullException(
                     "testMusket",
@@ -66,7 +67,7 @@ namespace KingmakerGunslinger.Blueprints
                         LocalizationService.Create(
                             "KMG.Ability.RepairTestMusket.Description",
                             Description),
-                        repairKit.Icon ?? testMusket.Icon);
+                        gunsmithKit.Icon ?? testMusket.Icon);
 
                     result.Type = AbilityType.Extraordinary;
                     result.Range = AbilityRange.Personal;
@@ -96,30 +97,30 @@ namespace KingmakerGunslinger.Blueprints
                     RepairTestMusketAbilityLogic logic =
                         RepairTestMusketAbilityLogic.Create(
                             testMusket,
-                            repairKit);
+                            gunsmithKit);
                     logic.name = ComponentName;
                     result.ComponentsArray = new BlueprintComponent[] { logic };
-                    Validate(result, testMusket, repairKit);
+                    Validate(result, testMusket, gunsmithKit);
                     return result;
                 });
 
-            Validate(ability, testMusket, repairKit);
+            Validate(ability, testMusket, gunsmithKit);
             logger.Info(
                 "recovery",
                 "repair-ability.ready",
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Registered full-round Repair Firearm ability guid={0}; compatibilityItem={1}; repairKit={2}.",
+                    "Registered full-round Repair Firearm ability guid={0}; compatibilityItem={1}; reusableTool={2}.",
                     registry.ResolveGuid(Symbol),
                     testMusket.name,
-                    repairKit.name));
+                    gunsmithKit.name));
             return ability;
         }
 
         internal static void Validate(
             BlueprintAbility ability,
             BlueprintItemWeapon testMusket,
-            BlueprintItem repairKit)
+            BlueprintItem gunsmithKit)
         {
             if (ability == null)
             {
@@ -162,7 +163,7 @@ namespace KingmakerGunslinger.Blueprints
             }
 
             components[0].ValidateConfiguration();
-            if (testMusket == null || repairKit == null)
+            if (testMusket == null || gunsmithKit == null)
             {
                 throw new InvalidOperationException(
                     "Repair Firearm validation received incomplete dependencies.");

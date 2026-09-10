@@ -1,11 +1,11 @@
-[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+﻿[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 # Three guarded fresh-process phases persist race, heritage, Release B feat,
 # and the eight-trait blood/Insight/Efreeti/Crystalline matrix; verify module-OFF,
 # restore the module, respec, and clean up the
 # fixtures. Run the fresh-load absence phase separately after this restores the
 # caller's original settings bytes.
 param(
-    [string]$ExpectedVersion = '0.0.120',
+    [string]$ExpectedVersion = '0.0.121',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
     [string]$SaveName = 'KMG_AUTOMATION_WORKING',
     [ValidateRange(120, 1800)][int]$TimeoutSeconds = 900,

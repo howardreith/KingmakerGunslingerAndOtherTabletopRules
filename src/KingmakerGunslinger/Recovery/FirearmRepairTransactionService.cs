@@ -4,13 +4,14 @@ using KingmakerGunslinger.Firearms;
 namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
-    /// Coordinates ordinary same-item Broken-to-Normal repair with one shared-inventory
-    /// Firearm Repair Kit. Eligibility is checked before mutation. Later failures attempt
-    /// to restore both resources to their exact pre-operation values.
+    /// Coordinates unified same-item Broken/Wrecked-to-Normal repair. The reusable
+    /// Gunsmith's Kit is verified in the shared inventory before mutation and is
+    /// never consumed, spent, or replaced. Eligibility is checked before mutation;
+    /// a later failure attempts to restore the exact pre-operation firearm state.
     /// </summary>
     internal sealed class FirearmRepairTransactionService
     {
-        internal FirearmRepairResult TryRepairBrokenToNormal(
+        internal FirearmRepairResult TryRepairToNormal(
             IFirearmRepairStateStore stateStore,
             IRepairKitInventory inventory)
         {
@@ -47,21 +48,10 @@ namespace KingmakerGunslinger.Recovery
             }
 
             FirearmState repairedState = FirearmStateMachine.Repair(beforeState);
-            bool inventoryMayHaveChanged = false;
             bool stateMayHaveChanged = false;
 
             try
             {
-                inventoryMayHaveChanged = true;
-                inventory.Remove(1);
-                RepairKitInventorySnapshot afterConsumption =
-                    RepairKitInventorySnapshot.Capture(inventory);
-                if (afterConsumption.RepairKits != beforeInventory.RepairKits - 1)
-                {
-                    throw new InvalidOperationException(
-                        "Shared inventory did not retain the exact expected repair-kit count after consumption.");
-                }
-
                 stateMayHaveChanged = true;
                 stateStore.Replace(beforeState, repairedState);
 
@@ -69,15 +59,15 @@ namespace KingmakerGunslinger.Recovery
                 if (verifiedState != repairedState)
                 {
                     throw new InvalidOperationException(
-                        "The exact firearm did not retain the expected empty/Normal ordinary repair state.");
+                        "The exact firearm did not retain the expected unified repair state.");
                 }
 
                 RepairKitInventorySnapshot verifiedInventory =
                     RepairKitInventorySnapshot.Capture(inventory);
-                if (!afterConsumption.Equals(verifiedInventory))
+                if (!beforeInventory.Equals(verifiedInventory))
                 {
                     throw new InvalidOperationException(
-                        "Shared inventory changed unexpectedly after the exact firearm state was written.");
+                        "The reusable Gunsmith's Kit count changed during a repair that consumes nothing.");
                 }
 
                 return new FirearmRepairResult(
@@ -90,7 +80,6 @@ namespace KingmakerGunslinger.Recovery
             catch (Exception operationException)
             {
                 Exception stateRollbackException = null;
-                Exception inventoryRollbackException = null;
 
                 if (stateMayHaveChanged)
                 {
@@ -104,25 +93,13 @@ namespace KingmakerGunslinger.Recovery
                     }
                 }
 
-                if (inventoryMayHaveChanged)
-                {
-                    try
-                    {
-                        RestoreInventory(inventory, beforeInventory);
-                    }
-                    catch (Exception exception)
-                    {
-                        inventoryRollbackException = exception;
-                    }
-                }
-
                 throw new FirearmRepairTransactionException(
-                    stateRollbackException == null && inventoryRollbackException == null
-                        ? "Ordinary repair failed and both exact firearm state and repair-kit inventory were restored."
-                        : "Ordinary repair failed and at least one rollback could not restore the exact pre-operation state.",
+                    stateRollbackException == null
+                        ? "Unified repair failed and the exact firearm state was restored; no inventory mutation was attempted."
+                        : "Unified repair failed and the firearm-state rollback could not restore the exact pre-operation state.",
                     operationException,
                     stateRollbackException,
-                    inventoryRollbackException);
+                    null);
             }
         }
 
@@ -140,7 +117,8 @@ namespace KingmakerGunslinger.Recovery
                 throw new ArgumentNullException("inventory");
             }
 
-            if (state.Condition != FirearmCondition.Broken)
+            if (state.Condition != FirearmCondition.Broken &&
+                state.Condition != FirearmCondition.Wrecked)
             {
                 return FirearmRepairStatus.NotBroken;
             }
@@ -175,36 +153,6 @@ namespace KingmakerGunslinger.Recovery
             {
                 throw new InvalidOperationException(
                     "Firearm-state rollback did not verify after replacement.");
-            }
-        }
-
-        private static void RestoreInventory(
-            IRepairKitInventory inventory,
-            RepairKitInventorySnapshot expected)
-        {
-            int current = inventory.Count();
-            if (current < 0)
-            {
-                throw new InvalidOperationException(
-                    "Cannot restore a negative repair-kit inventory count.");
-            }
-
-            if (current < expected.RepairKits)
-            {
-                inventory.Add(expected.RepairKits - current);
-            }
-            else if (current > expected.RepairKits)
-            {
-                inventory.Remove(current - expected.RepairKits);
-            }
-
-            RepairKitInventorySnapshot restored =
-                RepairKitInventorySnapshot.Capture(inventory);
-            if (!expected.Equals(restored))
-            {
-                throw new InvalidOperationException(
-                    "Repair-kit rollback verification failed. Expected [" +
-                    expected + "]; observed [" + restored + "].");
             }
         }
     }

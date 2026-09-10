@@ -19,9 +19,9 @@ using KingmakerGunslinger.Rules;
 namespace KingmakerGunslinger.Development
 {
     /// <summary>
-    /// Sprint 29 player-facing ordinary repair and accelerated maintenance-loop
-    /// qualification controls. This partial keeps the large development bridge focused
-    /// while sharing its exact runtime, inventory, and item-resolution helpers.
+    /// Player-facing unified repair and accelerated maintenance-loop qualification
+    /// controls. This partial keeps the large development bridge focused while
+    /// sharing its exact runtime, inventory, and item-resolution helpers.
     /// </summary>
     internal sealed partial class KingmakerDevelopmentBridge
     {
@@ -30,16 +30,18 @@ namespace KingmakerGunslinger.Development
             RuntimeContext runtime = ResolveRuntime(requireUnit: true);
             UnitDescriptor descriptor = RequireConcreteDescriptor(runtime);
             Ability ability = descriptor.Abilities.GetAbility(_repairAbility);
+            Ability legacyAlias = descriptor.Abilities.GetAbility(_overhaulAbility);
             FirearmRepairAvailability availability = RepairTestMusketRuntime.Evaluate(
                 descriptor,
                 _testMusketItem,
-                _repairKitItem);
+                _gunsmithKitItem);
             return DevelopmentActionResult.Success(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Selected unit={0}; hasRepairAbility={1}; readiness=[{2}]; runtime=[{3}].",
+                    "Selected unit={0}; hasRepairAbility={1}; legacyOverhaulFact={2}; readiness=[{3}]; runtime=[{4}].",
                     runtime.UnitName,
                     ability != null,
+                    legacyAlias != null,
                     availability,
                     RepairRuntimeDiagnostics.Describe()));
         }
@@ -52,7 +54,7 @@ namespace KingmakerGunslinger.Development
             FirearmRepairAvailability availability = RepairTestMusketRuntime.Evaluate(
                 descriptor,
                 _testMusketItem,
-                _repairKitItem);
+                _gunsmithKitItem);
             if (!availability.IsAvailable)
             {
                 return DevelopmentActionResult.Failure(
@@ -63,10 +65,10 @@ namespace KingmakerGunslinger.Development
             FirearmRepairRuntimeResult result = RepairTestMusketRuntime.Execute(
                 descriptor,
                 _testMusketItem,
-                _repairKitItem);
+                _gunsmithKitItem);
             RepairRuntimeDiagnostics.Record(result);
             return DevelopmentActionResult.Success(
-                "Immediate diagnostic ordinary repair completed; this bypassed full-round action economy: " +
+                "Immediate diagnostic unified repair completed; this bypassed full-round action economy and consumed nothing: " +
                 result + ".");
         }
 
@@ -75,7 +77,6 @@ namespace KingmakerGunslinger.Development
             RuntimeContext runtime = ResolveRuntime(requireUnit: true);
             UnitDescriptor descriptor = RequireConcreteDescriptor(runtime);
             EnsureReloadAbility(descriptor);
-            EnsureOverhaulAbility(descriptor);
             EnsureRepairAbility(descriptor);
 
             object targetItem = RequireSingleEquippedTestMusket(runtime);
@@ -98,7 +99,7 @@ namespace KingmakerGunslinger.Development
             if (second == null)
             {
                 throw new InvalidOperationException(
-                    "The Sprint 29 fixture requires a second independently tracked Test Musket.");
+                    "The maintenance fixture requires a second independently tracked Test Musket.");
             }
 
             _stateService.Set(
@@ -106,11 +107,11 @@ namespace KingmakerGunslinger.Development
                 FirearmStateMachine.Wreck(FirearmState.CreateEmpty()));
             _stateService.Set(second.Item, FirearmState.CreateEmpty());
 
-            KingmakerRepairKitInventory repairKits = ResolveRepairKitInventory();
-            int repairKitCount = repairKits.Count();
-            if (repairKitCount < 2)
+            KingmakerRepairKitInventory tools = ResolveToolInventory();
+            int toolCount = tools.Count();
+            if (toolCount < 1)
             {
-                repairKits.Add(2 - repairKitCount);
+                tools.Add(1 - toolCount);
             }
 
             KingmakerBasicAmmunitionInventory ammunition =
@@ -131,7 +132,7 @@ namespace KingmakerGunslinger.Development
             target = RequireMatchingEntry(entries, target.Item);
             second = RequireMatchingEntry(entries, second.Item);
             RepairKitInventorySnapshot kitSnapshot =
-                RepairKitInventorySnapshot.Capture(repairKits);
+                RepairKitInventorySnapshot.Capture(tools);
             BasicAmmunitionInventorySnapshot ammunitionSnapshot =
                 BasicAmmunitionInventorySnapshot.Capture(ammunition);
 
@@ -149,7 +150,6 @@ namespace KingmakerGunslinger.Development
                     kitSnapshot.RepairKits,
                     ammunitionSnapshot.BlackPowderCharges,
                     ammunitionSnapshot.LeadBalls,
-                    OverhaulRuntimeDiagnostics.Completed,
                     RepairRuntimeDiagnostics.Completed,
                     ReloadRuntimeDiagnostics.Loaded,
                     GetTotalFaults(),
@@ -162,14 +162,14 @@ namespace KingmakerGunslinger.Development
             return DevelopmentActionResult.Success(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Prepared Sprint 29 maintenance fixture for {0}; target={1}/0x{2:x8}; second={3}/0x{4:x8}; visibleFirearms={5}; repairKits={6}; powder={7}; leadBalls={8}; matrix=[{9}]. Next: complete Overhaul, print the matrix, complete Repair, print the matrix, then Reload and print the final matrix.",
+                    "Prepared unified maintenance fixture for {0}; target={1}/0x{2:x8}; second={3}/0x{4:x8}; visibleFirearms={5}; gunsmithKits={6}; powder={7}; leadBalls={8}; matrix=[{9}]. Next: complete Repair Firearm, print the matrix, then Reload and print the final matrix.",
                     runtime.UnitName,
                     baseline.RepositoryIdentity,
                     baseline.RuntimeReferenceHash,
                     baseline.SecondRepositoryIdentity,
                     baseline.SecondRuntimeReferenceHash,
                     baseline.VisibleFirearms,
-                    baseline.RepairKits,
+                    baseline.GunsmithKits,
                     baseline.BlackPowder,
                     baseline.LeadBalls,
                     report));
@@ -181,36 +181,18 @@ namespace KingmakerGunslinger.Development
             if (!fixture.Succeeded)
             {
                 return DevelopmentActionResult.Failure(
-                    "Sprint 29 immediate maintenance qualification could not prepare its fixture: " +
+                    "Immediate maintenance qualification could not prepare its fixture: " +
                     fixture.Message);
             }
 
             var checkpoints = new List<string>();
             checkpoints.Add(DescribeMaintenanceQualification().Message);
 
-            DevelopmentActionResult overhaul = OverhaulEquippedTestMusketNowForDebug();
-            if (!overhaul.Succeeded)
-            {
-                return DevelopmentActionResult.Failure(
-                    "Sprint 29 immediate maintenance qualification stopped at Overhaul: " +
-                    overhaul.Message + "; checkpoints=[" +
-                    string.Join(" || ", checkpoints) + "].");
-            }
-
-            DevelopmentActionResult overhaulReport = DescribeMaintenanceQualification();
-            checkpoints.Add(overhaulReport.Message);
-            if (!overhaulReport.Succeeded)
-            {
-                return DevelopmentActionResult.Failure(
-                    "Sprint 29 immediate maintenance qualification failed after Overhaul; checkpoints=[" +
-                    string.Join(" || ", checkpoints) + "].");
-            }
-
             DevelopmentActionResult repair = RepairEquippedTestMusketNowForDebug();
             if (!repair.Succeeded)
             {
                 return DevelopmentActionResult.Failure(
-                    "Sprint 29 immediate maintenance qualification stopped at Repair: " +
+                    "Immediate maintenance qualification stopped at Repair: " +
                     repair.Message + "; checkpoints=[" +
                     string.Join(" || ", checkpoints) + "].");
             }
@@ -220,7 +202,7 @@ namespace KingmakerGunslinger.Development
             if (!repairReport.Succeeded)
             {
                 return DevelopmentActionResult.Failure(
-                    "Sprint 29 immediate maintenance qualification failed after Repair; checkpoints=[" +
+                    "Immediate maintenance qualification failed after Repair; checkpoints=[" +
                     string.Join(" || ", checkpoints) + "].");
             }
 
@@ -228,7 +210,7 @@ namespace KingmakerGunslinger.Development
             if (!reload.Succeeded)
             {
                 return DevelopmentActionResult.Failure(
-                    "Sprint 29 immediate maintenance qualification stopped at Reload: " +
+                    "Immediate maintenance qualification stopped at Reload: " +
                     reload.Message + "; checkpoints=[" +
                     string.Join(" || ", checkpoints) + "].");
             }
@@ -236,7 +218,7 @@ namespace KingmakerGunslinger.Development
             DevelopmentActionResult finalReport = DescribeMaintenanceQualification();
             checkpoints.Add(finalReport.Message);
             string message =
-                "Sprint 29 one-command immediate maintenance qualification " +
+                "One-command immediate unified maintenance qualification " +
                 (finalReport.Succeeded ? "PASSED" : "FAILED") +
                 "; checkpoints=[" + string.Join(" || ", checkpoints) + "]. " +
                 "This diagnostic bypasses action economy; use the action-bar abilities separately to qualify full-round delivery and interruption.";
@@ -251,7 +233,7 @@ namespace KingmakerGunslinger.Development
             if (!MaintenanceQualificationSession.TryGetBaseline(out baseline))
             {
                 return DevelopmentActionResult.Failure(
-                    "No Sprint 29 maintenance qualification fixture is active. Prepare the fixture first.");
+                    "No maintenance qualification fixture is active. Prepare the fixture first.");
             }
 
             RuntimeContext runtime = ResolveRuntime(requireUnit: true);
@@ -260,7 +242,7 @@ namespace KingmakerGunslinger.Development
                     CaptureMaintenanceObservation(runtime, baseline));
             string message = string.Format(
                 CultureInfo.InvariantCulture,
-                "Sprint 29 maintenance qualification for {0}: {1}. Required sequence: FixtureReady -> OverhaulPassed -> RepairPassed -> MaintenanceLoopPassed.",
+                "Unified maintenance qualification for {0}: {1}. Required sequence: FixtureReady -> RepairPassed -> MaintenanceLoopPassed.",
                 runtime.UnitName,
                 report);
             return report.Passed
@@ -274,8 +256,8 @@ namespace KingmakerGunslinger.Development
             MaintenanceQualificationSession.Reset();
             return DevelopmentActionResult.Success(
                 wasActive
-                    ? "Cleared the process-local Sprint 29 maintenance qualification baseline. No item, resource, or ability state was mutated."
-                    : "No Sprint 29 maintenance qualification baseline was active. No mutation was requested.");
+                    ? "Cleared the process-local maintenance qualification baseline. No item, resource, or ability state was mutated."
+                    : "No maintenance qualification baseline was active. No mutation was requested.");
         }
 
         private MaintenanceQualificationObservation CaptureMaintenanceObservation(
@@ -312,7 +294,7 @@ namespace KingmakerGunslinger.Development
             }
 
             RepairKitInventorySnapshot kits =
-                RepairKitInventorySnapshot.Capture(ResolveRepairKitInventory());
+                RepairKitInventorySnapshot.Capture(ResolveToolInventory());
             BasicAmmunitionInventorySnapshot ammunition =
                 BasicAmmunitionInventorySnapshot.Capture(
                     ResolveBasicAmmunitionInventory());
@@ -329,7 +311,6 @@ namespace KingmakerGunslinger.Development
                 kits.RepairKits,
                 ammunition.BlackPowderCharges,
                 ammunition.LeadBalls,
-                OverhaulRuntimeDiagnostics.Completed,
                 RepairRuntimeDiagnostics.Completed,
                 ReloadRuntimeDiagnostics.Loaded,
                 GetTotalFaults(),
@@ -366,13 +347,13 @@ namespace KingmakerGunslinger.Development
             if (matches.Length == 0)
             {
                 throw new InvalidOperationException(
-                    "Equip exactly one Test Musket before preparing the Sprint 29 fixture.");
+                    "Equip exactly one Test Musket before preparing the maintenance fixture.");
             }
 
             if (matches.Length != 1)
             {
                 throw new InvalidOperationException(
-                    "More than one distinct Test Musket is equipped; the Sprint 29 fixture target is ambiguous.");
+                    "More than one distinct Test Musket is equipped; the maintenance fixture target is ambiguous.");
             }
 
             return matches[0];
@@ -478,7 +459,6 @@ namespace KingmakerGunslinger.Development
             return CombatTraceRuntime.FaultCount +
                 FirearmArmorClassRuntime.FaultCount +
                 ReloadRuntimeDiagnostics.Faults +
-                OverhaulRuntimeDiagnostics.Faults +
                 RepairRuntimeDiagnostics.Faults +
                 FirearmDischargeRuntimeDiagnostics.Faults +
                 FirearmMisfireRuntimeDiagnostics.Faults +

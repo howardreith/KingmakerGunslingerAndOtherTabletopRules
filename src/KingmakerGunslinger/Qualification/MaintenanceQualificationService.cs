@@ -5,9 +5,10 @@ using KingmakerGunslinger.Firearms;
 namespace KingmakerGunslinger.Qualification
 {
     /// <summary>
-    /// Pure deterministic evaluator for the accelerated Sprint 29 maintenance loop.
-    /// It recognizes fixture, Overhaul, Repair, and Reload checkpoints and validates
-    /// exact-item isolation, resource deltas, revisions, counters, faults, and duplicates.
+    /// Pure deterministic evaluator for the accelerated unified maintenance loop.
+    /// It recognizes fixture, Repair, and Reload checkpoints and validates exact-item
+    /// isolation, reusable-tool and ammunition deltas, revisions, counters, faults,
+    /// and duplicates.
     /// </summary>
     internal sealed class MaintenanceQualificationService
     {
@@ -68,40 +69,27 @@ namespace KingmakerGunslinger.Qualification
             {
                 case MaintenanceQualificationStage.FixtureReady:
                     passed &= AddCheck(checks, "revision", observation.Revision == baseline.Revision);
-                    passed &= AddCheck(checks, "kits", observation.RepairKits == baseline.RepairKits);
+                    passed &= AddCheck(checks, "tools", observation.GunsmithKits == baseline.GunsmithKits);
                     passed &= AddCheck(checks, "powder", observation.BlackPowder == baseline.BlackPowder);
                     passed &= AddCheck(checks, "lead", observation.LeadBalls == baseline.LeadBalls);
-                    passed &= AddCheck(checks, "overhaul", observation.OverhaulCompleted == baseline.OverhaulCompleted);
-                    passed &= AddCheck(checks, "repair", observation.RepairCompleted == baseline.RepairCompleted);
-                    passed &= AddCheck(checks, "reload", observation.ReloadCompleted == baseline.ReloadCompleted);
-                    break;
-
-                case MaintenanceQualificationStage.OverhaulPassed:
-                    passed &= AddCheck(checks, "revision", observation.Revision == baseline.Revision + 1);
-                    passed &= AddCheck(checks, "kits", observation.RepairKits == baseline.RepairKits - 1);
-                    passed &= AddCheck(checks, "powder", observation.BlackPowder == baseline.BlackPowder);
-                    passed &= AddCheck(checks, "lead", observation.LeadBalls == baseline.LeadBalls);
-                    passed &= AddCheck(checks, "overhaul", observation.OverhaulCompleted == baseline.OverhaulCompleted + 1);
                     passed &= AddCheck(checks, "repair", observation.RepairCompleted == baseline.RepairCompleted);
                     passed &= AddCheck(checks, "reload", observation.ReloadCompleted == baseline.ReloadCompleted);
                     break;
 
                 case MaintenanceQualificationStage.RepairPassed:
-                    passed &= AddCheck(checks, "revision", observation.Revision == baseline.Revision + 2);
-                    passed &= AddCheck(checks, "kits", observation.RepairKits == baseline.RepairKits - 2);
+                    passed &= AddCheck(checks, "revision", observation.Revision == baseline.Revision + 1);
+                    passed &= AddCheck(checks, "tools", observation.GunsmithKits == baseline.GunsmithKits);
                     passed &= AddCheck(checks, "powder", observation.BlackPowder == baseline.BlackPowder);
                     passed &= AddCheck(checks, "lead", observation.LeadBalls == baseline.LeadBalls);
-                    passed &= AddCheck(checks, "overhaul", observation.OverhaulCompleted == baseline.OverhaulCompleted + 1);
                     passed &= AddCheck(checks, "repair", observation.RepairCompleted == baseline.RepairCompleted + 1);
                     passed &= AddCheck(checks, "reload", observation.ReloadCompleted == baseline.ReloadCompleted);
                     break;
 
                 case MaintenanceQualificationStage.MaintenanceLoopPassed:
-                    passed &= AddCheck(checks, "revision", observation.Revision == baseline.Revision + 3);
-                    passed &= AddCheck(checks, "kits", observation.RepairKits == baseline.RepairKits - 2);
+                    passed &= AddCheck(checks, "revision", observation.Revision == baseline.Revision + 2);
+                    passed &= AddCheck(checks, "tools", observation.GunsmithKits == baseline.GunsmithKits);
                     passed &= AddCheck(checks, "powder", observation.BlackPowder == baseline.BlackPowder - 1);
                     passed &= AddCheck(checks, "lead", observation.LeadBalls == baseline.LeadBalls - 1);
-                    passed &= AddCheck(checks, "overhaul", observation.OverhaulCompleted == baseline.OverhaulCompleted + 1);
                     passed &= AddCheck(checks, "repair", observation.RepairCompleted == baseline.RepairCompleted + 1);
                     passed &= AddCheck(checks, "reload", observation.ReloadCompleted == baseline.ReloadCompleted + 1);
                     break;
@@ -124,11 +112,6 @@ namespace KingmakerGunslinger.Qualification
             if (state.IsEmpty && state.Condition == FirearmCondition.Wrecked)
             {
                 return MaintenanceQualificationStage.FixtureReady;
-            }
-
-            if (state.IsEmpty && state.Condition == FirearmCondition.Broken)
-            {
-                return MaintenanceQualificationStage.OverhaulPassed;
             }
 
             if (state.IsEmpty && state.Condition == FirearmCondition.Normal)

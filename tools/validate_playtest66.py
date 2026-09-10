@@ -105,7 +105,7 @@ def validate(root: Path, test_count: int = 865) -> None:
     require(root / "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
             "itemVisual", "itemMatch && itemVisual && itemIconDistinct")
     require(root / "src/KingmakerGunslinger/Blueprints/BeneathStolenLandsVendorBlueprints.cs",
-            "StandaloneHonestGuyTableGuid", "CampaignXellirenTableGuid", "200, 200, 10, 5, 1")
+            "StandaloneHonestGuyTableGuid", "CampaignXellirenTableGuid", "200, 200, 200, 1")
     require(root / "src/KingmakerGunslinger/Gunsmithing/CraftBasicAmmunitionAbilityLogic.cs",
             "BatchSize = 20", "Complete(context.Caster.Descriptor)",
             "FirearmCraftingTransactionService.Complete")

@@ -459,6 +459,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scenario == WorkingSaveMidgameVerifyAbsent;
         }
         internal const string WorkingSaveSmoke = "working-save-smoke";
+        internal const string WorkingSaveUnifiedRepairAlias =
+            "working-save-unified-repair-alias";
         internal const string P0AffectedFocusedAimSaveLoad =
             "p0-affected-focused-aim-save-load";
         internal const string P0AffectedFocusedAimSaveName =
@@ -721,6 +723,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveSaveCatalogProvider,
                 ObserveLoadGameButtonAction,
                 WorkingSaveSmoke,
+                WorkingSaveUnifiedRepairAlias,
                 WorkingSaveMidgamePrepare,
                 WorkingSaveMidgameVerifyCleanup,
                 WorkingSaveMidgameVerifyAbsent,

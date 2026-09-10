@@ -127,51 +127,26 @@ namespace KingmakerGunslinger.Firearms
                 "A wrecked firearm cannot receive another misfire-damage transition.");
         }
 
+        /// <summary>
+        /// Unified maintenance transition: both Broken and Wrecked firearms return
+        /// to Normal in one step. Surviving loaded ammunition is preserved exactly;
+        /// a Wrecked firearm (which is always empty) stays empty.
+        /// </summary>
         internal static FirearmState Repair(FirearmState state)
         {
             RequireState(state);
-            if (state.Condition == FirearmCondition.Wrecked)
-            {
-                throw Rejected(
-                    FirearmStateTransitionError.Wrecked,
-                    "A wrecked firearm cannot be silently repaired to normal.");
-            }
-
-            if (state.Condition != FirearmCondition.Broken)
+            if (state.Condition == FirearmCondition.Normal)
             {
                 throw Rejected(
                     FirearmStateTransitionError.NotBroken,
-                    "Only a broken firearm can use the ordinary repair transition.");
+                    "Only a Broken or Wrecked firearm can be repaired.");
             }
 
             return new FirearmState(
                 FirearmState.CurrentSchemaVersion,
-                0,
-                null,
+                state.LoadedRounds,
+                state.LoadedAmmunition,
                 FirearmCondition.Normal);
-        }
-
-        /// <summary>
-        /// Development-contract transition for a future recovery route. It preserves
-        /// the exact item and returns an empty Wrecked state to empty Broken without
-        /// silently completing ordinary repair to Normal. Gameplay cost, time, skill,
-        /// and ability delivery remain deliberately outside this pure state boundary.
-        /// </summary>
-        internal static FirearmState OverhaulWrecked(FirearmState state)
-        {
-            RequireState(state);
-            if (state.Condition != FirearmCondition.Wrecked)
-            {
-                throw Rejected(
-                    FirearmStateTransitionError.NotWrecked,
-                    "Only a wrecked firearm can use the same-item overhaul transition.");
-            }
-
-            return new FirearmState(
-                FirearmState.CurrentSchemaVersion,
-                0,
-                null,
-                FirearmCondition.Broken);
         }
 
         internal static FirearmState Wreck(FirearmState state)

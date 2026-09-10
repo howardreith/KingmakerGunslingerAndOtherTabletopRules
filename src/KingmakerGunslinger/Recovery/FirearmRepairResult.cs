@@ -5,8 +5,8 @@ using KingmakerGunslinger.Firearms;
 namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
-    /// Immutable result of one player-facing ordinary repair attempt. Rejected results prove
-    /// that neither the exact firearm state nor the Firearm Repair Kit count changed.
+    /// Immutable result of one player-facing unified repair attempt. Rejected results prove
+    /// that neither the exact firearm state nor the reusable Gunsmith's Kit count changed.
     /// </summary>
     internal sealed class FirearmRepairResult
     {
@@ -33,20 +33,22 @@ namespace KingmakerGunslinger.Recovery
 
             if (status == FirearmRepairStatus.Repaired)
             {
-                if (BeforeState.Condition != FirearmCondition.Broken ||
+                if ((BeforeState.Condition != FirearmCondition.Broken &&
+                        BeforeState.Condition != FirearmCondition.Wrecked) ||
                     AfterState.Condition != FirearmCondition.Normal ||
-                    !AfterState.IsEmpty ||
-                    AfterInventory.RepairKits != BeforeInventory.RepairKits - 1)
+                    AfterState.LoadedRounds != BeforeState.LoadedRounds ||
+                    AfterState.LoadedAmmunition != BeforeState.LoadedAmmunition ||
+                    AfterInventory.RepairKits != BeforeInventory.RepairKits)
                 {
                     throw new ArgumentException(
-                        "A successful ordinary repair must change a Broken firearm to empty Normal, discard its loaded ammunition, and consume exactly one Firearm Repair Kit.");
+                        "A successful unified repair must change a Broken or Wrecked firearm to Normal, preserve its exact loaded ammunition, and consume nothing.");
                 }
             }
             else if (BeforeState != AfterState ||
                 !BeforeInventory.Equals(AfterInventory))
             {
                 throw new ArgumentException(
-                    "A rejected ordinary repair must leave exact firearm state and repair-kit inventory unchanged.");
+                    "A rejected unified repair must leave exact firearm state and the reusable Gunsmith's Kit count unchanged.");
             }
         }
 

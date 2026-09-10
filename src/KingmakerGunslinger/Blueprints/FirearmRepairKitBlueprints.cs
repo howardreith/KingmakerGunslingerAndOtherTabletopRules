@@ -7,8 +7,10 @@ using KingmakerGunslinger.Bootstrap;
 namespace KingmakerGunslinger.Blueprints
 {
     /// <summary>
-    /// Registers one inert stackable component item consumed by the player-facing
-    /// Wrecked-to-Broken overhaul delivery. It is an isolated Diamond Dust clone so
+    /// Keeps the historical stackable Firearm Repair Kit item identity registered for
+    /// save compatibility with player inventories that already contain copies. The kit
+    /// is obsolete: unified Repair Firearm uses the reusable Gunsmith's Kit instead, and
+    /// this item is no longer sold or consumed. It is an isolated Diamond Dust clone so
     /// inventory stacking and icon behavior are known on Kingmaker 2.1.7b.
     /// </summary>
     internal static class FirearmRepairKitBlueprints
@@ -18,7 +20,7 @@ namespace KingmakerGunslinger.Blueprints
         internal const string DisplayName = "Firearm Repair Kit";
 
         private const string Description =
-            "Consume with Overhaul Firearm to change a wrecked Test Musket to an empty broken firearm. Repair it afterward.";
+            "Obsolete: no longer used or sold. Firearms are now repaired directly to Normal with a reusable Gunsmith's Kit.";
         private const string Flavor =
             "Enough fitted parts for one emergency overhaul, not a complete repair.";
         private const int Cost = 50;
