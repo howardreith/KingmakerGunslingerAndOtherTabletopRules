@@ -42,6 +42,23 @@ namespace KingmakerGunslinger.DomainTests
                 bootstrap.Contains("teleportationRegistry.RollbackAll()") &&
                 bootstrap.Contains("other module transactions are preserved"), "Independent identity/publication failure scope");
         }
+        internal static void ScrollItemsUseApprovedEconomicsAndCanonicalSpells()
+        {
+            string source = File.ReadAllText("src/KingmakerGunslinger/Blueprints/TeleportationScrollBlueprints.cs");
+            foreach (string token in new[] {
+                "TeleportDonorId = \"02086fbbda266ed4b8e9124abe5abd75\"",
+                "GreaterTeleportDonorId = \"0033529da3b90bd226232e1962ca34ba\"",
+                "WordOfRecallDonorId = \"00843bddf42908953a0d77e7155c20f0\"",
+                "cost: 1125, casterLevel: 9, spellLevel: 5",
+                "cost: 2275, casterLevel: 13, spellLevel: 7",
+                "cost: 1650, casterLevel: 11, spellLevel: 6",
+                "scroll.Ability = spell", "copies[0].CustomSpell = spell",
+                "donor.Cost != cost || donor.CasterLevel != casterLevel" })
+                Assertions.True(source.Contains(token), "Scroll contract missing " + token);
+            string bootstrap = File.ReadAllText("src/KingmakerGunslinger/Bootstrap/BlueprintBootstrap.cs");
+            Assertions.True(bootstrap.Contains("TeleportationScrollBlueprints.Register(library, teleportationRegistry, teleportation)"),
+                "Scrolls register inside the Teleportation module transaction with the canonical spells.");
+        }
         internal static void PublicationUsesExactListsAndDuplicateSafeMerge()
         {
             string publication = File.ReadAllText("src/KingmakerGunslinger/Blueprints/TeleportationSpellListPublication.cs");

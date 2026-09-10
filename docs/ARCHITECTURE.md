@@ -1,4 +1,4 @@
-# Current architecture
+﻿# Current architecture
 
 ## Retained public Brown-Fur direct-cast contract
 
@@ -591,7 +591,7 @@ the seventy-three always-registered Urban Barbarian identities, and the nine
 always-registered Bodyguard/In Harm's Way subsystem identities, and the
 Elemental Races mechanics, heritage, feat, alternate-trait provider, and visual
 identities, plus the released Roadwarden and Dead Reckoning firearms, extend
-the append-only ledger to 1883 stable IDs: 1881 active and 2 reserved. The
+the append-only ledger to 1886 stable IDs: 1884 active and 2 reserved. The
 0.0.114 Elemental Races foundation is 24 mechanical blueprints, 16
 body-wrapper or visual-preset blueprints, and 28 project-owned
 `EquipmentEntity` resource proxies over native Kingmaker geometry and native
@@ -794,7 +794,7 @@ state.
 ## Elemental completion candidate 0.0.119
 
 Seven Nereid and four Treacherous Earth auxiliary blueprints extend the ledger
-to 1883 stable IDs: 1881 active and 2 reserved. Existing identities are unchanged.
+to 1886 stable IDs: 1884 active and 2 reserved. Existing identities are unchanged.
 Both traits remain unpublished during qualification; current evidence belongs in
 [ELEMENTAL-RACES-COMPLETION.md](../ELEMENTAL-RACES-COMPLETION.md).
 
