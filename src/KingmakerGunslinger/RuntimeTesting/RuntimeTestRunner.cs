@@ -5059,35 +5059,65 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int overhaulFactUnits = 0, hiddenOverhaulFacts = 0,
                     visibleMaintenanceFacts = 0, savedOverhaulSlots = 0,
                     savedVisibleMaintenanceSlots = 0;
+                var scannedUnits = new List<
+                    Kingmaker.EntitySystem.Entities.UnitEntityData>();
+                string firstHolderName = null;
+                if (Game.Instance != null && Game.Instance.State != null &&
+                    Game.Instance.State.Units != null)
+                {
+                    // Every unit deserialized from the save, which includes
+                    // benched companions that party.json also serializes.
+                    scannedUnits.AddRange(
+                        Game.Instance.State.Units.All.ToArray());
+                }
                 if (Game.Instance != null && Game.Instance.Player != null &&
                     Game.Instance.Player.Party != null)
                 {
                     foreach (Kingmaker.EntitySystem.Entities.UnitEntityData
-                        partyUnit in Game.Instance.Player.Party.ToArray())
-                    {
-                        UnitDescriptor descriptor = partyUnit.Descriptor;
-                        if (descriptor == null || descriptor.Abilities == null)
-                            continue;
-                        bool unitHoldsOverhaul = false;
+                        partyMember in Game.Instance.Player.Party.ToArray())
+                        if (partyMember != null &&
+                            !scannedUnits.Contains(partyMember))
+                            scannedUnits.Add(partyMember);
+                }
+                foreach (Kingmaker.EntitySystem.Entities.UnitEntityData
+                    partyUnit in scannedUnits)
+                {
+                    UnitDescriptor descriptor = partyUnit.Descriptor;
+                    if (descriptor == null) continue;
+                    bool unitHoldsOverhaul = false;
+                    var maintenanceCandidates = new HashSet<object>();
+                    if (descriptor.Abilities != null)
                         foreach (object fact in ReflectionAccess.Enumerate(
                             descriptor.Abilities))
+                            if (fact != null) maintenanceCandidates.Add(fact);
+                    object allFacts;
+                    string factsMember;
+                    if (ReflectionAccess.TryGetFirstNonNullMember(descriptor,
+                        new[] { "Facts" }, out allFacts, out factsMember) &&
+                        allFacts != null)
+                        foreach (object fact in ReflectionAccess.Enumerate(
+                            allFacts))
+                            if (fact != null) maintenanceCandidates.Add(fact);
+                    foreach (object fact in maintenanceCandidates)
+                    {
+                        var ability = fact as
+                            Kingmaker.UnitLogic.Abilities.Ability;
+                        BlueprintAbility factBp =
+                            ability == null ? null : ability.Blueprint;
+                        if (ReferenceEquals(factBp, overhaulBp))
                         {
-                            var ability = fact as
-                                Kingmaker.UnitLogic.Abilities.Ability;
-                            BlueprintAbility factBp =
-                                ability == null ? null : ability.Blueprint;
-                            if (ReferenceEquals(factBp, overhaulBp))
-                            {
-                                unitHoldsOverhaul = true;
-                                hiddenOverhaulFacts++;
-                            }
-                            else if (ReferenceEquals(factBp, repairBp) &&
-                                !repairBp.Hidden)
-                            {
-                                visibleMaintenanceFacts++;
-                            }
+                            unitHoldsOverhaul = true;
+                            hiddenOverhaulFacts++;
+                            if (firstHolderName == null)
+                                firstHolderName = partyUnit.CharacterName;
                         }
-                        if (unitHoldsOverhaul) overhaulFactUnits++;
+                        else if (ReferenceEquals(factBp, repairBp) &&
+                            !repairBp.Hidden)
+                        {
+                            visibleMaintenanceFacts++;
+                        }
+                    }
+                    if (unitHoldsOverhaul) overhaulFactUnits++;
                         object unitSettings;
                         string settingsMember;
                         if (ReflectionAccess.TryGetFirstNonNullMember(partyUnit,
@@ -5107,8 +5137,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             }
                         }
                     }
-                }
-                string aliasObserved = "overhaulFactUnits=" +
+                string aliasObserved = "unitsScanned=" + scannedUnits.Count +
+                    ";firstHolder=" + (firstHolderName ?? "<none>") +
+                    ";overhaulFactUnits=" +
                     overhaulFactUnits + ";hiddenOverhaulFacts=" +
                     hiddenOverhaulFacts + ";visibleMaintenanceFacts=" +
                     visibleMaintenanceFacts + ";savedOverhaulSlots=" +
@@ -5284,6 +5315,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "observer contains no entry-action invocation"));
             }
             else result.WorkingSaveSmoke = evidence;
+            if (_request.Scenario ==
+                RuntimeTestScenarioCatalog.WorkingSaveUnifiedRepairAlias)
+            {
+                // This scenario's alias assertions are appended after the
+                // shared result object exists, so the overall status must be
+                // recomputed from the full assertion list.
+                result.Status = assertions.TrueForAll(
+                    value => value.Status == "PASS")
+                        ? RuntimeTestStatuses.Pass
+                        : RuntimeTestStatuses.Fail;
+            }
             if (!string.IsNullOrWhiteSpace(stage))
                 result.Diagnostics.Add("timeoutStage=" + stage);
             if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);
