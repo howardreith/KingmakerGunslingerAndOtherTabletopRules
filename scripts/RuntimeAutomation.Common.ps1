@@ -1587,7 +1587,7 @@ function Assert-KmgRuntimeScenarioPreflight {
     }
     if ($ExpectedVersion -cne '0.0.120' -and
         -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.120.'
+        throw 'ExpectedVersion must be exactly the active version 0.0.121.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'

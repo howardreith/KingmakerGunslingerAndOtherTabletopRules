@@ -1,5 +1,18 @@
 # Kingmaker Gunslinger
 
+**0.0.121-unified-firearm-maintenance** (UMM 0.0.121) unifies firearm
+maintenance into one full-round Repair Firearm action that restores a Broken
+or Wrecked firearm directly to Normal using one reusable shared-inventory
+Gunsmith's Kit: nothing is consumed and surviving loaded ammunition is
+preserved. The separate Overhaul action and both consumable maintenance kits
+are retired (blueprint identities remain as a hidden delegate and inert items
+for save compatibility), already-materialized merchant stock is swept on every
+trade open, and old saves load with exactly one visible maintenance action.
+Whether Wrecked repair should stay available during combat is an open owner
+decision recorded in `KNOWN-ISSUES.md`.
+
+### Retained public 0.0.120 Elemental Races behavior
+
 **0.0.120-elemental-races-completion** (UMM 0.0.120) adds Nereid Fascination
 and Treacherous Earth to the existing Undine and Oread SLA replacement selectors.
 The inventory is four races, twelve heritages, eleven racial feats and twenty-one
