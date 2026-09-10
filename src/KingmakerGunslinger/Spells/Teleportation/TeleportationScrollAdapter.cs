@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     result.Add(new TeleportCastSourceSnapshot(reader.UniqueId, order,
                         reader.CharacterName,
                         group.Representative.AssetGuid, "Scroll", group.Spell, TeleportCastSourceKind.Scroll,
-                        group.SpellLevel, group.Items.Sum(value => value.Count),
+                        group.SpellLevel, group.CasterLevel, group.Items.Sum(value => value.Count),
                         TeleportCastSourceFacts.ActiveParty | TeleportCastSourceFacts.LivingAvailableCaster |
                         TeleportCastSourceFacts.ScrollStock | TeleportCastSourceFacts.ExactSpell |
                         TeleportCastSourceFacts.RealResource));
@@ -57,25 +57,43 @@ namespace KingmakerGunslinger.Spells.Teleportation
             return result;
         }
 
-        // The verified association a genuine scroll carries: its CopyScroll
-        // teaching target, or the ability it activates, pointing at one of the
-        // canonical strategic spells. Any other charged item type is ignored.
+        // The verified association a genuine scroll ACTIVATES: the item's actual
+        // Ability must be one of the canonical strategic spells. A CopyScroll
+        // teaching association is accepted only when it teaches the exact same
+        // canonical spell the item activates — a teaching-only or mismatched
+        // association never authorizes an unrelated native effect followed by
+        // teleportation. Any other charged item type is ignored.
         internal static TeleportSpellKind? AssociatedSpell(BlueprintItem item)
         {
             var usable = item as BlueprintItemEquipmentUsable;
             if (usable == null || usable.Type != UsableItemType.Scroll || usable.Ability == null) return null;
             var spells = BlueprintBootstrap.Teleportation;
             if (spells == null) return null;
-            var copy = usable.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>()
-                .Select(value => value.CustomSpell).FirstOrDefault(value => value != null);
-            BlueprintAbilityClass(usable, copy, spells, out var kind);
-            return kind;
+            var activated = KindFor(usable.Ability, spells);
+            if (activated == null) return null;
+            foreach (var copy in usable.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>())
+            {
+                var taught = KindFor(copy.CustomSpell, spells);
+                if (taught != null && taught != activated) return null;
+            }
+            return activated;
         }
 
-        private static void BlueprintAbilityClass(BlueprintItemEquipmentUsable usable, Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility copy,
-            TeleportationSpellBlueprintSet spells, out TeleportSpellKind? kind)
+        // The material equivalence contract between scroll variants: two items
+        // aggregate into one choice only when their native activation behavior
+        // is identical — same canonical spell, caster level, item spell level
+        // and charge/consumption model. Anything else is a materially different
+        // variant.
+        private static bool SameContract(BlueprintItemEquipmentUsable left, BlueprintItemEquipmentUsable right)
         {
-            kind = KindFor(copy, spells) ?? KindFor(usable.Ability, spells);
+            return left.CasterLevel == right.CasterLevel && left.SpellLevel == right.SpellLevel &&
+                left.SpendCharges == right.SpendCharges && left.Charges == right.Charges &&
+                left.RestoreChargesOnRest == right.RestoreChargesOnRest;
+        }
+
+        internal static bool MatchesContract(BlueprintItemEquipmentUsable item, ScrollGroup group)
+        {
+            return SameContract(item, group.Representative);
         }
 
         private static TeleportSpellKind? KindFor(Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility ability, TeleportationSpellBlueprintSet spells)
@@ -104,10 +122,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     var kind = AssociatedSpell(entity.Blueprint);
                     if (kind == null) continue;
                     var usable = (BlueprintItemEquipmentUsable)entity.Blueprint;
-                    var group = groups.FirstOrDefault(value => value.Spell == kind.Value && value.CasterLevel == usable.CasterLevel);
+                    var group = groups.FirstOrDefault(value => value.Spell == kind.Value && MatchesContract(usable, value));
                     if (group == null)
                     {
-                        group = new ScrollGroup { Spell = kind.Value, CasterLevel = usable.CasterLevel, SpellLevel = usable.SpellLevel };
+                        group = new ScrollGroup { Spell = kind.Value, CasterLevel = usable.CasterLevel,
+                            SpellLevel = usable.SpellLevel, Representative = usable };
                         groups.Add(group);
                     }
                     if (!group.Items.Contains(entity)) group.Items.Add(entity);
@@ -149,9 +168,15 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (unit == null || unit.Inventory == null || !seen.Add(unit.Inventory)) continue;
                 foreach (var entity in unit.Inventory)
                 {
-                    if (entity != null && entity.Count > 0 && AssociatedSpell(entity.Blueprint) == snapshot.Spell &&
-                        ((BlueprintItemEquipmentUsable)entity.Blueprint).CasterLevel == group.CasterLevel)
-                        return new TeleportationScrollCastSource(snapshot, entity);
+                    if (entity == null || entity.Count <= 0) continue;
+                    var usable = entity.Blueprint as BlueprintItemEquipmentUsable;
+                    if (usable == null || AssociatedSpell(usable) != snapshot.Spell || !MatchesContract(usable, group))
+                        continue;
+                    // The bound item's material metadata must match what the
+                    // snapshot promised: the exact variant group, never a
+                    // silent substitution.
+                    if (usable.CasterLevel != snapshot.CasterLevel || usable.SpellLevel != snapshot.SpellLevel) continue;
+                    return new TeleportationScrollCastSource(snapshot, entity);
                 }
             }
             return null;
@@ -269,20 +294,33 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var observer = new TeleportScrollActivationObserver();
             Kingmaker.PubSubSystem.EventBus.Subscribe(observer);
             bool attempted;
-            try
+            using (var authorization = TeleportationScrollActivationGate.Authorization.TryOpen(reader, _item))
             {
-                // The exact native boundary the inventory context action reaches:
-                // temporary SourceItem fact, native availability checks, the
-                // RuleCastSpell event (with the UMD roll when required), native
-                // delivery and native consumption on success.
-                attempted = _item.TryUseFromInventory(reader, new Kingmaker.Utility.TargetWrapper(reader));
-            }
-            finally
-            {
-                Kingmaker.PubSubSystem.EventBus.Unsubscribe(observer);
+                try
+                {
+                    // The exact native boundary the inventory context action
+                    // reaches: temporary SourceItem fact, native availability
+                    // checks (the strategic caster checker passes ONLY inside
+                    // this authorization), the RuleCastSpell event (with the UMD
+                    // roll when required), native delivery and native
+                    // consumption on success. The authorization is released on
+                    // every path, including exceptions.
+                    attempted = _item.TryUseFromInventory(reader, new Kingmaker.Utility.TargetWrapper(reader));
+                }
+                finally
+                {
+                    Kingmaker.PubSubSystem.EventBus.Unsubscribe(observer);
+                }
             }
             TeleportExpenditure expenditure = ObserveExpenditure();
-            if (observer.Event == null)
+            // Attribution: the observed rulebook event must belong to THIS
+            // reader activating THIS item; an unrelated nested RuleCastSpell is
+            // never accepted as this request's result.
+            bool attributed = observer.Event != null &&
+                ReferenceEquals(observer.Event.Spell.Caster, reader.Descriptor) &&
+                ReferenceEquals(observer.Event.Spell.SourceItem, _item);
+            if (!attributed) observer.MarkUnattributed();
+            if (observer.Event == null || !attributed)
             {
                 // The native path refused the activation before any rulebook event.
                 _activation = expenditure == TeleportExpenditure.None ?
@@ -343,6 +381,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
         Kingmaker.PubSubSystem.IGlobalRulebookHandler<RuleCastSpell>
     {
         internal RuleCastSpell Event { get; private set; }
+        internal bool Attributed { get; private set; }
+        internal void MarkUnattributed() { Attributed = false; }
         internal bool? Success { get { return Event == null ? (bool?)null : Event.Success; } }
         internal bool IsUMDFailed { get { return Event != null && Event.IsUMDFailed; } }
         internal int? UmdRoll
@@ -351,6 +391,6 @@ namespace KingmakerGunslinger.Spells.Teleportation
         { get { return Event == null || Event.UseMagicDeviceCheck == null ? (int?)null : (int)Event.UseMagicDeviceCheck.DC; } }
         public void OnEventAboutToTrigger(RuleCastSpell evt) { }
         public void OnEventDidTrigger(RuleCastSpell evt)
-        { if (Event == null) Event = evt; }
+        { if (Event == null) { Event = evt; Attributed = true; } }
     }
 }

@@ -9,7 +9,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             return new WorldMapPointSpellAction(Point(), Origin, new TeleportCastSourceSnapshot("reader", 0, "caster-a",
                 "0123456789abcdef0123456789abcdef", "Scroll", TeleportSpellKind.Teleport,
-                TeleportCastSourceKind.Scroll, 5, uses,
+                TeleportCastSourceKind.Scroll, 5, 9, uses,
                 TeleportCastSourceFacts.ActiveParty | TeleportCastSourceFacts.LivingAvailableCaster |
                 TeleportCastSourceFacts.ScrollStock | TeleportCastSourceFacts.ExactSpell |
                 TeleportCastSourceFacts.RealResource), false);
@@ -50,13 +50,14 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ScrollRowsUseSharedStockWording()
         {
             var scroll = ScrollRow(uses: 3);
-            Assertions.Equal("Use Teleport Scroll\ncaster-a \u00b7 3 shared scrolls", TeleportContextPresentation.CompactRow(scroll, English),
+            Assertions.Equal("Use Teleport Scroll\ncaster-a \u00b7 3 shared scrolls \u00b7 CL 9", TeleportContextPresentation.CompactRow(scroll, English),
                 "Scroll compact row: use-scroll title over reader and shared stock.");
             var single = ScrollRow(uses: 1);
-            Assertions.Equal("Use Teleport Scroll\ncaster-a \u00b7 1 shared scroll", TeleportContextPresentation.CompactRow(single, English),
+            Assertions.Equal("Use Teleport Scroll\ncaster-a \u00b7 1 shared scroll \u00b7 CL 9", TeleportContextPresentation.CompactRow(single, English),
                 "Singular shared-scroll wording.");
             string confirmation = TeleportContextPresentation.Confirmation(scroll, TeleportFamiliarity.VeryFamiliar, English);
-            Assertions.True(confirmation.Contains("This consumes one Teleport scroll and no spell slot."),
+            Assertions.True(confirmation.Contains("Scroll caster level: 9.") &&
+                confirmation.Contains("This consumes one Teleport scroll and no spell slot."),
                 "Scroll confirmation states the one-scroll cost and no slot.");
         }
         internal static void ScrollSourcesNeedNoSpellbookFacts()
@@ -64,13 +65,13 @@ namespace KingmakerGunslinger.DomainTests
             var required = TeleportCastSourceFacts.ActiveParty | TeleportCastSourceFacts.LivingAvailableCaster |
                 TeleportCastSourceFacts.ScrollStock | TeleportCastSourceFacts.ExactSpell | TeleportCastSourceFacts.RealResource;
             var scroll = new TeleportCastSourceSnapshot("reader", 0, "reader-a", "0123456789abcdef0123456789abcdef", "Scroll",
-                TeleportSpellKind.Teleport, TeleportCastSourceKind.Scroll, 5, 2, required);
+                TeleportSpellKind.Teleport, TeleportCastSourceKind.Scroll, 5, 9, 2, required);
             Assertions.True(TeleportCastAvailabilityPolicy.Usable(scroll), "A reader with shared stock is a usable scroll source.");
             var withBook = new TeleportCastSourceSnapshot("reader", 0, "reader-a", "0123456789abcdef0123456789abcdef", "Scroll",
-                TeleportSpellKind.Teleport, TeleportCastSourceKind.Scroll, 5, 2, required | TeleportCastSourceFacts.OwnedSpellbook);
+                TeleportSpellKind.Teleport, TeleportCastSourceKind.Scroll, 5, 9, 2, required | TeleportCastSourceFacts.OwnedSpellbook);
             Assertions.False(TeleportCastAvailabilityPolicy.Usable(withBook), "Scroll sources never claim spellbook facts.");
             var noStock = new TeleportCastSourceSnapshot("reader", 0, "reader-a", "0123456789abcdef0123456789abcdef", "Scroll",
-                TeleportSpellKind.Teleport, TeleportCastSourceKind.Scroll, 5, 2,
+                TeleportSpellKind.Teleport, TeleportCastSourceKind.Scroll, 5, 9, 2,
                 required & ~TeleportCastSourceFacts.ScrollStock);
             Assertions.False(TeleportCastAvailabilityPolicy.Usable(noStock), "Scroll sources require the shared stock fact.");
             Assertions.Equal("reader/0123456789abcdef0123456789abcdef/" + ((int)TeleportSpellKind.Teleport).ToString(System.Globalization.CultureInfo.InvariantCulture),

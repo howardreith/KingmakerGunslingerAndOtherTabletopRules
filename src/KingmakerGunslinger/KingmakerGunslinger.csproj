@@ -914,6 +914,7 @@
     <Compile Include="Spells\Teleportation\TeleportExplorationBoundary.cs" />
     <Compile Include="Spells\Teleportation\TeleportExplorationGuardPatches.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollVendorMigration.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationScrollActivationGate.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollAdapter.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityRuntime.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityPatches.cs" />
