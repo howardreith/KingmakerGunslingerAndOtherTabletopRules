@@ -266,7 +266,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "uses=" + (action == null ? "absent" : action.Source.Uses.ToString()), action != null && action.Source.Uses == 1);
                     if (action == null) throw new InvalidOperationException("No specialist world-map source was composed.");
                     string resourcesBefore = TeleportResourceFingerprint(bookConjurer);
-                    rows.QualificationRolls = new TeleportationFixtureRolls(new int[0]);
+                    // Plain Teleport performs its native d100 roll; one forced
+                    // request-local value reproduces the on-target outcome.
+                    rows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
                     rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == action.Key)].onClick.Invoke();
                     var request = TeleportContextConfirmationPresenter.Current;
                     if (request == null || !DialogMessageBox.Instance.IsShown)
