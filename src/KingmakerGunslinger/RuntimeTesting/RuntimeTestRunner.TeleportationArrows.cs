@@ -53,10 +53,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SelectTeleportationCastingPoint(panel, destination);
                 foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
                 var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
-                if (rows == null || rows.Actions.Count != 1 || rows.Actions[0].Source.Spell != TeleportSpellKind.GreaterTeleport)
-                    throw new InvalidOperationException("The arrow audit cast lost its single contextual source: " + destinationId);
+                var greaterRow = rows == null ? null : rows.Actions.SingleOrDefault(value =>
+                    value.Source.Spell == TeleportSpellKind.GreaterTeleport &&
+                    value.Source.CasterId == owner.UniqueId && value.Source.BookId == book.Blueprint.AssetGuid);
+                if (greaterRow == null)
+                    throw new InvalidOperationException("The arrow audit cast lost its greater-teleport contextual source: " + destinationId);
                 rows.QualificationRolls = new TeleportationFixtureRolls(new int[0]);
-                rows.Buttons[0].onClick.Invoke();
+                rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == greaterRow.Key)].onClick.Invoke();
                 var request = TeleportContextConfirmationPresenter.Current;
                 if (request == null || !DialogMessageBox.Instance.IsShown)
                     throw new InvalidOperationException("The arrow audit cast did not open its owned confirmation.");
