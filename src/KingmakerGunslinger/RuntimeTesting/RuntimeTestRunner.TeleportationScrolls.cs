@@ -28,6 +28,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         private IEnumerator<int> _teleportationScrollsSteps;
+        private System.Diagnostics.Stopwatch _teleportationScrollsMapLoad;
         private readonly List<RuntimeTestAssertion> _teleportationScrollsAssertions = new List<RuntimeTestAssertion>();
         private readonly List<object> _teleportationScrollsCaptures = new List<object>();
         private bool IsTeleportationScrollsFixture { get { return _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls; } }
@@ -286,6 +287,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!IsTeleportationScrollsFixture || !_request.ExitAfterCompletion ||
                 _workingSaveSmoke == null || !_workingSaveSmoke.Complete || _workingSaveSmoke.WriteObserved)
                 throw new InvalidOperationException("Scrolls qualification requires its guarded working save, automatic exit and intact write sentinels.");
+            // The working save loads a local area first; load the global map the
+            // same way the interaction family does before any scroll work.
+            if (_teleportationScrollsMapLoad == null)
+            {
+                _teleportationScrollsMapLoad = System.Diagnostics.Stopwatch.StartNew();
+                Game.Instance.LoadArea(Game.Instance.BlueprintRoot.GlobalMap.GlobalMapEnterPoint, AutoSaveMode.None);
+                return;
+            }
+            if (_teleportationScrollsMapLoad.Elapsed.TotalSeconds > _request.CompletionTimeoutSeconds)
+                throw new InvalidOperationException("Scrolls qualification timed out during the world-map load.");
+            if (LoadingProcess.Instance.IsLoadingInProcess || LoadingProcess.Instance.IsLoadingScreenActive ||
+                GlobalMapRules.Instance == null || Game.Instance.CurrentMode != GameModeType.GlobalMap) return;
             if (_teleportationScrollsSteps == null) _teleportationScrollsSteps = RunTeleportationScrolls().GetEnumerator();
             Exception failure = null;
             try { if (_teleportationScrollsSteps.MoveNext()) return; }
