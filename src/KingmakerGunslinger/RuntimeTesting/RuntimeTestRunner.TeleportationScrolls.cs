@@ -590,7 +590,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.Source.Kind != TeleportCastSourceKind.Scroll && value.Source.Spell == TeleportSpellKind.Teleport &&
                     value.Source.CasterId == umdReader.UniqueId && value.Source.BookId == marketBook.Blueprint.AssetGuid);
                 ScrollsAssert("market-cast-row", "the specialist preparation composes a real world-map source with one use",
-                    "uses=" + (bookRow == null ? "absent" : bookRow.Source.Uses.ToString()), bookRow != null && bookRow.Source.Uses == 1);
+                    "uses=" + (bookRow == null ? "absent" : bookRow.Source.Uses.ToString()) +
+                        ";rows=" + (marketRows == null ? -1 : marketRows.Actions.Count) +
+                        ";kinds=" + (marketRows == null ? "" : string.Join(",", marketRows.Actions.Select(value => value.Source.Kind + ":" + value.Source.Spell + ":" + value.Source.CasterId.Substring(0, 6) + ":" + value.Source.BookId.Substring(0, 6)).ToArray())),
+                    bookRow != null && bookRow.Source.Uses == 1);
                 if (bookRow == null) throw new InvalidOperationException("The copied-and-prepared source was not composed.");
                 marketRows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
                 marketRows.Buttons[marketRows.Actions.ToList().FindIndex(value => value.Key == bookRow.Key)].onClick.Invoke();
