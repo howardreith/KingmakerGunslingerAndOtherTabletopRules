@@ -293,6 +293,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";variantUses=" + (variantRow2 == null ? 0 : variantRow2.Uses) + ";variantLevel=" + (variantRow2 == null ? 0 : variantRow2.SpellLevel),
                     variantSources.Length == 2 && standardRow != null && standardRow.Uses == 2 &&
                         variantRow2 != null && variantRow2.Uses == 1 && variantRow2.SpellLevel == variant.SpellLevel);
+                // C2: the no-destination activation guard covers every SUPPORTED
+                // variant, not only the standard items: ordinary native use of the
+                // distinct crafted variant is refused before any roll or
+                // consumption, identically to the standard scroll.
+                ItemEntity variantForOrdinaryUse = null;
+                foreach (var unit in party)
+                {
+                    if (unit == null || unit.Inventory == null) continue;
+                    foreach (var entity in unit.Inventory)
+                        if (entity != null && entity.Count > 0 && ReferenceEquals(entity.Blueprint, variant)) { variantForOrdinaryUse = entity; break; }
+                    if (variantForOrdinaryUse != null) break;
+                }
+                if (variantForOrdinaryUse == null) throw new InvalidOperationException("The variant scroll is unavailable for the ordinary-use guard test.");
+                int variantStockBefore = TeleportationScrollAdapter.Stock(player.Party, variant);
+                var variantObserver = new TeleportScrollActivationObserver();
+                Kingmaker.PubSubSystem.EventBus.Subscribe(variantObserver);
+                bool variantOrdinaryAttempted;
+                try { variantOrdinaryAttempted = variantForOrdinaryUse.TryUseFromInventory(bookReader, new Kingmaker.Utility.TargetWrapper(bookReader)); }
+                finally { Kingmaker.PubSubSystem.EventBus.Unsubscribe(variantObserver); }
+                ScrollsAssert("variant-ordinary-use-refused",
+                    "ordinary native use of a distinct supported variant without a destination transaction is refused before any roll or consumption",
+                    "attempted=" + variantOrdinaryAttempted + ";events=" + (variantObserver.Event != null) +
+                        ";stock=" + TeleportationScrollAdapter.Stock(player.Party, variant) +
+                        ";gateClosedAfter=" + !TeleportationScrollActivationGate.Authorized(bookReader),
+                    !variantOrdinaryAttempted && variantObserver.Event == null &&
+                        TeleportationScrollAdapter.Stock(player.Party, variant) == variantStockBefore &&
+                        !TeleportationScrollActivationGate.Authorized(bookReader));
                 rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                 for (int frame = 0; frame < 10; frame++) yield return 0;
 
