@@ -34,7 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var grants = grantsValue as System.Collections.Generic.List<string>;
             var state = part.Read(); part.ReadExplorationBoundary();
             if (!state.LegacyMigrationComplete) throw new InvalidOperationException("Persisted legacy migration is incomplete.");
-            return new JObject { ["ownerId"] = main.UniqueId, ["ownerCount"] = owners.Length,
+            var result = new JObject { ["ownerId"] = main.UniqueId, ["ownerCount"] = owners.Length,
                 ["gameId"] = game.Player.GameId, ["areaId"] = game.CurrentlyLoadedArea.AssetGuid,
                 ["areaName"] = game.CurrentlyLoadedArea.name, ["party"] = new JArray(game.Player.Party.Select(unit => unit.UniqueId)),
                 ["pointId"] = GlobalMapRules.State.PartyLocation.AssetGuid, ["miles"] = GlobalMapRules.State.MilesTravelled.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
@@ -42,6 +42,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["scrollVendorGrants"] = new JArray(grants ?? new System.Collections.Generic.List<string>()),
                 ["canonicalState"] = state.Serialize(), ["chainIds"] = new JArray(_teleportPersistenceChain),
                 ["acquisition"] = _teleportPersistenceAcquisition };
+            var expectedReader = _teleportPersistencePlan == null || _teleportPersistencePlan.Expected == null ?
+                null : (string)_teleportPersistencePlan.Expected["acquisition"]?["readerId"];
+            if (expectedReader != null)
+                result["acquisition"] = RefreshTeleportPersistenceAcquisition(expectedReader);
+            return result;
         }
         private IEnumerable<int> SaveTeleportPersistence()
         {
