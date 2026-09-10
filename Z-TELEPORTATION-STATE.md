@@ -19,7 +19,7 @@ current progress, evidence, and exact resumption instructions only.
 | 1 Post-teleport first-arrow movement | IMPLEMENTED + NATIVE-VERIFIED (core fix; breadth items below remain) |
 | 2 Conjuration specialist slots | NATIVE-VERIFIED (publication + behavioral scenario; two consecutive PASS runs) |
 | 3 Compact UI + settlement coexistence | NATIVE-VERIFIED (coexistence 26/26, interaction 29/29, casting 44/44, gamepad PASS) |
-| 4 Scrolls: items, vendors, learning, casting | IN PROGRESS — items + vendor stock NATIVE-VERIFIED; migration-behavior scenario, adapter, casting next |
+| 4 Scrolls: items, vendors, learning, casting | IN PROGRESS — items/vendor stock/migration sweep/scroll adapter implemented; behavioral scrolls scenario + migration proof next |
 | 5 Persistence + final install candidate | TODO |
 
 Gate 1 remaining breadth (mission §3): Recall cast + arrow; scroll source (after
@@ -80,6 +80,51 @@ inventory Use without destination) + guarded
 disposable-teleportation-scrolls scenario (buy -> copy -> prepare -> cast
 -> first arrow; migration behaviors above; failures/cancellation;
 persistence). Then Gate 5 and Gate 1 breadth.
+
+## Gate 4 scroll source adapter (implemented 2026-09-10; behavioral scenario next)
+
+DONE (commit "Add the inventory-backed scroll source adapter", plus tests):
+- TeleportCastSourceKind.Scroll + ScrollStock fact; availability policy
+  scroll branch (no spellbook/slot facts; Key = readerId/scrollGuid/spell).
+- TeleportationScrollAdapter: traveling-party enumeration via
+  player.Party inventories (equipped included — equipment lives in the
+  same ItemsCollection; stash/inactive never enumerated), one shared
+  stock count per scroll kind across all party inventories, readers =
+  living party units with the spell known in a book OR trained UMD
+  (StatType.SkillUseMagicDevice BaseValue > 0; Kingmaker HAS UMD).
+- TeleportationScrollCastResource (ITeleportCastResource + new Evidence()):
+  deterministic item binding (party order, then collection order), Spend =
+  ItemsCollection.Remove(blueprint, 1), ExactlyOne verified by total party
+  stock delta, compensation only for a proven pre-effect single debit.
+- Execution seam: TeleportationCastExecution.Resource now
+  ITeleportCastResource; scroll branch builds a TeleportationNativeCastSource
+  with explicit caster (new ctor; mishap damage now uses _source.Caster).
+- Presentation: "Use <Spell> Scroll" title, "n shared scrolls" uses,
+  confirmation "consumes one <Spell> scroll and no spell slot". Ordinary
+  inventory Use stays blocked by TeleportationWorldMapCasterChecker whose
+  guidance text already says to select a world-map destination.
+- Compose concatenates scroll sources (TeleportationWorldMapAdapter).
+- Verified: 1,561 domain tests (new scroll policy/wording tests),
+  observer PASS (startup with adapter), casting regression 44/44 PASS.
+
+REMAINING for Gate 4 completion — guarded scenario
+`disposable-teleportation-scrolls` (mirror RunTeleportationSpecialist
+structure, local area then global map):
+1. Give a fixture reader scroll items (inventory.Add) incl. an equipped
+   stack; assert scroll rows composed with shared counts; UMD-only reader
+   row; stash/inactive exclusion controls.
+2. Cast via scroll row: transaction Completed, ExactlyOne scroll spent
+   (no slot), arrival, arrows rebuilt (Gate 1 integration), deterministic
+   re-binding for aggregated stacks.
+3. Cancellation/invalid selection consumes nothing; ordinary inventory
+   Use blocked (checker reason text).
+4. Vendor slice: spawn/locate Zarcie + a Jhod in the working-save area
+   (or fixture units with the components), BeginTrading migration
+   behaviors: fresh natively-stocked target records marker only;
+   already-materialized target gets batch once; buy-out persists across
+   re-open; shared table single grant across family members.
+5. Buy->copy->prepare->cast integrated flow (CopyScroll native copy to a
+   wizard book; then specialist prepare from Gate 2 machinery).
 
 ## Gate 4 native forensics (verified 2026-09-10, observe-teleportation-native-contracts)
 
