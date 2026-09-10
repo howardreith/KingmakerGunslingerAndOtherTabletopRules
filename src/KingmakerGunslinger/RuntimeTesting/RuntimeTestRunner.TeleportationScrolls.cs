@@ -273,6 +273,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";variantUses=" + (variantRow2 == null ? 0 : variantRow2.Uses) + ";variantLevel=" + (variantRow2 == null ? 0 : variantRow2.SpellLevel),
                     variantSources.Length == 2 && standardRow != null && standardRow.Uses == 2 &&
                         variantRow2 != null && variantRow2.Uses == 1 && variantRow2.SpellLevel == variant.SpellLevel);
+                rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                for (int frame = 0; frame < 10; frame++) yield return 0;
                 for (int attempt = 0; attempt < 3; attempt++)
                 {
                     SelectTeleportationCastingPoint(panel, target);
@@ -284,7 +286,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var variantCommitted = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll &&
                     value.Source.BookId == variant.AssetGuid && value.Source.CasterId == bookReader.UniqueId);
-                rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                 rows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
                 rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == variantCommitted.Key)].onClick.Invoke();
                 var variantRequest = TeleportContextConfirmationPresenter.Current;
