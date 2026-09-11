@@ -130,4 +130,36 @@ addition to the existing label/callback gates:
   supporting evidence per the runtime-testing contract). The machine's
   display settings were not modified autonomously; the automated run's
   display resolution was not recorded in evidence.
-- No release published, no merge; owner review required.
+
+## 2026-09-11 RELEASED (owner-approved)
+
+Owner instructed: finalize, merge, push, cut the release. PR #14 merged
+(master merge commit `6cc832b1`, tree identical to the runtime-qualified
+branch — the only diff from `d8887b3e` is this evidence document; zero
+src/tests/build-identity changes). `Publish-Release.ps1 -Publish
+-ConfirmReleaseReady` from clean master == origin/master: deterministic
+build + strict package validation, tag `v0.0.125` at `6cc832b1`, GitHub
+release published (not draft, not prerelease):
+https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.125
+Asset `KingmakerGunslinger-0.0.125-settlement-button-width.zip`
+sha256 `9f503708194d9fe2da555c3f1a2671b0a62755350ff8f5dad16b9cc9c046c7b3`.
+
+Build-identity chain (all from the one proven-identical source tree):
+
+- Runtime-qualified DLL `b4bc1513…` (branch commit `d8887b3e`,
+  exact-reference pipeline) — guarded coexistence 28/28 PASS.
+- Release-asset DLL `77871a22…` (merge commit `6cc832b1`, Publish-Release
+  default MSBuild pipeline). Unlike the 0.0.124 publication, this run did
+  not pass `-ReferenceBundleDir`, so the release binary differs from the
+  exact-reference builds by toolchain as well as embedded commit — same
+  source, proven by the empty src/tests diff above.
+- Locally deployed (post-release, master merge commit, exact-reference
+  pipeline): package sha `029ad0ac…`, DLL `e80462a7…`, installed ==
+  deployed exact-match guard PASS, owner FeatureModules.json preserved,
+  backup `C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260911T2005142697303Z`,
+  deployment manifest
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260911T2005173805911Z/deployment.json`.
+
+This record branch flips the static release authorization to true, syncs
+the committed release notes with the published body, and records the tag,
+commit, asset hashes, and the local deployment.
