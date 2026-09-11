@@ -347,19 +347,75 @@ SHA-256 `556eb5217293c7ed076aa99088fff00831b1b18871c78ff2c3229471bb42227d`):
   the native loader's name-only validation is backed by Unity liveness
   checks on every accepted instance.
 
+## Qualification PASS (2026-09-11, run 13)
+
+`working-save-creator-visual-lifecycle` run
+`20260911T0623320962681Z-bbe876c07d664701b815fb631a28a252`
+(commit a159fc4-deployed artifact via the guarded harness; 99.9 s):
+**Status PASS** — both real native mercenary creators committed with
+per-character acceptance PASS, zero resource damage at every checkpoint
+(before/after the native `ReloadArea` boundary; no heal events fired at all),
+routing coverage green, exact semantic restoration verified. Logs preserved:
+`repair-run-13-output_log.txt`,
+`runtime-evidence/20260911T0623320962681Z-...-visual-lifecycle/`.
+
+Runs 06→13 diagnosis chain (all logs preserved as `repair-run-NN*.log/txt`):
+
+- Run 06: recorder proved the destroyers — native donor entities removed by
+  the creator's own `UpdateDollCoroutine` (a) destroy un-excepted ramp
+  textures in `UnloadInnerAssetsExceptGiven` (retention never covered
+  `PrimaryRamps`/`SecondaryRamps`), and (b) their
+  `TryUnloadResource`→`LoadedBundle.Unload(true)` force-destroys the shared
+  bundle-mate materials referenced by every proxy clone.
+- Run 07/08: v2 protections eliminated creator-time destruction (zero
+  destructive unload calls), but exposed (a) the heal's false-positive damage
+  signal — `GetInnerAssets` always contains CLR-null slots that were counted
+  as destroyed, driving eviction of healthy donors; (b) Unity's refusal to
+  reload a bundle whose stale file handle is still loaded, caching
+  null-resource entries that poisoned later resolves; (c) the anchor's
+  inability to protect inner assets (evidenced by donors alive in the anchor
+  while their inner assets died); (d) the previous "renderableRenderers=0"
+  world-view metric is invalid — the healthy in-scene native main character
+  scores identically (both 0 of 11).
+- Run 09 (classification fix): zero damage at every checkpoint, both
+  creators PASS; remaining failures were probe-contract defects, not
+  production: exact-reference restoration can never hold across the
+  deliberate area reload (native re-spawns Trap units under fresh ids), and
+  the routing observer was never armed for this scenario (missing from the
+  `Arm` allowlist — the assertions evaluated an unarmed observer).
+- Runs 10-12: pinpointed the Trap re-spawn and per-visit controller capture;
+  run 13 PASS.
+
+Repair v3 (current source, all static qualification PASS, 1,567 tests):
+v2's donor-unload guard, ramp-complete retention, counter arming, native
+anchor, and damage-aware heal — plus: destruction classifiers count only
+managed-nonnull references that compare null (CLR-null slots are legitimate
+construction state), eviction for reload releases the stale bundle handle
+without destroying live objects, failed reloads never leave poisoned
+null-resource cache entries, the probe's world view carries a healthy
+in-scene control, lifecycle restoration is proven semantically (no fixture
+survives, no controller owns a fixture), and each creator visit re-acquires
+and re-captures the live UI controller.
+
+## Remaining mission gates (open)
+
+1. New-game creation entry point (actual main-menu new-game creator through
+   commitment) — needs its own guarded scenario; 0.0.117 history forbids
+   DefaultPlayerCharacter-in-loaded-campaign as a substitute.
+2. Broader mandatory coverage per mission §6: native race controls
+   (Human/Aasimar both sexes), all four elemental races both sexes,
+   customization browsing, cancellation/reopening repetition, persistence
+   across save/full-exit/fresh-launch/reload, module-OFF legacy data,
+   delivery-identity focused regressions on the exact final artifact.
+3. Human visual acceptance (Howie's playtest) — pending by definition; the
+   qualified candidate is installed through the harness's backup-first
+   deployment (rollback available in `runtime-backups/live-mod/`).
+
 ## Next exact action
 
-1. Deploy repair v2 through the guarded harness and re-run
-   `working-save-creator-visual-lifecycle` (expect: no inner-asset
-   destruction during creator, both visits complete, renderable committed
-   world view, boundary survival).
-2. Then run the canonical `working-save-smoke`.
-3. Then both reported creation paths per mission gate 4 — mercenary
-   recruitment covered by the lifecycle scenario; new-game creation coverage
-   still needs its guarded scenario or an explicitly documented equivalent
-   (0.0.117 history forbids DefaultPlayerCharacter-in-loaded-campaign as a
-   substitute).
-4. Record evidence, update the report, final checkpoint.
+1. Confirm `working-save-smoke` PASS on the repaired build (in flight).
+2. Continue mission gates above in priority order; update
+   `CHARACTER-VISIBILITY-REPAIR-REPORT.md` at completion.
 
 ## Deployment / installation state
 
