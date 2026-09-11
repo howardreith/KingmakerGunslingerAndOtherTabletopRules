@@ -93,8 +93,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         // strictly between the previous group's last rendered line and the next
         // group's first rendered line, derived from the label's own text mesh.
         private static bool RulesSitBetweenRenderedSections(TeleportContextConfirmationPresenter presenter,
-            TextMeshProUGUI label, IReadOnlyList<string> sections)
+            TextMeshProUGUI label, IReadOnlyList<string> sections, out string detail)
         {
+            detail = "";
             TMP_TextInfo info = label.textInfo;
             if (info == null || info.characterInfo == null || info.characterInfo.Length == 0) return false;
             var rules = presenter.SectionRules;
@@ -116,6 +117,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (float.IsNaN(previousBottom) || previousBottom >= top) return false;
                 var rule = (RectTransform)rules[index - 1].transform;
                 float ruleY = rule.anchoredPosition.y;
+                detail += index + ":y=" + ruleY.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) +
+                    " in (" + previousBottom.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "," +
+                    top.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + ");";
                 if (!(ruleY > previousBottom + 0.5f) || !(ruleY < top - 0.5f)) return false;
             }
             return true;
@@ -375,10 +379,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         sectioned.SectionRules.All(value => value != null && value.transform.parent == sectionLabel.transform &&
                             ((RectTransform)value.transform).rect.width < ((RectTransform)sectionLabel.transform).rect.width * 0.8f &&
                             value.GetComponent<UnityEngine.UI.Image>() != null && !value.GetComponent<UnityEngine.UI.Image>().raycastTarget));
+                    string placementDetail;
+                    bool placement = sectionLabel != null && RulesSitBetweenRenderedSections(sectioned, sectionLabel, sections, out placementDetail);
                     TeleportInteractionAssert("confirmation-rule-placement",
                         "each rendered rule sits vertically between its adjacent confirmation groups, never on text",
-                        "rules=" + sectioned.SectionRules.Count,
-                        sectionLabel != null && RulesSitBetweenRenderedSections(sectioned, sectionLabel, sections));
+                        "rules=" + sectioned.SectionRules.Count + ";placement=" + placementDetail, placement);
                     TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke();
                     for (int frame = 0; frame < 4; frame++) yield return 0;
                     // An unrelated dialog opened after ours finds no leftover
