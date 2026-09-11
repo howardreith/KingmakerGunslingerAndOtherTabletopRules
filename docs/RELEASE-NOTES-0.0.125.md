@@ -58,6 +58,11 @@ label fits — nothing else in the popup changes.
   owner review: the automated proof is structured geometry, not an
   eyeball.
 
+Released as **KingmakerGunslinger 0.0.125** by owner approval on 2026-09-11
+after the merged candidate (PR #14) passed the guarded runtime battery on
+identical source. The visual acceptance note above remains the honest
+boundary of what was verified.
+
 ## Upgrade
 
 Install **KingmakerGunslinger-0.0.125-settlement-button-width.zip**
