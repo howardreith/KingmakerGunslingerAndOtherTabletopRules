@@ -103,14 +103,18 @@ namespace KingmakerGunslinger.Spells.Teleportation
         // zero, so the donor alone is never trusted; the full button region —
         // not a single button — is the usable width rows may fill.
         internal static NativeActionExtentInfo NativeActionExtent(CanvasGroup dialog, Transform appended)
+        { return NativeActionExtent(dialog, appended, value => value is Button); }
+        internal static NativeActionExtentInfo NativeActionExtent(CanvasGroup dialog, Transform appended, Func<Component, bool> isNativeAction)
         {
             Vector3[] corners = new Vector3[4];
             float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
-            foreach (Button button in dialog.GetComponentsInChildren<Button>(true))
+            foreach (Component selectable in dialog.GetComponentsInChildren<Component>(true))
             {
-                if (button == null || !button.gameObject.activeInHierarchy ||
-                    button.transform.IsChildOf(appended) || appended.IsChildOf(button.transform)) continue;
-                ((RectTransform)button.transform).GetWorldCorners(corners);
+                if (selectable == null || !isNativeAction(selectable) || !selectable.gameObject.activeInHierarchy ||
+                    selectable.transform.IsChildOf(appended) || appended.IsChildOf(selectable.transform)) continue;
+                var rect = selectable.transform as RectTransform;
+                if (rect == null) continue;
+                rect.GetWorldCorners(corners);
                 minX = Math.Min(minX, Math.Min(corners[0].x, corners[2].x));
                 maxX = Math.Max(maxX, Math.Max(corners[0].x, corners[2].x));
             }

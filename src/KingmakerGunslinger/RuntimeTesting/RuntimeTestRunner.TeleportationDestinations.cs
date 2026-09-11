@@ -102,7 +102,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 book.Rest();
                 int castStarts = movement.Starts, castStops = movement.Stops;
                 var before = new TeleportationWorldSnapshot(TeleportationWorldMapAdapter.Capture(false));
-                string resourcesBefore = TeleportResourceFingerprint(book);
                 SelectTeleportationCastingPoint(panel, point);
                 foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
                 var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
@@ -111,14 +110,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rows.Actions[0].Source.CasterId != owner.UniqueId || rows.Actions[0].Source.BookId != book.Blueprint.AssetGuid)
                     throw new InvalidOperationException("The special point lacks its single current real contextual source: " + point.Blueprint.AssetGuid);
                 var dice = new TeleportationFixtureRolls(new int[0]); rows.QualificationRolls = dice;
+                // Greater Teleport settles directly from its row; the single
+                // use is spent synchronously by the same click.
+                TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
                 rows.Buttons[0].onClick.Invoke();
-                var request = TeleportContextConfirmationPresenter.Current;
-                if (request == null || !DialogMessageBox.Instance.IsShown)
-                    throw new InvalidOperationException("Native destination action did not open its owned spell confirmation.");
-                for (int frame = 0; frame < 8; frame++) yield return 0;
-                if (resourcesBefore != TeleportResourceFingerprint(book)) throw new InvalidOperationException("Opening confirmation spent a resource.");
+                var request = TeleportContextConfirmationPresenter.LastDirectCast;
+                if (request == null || DialogMessageBox.Instance.IsShown || panel.gameObject.activeInHierarchy)
+                    throw new InvalidOperationException("Native destination action did not settle its direct cast.");
                 var atCommit = new TeleportationWorldSnapshot(TeleportationWorldMapAdapter.Capture(false));
-                TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 var deferred = new TeleportationWorldSnapshot(TeleportationWorldMapAdapter.Capture(false));
                 CaptureTeleportInteraction("deferred-differences-" + point.Blueprint.AssetGuid, new {
