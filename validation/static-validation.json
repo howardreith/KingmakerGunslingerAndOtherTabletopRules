@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.124-teleport-polish-specialist",
-  "version": "0.0.124",
+  "milestone": "0.0.125-settlement-button-width",
+  "version": "0.0.125",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1334,7 +1334,7 @@
     "treacherousPlayerRespecSaveQualificationWaivedByOwner": true
   },
   "unifiedRepair121": {
-    "deterministicTestCount": 1574,
+    "deterministicTestCount": 1576,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -1511,7 +1511,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "characterVisibility123": {
-    "deterministicTestCount": 1574,
+    "deterministicTestCount": 1576,
     "compatibilityRuntimeQualificationPending": false,
     "publicReleaseAuthorized": true,
     "ownerAcceptedMissionReport": true,
@@ -1523,7 +1523,7 @@
     "remainingMatrixCellsDisclosed": true
   },
   "teleportPolish124": {
-    "deterministicTestCount": 1574,
+    "deterministicTestCount": 1576,
     "publicReleaseAuthorized": true,
     "specialistRootCauseConfirmed": "serialized per-book m_SpecialSpells cache derived only at feature activation and learn time; PostLoad never re-derives it",
     "loadSeamRepair": "Spellbook.PostLoad",
@@ -1531,6 +1531,15 @@
     "greaterSuccessAnnouncementSuppressed": true,
     "arrivalCopyTemplates": true,
     "settledExtentRowContainment": true,
+    "runtimeQualificationPending": true,
+    "compatibilityRuntimeQualificationPending": true
+  },
+  "settlementButton125": {
+    "deterministicTestCount": 1576,
+    "publicReleaseAuthorized": false,
+    "settlementButtonWidenedToLabel": "label preferred width at the native font size plus the control native padding, capped by the settled native action region",
+    "settlementButtonRestoreExact": true,
+    "settlementButtonNoCumulativeGrowth": true,
     "runtimeQualificationPending": true,
     "compatibilityRuntimeQualificationPending": true
   }

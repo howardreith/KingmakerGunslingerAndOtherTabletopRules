@@ -1,6 +1,11 @@
 ﻿# Kingmaker Gunslinger
 
-**0.0.124-teleport-polish-specialist** (UMM 0.0.124) finishes the teleport
+**0.0.125-settlement-button-width** (UMM 0.0.125) is one owner-requested
+cosmetic fix: the relabeled native Settlement Teleport destination button is
+widened to carry its full label with its native padding, inside the settled
+parchment action region, with exact native restoration when the mod rows
+withdraw. The prior
+**0.0.124-teleport-polish-specialist** (UMM 0.0.124) finished the teleport
 follow-up: genuine Conjuration specialist favorite slots for existing
 specialists (a load-time special-spell cache repair for Teleport and Greater
 Teleport), direct Greater Teleport casting from its destination row with no

@@ -51,5 +51,27 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(TeleportContextLayoutPolicy.RowInsideNativeExtent(float.NaN, 460f, 100f, 460f), "Unproven geometry fails closed.");
             Assertions.False(TeleportContextLayoutPolicy.RowInsideNativeExtent(100f, 460f, 460f, 100f), "Inverted native extent fails closed.");
         }
+        internal static void SettlementButtonCarriesItsLabelWithNativePadding()
+        {
+            // Native "Teleport" control 120 wide with a 100 label rect keeps its
+            // 20 of settled native padding; the longer settlement wording grows
+            // the control to label preferred width plus that padding.
+            Assertions.Equal(280f, TeleportContextLayoutPolicy.SettlementButtonWidth(260f, 120f, 100f, 400f), "Label preferred width plus the native padding.");
+            // A shorter localization never shrinks the native control.
+            Assertions.Equal(120f, TeleportContextLayoutPolicy.SettlementButtonWidth(90f, 120f, 100f, 400f), "Grow-only: the native width is the floor.");
+            // A label wider than the parchment action region is capped by it.
+            Assertions.Equal(300f, TeleportContextLayoutPolicy.SettlementButtonWidth(360f, 120f, 100f, 300f), "The settled native action region caps the control.");
+            // A label rect that already overflows the control contributes no padding.
+            Assertions.Equal(260f, TeleportContextLayoutPolicy.SettlementButtonWidth(260f, 120f, 140f, 400f), "Padding never goes negative.");
+        }
+        internal static void SettlementButtonWidthFailsClosedOnUnprovenGeometry()
+        {
+            foreach (float[] values in new[] {
+                new[] { float.NaN, 120f, 100f, 400f }, new[] { 260f, 0f, 100f, 400f },
+                new[] { 260f, -1f, 100f, 400f }, new[] { 260f, 120f, -1f, 400f },
+                new[] { 260f, 120f, 100f, 0f }, new[] { 260f, 120f, 100f, float.NaN } })
+                Assertions.Throws<InvalidOperationException>(() => TeleportContextLayoutPolicy.SettlementButtonWidth(values[0], values[1], values[2], values[3]),
+                    "Unproven settlement control geometry fails closed.");
+        }
     }
 }

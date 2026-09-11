@@ -88,7 +88,8 @@ firearm SoundBank is retained unchanged: `KMG_Firearms.bnk` SHA-256
 Foreign assemblies — `CraftMagicItems.dll` remains an externally installed
 optional mod and is never bundled.
 
-This release is superseded by the teleport polish and specialist cache repair:
-install `KingmakerGunslinger-0.0.124-teleport-polish-specialist.zip`
-(0.0.124-teleport-polish-specialist) for the genuine Conjuration
-specialist-slot fix for existing specialists and the teleport UI polish.
+This release is superseded by the settlement-teleport button width fix:
+install `KingmakerGunslinger-0.0.125-settlement-button-width.zip`
+(0.0.125-settlement-button-width) so the relabeled Settlement Teleport
+button is wide enough for its full label; it carries the 0.0.124 teleport
+polish and genuine Conjuration specialist-slot fix forward.
