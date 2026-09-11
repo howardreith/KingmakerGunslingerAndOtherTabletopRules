@@ -134,6 +134,9 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                     EquipmentEntity>(entry.AssetId, true);
                 if (fresh == null)
                 {
+                    // A failed reload leaves a cached null-resource entry that
+                    // poisons every later resolve; discard it before retrying.
+                    registry.DiscardFailedNativeReload(entry.AssetId);
                     if (failureStage == null) failureStage = "reload-null";
                     return false;
                 }
@@ -185,8 +188,10 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                     spec, donor, palette);
                 // A clone inherited from a still-gutted donor is itself damaged;
                 // never register a reconstruction that would repeat the defect.
+                // CLR-null inner-asset slots are legitimate since construction.
                 if (proxy == null) { failureStage = "clone-null"; return false; }
-                if (proxy.GetInnerAssets().Any(value => value == null))
+                if (proxy.GetInnerAssets().Any(value =>
+                        !ReferenceEquals(value, null) && value == null))
                 { failureStage = "clone-inner-assets-destroyed"; return false; }
                 try
                 {

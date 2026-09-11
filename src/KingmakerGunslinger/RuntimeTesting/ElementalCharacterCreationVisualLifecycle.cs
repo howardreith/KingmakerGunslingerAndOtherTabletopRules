@@ -287,7 +287,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             try
             {
-                return entity.GetInnerAssets().Count(value => value == null);
+                // Unity-destroyed references are managed-nonnull but compare
+                // null; CLR-null slots are legitimate since construction.
+                return entity.GetInnerAssets().Count(value =>
+                    !ReferenceEquals(value, null) && value == null);
             }
             catch (Exception)
             {
@@ -362,6 +365,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence["avatarEntityNames"] = new JArray((avatar.EquipmentEntities ?? new List<EquipmentEntity>())
                     .Select(value => value == null ? "<destroyed>" : value.name).ToArray());
                 ElementalRaceDevelopmentProbeScenario.DestroyView(view);
+                // Healthy in-scene control: the same renderer predicate applied
+                // to the live native main character, so the off-screen doll
+                // view's renderer counts are never read without a baseline.
+                var main = Game.Instance.Player.MainCharacter.Value;
+                UnitEntityView controlView = main == null ? null : main.View;
+                Renderer[] controlRenderers = controlView == null ? null :
+                    controlView.GetComponentsInChildren<Renderer>(true);
+                evidence["inSceneControlViewPresent"] = controlView != null;
+                evidence["inSceneControlRendererTotal"] = controlRenderers == null ?
+                    -1 : controlRenderers.Length;
+                evidence["inSceneControlRenderableRenderers"] = controlRenderers == null ?
+                    -1 : controlRenderers.Count(value => value != null && value.enabled &&
+                    value.sharedMaterials != null && value.sharedMaterials.Length > 0 &&
+                    value.sharedMaterials.All(material => material != null && material.shader != null));
             }
             catch (Exception error)
             {
