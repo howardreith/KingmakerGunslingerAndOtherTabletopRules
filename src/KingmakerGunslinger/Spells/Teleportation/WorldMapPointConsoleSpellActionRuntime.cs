@@ -26,9 +26,12 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (panel == null || !panel.gameObject.activeInHierarchy || !Game.Instance.IsControllerGamepad) return;
                 var model = WorldMapPointConsoleSpellActionPatches.Model(panel);
                 var context = TeleportationWorldMapAdapter.Capture(TeleportContextConfirmationPresenter.Pending);
-                var actions = TeleportationWorldMapAdapter.Compose(context, model == null || model.Location == null ? null : model.Location.Blueprint);
-                // No source means no UI allocation, navigation change or extra route.
-                if (actions.Count == 0 || !TeleportContextConfirmationPresenter.CanBegin(actions)) return;
+                var offered = TeleportationWorldMapAdapter.Compose(context, model == null || model.Location == null ? null : model.Location.Blueprint);
+                // No executable action means no UI allocation, navigation change
+                // or extra route; executability is evaluated per action.
+                if (!TeleportContextConfirmationPresenter.CanBegin(offered)) return;
+                var actions = offered.Where(TeleportContextConfirmationPresenter.CanExecute).ToArray();
+                if (actions.Length == 0) return;
                 TeleportationTravelers.Read(context.Player);
                 var dialog = (CanvasGroup)WorldMapPointConsoleSpellActionPatches.DialogField.GetValue(panel);
                 var donor = (ConsoleButton)WorldMapPointConsoleSpellActionPatches.ConfirmField.GetValue(panel);
@@ -202,6 +205,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!_ready) return;
             try
             {
+                // An unrelated modal covering the popup invalidates the rows.
+                if (TeleportationConfirmationSurface.UnrelatedModalShown())
+                { WorldMapPointConsoleSpellActionRuntime.Clear(_panel); return; }
                 if (_panel == null || !Game.Instance.IsControllerGamepad || !ReferenceEquals(_model, WorldMapPointConsoleSpellActionPatches.Model(_panel)))
                 { WorldMapPointConsoleSpellActionRuntime.Clear(_panel); return; }
                 var context = TeleportationWorldMapAdapter.Capture(TeleportContextConfirmationPresenter.Pending);
@@ -256,7 +262,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             }
             catch (Exception exception) { WorldMapPointConsoleSpellActionRuntime.Clear(_panel); WorldMapPointSpellActionRuntime.Report(exception); }
         }
-        private void Resize() { _viewportLayout.preferredHeight = Math.Min(_maximumHeight, _rows.Count * _rowHeight); }
+        private void Resize()
+        { _viewportLayout.preferredHeight = TeleportContextLayoutPolicy.ViewportHeight(LayoutUtility.GetPreferredHeight(_content), _maximumHeight); }
+        internal float MaximumHeight { get { return _maximumHeight; } }
         private void RemoveNavigation()
         {
             if (_navigation == null) return;

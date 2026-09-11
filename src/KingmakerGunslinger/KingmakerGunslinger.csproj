@@ -917,6 +917,7 @@
     <Compile Include="Spells\Teleportation\TeleportExplorationGuardPatches.cs" />
     <Compile Include="Spells\Teleportation\TeleportSpecialistSpellCachePatches.cs" />
     <Compile Include="Spells\Teleportation\TeleportSpecialistSpellCachePolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportBeginPolicy.cs" />
     <Compile Include="Spells\Teleportation\TeleportationUiDivider.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollVendorMigration.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollActivationGate.cs" />

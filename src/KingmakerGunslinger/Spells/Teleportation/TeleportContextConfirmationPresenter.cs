@@ -50,16 +50,24 @@ namespace KingmakerGunslinger.Spells.Teleportation
         // Guarded fixtures reset the diagnostics handle before invoking a row.
         internal static void ResetDirectCastDiagnostics() { LastDirectCast = null; }
         internal static bool CanOpen { get { return !Pending && TeleportationConfirmationSurface.Available() != null; } }
-        // Rows may compose when every offered action can execute: confirmed
-        // spells need the native confirmation surface, while Greater Teleport
-        // settles directly and never depends on that surface.
+        // Per-action executability: an unrelated active modal blocks everything;
+        // a merely unavailable confirmation presenter blocks only confirmed
+        // spells, so Greater Teleport stays usable without letting ordinary
+        // Teleport bypass its confirmation.
+        internal static bool CanExecute(WorldMapPointSpellAction action)
+        {
+            return action != null && TeleportBeginPolicy.CanExecuteAction(Pending,
+                TeleportationConfirmationSurface.UnrelatedModalShown(),
+                TeleportationConfirmationSurface.Available() != null, action.Source.Spell);
+        }
+        // Rows compose when at least one offered action can execute.
         internal static bool CanBegin(IReadOnlyList<WorldMapPointSpellAction> actions)
         {
-            if (Pending || actions == null || actions.Count == 0) return false;
-            if (TeleportationConfirmationSurface.Available() != null) return true;
-            for (int index = 0; index < actions.Count; index++)
-                if (actions[index] == null || actions[index].Source.Spell != TeleportSpellKind.GreaterTeleport) return false;
-            return true;
+            if (actions == null) return false;
+            return TeleportBeginPolicy.OffersAnyAction(Pending,
+                TeleportationConfirmationSurface.UnrelatedModalShown(),
+                TeleportationConfirmationSurface.Available() != null,
+                actions.Select(value => value == null ? (TeleportSpellKind)(-1) : value.Source.Spell).ToArray());
         }
         // One entry point for every destination action. Greater Teleport casts
         // immediately; every other spell opens its owned native confirmation.
@@ -115,6 +123,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private static void OpenDirect(WorldMapPointSpellAction action, TeleportationWorldMapContext context, ITeleportationRolls qualificationRolls)
         {
             if (Pending || action == null || context == null || !context.Usable) return;
+            // A direct cast never needs the confirmation presenter, but an
+            // unrelated active modal still blocks it outright.
+            if (TeleportationConfirmationSurface.UnrelatedModalShown()) return;
             if (action.Source.Kind == TeleportCastSourceKind.Scroll)
             {
                 if (TeleportationScrollAdapter.Resolve(action.Source) == null) return;
@@ -184,15 +195,23 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 }
             }
             catch (Exception exception) { Cancel(true); WorldMapPointSpellActionRuntime.Report(exception); }
-        }
-        // Desktop confirmations read like native UI: the text itself is never
+        }        // Desktop confirmations read like native UI: the text itself is never
         // mutated — restrained hairline rules are placed in the measured gap
         // between the confirmation's factual groups. Console keeps its plain
         // single-string presentation.
         private void DecorateConfirmationSections()
         {
             if (_sectionsDecorated) return;
-            if (_surface == null || _surface.Model != null || MessageLabelField == null) { _sectionsDecorated = true; return; }
+            if (_surface == null || _surface.Model != null) { _sectionsDecorated = true; return; }
+            if (MessageLabelField == null)
+            {
+                // The native message-label contract differs: the confirmation
+                // still works, only its section rules cannot be placed. Surface
+                // that instead of silently claiming decoration.
+                _sectionsDecorated = true;
+                WorldMapPointSpellActionRuntime.Report(new MissingFieldException(typeof(DialogMessageBox).FullName, "m_Messagelabel"));
+                return;
+            }
             var box = DialogMessageBox.Instance;
             var label = box == null ? null : MessageLabelField.GetValue(box) as TextMeshProUGUI;
             if (label == null) return;

@@ -28,9 +28,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (panel == null || !panel.gameObject.activeInHierarchy || Game.Instance.IsControllerGamepad) return;
                 var context = TeleportationWorldMapAdapter.Capture(TeleportContextConfirmationPresenter.Pending);
                 var location = (GlobalMapLocation)WorldMapPointSpellActionPatches.LocationField.GetValue(panel);
-                var actions = TeleportationWorldMapAdapter.Compose(context, location == null ? null : location.Blueprint);
-                // Critical vanilla path: return without constructing or touching UI.
-                if (actions.Count == 0 || !TeleportContextConfirmationPresenter.CanBegin(actions)) return;
+                var offered = TeleportationWorldMapAdapter.Compose(context, location == null ? null : location.Blueprint);
+                // Critical vanilla path: no executable action means no UI.
+                // Executability is per action — an unavailable confirmation
+                // presenter removes only confirmed spells, never the direct
+                // Greater Teleport action; an unrelated modal removes all.
+                if (!TeleportContextConfirmationPresenter.CanBegin(offered)) return;
+                var actions = offered.Where(TeleportContextConfirmationPresenter.CanExecute).ToArray();
+                if (actions.Length == 0) return;
                 TeleportationTravelers.Read(context.Player); // prove canonical associated units before offering a cast
                 var dialog = (CanvasGroup)WorldMapPointSpellActionPatches.DialogField.GetValue(panel);
                 var label = (TextMeshProUGUI)WorldMapPointSpellActionPatches.AcceptTextField.GetValue(panel);
@@ -318,6 +323,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!_ready) return;
             try
             {
+                // An unrelated modal covering the popup invalidates the offered
+                // actions: remove the rows rather than leave stale controls
+                // beneath (or clickable through) another dialog.
+                if (TeleportationConfirmationSurface.UnrelatedModalShown())
+                { WorldMapPointSpellActionRuntime.Clear(_panel); return; }
                 var context = TeleportationWorldMapAdapter.Capture(TeleportContextConfirmationPresenter.Pending);
                 var current = TeleportationWorldMapAdapter.Compose(context, _location == null ? null : _location.Blueprint).ToDictionary(value => value.Key, StringComparer.Ordinal);
                 foreach (Row row in _rows.ToArray())
@@ -352,7 +362,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 _separators.Add(separator);
             }
         }
-        private void Resize() { _viewportLayout.preferredHeight = Math.Min(_maximumHeight, _rows.Count * RowExtent); }
+        private void Resize()
+        { _viewportLayout.preferredHeight = TeleportContextLayoutPolicy.ViewportHeight(LayoutUtility.GetPreferredHeight(_content), _maximumHeight); }
+        internal float MaximumHeight { get { return _maximumHeight; } }
         internal void Remove()
         {
             _ready = false;
