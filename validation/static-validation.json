@@ -1334,7 +1334,7 @@
     "treacherousPlayerRespecSaveQualificationWaivedByOwner": true
   },
   "unifiedRepair121": {
-    "deterministicTestCount": 1561,
+    "deterministicTestCount": 1566,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -1492,7 +1492,7 @@
     "retiredKitVendorSweepQualified": true
   },
   "teleportationCompletion122": {
-    "deterministicTestCount": 1561,
+    "deterministicTestCount": 1566,
     "publicReleaseAuthorized": true,
     "ownerAcceptedPr": 12,
     "scrollsRuntimeAssertions": 36,

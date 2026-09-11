@@ -1,14 +1,16 @@
 # Character Visibility Repair — Working State and Resume Record
 
-Last updated: 2026-09-10 (mission start checkpoint 0)
+Last updated: 2026-09-11 (repair implemented; source qualification passed;
+runtime qualification of the repaired build pending)
 
 ## Current position
 
 - Branch: `codex/z-character-visibility-repair` (from master `221f6080`).
-- Phase: baseline established; investigation in progress; NO source change
-  made yet; NO game launch performed by this mission yet.
-- Working tree: mission docs + durable records only (plus the untracked
-  assignment document). Nothing else modified.
+- Phase: root cause reproduced (run 04) and repair implemented in
+  `ElementalRaces/Visuals`; full static qualification passed (repository
+  validation with 1,566 deterministic tests, complete domain suite, clean
+  Release build, strict package validation). The repaired build has NOT yet
+  been deployed or runtime-qualified.
 
 ## Exact resume instructions
 
@@ -178,16 +180,136 @@ deferred cleanup + assertions), new partial
 `ElementalCharacterCreationVisualLifecycle.cs`, PS metadata/preflight/invoke
 entries.
 
+## Reproduction evidence (2026-09-11, run 04, unfixed build)
+
+Guarded run `20260911T0204512649293Z-working-save-creator-visual-lifecycle`
+(current source 6c855f7d ≡ owner-installed production + diagnostic probe only;
+full owner stack; KMG_AUTOMATION_WORKING through the identity-verified load;
+real native mercenary creator; commit d443a1ce-equivalent artifact deployed by
+the harness):
+
+- Visit 1 (Ifrit Fighter point-buy) completed the real native creator and
+  `CharacterBuildController.Commit` — the phases are NOT blocked.
+- `lifecycleCommit.registry` at the moment of commit:
+  - ALL 28 registered proxies: objectAlive=true, cacheContains=true, yet
+    state=owned-inner-asset-destroyed (materials/textures destroyed).
+  - 74 of 75 native donors: donor-inner-asset-destroyed (one survivor).
+  - Body.Male requestCounter=31, Head.Male.01=38 (heavily resolved during the
+    creator); every unused proxy/donor counter=0.
+- `committedWorldView` (native `DollData.CreateUnitView`): view created, 5
+  avatar entities with correct names (KMG Ifrit body proxy + head + eyebrows +
+  hair + empty facial), body resource resolves and IS on the avatar —
+  **renderableRenderers=0 and bakedCharacterRenderers=0**: the committed
+  character cannot draw its body/head. This is the owner's invisible body,
+  renderer-verified, before any area boundary.
+- First destroyed resources: shared materials/textures owned by every proxy —
+  `Character_Diffuse_Cutout`, `lambert1`, `whiteSquare`,
+  `Character_Diffuse_EmissionCharacter_Cutout` (first owner recorded: Ifrit
+  Head Male 02 proxy `f9f25529-...`).
+- The retention prefix did NOT throw during the creator (log contains exactly
+  one `visual-retained` with additions=579 and zero retention ERRORs): the
+  destruction happens in the LAST `UpdateDollCoroutine` removal pass, after the
+  final `DollStateUpdated`. The mission's hypothesized prefix exception is the
+  SECONDARY effect for the NEXT creator session; the primary destruction is the
+  native removal pass's `ResourcesLibrary.TryUnloadResource` →
+  `LoadedResource.Unload()` → `AssetBundle.Unload(true)`, which force-destroys
+  shared bundle materials still referenced by every live proxy clone
+  (`UnloadInnerAssetsExceptGiven` exceptions cannot protect against it — the
+  0.0.117-era donor-ID retention covered the donors themselves but not other
+  bundle-mates unloaded by the creator's own removal planning).
+- Native clothes/weapons reload from their bundles on demand, so they remain
+  visible — matching the report. Proxy bodies/heads cannot reload (they are
+  cache-only clones), so they stay invisible — matching "remains after
+  creation".
+
+Run 05 (in flight) adds a read-only `TryUnloadResource` recorder to name the
+exact unloaded asset and caller stack.
+
+## Run 05 outcome (2026-09-11)
+
+Guarded run `20260911T0214573548640Z-working-save-creator-visual-lifecycle`
+(build f3b6e789 ≡ 0.0.122 production + probe): FAIL after 69 s. Creator visit
+1's request-local cleanup threw
+`Registered visual inner assets destroyed during creator`
+(KMG_ElementalRaces_Ifrit_Race; first destroyed: `Character_Diffuse_Cutout`,
+`lambert1`, `whiteSquare`, `Character_Diffuse_EmissionCharacter_Cutout` under
+Ifrit Head Male 02 proxy `f9f25529-...`) — the same shared-material set as
+run 04, re-confirming the destruction boundary at the creator's own removal
+pass. The abort preceded snapshot capture and visit 2, so the
+`nativeTryUnloadResource` recorder entries were never extracted; the static
+IL model (removal pass → `TryUnloadResource` → `LoadedResource.Unload()` →
+bundle `Unload(true)` force-destroys shared bundle-mates) plus two
+independent runtime reproductions remain the causal record. No new launch
+environment problem; the FAIL is the probe's fail-closed cleanup assertion.
+
+## Repair implementation (2026-09-11, this branch, uncommitted→committed)
+
+Design (mission doc §5 "protect/reconstruct" direction — reconstruct, never
+unload/pin/displace foreign resources):
+
+- `ElementalVisualResourceRecoveryPolicy.cs` (new): pure damage
+  classification (owned proxy: destroyed > evicted > replaced >
+  inner-assets-destroyed; native dependency: evicted > destroyed > replaced >
+  inner-assets-destroyed), recoverability (all kinds except
+  native-dependency-replaced, which fails closed), all-or-nothing retention
+  gating, 2 s report/recovery rate gate.
+- `ElementalVisualResourceRecovery.cs` (new): boundary `Heal` — evicts dead
+  native-dependency corpses so the native loader reloads from bundle
+  (rebind validated by recorded original object name), re-clones owned
+  proxies from catalog provenance (donor reloaded + validated by expected
+  name, palette re-derived, fallback donor as last resort) under the
+  original stable GUIDs via `ReplaceOwnedRegistration` (refuses to displace a
+  foreign object), rate-gated, reports remaining damage.
+- `ElementalRaceVisualResourceRegistry.cs`: `AssessDamage`,
+  `ReplaceOwnedRegistration` (swap cache entry + `RebindResource` in place so
+  every registration holder observes the healed instance),
+  `TryRebindNativeDependency`/`EvictDeadNativeDependency`,
+  `ArmRetentionCounters` (sets `RequestCounter=1` on exactly the registered
+  identities after each native cleanup so counter-decay cannot evict them),
+  provenance name record for donors.
+- `ElementalRaceVisualBlueprintSet.cs`: `EnsureCreatorResourcesRetained` —
+  heal first, then extend native retention only when no damage remains.
+- `ElementalRaceVisualFactory.cs`: `RecreateProxy`/`RecreatePalette`
+  (recovery entry points reusing the exact construction contract).
+- `ElementalCharGenVisualRetentionPatch.cs`: the `DollStateUpdated` prefix now
+  heals + isolates its own failures (a prefix exception can no longer abort
+  native doll update — the secondary stuck-`m_DollStateForUpdate` effect);
+  new `ResourcesLibrary.CleanupLoadedCache` postfix (heal + re-arm counters
+  after every native cleanup/area boundary); new `CharGenDollRoom.OnDisable`
+  postfix (heal when the creator closes so the committed world unit never
+  spawns against destroyed proxies — covers the primary damage that occurs
+  after the final `DollStateUpdated`).
+
+Boundaries fire only through native lifecycle methods already IL-verified
+(`CleanupLoadedCache`, `OnDisable` confirmed present in the retained IL).
+No foreign resource is unloaded, pinned, or displaced; blueprint/GUID
+identities unchanged; no new dependencies.
+
+Static qualification (2026-09-11, all PASS):
+- Repository validation via `validate_teleportation122.py` chain with
+  deterministic test count advanced 1,561 → 1,566 (5 new
+  `elemental-visual-recovery.*` cases; both live static blocks updated).
+- Complete domain suite: 1,566 tests, failures=0.
+- Clean Release build + build-output validation.
+- Strict standalone UMM package validation;
+  `KingmakerGunslinger-0.0.122-local-runtime.zip`
+  SHA-256 `cf1afd4e4cffc2f085c548a2b78cef982b2f09b1b2fce7c0b8aac79e20c6a185`,
+  DLL SHA-256 `daa2ee906792622fbd90f88fb208ffd735af1aa5d71465e6bf2cbd138ebf3711`.
+
 ## Next exact action
 
-1. Await `Build-Local.ps1` (log:
-   `runtime-evidence/character-visibility-repair/probe-build-01.log`).
-2. Commit the probe instrumentation.
-3. Launch reproduction:
-   `scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-creator-visual-lifecycle -ExpectedVersion 0.0.122 -SaveName KMG_AUTOMATION_WORKING -Parameters @{race='Ifrit';class='Fighter';allocation='point-buy'} -TimeoutSeconds 900 -ExitAfterCompletion:$true -Confirm:$false`
-4. Analyze evidence: expected (if model holds) healthy visit-1 commit, then
-   post-boundary first-failure naming the exact asset and state, broken
-   visit-2 doll; the game log should contain the exact retention exception.
+1. Deploy the repaired build through the guarded harness (backup-first, exact
+   identity checks) and re-run
+   `working-save-creator-visual-lifecycle`: PASS requires both creator visits
+   to complete with live inner assets (the run 05 fail-closed assertion),
+   a renderable committed world view, and survival across the ReloadArea
+   boundary.
+2. Then run the canonical `working-save-smoke`.
+3. Then both reported creation paths per mission gate 4 (new-game creation and
+   mercenary recruitment) — the lifecycle scenario covers mercenary
+   recruitment; new-game creation coverage still needs its guarded scenario or
+   an explicitly documented equivalent.
+4. Record evidence, update the report, final checkpoint.
 
 ## Deployment / installation state
 

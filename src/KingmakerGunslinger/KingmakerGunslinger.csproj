@@ -1127,6 +1127,8 @@
     <Compile Include="ElementalRaces\ElementalRacePublication.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRollbackPolicy.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRetentionPolicy.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRecovery.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRecoveryPolicy.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalCharGenVisualRetentionPatch.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualDefinition.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualCatalog.cs" />
