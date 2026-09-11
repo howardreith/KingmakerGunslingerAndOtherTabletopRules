@@ -370,7 +370,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     TeleportInteractionAssert("confirmation-section-rules",
                         "the rendered confirmation carries exactly one restrained rule between each factual group, inset from the label edges and non-interactive",
                         "rules=" + sectioned.SectionRules.Count + ";sections=" + sections.Count +
-                            ";label=" + (sectionLabel == null ? "null" : (sectionLabel.text.Length <= 48 ? sectionLabel.text : sectionLabel.text.Substring(0, 48))),
+                            ";label=" + (sectionLabel == null ? "null" : sectionLabel.text.Replace("\n", "{NL}").Replace("\r", "{CR}")),
                         sectionLabel != null && sectioned.SectionRules.Count == sections.Count - 1 &&
                         sectioned.SectionRules.All(value => value != null && value.transform.parent == sectionLabel.transform &&
                             ((RectTransform)value.transform).rect.width < ((RectTransform)sectionLabel.transform).rect.width * 0.8f &&
@@ -390,7 +390,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var unrelatedLabel = (TextMeshProUGUI)typeof(DialogMessageBox)
                         .GetField("m_Messagelabel", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(DialogMessageBox.Instance);
                     bool unrelatedClean = DialogMessageBox.Instance.IsShown && unrelatedLabel != null &&
-                        unrelatedLabel.text.Contains("KMG unrelated fixture message") &&
+                        unrelatedLabel.text.Contains("unrelated fixture message") &&
                         unrelatedLabel.GetComponentsInChildren<Transform>(true).All(value => !value.name.StartsWith("KMG_ConfirmSectionRule")) &&
                         UnityEngine.Object.FindObjectsOfType<TeleportContextConfirmationPresenter>().Length == 0;
                     TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke();

@@ -216,10 +216,12 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var label = box == null ? null : MessageLabelField.GetValue(box) as TextMeshProUGUI;
             if (label == null) return;
             var sections = TeleportContextPresentation.ConfirmationSections(_action, _familiarity, TeleportationText.Get);
-            // The native dialog renders the message wrapped in rich-text
-            // markup, so ownership is detected by the first section's plain
-            // text appearing inside the rendered label, never by equality.
-            if (label.text.IndexOf(sections[0], StringComparison.Ordinal) < 0) { RemoveSectionRules(); return; }
+            // The native dialog renders the message through GetSaberBookFormat:
+            // the FIRST character is pulled inside font/color/size tags and the
+            // rest of the message follows after them. Ownership is therefore
+            // detected by a section that is never split (the last one),
+            // never by equality with the plain message.
+            if (label.text.IndexOf(sections[sections.Count - 1], StringComparison.Ordinal) < 0) { RemoveSectionRules(); return; }
             TMP_TextInfo info = label.textInfo;
             if (info == null || info.characterInfo == null || info.characterInfo.Length == 0) return; // not rendered yet
             try
