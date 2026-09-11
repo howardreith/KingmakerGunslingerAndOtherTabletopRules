@@ -1,5 +1,10 @@
 ﻿# Release notes — 0.0.124-teleport-polish-specialist
 
+This release is superseded by the settlement-teleport button width fix:
+install `KingmakerGunslinger-0.0.125-settlement-button-width.zip`
+(0.0.125-settlement-button-width) so the relabeled Settlement Teleport
+button is wide enough for its full label.
+
 Owner follow-up mission: teleport UI polish and the genuine Conjuration
 specialist-slot repair. Eight requirements from
 `Z-TELEPORT-POLISH-AND-SPECIALIST-MISSION.md`.
@@ -60,7 +65,10 @@ specialist-slot repair. Eight requirements from
   was not run; visual acceptance at the owner's geometry remains pending
   owner review.
 
-No public release was performed from this candidate; owner review required.
+Released as **KingmakerGunslinger 0.0.124** by owner approval on 2026-09-11
+after the merged review-corrected candidate passed the full guarded runtime
+battery. The save-round-trip lifecycle and manual visual acceptance notes
+above remain the honest boundaries of what was verified.
 
 ## Upgrade
 

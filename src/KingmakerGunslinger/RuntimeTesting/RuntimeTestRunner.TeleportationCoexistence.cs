@@ -150,24 +150,131 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool controllersActive = controllers.activeSelf;
                     var teleportButton = nativeTeleportButton;
                     var teleportLabel = nativeTeleportLabel;
+                    var teleportRect = (RectTransform)teleportButton.transform;
+                    // The settlement control's native layout identity, captured
+                    // while the previous dismissal has restored it: every
+                    // widened cycle must return to exactly these values.
+                    float originalTeleportWidth = teleportRect.rect.width;
+                    float originalTeleportWidthWorld = originalTeleportWidth * Math.Max(teleportRect.lossyScale.x, 0.0001f);
+                    var teleportLabelRect = (RectTransform)teleportLabel.transform;
+                    float originalLabelWidthWorld = teleportLabelRect.rect.width * Math.Max(teleportLabelRect.lossyScale.x, 0.0001f);
+                    float originalPaddingWorld = Math.Max(0f, originalTeleportWidthWorld - originalLabelWidthWorld);
+                    int originalTeleportElements = teleportButton.GetComponents<UnityEngine.UI.LayoutElement>().Length;
+                    // Every other active native action button, individually:
+                    // widening the settlement control must not move any of the
+                    // neighbors (Travel/Cancel) or resize the appended rows.
+                    Func<string> nativeGeometries = () => string.Join(";", desktop.GetComponentsInChildren<UnityEngine.UI.Button>(true)
+                        .Where(value => value.GetComponentInParent<TeleportDestinationRows>() == null && value.gameObject.activeInHierarchy && value != teleportButton)
+                        .OrderBy(value => value.GetInstanceID())
+                        .Select(value =>
+                        {
+                            var corners = new UnityEngine.Vector3[4];
+                            ((RectTransform)value.transform).GetWorldCorners(corners);
+                            return Math.Min(corners[0].x, corners[2].x).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + ".." +
+                                Math.Max(corners[0].x, corners[2].x).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
+                        }).ToArray());
+                    // The established parchment content region from the same
+                    // buttons the production widening measures.
+                    Func<float[]> nativeRegion = () =>
+                    {
+                        var corners = new UnityEngine.Vector3[4];
+                        float min = float.PositiveInfinity, max = float.NegativeInfinity;
+                        foreach (var value in desktop.GetComponentsInChildren<UnityEngine.UI.Button>(true))
+                        {
+                            if (value.GetComponentInParent<TeleportDestinationRows>() != null || !value.gameObject.activeInHierarchy || value == teleportButton) continue;
+                            ((RectTransform)value.transform).GetWorldCorners(corners);
+                            min = Math.Min(min, Math.Min(corners[0].x, corners[2].x));
+                            max = Math.Max(max, Math.Max(corners[0].x, corners[2].x));
+                        }
+                        return new[] { min, max };
+                    };
+                    string travelGeometryBefore = nativeGeometries();
                     // The fixture activates the native settlement control the way
                     // native FillDialogInfoLocation does when a settlement circle
                     // covers the point, then re-runs the exact production append.
                     controllers.SetActive(true);
                     WorldMapPointSpellActionRuntime.Append(desktop);
                     yield return 0;
+                    var widenedCorners = new UnityEngine.Vector3[4];
+                    teleportRect.GetWorldCorners(widenedCorners);
+                    float widenedMin = Math.Min(widenedCorners[0].x, widenedCorners[2].x);
+                    float widenedMax = Math.Max(widenedCorners[0].x, widenedCorners[2].x);
+                    float widenedWidth = teleportRect.rect.width;
+                    float labelPreferredWorld = teleportLabel.preferredWidth * Math.Max(teleportLabelRect.lossyScale.x, 0.0001f);
+                    float[] region = nativeRegion();
+                    float reopenedRowWidth = ((RectTransform)desktop.GetComponentInChildren<TeleportDestinationRows>(true).transform).rect.width;
+                    var widenedParent = teleportButton.transform.parent == null ? null : teleportButton.transform.parent.GetComponent<UnityEngine.UI.LayoutGroup>();
                     TeleportInteractionAssert("settlement-label-coexists",
-                        "the native settlement-teleport button is relabeled while spell rows coexist, with its callback untouched",
-                        "label=" + (teleportLabel == null ? "absent" : teleportLabel.text) + ";callbacks=" +
-                            (teleportButton == null ? 0 : teleportButton.onClick.GetPersistentEventCount()),
+                        "the native settlement-teleport button is relabeled and widened to its label with native padding, centered inside the native action region, without moving neighbors, rows or callbacks",
+                        "label=" + (teleportLabel == null ? "absent" : teleportLabel.text) + ";callbacks=" + teleportButton.onClick.GetPersistentEventCount() +
+                            ";width=" + widenedWidth.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + " (was " + originalTeleportWidth.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + ")" +
+                            ";labelPreferred=" + labelPreferredWorld.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                            ";nativePadding=" + originalPaddingWorld.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                            ";extent=" + widenedMin.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + ".." + widenedMax.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                            ";region=" + region[0].ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + ".." + region[1].ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                            ";parentLayout=" + (widenedParent == null ? "none" : widenedParent.GetType().Name) +
+                            ";layoutElements=" + teleportButton.GetComponents<UnityEngine.UI.LayoutElement>().Length + " (was " + originalTeleportElements + ")",
                         containers() == 1 && teleportLabel != null &&
                             teleportLabel.text == TeleportContextPresentation.SettlementTeleportLabel(TeleportationText.Get) &&
-                            teleportButton.onClick.GetPersistentEventCount() > 0);
+                            teleportButton.onClick.GetPersistentEventCount() > 0 &&
+                            widenedWidth >= originalTeleportWidth + 0.5f &&
+                            widenedMax - widenedMin >= labelPreferredWorld + originalPaddingWorld - 0.5f &&
+                            widenedMin >= region[0] - 0.5f && widenedMax <= region[1] + 0.5f &&
+                            nativeGeometries() == travelGeometryBefore &&
+                            Math.Abs(reopenedRowWidth - innerWidth) <= 0.5f &&
+                            teleportButton.GetComponents<UnityEngine.UI.LayoutElement>().Length <= originalTeleportElements + 1);
+                    CaptureTeleportInteraction("settlement-geometry", new
+                    {
+                        label = teleportLabel == null ? null : teleportLabel.text,
+                        width = widenedWidth,
+                        originalWidth = originalTeleportWidth,
+                        labelPreferredWorld,
+                        nativePaddingWorld = originalPaddingWorld,
+                        extentMin = widenedMin,
+                        extentMax = widenedMax,
+                        regionMin = region[0],
+                        regionMax = region[1],
+                        rowsWidth = reopenedRowWidth,
+                        rowsWidthBefore = innerWidth,
+                        parentLayout = widenedParent == null ? null : widenedParent.GetType().Name,
+                        anchorMinX = teleportRect.anchorMin.x,
+                        anchorMaxX = teleportRect.anchorMax.x,
+                        layoutElements = teleportButton.GetComponents<UnityEngine.UI.LayoutElement>().Length
+                    });
                     hide(); yield return 0;
                     TeleportInteractionAssert("settlement-label-restored",
-                        "removing the spell rows restores the exact native settlement label and control state",
-                        "label=" + (teleportLabel == null ? "absent" : teleportLabel.text),
-                        containers() == 0 && teleportLabel.text == originalTeleportLabel);
+                        "removing the spell rows restores the exact native settlement label, width and layout components",
+                        "label=" + (teleportLabel == null ? "absent" : teleportLabel.text) +
+                            ";width=" + teleportRect.rect.width.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                            ";layoutElements=" + teleportButton.GetComponents<UnityEngine.UI.LayoutElement>().Length,
+                        containers() == 0 && teleportLabel.text == originalTeleportLabel &&
+                            Math.Abs(teleportRect.rect.width - originalTeleportWidth) <= 0.5f &&
+                            teleportButton.GetComponents<UnityEngine.UI.LayoutElement>().Length == originalTeleportElements);
+                    // Reopening with the settlement control active must widen
+                    // to the same settled width from the restored native
+                    // geometry — never a wider, accumulated second adjustment.
+                    select(); foreach (int tick in wait()) yield return tick;
+                    controllers.SetActive(true);
+                    WorldMapPointSpellActionRuntime.Append(desktop);
+                    yield return 0;
+                    float reopenedWidth = teleportRect.rect.width;
+                    float reopenedRowWidthAgain = ((RectTransform)desktop.GetComponentInChildren<TeleportDestinationRows>(true).transform).rect.width;
+                    TeleportInteractionAssert("settlement-width-reopen",
+                        "a second open cycle widens to the same settled width with neighbors and rows unchanged",
+                        "width=" + reopenedWidth.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                            ";firstWidth=" + widenedWidth.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                            ";rowsWidth=" + reopenedRowWidthAgain.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
+                        containers() == 1 && Math.Abs(reopenedWidth - widenedWidth) <= 0.5f &&
+                            reopenedWidth >= originalTeleportWidth + 0.5f &&
+                            nativeGeometries() == travelGeometryBefore &&
+                            Math.Abs(reopenedRowWidthAgain - innerWidth) <= 0.5f &&
+                            teleportButton.GetComponents<UnityEngine.UI.LayoutElement>().Length <= originalTeleportElements + 1);
+                    hide(); yield return 0;
+                    TeleportInteractionAssert("settlement-width-restored-again",
+                        "the second cycle restores the exact native settlement geometry again",
+                        "width=" + teleportRect.rect.width.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
+                        containers() == 0 && Math.Abs(teleportRect.rect.width - originalTeleportWidth) <= 0.5f &&
+                            teleportButton.GetComponents<UnityEngine.UI.LayoutElement>().Length == originalTeleportElements);
                     controllers.SetActive(controllersActive);
                 }
                 if (enabled)

@@ -139,6 +139,22 @@ arrows fixtures routed through the direct settlement.
   Invoke-TeleportationPersistenceQualification); the disabled-scenario gate
   was updated to include the new patch's Installed flag.
 
+- 2026-09-11 (RELEASED): owner approved after merging PR #13 (master
+  398d2b7c). scripts/Publish-Release.ps1 -Publish -ConfirmReleaseReady ran
+  from clean master == origin/master: two deterministic builds, strict
+  package validation, tag v0.0.124 at 398d2b7c, GitHub release published
+  (not draft, not prerelease):
+  https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.124
+  Asset KingmakerGunslinger-0.0.124-teleport-polish-specialist.zip
+  sha256 0fd6915eae93150c819c0272564fb709af21fcb82d222672572cd1f5c5b85a52
+  (release DLL sha256 6b091de6857465b3eb569c949311d899b45370d1d60fcb68acb4346b839c3f7c;
+  differs from the runtime-qualified 007921e8 only by the embedded commit —
+  branch commit vs merge commit, identical source). The released package was
+  deployed locally (installed DLL == release DLL, owner settings preserved,
+  backup 20260911T1706587689181Z). Record branch
+  codex/z-teleport-polish-release-record flips the static release
+  authorization flags and syncs the committed release notes to the published
+  body; owner merges it.
 - 2026-09-11 (review corrections, final): the definitive battery passed on
   DLL 007921e8 and the candidate was redeployed. Engineering fixes found by
   the new scenario code itself during qualification: the native dialog
