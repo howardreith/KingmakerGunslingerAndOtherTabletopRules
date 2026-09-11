@@ -49,24 +49,45 @@ namespace KingmakerGunslinger.RuntimeTesting
         // so exact restoration is proven semantically: the same ordered unit
         // identities (no fixture survives) and no creator controller owning a
         // fixture — reference equality can never hold across an area reload.
-        private bool LifecycleRestorationSatisfied()
+        private bool LifecycleRestorationSatisfied(out string diagnostic)
         {
+            diagnostic = null;
             UnitEntityData[] current = Game.Instance.State.Units.All.ToArray();
             if (_worldBefore == null || current.Length != _worldBefore.Length)
+            {
+                diagnostic = "unit-count worldBefore=" +
+                    (_worldBefore == null ? -1 : _worldBefore.Length) +
+                    " current=" + current.Length;
                 return false;
+            }
             for (int i = 0; i < current.Length; i++)
                 if (!string.Equals(current[i].UniqueId, _worldBefore[i].UniqueId,
                         StringComparison.Ordinal))
+                {
+                    diagnostic = "unit-identity index=" + i + " before=" +
+                        _worldBefore[i].UniqueId + " current=" + current[i].UniqueId;
                     return false;
+                }
             var global = Game.Instance.UI.LevelUpController;
             if (global != null && global.Unit != null &&
                 _lifecycleFixtureIds.Contains(global.Unit.Unit.UniqueId))
+            {
+                diagnostic = "global-controller-owns-fixture";
                 return false;
+            }
             var buildUnit = _build == null ? null : _build.Unit;
             if (buildUnit != null && _build.Unit.Unit != null &&
                 _lifecycleFixtureIds.Contains(_build.Unit.Unit.UniqueId))
+            {
+                diagnostic = "build-controller-owns-fixture";
                 return false;
-            return _build == null || _build.LevelUpController == null;
+            }
+            if (_build != null && _build.LevelUpController != null)
+            {
+                diagnostic = "build-level-up-controller-active";
+                return false;
+            }
+            return true;
         }
         private Harmony12.HarmonyInstance _unloadObserver;
         private string _unloadObserverId;

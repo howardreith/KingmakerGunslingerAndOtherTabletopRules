@@ -892,15 +892,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             try { CleanupCharacter(); }
             catch (Exception error) { _failures.Add("cleanup: " + error); }
             bool membershipRestored = CreatorMembershipRestored();
+            string lifecycleDiagnostic;
+            bool lifecycleRestored;
+            try { lifecycleRestored = LifecycleRestorationSatisfied(out lifecycleDiagnostic); }
+            catch (Exception error)
+            {
+                lifecycleRestored = false;
+                lifecycleDiagnostic = "threw:" + error.Message;
+            }
             bool restored = !_started && _unit == null && _controller == null ||
-                (_visualLifecycle ? membershipRestored && LifecycleRestorationSatisfied() :
+                (_visualLifecycle ? membershipRestored && lifecycleRestored :
                 (_worldBefore != null && CharacterCreationObservationIdentity.SameOrderedReferences(
                 _worldBefore, Game.Instance.State.Units.All.ToArray()) &&
                 ReferenceEquals(Game.Instance.UI.LevelUpController, _globalControllerBefore) &&
                 ReferenceEquals(_build.Unit, _buildUnitBefore) && _build.LevelUpController == null &&
                 ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore) &&
                 ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore) && membershipRestored));
-            if (!restored) _failures.Add("Original world unit membership or controller ownership was not restored.");
+            if (!restored) _failures.Add("Original world unit membership or controller ownership was not restored" +
+                (_visualLifecycle ? "; lifecycle diagnostic: " + (lifecycleDiagnostic ?? "none") : "") + ".");
             if (_profileFixture != null)
             {
                 try { _profileFixture.Dispose(); }
