@@ -97,24 +97,25 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             detail = "";
             TMP_TextInfo info = label.textInfo;
-            if (info == null || info.characterInfo == null || info.characterInfo.Length == 0) return false;
+            if (info == null || info.characterInfo == null || info.characterInfo.Length == 0) { detail = "no-mesh"; return false; }
             var rules = presenter.SectionRules;
-            if (rules.Count != sections.Count - 1) return false;
+            if (rules.Count != sections.Count - 1) { detail = "count"; return false; }
             int searched = 0;
             for (int index = 1; index < sections.Count; index++)
             {
                 int at = label.text.IndexOf(sections[index], searched, StringComparison.Ordinal);
-                if (at < 0) return false;
+                if (at < 0) { detail = "section-" + index + "-absent"; return false; }
                 searched = at + 1;
                 int boundary = -1;
                 for (int scan = 0; scan < info.characterInfo.Length; scan++)
                     if (info.characterInfo[scan].index >= at && info.characterInfo[scan].isVisible) { boundary = scan; break; }
-                if (boundary < 1) return false;
+                if (boundary < 1) { detail = "boundary-" + index + "-at=" + at; return false; }
                 float top = info.characterInfo[boundary].topLeft.y;
                 float previousBottom = float.NaN;
                 for (int scan = boundary - 1; scan >= 0; scan--)
                     if (info.characterInfo[scan].isVisible) { previousBottom = info.characterInfo[scan].bottomLeft.y; break; }
-                if (float.IsNaN(previousBottom) || previousBottom >= top) return false;
+                if (float.IsNaN(previousBottom) || previousBottom >= top)
+                { detail = "order-" + index + "-prev=" + previousBottom.ToString("0.#") + "-top=" + top.ToString("0.#"); return false; }
                 var rule = (RectTransform)rules[index - 1].transform;
                 float ruleY = rule.anchoredPosition.y;
                 detail += index + ":y=" + ruleY.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) +
