@@ -1,7 +1,7 @@
 ﻿[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [ValidateSet('Coexistence', 'Native', 'Boundary')][string]$Scope = 'Coexistence',
-    [string]$ExpectedVersion = '0.0.122',
+    [string]$ExpectedVersion = '0.0.123',
     [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
     [Parameter(Mandatory = $true)][string]$PackagePath,
     [switch]$AllowDirtyGit

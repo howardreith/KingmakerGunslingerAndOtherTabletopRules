@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.122-teleportation-completion",
-  "version": "0.0.122",
+  "milestone": "0.0.123-character-visibility-repair",
+  "version": "0.0.123",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1509,5 +1509,17 @@
     "variantActivationGuard": true,
     "inAreaFallbackNeedNotRun": true,
     "compatibilityRuntimeQualificationPending": true
+  },
+  "characterVisibility123": {
+    "deterministicTestCount": 1567,
+    "compatibilityRuntimeQualificationPending": false,
+    "publicReleaseAuthorized": true,
+    "ownerAcceptedMissionReport": true,
+    "rootCauseConfirmed": "creator doll-update removal passes and counter-based cache cleanups destroy shared visual resources",
+    "unfixedBuildAllProxiesDestroyed": 28,
+    "lifecycleQualificationRun13Pass": true,
+    "mainMenuFourRaceCreatorRun14Pass": true,
+    "workingSaveSmokePass": true,
+    "remainingMatrixCellsDisclosed": true
   }
 }
