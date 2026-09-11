@@ -307,7 +307,11 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
 
         private static bool HasDestroyedInnerAsset(EquipmentEntity entity)
         {
-            return entity.GetInnerAssets().Any(value => value == null);
+            // Unity-destroyed references are managed-nonnull but compare null;
+            // plain CLR-null slots are legitimate since construction and must
+            // not be misread as destruction (runtime-proven false positive).
+            return entity.GetInnerAssets().Any(value =>
+                !ReferenceEquals(value, null) && value == null);
         }
 
         /// <summary>
@@ -396,6 +400,11 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 BindingFlags.NonPublic | BindingFlags.Public).GetField(
                     "RequestCounter", BindingFlags.Instance | BindingFlags.Public);
 
+        private static readonly FieldInfo LoadedBundleField =
+            typeof(ResourcesLibrary).GetNestedType("LoadedResource",
+                BindingFlags.NonPublic | BindingFlags.Public).GetField(
+                    "LoadedBundle", BindingFlags.Instance | BindingFlags.Public);
+
         /// <summary>
         /// The native doll-removal exception set covers GetInnerAssets() of the
         /// loaded entities plus the initially-retained list, but EquipmentEntity
@@ -452,7 +461,10 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
         /// Evicts a damaged native dependency's cache entry (destroyed corpse or
         /// live-but-gutted registered instance) so the native loader supplies a
         /// fresh instance on the next resolve. A foreign replacement is never
-        /// displaced.
+        /// displaced. The stale bundle file handle is released without
+        /// destroying still-referenced objects: Unity refuses to reload a
+        /// bundle whose file is already loaded ("another AssetBundle with the
+        /// same files is already loaded").
         /// </summary>
         internal bool EvictReloadableNativeDependency(string assetId)
         {
@@ -478,8 +490,34 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             if (!ElementalVisualResourceRecoveryPolicy
                     .ShouldEvictNativeDependencyForReload(kind))
                 return false;
+            object wrapper = cache[assetId];
             cache.Remove(assetId);
+            try
+            {
+                UnityEngine.Object replaced = CurrentResource(wrapper);
+                if (replaced != null && ReferenceEquals(replaced, registered))
+                    UnityEngine.Object.Destroy(replaced);
+                var bundle = LoadedBundleField == null ? null :
+                    LoadedBundleField.GetValue(wrapper) as UnityEngine.AssetBundle;
+                if (bundle != null) bundle.Unload(false);
+            }
+            catch { /* eviction stands; handle hygiene is best-effort */ }
             return true;
+        }
+
+        /// <summary>
+        /// Removes a cache entry whose reload failed and left a null resource,
+        /// so the native loader and later recovery attempts are not poisoned
+        /// against the asset.
+        /// </summary>
+        internal void DiscardFailedNativeReload(string assetId)
+        {
+            if (string.IsNullOrWhiteSpace(assetId)) return;
+            if (!_nativeDependencies.ContainsKey(assetId)) return;
+            IDictionary cache = RequireCache();
+            if (!cache.Contains(assetId)) return;
+            if (CurrentResource(cache[assetId]) != null) return;
+            cache.Remove(assetId);
         }
 
         /// <summary>
