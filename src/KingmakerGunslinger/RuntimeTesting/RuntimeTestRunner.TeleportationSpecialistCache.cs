@@ -246,16 +246,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RawSlots(bookConjurer, 7).Count(value => value.Spell != null && value.Spell.Blueprint == greaterTeleport && value.Available);
                 if (onlyFavorites != 2)
                     throw new InvalidOperationException("The world-map phase lacks exactly one ready favorite preparation per level.");
+                // Mirror the qualified specialist ordering: restore the
+                // selection and UI snapshots before leaving the local area.
+                if (ui.SelectionManagerPC != null && originalSelection.Select(value => value.View).All(value => value != null))
+                    ui.SelectionManagerPC.MultiSelect(originalSelection.Select(value => value.View).ToArray(), false);
+                foreach (var snapshot in uiSnapshots) snapshot.Restore();
                 if (GlobalMapRules.Instance != null) throw new InvalidOperationException("A global map is already loaded before the world-map phase.");
                 game.LoadArea(game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint, AutoSaveMode.None);
-                for (int frame = 0; frame < 600; frame++)
+                for (int frame = 0; frame < 1800; frame++)
                 {
                     yield return 0;
                     if (!LoadingProcess.Instance.IsLoadingInProcess && !LoadingProcess.Instance.IsLoadingScreenActive &&
                         GlobalMapRules.Instance != null && game.CurrentMode == GameModeType.GlobalMap) break;
                 }
                 if (GlobalMapRules.Instance == null || game.CurrentMode != GameModeType.GlobalMap)
-                    throw new InvalidOperationException("The world-map phase did not finish loading.");
+                    throw new InvalidOperationException("The world-map phase did not finish loading: mode=" + game.CurrentMode +
+                        ";loading=" + (LoadingProcess.Instance == null ? "null" : LoadingProcess.Instance.IsLoadingInProcess + "/" + LoadingProcess.Instance.IsLoadingScreenActive) +
+                        ";globalMap=" + (GlobalMapRules.Instance != null) + ";paused=" + game.IsPaused);
                 var rules = GlobalMapRules.Instance; var map = GlobalMapRules.State;
                 var ledger = TeleportFamiliarityRuntime.EnsureLedger(player);
                 var payloadState = typeof(UnitPartTeleportFamiliarity).GetField("_state", BindingFlags.Instance | BindingFlags.NonPublic);
