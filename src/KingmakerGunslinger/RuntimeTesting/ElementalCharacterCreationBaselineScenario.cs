@@ -349,6 +349,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _buildUnitBefore = _build.Unit;
             CaptureInitialInnerAssets();
             if (_saveGuard == null) ArmSaveGuard();
+            if (_visualLifecycle) ArmUnloadObserver();
             _worldBefore = Game.Instance.State.Units.All.ToArray();
             CaptureCreatorMembership();
             VerifyRepeatedHelpfulReconciliation();
@@ -894,6 +895,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             try { DisarmSaveGuard(); }
             catch (Exception error) { _failures.Add("save guard cleanup: " + error); }
+            try { DisarmUnloadObserver(); }
+            catch (Exception error) { _failures.Add("unload observer cleanup: " + error); }
             Result = ElementalCharacterCreationRoutingObserver.Run(_context, _request);
             Result.Assertions.Add(new RuntimeTestAssertion { Name = "actual-first-level-creators-observed",
                 Expected = _races.Length.ToString(), Observed = _characters.Count.ToString(), Status = _characters.Count == _races.Length &&
