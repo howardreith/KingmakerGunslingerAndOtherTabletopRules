@@ -379,7 +379,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         sectioned.SectionRules.All(value => value != null && value.transform.parent == sectionLabel.transform &&
                             ((RectTransform)value.transform).rect.width < ((RectTransform)sectionLabel.transform).rect.width * 0.8f &&
                             value.GetComponent<UnityEngine.UI.Image>() != null && !value.GetComponent<UnityEngine.UI.Image>().raycastTarget));
-                    string placementDetail;
+                    string placementDetail = "unavailable";
                     bool placement = sectionLabel != null && RulesSitBetweenRenderedSections(sectioned, sectionLabel, sections, out placementDetail);
                     TeleportInteractionAssert("confirmation-rule-placement",
                         "each rendered rule sits vertically between its adjacent confirmation groups, never on text",
