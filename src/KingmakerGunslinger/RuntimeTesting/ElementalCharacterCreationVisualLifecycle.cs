@@ -42,7 +42,32 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _lifecycleSettle;
         private bool _lifecycleBoundaryComplete;
         private readonly JArray _lifecycleEvidence = new JArray();
+        private readonly List<string> _lifecycleFixtureIds = new List<string>();
         internal readonly bool _visualLifecycle;
+
+        // The lifecycle boundary rebuilds the UI and world instances by design,
+        // so exact restoration is proven semantically: the same ordered unit
+        // identities (no fixture survives) and no creator controller owning a
+        // fixture — reference equality can never hold across an area reload.
+        private bool LifecycleRestorationSatisfied()
+        {
+            UnitEntityData[] current = Game.Instance.State.Units.All.ToArray();
+            if (_worldBefore == null || current.Length != _worldBefore.Length)
+                return false;
+            for (int i = 0; i < current.Length; i++)
+                if (!string.Equals(current[i].UniqueId, _worldBefore[i].UniqueId,
+                        StringComparison.Ordinal))
+                    return false;
+            var global = Game.Instance.UI.LevelUpController;
+            if (global != null && global.Unit != null &&
+                _lifecycleFixtureIds.Contains(global.Unit.Unit.UniqueId))
+                return false;
+            var buildUnit = _build == null ? null : _build.Unit;
+            if (buildUnit != null && _build.Unit.Unit != null &&
+                _lifecycleFixtureIds.Contains(_build.Unit.Unit.UniqueId))
+                return false;
+            return _build == null || _build.LevelUpController == null;
+        }
         private Harmony12.HarmonyInstance _unloadObserver;
         private string _unloadObserverId;
 

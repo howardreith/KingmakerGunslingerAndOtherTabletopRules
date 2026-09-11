@@ -458,6 +458,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _unit = _nativeRespec && _respecOriginal != null ? _respecOriginal :
                 new ChargenUnit(_canCommit && (_useRoll || _nativeRespec || _nativeProfile) ? BlueprintRoot.Instance.CustomCompanion :
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            if (_visualLifecycle) _lifecycleFixtureIds.Add(_unit.UniqueId);
             _character["nativeMercenaryFixture"] = _unit.Descriptor.IsCustomCompanion();
             if (ReferenceEquals(_unit, _mainBefore)) throw new InvalidOperationException("Fixture cannot own the campaign character.");
             _character["fixtureId"] = _unit.UniqueId;
@@ -892,12 +893,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception error) { _failures.Add("cleanup: " + error); }
             bool membershipRestored = CreatorMembershipRestored();
             bool restored = !_started && _unit == null && _controller == null ||
+                (_visualLifecycle ? membershipRestored && LifecycleRestorationSatisfied() :
                 (_worldBefore != null && CharacterCreationObservationIdentity.SameOrderedReferences(
                 _worldBefore, Game.Instance.State.Units.All.ToArray()) &&
                 ReferenceEquals(Game.Instance.UI.LevelUpController, _globalControllerBefore) &&
                 ReferenceEquals(_build.Unit, _buildUnitBefore) && _build.LevelUpController == null &&
                 ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore) &&
-                ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore) && membershipRestored);
+                ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore) && membershipRestored));
             if (!restored) _failures.Add("Original world unit membership or controller ownership was not restored.");
             if (_profileFixture != null)
             {
