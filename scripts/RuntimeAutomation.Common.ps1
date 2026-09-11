@@ -761,12 +761,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'disposable-teleportation-specialist' = [pscustomobject]@{
-    'disposable-teleportation-specialist-cache' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'disposable-teleportation-specialist-cache' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
@@ -1615,7 +1615,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         $Parameters.Count -ne 1 -or $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING')) {
         throw 'Public 0.0.117 authority permits only its exact disposable persistence producer, without another producer authority.'
     }
-    if ($ExpectedVersion -cne '0.0.123' -and
+    if ($ExpectedVersion -cne '0.0.124' -and
         -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
         throw 'ExpectedVersion must be exactly the active version 0.0.124.'
     }
