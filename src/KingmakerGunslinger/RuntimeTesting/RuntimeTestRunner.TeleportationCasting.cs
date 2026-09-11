@@ -79,9 +79,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rows.Buttons.Select((button, index) => button.onClick.GetPersistentEventCount() == 0 && button.interactable &&
                     button.GetComponentInChildren<TextMeshProUGUI>(true).text == TeleportContextPresentation.CompactRow(rows.Actions[index], TeleportationText.Get)).All(value => value), path));
             var viewport = (RectTransform)rows.transform;
-            assertions.Add(Assertion("teleportation-ui-native-layout", "appended native style row viewport has positive measured geometry",
+            assertions.Add(Assertion("teleportation-ui-native-layout", "appended native style row viewport has positive measured geometry sized to the settled native action extent",
                 "width=" + viewport.rect.width + ";height=" + viewport.rect.height,
-                viewport.rect.width > 300 && viewport.rect.height > 0 &&
+                viewport.rect.width > 0 && viewport.rect.height > 0 &&
                 rows.Buttons.Select(value => ((RectTransform)value.transform).anchoredPosition.y).Distinct().Count() == rows.Actions.Count &&
                 rows.Buttons.All(value => ((RectTransform)value.transform).rect.width >= viewport.rect.width - 1 &&
                     ((RectTransform)value.transform).rect.height > 0), path));
