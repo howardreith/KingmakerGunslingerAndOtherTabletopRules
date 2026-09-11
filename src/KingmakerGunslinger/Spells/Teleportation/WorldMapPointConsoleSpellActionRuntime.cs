@@ -264,11 +264,27 @@ namespace KingmakerGunslinger.Spells.Teleportation
         }
         private void Resize()
         {
-            // A transient unproven preferred height (mid-transition frames)
-            // must not withdraw the rows: skip that frame's sizing; the
-            // strict policy still guards the initial Create sizing.
-            float preferred = LayoutUtility.GetPreferredHeight(_content);
+            // The complete laid-out content — every active child (rows AND
+            // group separators) plus the group's spacing and padding. Children
+            // are read directly because the content's own driven preferred
+            // height is unproven while its hierarchy is still inactive.
+            float preferred = ContentPreferredHeight();
             if (preferred > 0f) _viewportLayout.preferredHeight = TeleportContextLayoutPolicy.ViewportHeight(preferred, _maximumHeight);
+        }
+        private float ContentPreferredHeight()
+        {
+            var group = _content.GetComponent<VerticalLayoutGroup>();
+            if (group == null) return 0f;
+            float total = 0f; int count = 0;
+            foreach (Transform child in _content)
+            {
+                if (child == null || !child.gameObject.activeSelf) continue;
+                float height = LayoutUtility.GetPreferredHeight((RectTransform)child);
+                if (height <= 0f) continue;
+                total += height;
+                count++;
+            }
+            return total + (count > 0 ? group.spacing * (count - 1) : 0f) + group.padding.vertical;
         }
         internal float MaximumHeight { get { return _maximumHeight; } }
         private void RemoveNavigation()

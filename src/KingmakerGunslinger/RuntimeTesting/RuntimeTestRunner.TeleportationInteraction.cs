@@ -357,8 +357,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 30 && sectioned.SectionRules.Count == 0; frame++) yield return 0;
                     var sectionLabel = (TextMeshProUGUI)typeof(DialogMessageBox)
                         .GetField("m_Messagelabel", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(DialogMessageBox.Instance);
+                    // The fixture helper activates the FIRST matching row;
+                    // several casters may offer prepared Teleport actions.
                     var sectionAction = TeleportationWorldMapAdapter.Compose(TeleportationWorldMapAdapter.Capture(false), target.Blueprint)
-                        .Single(value => value.Source.Spell == TeleportSpellKind.Teleport && value.Source.Kind == TeleportCastSourceKind.Prepared);
+                        .Where(value => value.Source.Spell == TeleportSpellKind.Teleport && value.Source.Kind == TeleportCastSourceKind.Prepared)
+                        .FirstOrDefault();
+                    if (sectionAction == null) throw new InvalidOperationException("No prepared Teleport action for the section probe.");
                     var sections = TeleportContextPresentation.ConfirmationSections(sectionAction,
                         TeleportationCastExecution.FamiliarityFor(TeleportationWorldMapAdapter.Capture(false), target.Blueprint.AssetGuid), TeleportationText.Get);
                     CaptureTeleportInteraction("confirmation-sections", new { rules = sectioned.SectionRules.Count, sections = sections.Count,
