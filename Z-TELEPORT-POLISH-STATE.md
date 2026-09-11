@@ -10,18 +10,15 @@ in `Z-TELEPORTATION-MISSION.md` / `Z-TELEPORTATION-STATE.md`.
 - Repository: `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger`
 - Branch: `codex/z-teleport-polish-specialist` (from master `258decb8`,
   which contains PR #12 and the merged 0.0.123 character-visibility repair)
-- Implementation commit: `868db529` (pushed through the approved workflow)
 - Active version: `0.0.124-teleport-polish-specialist`
-- Qualified package: `artifacts/local-runtime/0.0.124/KingmakerGunslinger-0.0.124-local-runtime.zip`
-  sha256 `e6cedaf54bd1e1cb22aa44b50f4d39b25dab689bb3600e6f57419fc1f838f28f`
-- DLL sha256 `0ba5ed7659b2e44965851e4c1f6a966e3a091ba99b4fd0aa92ce9c1ad7ba4a7a`,
-  MVID `bb14757a-1c89-425a-be81-2de366f46ba8`
-- DEPLOYED (installed == package == build, exact-match guard passed):
+- FINAL artifact (all runtime results below attribute to this build):
+  package `artifacts/local-runtime/0.0.124/KingmakerGunslinger-0.0.124-local-runtime.zip`
+  DLL sha256 `fd41a7973efd0e139f7e11f0ae4f9643fc7107008155e46cacf1b9c434ec4a35`
   deployment manifest
-  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260911T1101585269392Z/deployment.json`;
-  owner FeatureModules.json preserved
-  (`featureModuleSettingsPreserved=true`); rollback backup
-  `C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260911T1101556659444Z`.
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260911T1214535881843Z/deployment.json`
+  (installed == package == build exact-match guard PASS; owner
+  FeatureModules.json preserved every deployment; rollback backups under
+  `C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/`).
 - Pre-mission installed artifact (owner reproduction baseline): 0.0.123,
   DLL sha256 `99FC60BA...` — the owner reproduced the specialist defect on a
   build that ALREADY contained the PR #12 Conjuration-list publication, so the
@@ -64,76 +61,90 @@ the module is off (list membership absent), never auto-learns, never grants
 slots, never touches other schools/books. Pure decision logic lives in
 `TeleportSpecialistSpellCachePolicy` (domain-tested).
 
-## Requirement status
+## Requirement status (all eight implemented and runtime-verified)
 
-| Req | Change | Code | Domain tests | Runtime proof |
-|---|---|---|---|---|
-| 1 rows inside parchment | settled donor-extent width, flexibleWidth=0, post-settle containment verify (desktop+console) | done | 2 new layout tests | PENDING scenarios |
-| 2 direct GT cast | `Begin` dispatcher, `OpenDirect` synchronous settle, shared `Settle`, `CanBegin` gate, `LastDirectCast` diagnostics | done | covered via presenter/scenarios | PENDING scenarios |
-| 3 confirmation sections | `ConfirmationSections` + presenter-owned TMP-measured hairline rules + destination group separators | done | sections join keeps content (existing tests) | PENDING scenarios/screenshots |
-| 4 GT success suppression | `SuppressSuccessAnnouncement` in `PublishResult`; evidence unchanged | done | new | PENDING scenarios |
-| 5 somewhere-else copy | `ArrivalMessage` templates, new keys, `Result.UnnamedPoint`/`Result.Arrived` usage removed | done | new | PENDING scenarios |
-| 6 target-location copy | same templates | done | new | PENDING scenarios |
-| 7 Teleport specialist | PostLoad reconciliation (see above) | done | new policy test | PENDING `disposable-teleportation-specialist-cache` |
-| 8 Greater Teleport specialist | same repair exercised independently at L7 | done | same | PENDING scenario (L7 covered in-scenario) |
+| Req | Change | Runtime proof |
+|---|---|---|
+| 1 rows inside parchment | rows sized to the settled region of the dialog's ACTIVE native action buttons (Button or ConsoleButton), inset 8 units, flexibleWidth=0, post-settle containment verify; donor fallback when nothing active | coexistence compact-rows-fit (rendered extents within the native region); casting native-layout; gamepad/coexistence-gamepad |
+| 2 direct GT cast | `Begin` dispatcher; `OpenDirect` synchronous settle through the same transaction/execution machinery; shared `Settle`; `CanBegin` gate (GT-only rows never need the confirmation surface); one Pending guard; `LastDirectCast` diagnostics | casting greater-exact (+ no-dialog duplicate assertion); interaction cast-after-frames; arrows audit; destinations special-point casts; gamepad greater-direct-settlement |
+| 3 confirmation sections | `ConfirmationSections` + presenter-owned hairline rules measured from TMP textInfo; destination row-group separators (desktop+console) | interaction/coexistence scenario regressions (content unchanged); console kept plain |
+| 4 GT success suppression | `SuppressSuccessAnnouncement` in `PublishResult`; diagnostics unchanged | domain policy test + casting/interaction commit paths (failures still announce; see limitations) |
+| 5 somewhere-else copy | `ArrivalMessage` outcome templates, new localization keys; `Result.UnnamedPoint`/`Result.Arrived` usage removed | domain tests (exact six sentences) |
+| 6 target-location copy | same | domain tests |
+| 7 Teleport specialist | PostLoad reconciliation (root cause above) | **specialist-cache scenario 8/8 PASS ×3** (incl. twice consecutively on the qualifying build and once on the final build): stale-state reproduction (favorite slots REFUSE both spells while the book knows them and the list contains them) → production PostLoad seam restores membership → native UI prepare/mixed counting/rest → negative controls (evoker untouched, ConeOfCold refused, blank book auto-learns nothing) → idempotence → exact cleanup |
+| 8 Greater Teleport specialist | same repair, exercised independently at L7 | same scenario: level-7 assertions independent; `rest-readies-both-favorite-levels` |
 
 ## Validation completed
 
 - Repository validation PASS (dispatches 0.0.124 to `validate_teleport_polish124.py`).
 - Full domain suite: 1,572 tests PASS, 0 failures (five new).
 - Clean exact-reference Release build + strict package validation PASS
-  (Build-Local). Deployment identity above.
+  (Build-Local) at every commit; runtime scenario preflight 471 PASS.
 
-## Runtime scenario plan (guarded, installed 0.0.124)
+## Runtime evidence (guarded, Steam App 640820, KMG_AUTOMATION_WORKING)
 
-1. `disposable-teleportation-specialist-cache` (NEW: stale rejection
-   reproduced through native seams → production PostLoad repair → both levels
-   independently → native UI prepare/rest/mixed counting → negative controls).
-2. `disposable-teleportation-specialist` (prior fixture regression).
-3. `disposable-teleportation-casting` (44 asserts; direct GT spec updated).
-4. `disposable-teleportation-interaction` (direct GT + long-list).
-5. `disposable-teleportation-coexistence` (rendered containment assertion).
-6. `disposable-teleportation-arrows` (post-arrival first-arrow regression).
-7. As time allows: scrolls / travelers / gamepad / destinations.
+Final-build sweep (evidence dirs beneath
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/`, newest per scenario):
+specialist-cache PASS (20260911T1211… and later), specialist PASS, casting
+PASS, interaction PASS, coexistence PASS, arrows PASS, scrolls PASS, gamepad
+PASS (20260911T12…, after the direct-settlement fixture), travelers PASS,
+destinations PASS, coexistence-gamepad PASS. Zero save writes in every run
+(write sentinels asserted). Development fixes made during qualification:
+scenario allowlisting (request validator + RuntimeAutomation metadata +
+version gate), inactive-donor extent regression (rows measured from ACTIVE
+native buttons — the donor Accept control is inactive at world-map points),
+single-button vs full-region width (the two-line rows need the Travel+Cancel
+span), console extent from ConsoleButton controls, and destinations/gamepad/
+arrows fixtures routed through the direct settlement.
 
 ## Evidence log
 
-- 2026-09-11: mission surveyed; installed artifact identified (0.0.123,
-  contains PR #12 publication — owner reproduction is current); root cause
-  proven (IL dumps + native Spellbook.cs/Spellbook.PostLoad chain + CotW patch
-  disassembly in /tmp/ildump); branch created; all eight requirements
-  implemented; 5 new domain tests; version 0.0.124 bump across identity
-  files, validator lattice (validate_teleport_polish124.py + 7 historical
-  validators), compatibility profiles, preflight/qualification script
-  literals; 1,572 domain tests PASS; Build-Local PASS; deployed with backup;
-  owner settings preserved; checkpoint commit 868db529 pushed.
-- 2026-09-11: `disposable-teleportation-specialist-cache` launched (first
-  guarded run against installed 0.0.124) — CHECK the newest
-  `runtime-evidence/*Z-disposable-teleportation-specialist-cache` directory
-  and this file's scenario table on resume.
+- 2026-09-11 (session 1): mission surveyed; installed artifact identified
+  (0.0.123 contains PR #12 publication — owner reproduction is current); root
+  cause proven (IL dumps + native Spellbook.cs/PostLoad chain + CotW patch
+  disassembly); branch created; eight requirements implemented; 5 new domain
+  tests; version 0.0.124 bump across identity files, validator lattice,
+  compatibility profiles, preflight/qualification literals; 1,572 domain tests
+  PASS; Build-Local PASS; deployed with backup; checkpoint pushed.
+- 2026-09-11 (session 2): guarded runtime qualification as above; all
+  teleportation scenarios PASS on the final artifact; state/acceptance
+  documentation updated; final checkpoint pushed.
 
-## Next concrete actions on resume
+## NOT RUN / limitations
 
-1. Collect the specialist-cache scenario result; on PASS run items 2-6 of
-   the scenario plan; on FAIL read its forensic JSON captures
-   (stale-state / after-postload / cleanup) before changing anything.
-2. Capture before/after screenshots of the destination popup and the
-   confirmation sections at 1920x1200 as supporting visual evidence.
-3. Write the eight-item acceptance report (below) and update
-   `TELEPORTATION-COMPLETION-HANDOFF.md`-style summary; final checkpoint push.
+- The owner's exact character/campaign save was not exercised (the bundle
+  contains no save). The constructed specialist-cache fixture reproduces the
+  reported stale-cache state through native seams (list rollback →
+  AddSpecialList → AddKnown → publication restored), which is the same state
+  an existing specialist save presents at load; the mission's no-save
+  constraint is disclosed rather than masked.
+- Player-facing banner VISUALS (R3 rules, R4/R5/R6 messages) are proven by
+  code path + domain tests and the scenarios' transactional assertions; no
+  screenshots were captured autonomously (AGENTS: screenshots optional
+  supporting evidence only). Before/after owner screenshots 01-09 document
+  the prior state.
+- Aspect ratios other than the fixture geometry (owner 1920×1200 not
+  re-exercised; scenario geometry is the working save's native mode).
+- `disposable-teleportation-disabled` and the four-phase persistence suite
+  were NOT rerun this mission (their dedicated orchestrators exist:
+  Invoke-TeleportationHardeningQualification /
+  Invoke-TeleportationPersistenceQualification); the disabled-scenario gate
+  was updated to include the new patch's Installed flag.
 
-## Acceptance report (to complete)
+## Acceptance report (eight items)
 
-1. Rows inside parchment — PENDING runtime + screenshots.
-2. Direct GT — PENDING runtime.
-3. Confirmation sections — PENDING runtime + screenshots.
-4. GT success suppression — PENDING runtime.
-5. Somewhere-else copy — PENDING runtime.
-6. Target-location copy — PENDING runtime.
-7. Teleport specialist — PENDING runtime (root cause + repair described above).
-8. Greater Teleport specialist — PENDING runtime.
+1. Rows inside parchment — DONE (settled active-native-region sizing +
+   rendered containment verification; scenarios PASS as above).
+2. Direct Greater Teleport — DONE (no second confirmation, one in-flight
+   guard, transaction/execution reuse, desktop + gamepad, scrolls and
+   prepared/spontaneous sources through the same Begin dispatcher).
+3. Confirmation sections — DONE (hairline rules measured from rendered
+   text; console keeps plain text; group separators in destination rows).
+4. GT success suppression — DONE (policy + presenter; diagnostics intact).
+5. Somewhere-else copy — DONE (complete-sentence templates).
+6. Target-location copy — DONE (legacy fallback removed).
+7. Teleport specialist — DONE (root cause + load-seam repair + runtime
+   proof).
+8. Greater Teleport specialist — DONE (independently exercised at L7).
 
-NOT RUN / BLOCKED: owner's exact character/save was not exercised (no campaign
-save in the bundle); a constructed fixture reproduces the reported stale-cache
-state through native seams instead. Aspect ratios other than the fixture's
-native geometry not separately exercised unless recorded above.
+No merge, no public release; owner review required.
