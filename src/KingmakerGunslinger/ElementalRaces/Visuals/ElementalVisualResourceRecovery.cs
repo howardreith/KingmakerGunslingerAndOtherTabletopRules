@@ -55,17 +55,20 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
 
             try
             {
-                foreach (ElementalVisualResourceDamage entry in damage)
+                // Dependencies heal first: a reloaded donor restores the shared
+                // bundle assets that proxy reclones must not inherit as corpses.
+                foreach (ElementalVisualResourceDamage entry in damage.Where(value =>
+                    ElementalVisualResourceRecoveryPolicy.IsNativeDependencyKind(value.Kind)))
                 {
                     if (!ElementalVisualResourceRecoveryPolicy.IsRecoverable(entry.Kind))
                         continue;
-                    if (entry.Kind == ElementalVisualResourceRecoveryPolicy.NativeDependencyDestroyed ||
-                        entry.Kind == ElementalVisualResourceRecoveryPolicy.NativeDependencyEvicted ||
-                        entry.Kind == ElementalVisualResourceRecoveryPolicy.NativeInnerAssetsDestroyed)
-                    {
-                        if (HealNativeDependency(registry, entry)) report.ReboundDependencies++;
+                    if (HealNativeDependency(registry, entry)) report.ReboundDependencies++;
+                }
+                foreach (ElementalVisualResourceDamage entry in damage.Where(value =>
+                    !ElementalVisualResourceRecoveryPolicy.IsNativeDependencyKind(value.Kind)))
+                {
+                    if (!ElementalVisualResourceRecoveryPolicy.IsRecoverable(entry.Kind))
                         continue;
-                    }
                     if (HealOwnedProxy(set, registry, entry)) report.RecoveredProxies++;
                 }
             }
@@ -103,11 +106,10 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             ElementalRaceVisualResourceRegistry registry,
             ElementalVisualResourceDamage entry)
         {
-            EquipmentEntity current = registry.CurrentNativeDependency(entry.AssetId);
-            // A dead object under a surviving cache entry must be evicted first;
-            // the native loader would otherwise keep returning the corpse.
-            if (current != null)
-                registry.EvictDeadNativeDependency(entry.AssetId);
+            // A corpse or live-but-gutted registered instance under a surviving
+            // cache entry is returned as a cache hit by the native loader, so
+            // the damaged entry must be evicted before the reload.
+            registry.EvictReloadableNativeDependency(entry.AssetId);
             EquipmentEntity fresh = ResourcesLibrary.TryGetResource<
                 EquipmentEntity>(entry.AssetId, true);
             return registry.TryRebindNativeDependency(entry.AssetId, fresh);
@@ -142,6 +144,10 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             }
             EquipmentEntity proxy = ElementalRaceVisualFactory.RecreateProxy(
                 spec, donor, palette);
+            // A clone inherited from a still-gutted donor is itself damaged;
+            // never register a reconstruction that would repeat the defect.
+            if (proxy == null || proxy.GetInnerAssets().Any(value => value == null))
+                return false;
             registry.ReplaceOwnedRegistration(registration, proxy);
             return true;
         }

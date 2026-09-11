@@ -63,6 +63,7 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 ElementalVisualResourceRecovery.Heal(visuals,
                     visuals.Registry.Logger, "loaded-cache-cleanup");
                 visuals.Registry.ArmRetentionCounters();
+                visuals.Registry.RefreshNativeAnchor();
             }
             catch (Exception exception)
             {
@@ -72,6 +73,27 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                     "visual-resource.cache-cleanup-isolated",
                     "Loaded-cache cleanup recovery was isolated: " + exception.Message);
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(Kingmaker.Blueprints.ResourcesLibrary), "TryUnloadResource")]
+    internal static class ElementalVisualResourceDonorUnloadGuardPatch
+    {
+        // Unloading a registered donor runs LoadedBundle.Unload(true), which
+        // force-destroys every bundle-mate — including the shared materials and
+        // textures the elemental proxy clones reference (runtime-proven: the
+        // creator's own removal passes unload exactly these donor entities).
+        // Keep the exact catalog donor identities cached and alive; the native
+        // "remove from doll" contract is honored by reporting success, and no
+        // foreign resource is retained.
+        private static bool Prefix(string assetId, ref bool __result)
+        {
+            var visuals = BlueprintBootstrap.ElementalRaces?.Visuals;
+            if (visuals == null) return true;
+            if (Kingmaker.Blueprints.ResourcesLibrary.Preloading) return true;
+            if (!visuals.Registry.IsProtectedNativeDependency(assetId)) return true;
+            __result = true;
+            return false;
         }
     }
 

@@ -296,19 +296,69 @@ Static qualification (2026-09-11, all PASS):
   SHA-256 `cf1afd4e4cffc2f085c548a2b78cef982b2f09b1b2fce7c0b8aac79e20c6a185`,
   DLL SHA-256 `daa2ee906792622fbd90f88fb208ffd735af1aa5d71465e6bf2cbd138ebf3711`.
 
+## Repair v2 (2026-09-11, after run 06 diagnosis)
+
+Run 06 (`20260911T0456251445313Z`, build 3c0281e4, log preserved as
+`repair-run-06-output_log.txt`) FAILED identically to run 05, and its
+recorder finally named the true destroyers (probe `assetUnloads`, caller
+`CharGenDollRoom.UpdateDollCoroutine`):
+
+1. `EquipmentEntity.UnloadInnerAssetsExceptGiven` on removed NATIVE donor
+   entities (EE_Naked_M_TF, EE_Head_Face01_M_TF, EE_HornsTieflingRam_M_TF —
+   the Ifrit body/head/horn DONORS; `guid:null` proves the removed instances
+   were not our proxies) destroyed ramp textures absent from the exception
+   set — ALL seven CR_Horns_* ramps and CR_Skin_White/Blue/DarkBlue. The
+   0.0.117-era retention extended only `GetInnerAssets()`, never
+   `PrimaryRamps`/`SecondaryRamps`.
+2. `ResourcesLibrary.TryUnloadResource(donorId)` → `LoadedResource.Unload()`
+   → `LoadedBundle.Unload(true)` force-destroyed the shared bundle-mate
+   materials (Character_Diffuse_Cutout, lambert1, whiteSquare,
+   shared_aiStandard10) still referenced by every proxy clone — these were
+   alive immediately after the inner-asset call and dead by cleanup.
+3. The v1 heal was ineffective: `HealNativeDependency`'s
+   `if (current != null)` gate skipped eviction exactly when the cache held a
+   corpse, and live-but-gutted donors had no reload path at all; proxies were
+   also healed before the donors they clone from. Three heal boundaries fired
+   (loaded-cache-cleanup, character-creator-update ×2) each reporting
+   damaged=102, recloned=28, rebound=74, remaining=102 — the IL-verified
+   cache-hit-without-liveness-check behavior confirmed.
+
+Repair v2 (all static qualification PASS; 1,567 deterministic tests;
+local-runtime package SHA-256
+`5396494a671c2461d89ce8307e583b2f14a27889795c038336186dfa96ef8fe4`, DLL
+SHA-256 `556eb5217293c7ed076aa99088fff00831b1b18871c78ff2c3229471bb42227d`):
+
+- Retention completeness: the creator retention plan now extends the native
+  exception set with proxy AND donor ramp textures
+  (`ProtectedInnerAssets`), not just `GetInnerAssets()`.
+- Donor unload guard: `TryUnloadResource` prefix keeps the exact 75
+  registered native dependency identities cached and alive (reports success,
+  skips the bundle unload); no foreign resource is retained.
+- Native anchor: hidden `DontDestroyOnLoad` GameObject
+  (`ElementalVisualResourceAnchor`) holds references to the 28 proxies and
+  75 donors so Unity's unused-asset sweep cannot destroy them; cache
+  counters armed at set construction so the first counter-based cleanup
+  cannot evict them; anchor refreshed on every rebind/replace and destroyed
+  on rollback.
+- Heal correctness: damaged dependency entries (corpse or live-but-gutted
+  registered instance) are evicted before reload
+  (`EvictReloadableNativeDependency` + policy), dependencies heal before
+  proxies, recloned proxies are integrity-checked before registration, and
+  the native loader's name-only validation is backed by Unity liveness
+  checks on every accepted instance.
+
 ## Next exact action
 
-1. Deploy the repaired build through the guarded harness (backup-first, exact
-   identity checks) and re-run
-   `working-save-creator-visual-lifecycle`: PASS requires both creator visits
-   to complete with live inner assets (the run 05 fail-closed assertion),
-   a renderable committed world view, and survival across the ReloadArea
-   boundary.
+1. Deploy repair v2 through the guarded harness and re-run
+   `working-save-creator-visual-lifecycle` (expect: no inner-asset
+   destruction during creator, both visits complete, renderable committed
+   world view, boundary survival).
 2. Then run the canonical `working-save-smoke`.
-3. Then both reported creation paths per mission gate 4 (new-game creation and
-   mercenary recruitment) — the lifecycle scenario covers mercenary
-   recruitment; new-game creation coverage still needs its guarded scenario or
-   an explicitly documented equivalent.
+3. Then both reported creation paths per mission gate 4 — mercenary
+   recruitment covered by the lifecycle scenario; new-game creation coverage
+   still needs its guarded scenario or an explicitly documented equivalent
+   (0.0.117 history forbids DefaultPlayerCharacter-in-loaded-campaign as a
+   substitute).
 4. Record evidence, update the report, final checkpoint.
 
 ## Deployment / installation state

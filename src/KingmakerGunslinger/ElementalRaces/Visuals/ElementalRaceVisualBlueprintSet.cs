@@ -85,6 +85,11 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 _registry.RegisteredCount != ResourceCount)
                 throw new InvalidOperationException(
                     "Elemental visual set inventory or order drifted.");
+            // The registered proxies and donors must stay reachable from native
+            // state for the whole session: mark their cache counters and hold
+            // them on a hidden persistent GameObject so neither the counter-based
+            // cleanup nor Unity's unused-asset sweep can destroy them.
+            _registry.AttachNativeAnchor();
         }
 
         internal int BlueprintCount
