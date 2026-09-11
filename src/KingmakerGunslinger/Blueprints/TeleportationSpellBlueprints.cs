@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -71,7 +71,11 @@ namespace KingmakerGunslinger.Blueprints
             ability.CanTargetPoint = false;
             ability.CanTargetEnemies = false;
             ability.CanTargetFriends = false;
-            ability.CanTargetSelf = false;
+            // The native scroll activation boundary gives scroll abilities a
+            // Personal anchor targeting the reader; self-targeting must be
+            // allowed or a genuine scroll can never be activated. The world-map
+            // caster checker still forbids every local use.
+            ability.CanTargetSelf = true;
             ability.SpellResistance = false;
             ability.ActionBarAutoFillIgnored = true;
             ability.Hidden = false;
@@ -102,7 +106,7 @@ namespace KingmakerGunslinger.Blueprints
             if (ability == null || ability.Parent != null || ability.Type != AbilityType.Spell || ability.Hidden || ability.Icon == null ||
                 ability.ActionType != UnitCommand.CommandType.Standard || ability.MaterialComponent == null ||
                 ability.SpellResistance || ability.AvailableMetamagic != 0 || !ability.ActionBarAutoFillIgnored ||
-                ability.CanTargetPoint || ability.CanTargetEnemies || ability.CanTargetFriends || ability.CanTargetSelf ||
+                ability.CanTargetPoint || ability.CanTargetEnemies || ability.CanTargetFriends || !ability.CanTargetSelf ||
                 ability.ComponentsArray.Any(value => value == null ||
                     (value.GetType() != typeof(SpellComponent) && value.GetType() != typeof(TeleportationWorldMapCasterChecker) &&
                      value.GetType() != typeof(SpellListComponent))) ||
@@ -124,8 +128,20 @@ namespace KingmakerGunslinger.Blueprints
     {
         public bool CorrectCaster(UnitEntityData caster)
         {
-            return caster != null && Game.Instance != null && Game.Instance.CurrentMode == GameModeType.GlobalMap &&
-                BlueprintBootstrap.TeleportationPublication != null;
+            if (caster == null || Game.Instance == null || Game.Instance.CurrentMode != GameModeType.GlobalMap ||
+                BlueprintBootstrap.TeleportationPublication == null) return false;
+            // Native ACTIVATION of a strategic scroll is only correct inside an
+            // authorized contextual request. The native item-use path creates a
+            // temporary ability fact whose SourceItem IS the scroll before any
+            // availability check; when such a fact exists on the caster the
+            // request-bound activation gate decides, so ordinary inventory or
+            // equipment use is refused before any roll or consumption. Every
+            // other context — menu enumeration, spellbook presentation, pure
+            // availability queries, preparation previews — carries no scroll
+            // fact and stays permitted.
+            if (Spells.Teleportation.TeleportationScrollActivationGate.HasStrategicScrollFact(caster))
+                return Spells.Teleportation.TeleportationScrollActivationGate.Authorized(caster);
+            return true;
         }
         public string GetReason()
         { return LocalizationService.Create("KMG.Teleportation.UseDestinationActions", "Select an eligible world-map destination to use this spell."); }

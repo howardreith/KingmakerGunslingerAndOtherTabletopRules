@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -77,7 +77,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             assertions.Add(Assertion("teleportation-ui-real-source-rows", "six distinct caster/book rows with exact current labels and isolated callbacks",
                 "rows=" + rows.Actions.Count, rows.Actions.Count == 6 && rows.Actions.Select(value => value.Key).Distinct().Count() == 6 &&
                 rows.Buttons.Select((button, index) => button.onClick.GetPersistentEventCount() == 0 && button.interactable &&
-                    button.GetComponentInChildren<TextMeshProUGUI>(true).text == TeleportContextPresentation.Row(rows.Actions[index], TeleportationText.Get)).All(value => value), path));
+                    button.GetComponentInChildren<TextMeshProUGUI>(true).text == TeleportContextPresentation.CompactRow(rows.Actions[index], TeleportationText.Get)).All(value => value), path));
             var viewport = (RectTransform)rows.transform;
             assertions.Add(Assertion("teleportation-ui-native-layout", "appended native style row viewport has positive measured geometry",
                 "width=" + viewport.rect.width + ";height=" + viewport.rect.height,
@@ -317,7 +317,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return TeleportationDiagnosticJson.Serialize(panel.GetComponentsInChildren<Button>(true).Where(value => value.GetComponentInParent<TeleportDestinationRows>() == null)
                 .Select(value => new { name = value.name, active = value.gameObject.activeSelf, interactable = value.interactable,
                     labels = value.GetComponentsInChildren<TextMeshProUGUI>(true).Select(label => label.text).ToArray(),
-                    callbacks = Enumerable.Range(0, value.onClick.GetPersistentEventCount()).Select(value.onClick.GetPersistentMethodName).ToArray() }).ToArray());
+                    callbacks = Enumerable.Range(0, value.onClick.GetPersistentEventCount()).Select(value.onClick.GetPersistentMethodName).ToArray() }).ToArray())
+                .Replace(TeleportContextPresentation.SettlementTeleportLabel(TeleportationText.Get), "Teleport");
         }
         private static void CloseTeleportationFixturePanels()
         {

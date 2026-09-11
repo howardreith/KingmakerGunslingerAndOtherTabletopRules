@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -100,6 +100,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                 book.Rest();
+                int castStarts = movement.Starts, castStops = movement.Stops;
                 var before = new TeleportationWorldSnapshot(TeleportationWorldMapAdapter.Capture(false));
                 string resourcesBefore = TeleportResourceFingerprint(book);
                 SelectTeleportationCastingPoint(panel, point);
@@ -132,10 +133,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     transaction = request.Transaction.State.ToString(), request.Transaction.Diagnostic, result = request.Execution.LastEvidence,
                     deferredProtectedStateUnchanged = committed, movement.Starts, movement.Stops });
                 TeleportInteractionAssert("contextual-arrival-" + point.Blueprint.AssetGuid,
-                    "native controls retained; actual confirmation spends one real slot; exact dot arrival and all protected state hold across frames",
+                    "native controls retained; actual confirmation spends one real slot; exact dot arrival, exactly one native pawn-notification pair and no other movement hold across frames",
                     "transaction=" + request.Transaction.State + ";nativePreserved=" + nativePreserved,
                     committed && nativePreserved && request.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
-                    dice.D100Count == 0 && dice.D10Count == 0 && movement.Starts == 0 && movement.Stops == 0 &&
+                    dice.D100Count == 0 && dice.D10Count == 0 && movement.Starts == castStarts + 1 && movement.Stops == castStops + 1 &&
                     !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown);
                 if (!committed) throw new InvalidOperationException("Special point cast failed: " + point.Blueprint.AssetGuid + ";" + request.Transaction.Diagnostic);
             }
@@ -148,6 +149,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (arrivalBoundary == null || hidden == null || hidden.Data.IsRevealed || hidden.Data.LastPerceptionRolled != 0)
                 throw new InvalidOperationException("The native deferred exploration positive control lost its unvisited/unchecked state.");
             string beforeTravelSlots = TeleportResourceFingerprint(book);
+            int travelStartsBase = movement.Starts;
             var arrival = rules.GetLocationObject(map.PartyLocation);
             var ordinaryEdge = arrival.Edges.Where(value => value != null && !value.IsLocked && value.Spline != null &&
                 value.Spline.WorldLength > 0 && value.GetOppositeLocation(arrival) != hidden &&
@@ -173,7 +175,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             TeleportInteractionAssert("ordinary-travel-releases-exploration", "native Travel resumes the real exploration tick with no spell expenditure",
                 "boundaryCleared=" + (ledger.ReadExplorationBoundary() == null) + ";nativePerception=" + hidden.Data.LastPerceptionRolled,
                 ledger.ReadExplorationBoundary() == null && hidden.Data.LastPerceptionRolled > 0 &&
-                beforeTravelSlots == TeleportResourceFingerprint(book) && movement.Starts == 1);
+                beforeTravelSlots == TeleportResourceFingerprint(book) && movement.Starts == travelStartsBase + 1);
             CaptureTeleportInteraction("ordinary-exploration-control", new { arrivalBoundary = arrivalBoundary.Serialize(),
                 targetId = hidden.Blueprint.AssetGuid, hidden.Data.LastPerceptionRolled, hidden.Data.IsRevealed, movement.Starts });
             rules.OnBreak();
@@ -197,7 +199,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             TeleportInteractionAssert("ordinary-travel-recovers-corrupt-boundary", "invalid spell state hides casting and cannot permanently block native exploration",
                 "invalidCastAbsent=" + invalidCastAbsent + ";nativePerception=" + hidden.Data.LastPerceptionRolled,
                 invalidCastAbsent && ledger.ReadExplorationBoundary() == null && hidden.Data.LastPerceptionRolled > 0 &&
-                beforeTravelSlots == TeleportResourceFingerprint(book) && movement.Starts == 2);
+                beforeTravelSlots == TeleportResourceFingerprint(book) && movement.Starts == travelStartsBase + 2);
             CaptureTeleportInteraction("corrupt-boundary-ordinary-control", new { invalidCastAbsent,
                 hidden.Data.LastPerceptionRolled, movement.Starts, exactResources = beforeTravelSlots == TeleportResourceFingerprint(book) });
             rules.OnBreak();

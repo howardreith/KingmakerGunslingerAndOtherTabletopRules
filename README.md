@@ -623,3 +623,32 @@ Wwise 2016.2.6.6153 with five embedded firearm media items. The mod stages only
 that allowlisted bank into Kingmaker's native Windows SoundBank directory.
 Audio failure remains fail-soft for firearm mechanics. The retired Unity
 `AudioSource` fallback is not used, and no custom `Init.bnk` is distributed.
+
+### Teleportation completion update (unreleased candidate, 2026-09-10)
+
+The five completion items below are qualified on the current development
+candidate (see `TELEPORTATION-COMPLETION-HANDOFF.md` for exact evidence):
+
+- **Post-teleport movement.** Relocation now issues the native
+  pawn-notification pair, so the direction arrows around the party token are
+  rebuilt at the actual arrival point — including off-target arrivals and
+  fresh save reloads. The first click on a legal arrow works immediately;
+  no extra travel is needed to "repair" movement.
+- **Conjuration specialists.** Teleport and Greater Teleport are published
+  into the native Conjuration school list, so a Conjuration specialist can
+  prepare them in the fifth/seventh-level favorite slot through the normal
+  spellbook UI. Existing specialists work without respec. Universalists and
+  other schools are unchanged.
+- **Compact destination menu.** Spell actions are compact two-line controls
+  ("Cast Teleport" over "caster · n prepared") that fit the parchment on
+  narrow layouts. When the native settlement teleport is also available, it
+  is labeled **Settlement Teleport** to distinguish it from the spells; the
+  label restores itself when the spell rows close.
+- **Genuine scrolls.** Real Teleport (5th, 1,125 gp), Greater Teleport (7th,
+  2,275 gp) and Word of Recall (6th, 1,650 gp) scrolls are sold in finite
+  batches — Zarcie stocks Teleport and Greater Teleport; Arsinoe and the
+  Jhod priests stock Word of Recall. Wizards can copy them into a book
+  (native copy rules), any character with trained Use Magic Device can read
+  them from the world-map menu, and using one from inventory tells you to
+  select a destination on the world map. Each activation consumes exactly
+  one scroll; bought-out stock stays bought out.

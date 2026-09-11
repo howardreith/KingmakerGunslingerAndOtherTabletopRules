@@ -35,10 +35,10 @@
     "guidPattern": "32 lowercase hexadecimal characters",
     "duplicateGuidCount": 0,
     "duplicateSymbolCount": 0,
-    "entryCount": 1883,
-    "activeEntryCount": 1881,
+    "entryCount": 1886,
+    "activeEntryCount": 1884,
     "reservedEntryCount": 2,
-    "registrationCount": 1867
+    "registrationCount": 1870
   },
   "sprint29": {
     "completeMaintenanceLoop": true,
@@ -1334,7 +1334,7 @@
     "treacherousPlayerRespecSaveQualificationWaivedByOwner": true
   },
   "unifiedRepair121": {
-    "deterministicTestCount": 1554,
+    "deterministicTestCount": 1561,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -14,11 +14,20 @@ namespace KingmakerGunslinger.Spells.Teleportation
     {
         internal TeleportationNativeCastSource(TeleportCastSourceSnapshot snapshot, Spellbook book, AbilityData ability)
         { Snapshot = snapshot; Book = book; Ability = ability; }
+        // Inventory-backed sources have no spellbook; the reader is explicit.
+        internal TeleportationNativeCastSource(TeleportCastSourceSnapshot snapshot, Spellbook unused,
+            AbilityData ability, Kingmaker.EntitySystem.Entities.UnitEntityData reader)
+        { Snapshot = snapshot; Book = null; Ability = ability; Caster = reader; }
+        internal Kingmaker.EntitySystem.Entities.UnitEntityData Caster
+        { get { return _caster ?? (Book == null ? null : Book.Owner.Unit); } private set { _caster = value; } }
+        private Kingmaker.EntitySystem.Entities.UnitEntityData _caster;
         internal TeleportCastSourceSnapshot Snapshot { get; private set; }
         internal Spellbook Book { get; private set; }
         internal AbilityData Ability { get; private set; }
         internal TeleportationNativeCastResource Capture()
         { return new TeleportationNativeCastResource(this); }
+        internal object Evidence() { return new { kind = Snapshot.Kind.ToString(), casterId = Snapshot.CasterId,
+            bookId = Snapshot.BookId, spell = Snapshot.Spell.ToString(), uses = Snapshot.Uses }; }
     }
 
     internal static class TeleportationSpellbookAdapter
@@ -145,7 +154,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (string.IsNullOrWhiteSpace(bookName)) return null;
             var snapshot = new TeleportCastSourceSnapshot(caster.UniqueId, order, caster.CharacterName, book.Blueprint.AssetGuid,
                 bookName, kind, book.Blueprint.Spontaneous ? TeleportCastSourceKind.Spontaneous : TeleportCastSourceKind.Prepared,
-                level, uses, facts);
+                level, book.CasterLevel, uses, facts);
             return TeleportCastAvailabilityPolicy.Usable(snapshot) ? new TeleportationNativeCastSource(snapshot, book, ability) : null;
         }
     }

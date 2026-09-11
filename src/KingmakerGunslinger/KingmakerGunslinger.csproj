@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.props" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Common.props')" />
   <Import Project="..\..\GamePath.props" Condition="Exists('..\..\GamePath.props')" />
@@ -317,6 +317,8 @@
     <Compile Include="Blueprints\ShieldOtherBlueprints.cs" />
     <Compile Include="Blueprints\TeleportationSpellBlueprints.cs" />
     <Compile Include="Blueprints\TeleportationSpellListPublication.cs" />
+    <Compile Include="Blueprints\TeleportationScrollBlueprints.cs" />
+    <Compile Include="Blueprints\TeleportationScrollVendorPublication.cs" />
     <Compile Include="Blueprints\ShieldOtherSpellListPublication.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\ProtectionAlignment.cs" />
     <Compile Include="Spells\ProtectionFromAlignment\MentalControlBlueprintKind.cs" />
@@ -896,6 +898,10 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpellbookUi.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationLevelUp.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDestinations.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationArrows.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpecialist.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationScrolls.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPersistenceAcquisition.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDisabled.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationLoadDiagnostics.cs" />
     <Compile Include="Spells\Teleportation\TeleportationText.cs" />
@@ -908,6 +914,9 @@
     <Compile Include="Spells\Teleportation\UnitPartTeleportFamiliarity.cs" />
     <Compile Include="Spells\Teleportation\TeleportExplorationBoundary.cs" />
     <Compile Include="Spells\Teleportation\TeleportExplorationGuardPatches.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationScrollVendorMigration.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationScrollActivationGate.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationScrollAdapter.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityRuntime.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityPatches.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInventory.cs" />

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -175,6 +175,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!TeleportDestinationPolicy.EvaluateSafety(point, context.OriginId, Forbidden).Eligible)
                 return new WorldMapPointSpellAction[0];
             var sources = TeleportationSpellbookAdapter.Enumerate(context.Player).Select(value => value.Snapshot)
+                .Concat(TeleportationScrollAdapter.Enumerate(context.Player))
                 // The composer requires a persisted arrival for both Teleport
                 // families. Ordinary Teleport also needs a usable mishap path.
                 .Where(value => value.Spell != TeleportSpellKind.Teleport ||

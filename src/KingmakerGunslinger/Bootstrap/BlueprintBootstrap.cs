@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using Kingmaker.Blueprints;
@@ -68,7 +68,11 @@ namespace KingmakerGunslinger.Bootstrap
         private static BlueprintItemEquipmentBelt _cordOfStubbornResolve;
         private static TeleportationSpellBlueprintSet _teleportation;
         private static TeleportationSpellListPublication _teleportationPublication;
+        private static TeleportationScrollBlueprintSet _teleportationScrolls;
+        private static TeleportationScrollVendorPublication _teleportationScrollVendors;
         internal static TeleportationSpellBlueprintSet Teleportation { get { return _teleportation; } }
+        internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }
+        internal static TeleportationScrollVendorPublication TeleportationScrollVendors { get { return _teleportationScrollVendors; } }
         internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }
         private static ShieldOtherBlueprintSet _shieldOther;
         private static ShieldOtherSpellListPublication _shieldOtherPublication;
@@ -825,6 +829,24 @@ namespace KingmakerGunslinger.Bootstrap
                 try
                 {
                     teleportation = TeleportationSpellBlueprints.Register(library, teleportationRegistry);
+                    _teleportationScrolls = TeleportationScrollBlueprints.Register(library, teleportationRegistry, teleportation);
+                    // The finite vendor stock rows are save-compatible campaign
+                    // DEFINITIONS, published whenever the scroll identities load —
+                    // independently of gameplay enablement. A fresh OFF process
+                    // rebuilding blueprints without them would make the native
+                    // shared-table reconciliation wipe already-generated shelf
+                    // stock and its purchase memory, so re-enabling would refill
+                    // bought-out shelves. Teleport activation, migration and
+                    // spell-list publication remain module-gated.
+                    try {
+                        _teleportationScrollVendors = TeleportationScrollVendorPublication.Publish(library,
+                            _teleportationScrolls, true, context.Logger);
+                    }
+                    catch (Exception vendorException) {
+                        _teleportationScrollVendors = null;
+                        context.Logger.Failure("teleportation-spells", "scroll-vendors.publication-failed",
+                            "Finite scroll stock was not published; scroll items remain registered and other modules continue.", vendorException);
+                    }
                     if (publicationPlan.TeleportationSpellLists)
                     {
                         try {
@@ -841,7 +863,7 @@ namespace KingmakerGunslinger.Bootstrap
                 }
                 catch (Exception registrationException)
                 {
-                    teleportation = null;
+                    teleportation = null; _teleportationScrolls = null;
                     try { teleportationRegistry.RollbackAll(); }
                     catch (Exception rollbackException) {
                         context.Logger.Failure("teleportation-spells", "registration.rollback-failed",

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 
 namespace KingmakerGunslinger.Spells.Teleportation
@@ -25,12 +25,36 @@ namespace KingmakerGunslinger.Spells.Teleportation
         { return action.Source.CasterName + (action.ShowBook ? ", " + action.Source.BookName : string.Empty); }
         internal static string Uses(TeleportCastSourceSnapshot source, Translate text)
         {
+            if (source.Kind == TeleportCastSourceKind.Scroll)
+                return Format(source.Uses == 1 ? text("ScrollCount.Single", "{0} shared scroll") :
+                    text("ScrollCount.Plural", "{0} shared scrolls"), source.Uses);
             return Format(source.Kind == TeleportCastSourceKind.Prepared ? text("PreparedCount", "{0} prepared") :
                 source.Uses == 1 ? text("SlotCount.Single", "{0} {1} slot") : text("SlotCount.Plural", "{0} {1} slots"),
                 source.Uses, Level(source.SpellLevel, text));
         }
         internal static string Row(WorldMapPointSpellAction action, Translate text)
         { return Format(text("ActionRow", "{0}  {1} ({2})"), SpellName(action.Source.Spell, text), Caster(action), Uses(action.Source, text)); }
+        // Compact two-line desktop rows: the full spell name as the title and
+        // caster/cost detail beneath it, so controls stay within the native
+        // parchment's inner content width on compact geometries.
+        internal static string Title(WorldMapPointSpellAction action, Translate text)
+        {
+            return action.Source.Kind == TeleportCastSourceKind.Scroll ?
+                Format(text("ActionTitle.Scroll", "Use {0} Scroll"), SpellName(action.Source.Spell, text)) :
+                Format(text("ActionTitle", "Cast {0}"), SpellName(action.Source.Spell, text));
+        }
+        internal static string Detail(WorldMapPointSpellAction action, Translate text)
+        {
+            // Material variant identity is part of the choice: scroll rows name
+            // the caster level so two same-count variants stay visibly distinct.
+            return Format(text("ActionDetail", "{0} · {1}"), Caster(action), Uses(action.Source, text)) +
+                (action.Source.Kind == TeleportCastSourceKind.Scroll ?
+                    " · " + Format(text("CasterLevel", "CL {0}"), action.Source.CasterLevel.ToString(CultureInfo.InvariantCulture)) : string.Empty);
+        }
+        internal static string CompactRow(WorldMapPointSpellAction action, Translate text)
+        { return Title(action, text) + "\n" + Detail(action, text); }
+        internal static string SettlementTeleportLabel(Translate text)
+        { return text("SettlementTeleport", "Settlement Teleport"); }
         internal static string Confirmation(WorldMapPointSpellAction action, TeleportFamiliarity familiarity, Translate text)
         {
             string spell = SpellName(action.Source.Spell, text);
@@ -53,6 +77,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             else value += action.Source.Spell == TeleportSpellKind.GreaterTeleport ?
                 text("GreaterExact", "Greater Teleport arrives exactly at the selected world-map point.\n\n") :
                 text("RecallExact", "Word of Recall returns the party exactly to this world-map point.\n\n");
+            if (action.Source.Kind == TeleportCastSourceKind.Scroll)
+                return value + Format(text("ScrollCasterLevel", "Scroll caster level: {0}.\n\n"), action.Source.CasterLevel.ToString(CultureInfo.InvariantCulture)) +
+                    Format(text("ConsumesScroll", "This consumes one {0} scroll and no spell slot."), spell);
             return value + (action.Source.Kind == TeleportCastSourceKind.Prepared ?
                 Format(text("ConsumesPrepared", "This consumes one prepared {0}."), spell) :
                 Format(text("ConsumesSlot", "This consumes one {0} spell slot."), Level(action.Source.SpellLevel, text)));

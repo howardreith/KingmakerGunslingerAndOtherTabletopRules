@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -79,6 +79,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 input = _teleportPersistencePlan.Input, finalSnapshot = _teleportPersistenceFinal, savedInfo = _teleportPersistenceSaved,
                 events = _teleportPersistenceEvents, assertions = _teleportPersistenceAssertions, error });
         }
+        private JObject NormalizeAcquisitionForModule(JToken token)
+        {
+            var normalized = (JObject)token.DeepClone();
+            return normalized;
+        }
         private IEnumerable<int> RunTeleportationPersistence()
         {
             var plan = _teleportPersistencePlan; var game = Game.Instance; var map = GlobalMapRules.State;
@@ -98,9 +103,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             else chain = ((JArray)plan.Expected["chainIds"]).Select(id => rules.AllLocations.Single(value => value.Blueprint.AssetGuid == (string)id)).ToArray();
             _teleportPersistenceChain = chain.Select(value => value.Blueprint.AssetGuid).ToArray();
             JObject initial = CaptureTeleportPersistence();
-            if (plan.Phase != "A") PersistenceAssert("fresh-owner-payload", "Fresh native load restores exact owner, migration, counts and exploration boundary",
-                JToken.DeepEquals(initial, plan.Expected), new { expected = plan.Expected, actual = initial });
-            if (plan.Phase == "D") { _teleportPersistenceFinal = initial; yield break; }
+            if (plan.Phase != "A") PersistenceAssert("fresh-owner-payload", "Fresh native load restores exact owner, migration, counts, exploration boundary and acquisition lifecycle state",
+                // Canonical serialization equality: plan values arrive as JSON
+                // longs while live capture builds ints, and JToken.DeepEquals
+                // treats those boxed types as unequal despite identical values.
+                // With the module OFF the vendor shelf legitimately offers
+                // nothing (publication is disabled); owned items, purchases and
+                // grant markers still persist and are compared exactly.
+                string.Equals(NormalizeAcquisitionForModule(initial).ToString(Newtonsoft.Json.Formatting.None),
+                    NormalizeAcquisitionForModule(plan.Expected).ToString(Newtonsoft.Json.Formatting.None), StringComparison.Ordinal),
+                new { expected = plan.Expected, actual = initial });
+            if (plan.Phase != "A")
+            {
+                // Gate 1 breadth: a fresh-process reload of the post-teleport save
+                // presents working arrows immediately, before any workaround.
+                var reloadArrival = rules.GetLocationObject(map.PartyLocation);
+                var reloadLabels = ArrowCompassLabels();
+                PersistenceAssert("reload-arrows-immediate",
+                    "a fresh reload presents compass arrows bound to the loaded arrival point",
+                    reloadArrival != null && reloadLabels.Length > 0 && reloadLabels.All(label =>
+                        ArrowLabelEdge(label) != null && reloadArrival.Edges.Contains(ArrowLabelEdge(label))),
+                    new { point = map.PartyLocation == null ? null : map.PartyLocation.AssetGuid, labels = reloadLabels.Length });
+            }
+            if (plan.Phase == "A")
+            {
+                // A stable probe grant proves the vendor-grant markers persist
+                // through reload and module OFF/ON alongside the other fields.
+                ledger.RecordScrollVendorGrant("shared:persistence-probe");
+            }
+            if (plan.Phase == "D")
+            {
+                // Module ON again: the vendor shelf returns to exactly the finite
+                // batch minus remembered purchases — never a refill — while every
+                // owned item, learned spell and spent preparation persisted.
+                var acquisition = initial["acquisition"] as JObject;
+                PersistenceAssert("module-on-no-refill",
+                    "re-enabling restores the vendor shelf to the batch minus remembered purchases without refilling, losing items or restoring spent uses",
+                    acquisition != null && (int)acquisition["remainingTeleportStock"] == 3 && (int)acquisition["remainingGreaterStock"] == 3 &&
+                        (int)acquisition["carriedTeleportScrolls"] == 0 && (bool)acquisition["learnedTeleport"] &&
+                        (int)acquisition["readyFavoriteUses"] == 1 && (int)acquisition["spentFavoriteUses"] == 0,
+                    new { acquisition });
+                _teleportPersistenceFinal = initial; yield break;
+            }
             var panel = TeleportationFixturePanel();
             if (plan.Phase == "C")
             {
@@ -137,6 +181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             else
             {
                 foreach (int tick in EstablishTeleportPersistence(ledger, chain, plan.Phase == "A")) yield return tick;
+                if (plan.Phase == "A")
+                    foreach (int tick in EstablishTeleportPersistenceAcquisition(chain)) yield return tick;
             }
             _teleportPersistenceFinal = CaptureTeleportPersistence();
             foreach (int tick in SaveTeleportPersistence()) yield return tick;

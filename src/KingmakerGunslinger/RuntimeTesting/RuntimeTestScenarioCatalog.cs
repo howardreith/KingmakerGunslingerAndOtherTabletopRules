@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -9,6 +9,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string DisposableTeleportationResources = "disposable-teleportation-resources";
         internal const string DisposableTeleportationDisabled = "disposable-teleportation-disabled";
         internal const string DisposableTeleportationDestinations = "disposable-teleportation-destinations";
+        internal const string DisposableTeleportationArrows = "disposable-teleportation-arrows";
+        internal const string DisposableTeleportationSpecialist = "disposable-teleportation-specialist";
+        internal const string DisposableTeleportationScrolls = "disposable-teleportation-scrolls";
         internal const string DisposableTeleportationLevelUp = "disposable-teleportation-level-up";
         internal const string DisposableTeleportationSpellbookUi = "disposable-teleportation-spellbook-ui";
         internal const string DisposableTeleportationGamepad = "disposable-teleportation-gamepad";
@@ -647,6 +650,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableTeleportationSpellbookUi,
                 DisposableTeleportationLevelUp,
                 DisposableTeleportationDestinations,
+                DisposableTeleportationArrows,
+                DisposableTeleportationSpecialist,
+                DisposableTeleportationScrolls,
                 DisposableTeleportationDisabled,
                 ReliableFirearmMisfireMatrix,
                 BlunderbussThunderingScatter,

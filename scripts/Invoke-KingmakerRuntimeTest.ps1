@@ -1,4 +1,4 @@
-[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+﻿[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [Parameter(Mandatory = $true)]
     [string]$Scenario,
@@ -609,6 +609,9 @@ try {
         'disposable-teleportation-spellbook-ui',
         'disposable-teleportation-level-up',
         'disposable-teleportation-destinations',
+        'disposable-teleportation-arrows',
+        'disposable-teleportation-specialist',
+        'disposable-teleportation-scrolls',
         'disposable-teleportation-disabled',
         'weapon-presentation-motion-evidence',
         'weapon-presentation-handgun-motion-evidence',
