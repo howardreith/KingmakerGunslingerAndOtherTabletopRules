@@ -761,6 +761,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'disposable-teleportation-specialist' = [pscustomobject]@{
+    'disposable-teleportation-specialist-cache' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
@@ -1611,7 +1617,7 @@ function Assert-KmgRuntimeScenarioPreflight {
     }
     if ($ExpectedVersion -cne '0.0.123' -and
         -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.123.'
+        throw 'ExpectedVersion must be exactly the active version 0.0.124.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'

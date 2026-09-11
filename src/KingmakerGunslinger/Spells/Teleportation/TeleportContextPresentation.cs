@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace KingmakerGunslinger.Spells.Teleportation
 {
@@ -55,11 +57,50 @@ namespace KingmakerGunslinger.Spells.Teleportation
         { return Title(action, text) + "\n" + Detail(action, text); }
         internal static string SettlementTeleportLabel(Translate text)
         { return text("SettlementTeleport", "Settlement Teleport"); }
+        // A verified successful Greater Teleport arrival announces nothing. Every
+        // other result — arrival by ordinary Teleport, rules failures, uncertain
+        // expenditure — keeps its actionable player message.
+        internal static bool SuppressSuccessAnnouncement(TeleportSpellKind spell, TeleportExecutionStatus status)
+        { return spell == TeleportSpellKind.GreaterTeleport && status == TeleportExecutionStatus.Arrived; }
+        // Outcome-appropriate arrival sentences. An unnamed destination never
+        // substitutes a noun into the "arrived at {destination}" template; the
+        // complete sentence comes from its own localization entry.
+        internal static string ArrivalMessage(TeleportSpellKind spell, TeleportOutcomeKind outcome,
+            string destinationName, Translate text)
+        {
+            if (!string.IsNullOrWhiteSpace(destinationName))
+                return Format(text("Result.Arrival.Named", "{0}: {1}. The party arrived at {2}."),
+                    SpellName(spell, text), ArrivalOutcomeLabel(outcome, text), destinationName);
+            if (outcome == TeleportOutcomeKind.OnTarget)
+                return Format(text("Result.Arrival.TargetLocation", "{0}: On target. The party arrived at the target location."),
+                    SpellName(spell, text));
+            return Format(text("Result.Arrival.SomewhereElse", "{0}: {1}. The party arrived somewhere else."),
+                SpellName(spell, text), ArrivalOutcomeLabel(outcome, text));
+        }
+        private static string ArrivalOutcomeLabel(TeleportOutcomeKind outcome, Translate text)
+        {
+            return outcome == TeleportOutcomeKind.OffTarget ? text("Result.OffTarget", "Off target") :
+                outcome == TeleportOutcomeKind.SimilarLocation ? text("Result.Similar", "Similar location") :
+                text("Result.OnTarget", "On target");
+        }
         internal static string Confirmation(WorldMapPointSpellAction action, TeleportFamiliarity familiarity, Translate text)
         {
+            // The single-string form joins the same sections the desktop
+            // decorator separates with native-looking divider rules.
+            var sections = ConfirmationSections(action, familiarity, text);
+            return string.Join("\n\n", sections.ToArray()) + "\n";
+        }
+        // Confirmation groups in display order: casting facts, familiarity,
+        // outcome probabilities, then resource cost. Every group keeps its full
+        // disclosure; only the grouping is expressed here so the UI can place a
+        // restrained separator rule between groups.
+        internal static IReadOnlyList<string> ConfirmationSections(WorldMapPointSpellAction action, TeleportFamiliarity familiarity, Translate text)
+        {
             string spell = SpellName(action.Source.Spell, text);
-            string value = Format(text("Confirmation", "Cast {0}?\n\nCaster: {1}\nDestination: {2}\nAvailable: {3}\n\n"),
-                spell, Caster(action), Destination(action.Destination, text), Uses(action.Source, text));
+            var sections = new List<string> {
+                Format(text("Confirmation", "Cast {0}?\n\nCaster: {1}\nDestination: {2}\nAvailable: {3}"),
+                    spell, Caster(action), Destination(action.Destination, text), Uses(action.Source, text))
+            };
             if (action.Source.Spell == TeleportSpellKind.Teleport)
             {
                 var odds = TeleportRollTable.For(familiarity);
@@ -70,19 +111,20 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     case TeleportFamiliarity.SeenCasually: category = text("Familiarity.SeenCasually", "Seen casually"); break;
                     default: category = text("Familiarity.ViewedOnce", "Viewed once"); break;
                 }
-                value += Format(text("Odds", "Familiarity: {0}\nOrdinary visits: {1}\n\nOn target: {2}%\nOff target: {3}%\nSimilar location: {4}%\nMishap: {5}%\n\n"),
-                    category, action.Destination.OrdinaryArrivals, odds.OnTargetPercent, odds.OffTargetPercent,
-                    odds.SimilarLocationPercent, odds.MishapPercent);
+                sections.Add(Format(text("FamiliarityGroup", "Familiarity: {0}\nOrdinary visits: {1}"), category, action.Destination.OrdinaryArrivals));
+                sections.Add(Format(text("OddsGroup", "On target: {0}%\nOff target: {1}%\nSimilar location: {2}%\nMishap: {3}%"),
+                    odds.OnTargetPercent, odds.OffTargetPercent, odds.SimilarLocationPercent, odds.MishapPercent));
             }
-            else value += action.Source.Spell == TeleportSpellKind.GreaterTeleport ?
-                text("GreaterExact", "Greater Teleport arrives exactly at the selected world-map point.\n\n") :
-                text("RecallExact", "Word of Recall returns the party exactly to this world-map point.\n\n");
+            else sections.Add(action.Source.Spell == TeleportSpellKind.GreaterTeleport ?
+                text("GreaterExact", "Greater Teleport arrives exactly at the selected world-map point.") :
+                text("RecallExact", "Word of Recall returns the party exactly to this world-map point."));
             if (action.Source.Kind == TeleportCastSourceKind.Scroll)
-                return value + Format(text("ScrollCasterLevel", "Scroll caster level: {0}.\n\n"), action.Source.CasterLevel.ToString(CultureInfo.InvariantCulture)) +
-                    Format(text("ConsumesScroll", "This consumes one {0} scroll and no spell slot."), spell);
-            return value + (action.Source.Kind == TeleportCastSourceKind.Prepared ?
+                sections.Add(Format(text("ScrollCasterLevel", "Scroll caster level: {0}."), action.Source.CasterLevel.ToString(CultureInfo.InvariantCulture)) + "\n" +
+                    Format(text("ConsumesScroll", "This consumes one {0} scroll and no spell slot."), spell));
+            else sections.Add(action.Source.Kind == TeleportCastSourceKind.Prepared ?
                 Format(text("ConsumesPrepared", "This consumes one prepared {0}."), spell) :
                 Format(text("ConsumesSlot", "This consumes one {0} spell slot."), Level(action.Source.SpellLevel, text)));
+            return sections;
         }
         private static string Level(int level, Translate text)
         {

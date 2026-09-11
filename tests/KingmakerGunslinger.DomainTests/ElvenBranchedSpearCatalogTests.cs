@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.123\"") &&
-                props.Contains("<KmgVersion>0.0.123</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.123-character-visibility-repair</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.123\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.123\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.123-character-visibility-repair\")"),
-                "Release and assembly identity are not transactionally pinned to the character visibility repair candidate.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.124\"") &&
+                props.Contains("<KmgVersion>0.0.124</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.124-teleport-polish-specialist</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.124\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.124\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.124-teleport-polish-specialist\")"),
+                "Release and assembly identity are not transactionally pinned to the teleport polish specialist candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-character-visibility-repair.zip") &&
+                "$($info.Id)-$($info.Version)-teleport-polish-specialist.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the character visibility repair archive.");
-            Assertions.True(runtime.Contains("active version 0.0.123") &&
-                localBuild.Contains("active version 0.0.123") &&
-                localBuild.Contains("local-runtime\\0.0.123"),
+                "Package identity is not pinned to the teleport polish specialist archive.");
+            Assertions.True(runtime.Contains("active version 0.0.124") &&
+                localBuild.Contains("active version 0.0.124") &&
+                localBuild.Contains("local-runtime\\0.0.124"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

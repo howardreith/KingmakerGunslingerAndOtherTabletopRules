@@ -611,6 +611,7 @@ try {
         'disposable-teleportation-destinations',
         'disposable-teleportation-arrows',
         'disposable-teleportation-specialist',
+        'disposable-teleportation-specialist-cache',
         'disposable-teleportation-scrolls',
         'disposable-teleportation-disabled',
         'weapon-presentation-motion-evidence',

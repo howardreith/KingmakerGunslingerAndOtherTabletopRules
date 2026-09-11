@@ -1,4 +1,4 @@
-# Kingmaker Gunslinger 0.0.123
+﻿# Kingmaker Gunslinger 0.0.123
 
 Informational version: **0.0.123-character-visibility-repair**.
 The owner accepted the character-visibility repair mission report and
@@ -87,3 +87,8 @@ firearm SoundBank is retained unchanged: `KMG_Firearms.bnk` SHA-256
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
 Foreign assemblies — `CraftMagicItems.dll` remains an externally installed
 optional mod and is never bundled.
+
+This release is superseded by the teleport polish and specialist cache repair:
+install `KingmakerGunslinger-0.0.124-teleport-polish-specialist.zip`
+(0.0.124-teleport-polish-specialist) for the genuine Conjuration
+specialist-slot fix for existing specialists and the teleport UI polish.
