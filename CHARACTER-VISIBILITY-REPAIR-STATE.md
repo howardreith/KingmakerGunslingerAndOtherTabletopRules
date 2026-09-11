@@ -413,7 +413,10 @@ and re-captures the live UI controller.
 
 ## Next exact action
 
-1. Confirm `working-save-smoke` PASS on the repaired build (in flight).
+1. DONE 2026-09-11: canonical `working-save-smoke` run
+   `20260911T0640099828641Z-working-save-smoke` on the repaired build:
+   **Status PASS** (log
+   `runtime-evidence/character-visibility-repair/smoke-after-repair.log`).
 2. Continue mission gates above in priority order; update
    `CHARACTER-VISIBILITY-REPAIR-REPORT.md` at completion.
 
