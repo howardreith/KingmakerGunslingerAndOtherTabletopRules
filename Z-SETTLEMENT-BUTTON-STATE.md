@@ -12,10 +12,15 @@ native control and nothing else.
 - Branch: `codex/z-settlement-teleport-button-width` (from
   `677ee31a` = master `398d2b7c` + the 0.0.124 release record)
 - Active version: `0.0.125-settlement-button-width`
-- Candidate package
-  `artifacts/local-runtime/0.0.125/KingmakerGunslinger-0.0.125-local-runtime.zip`
-  package sha256 `f65fd629714db7195d9f0c2c162603435aa572a71eecdbef32369237a4272bd2`
-  DLL sha256 `ef5b05ff687ab8babdc8440d40cff2a3dbf5f79b0b9271b176a9ae0f0ee40da3`
+- RUNTIME-QUALIFIED artifact (built from commit `d8887b3e` by the guarded
+  orchestrator; installed == package == build exact-match guard PASS):
+  package `artifacts/local-runtime/0.0.125/KingmakerGunslinger-0.0.125-local-runtime.zip`
+  sha256 `6c5790d6f6d950d3388a8d24ea5feaf279b7ce2bc3127a2a5ae11c629c6b4c05`
+  DLL sha256 `b4bc1513c754b73bb1abdbcdba452628c8120dfeee6c5cbbe9a6413362b039fd`
+  deployment manifest
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260911T1745465853449Z/deployment.json`
+  (owner FeatureModules.json preserved; rollback backup
+  `C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260911T1745436555052Z`).
 
 ## Change (exactly one cosmetic adjustment)
 
@@ -91,12 +96,38 @@ addition to the existing label/callback gates:
 
 ## Runtime evidence
 
-- PENDING: guarded `disposable-teleportation-coexistence` run on the
-  candidate artifact via Steam App 640820 / `KMG_AUTOMATION_WORKING`.
+- 2026-09-11 guarded `disposable-teleportation-coexistence` PASS on the exact
+  final artifact (run `20260911T1745466343449Z-ccc05e0ebcab483189c47ab2263b7866`,
+  evidence `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260911T1745466213435Z-disposable-teleportation-coexistence/`,
+  Steam App 640820, `KMG_AUTOMATION_WORKING`, loaded mod 0.0.125, 28/28
+  assertions PASS, zero save writes, zero UI exceptions). Key geometry
+  (structured, canvas world/local units at the automated fixture's
+  resolution; canvas scale 0.8125):
+  - native settlement button 175.0 local wide → widened to 269.35 local =
+    218.9 world = label preferred 202.63 + native padding 16.25 (symmetric
+    ≈8.1/side) — exactly the policy target;
+  - widened extent −107.82..111.07 world, inside the Travel/Cancel region
+    −160.49..162.12 (compact-rows-fit unchanged: rows width 387.16, native
+    extent identical to the qualified 0.0.124 run — no indirect expansion);
+  - governing mechanism recorded: no parent layout group, point-centered
+    anchors (0.5/0.5) — the settled rect size carries the width; the
+    natively present LayoutElement (count 1 before/during/after) had its
+    values driven and restored;
+  - dismissal restores exactly 175.0 with the byte-for-byte label; a second
+    open cycle reproduces exactly 269.4 with neighbor geometry
+    byte-identical and rows unchanged (no cumulative growth); native
+    callback count 1 throughout; travel happened only through the explicit
+    native invoke gate; no resource spend from layout/reopening.
+- 2026-09-11 runtime scenario preflight 471 PASS + teleportation world-map
+  guarded metadata check PASS (post-bump orchestrator contracts).
 
 ## NOT RUN / limitations
 
 - Visual acceptance at the owner's resolution/UI scale remains pending owner
-  review; the automated proof is structured geometry, not an eyeball. The
-  machine's display settings are not modified autonomously.
+  review: the automated proof is structured geometry (the numbers above),
+  not an eyeball; no after screenshot was captured by the permitted workflow
+  (the scenario records structured evidence; screenshots remain optional
+  supporting evidence per the runtime-testing contract). The machine's
+  display settings were not modified autonomously; the automated run's
+  display resolution was not recorded in evidence.
 - No release published, no merge; owner review required.
