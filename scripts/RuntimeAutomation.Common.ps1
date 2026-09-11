@@ -1884,7 +1884,7 @@ function New-KmgRuntimeRequest {
         parameters = if ($Scenario -ceq 'working-save-elemental-nereid-respec') {
             [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
                 class = [string]$Parameters.class; allocation = [string]$Parameters.allocation; sex = [string]$Parameters.sex }
-        } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')) {
+        } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec', 'working-save-creator-visual-lifecycle')) {
             [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
                 class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
         } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
