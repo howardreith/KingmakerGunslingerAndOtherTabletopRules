@@ -1,6 +1,14 @@
 ﻿# Kingmaker Gunslinger
 
-**0.0.123-character-visibility-repair** (UMM 0.0.123) completes world-map
+**0.0.124-teleport-polish-specialist** (UMM 0.0.124) finishes the teleport
+follow-up: genuine Conjuration specialist favorite slots for existing
+specialists (a load-time special-spell cache repair for Teleport and Greater
+Teleport), direct Greater Teleport casting from its destination row with no
+second confirmation, clearly sectioned ordinary-Teleport risk confirmation,
+destination rows measured and verified inside the parchment, quiet Greater
+Teleport successes, and complete-sentence unnamed-arrival messages
+("somewhere else" / "the target location"). The prior
+**0.0.123-character-visibility-repair** (UMM 0.0.123) completed world-map
 teleportation: post-teleport movement arrows, Conjuration specialist slots, a
 compact destination menu, genuine scrolls with finite vendor stock and native
 activation safety. The prior **0.0.121-unified-firearm-maintenance** (UMM

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using KingmakerGunslinger.Spells.Teleportation;
 
 namespace KingmakerGunslinger.DomainTests
@@ -126,6 +126,19 @@ namespace KingmakerGunslinger.DomainTests
             var saturated = TeleportFamiliarityState.Parse("1|1|" + Point + ":2147483647");
             saturated.RecordOrdinaryArrival(Point);
             Assertions.Equal(int.MaxValue, saturated.Count(Point), "No integer wraparound.");
+        }
+        internal static void SpecialistCacheRestoresOnlyTheNativeInvariant()
+        {
+            Assertions.True(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                false, true, true, false), "Known spell in an attached special list with a stale cache is restored.");
+            Assertions.False(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                false, false, true, false), "A spell the book does not know is never auto-learned.");
+            Assertions.False(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                false, true, false, false), "A spell outside the book's attached school lists is untouched.");
+            Assertions.False(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                false, true, true, true), "Already-special membership is idempotent.");
+            Assertions.False(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                true, true, true, false), "AllSpellsKnown books self-heal natively and are left alone.");
         }
     }
 }

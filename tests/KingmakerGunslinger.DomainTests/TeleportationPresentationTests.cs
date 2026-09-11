@@ -79,6 +79,42 @@ namespace KingmakerGunslinger.DomainTests
         }
         internal static void SettlementLabelDistinguishesNativeTeleport()
         { Assertions.Equal("Settlement Teleport", TeleportContextPresentation.SettlementTeleportLabel(English), "Native settlement label text."); }
+        internal static void ArrivalMessagesUseOutcomeAppropriateSentences()
+        {
+            Assertions.Equal("Teleport: On target. The party arrived at Oleg's Trading Post.",
+                TeleportContextPresentation.ArrivalMessage(TeleportSpellKind.Teleport, TeleportOutcomeKind.OnTarget, "Oleg's Trading Post", English),
+                "Named on-target arrival keeps the location name.");
+            Assertions.Equal("Teleport: On target. The party arrived at the target location.",
+                TeleportContextPresentation.ArrivalMessage(TeleportSpellKind.Teleport, TeleportOutcomeKind.OnTarget, null, English),
+                "Unnamed on-target arrival names the target location.");
+            Assertions.Equal("Teleport: Off target. The party arrived somewhere else.",
+                TeleportContextPresentation.ArrivalMessage(TeleportSpellKind.Teleport, TeleportOutcomeKind.OffTarget, "  ", English),
+                "Unnamed off-target arrival is a complete sentence, not a substituted noun.");
+            Assertions.Equal("Teleport: Similar location. The party arrived somewhere else.",
+                TeleportContextPresentation.ArrivalMessage(TeleportSpellKind.Teleport, TeleportOutcomeKind.SimilarLocation, "", English),
+                "Unnamed similar-location arrival keeps its distinct outcome label.");
+            Assertions.Equal("Teleport: Off target. The party arrived at Shrike Ford.",
+                TeleportContextPresentation.ArrivalMessage(TeleportSpellKind.Teleport, TeleportOutcomeKind.OffTarget, "Shrike Ford", English),
+                "A useful alternate name is retained instead of discarded.");
+            foreach (string message in new[] {
+                TeleportContextPresentation.ArrivalMessage(TeleportSpellKind.Teleport, TeleportOutcomeKind.OnTarget, null, English),
+                TeleportContextPresentation.ArrivalMessage(TeleportSpellKind.Teleport, TeleportOutcomeKind.OffTarget, null, English) })
+                Assertions.False(message.Contains("a previously visited world-map point") || message.Contains("arrived at somewhere"),
+                    "No legacy fallback phrase or noun substitution appears.");
+        }
+        internal static void GreaterTeleportSuccessAnnouncementIsSuppressed()
+        {
+            Assertions.True(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.GreaterTeleport, TeleportExecutionStatus.Arrived),
+                "Verified Greater Teleport arrival announces nothing.");
+            Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.GreaterTeleport, TeleportExecutionStatus.NoLegalAlternate),
+                "Rules failures still announce.");
+            Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.GreaterTeleport, TeleportExecutionStatus.DefensiveMishapLimit),
+                "Mishap-limit failures still announce.");
+            Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.Teleport, TeleportExecutionStatus.Arrived),
+                "Ordinary Teleport still reports its outcome.");
+            Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.WordOfRecall, TeleportExecutionStatus.Arrived),
+                "Word of Recall still reports its outcome.");
+        }
         internal static void ConfirmationShowsExactOddsAndOrdinaryCount()
         {
             var row = new WorldMapPointSpellAction(Point(visits: 3), Origin, Source(), false);

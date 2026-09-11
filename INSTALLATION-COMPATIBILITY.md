@@ -1,7 +1,7 @@
 ﻿# Installation, updates, removal, and compatibility
 
-Version: `0.0.123-character-visibility-repair`.
-The installable archive is `KingmakerGunslinger-0.0.123-character-visibility-repair.zip`.
+Version: `0.0.124-teleport-polish-specialist`.
+The installable archive is `KingmakerGunslinger-0.0.124-teleport-polish-specialist.zip`.
 The retained 0.0.121 archive is
 `KingmakerGunslinger-0.0.121-unified-firearm-maintenance.zip`.
 

@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.123-character-visibility-repair",
-  "version": "0.0.123",
+  "milestone": "0.0.124-teleport-polish-specialist",
+  "version": "0.0.124",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1334,7 +1334,7 @@
     "treacherousPlayerRespecSaveQualificationWaivedByOwner": true
   },
   "unifiedRepair121": {
-    "deterministicTestCount": 1567,
+    "deterministicTestCount": 1572,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -1511,7 +1511,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "characterVisibility123": {
-    "deterministicTestCount": 1567,
+    "deterministicTestCount": 1572,
     "compatibilityRuntimeQualificationPending": false,
     "publicReleaseAuthorized": true,
     "ownerAcceptedMissionReport": true,
@@ -1521,5 +1521,17 @@
     "mainMenuFourRaceCreatorRun14Pass": true,
     "workingSaveSmokePass": true,
     "remainingMatrixCellsDisclosed": true
+  },
+  "teleportPolish124": {
+    "deterministicTestCount": 1572,
+    "publicReleaseAuthorized": false,
+    "specialistRootCauseConfirmed": "serialized per-book m_SpecialSpells cache derived only at feature activation and learn time; PostLoad never re-derives it",
+    "loadSeamRepair": "Spellbook.PostLoad",
+    "directCastGreaterTeleport": true,
+    "greaterSuccessAnnouncementSuppressed": true,
+    "arrivalCopyTemplates": true,
+    "settledExtentRowContainment": true,
+    "runtimeQualificationPending": true,
+    "compatibilityRuntimeQualificationPending": true
   }
 }

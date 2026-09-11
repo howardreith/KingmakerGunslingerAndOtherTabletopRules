@@ -118,28 +118,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                 restoreOrigin();
                 setClaimed.Invoke(capitalRegion, new object[] { spec.Target == capital });
                 var dice = new TeleportationFixtureRolls(spec.Roll == 0 ? new int[0] : new[] { spec.Roll });
-                var request = OpenTeleportationFixtureConfirmation(panel, spec.Target, spec.Spell, spec.Source, dice);
-                var yes = TeleportationFixtureDialogButton("m_ButtonYes");
-                yes.onClick.Invoke();
-                captures.Add(new { step = spec.Name, confirmation = request.Message, transaction = request.Transaction.State.ToString(),
-                    diagnostic = request.Transaction.Diagnostic, result = request.Execution.LastEvidence,
-                    resource = request.Execution.Resource == null ? null : request.Execution.Resource.Evidence() });
-                if (request.Transaction.State != TeleportTransactionState.Completed)
-                    throw new InvalidOperationException(spec.Name + " did not complete: " + request.Transaction.State + ";" + request.Transaction.Diagnostic);
-                var result = request.Transaction.Result;
+                // Greater Teleport settles directly from its row with no second
+                // confirmation; every other spell goes through the native dialog.
+                bool direct = spec.Spell == TeleportSpellKind.GreaterTeleport;
+                TeleportCastTransaction transaction;
+                TeleportationCastExecution execution;
+                if (direct)
+                {
+                    var outcome = InvokeTeleportationFixtureDirectCast(panel, spec.Target, spec.Spell, spec.Source, dice);
+                    transaction = outcome.Transaction;
+                    execution = outcome.Execution;
+                }
+                else
+                {
+                    var request = OpenTeleportationFixtureConfirmation(panel, spec.Target, spec.Spell, spec.Source, dice);
+                    transaction = request.Transaction;
+                    execution = request.Execution;
+                    TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                }
+                captures.Add(new { step = spec.Name, direct, transaction = transaction.State.ToString(),
+                    diagnostic = transaction.Diagnostic, result = execution.LastEvidence,
+                    resource = execution.Resource == null ? null : execution.Resource.Evidence() });
+                if (transaction.State != TeleportTransactionState.Completed)
+                    throw new InvalidOperationException(spec.Name + " did not complete: " + transaction.State + ";" + transaction.Diagnostic);
+                var result = transaction.Result;
                 bool exact = spec.Outcome == TeleportOutcomeKind.OnTarget;
-                assertions.Add(Assertion("teleportation-ui-" + spec.Name, "native row -> native Cast confirmation -> one real slot -> protected canonical relocation",
+                assertions.Add(Assertion("teleportation-ui-" + spec.Name, direct ?
+                    "native row settles the Greater Teleport cast directly: one real slot, exact relocation, no confirmation dialog" :
+                    "native row -> native Cast confirmation -> one real slot -> protected canonical relocation",
                     "outcome=" + result.Outcome + ";point=" + result.DestinationId,
                     result.Status == TeleportExecutionStatus.Arrived && result.Outcome == spec.Outcome &&
                     (exact ? result.DestinationId == spec.Target.Blueprint.AssetGuid : result.DestinationId != origin.Blueprint.AssetGuid &&
                         result.DestinationId != spec.Target.Blueprint.AssetGuid && result.Alternate != null && result.Alternate.Found) &&
-                    request.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
+                    execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
                     dice.D100Count == (spec.Spell == TeleportSpellKind.Teleport ? 1 : 0) && dice.D10Count == 0 &&
                     map.PartyLocation.AssetGuid == result.DestinationId && !TeleportContextConfirmationPresenter.Pending, path));
                 string spent = slots();
-                yes.onClick.Invoke();
-                assertions.Add(Assertion("teleportation-ui-" + spec.Name + "-duplicate-confirmation", "duplicate native callback spends nothing further",
-                    "unchanged=" + (spent == slots()), spent == slots() && request.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne, path));
+                if (direct)
+                    assertions.Add(Assertion("teleportation-ui-" + spec.Name + "-duplicate-confirmation",
+                        "the settled direct cast leaves no pending request and no confirmation dialog to double-spend",
+                        "pending=" + TeleportContextConfirmationPresenter.Pending,
+                        !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown && spent == slots() &&
+                        execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne, path));
+                else
+                {
+                    TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                    assertions.Add(Assertion("teleportation-ui-" + spec.Name + "-duplicate-confirmation", "duplicate native callback spends nothing further",
+                        "unchanged=" + (spent == slots()), spent == slots() && execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne, path));
+                }
             }
             restoreOrigin();
             // Oleg is Very familiar: the normal canonical RNG can be exercised
@@ -298,6 +324,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (request == null || !DialogMessageBox.Instance.IsShown || panel.gameObject.activeInHierarchy)
                 throw new InvalidOperationException("Selected native spell row did not open its own confirmation and close the destination presenter.");
             return request;
+        }
+        // The Greater Teleport direct-cast boundary: the same native row click
+        // production uses, settling synchronously with no confirmation dialog.
+        private static TeleportDirectCastOutcome InvokeTeleportationFixtureDirectCast(GlobalMapMessageBox panel,
+            GlobalMapLocation point, TeleportSpellKind spell, TeleportCastSourceKind kind, TeleportationFixtureRolls rolls)
+        {
+            SelectTeleportationCastingPoint(panel, point);
+            var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+            if (rows == null) throw new InvalidOperationException("No contextual actions for guarded " + spell + " direct cast at " + point.Blueprint.AssetGuid);
+            int index = Array.FindIndex(rows.Actions.ToArray(), value => value.Source.Spell == spell && value.Source.Kind == kind);
+            if (index < 0) throw new InvalidOperationException("Guarded direct cast source is absent from native contextual actions.");
+            rows.QualificationRolls = rolls;
+            TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+            rows.Buttons[index].onClick.Invoke();
+            var outcome = TeleportContextConfirmationPresenter.LastDirectCast;
+            if (outcome == null || DialogMessageBox.Instance.IsShown || panel.gameObject.activeInHierarchy)
+                throw new InvalidOperationException("Selected native Greater Teleport row did not settle directly with the destination presenter closed and no confirmation opened.");
+            return outcome;
         }
         private static Kingmaker.View.CameraRig TeleportationCastingCamera()
         { return Resources.FindObjectsOfTypeAll<Kingmaker.View.CameraRig>().Single(value => value != null &&
