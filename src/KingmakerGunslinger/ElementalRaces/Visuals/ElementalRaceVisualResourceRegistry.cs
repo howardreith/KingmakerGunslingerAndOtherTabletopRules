@@ -514,6 +514,22 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             anchor.Donors = _nativeDependencies.Values.ToArray();
         }
 
+        /// <summary>Diagnostic description of the native anchor state.</summary>
+        internal string DescribeNativeAnchor()
+        {
+            if (_anchor == null) return "absent";
+            var anchor = _anchor.GetComponent<ElementalVisualResourceAnchor>();
+            if (anchor == null) return "holder-without-component";
+            int liveProxies = anchor.Proxies == null ? 0 :
+                anchor.Proxies.Count(value => value != null);
+            int liveDonors = anchor.Donors == null ? 0 :
+                anchor.Donors.Count(value => value != null);
+            return string.Format(CultureInfo.InvariantCulture,
+                "alive;proxies={0}/{1};donors={2}/{3}", liveProxies,
+                anchor.Proxies == null ? 0 : anchor.Proxies.Length,
+                liveDonors, anchor.Donors == null ? 0 : anchor.Donors.Length);
+        }
+
         internal void RollbackAll()
         {
             if (_order.Count == 0) return;

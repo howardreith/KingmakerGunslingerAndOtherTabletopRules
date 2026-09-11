@@ -180,11 +180,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             var proxyRows = new JArray();
             string firstFailure = null;
             string firstFailureAsset = null;
+            JArray firstFailureDestroyed = null;
             foreach (var registration in proxies)
             {
                 string state;
                 EvaluateResource(cache, registration.AssetId, registration.Resource, "owned", out state);
-                if (firstFailure == null && state != null) { firstFailure = state; firstFailureAsset = registration.AssetId; }
+                if (firstFailure == null && state != null)
+                {
+                    firstFailure = state; firstFailureAsset = registration.AssetId;
+                    firstFailureDestroyed = new JArray();
+                    foreach (var asset in registration.Resource.GetInnerAssets())
+                    {
+                        if (ReferenceEquals(asset, null)) continue;
+                        if (asset != null) continue;
+                        string label;
+                        try { label = asset.GetType().Name + ":" + asset.name; }
+                        catch { label = asset.GetType().Name; }
+                        firstFailureDestroyed.Add(label);
+                        if (firstFailureDestroyed.Count >= 8) break;
+                    }
+                }
                 proxyRows.Add(DescribeCachedResource(cache, registration.AssetId, registration.Resource, state));
             }
             var donorRows = new JArray();
@@ -204,7 +219,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["retentionEvaluation"] = new JObject {
                     ["wouldThrow"] = firstFailure != null,
                     ["firstFailure"] = firstFailure,
-                    ["firstFailureAsset"] = firstFailureAsset }
+                    ["firstFailureAsset"] = firstFailureAsset,
+                    ["firstFailureDestroyedAssets"] = firstFailureDestroyed }
             };
             if (includeCommittedView && _lifecycleDoll != null)
                 result["committedWorldView"] = DescribeCommittedWorldView(checkpoint);
