@@ -304,7 +304,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         SelectTeleportationCastingPoint(panel, mapTarget);
                         foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
                     }
-                    if (worldRows == null) throw new InvalidOperationException("The world-map phase composed no destination rows.");
+                    if (worldRows == null)
+                    {
+                        var offeredProbe = TeleportationWorldMapAdapter.Compose(TeleportationWorldMapAdapter.Capture(false), mapTarget.Blueprint);
+                        throw new InvalidOperationException("The world-map phase composed no destination rows: offered=" + offeredProbe.Count +
+                            ";canBegin=" + TeleportContextConfirmationPresenter.CanBegin(offeredProbe) +
+                            ";unrelatedModal=" + TeleportationConfirmationSurface.UnrelatedModalShown() +
+                            ";surface=" + (TeleportationConfirmationSurface.Available() != null) +
+                            ";diag=" + TeleportationWorldMapAdapter.Capture(false).Diagnostic +
+                            ";mode=" + game.CurrentMode + ";panelActive=" + panel.gameObject.activeInHierarchy);
+                    }
                     // Level 7: direct Greater Teleport from the repaired favorite-only preparation.
                     var greaterAction = worldRows.Actions.SingleOrDefault(value => value.Source.Spell == TeleportSpellKind.GreaterTeleport &&
                         value.Source.BookId == bookConjurer.Blueprint.AssetGuid && value.Source.CasterId == conjurer.UniqueId);
