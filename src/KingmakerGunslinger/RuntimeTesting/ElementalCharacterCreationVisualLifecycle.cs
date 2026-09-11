@@ -45,38 +45,25 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<string> _lifecycleFixtureIds = new List<string>();
         internal readonly bool _visualLifecycle;
 
-        // The lifecycle boundary rebuilds the UI and world instances by design,
-        // so exact restoration is proven semantically: the same ordered unit
-        // identities (no fixture survives) and no creator controller owning a
-        // fixture — reference equality can never hold across an area reload.
+        // The lifecycle boundary rebuilds the UI and world instances by design:
+        // the native area reload re-spawns area units under fresh identities
+        // (observed: Trap units), so exact reference or identity equality can
+        // never hold. Restoration is proven semantically instead: no fixture
+        // unit survives anywhere in the world, no creator controller owns a
+        // fixture, and the shared controller is released.
         private bool LifecycleRestorationSatisfied(out string diagnostic)
         {
             diagnostic = null;
             UnitEntityData[] current = Game.Instance.State.Units.All.ToArray();
-            if (_worldBefore == null || current.Length != _worldBefore.Length)
+            UnitEntityData[] surviving = current
+                .Where(value => _lifecycleFixtureIds.Contains(value.UniqueId))
+                .ToArray();
+            if (surviving.Length != 0)
             {
-                var beforeIds = new HashSet<string>(_worldBefore == null
-                    ? Enumerable.Empty<string>() : _worldBefore.Select(value => value.UniqueId),
-                    StringComparer.Ordinal);
-                diagnostic = "unit-count worldBefore=" +
-                    (_worldBefore == null ? -1 : _worldBefore.Length) +
-                    " current=" + current.Length + " extras=[" +
-                    string.Join("; ", current
-                        .Where(value => !beforeIds.Contains(value.UniqueId))
-                        .Take(4)
-                        .Select(value => value.UniqueId + ":" +
-                            (value.Descriptor == null ? "?" : value.Descriptor.CharacterName))
-                        .ToArray()) + "]";
+                diagnostic = "fixture-survives count=" + surviving.Length +
+                    " first=" + surviving[0].UniqueId;
                 return false;
             }
-            for (int i = 0; i < current.Length; i++)
-                if (!string.Equals(current[i].UniqueId, _worldBefore[i].UniqueId,
-                        StringComparison.Ordinal))
-                {
-                    diagnostic = "unit-identity index=" + i + " before=" +
-                        _worldBefore[i].UniqueId + " current=" + current[i].UniqueId;
-                    return false;
-                }
             var global = Game.Instance.UI.LevelUpController;
             if (global != null && global.Unit != null &&
                 _lifecycleFixtureIds.Contains(global.Unit.Unit.UniqueId))
