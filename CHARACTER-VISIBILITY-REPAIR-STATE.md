@@ -98,17 +98,96 @@ checks, doll-room observation), `ElementalRaceVisualAuditScenario`
 driving). `DollState` exposes `SetHair/SetBeard/SetHead/SetRacePreset` etc. for
 driving the native browse path.
 
+## Static root-cause model (2026-09-10, IL-verified)
+
+`Game.LoadArea` (every area transition, including `Game.ReloadArea()` =
+`LoadArea(current, null, AutoSaveMode.None, true, null)`) starts
+`Game.UnloadUnusedAssetsCoroutine`, which runs:
+
+1. `ResourcesLibrary.CleanupLoadedCache()` — for every `s_LoadedResources`
+   entry with `RequestCounter <= 0` (except pooled particle GameObjects):
+   `LoadedResource.Unload()` = bundle `Unload(true)` + `Object.Destroy`,
+   then evicts the cache entry. Survivors' counters are reset to 0.
+2. `GC.Collect()`.
+3. `Resources.UnloadUnusedAssets()` — unloads natively-unreferenced assets
+   (donor EquipmentEntities are referenced only from managed state).
+
+`RequestCounter` semantics: `TryGetResource`/`LoadResource` increment on every
+cache hit; `CleanupLoadedCache` resets to 0 after each pass. It is a
+"touched-since-last-cleanup" flag.
+
+KMG impact:
+- The 28 registered proxies were injected via `new LoadedResource(proxy)`
+  (counter 0) and are NEVER loaded through the native load API — the counter
+  only exceeds 0 incidentally (bootstrap validation `TryGetResource` calls,
+  creator/world entity-link loads). Any area boundary where nothing touched
+  them since the previous reset destroys and evicts them.
+- The 29 donors/palette sources are native assets but are not part of any
+  creator/world link lists (the proxies replaced them), so their counters also
+  decay to 0, and their objects are additionally natively unreferenced.
+- Consequences after the boundary: `RetainCharacterCreatorResources` throws
+  ("Owned character creator visual resource was lost:" /
+  "Native visual donor was unloaded:") on the FIRST `DollStateUpdated` of any
+  creator session for ANY race (the check is unconditional); Harmony 1.2
+  prefix exceptions skip the native method, so `LateUpdate`'s
+  `m_DollStateForUpdate` is never cleared and the doll never updates/assembles
+  again (invisible preview bodies for new game and mercenaries alike).
+  Committed elemental characters lose their body at the next area entry when
+  the evicted proxy fails to resolve, while class clothing/firearm entities
+  reload from their native bundles — exactly "invisible body, clothes and
+  weapons visible", persisting in the world.
+
+Why earlier qualification missed it: the 0.0.117-era creator/persistence runs
+loaded one save and created/committed within ONE loaded-area session; the
+proxies' bootstrap counters carried them through that single cleanup, and no
+second boundary ran between registration and the creators. The visual
+qualification asserted inner-asset liveness during creators, not across area
+boundaries.
+
+## Probe implementation (diagnostic instrumentation, in progress)
+
+New guarded scenario `working-save-creator-visual-lifecycle` (request-scoped,
+inactive in ordinary gameplay):
+- Loads `KMG_AUTOMATION_WORKING` through the established identity-verified
+  smoke machinery; creator visit 1 creates and commits one real native
+  mercenary fixture (`CustomCompanion` unit, real `CharacterBuildController`)
+  through final review.
+- CaptureLifecycleCommit: records the committed `DollData`, its body proxy
+  asset ID, a registry liveness snapshot (cache membership, RequestCounter,
+  object/inner-asset liveness, which retention precondition would fail first
+  and for which asset), and a native `DollData.CreateUnitView` world-appearance
+  checkpoint (renderable renderers, baked Renderer_Character_* count, null
+  materials/shaders, body entity presence).
+- The visit-1 fixture is intentionally kept registered across one
+  `Game.Instance.ReloadArea()` (the exact native area boundary, AutoSaveMode
+  None, save-write sentinels retained). After it settles: snapshot again,
+  world-view evidence again, retire the fixture through the normal owned
+  cleanup with exact restoration.
+- Creator visit 2 runs the same real creation path after the boundary; each
+  capture includes doll-room state (`m_DollStateForUpdate` stuck, loaded links,
+  avatar entity counts) as renderer-independent evidence of the aborted native
+  update.
+- All observations read-only; no donor reloads, proxy rebuilds, or retention
+  extensions performed by the probe.
+
+Wiring: `RuntimeTestScenarioCatalog` (constant + allowlist),
+`RuntimeTestRequest` (validation: 4 params, working-smoke prerequisites, exit
+required), `RuntimeTestRunner` (dispatch, working-save construction),
+`ElementalCharacterCreationBaselineScenario` (mode + boundary insertion +
+deferred cleanup + assertions), new partial
+`ElementalCharacterCreationVisualLifecycle.cs`, PS metadata/preflight/invoke
+entries.
+
 ## Next exact action
 
-1. Complete baseline `Build-Local.ps1` on master `221f6080` (running;
-   log at `runtime-evidence/character-visibility-repair/baseline-20260910/build-local-master-221f6080.log`).
-2. Commit mission records; keep tree clean for guarded runs.
-3. Healthy control: guarded `disposable-elemental-character-creation-baseline`
-   on current source (ExpectedVersion 0.0.122).
-4. Causal probe: extend the baseline scenario with an optional long native
-   browse phase (real `SetHair`/`SetBeard` cycling until `m_LoadsDone > 100`,
-   read-only observation), then continue creation and capture the first dead
-   resource, the first prefix exception, and renderer-level body state.
+1. Await `Build-Local.ps1` (log:
+   `runtime-evidence/character-visibility-repair/probe-build-01.log`).
+2. Commit the probe instrumentation.
+3. Launch reproduction:
+   `scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-creator-visual-lifecycle -ExpectedVersion 0.0.122 -SaveName KMG_AUTOMATION_WORKING -Parameters @{race='Ifrit';class='Fighter';allocation='point-buy'} -TimeoutSeconds 900 -ExitAfterCompletion:$true -Confirm:$false`
+4. Analyze evidence: expected (if model holds) healthy visit-1 commit, then
+   post-boundary first-failure naming the exact asset and state, broken
+   visit-2 doll; the game log should contain the exact retention exception.
 
 ## Deployment / installation state
 
