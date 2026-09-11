@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -645,6 +645,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationDestinations &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationArrows &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationScrolls &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationDisabled &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationContext &&
                     !IsExpandedSummoningPersistenceScenario() &&
@@ -1791,6 +1794,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
@@ -1883,6 +1895,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
@@ -2421,9 +2442,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     PollTeleportationContext();
                 }
+                else if (IsTeleportationSpecialistFixture)
+                {
+                    PollTeleportationSpecialist();
+                }
+                else if (IsTeleportationScrollsFixture)
+                {
+                    PollTeleportationScrolls();
+                }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationTravelers ||
-                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad || IsTeleportationDestinationsFixture || IsTeleportationDisabledFixture)
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationGamepad || IsTeleportationDestinationsFixture || IsTeleportationArrowsFixture || IsTeleportationDisabledFixture)
                 {
                     PollTeleportationInteraction();
                 }
@@ -5252,6 +5281,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                 _request.Scenario == RuntimeTestScenarioCatalog.GenericFirearmActions ||

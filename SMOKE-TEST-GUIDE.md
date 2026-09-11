@@ -358,3 +358,32 @@ State-token reconciliation faults=0
 All duplicate-application counters included by the maintenance matrix must remain at their baseline values. Harmless native spatial-query candidate deduplication may still appear in `targetDuplicates`; it is not included in the maintenance duplicate-application total.
 
 Any consumed kit on interruption, wrong item mutation, changed second item, incorrect revision/resource delta, failed PASS/FAIL checkpoint, state loss after restart, nonzero relevant fault, or new duplicate application blocks Sprint 30.
+
+## Teleportation completion smoke test (2026-09-10 candidate)
+
+Applies on top of the 0.0.119 smoke steps above, using a save kept for testing.
+
+1. **Specialist preparation.** On a Conjuration specialist wizard, open the
+   spellbook, level-5 page, and prepare Teleport into the star-marked
+   favorite slot; rest. The slot accepts it (and rejects non-Conjuration
+   spells). Greater Teleport uses the seventh-level favorite slot. Other
+   schools' favorite slots and universalist books are unchanged.
+2. **Scroll purchase.** Buy a Teleport scroll from Zarcie (or Word of Recall
+   from Arsinoe/Jhod). Stock is finite; buying out leaves it empty after
+   reload and after toggling the module OFF/ON.
+3. **Copy.** With a wizard who does not yet know Teleport, use the scroll's
+   copy action in inventory: the spell enters the book and the scroll is
+   consumed. Then prepare it (favorite or ordinary slot) and rest.
+4. **Scroll activation.** On the world map, select a visited destination:
+   a "Use Teleport Scroll / reader · n shared scrolls" action appears for
+   any reader (a caster who knows the spell, or anyone with trained Use
+   Magic Device). Confirm: exactly one scroll is consumed, no spell slot,
+   and the party arrives instantly. Cancelling consumes nothing. Using the
+   scroll from the inventory outside this flow prompts you to select a
+   destination on the world map instead.
+5. **Post-teleport arrows.** After any teleport (spell, scroll, or off-target
+   result), the direction arrows around the party token respond on the very
+   first click — also after reloading a save made right after teleporting.
+6. **Compact menu.** At a settlement with a native Teleport button plus spell
+   rows, the native button reads "Settlement Teleport"; long spell lists
+   scroll inside the panel; the label and layout restore after closing.

@@ -15071,6 +15071,30 @@
       "status": "active",
       "milestone": "Elemental completion 0.0.118",
       "notes": "Owned Treacherous Earth Area; native effect graph registered in both module states; material eligibility and publication remain closed."
+    },
+    {
+      "symbol": "KMG.Spells.Teleport.Scroll",
+      "guid": "2c283c993b233df53b487fc7eeac2ba3",
+      "plannedType": "BlueprintItemEquipmentUsable",
+      "status": "active",
+      "milestone": "Contextual world-map teleportation scrolls",
+      "notes": "Native scroll of the strategic world-map Teleport; canonical spell association."
+    },
+    {
+      "symbol": "KMG.Spells.GreaterTeleport.Scroll",
+      "guid": "2a2b0185be1d2dba5aa1b5a24774e17d",
+      "plannedType": "BlueprintItemEquipmentUsable",
+      "status": "active",
+      "milestone": "Contextual world-map teleportation scrolls",
+      "notes": "Native scroll of the strategic world-map Greater Teleport; canonical spell association."
+    },
+    {
+      "symbol": "KMG.Spells.WordOfRecall.Scroll",
+      "guid": "42d3daeb7d503687df8953b47727372b",
+      "plannedType": "BlueprintItemEquipmentUsable",
+      "status": "active",
+      "milestone": "Contextual world-map teleportation scrolls",
+      "notes": "Native scroll of the strategic world-map Word of Recall; canonical spell association."
     }
   ]
 }

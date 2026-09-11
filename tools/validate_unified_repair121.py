@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Validate the unified firearm maintenance release candidate."""
 from __future__ import annotations
 import argparse
@@ -10,9 +10,9 @@ import validate_teleportation119 as baseline
 
 VERSION = "0.0.121"
 INFORMATIONAL_VERSION = "0.0.121-unified-firearm-maintenance"
-DETERMINISTIC_TEST_COUNT = 1554
-MANIFEST_TOTAL = 1883
-MANIFEST_ACTIVE = 1881
+DETERMINISTIC_TEST_COUNT = 1561
+MANIFEST_TOTAL = 1886
+MANIFEST_ACTIVE = 1884
 ELEMENTAL_TOTAL = 241
 ELEMENTAL_ACTIVE = 240
 

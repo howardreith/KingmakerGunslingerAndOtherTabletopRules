@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -124,9 +124,9 @@ namespace KingmakerGunslinger.DomainTests
                     StringComparison.Ordinal)).ToArray();
             Assertions.Equal(240, elemental.Length,
                 "Production elemental identity count changed.");
-            Assertions.Equal(1883, all.Length,
+            Assertions.Equal(1886, all.Length,
                 "Manifest total must include 240 production elemental identities.");
-            Assertions.Equal(1881, all.Count(value => string.Equals(
+            Assertions.Equal(1884, all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
             Assertions.Equal(all.Length, all.Select(value =>

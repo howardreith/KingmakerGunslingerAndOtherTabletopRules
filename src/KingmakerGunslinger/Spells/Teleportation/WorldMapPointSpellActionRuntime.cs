@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -17,6 +17,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
     internal static class WorldMapPointSpellActionRuntime
     {
         private static readonly Dictionary<GlobalMapMessageBox, TeleportDestinationRows> Owned = new Dictionary<GlobalMapMessageBox, TeleportDestinationRows>();
+        private static readonly Dictionary<GlobalMapMessageBox, TextMeshProUGUI> RelabeledSettlement = new Dictionary<GlobalMapMessageBox, TextMeshProUGUI>();
+        private static readonly Dictionary<TextMeshProUGUI, string> SettlementLabelBefore = new Dictionary<TextMeshProUGUI, string>();
         private static readonly HashSet<string> Reported = new HashSet<string>(StringComparer.Ordinal);
         internal static void Append(GlobalMapMessageBox panel)
         {
@@ -37,6 +39,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     throw new InvalidOperationException("Native destination layout/button donor is unavailable.");
                 var rows = TeleportDestinationRows.Create(panel, dialog, donor, actions);
                 Owned.Add(panel, rows);
+                RelabelSettlementControl(panel);
             }
             catch (Exception exception) { Clear(panel); Report(exception); }
         }
@@ -44,9 +47,50 @@ namespace KingmakerGunslinger.Spells.Teleportation
         {
             if (ReferenceEquals(panel, null)) return;
             TeleportDestinationRows rows;
-            if (!Owned.TryGetValue(panel, out rows)) return;
+            if (!Owned.TryGetValue(panel, out rows) && !RelabeledSettlement.ContainsKey(panel)) return;
             Owned.Remove(panel);
             if (rows != null) rows.Remove();
+            RestoreSettlementControl(panel);
+        }
+        // While spell rows coexist with the native settlement-teleport control,
+        // its serialized "Teleport" label is ambiguous with "Cast Teleport".
+        // The exact native label is relabeled presentationally and restored
+        // byte-for-byte when the rows are removed; callbacks, ownership and
+        // eligibility are untouched, and no shared localization asset changes.
+        private static void RelabelSettlementControl(GlobalMapMessageBox panel)
+        {
+            try
+            {
+                // The settlement teleport button is located through the panel's own
+                // hierarchy by its exact serialized OnTeleportPressed callback; the
+                // control's own active state is the native eligibility gate.
+                var button = panel.GetComponentsInChildren<Button>(true).FirstOrDefault(value =>
+                {
+                    int count = value.onClick.GetPersistentEventCount();
+                    for (int index = 0; index < count; index++)
+                        if (string.Equals(value.onClick.GetPersistentMethodName(index), "OnTeleportPressed", StringComparison.Ordinal)) return true;
+                    return false;
+                });
+                var label = button == null ? null : button.GetComponentInChildren<TextMeshProUGUI>(true);
+                if (label == null || RelabeledSettlement.ContainsKey(panel)) return;
+                if (!button.gameObject.activeSelf) return;
+                RelabeledSettlement.Add(panel, label);
+                SettlementLabelBefore[label] = label.text;
+                label.text = TeleportContextPresentation.SettlementTeleportLabel(TeleportationText.Get);
+            }
+            catch (Exception exception) { Report(exception); }
+        }
+        private static void RestoreSettlementControl(GlobalMapMessageBox panel)
+        {
+            TextMeshProUGUI label;
+            if (!RelabeledSettlement.TryGetValue(panel, out label)) return;
+            RelabeledSettlement.Remove(panel);
+            string before;
+            if (label != null && SettlementLabelBefore.TryGetValue(label, out before))
+            {
+                SettlementLabelBefore.Remove(label);
+                label.text = before;
+            }
         }
         internal static void Forget(GlobalMapMessageBox panel, TeleportDestinationRows rows)
         {
@@ -75,6 +119,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private float _maximumHeight;
         private bool _ready;
         internal ITeleportationRolls QualificationRolls { private get; set; }
+        private float RowExtent { get { return _rowHeight * 2; } }
+        private static float NativeLineHeight;
         internal IReadOnlyList<WorldMapPointSpellAction> Actions { get { return _rows.Select(value => value.Action).ToArray(); } }
         internal IReadOnlyList<Button> Buttons { get { return _rows.Select(value => value.Button).ToArray(); } }
 
@@ -89,7 +135,16 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 var self = container.AddComponent<TeleportDestinationRows>();
                 self._panel = panel;
                 self._location = (GlobalMapLocation)WorldMapPointSpellActionPatches.LocationField.GetValue(panel);
-                self._rowHeight = Math.Max(LayoutUtility.GetPreferredHeight((RectTransform)donor.transform), ((RectTransform)donor.transform).rect.height);
+                // The donor's live rect can be stretched by the dialog layout once
+                // taller rows exist; measure the native line height once, from the
+                // pristine first append, and reuse it for every later container.
+                if (NativeLineHeight <= 0)
+                {
+                    float measured = Math.Max(LayoutUtility.GetPreferredHeight((RectTransform)donor.transform), ((RectTransform)donor.transform).rect.height);
+                    if (measured <= 0) throw new InvalidOperationException("Native action height is unproven.");
+                    NativeLineHeight = measured;
+                }
+                self._rowHeight = NativeLineHeight;
                 if (self._rowHeight <= 0) throw new InvalidOperationException("Native action height is unproven.");
                 self._viewportLayout = container.AddComponent<LayoutElement>();
                 float width = ((RectTransform)dialog.transform).rect.width - dialog.GetComponent<LayoutGroup>().padding.horizontal;
@@ -103,7 +158,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 scroll.horizontal = false;
                 scroll.vertical = true;
                 scroll.movementType = ScrollRect.MovementType.Clamped;
-                scroll.scrollSensitivity = self._rowHeight;
+                scroll.scrollSensitivity = self._rowHeight * 2;
                 scroll.viewport = (RectTransform)container.transform;
                 var content = new GameObject("NativeSpellRows", typeof(RectTransform));
                 content.transform.SetParent(container.transform, false);
@@ -126,7 +181,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)dialog.transform);
                 float nativeHeight = LayoutUtility.GetPreferredHeight((RectTransform)dialog.transform);
                 float anchorY = Game.GetCamera().WorldToViewportPoint(self._location.LocationTooltipPoint.position).y;
-                self._maximumHeight = TeleportContextLayoutPolicy.MaximumRowsHeight(canvasHeight, anchorY, nativeHeight, self._rowHeight);
+                self._maximumHeight = TeleportContextLayoutPolicy.MaximumRowsHeight(canvasHeight, anchorY, nativeHeight, self._rowHeight * 2);
                 foreach (var action in actions) self.Add(donor, action);
                 self.Resize();
                 self._ready = true;
@@ -161,11 +216,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
             label.enableAutoSizing = true;
             label.fontSizeMax = label.fontSize;
             label.fontSizeMin = label.fontSize * 0.65f;
-            label.text = TeleportContextPresentation.Row(action, TeleportationText.Get);
+            // One focusable control, two lines: the full spell name above the
+            // caster/cost detail, keeping each line inside the native content
+            // width on compact panels.
+            label.text = TeleportContextPresentation.CompactRow(action, TeleportationText.Get);
             var element = clone.GetComponent<LayoutElement>() ?? clone.AddComponent<LayoutElement>();
             element.ignoreLayout = false;
             element.minWidth = 0; element.preferredWidth = -1; element.flexibleWidth = 1;
-            element.minHeight = _rowHeight; element.preferredHeight = _rowHeight; element.flexibleHeight = 0;
+            element.minHeight = RowExtent; element.preferredHeight = RowExtent; element.flexibleHeight = 0;
             var row = new Row { Action = action, Button = button, Label = label };
             button.onClick.AddListener(() => Choose(row));
             _rows.Add(row);
@@ -199,14 +257,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     if (!current.TryGetValue(row.Action.Key, out fresh)) {
                         _rows.Remove(row); row.Button.gameObject.SetActive(false);
                         row.Button.transform.SetParent(null, false); Destroy(row.Button.gameObject);
-                    } else { row.Action = fresh; row.Label.text = TeleportContextPresentation.Row(fresh, TeleportationText.Get); }
+                    } else { row.Action = fresh; row.Label.text = TeleportContextPresentation.CompactRow(fresh, TeleportationText.Get); }
                 }
                 if (_rows.Count == 0) WorldMapPointSpellActionRuntime.Clear(_panel);
                 else Resize();
             }
             catch (Exception exception) { WorldMapPointSpellActionRuntime.Clear(_panel); WorldMapPointSpellActionRuntime.Report(exception); }
         }
-        private void Resize() { _viewportLayout.preferredHeight = Math.Min(_maximumHeight, _rows.Count * _rowHeight); }
+        private void Resize() { _viewportLayout.preferredHeight = Math.Min(_maximumHeight, _rows.Count * RowExtent); }
         internal void Remove()
         {
             _ready = false;

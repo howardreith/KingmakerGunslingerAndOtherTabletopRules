@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using KingmakerGunslinger.Spells.Teleportation;
@@ -22,7 +22,7 @@ namespace KingmakerGunslinger.DomainTests
             TeleportCastSourceKind kind = TeleportCastSourceKind.Prepared,
             TeleportCastSourceFacts facts = TeleportCastSourceFacts.Required | TeleportCastSourceFacts.PreparedUse)
         { return new TeleportCastSourceSnapshot(caster, party, caster, book, book == Book ? "Wizard" : "Sorcerer", spell, kind,
-            spell == TeleportSpellKind.Teleport ? 5 : spell == TeleportSpellKind.GreaterTeleport ? 7 : 6, uses, facts); }
+            spell == TeleportSpellKind.Teleport ? 5 : spell == TeleportSpellKind.GreaterTeleport ? 7 : 6, 9, uses, facts); }
         private static WorldMapPointSpellActions<Action> Compose(TeleportDestinationSnapshot point,
             IEnumerable<TeleportCastSourceSnapshot> sources, TeleportCastBlock blocks = TeleportCastBlock.None,
             bool capital = false, string capitalId = WordOfRecallDestinationPolicy.CapitalId,
