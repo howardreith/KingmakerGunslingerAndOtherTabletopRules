@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.0.123-character-visibility-repair
+
+- Fixed newly created characters having invisible bodies while clothes and
+  weapons stayed visible (new-game creation and mercenary recruitment,
+  persisting after creation).
+- Root cause: the native creator's doll-update removal passes and the
+  counter-based loaded-cache cleanups on area transitions force-destroyed the
+  shared materials/ramps referenced by every elemental visual proxy
+  (`AssetBundle.Unload(true)` collateral); the cache-only proxies could not
+  reload.
+- The repair protects the exact registered resources across those
+  boundaries, reconstructs any destroyed ones from validated catalog
+  provenance under their original stable GUIDs, and isolates elemental
+  failures so ordinary native character creation is never aborted.
+- Identities, saves, and settings unchanged. Guarded native qualification:
+  character-creator visual lifecycle PASS (run 13), working-save-smoke PASS,
+  four-race main-menu creator baseline PASS with zero asset unloads (run 14).
+
 ## 0.0.121-unified-firearm-maintenance
 
 - One full-round Repair Firearm action now restores a Broken **or** Wrecked

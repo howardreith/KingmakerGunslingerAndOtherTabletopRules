@@ -1016,6 +1016,7 @@
     <Compile Include="RuntimeTesting\ElementalCharacterCreationRegression.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeRespec.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationRegressionPlan.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterCreationVisualLifecycle.cs" />
     <Compile Include="RuntimeTesting\DisabledKmgCharacterCreationProbe.cs" />
     <Compile Include="RuntimeTesting\CharacterCreationObservationIdentity.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitFrameworkScenario.cs" />
@@ -1126,6 +1127,11 @@
     <Compile Include="ElementalRaces\ElementalRacePublication.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRollbackPolicy.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRetentionPolicy.cs" />
+
+    <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRecovery.cs" />
+
+    <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceRecoveryPolicy.cs" />
+    <Compile Include="ElementalRaces\Visuals\ElementalVisualResourceAnchor.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalCharGenVisualRetentionPatch.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualDefinition.cs" />
     <Compile Include="ElementalRaces\Visuals\ElementalRaceVisualCatalog.cs" />

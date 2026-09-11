@@ -139,6 +139,35 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             }
         }
 
+        /// <summary>
+        /// Recovery entry point: re-clones a proxy from a validated donor with
+        /// the same construction contract as initial registration. The clone is
+        /// returned unregistered; the caller re-registers it under the original
+        /// stable GUID.
+        /// </summary>
+        internal static EquipmentEntity RecreateProxy(
+            ElementalRaceVisualProxySpec spec, EquipmentEntity donor,
+            IReadOnlyList<Texture2D> skinPalette)
+        {
+            return CreateProxy(spec, donor, skinPalette);
+        }
+
+        /// <summary>
+        /// Recovery entry point: re-derives the seven-ramp skin palette from
+        /// catalog provenance after the original ramp textures were destroyed.
+        /// Returns null when any source no longer validates.
+        /// </summary>
+        internal static List<Texture2D> RecreatePalette(
+            IEnumerable<ElementalRaceRampReference> references)
+        {
+            List<Texture2D> palette;
+            List<KeyValuePair<string, EquipmentEntity>> sources;
+            string failure;
+            if (!TryResolvePalette(references, out palette, out sources, out failure))
+                return null;
+            return palette;
+        }
+
         private static EquipmentEntity CreateProxy(
             ElementalRaceVisualProxySpec spec, EquipmentEntity donor,
             IReadOnlyList<Texture2D> skinPalette)
