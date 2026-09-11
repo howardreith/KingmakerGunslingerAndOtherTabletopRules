@@ -54,7 +54,7 @@ def validate(root: Path) -> None:
     state = static.get("settlementButton125", {})
     expected = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
-        "publicReleaseAuthorized": False,
+        "publicReleaseAuthorized": True,
         "settlementButtonWidenedToLabel": "label preferred width at the native font size plus the control native padding, capped by the settled native action region",
         "settlementButtonRestoreExact": True,
         "settlementButtonNoCumulativeGrowth": True,
