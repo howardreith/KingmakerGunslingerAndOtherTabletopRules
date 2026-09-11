@@ -103,6 +103,7 @@ VALIDATORS = {
     "0.0.122": "validate_teleportation122.py",
     "0.0.123": "validate_character_visibility123.py",
     "0.0.124": "validate_teleport_polish124.py",
+    "0.0.125": "validate_settlement_button125.py",
 }
 
 

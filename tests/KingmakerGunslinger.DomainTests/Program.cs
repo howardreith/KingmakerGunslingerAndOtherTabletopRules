@@ -44,6 +44,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.layout.UnprovenOrInsufficientGeometryFailsClosed", TeleportationLayoutTests.UnprovenOrInsufficientGeometryFailsClosed),
             Case("teleportation.layout.RowWidthFollowsTheSettledNativeActionExtent", TeleportationLayoutTests.RowWidthFollowsTheSettledNativeActionExtent),
             Case("teleportation.layout.RenderedRowsMustStayInsideTheNativeExtent", TeleportationLayoutTests.RenderedRowsMustStayInsideTheNativeExtent),
+            Case("teleportation.layout.SettlementButtonCarriesItsLabelWithNativePadding", TeleportationLayoutTests.SettlementButtonCarriesItsLabelWithNativePadding),
+            Case("teleportation.layout.SettlementButtonWidthFailsClosedOnUnprovenGeometry", TeleportationLayoutTests.SettlementButtonWidthFailsClosedOnUnprovenGeometry),
             Case("teleportation.scrolls.ScrollItemsUseApprovedEconomicsAndCanonicalSpells", TeleportationBlueprintContractTests.ScrollItemsUseApprovedEconomicsAndCanonicalSpells),
             Case("teleportation.scrolls.ScrollVendorStockUsesVerifiedTablesAndFiniteBatches", TeleportationBlueprintContractTests.ScrollVendorStockUsesVerifiedTablesAndFiniteBatches),
             Case("teleportation.presentation.PreparedRowIncludesCurrentCount", TeleportationContextTests.PreparedRowIncludesCurrentCount),

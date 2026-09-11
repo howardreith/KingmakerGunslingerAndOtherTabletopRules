@@ -19,6 +19,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private static readonly Dictionary<GlobalMapMessageBox, TeleportDestinationRows> Owned = new Dictionary<GlobalMapMessageBox, TeleportDestinationRows>();
         private static readonly Dictionary<GlobalMapMessageBox, TextMeshProUGUI> RelabeledSettlement = new Dictionary<GlobalMapMessageBox, TextMeshProUGUI>();
         private static readonly Dictionary<TextMeshProUGUI, string> SettlementLabelBefore = new Dictionary<TextMeshProUGUI, string>();
+        private static readonly Dictionary<GlobalMapMessageBox, SettlementControlLayout> WidenedSettlement = new Dictionary<GlobalMapMessageBox, SettlementControlLayout>();
         private static readonly HashSet<string> Reported = new HashSet<string>(StringComparer.Ordinal);
         internal static void Append(GlobalMapMessageBox panel)
         {
@@ -81,9 +82,84 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (!button.gameObject.activeSelf) return;
                 RelabeledSettlement.Add(panel, label);
                 SettlementLabelBefore[label] = label.text;
+                // The pristine settled geometry — captured before the longer text
+                // can disturb any content-driven label rect — carries the native
+                // padding the widened control must preserve.
+                float buttonScale = Math.Max(button.transform.lossyScale.x, 0.0001f);
+                float nativeButtonWidth = ((RectTransform)button.transform).rect.width;
+                float nativeLabelWidth = WorldWidth((RectTransform)label.transform) / buttonScale;
                 label.text = TeleportContextPresentation.SettlementTeleportLabel(TeleportationText.Get);
+                WidenSettlementControl(panel, button, label, nativeButtonWidth, nativeLabelWidth);
             }
             catch (Exception exception) { Report(exception); }
+        }
+        // The relabel hands the native serialized button a longer wording than
+        // its serialized width was ever sized for. The very same control is
+        // widened per instance — label preferred width plus its own native
+        // padding, capped by the region the other settled native actions
+        // occupy — and every touched layout value is recorded so removal
+        // restores the exact native geometry. The target is always measured
+        // from the pristine width Clear restored first, so repeated
+        // open/close cycles cannot accumulate growth; a failing containment
+        // verification reverts the widening and keeps only the accepted
+        // relabel, never the native callback or artwork.
+        private static void WidenSettlementControl(GlobalMapMessageBox panel, Button button, TextMeshProUGUI label,
+            float nativeButtonWidth, float nativeLabelWidth)
+        {
+            if (WidenedSettlement.ContainsKey(panel)) return;
+            var dialog = (CanvasGroup)WorldMapPointSpellActionPatches.DialogField.GetValue(panel);
+            TeleportDestinationRows rows;
+            if (dialog == null || !Owned.TryGetValue(panel, out rows) || rows == null) return;
+            var rect = (RectTransform)button.transform;
+            float buttonScale = Math.Max(button.transform.lossyScale.x, 0.0001f);
+            float labelScale = Math.Max(label.transform.lossyScale.x, 0.0001f) / buttonScale;
+            // The other settled native action buttons (Travel and Cancel) are
+            // the established parchment content region the widened control must
+            // stay inside; the appended rows are excluded like the control
+            // itself.
+            var region = NativeActionExtent(dialog, rows.transform, value => value is Button && !ReferenceEquals(value, button));
+            float preferred = LayoutUtility.GetPreferredWidth(label.rectTransform) * labelScale;
+            // Without a proven region or label no safe width choice exists; the
+            // native width stays and only the accepted relabel remains.
+            if (region.Width <= 0f || preferred <= 0f || nativeButtonWidth <= 0f) return;
+            float target = TeleportContextLayoutPolicy.SettlementButtonWidth(preferred, nativeButtonWidth, nativeLabelWidth, region.Width / buttonScale);
+            var record = new SettlementControlLayout { Button = rect, Width = nativeButtonWidth };
+            var element = button.GetComponent<LayoutElement>();
+            if (element == null)
+            {
+                element = button.gameObject.AddComponent<LayoutElement>();
+                record.Added = true;
+            }
+            else
+            {
+                record.MinWidth = element.minWidth; record.PreferredWidth = element.preferredWidth; record.FlexibleWidth = element.flexibleWidth;
+            }
+            record.Element = element;
+            // Both width authorities move together: the LayoutElement governs
+            // when a parent layout controls the width; the settled rect size
+            // governs when it does not. Whichever applies, the recorded values
+            // restore the native choice.
+            element.minWidth = target; element.preferredWidth = target; element.flexibleWidth = 0f;
+            rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, target);
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)dialog.transform);
+            // Containment is proven on the settled render geometry: the widened
+            // control must sit inside the native action region and actually
+            // cover its label with the native padding. Unproven geometry
+            // reverts to the untouched native width, never a partial overlap.
+            Vector3[] corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+            float minX = Math.Min(corners[0].x, corners[2].x), maxX = Math.Max(corners[0].x, corners[2].x);
+            float padding = Math.Max(0f, nativeButtonWidth - nativeLabelWidth);
+            if (TeleportContextLayoutPolicy.RowInsideNativeExtent(minX, maxX, region.MinX, region.MaxX) &&
+                rect.rect.width + 0.5f >= LayoutUtility.GetPreferredWidth(label.rectTransform) * labelScale + padding)
+                WidenedSettlement.Add(panel, record);
+            else
+            {
+                RestoreSettlementLayout(panel, record);
+                ModContext context;
+                if (ModContext.TryGet(out context)) context.Logger.Info("teleportation", "destination.settlement-width-reverted",
+                    "Native width kept: widened control would not settle inside the native action region with its label.");
+            }
         }
         private static void RestoreSettlementControl(GlobalMapMessageBox panel)
         {
@@ -96,6 +172,32 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 SettlementLabelBefore.Remove(label);
                 label.text = before;
             }
+            SettlementControlLayout layout;
+            if (WidenedSettlement.TryGetValue(panel, out layout)) RestoreSettlementLayout(panel, layout);
+        }
+        private static void RestoreSettlementLayout(GlobalMapMessageBox panel, SettlementControlLayout record)
+        {
+            WidenedSettlement.Remove(panel);
+            if (record == null || record.Button == null) return;
+            if (record.Element != null)
+            {
+                if (record.Added) UnityEngine.Object.Destroy(record.Element);
+                else
+                {
+                    record.Element.minWidth = record.MinWidth;
+                    record.Element.preferredWidth = record.PreferredWidth;
+                    record.Element.flexibleWidth = record.FlexibleWidth;
+                }
+            }
+            record.Button.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, record.Width);
+            var dialog = (CanvasGroup)WorldMapPointSpellActionPatches.DialogField.GetValue(panel);
+            if (dialog != null) LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)dialog.transform);
+        }
+        private static float WorldWidth(RectTransform rect)
+        {
+            Vector3[] corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+            return Math.Max(corners[0].x, corners[2].x) - Math.Min(corners[0].x, corners[2].x);
         }
         internal static void Forget(GlobalMapMessageBox panel, TeleportDestinationRows rows)
         {
@@ -133,6 +235,18 @@ namespace KingmakerGunslinger.Spells.Teleportation
             internal float MaxX;
             internal static NativeActionExtentInfo Unproven
             { get { return new NativeActionExtentInfo { Width = -1f, MinX = float.NegativeInfinity, MaxX = float.PositiveInfinity }; } }
+        }
+        // The exact native layout values the settlement-control widening touched,
+        // restored with the original label when the mod augmentation withdraws.
+        private sealed class SettlementControlLayout
+        {
+            internal RectTransform Button;
+            internal float Width;
+            internal LayoutElement Element;
+            internal bool Added;
+            internal float MinWidth;
+            internal float PreferredWidth;
+            internal float FlexibleWidth;
         }
         internal static void Report(Exception exception)
         {

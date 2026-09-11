@@ -56,7 +56,7 @@ def validate(root: Path) -> None:
     state = static.get("teleportPolish124", {})
     expected = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
-        "publicReleaseAuthorized": False,
+        "publicReleaseAuthorized": True,
         "compatibilityRuntimeQualificationPending": True,
         "specialistRootCauseConfirmed": "serialized per-book m_SpecialSpells cache derived only at feature activation and learn time; PostLoad never re-derives it",
         "loadSeamRepair": "Spellbook.PostLoad",
