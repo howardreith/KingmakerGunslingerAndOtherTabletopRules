@@ -60,7 +60,10 @@ specialist-slot repair. Eight requirements from
   was not run; visual acceptance at the owner's geometry remains pending
   owner review.
 
-No public release was performed from this candidate; owner review required.
+Released as **KingmakerGunslinger 0.0.124** by owner approval on 2026-09-11
+after the merged review-corrected candidate passed the full guarded runtime
+battery. The save-round-trip lifecycle and manual visual acceptance notes
+above remain the honest boundaries of what was verified.
 
 ## Upgrade
 
