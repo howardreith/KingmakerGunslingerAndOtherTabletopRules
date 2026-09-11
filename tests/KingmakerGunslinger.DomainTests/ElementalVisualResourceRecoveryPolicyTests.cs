@@ -106,6 +106,37 @@ namespace KingmakerGunslinger.DomainTests
                 "An unclassified damage kind fails closed.");
         }
 
+        internal static void DamagedDependencyEntriesAreEvictedBeforeReload()
+        {
+            Assertions.True(ElementalVisualResourceRecoveryPolicy
+                    .ShouldEvictNativeDependencyForReload(
+                        ElementalVisualResourceRecoveryPolicy.NativeDependencyDestroyed),
+                "A corpse under a surviving cache entry must be evicted or the loader returns it as a hit.");
+            Assertions.True(ElementalVisualResourceRecoveryPolicy
+                    .ShouldEvictNativeDependencyForReload(
+                        ElementalVisualResourceRecoveryPolicy.NativeInnerAssetsDestroyed),
+                "A live-but-gutted registered instance must be evicted so the reload is fresh.");
+            Assertions.False(ElementalVisualResourceRecoveryPolicy
+                    .ShouldEvictNativeDependencyForReload(
+                        ElementalVisualResourceRecoveryPolicy.NativeDependencyReplaced),
+                "A foreign replacement is never displaced for reload.");
+            Assertions.False(ElementalVisualResourceRecoveryPolicy
+                    .ShouldEvictNativeDependencyForReload(
+                        ElementalVisualResourceRecoveryPolicy.NativeDependencyEvicted),
+                "An evicted dependency has no cache entry to remove.");
+            Assertions.False(ElementalVisualResourceRecoveryPolicy
+                    .ShouldEvictNativeDependencyForReload(null),
+                "A healthy dependency needs no eviction.");
+            Assertions.True(ElementalVisualResourceRecoveryPolicy.IsNativeDependencyKind(
+                    ElementalVisualResourceRecoveryPolicy.NativeDependencyEvicted) &&
+                ElementalVisualResourceRecoveryPolicy.IsNativeDependencyKind(
+                    ElementalVisualResourceRecoveryPolicy.NativeDependencyReplaced),
+                "Every native dependency kind is recognized for heal ordering.");
+            Assertions.False(ElementalVisualResourceRecoveryPolicy.IsNativeDependencyKind(
+                    ElementalVisualResourceRecoveryPolicy.OwnedInnerAssetsDestroyed),
+                "Owned proxy damage never sorts into the dependency-first heal pass.");
+        }
+
         internal static void RetentionExtendsOnlyAfterFullRecovery()
         {
             ElementalVisualResourceDamage remaining =

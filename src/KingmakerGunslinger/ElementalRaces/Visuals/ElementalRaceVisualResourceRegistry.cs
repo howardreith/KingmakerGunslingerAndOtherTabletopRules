@@ -63,6 +63,7 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             new Dictionary<string, EquipmentEntity>(StringComparer.Ordinal);
         private readonly Dictionary<string, string> _nativeDependencyNames =
             new Dictionary<string, string>(StringComparer.Ordinal);
+        private UnityEngine.GameObject _anchor;
 
         internal string[] NativeDependencyIds { get { return _nativeDependencies.Keys.OrderBy(value => value, StringComparer.Ordinal).ToArray(); } }
 
@@ -229,8 +230,7 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 if (registration.Resource == null || !cache.Contains(registration.AssetId) ||
                     !ReferenceEquals(CurrentResource(cache[registration.AssetId]), registration.Resource))
                     throw new InvalidOperationException("Owned character creator visual resource was lost: " + registration.AssetId);
-                UnityEngine.Object[] inner = registration.Resource.GetInnerAssets()
-                    .Where(value => !ReferenceEquals(value, null)).ToArray();
+                UnityEngine.Object[] inner = ProtectedInnerAssets(registration.Resource);
                 if (inner.Any(value => value == null))
                     throw new InvalidOperationException("Owned character creator inner asset was destroyed: " + registration.AssetId);
                 plan.Add(new KeyValuePair<string, UnityEngine.Object[]>(registration.AssetId, inner));
@@ -243,8 +243,7 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 if (dependency.Value == null || !cache.Contains(dependency.Key) ||
                     !ReferenceEquals(CurrentResource(cache[dependency.Key]), dependency.Value))
                     throw new InvalidOperationException("Native visual donor was unloaded: " + dependency.Key);
-                UnityEngine.Object[] inner = dependency.Value.GetInnerAssets()
-                    .Where(value => !ReferenceEquals(value, null)).ToArray();
+                UnityEngine.Object[] inner = ProtectedInnerAssets(dependency.Value);
                 if (inner.Any(value => value == null))
                     throw new InvalidOperationException("Native visual dependency inner asset was destroyed: " + dependency.Key);
                 plan.Add(new KeyValuePair<string, UnityEngine.Object[]>(dependency.Key, inner));
@@ -341,12 +340,13 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                     "Reconstructed visual resource verification failed for " +
                     registration.Spec.Symbol + ".");
             registration.RebindResource(replacement);
+            RefreshNativeAnchor();
         }
 
         /// <summary>
         /// Rebinds a native dependency that legitimately reloaded as a new
         /// instance. Identity is validated by the recorded original object
-        /// name before the new reference is accepted.
+        /// name and native liveness before the new reference is accepted.
         /// </summary>
         internal bool TryRebindNativeDependency(string assetId,
             EquipmentEntity fresh)
@@ -356,6 +356,7 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             if (!_nativeDependencyNames.TryGetValue(assetId, out expected)) return false;
             if (!string.Equals(fresh.name, expected, StringComparison.Ordinal)) return false;
             _nativeDependencies[assetId] = fresh;
+            RefreshNativeAnchor();
             return true;
         }
 
@@ -363,23 +364,6 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
         {
             EquipmentEntity value;
             return _nativeDependencies.TryGetValue(assetId, out value) ? value : null;
-        }
-
-        /// <summary>
-        /// Evicts a bound native dependency's cache entry only when it holds a
-        /// Unity-destroyed object, so the native loader can reload the asset
-        /// from its bundle. A live foreign or native object is never evicted.
-        /// </summary>
-        internal bool EvictDeadNativeDependency(string assetId)
-        {
-            if (string.IsNullOrWhiteSpace(assetId) ||
-                !_nativeDependencies.ContainsKey(assetId)) return false;
-            IDictionary cache = RequireCache();
-            if (!cache.Contains(assetId)) return false;
-            UnityEngine.Object current = CurrentResource(cache[assetId]);
-            if (current != null) return false;
-            cache.Remove(assetId);
-            return true;
         }
 
         /// <summary>
@@ -412,6 +396,124 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 BindingFlags.NonPublic | BindingFlags.Public).GetField(
                     "RequestCounter", BindingFlags.Instance | BindingFlags.Public);
 
+        /// <summary>
+        /// The native doll-removal exception set covers GetInnerAssets() of the
+        /// loaded entities plus the initially-retained list, but EquipmentEntity
+        /// ramp textures (skin/horn palettes) are referenced outside that list;
+        /// runtime evidence shows the removal pass destroyed exactly those. The
+        /// retention plan therefore extends with the ramps as well.
+        /// </summary>
+        private static UnityEngine.Object[] ProtectedInnerAssets(EquipmentEntity entity)
+        {
+            var seen = new HashSet<UnityEngine.Object>(ReferenceIdentity);
+            var result = new List<UnityEngine.Object>();
+            foreach (var asset in entity.GetInnerAssets())
+            {
+                if (ReferenceEquals(asset, null)) continue;
+                if (seen.Add(asset)) result.Add(asset);
+            }
+            foreach (var ramp in PrimaryAndSecondaryRamps(entity))
+            {
+                if (ramp == null) continue;
+                if (seen.Add(ramp)) result.Add(ramp);
+            }
+            return result.ToArray();
+        }
+
+        private static IEnumerable<UnityEngine.Texture2D> PrimaryAndSecondaryRamps(EquipmentEntity entity)
+        {
+            if (entity.PrimaryRamps != null)
+                foreach (var ramp in entity.PrimaryRamps) yield return ramp;
+            if (entity.SecondaryRamps != null)
+                foreach (var ramp in entity.SecondaryRamps) yield return ramp;
+        }
+
+        private sealed class ReferenceIdentityComparer : IEqualityComparer<UnityEngine.Object>
+        {
+            internal static readonly ReferenceIdentityComparer Instance =
+                new ReferenceIdentityComparer();
+            bool IEqualityComparer<UnityEngine.Object>.Equals(UnityEngine.Object x, UnityEngine.Object y)
+            { return ReferenceEquals(x, y); }
+            int IEqualityComparer<UnityEngine.Object>.GetHashCode(UnityEngine.Object obj)
+            { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj); }
+        }
+
+        private static readonly ReferenceIdentityComparer ReferenceIdentity =
+            ReferenceIdentityComparer.Instance;
+
+        /// <summary>True when the id is one of the bound native donors/palette sources.</summary>
+        internal bool IsProtectedNativeDependency(string assetId)
+        {
+            return !string.IsNullOrWhiteSpace(assetId) &&
+                _nativeDependencies.ContainsKey(assetId);
+        }
+
+        /// <summary>
+        /// Evicts a damaged native dependency's cache entry (destroyed corpse or
+        /// live-but-gutted registered instance) so the native loader supplies a
+        /// fresh instance on the next resolve. A foreign replacement is never
+        /// displaced.
+        /// </summary>
+        internal bool EvictReloadableNativeDependency(string assetId)
+        {
+            if (string.IsNullOrWhiteSpace(assetId)) return false;
+            EquipmentEntity registered;
+            if (!_nativeDependencies.TryGetValue(assetId, out registered)) return false;
+            IDictionary cache = RequireCache();
+            if (!cache.Contains(assetId)) return false;
+            UnityEngine.Object current = CurrentResource(cache[assetId]);
+            if (current != null && !ReferenceEquals(current, registered))
+                return false;
+            string kind = ElementalVisualResourceRecoveryPolicy.ClassifyNativeDependency(
+                new ElementalVisualResourceStateSnapshot
+                {
+                    AssetId = assetId,
+                    Symbol = assetId,
+                    ObjectAlive = registered != null,
+                    CacheContains = true,
+                    CacheReferencesRegistered = ReferenceEquals(current, registered),
+                    InnerAssetsIntact = registered != null &&
+                        !HasDestroyedInnerAsset(registered)
+                });
+            if (!ElementalVisualResourceRecoveryPolicy
+                    .ShouldEvictNativeDependencyForReload(kind))
+                return false;
+            cache.Remove(assetId);
+            return true;
+        }
+
+        /// <summary>
+        /// Creates (or refreshes) the hidden native holder that keeps exactly the
+        /// registered proxies and bound donors reachable for Unity's unused-asset
+        /// sweep, and marks their request counters so the counter-based cache
+        /// cleanup cannot evict them. Nothing outside the owned identity set is
+        /// retained.
+        /// </summary>
+        internal void AttachNativeAnchor()
+        {
+            ArmRetentionCounters();
+            if (_anchor == null)
+            {
+                var holder = new UnityEngine.GameObject(
+                    "KMG.ElementalRaces.VisualAnchor");
+                UnityEngine.Object.DontDestroyOnLoad(holder);
+                holder.hideFlags = UnityEngine.HideFlags.HideAndDontSave;
+                _anchor = holder;
+                _anchor.AddComponent<ElementalVisualResourceAnchor>();
+            }
+            RefreshNativeAnchor();
+        }
+
+        internal void RefreshNativeAnchor()
+        {
+            if (_anchor == null) return;
+            var anchor = _anchor.GetComponent<ElementalVisualResourceAnchor>();
+            if (anchor == null) return;
+            anchor.Proxies = _order
+                .Select(registration => registration.Resource).ToArray();
+            anchor.Donors = _nativeDependencies.Values.ToArray();
+        }
+
         internal void RollbackAll()
         {
             if (_order.Count == 0) return;
@@ -431,6 +533,11 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             int removed = _order.Count;
             _order.Clear();
             _bySymbol.Clear();
+            if (_anchor != null)
+            {
+                UnityEngine.Object.Destroy(_anchor);
+                _anchor = null;
+            }
             _logger.Warning("elemental-races", "visual-resource.rollback",
                 string.Format(CultureInfo.InvariantCulture,
                     "Rolled back {0} owned visual resource proxies.", removed));

@@ -109,6 +109,28 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
             }
         }
 
+        /// <summary>True for the damage kinds reported for native dependencies.</summary>
+        internal static bool IsNativeDependencyKind(string kind)
+        {
+            return kind == NativeDependencyDestroyed ||
+                kind == NativeDependencyEvicted ||
+                kind == NativeDependencyReplaced ||
+                kind == NativeInnerAssetsDestroyed;
+        }
+
+        /// <summary>
+        /// A damaged native dependency's cache entry must be evicted before the
+        /// native loader can supply a fresh instance: a Unity-destroyed corpse
+        /// or a live-but-gutted registered instance is returned as a cache hit
+        /// otherwise. A foreign replacement is never displaced; an evicted
+        /// entry has nothing to remove.
+        /// </summary>
+        internal static bool ShouldEvictNativeDependencyForReload(string kind)
+        {
+            return kind == NativeDependencyDestroyed ||
+                kind == NativeInnerAssetsDestroyed;
+        }
+
         /// <summary>
         /// The retention plan remains all-or-nothing: when any damaged entry is
         /// not recoverable, retention is skipped for that boundary and the

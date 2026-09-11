@@ -230,6 +230,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("elemental-visual-recovery.native-classification", ElementalVisualResourceRecoveryPolicyTests.NativeDependencyClassificationIsSeverityOrdered),
             Case("elemental-visual-recovery.recoverable-kinds", ElementalVisualResourceRecoveryPolicyTests.ForeignReplacementIsTheOnlyUnrecoverableDamage),
             Case("elemental-visual-recovery.retention-gate", ElementalVisualResourceRecoveryPolicyTests.RetentionExtendsOnlyAfterFullRecovery),
+            Case("elemental-visual-recovery.donor-reload-eviction", ElementalVisualResourceRecoveryPolicyTests.DamagedDependencyEntriesAreEvictedBeforeReload),
             Case("elemental-visual-recovery.rate-gate", ElementalVisualResourceRecoveryPolicyTests.RecoveryAndReportsAreRateGated),
             Case("elemental-races.registration-publication", ElementalRaceProductionTests.RegistrationAndPublicationAreSaveSafe),
             Case("elemental-races.runtime-mechanics", ElementalRaceProductionTests.RuntimeMechanicsScenarioIsGuardedAndNative),
