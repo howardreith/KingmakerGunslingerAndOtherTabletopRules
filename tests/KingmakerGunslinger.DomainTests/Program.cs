@@ -132,6 +132,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.MigrationIsIdempotentAndRoundTrips", TeleportationPolicyTests.MigrationIsIdempotentAndRoundTrips),
             Case("teleportation.CorruptLedgerFailsClosed", TeleportationPolicyTests.CorruptLedgerFailsClosed),
             Case("teleportation.SpecialistCacheRestoresOnlyTheNativeInvariant", TeleportationPolicyTests.SpecialistCacheRestoresOnlyTheNativeInvariant),
+            Case("teleportation.BeginPolicySeparatesModalBlockingFromPresenterAvailability", TeleportationPolicyTests.BeginPolicySeparatesModalBlockingFromPresenterAvailability),
+            Case("teleportation.ViewportHeightIncludesSeparatorContent", TeleportationPolicyTests.ViewportHeightIncludesSeparatorContent),
 
             Case("elemental-chargen.alternate-racial-route", ElementalCharacterCreationRoutingTests.AlternateTraitFactoryUsesRacialRouteAndPublishedChoices),
             Case("elemental-traits.completion-marker-revisions", ElementalAlternateTraitPolicyTests.CompletionMarkersPreserveReplacementAndLegacyRevisionContracts),

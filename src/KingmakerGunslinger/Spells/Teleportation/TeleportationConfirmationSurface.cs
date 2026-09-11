@@ -44,8 +44,24 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!ConsoleContractValid) return null;
             var views = Resources.FindObjectsOfTypeAll<DialogMessageBoxView>().Where(value => value != null && value.gameObject.scene.IsValid() &&
                 value.gameObject.scene.isLoaded && value.transform.parent != null && value.transform.parent.gameObject.activeInHierarchy).ToArray();
-            if (views.Length != 1 || ConsoleViewModel.GetValue(views[0], null) != null) return null;
+            if (views.Length != 1 || ConsoleViewModel.GetValue(views[0]) != null) return null;
             return new TeleportationConfirmationSurface(null, views[0]);
+        }
+        // Distinguishes an unrelated message box currently shown on screen from
+        // the absence of a usable confirmation presenter. An occupied modal
+        // blocks every magical action — including direct casts, which must never
+        // click through or interfere with another dialog's callback — while a
+        // merely unavailable presenter only blocks confirmed spells.
+        internal static bool UnrelatedModalShown()
+        {
+            if (Game.Instance == null) return true;
+            if (!Game.Instance.IsControllerGamepad)
+                return DialogMessageBox.Instance != null && DialogMessageBox.Instance.IsShown;
+            if (!ConsoleContractValid) return false;
+            var views = Resources.FindObjectsOfTypeAll<DialogMessageBoxView>().Where(value => value != null && value.gameObject.scene.IsValid() &&
+                value.gameObject.scene.isLoaded && value.transform.parent != null && value.transform.parent.gameObject.activeInHierarchy).ToArray();
+            // A bound view model means a console message is currently presented.
+            return views.Any(value => ConsoleViewModel.GetValue(value, null) != null);
         }
     }
 }

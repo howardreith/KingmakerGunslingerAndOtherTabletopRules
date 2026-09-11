@@ -1,4 +1,4 @@
-# Release notes — 0.0.124-teleport-polish-specialist
+﻿# Release notes — 0.0.124-teleport-polish-specialist
 
 Owner follow-up mission: teleport UI polish and the genuine Conjuration
 specialist-slot repair. Eight requirements from
@@ -45,14 +45,20 @@ specialist-slot repair. Eight requirements from
 
 ## Verification summary
 
-- 1,572 deterministic domain tests PASS (five new: arrival templates, success
-  suppression policy, settled-extent width/containment, specialist-cache
-  invariant).
+- 1,574 deterministic domain tests PASS (seven new: arrival templates,
+  success suppression, settled-extent width and containment, specialist-cache
+  invariant, modal-versus-presenter offer policy, separator-aware viewport
+  height).
 - Clean Release build and repository validation PASS at the release identity.
-- Guarded runtime scenarios updated for the direct cast and settled-extent
-  containment; a new `disposable-teleportation-specialist-cache` scenario
-  reproduces the stale-cache rejection through native seams and proves the
-  load-seam repair for both spell levels independently.
+- Guarded runtime scenarios updated for the direct cast, the settled-extent
+  width containment, the duplicate-input and unrelated-modal boundaries, and
+  the divider structural checks; a new
+  `disposable-teleportation-specialist-cache` scenario reproduces the
+  stale-cache rejection through native seams, proves the load-seam repair for
+  both spell levels independently, and casts from both repaired favorite-only
+  preparations on the world map. A disposable-save deserialization round-trip
+  was not run; visual acceptance at the owner's geometry remains pending
+  owner review.
 
 No public release was performed from this candidate; owner review required.
 
@@ -68,7 +74,7 @@ cache on their next load — no save migration is involved.
 This Kingmaker Gunslinger 0.0.124 release carries the retained qualification
 counts forward: the inherited Gunslinger-fixes baseline of 1,288 tests, the
 fatigue-authority baseline of 1,325 tests, and the current deterministic suite
-of 1,572 tests all pass.
+of 1,574 tests all pass.
 
 The installable archive is
 `KingmakerGunslinger-0.0.124-teleport-polish-specialist.zip`. The qualified

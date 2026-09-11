@@ -13,7 +13,7 @@ VERSION = "0.0.124"
 INFORMATIONAL_VERSION = "0.0.124-teleport-polish-specialist"
 PACKAGE = "KingmakerGunslinger-0.0.124-local-runtime.zip"
 PACKAGE_SUFFIX = "teleport-polish-specialist"
-DETERMINISTIC_TEST_COUNT = 1572
+DETERMINISTIC_TEST_COUNT = 1574
 MANIFEST_TOTAL = 1886
 MANIFEST_ACTIVE = 1884
 
@@ -48,7 +48,7 @@ def validate(root: Path) -> None:
         "m_SpecialSpells", "favorite slot",
         "world extent", "settled-extent width", "somewhere else",
         "the target location", "no second confirmation",
-        "1,572")
+        "1,574")
     static = json.loads((root / "validation/static-validation.json").read_text(encoding="utf-8"))
     if static.get("version") != VERSION or \
             static.get("milestone") != INFORMATIONAL_VERSION:

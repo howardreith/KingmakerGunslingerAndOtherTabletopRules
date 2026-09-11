@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +7,10 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.EntitySystem.Persistence;
 using Kingmaker.GameModes;
+using Kingmaker.Globalmap;
+using Kingmaker.Globalmap.State;
 using Kingmaker.UI;
 using Kingmaker.UI.Group;
 using Kingmaker.UI.ServiceWindow;
@@ -70,7 +73,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var fixtureConjurer = new TeleportResourceFixtureOwner(conjurer);
             var fixtureEvoker = new TeleportResourceFixtureOwner(evoker);
             var fixtureBlank = new TeleportResourceFixtureOwner(blank);
-            bool conjurerFeatureAttached = false, evokerFeatureAttached = false;
+            bool conjurerFeatureAttached = false, evokerFeatureAttached = false, blankFeatureAttached = false;
             // In-memory Conjuration-list rollback fixture: the exact publication
             // mutation reversed, so the stale-cache order can be reproduced.
             var cache = typeof(SpellLevelList).GetField("m_SpellsFiltered", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -95,8 +98,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 conjurer.Descriptor.AddFact(conjurationFeature); conjurerFeatureAttached = true;
                 evoker.Descriptor.AddFact(evocationFeature); evokerFeatureAttached = true;
+                blank.Descriptor.AddFact(conjurationFeature); blankFeatureAttached = true;
                 bookConjurer.AddSpecialList(conjurationList);
                 bookEvoker.AddSpecialList(evocationList);
+                // A genuine Conjuration specialist that never knows either
+                // strategic spell: the direct knowledge boundary.
+                bookBlank.AddSpecialList(conjurationList);
                 bookConjurer.AddKnown(5, teleport, true); bookConjurer.AddKnown(5, coneOfCold, true);
                 bookConjurer.AddKnown(7, greaterTeleport, true);
                 bookEvoker.AddKnown(5, teleport, true);
@@ -148,7 +155,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "the production load seam restores special membership and native favorite acceptance for Teleport@5 and GreaterTeleport@7 independently",
                     "teleport5=" + repairedTeleport + ";greater7=" + repairedGreater, repairedTeleport && repairedGreater);
                 SpecialistCacheAssert("postload-negative-controls",
-                    "the Evocation book gains nothing, the Conjuration favorite still refuses non-Conjuration spells, and a book that never knew the spells auto-learns nothing",
+                    "the Evocation book gains nothing, the Conjuration favorite still refuses non-Conjuration spells, and a genuine Conjuration specialist that never knew the spells auto-learns nothing",
                     "evoker=" + bookEvoker.GetSpecialSpells(5).Any(value => value.Blueprint == teleport) +
                         ";coneRejected=" + !bookConjurer.PosibleMemorize(new AbilityData(coneOfCold, bookConjurer), conjurerFavorite5) +
                         ";blankKnowsTeleport=" + bookBlank.IsKnown(teleport) + ";blankKnowsGreater=" + bookBlank.IsKnown(greaterTeleport),
@@ -223,6 +230,152 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RawSlots(bookConjurer, 7).Count(value => value.Spell != null && value.Spell.Blueprint == greaterTeleport && value.Available) == 2);
                 ui.ServiceWindow.HandleOpenSpellbook();
                 for (int frame = 0; frame < 60; frame++) yield return 0;
+                // World-map phase: spend the REPAIRED favorite-only preparations
+                // at both levels through the real cast boundaries — Greater
+                // Teleport settles directly, ordinary Teleport through its
+                // confirmation — proving the reconciled slots are not merely
+                // displayable but genuinely spendable.
+                foreach (var ordinary5 in RawSlots(bookConjurer, 5).Where(value =>
+                    value.Spell != null && value.Spell.Blueprint == teleport && value.Type == SpellSlotType.Common).ToArray())
+                    bookConjurer.ForgetMemorized(ordinary5);
+                foreach (var ordinary7 in RawSlots(bookConjurer, 7).Where(value =>
+                    value.Spell != null && value.Spell.Blueprint == greaterTeleport && value.Type == SpellSlotType.Common).ToArray())
+                    bookConjurer.ForgetMemorized(ordinary7);
+                bookConjurer.Rest();
+                var onlyFavorites = RawSlots(bookConjurer, 5).Count(value => value.Spell != null && value.Spell.Blueprint == teleport && value.Available) +
+                    RawSlots(bookConjurer, 7).Count(value => value.Spell != null && value.Spell.Blueprint == greaterTeleport && value.Available);
+                if (onlyFavorites != 2)
+                    throw new InvalidOperationException("The world-map phase lacks exactly one ready favorite preparation per level.");
+                if (GlobalMapRules.Instance != null) throw new InvalidOperationException("A global map is already loaded before the world-map phase.");
+                game.LoadArea(game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint, AutoSaveMode.None);
+                for (int frame = 0; frame < 600; frame++)
+                {
+                    yield return 0;
+                    if (!LoadingProcess.Instance.IsLoadingInProcess && !LoadingProcess.Instance.IsLoadingScreenActive &&
+                        GlobalMapRules.Instance != null && game.CurrentMode == GameModeType.GlobalMap) break;
+                }
+                if (GlobalMapRules.Instance == null || game.CurrentMode != GameModeType.GlobalMap)
+                    throw new InvalidOperationException("The world-map phase did not finish loading.");
+                var rules = GlobalMapRules.Instance; var map = GlobalMapRules.State;
+                var ledger = TeleportFamiliarityRuntime.EnsureLedger(player);
+                var payloadState = typeof(UnitPartTeleportFamiliarity).GetField("_state", BindingFlags.Instance | BindingFlags.NonPublic);
+                var originalPayload = payloadState.GetValue(ledger);
+                var originalPosition = map.PartyPosition; var originalLast = map.LastLocation;
+                var originalTime = player.GameTime; float originalMiles = map.MilesTravelled;
+                var originalHistory = map.HistoryTravels.ToArray(); var originalPerception = map.PerceptionRolledLocations.ToArray();
+                var pointRecords = map.Locations.ToArray(); var edgeRecords = map.Edges.ToArray();
+                var snapshots = pointRecords.Select(value => new TeleportNativeFieldSnapshot(value.Value))
+                    .Concat(edgeRecords.Select(value => new TeleportNativeFieldSnapshot(value.Value)))
+                    .Concat(new[] { new TeleportNativeFieldSnapshot(ledger) }).ToArray();
+                try
+                {
+                    var chain = FindTeleportInteractionChain(rules);
+                    var origin = chain[0]; var mapTarget = chain[2];
+                    var setRevealed = typeof(LocationData).GetProperty("IsRevealed").GetSetMethod(true);
+                    foreach (var point in chain) { setRevealed.Invoke(point.Data, new object[] { true }); point.Data.EdgesOpened = true; }
+                    var familiarity = new TeleportFamiliarityState(); familiarity.MigrateLegacy(chain.Select(value => value.Blueprint.AssetGuid));
+                    payloadState.SetValue(ledger, familiarity.Serialize());
+                    rules.StopWhenRevealingNewEdges = false;
+                    rules.SetCurrentPosition(new Kingmaker.Globalmap.State.MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                    var rig = Resources.FindObjectsOfTypeAll<Kingmaker.View.CameraRig>().Single(value => value != null &&
+                        value.gameObject.activeInHierarchy && value.gameObject.scene.IsValid() && value.gameObject.scene.isLoaded);
+                    rig.ScrollTo(mapTarget.transform.position);
+                    for (int frame = 0; frame < 60; frame++) yield return 0;
+                    var panel = TeleportationFixturePanel();
+                    TeleportDestinationRows worldRows = null;
+                    for (int attempt = 0; attempt < 3 && (worldRows == null || worldRows.Actions.Count == 0); attempt++)
+                    {
+                        SelectTeleportationCastingPoint(panel, mapTarget);
+                        foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                        for (int frame = 0; frame < 40; frame++)
+                        {
+                            worldRows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                            if (worldRows != null && worldRows.Actions.Count > 0) break;
+                            yield return 0;
+                        }
+                        if (worldRows != null && worldRows.Actions.Count > 0) break;
+                        SelectTeleportationCastingPoint(panel, mapTarget);
+                        foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                    }
+                    if (worldRows == null) throw new InvalidOperationException("The world-map phase composed no destination rows.");
+                    // Level 7: direct Greater Teleport from the repaired favorite-only preparation.
+                    var greaterAction = worldRows.Actions.SingleOrDefault(value => value.Source.Spell == TeleportSpellKind.GreaterTeleport &&
+                        value.Source.BookId == bookConjurer.Blueprint.AssetGuid && value.Source.CasterId == conjurer.UniqueId);
+                    SpecialistCacheAssert("world-map-favorite-greater-row",
+                        "the repaired favorite-only Greater Teleport preparation composes as a real world-map source",
+                        "uses=" + (greaterAction == null ? "absent" : greaterAction.Source.Uses.ToString()),
+                        greaterAction != null && greaterAction.Source.Uses == 1);
+                    if (greaterAction == null) throw new InvalidOperationException("No repaired favorite Greater Teleport world-map source.");
+                    worldRows.QualificationRolls = new TeleportationFixtureRolls(new int[0]);
+                    TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                    worldRows.Buttons[worldRows.Actions.ToList().FindIndex(value => value.Key == greaterAction.Key)].onClick.Invoke();
+                    var greaterOutcome = TeleportContextConfirmationPresenter.LastDirectCast;
+                    for (int frame = 0; frame < 8; frame++) yield return 0;
+                    int remainingGreater = RawSlots(bookConjurer, 7).Count(value => value.Spell != null && value.Spell.Blueprint == greaterTeleport && value.Available);
+                    bool greaterArrived = greaterOutcome != null && greaterOutcome.Transaction.State == TeleportTransactionState.Completed &&
+                        greaterOutcome.Transaction.Result != null && greaterOutcome.Transaction.Result.Status == TeleportExecutionStatus.Arrived &&
+                        greaterOutcome.Transaction.Result.DestinationId == mapTarget.Blueprint.AssetGuid;
+                    CaptureTeleportationSpecialistCache("world-map-greater-spend", new {
+                        transaction = greaterOutcome == null ? null : greaterOutcome.Transaction.State.ToString(),
+                        evidence = greaterOutcome == null ? null : greaterOutcome.Execution.LastEvidence, remainingGreater });
+                    SpecialistCacheAssert("world-map-favorite-greater-spend",
+                        "the repaired favorite-only Greater Teleport preparation is spent directly: exactly one use, exact arrival, none remaining",
+                        "arrived=" + greaterArrived + ";expenditure=" + (greaterOutcome != null && greaterOutcome.Execution.Resource != null ?
+                            greaterOutcome.Execution.Resource.ObserveExpenditure().ToString() : "none") + ";remaining=" + remainingGreater,
+                        greaterArrived && greaterOutcome.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
+                        remainingGreater == 0 && !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown);
+                    // Level 5: ordinary Teleport through its confirmation from the repaired favorite-only preparation.
+                    rules.SetCurrentPosition(new Kingmaker.Globalmap.State.MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                    player.GameTime = originalTime;
+                    for (int attempt = 0; attempt < 3; attempt++)
+                    {
+                        SelectTeleportationCastingPoint(panel, mapTarget);
+                        foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                        worldRows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                        if (worldRows != null && worldRows.Actions.Any(value => value.Source.Spell == TeleportSpellKind.Teleport &&
+                            value.Source.BookId == bookConjurer.Blueprint.AssetGuid)) break;
+                        for (int frame = 0; frame < 30; frame++) yield return 0;
+                    }
+                    var teleportAction = worldRows.Actions.SingleOrDefault(value => value.Source.Spell == TeleportSpellKind.Teleport &&
+                        value.Source.BookId == bookConjurer.Blueprint.AssetGuid && value.Source.CasterId == conjurer.UniqueId);
+                    SpecialistCacheAssert("world-map-favorite-teleport-row",
+                        "the repaired favorite-only Teleport preparation composes as a real world-map source",
+                        "uses=" + (teleportAction == null ? "absent" : teleportAction.Source.Uses.ToString()),
+                        teleportAction != null && teleportAction.Source.Uses == 1);
+                    if (teleportAction == null) throw new InvalidOperationException("No repaired favorite Teleport world-map source.");
+                    worldRows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
+                    worldRows.Buttons[worldRows.Actions.ToList().FindIndex(value => value.Key == teleportAction.Key)].onClick.Invoke();
+                    var teleportRequest = TeleportContextConfirmationPresenter.Current;
+                    if (teleportRequest == null || !DialogMessageBox.Instance.IsShown)
+                        throw new InvalidOperationException("The repaired favorite Teleport confirmation did not open.");
+                    for (int frame = 0; frame < 8; frame++) yield return 0;
+                    TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                    for (int frame = 0; frame < 12; frame++) yield return 0;
+                    int remainingTeleport = RawSlots(bookConjurer, 5).Count(value => value.Spell != null && value.Spell.Blueprint == teleport && value.Available);
+                    bool teleportArrived = teleportRequest.Transaction.State == TeleportTransactionState.Completed &&
+                        teleportRequest.Transaction.Result != null && teleportRequest.Transaction.Result.Status == TeleportExecutionStatus.Arrived &&
+                        teleportRequest.Transaction.Result.DestinationId == mapTarget.Blueprint.AssetGuid;
+                    CaptureTeleportationSpecialistCache("world-map-teleport-spend", new {
+                        transaction = teleportRequest.Transaction.State.ToString(), remainingTeleport });
+                    SpecialistCacheAssert("world-map-favorite-teleport-spend",
+                        "the repaired favorite-only Teleport preparation spends exactly one use through its confirmation and arrives exactly",
+                        "arrived=" + teleportArrived + ";expenditure=" + teleportRequest.Execution.Resource.ObserveExpenditure() + ";remaining=" + remainingTeleport,
+                        teleportArrived && teleportRequest.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
+                        remainingTeleport == 0 && !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown);
+                }
+                finally
+                {
+                    try { if (TeleportContextConfirmationPresenter.Pending && DialogMessageBox.Instance.IsShown) TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke(); }
+                    catch { /* cleanup must continue */ }
+                    map.TravelData = null;
+                    rules.StopWhenRevealingNewEdges = true;
+                    map.PartyPosition = originalPosition; map.LastLocation = originalLast;
+                    map.HistoryTravels.Clear(); foreach (var entry in originalHistory) map.HistoryTravels.Add(entry);
+                    map.PerceptionRolledLocations.Clear(); foreach (var entry in originalPerception) map.PerceptionRolledLocations.Add(entry);
+                    map.MilesTravelled = originalMiles; player.GameTime = originalTime;
+                    foreach (var snapshot in snapshots) snapshot.Restore();
+                    payloadState.SetValue(ledger, originalPayload);
+                }
             }
             finally
             {
@@ -233,6 +386,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cache.SetValue(conjurationLevels[index], originalCaches[index]);
                 }
                 if (evokerFeatureAttached) evoker.Descriptor.RemoveFact(evocationFeature);
+                if (blankFeatureAttached) blank.Descriptor.RemoveFact(conjurationFeature);
                 if (conjurerFeatureAttached) conjurer.Descriptor.RemoveFact(conjurationFeature);
                 fixtureBlank.Restore(); fixtureEvoker.Restore(); fixtureConjurer.Restore();
                 var selectionManager = ui.SelectionManagerPC;
@@ -244,6 +398,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool restored = fixtureConjurer.IsRestored() && fixtureEvoker.IsRestored() && fixtureBlank.IsRestored() &&
                     uiSnapshots.All(value => value.IsRestored()) &&
                     !conjurer.Descriptor.HasFact(conjurationFeature) && !evoker.Descriptor.HasFact(evocationFeature) &&
+                    !blank.Descriptor.HasFact(conjurationFeature) &&
                     selectionRestored && player.Party.SequenceEqual(originalParty) &&
                     conjurationLevels[0].Spells == originalSpells[0] && conjurationLevels[1].Spells == originalSpells[1] &&
                     !TeleportContextConfirmationPresenter.Pending && !_workingSaveSmoke.WriteObserved;

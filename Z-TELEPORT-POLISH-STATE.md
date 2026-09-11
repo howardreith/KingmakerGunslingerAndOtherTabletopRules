@@ -65,19 +65,19 @@ slots, never touches other schools/books. Pure decision logic lives in
 
 | Req | Change | Runtime proof |
 |---|---|---|
-| 1 rows inside parchment | rows sized to the settled region of the dialog's ACTIVE native action buttons (Button or ConsoleButton), inset 8 units, flexibleWidth=0, post-settle containment verify; donor fallback when nothing active | coexistence compact-rows-fit (rendered extents within the native region); casting native-layout; gamepad/coexistence-gamepad |
-| 2 direct GT cast | `Begin` dispatcher; `OpenDirect` synchronous settle through the same transaction/execution machinery; shared `Settle`; `CanBegin` gate (GT-only rows never need the confirmation surface); one Pending guard; `LastDirectCast` diagnostics | casting greater-exact (+ no-dialog duplicate assertion); interaction cast-after-frames; arrows audit; destinations special-point casts; gamepad greater-direct-settlement |
-| 3 confirmation sections | `ConfirmationSections` + presenter-owned hairline rules measured from TMP textInfo; destination row-group separators (desktop+console) | interaction/coexistence scenario regressions (content unchanged); console kept plain |
+| 1 rows inside parchment | rows sized to the settled region of the dialog's ACTIVE native action buttons (Button or ConsoleButton), inset 8 units, flexibleWidth=0, post-settle containment verify; donor fallback when nothing active; viewport height from the complete laid-out content incl. group separators (`ViewportHeight` policy) | coexistence compact-rows-fit (rendered extents within the native region); casting native-layout; gamepad/coexistence-gamepad; interaction long-list scroll behavior |
+| 2 direct GT cast | `Begin` dispatcher; `OpenDirect` synchronous settle through the same transaction/execution machinery; shared `Settle`; per-action offer policy (`TeleportBeginPolicy`: an unrelated active modal blocks EVERY action incl. direct casts — `OpenDirect` re-checks it and the rows withdraw beneath a modal — while a merely unavailable confirmation presenter removes only confirmed spells from the list, never the Greater Teleport action); one Pending guard; `LastDirectCast` diagnostics | casting greater-exact; interaction cast-after-frames + cast-duplicate-activation (same-frame and stale re-invokes of the retained event) + direct-blocked-by-unrelated-modal; arrows audit; destinations special-point casts; gamepad greater-direct-settlement |
+| 3 confirmation sections | `ConfirmationSections` + presenter-owned hairline rules measured from TMP textInfo; destination row-group separators (desktop+console); missing native label contract reported, not silently skipped | interaction confirmation-section-rules / confirmation-rule-placement (independent between-groups placement check) / confirmation-rules-cleaned-up (no leftover rules in a later unrelated dialog); console kept plain |
 | 4 GT success suppression | `SuppressSuccessAnnouncement` in `PublishResult`; diagnostics unchanged | domain policy test + casting/interaction commit paths (failures still announce; see limitations) |
 | 5 somewhere-else copy | `ArrivalMessage` outcome templates, new localization keys; `Result.UnnamedPoint`/`Result.Arrived` usage removed | domain tests (exact six sentences) |
 | 6 target-location copy | same | domain tests |
-| 7 Teleport specialist | PostLoad reconciliation (root cause above) | **specialist-cache scenario 8/8 PASS ×3** (incl. twice consecutively on the qualifying build and once on the final build): stale-state reproduction (favorite slots REFUSE both spells while the book knows them and the list contains them) → production PostLoad seam restores membership → native UI prepare/mixed counting/rest → negative controls (evoker untouched, ConeOfCold refused, blank book auto-learns nothing) → idempotence → exact cleanup |
-| 8 Greater Teleport specialist | same repair, exercised independently at L7 | same scenario: level-7 assertions independent; `rest-readies-both-favorite-levels` |
+| 7 Teleport specialist | PostLoad reconciliation (root cause above) | **specialist-cache scenario PASS** (now incl. world-map spend of the repaired favorite-only preparation at L5 and a genuine Conjuration-specialist-without-knowledge negative control) (incl. twice consecutively on the qualifying build and once on the final build): stale-state reproduction (favorite slots REFUSE both spells while the book knows them and the list contains them) → production PostLoad seam restores membership → native UI prepare/mixed counting/rest → negative controls (evoker untouched, ConeOfCold refused, blank book auto-learns nothing) → idempotence → exact cleanup |
+| 8 Greater Teleport specialist | same repair, exercised independently at L7 | same scenario: independent L7 assertions + world-map direct spend of the repaired favorite-only preparation at L7 |
 
 ## Validation completed
 
 - Repository validation PASS (dispatches 0.0.124 to `validate_teleport_polish124.py`).
-- Full domain suite: 1,572 tests PASS, 0 failures (five new).
+- Full domain suite: 1,574 tests PASS, 0 failures (seven new).
 - Clean exact-reference Release build + strict package validation PASS
   (Build-Local) at every commit; runtime scenario preflight 471 PASS.
 
@@ -105,7 +105,7 @@ arrows fixtures routed through the direct settlement.
   cause proven (IL dumps + native Spellbook.cs/PostLoad chain + CotW patch
   disassembly); branch created; eight requirements implemented; 5 new domain
   tests; version 0.0.124 bump across identity files, validator lattice,
-  compatibility profiles, preflight/qualification literals; 1,572 domain tests
+  compatibility profiles, preflight/qualification literals; 1,574 domain tests
   PASS; Build-Local PASS; deployed with backup; checkpoint pushed.
 - 2026-09-11 (session 2): guarded runtime qualification as above; all
   teleportation scenarios PASS on the final artifact; state/acceptance
@@ -114,18 +114,23 @@ arrows fixtures routed through the direct settlement.
 ## NOT RUN / limitations
 
 - The owner's exact character/campaign save was not exercised (the bundle
-  contains no save). The constructed specialist-cache fixture reproduces the
-  reported stale-cache state through native seams (list rollback →
-  AddSpecialList → AddKnown → publication restored), which is the same state
-  an existing specialist save presents at load; the mission's no-save
-  constraint is disclosed rather than masked.
-- Player-facing banner VISUALS (R3 rules, R4/R5/R6 messages) are proven by
-  code path + domain tests and the scenarios' transactional assertions; no
-  screenshots were captured autonomously (AGENTS: screenshots optional
-  supporting evidence only). Before/after owner screenshots 01-09 document
-  the prior state.
-- Aspect ratios other than the fixture geometry (owner 1920×1200 not
-  re-exercised; scenario geometry is the working save's native mode).
+  contains no save), so the diagnosis is a credible mechanism matching the
+  reported symptoms, not a confirmed inspection of that particular save. The
+  constructed specialist-cache fixture reproduces the reported stale-cache
+  state through native seams (list rollback → AddSpecialList → AddKnown →
+  publication restored) — the state an existing specialist save presents at
+  load — but no disposable-save deserialization round-trip through the
+  authorized persistence workflow was run this mission; that lifecycle step
+  remains explicitly unqualified for requirements 7/8.
+- VISUAL ACCEPTANCE REMAINS PENDING OWNER REVIEW: the divider rules now have
+  structural runtime assertions (count, between-group placement verified
+  independently from the rendered text mesh, ownership, cleanup after close
+  and across a later unrelated dialog), but no screenshots were captured and
+  the owner's 1920×1200 geometry and other supported resolutions/UI scales
+  were not exercised by automation. The machine's display settings were not
+  modified autonomously. Before/after owner screenshots 01-09 document the
+  prior state; manual visual confirmation at the owner's resolution is the
+  remaining acceptance step for the visual polish (requirements 1 and 3).
 - `disposable-teleportation-disabled` and the four-phase persistence suite
   were NOT rerun this mission (their dedicated orchestrators exist:
   Invoke-TeleportationHardeningQualification /
@@ -144,8 +149,15 @@ arrows fixtures routed through the direct settlement.
 4. GT success suppression — DONE (policy + presenter; diagnostics intact).
 5. Somewhere-else copy — DONE (complete-sentence templates).
 6. Target-location copy — DONE (legacy fallback removed).
-7. Teleport specialist — DONE (root cause + load-seam repair + runtime
-   proof).
-8. Greater Teleport specialist — DONE (independently exercised at L7).
+7. Teleport specialist — repair qualified through the native load seam,
+   native UI prepare/rest, and an actual world-map cast from the repaired
+   favorite-only preparation. A disposable-save deserialization round-trip
+   through the persistence workflow remains NOT RUN: the fixture invokes the
+   production-patched public Spellbook.PostLoad on a live book rather than
+   reloading a serialized stale save. Requirement 7 is runtime-qualified
+   EXCEPT that save-round-trip lifecycle, which stays explicitly unqualified.
+8. Greater Teleport specialist — same qualification scope as 7, exercised
+   independently at level 7 including its own world-map direct cast; the same
+   save-round-trip limitation applies.
 
 No merge, no public release; owner review required.

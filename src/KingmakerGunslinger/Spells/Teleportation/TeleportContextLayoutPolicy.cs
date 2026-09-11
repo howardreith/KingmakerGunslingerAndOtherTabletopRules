@@ -37,5 +37,16 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 return false;
             return rowMinX >= nativeMinX - tolerance && rowMaxX <= nativeMaxX + tolerance;
         }
+        // The viewport wants exactly the laid-out content — every row, group
+        // separator, spacing and padding — clamped to the measured maximum.
+        // Sizing from the row count alone would clip the separators' height and
+        // force unnecessary scrolling.
+        internal static float ViewportHeight(float preferredContentHeight, float maximumHeight)
+        {
+            if (!Finite(preferredContentHeight) || preferredContentHeight <= 0 ||
+                !Finite(maximumHeight) || maximumHeight <= 0)
+                throw new InvalidOperationException("Appended rows content height is unproven.");
+            return Math.Min(preferredContentHeight, maximumHeight);
+        }
     }
 }

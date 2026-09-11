@@ -197,6 +197,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportFailureSeverityPolicy.cs"><Link>Spells\Teleportation\TeleportFailureSeverityPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportFamiliarityState.cs"><Link>Spells\Teleportation\TeleportFamiliarityState.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportSpecialistSpellCachePolicy.cs"><Link>Spells\Teleportation\TeleportSpecialistSpellCachePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportBeginPolicy.cs"><Link>Spells\Teleportation\TeleportBeginPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\MidgameFirearmCatalog.cs"><Link>Firearms\MidgameFirearmCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\SkeletalSalesmanStockCatalog.cs"><Link>Acquisition\SkeletalSalesmanStockCatalog.cs</Link></Compile>
     <Compile Include="FeatureModuleSettingsTests.cs" />
