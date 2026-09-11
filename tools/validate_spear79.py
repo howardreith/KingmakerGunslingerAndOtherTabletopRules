@@ -22,7 +22,8 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("teleport-polish-specialist"
+    effective_suffix = ("settlement-button-width"
+        if VERSION == "0.0.125" else "teleport-polish-specialist"
         if VERSION == "0.0.124" else "character-visibility-repair"
         if VERSION == "0.0.123" else "teleportation-completion"
         if VERSION in {"0.0.121", "0.0.122"} else "elemental-races-completion"

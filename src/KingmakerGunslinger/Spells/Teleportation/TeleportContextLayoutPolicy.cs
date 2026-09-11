@@ -37,6 +37,25 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 return false;
             return rowMinX >= nativeMinX - tolerance && rowMaxX <= nativeMaxX + tolerance;
         }
+        // The relabeled settlement control keeps its native font and artwork but
+        // must carry the longer wording: its target width is the label's
+        // preferred width at the native font size plus the control's own settled
+        // horizontal padding (button width minus label width, both pristine),
+        // never narrower than the native control and never wider than the
+        // region the other settled native actions already occupy. All values in
+        // the button's local space; unproven geometry fails closed.
+        internal static float SettlementButtonWidth(float labelPreferredWidth, float nativeButtonWidth,
+            float nativeLabelWidth, float nativeActionRegionWidth)
+        {
+            if (!Finite(labelPreferredWidth) || labelPreferredWidth <= 0 ||
+                !Finite(nativeButtonWidth) || nativeButtonWidth <= 0 ||
+                !Finite(nativeLabelWidth) || nativeLabelWidth < 0 ||
+                !Finite(nativeActionRegionWidth) || nativeActionRegionWidth <= 0)
+                throw new InvalidOperationException("Native settlement control width is unproven.");
+            float padding = Math.Max(0f, nativeButtonWidth - nativeLabelWidth);
+            float required = labelPreferredWidth + padding;
+            return Math.Max(nativeButtonWidth, Math.Min(required, nativeActionRegionWidth));
+        }
         // The viewport wants exactly the laid-out content — every row, group
         // separator, spacing and padding — clamped to the measured maximum.
         // Sizing from the row count alone would clip the separators' height and
