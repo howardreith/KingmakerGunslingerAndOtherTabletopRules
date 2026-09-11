@@ -364,27 +364,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
         }
         private void Resize()
         {
-            // The complete laid-out content — every active child (rows AND
-            // group separators) plus the group's spacing and padding. Children
-            // are read directly because the content's own driven preferred
-            // height is unproven while its hierarchy is still inactive.
-            float preferred = ContentPreferredHeight();
-            if (preferred > 0f) _viewportLayout.preferredHeight = TeleportContextLayoutPolicy.ViewportHeight(preferred, _maximumHeight);
-        }
-        private float ContentPreferredHeight()
-        {
+            // The complete laid-out content: every row extent AND every group
+            // separator, plus the group's spacing and padding — sized
+            // deterministically from the values this container itself set,
+            // never from child layout state that is unproven while inactive.
             var group = _content.GetComponent<VerticalLayoutGroup>();
-            if (group == null) return 0f;
-            float total = 0f; int count = 0;
-            foreach (Transform child in _content)
-            {
-                if (child == null || !child.gameObject.activeSelf) continue;
-                float height = LayoutUtility.GetPreferredHeight((RectTransform)child);
-                if (height <= 0f) continue;
-                total += height;
-                count++;
-            }
-            return total + (count > 0 ? group.spacing * (count - 1) : 0f) + group.padding.vertical;
+            float content = _rows.Count * RowExtent + _separators.Count * TeleportationUiDivider.SeparatorHeight;
+            if (group != null) content += group.spacing * Math.Max(0, _rows.Count + _separators.Count - 1) + group.padding.vertical;
+            _viewportLayout.preferredHeight = TeleportContextLayoutPolicy.ViewportHeight(content, _maximumHeight);
         }
         internal float MaximumHeight { get { return _maximumHeight; } }
         internal void Remove()
