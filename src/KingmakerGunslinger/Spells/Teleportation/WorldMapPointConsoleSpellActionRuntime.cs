@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -97,7 +97,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 // parchment content region; the donor alone can be inactive.
                 var nativeExtent = WorldMapPointSpellActionRuntime.NativeActionExtent(dialog, container.transform);
                 float scale = Math.Max(container.transform.lossyScale.x, 0.0001f);
-                float settledWidth = nativeExtent.Width > 0f ? nativeExtent.Width :
+                float settledWidth = nativeExtent.Width > 0f ? (nativeExtent.Width - 8f) / scale :
                     ((RectTransform)donor.transform).rect.width * (Math.Max(donor.transform.lossyScale.x, 0.0001f) / scale);
                 float width = TeleportContextLayoutPolicy.ActionRowsWidth(
                     settledWidth,

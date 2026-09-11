@@ -97,25 +97,25 @@ namespace KingmakerGunslinger.Spells.Teleportation
             TeleportDestinationRows owned;
             if (!ReferenceEquals(panel, null) && Owned.TryGetValue(panel, out owned) && ReferenceEquals(owned, rows)) Owned.Remove(panel);
         }
-        // The horizontal extent of the dialog's currently active native action
-        // buttons: the visible parchment content region. World corners of an
-        // inactive control read as zero, so the donor alone is never trusted.
+        // The horizontal region occupied by the dialog's currently active native
+        // action buttons (e.g. Travel and Cancel side by side): the visible
+        // parchment content region. World corners of an inactive control read as
+        // zero, so the donor alone is never trusted; the full button region —
+        // not a single button — is the usable width rows may fill.
         internal static NativeActionExtentInfo NativeActionExtent(CanvasGroup dialog, Transform appended)
         {
             Vector3[] corners = new Vector3[4];
-            float width = 0f, minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
+            float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
             foreach (Button button in dialog.GetComponentsInChildren<Button>(true))
             {
                 if (button == null || !button.gameObject.activeInHierarchy ||
                     button.transform.IsChildOf(appended) || appended.IsChildOf(button.transform)) continue;
                 ((RectTransform)button.transform).GetWorldCorners(corners);
-                float low = Math.Min(corners[0].x, corners[2].x), high = Math.Max(corners[0].x, corners[2].x);
-                width = Math.Max(width, high - low);
-                minX = Math.Min(minX, low);
-                maxX = Math.Max(maxX, high);
+                minX = Math.Min(minX, Math.Min(corners[0].x, corners[2].x));
+                maxX = Math.Max(maxX, Math.Max(corners[0].x, corners[2].x));
             }
-            if (float.IsInfinity(minX) || width <= 0f) return NativeActionExtentInfo.Unproven;
-            return new NativeActionExtentInfo { Width = width, MinX = minX, MaxX = maxX };
+            if (float.IsInfinity(minX) || maxX - minX <= 0f) return NativeActionExtentInfo.Unproven;
+            return new NativeActionExtentInfo { Width = maxX - minX, MinX = minX, MaxX = maxX };
         }
         internal struct NativeActionExtentInfo
         {
@@ -190,9 +190,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 // is the fallback when no native action is currently shown.
                 var nativeExtent = WorldMapPointSpellActionRuntime.NativeActionExtent(dialog, container.transform);
                 float scale = Math.Max(container.transform.lossyScale.x, 0.0001f);
+                // The active native buttons' region, inset so rows sit visibly
+                // inside it and small center drift cannot overhang the region.
                 // Fallback when no native action is currently shown: the donor's
                 // own laid-out rect (inactive controls still retain it).
-                float settledWidth = nativeExtent.Width > 0f ? nativeExtent.Width :
+                float settledWidth = nativeExtent.Width > 0f ? (nativeExtent.Width - 8f) / scale :
                     ((RectTransform)donor.transform).rect.width * (Math.Max(donor.transform.lossyScale.x, 0.0001f) / scale);
                 float width = TeleportContextLayoutPolicy.ActionRowsWidth(
                     settledWidth,
