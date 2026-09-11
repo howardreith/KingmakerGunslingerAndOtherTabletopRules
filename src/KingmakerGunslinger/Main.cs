@@ -142,6 +142,7 @@ namespace KingmakerGunslinger
 
                 ClassCatalogDiagnostics.AttachFirstUpdate(context);
                 ShieldOtherFinalLiveReconciler.AttachFirstUpdate(context);
+                Spells.Teleportation.TeleportationFinalLiveReconciler.AttachFirstUpdate(context);
                 EasternWeaponLatePublicationCoordinator.AttachFirstUpdate(
                     context);
                 ExpandedSummoningAlignmentModeRuntime.Attach(context);

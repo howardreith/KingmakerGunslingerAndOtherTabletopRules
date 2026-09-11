@@ -1,6 +1,12 @@
 ﻿# Kingmaker Gunslinger
 
-**0.0.125-settlement-button-width** (UMM 0.0.125) is one owner-requested
+**0.0.126-word-of-recall-oracle** (UMM 0.0.126) is one owner-reported
+eligibility repair: an optional Call of the Wild Oracle with zero Use Magic
+Device ranks can now read an existing Word of Recall scroll through the same
+native class-list check as a cleric, because the canonical spell is finally
+published at level 6 of the Oracle's own final spell list (a final-live
+reconciliation mirroring Shield Other's qualified pattern). The prior
+**0.0.125-settlement-button-width** (UMM 0.0.125) was one owner-requested
 cosmetic fix: the relabeled native Settlement Teleport destination button is
 widened to carry its full label with its native padding, inside the settled
 parchment action region, with exact native restoration when the mod rows

@@ -1,9 +1,10 @@
 ﻿# Release notes — 0.0.124-teleport-polish-specialist
 
-This release is superseded by the settlement-teleport button width fix:
-install `KingmakerGunslinger-0.0.125-settlement-button-width.zip`
-(0.0.125-settlement-button-width) so the relabeled Settlement Teleport
-button is wide enough for its full label.
+This release is superseded by the Word of Recall Oracle eligibility
+repair: install `KingmakerGunslinger-0.0.126-word-of-recall-oracle.zip`
+(0.0.126-word-of-recall-oracle) so an optional Call of the Wild Oracle can
+use an existing Word of Recall scroll; it carries the settlement-button and
+teleport polish fixes forward.
 
 Owner follow-up mission: teleport UI polish and the genuine Conjuration
 specialist-slot repair. Eight requirements from

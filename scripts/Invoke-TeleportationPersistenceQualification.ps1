@@ -1,6 +1,6 @@
 ﻿[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.125',
+    [string]$ExpectedVersion = '0.0.126',
     [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
     [Parameter(Mandatory = $true)][string]$PackagePath,
     [switch]$AllowDirtyGit
