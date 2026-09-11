@@ -900,6 +900,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDestinations.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationArrows.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpecialist.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpecialistCache.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationScrolls.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationPersistenceAcquisition.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDisabled.cs" />
@@ -914,6 +915,10 @@
     <Compile Include="Spells\Teleportation\UnitPartTeleportFamiliarity.cs" />
     <Compile Include="Spells\Teleportation\TeleportExplorationBoundary.cs" />
     <Compile Include="Spells\Teleportation\TeleportExplorationGuardPatches.cs" />
+    <Compile Include="Spells\Teleportation\TeleportSpecialistSpellCachePatches.cs" />
+    <Compile Include="Spells\Teleportation\TeleportSpecialistSpellCachePolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportBeginPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationUiDivider.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollVendorMigration.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollActivationGate.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollAdapter.cs" />

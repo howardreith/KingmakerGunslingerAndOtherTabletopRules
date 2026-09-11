@@ -89,6 +89,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 disabledExceptions = IsTeleportationDisabledFixture ? _teleportationDisabledExceptions : null,
                 saveWriteObserved = _workingSaveSmoke.WriteObserved, error });
         }
+        // Independent placement check: each rendered rule's local Y must sit
+        // strictly between the previous group's last rendered line and the next
+        // group's first rendered line, derived from the label's own text mesh.
+        private static bool RulesSitBetweenRenderedSections(TeleportContextConfirmationPresenter presenter,
+            TextMeshProUGUI label, IReadOnlyList<string> sections, out string detail)
+        {
+            detail = "";
+            TMP_TextInfo info = label.textInfo;
+            if (info == null || info.characterInfo == null || info.characterInfo.Length == 0) { detail = "no-mesh"; return false; }
+            var rules = presenter.SectionRules;
+            if (rules.Count != sections.Count - 1) { detail = "count"; return false; }
+            int searched = 0;
+            for (int index = 1; index < sections.Count; index++)
+            {
+                int at = label.text.IndexOf(sections[index], searched, StringComparison.Ordinal);
+                if (at < 0) { detail = "section-" + index + "-absent"; return false; }
+                searched = at + 1;
+                int boundary = -1;
+                for (int scan = 0; scan < info.characterInfo.Length; scan++)
+                    if (info.characterInfo[scan].index >= at && info.characterInfo[scan].isVisible) { boundary = scan; break; }
+                if (boundary < 1) { detail = "boundary-" + index + "-at=" + at; return false; }
+                float top = info.characterInfo[boundary].topLeft.y;
+                float previousBottom = float.NaN;
+                for (int scan = boundary - 1; scan >= 0; scan--)
+                    if (info.characterInfo[scan].isVisible) { previousBottom = info.characterInfo[scan].bottomLeft.y; break; }
+                if (float.IsNaN(previousBottom) || previousBottom == top)
+                { detail = "order-" + index + "-prev=" + previousBottom.ToString("0.#") + "-top=" + top.ToString("0.#"); return false; }
+                // TMP text-local space is y-down; "between the groups" is
+                // orientation-agnostic: strictly inside the open interval.
+                float low = Math.Min(previousBottom, top), high = Math.Max(previousBottom, top);
+                var rule = (RectTransform)rules[index - 1].transform;
+                float ruleY = rule.anchoredPosition.y;
+                detail += index + ":y=" + ruleY.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) +
+                    " in (" + low.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "," +
+                    high.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + ");";
+                if (!(ruleY > low + 0.5f) || !(ruleY < high - 0.5f)) return false;
+            }
+            return true;
+        }
         private void TeleportInteractionAssert(string id, string expected, string actual, bool pass)
         { _teleportationInteractionAssertions.Add(Assertion((IsTeleportationCoexistenceFixture ? "teleportation-coexistence-" : IsTeleportationDisabledFixture ? "teleportation-disabled-" : IsTeleportationDestinationsFixture ? "teleportation-destinations-" : IsTeleportationTravelersFixture ? "teleportation-travelers-" : IsTeleportationGamepadFixture ? "teleportation-gamepad-" : IsTeleportationArrowsFixture ? "teleportation-arrows-" : "teleportation-interaction-") + id, expected, actual, pass, TeleportationInteractionPath)); }
         private void CaptureTeleportInteraction(string step, object state)
@@ -315,6 +354,96 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 4; frame++) yield return 0;
                 }
 
+                // The retained ordinary-Teleport confirmation is sectioned by
+                // real hairline rules measured from the rendered text: exactly
+                // one rule between each factual group, owned by the message
+                // label, cleaned up on close, and absent from an unrelated
+                // dialog opened afterwards.
+                {
+                    var sectioned = OpenTeleportationFixtureConfirmation(panel, target, TeleportSpellKind.Teleport,
+                        TeleportCastSourceKind.Prepared, new TeleportationFixtureRolls(new[] { 1 }));
+                    for (int frame = 0; frame < 30 && sectioned.SectionRules.Count == 0; frame++) yield return 0;
+                    var sectionLabel = (TextMeshProUGUI)typeof(DialogMessageBox)
+                        .GetField("m_Messagelabel", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(DialogMessageBox.Instance);
+                    // The fixture helper activates the FIRST matching row;
+                    // several casters may offer prepared Teleport actions.
+                    var sectionAction = TeleportationWorldMapAdapter.Compose(TeleportationWorldMapAdapter.Capture(false), target.Blueprint)
+                        .Where(value => value.Source.Spell == TeleportSpellKind.Teleport && value.Source.Kind == TeleportCastSourceKind.Prepared)
+                        .FirstOrDefault();
+                    if (sectionAction == null) throw new InvalidOperationException("No prepared Teleport action for the section probe.");
+                    var sections = TeleportContextPresentation.ConfirmationSections(sectionAction,
+                        TeleportationCastExecution.FamiliarityFor(TeleportationWorldMapAdapter.Capture(false), target.Blueprint.AssetGuid), TeleportationText.Get);
+                    CaptureTeleportInteraction("confirmation-sections", new { rules = sectioned.SectionRules.Count, sections = sections.Count,
+                        message = sectioned.Message });
+                    TeleportInteractionAssert("confirmation-section-rules",
+                        "the rendered confirmation carries exactly one restrained rule between each factual group, inset from the label edges and non-interactive",
+                        "rules=" + sectioned.SectionRules.Count + ";sections=" + sections.Count +
+                            ";label=" + (sectionLabel == null ? "null" : sectionLabel.text.Replace("\n", "{NL}").Replace("\r", "{CR}")),
+                        sectionLabel != null && sectioned.SectionRules.Count == sections.Count - 1 &&
+                        sectioned.SectionRules.All(value => value != null && value.transform.parent == sectionLabel.transform &&
+                            ((RectTransform)value.transform).rect.width < ((RectTransform)sectionLabel.transform).rect.width * 0.8f &&
+                            value.GetComponent<UnityEngine.UI.Image>() != null && !value.GetComponent<UnityEngine.UI.Image>().raycastTarget));
+                    string placementDetail = "unavailable";
+                    bool placement = sectionLabel != null && RulesSitBetweenRenderedSections(sectioned, sectionLabel, sections, out placementDetail);
+                    TeleportInteractionAssert("confirmation-rule-placement",
+                        "each rendered rule sits vertically between its adjacent confirmation groups, never on text",
+                        "rules=" + sectioned.SectionRules.Count + ";placement=" + placementDetail, placement);
+                    TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke();
+                    for (int frame = 0; frame < 4; frame++) yield return 0;
+                    // An unrelated dialog opened after ours finds no leftover
+                    // rules and keeps its own message and callback untouched.
+                    DialogMessageBoxBase.BoxButton unrelatedResult = DialogMessageBoxBase.BoxButton.Close;
+                    EventBus.RaiseEvent<IDialogMessageBoxUIHandler>(handler => handler.HandleOpen("KMG unrelated fixture message",
+                        DialogMessageBoxBase.BoxType.Dialog, value => unrelatedResult = value, "Yes", "No", null, null));
+                    for (int frame = 0; frame < 8; frame++) yield return 0;
+                    var unrelatedLabel = (TextMeshProUGUI)typeof(DialogMessageBox)
+                        .GetField("m_Messagelabel", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(DialogMessageBox.Instance);
+                    bool unrelatedClean = DialogMessageBox.Instance.IsShown && unrelatedLabel != null &&
+                        unrelatedLabel.text.Contains("unrelated fixture message") &&
+                        unrelatedLabel.GetComponentsInChildren<Transform>(true).All(value => !value.name.StartsWith("KMG_ConfirmSectionRule")) &&
+                        UnityEngine.Object.FindObjectsOfType<TeleportContextConfirmationPresenter>().Length == 0;
+                    TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke();
+                    for (int frame = 0; frame < 4; frame++) yield return 0;
+                    TeleportInteractionAssert("confirmation-rules-cleaned-up",
+                        "closing the confirmation removes every owned rule; an unrelated dialog shows its own text with no leftover decorations",
+                        "unrelatedClean=" + unrelatedClean + ";unrelatedResult=" + unrelatedResult +
+                            ";unrelatedLabel=" + (unrelatedLabel == null ? "null" : (unrelatedLabel.text.Length <= 32 ? unrelatedLabel.text : unrelatedLabel.text.Substring(0, 32))),
+                        unrelatedClean && unrelatedResult == DialogMessageBoxBase.BoxButton.No && !TeleportContextConfirmationPresenter.Pending);
+                }
+                // An unrelated active modal blocks even the direct Greater
+                // Teleport action: no cast, no expenditure, the rows beneath
+                // are withdrawn, and the modal's own callback is undisturbed.
+                {
+                    rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                    SelectTeleportationCastingPoint(panel, target);
+                    foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                    var blockedRows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                    var blockedAction = blockedRows == null ? null : blockedRows.Actions.SingleOrDefault(value =>
+                        value.Source.Spell == TeleportSpellKind.GreaterTeleport && value.Source.Kind == TeleportCastSourceKind.Spontaneous);
+                    if (blockedAction == null) throw new InvalidOperationException("The modal-block probe found no Greater Teleport row.");
+                    string blockedSlots = slots();
+                    DialogMessageBoxBase.BoxButton blockedResult = DialogMessageBoxBase.BoxButton.Close;
+                    EventBus.RaiseEvent<IDialogMessageBoxUIHandler>(handler => handler.HandleOpen("KMG blocking fixture message",
+                        DialogMessageBoxBase.BoxType.Dialog, value => blockedResult = value, "Yes", "No", null, null));
+                    // Same-frame stale callback: the row is invoked before any
+                    // Update can withdraw it beneath the modal.
+                    blockedRows.QualificationRolls = new TeleportationFixtureRolls(new int[0]);
+                    TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                    blockedRows.Buttons[blockedRows.Actions.ToList().FindIndex(value => value.Key == blockedAction.Key)].onClick.Invoke();
+                    for (int frame = 0; frame < 8; frame++) yield return 0;
+                    bool modalStillShown = DialogMessageBox.Instance.IsShown;
+                    TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke();
+                    for (int frame = 0; frame < 4; frame++) yield return 0;
+                    TeleportInteractionAssert("direct-blocked-by-unrelated-modal",
+                        "with an unrelated modal shown, the Greater Teleport row neither casts nor spends, the rows are withdrawn, and the modal's callback is undisturbed",
+                        "cast=" + (TeleportContextConfirmationPresenter.LastDirectCast != null) + ";blockedResult=" + blockedResult +
+                            ";rowsRemaining=" + panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length,
+                        TeleportContextConfirmationPresenter.LastDirectCast == null && blockedSlots == slots() &&
+                        map.PartyLocation == origin.Blueprint && map.TravelData == null && modalStillShown &&
+                        blockedResult == DialogMessageBoxBase.BoxButton.No &&
+                        panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length == 0);
+                }
+
                 panel.OnLocationSelect(target.Blueprint, false);
                 yield return 0;
                 rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
@@ -340,17 +469,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition(); player.GameTime = originalTime;
                 for (int frame = 0; frame < 4; frame++) yield return 0;
                 int castStarts = movement.Starts, castStops = movement.Stops;
-                var cast = OpenTeleportationFixtureConfirmation(panel, target, TeleportSpellKind.GreaterTeleport,
-                    TeleportCastSourceKind.Spontaneous, new TeleportationFixtureRolls(new int[0]));
-                for (int frame = 0; frame < 20; frame++) yield return 0;
-                TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                // Greater Teleport now settles directly from its native row: no
+                // second confirmation, destination presenter closed, one use spent.
+                // The exact activation event is retained so repeated input can be
+                // exercised after the settlement: same-frame and stale re-invokes.
+                SelectTeleportationCastingPoint(panel, target);
+                rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                int castIndex = Array.FindIndex(rows.Actions.ToArray(), value =>
+                    value.Source.Spell == TeleportSpellKind.GreaterTeleport && value.Source.Kind == TeleportCastSourceKind.Spontaneous);
+                if (castIndex < 0) throw new InvalidOperationException("Guarded direct cast source is absent from native contextual actions.");
+                var castRolls = new TeleportationFixtureRolls(new int[0]);
+                rows.QualificationRolls = castRolls;
+                UnityEngine.Events.UnityAction repeatedActivation = rows.Buttons[castIndex].onClick.Invoke;
+                TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                repeatedActivation();
+                var cast = TeleportContextConfirmationPresenter.LastDirectCast;
+                if (cast == null || DialogMessageBox.Instance.IsShown || panel.gameObject.activeInHierarchy)
+                    throw new InvalidOperationException("Selected native Greater Teleport row did not settle directly with the destination presenter closed and no confirmation opened.");
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 CaptureTeleportInteraction("cast-after-frames", new { transaction = cast.Transaction.State.ToString(), cast.Transaction.Diagnostic,
                     evidence = cast.Execution.LastEvidence, movement.Starts, movement.Stops });
-                TeleportInteractionAssert("cast-after-frames", "real native Cast after UI updates spends one slot and completes exact relocation raising exactly the native pawn-notification pair",
+                TeleportInteractionAssert("cast-after-frames", "real native direct Cast after UI updates spends one slot and completes exact relocation raising exactly the native pawn-notification pair",
                     "state=" + cast.Transaction.State, cast.Transaction.State == TeleportTransactionState.Completed &&
                     cast.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && map.PartyLocation == target.Blueprint &&
                     movement.Starts == castStarts + 1 && movement.Stops == castStops + 1 && !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown && map.TravelData == null);
+                {
+                    // Real repeated input against the settled direct cast.
+                    string spentAfterCast = slots();
+                    var arrivalAfterCast = map.PartyLocation;
+                    repeatedActivation();
+                    for (int frame = 0; frame < 4; frame++) yield return 0;
+                    repeatedActivation();
+                    for (int frame = 0; frame < 4; frame++) yield return 0;
+                    TeleportInteractionAssert("cast-duplicate-activation",
+                        "re-activating the settled direct cast's original event (same frame and stale) spends nothing further, keeps the arrival, and starts no ordinary travel",
+                        "unchanged=" + (spentAfterCast == slots()) + ";pending=" + TeleportContextConfirmationPresenter.Pending,
+                        spentAfterCast == slots() && cast.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
+                        !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown &&
+                        map.PartyLocation == arrivalAfterCast && map.TravelData == null && movement.Starts == castStarts + 1);
+                }
 
                 rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                 var druid = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,

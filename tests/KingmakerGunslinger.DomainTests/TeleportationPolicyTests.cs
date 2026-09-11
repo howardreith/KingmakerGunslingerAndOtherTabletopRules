@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using KingmakerGunslinger.Spells.Teleportation;
 
 namespace KingmakerGunslinger.DomainTests
@@ -126,6 +126,70 @@ namespace KingmakerGunslinger.DomainTests
             var saturated = TeleportFamiliarityState.Parse("1|1|" + Point + ":2147483647");
             saturated.RecordOrdinaryArrival(Point);
             Assertions.Equal(int.MaxValue, saturated.Count(Point), "No integer wraparound.");
+        }
+        internal static void SpecialistCacheRestoresOnlyTheNativeInvariant()
+        {
+            Assertions.True(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                false, true, true, false), "Known spell in an attached special list with a stale cache is restored.");
+            Assertions.False(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                false, false, true, false), "A spell the book does not know is never auto-learned.");
+            Assertions.False(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                false, true, false, false), "A spell outside the book's attached school lists is untouched.");
+            Assertions.False(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                false, true, true, true), "Already-special membership is idempotent.");
+            Assertions.False(TeleportSpecialistSpellCachePolicy.ShouldRestoreSpecialMembership(
+                true, true, true, false), "AllSpellsKnown books self-heal natively and are left alone.");
+        }
+        internal static void BeginPolicySeparatesModalBlockingFromPresenterAvailability()
+        {
+            // Case 1: an unrelated active modal blocks every action.
+            Assertions.False(TeleportBeginPolicy.CanExecuteAction(false, true, true, TeleportSpellKind.GreaterTeleport),
+                "an unrelated modal blocks the direct cast");
+            Assertions.False(TeleportBeginPolicy.CanExecuteAction(false, true, true, TeleportSpellKind.Teleport),
+                "an unrelated modal blocks confirmed spells");
+            Assertions.False(TeleportBeginPolicy.OffersAnyAction(false, true, true,
+                new[] { TeleportSpellKind.GreaterTeleport, TeleportSpellKind.Teleport }),
+                "an unrelated modal removes the whole offer");
+            // Case 2: no modal, no confirmation presenter: Greater Teleport stays
+            // usable; confirmed spells do not bypass their confirmation.
+            Assertions.True(TeleportBeginPolicy.CanExecuteAction(false, false, false, TeleportSpellKind.GreaterTeleport),
+                "Greater Teleport never needs the presenter");
+            Assertions.False(TeleportBeginPolicy.CanExecuteAction(false, false, false, TeleportSpellKind.Teleport),
+                "ordinary Teleport cannot bypass its confirmation");
+            Assertions.False(TeleportBeginPolicy.CanExecuteAction(false, false, false, TeleportSpellKind.WordOfRecall),
+                "Word of Recall cannot bypass its confirmation");
+            // Case 3: a mixed list with no presenter still offers Greater Teleport.
+            Assertions.True(TeleportBeginPolicy.OffersAnyAction(false, false, false,
+                new[] { TeleportSpellKind.Teleport, TeleportSpellKind.GreaterTeleport }),
+                "a mixed list keeps its Greater Teleport action when the presenter is unavailable");
+            Assertions.False(TeleportBeginPolicy.OffersAnyAction(false, false, false,
+                new[] { TeleportSpellKind.Teleport, TeleportSpellKind.WordOfRecall }),
+                "a list of only confirmed spells composes nothing without the presenter");
+            // Presenter available and idle: everything is offered.
+            Assertions.True(TeleportBeginPolicy.OffersAnyAction(false, false, true,
+                new[] { TeleportSpellKind.Teleport, TeleportSpellKind.GreaterTeleport, TeleportSpellKind.WordOfRecall }),
+                "an idle presenter offers every spell");
+            // An in-flight cast suspends every offer.
+            Assertions.False(TeleportBeginPolicy.OffersAnyAction(true, false, true,
+                new[] { TeleportSpellKind.GreaterTeleport }),
+                "the single in-flight guard suspends new offers");
+            Assertions.False(TeleportBeginPolicy.OffersAnyAction(false, false, true, new TeleportSpellKind[0]),
+                "an empty offer composes nothing");
+        }
+        internal static void ViewportHeightIncludesSeparatorContent()
+        {
+            Assertions.Equal(72f, TeleportContextLayoutPolicy.ViewportHeight(72f, 300f),
+                "Two rows plus a separator are fully shown when room exists.");
+            Assertions.Equal(300f, TeleportContextLayoutPolicy.ViewportHeight(480f, 300f),
+                "A genuinely long list still clamps to the measured maximum.");
+            Assertions.Equal(7f, TeleportContextLayoutPolicy.ViewportHeight(7f, 7f), "Exact fit is accepted.");
+            foreach (float value in new[] { 0f, -1f, float.NaN, float.PositiveInfinity })
+            {
+                Assertions.Throws<InvalidOperationException>(() => TeleportContextLayoutPolicy.ViewportHeight(value, 300f),
+                    "Unproven content height fails closed.");
+                Assertions.Throws<InvalidOperationException>(() => TeleportContextLayoutPolicy.ViewportHeight(72f, value),
+                    "Unproven maximum height fails closed.");
+            }
         }
     }
 }

@@ -46,7 +46,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
                 book.Rest();
                 string destinationId = destination.Blueprint.AssetGuid;
-                string resourcesBefore = TeleportResourceFingerprint(book);
                 int castStarts = movement.Starts, castStops = movement.Stops;
                 float milesBefore = map.MilesTravelled;
                 var timeBefore = player.GameTime;
@@ -59,15 +58,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (greaterRow == null)
                     throw new InvalidOperationException("The arrow audit cast lost its greater-teleport contextual source: " + destinationId);
                 rows.QualificationRolls = new TeleportationFixtureRolls(new int[0]);
+                // Greater Teleport settles directly from its row; the single
+                // use is spent synchronously by the same click.
+                TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
                 rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == greaterRow.Key)].onClick.Invoke();
-                var request = TeleportContextConfirmationPresenter.Current;
-                if (request == null || !DialogMessageBox.Instance.IsShown)
-                    throw new InvalidOperationException("The arrow audit cast did not open its owned confirmation.");
-                for (int frame = 0; frame < 8; frame++) yield return 0;
-                if (resourcesBefore != TeleportResourceFingerprint(book))
-                    throw new InvalidOperationException("Opening the arrow audit confirmation spent a resource.");
-                TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                var request = TeleportContextConfirmationPresenter.LastDirectCast;
+                if (request == null || DialogMessageBox.Instance.IsShown || panel.gameObject.activeInHierarchy)
+                    throw new InvalidOperationException("The arrow audit cast did not settle directly.");
                 for (int frame = 0; frame < 12; frame++) yield return 0;
+                if (request.Execution.Resource == null || request.Execution.Resource.ObserveExpenditure() != TeleportExpenditure.ExactlyOne)
+                    throw new InvalidOperationException("The direct arrow audit cast did not spend exactly one use.");
                 bool committed = request.Transaction.State == TeleportTransactionState.Completed &&
                     request.Transaction.Result != null && request.Transaction.Result.Status == TeleportExecutionStatus.Arrived &&
                     request.Transaction.Result.DestinationId == destinationId;

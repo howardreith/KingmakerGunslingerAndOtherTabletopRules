@@ -28,9 +28,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (panel == null || !panel.gameObject.activeInHierarchy || Game.Instance.IsControllerGamepad) return;
                 var context = TeleportationWorldMapAdapter.Capture(TeleportContextConfirmationPresenter.Pending);
                 var location = (GlobalMapLocation)WorldMapPointSpellActionPatches.LocationField.GetValue(panel);
-                var actions = TeleportationWorldMapAdapter.Compose(context, location == null ? null : location.Blueprint);
-                // Critical vanilla path: return without constructing or touching UI.
-                if (actions.Count == 0 || !TeleportContextConfirmationPresenter.CanOpen) return;
+                var offered = TeleportationWorldMapAdapter.Compose(context, location == null ? null : location.Blueprint);
+                // Critical vanilla path: no executable action means no UI.
+                // Executability is per action — an unavailable confirmation
+                // presenter removes only confirmed spells, never the direct
+                // Greater Teleport action; an unrelated modal removes all.
+                if (!TeleportContextConfirmationPresenter.CanBegin(offered)) return;
+                var actions = offered.Where(TeleportContextConfirmationPresenter.CanExecute).ToArray();
+                if (actions.Length == 0) return;
                 TeleportationTravelers.Read(context.Player); // prove canonical associated units before offering a cast
                 var dialog = (CanvasGroup)WorldMapPointSpellActionPatches.DialogField.GetValue(panel);
                 var label = (TextMeshProUGUI)WorldMapPointSpellActionPatches.AcceptTextField.GetValue(panel);
@@ -97,6 +102,38 @@ namespace KingmakerGunslinger.Spells.Teleportation
             TeleportDestinationRows owned;
             if (!ReferenceEquals(panel, null) && Owned.TryGetValue(panel, out owned) && ReferenceEquals(owned, rows)) Owned.Remove(panel);
         }
+        // The horizontal region occupied by the dialog's currently active native
+        // action buttons (e.g. Travel and Cancel side by side): the visible
+        // parchment content region. World corners of an inactive control read as
+        // zero, so the donor alone is never trusted; the full button region —
+        // not a single button — is the usable width rows may fill.
+        internal static NativeActionExtentInfo NativeActionExtent(CanvasGroup dialog, Transform appended)
+        { return NativeActionExtent(dialog, appended, value => value is Button); }
+        internal static NativeActionExtentInfo NativeActionExtent(CanvasGroup dialog, Transform appended, Func<Component, bool> isNativeAction)
+        {
+            Vector3[] corners = new Vector3[4];
+            float minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
+            foreach (Component selectable in dialog.GetComponentsInChildren<Component>(true))
+            {
+                if (selectable == null || !isNativeAction(selectable) || !selectable.gameObject.activeInHierarchy ||
+                    selectable.transform.IsChildOf(appended) || appended.IsChildOf(selectable.transform)) continue;
+                var rect = selectable.transform as RectTransform;
+                if (rect == null) continue;
+                rect.GetWorldCorners(corners);
+                minX = Math.Min(minX, Math.Min(corners[0].x, corners[2].x));
+                maxX = Math.Max(maxX, Math.Max(corners[0].x, corners[2].x));
+            }
+            if (float.IsInfinity(minX) || maxX - minX <= 0f) return NativeActionExtentInfo.Unproven;
+            return new NativeActionExtentInfo { Width = maxX - minX, MinX = minX, MaxX = maxX };
+        }
+        internal struct NativeActionExtentInfo
+        {
+            internal float Width;
+            internal float MinX;
+            internal float MaxX;
+            internal static NativeActionExtentInfo Unproven
+            { get { return new NativeActionExtentInfo { Width = -1f, MinX = float.NegativeInfinity, MaxX = float.PositiveInfinity }; } }
+        }
         internal static void Report(Exception exception)
         {
             if (!Reported.Add(exception.GetType().FullName + ":" + exception.Message)) return;
@@ -113,6 +150,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private GlobalMapMessageBox _panel;
         private GlobalMapLocation _location;
         private readonly List<Row> _rows = new List<Row>();
+        private readonly List<GameObject> _separators = new List<GameObject>();
+        private string _separatorSignature;
+        private Color _tone = Color.black;
         private RectTransform _content;
         private LayoutElement _viewportLayout;
         private float _rowHeight;
@@ -135,6 +175,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 var self = container.AddComponent<TeleportDestinationRows>();
                 self._panel = panel;
                 self._location = (GlobalMapLocation)WorldMapPointSpellActionPatches.LocationField.GetValue(panel);
+                // Settle the native layout before any measurement: the appended
+                // container is still inactive, so this rebuild reflects the
+                // native controls only.
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)dialog.transform);
                 // The donor's live rect can be stretched by the dialog layout once
                 // taller rows exist; measure the native line height once, from the
                 // pristine first append, and reuse it for every later container.
@@ -147,12 +191,27 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 self._rowHeight = NativeLineHeight;
                 if (self._rowHeight <= 0) throw new InvalidOperationException("Native action height is unproven.");
                 self._viewportLayout = container.AddComponent<LayoutElement>();
-                float width = ((RectTransform)dialog.transform).rect.width - dialog.GetComponent<LayoutGroup>().padding.horizontal;
-                if (width <= 0) throw new InvalidOperationException("Native destination content width is unproven.");
+                // The settled native action buttons are the visible parchment
+                // content region; the dialog canvas group can be wider than the
+                // parchment art. The donor itself can be inactive at world-map
+                // points (its world corners read as zero), so the extent comes
+                // from the dialog's active native buttons; the donor's own rect
+                // is the fallback when no native action is currently shown.
+                var nativeExtent = WorldMapPointSpellActionRuntime.NativeActionExtent(dialog, container.transform);
+                float scale = Math.Max(container.transform.lossyScale.x, 0.0001f);
+                // The active native buttons' region, inset so rows sit visibly
+                // inside it and small center drift cannot overhang the region.
+                // Fallback when no native action is currently shown: the donor's
+                // own laid-out rect (inactive controls still retain it).
+                float settledWidth = nativeExtent.Width > 0f ? (nativeExtent.Width - 8f) / scale :
+                    ((RectTransform)donor.transform).rect.width * (Math.Max(donor.transform.lossyScale.x, 0.0001f) / scale);
+                float width = TeleportContextLayoutPolicy.ActionRowsWidth(
+                    settledWidth,
+                    ((RectTransform)dialog.transform).rect.width - dialog.GetComponent<LayoutGroup>().padding.horizontal);
                 ((RectTransform)container.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
                 self._viewportLayout.minWidth = width;
                 self._viewportLayout.preferredWidth = width;
-                self._viewportLayout.flexibleWidth = 1;
+                self._viewportLayout.flexibleWidth = 0;
                 container.AddComponent<RectMask2D>();
                 var scroll = container.AddComponent<ScrollRect>();
                 scroll.horizontal = false;
@@ -182,12 +241,26 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 float nativeHeight = LayoutUtility.GetPreferredHeight((RectTransform)dialog.transform);
                 float anchorY = Game.GetCamera().WorldToViewportPoint(self._location.LocationTooltipPoint.position).y;
                 self._maximumHeight = TeleportContextLayoutPolicy.MaximumRowsHeight(canvasHeight, anchorY, nativeHeight, self._rowHeight * 2);
+                var donorLabel = donor.GetComponentInChildren<TextMeshProUGUI>(true);
+                self._tone = donorLabel == null ? Color.black : donorLabel.color;
                 foreach (var action in actions) self.Add(donor, action);
+                self.RefreshGroupSeparators();
                 self.Resize();
                 self._ready = true;
                 container.SetActive(true);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(self._content);
                 LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)dialog.transform);
+                // Visual containment is proven on the settled render geometry,
+                // never assumed from the pre-layout width choice above.
+                Vector3[] rowCorners = new Vector3[4];
+                foreach (Row row in self._rows)
+                {
+                    ((RectTransform)row.Button.transform).GetWorldCorners(rowCorners);
+                    if (!TeleportContextLayoutPolicy.RowInsideNativeExtent(
+                        Math.Min(rowCorners[0].x, rowCorners[2].x), Math.Max(rowCorners[0].x, rowCorners[2].x),
+                        nativeExtent.MinX, nativeExtent.MaxX))
+                        throw new InvalidOperationException("Appended spell rows exceed the settled native action extent.");
+                }
                 return self;
             }
             catch { container.SetActive(false); container.transform.SetParent(null, false); Destroy(container); throw; }
@@ -237,10 +310,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 var context = TeleportationWorldMapAdapter.Capture(false);
                 var current = TeleportationWorldMapAdapter.Compose(context, _location.Blueprint).SingleOrDefault(value => value.Key == row.Action.Key);
                 if (current == null) { WorldMapPointSpellActionRuntime.Clear(_panel); return; }
-                // Hide the destination presenter before opening native confirmation;
-                // its global Accept handler can no longer start normal travel.
+                // Hide the destination presenter before executing; its global
+                // Accept handler can no longer start normal travel. Greater
+                // Teleport settles directly; other spells confirm first.
                 _panel.Hide();
-                TeleportContextConfirmationPresenter.Open(current, context, QualificationRolls);
+                TeleportContextConfirmationPresenter.Begin(current, context, QualificationRolls);
             }
             catch (Exception exception) { WorldMapPointSpellActionRuntime.Report(exception); }
         }
@@ -249,6 +323,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!_ready) return;
             try
             {
+                // An unrelated modal covering the popup invalidates the offered
+                // actions: remove the rows rather than leave stale controls
+                // beneath (or clickable through) another dialog.
+                if (TeleportationConfirmationSurface.UnrelatedModalShown())
+                { WorldMapPointSpellActionRuntime.Clear(_panel); return; }
                 var context = TeleportationWorldMapAdapter.Capture(TeleportContextConfirmationPresenter.Pending);
                 var current = TeleportationWorldMapAdapter.Compose(context, _location == null ? null : _location.Blueprint).ToDictionary(value => value.Key, StringComparer.Ordinal);
                 foreach (Row row in _rows.ToArray())
@@ -260,11 +339,41 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     } else { row.Action = fresh; row.Label.text = TeleportContextPresentation.CompactRow(fresh, TeleportationText.Get); }
                 }
                 if (_rows.Count == 0) WorldMapPointSpellActionRuntime.Clear(_panel);
-                else Resize();
+                else { RefreshGroupSeparators(); Resize(); }
             }
             catch (Exception exception) { WorldMapPointSpellActionRuntime.Clear(_panel); WorldMapPointSpellActionRuntime.Report(exception); }
         }
-        private void Resize() { _viewportLayout.preferredHeight = Math.Min(_maximumHeight, _rows.Count * RowExtent); }
+        // Modest separation where road travel/settlement teleport (the native
+        // controls) and magical spell/scroll actions coexist: a hairline marks
+        // each change of action family inside the list. Separators are owned by
+        // this container and removed with it; the native controls are untouched.
+        private void RefreshGroupSeparators()
+        {
+            var signature = string.Join(",", _rows.Select(value => ((int)value.Action.Source.Kind).ToString(System.Globalization.CultureInfo.InvariantCulture)).ToArray());
+            if (string.Equals(signature, _separatorSignature, StringComparison.Ordinal)) return;
+            _separatorSignature = signature;
+            foreach (GameObject separator in _separators) if (separator != null) Destroy(separator);
+            _separators.Clear();
+            for (int index = 1; index < _rows.Count; index++)
+            {
+                if (_rows[index].Action.Source.Kind == _rows[index - 1].Action.Source.Kind) continue;
+                GameObject separator = TeleportationUiDivider.CreateRowSeparator(_content, "KMG_DestinationGroupRule", _tone);
+                separator.transform.SetSiblingIndex(_rows[index].Button.transform.GetSiblingIndex());
+                _separators.Add(separator);
+            }
+        }
+        private void Resize()
+        {
+            // The complete laid-out content: every row extent AND every group
+            // separator, plus the group's spacing and padding — sized
+            // deterministically from the values this container itself set,
+            // never from child layout state that is unproven while inactive.
+            var group = _content.GetComponent<VerticalLayoutGroup>();
+            float content = _rows.Count * RowExtent + _separators.Count * TeleportationUiDivider.SeparatorHeight;
+            if (group != null) content += group.spacing * Math.Max(0, _rows.Count + _separators.Count - 1) + group.padding.vertical;
+            _viewportLayout.preferredHeight = TeleportContextLayoutPolicy.ViewportHeight(content, _maximumHeight);
+        }
+        internal float MaximumHeight { get { return _maximumHeight; } }
         internal void Remove()
         {
             _ready = false;

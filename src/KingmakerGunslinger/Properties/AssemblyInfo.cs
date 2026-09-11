@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Kingmaker Gunslinger")]
@@ -11,6 +11,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("8668dd56-63f3-4868-8978-5e8f00120fc3")]
-[assembly: AssemblyVersion("0.0.123")]
-[assembly: AssemblyFileVersion("0.0.123")]
-[assembly: AssemblyInformationalVersion("0.0.123-character-visibility-repair")]
+[assembly: AssemblyVersion("0.0.124")]
+[assembly: AssemblyFileVersion("0.0.124")]
+[assembly: AssemblyInformationalVersion("0.0.124-teleport-polish-specialist")]

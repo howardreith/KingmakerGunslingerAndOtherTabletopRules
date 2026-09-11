@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -26,9 +26,12 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (panel == null || !panel.gameObject.activeInHierarchy || !Game.Instance.IsControllerGamepad) return;
                 var model = WorldMapPointConsoleSpellActionPatches.Model(panel);
                 var context = TeleportationWorldMapAdapter.Capture(TeleportContextConfirmationPresenter.Pending);
-                var actions = TeleportationWorldMapAdapter.Compose(context, model == null || model.Location == null ? null : model.Location.Blueprint);
-                // No source means no UI allocation, navigation change or extra route.
-                if (actions.Count == 0 || !TeleportContextConfirmationPresenter.CanOpen) return;
+                var offered = TeleportationWorldMapAdapter.Compose(context, model == null || model.Location == null ? null : model.Location.Blueprint);
+                // No executable action means no UI allocation, navigation change
+                // or extra route; executability is evaluated per action.
+                if (!TeleportContextConfirmationPresenter.CanBegin(offered)) return;
+                var actions = offered.Where(TeleportContextConfirmationPresenter.CanExecute).ToArray();
+                if (actions.Length == 0) return;
                 TeleportationTravelers.Read(context.Player);
                 var dialog = (CanvasGroup)WorldMapPointConsoleSpellActionPatches.DialogField.GetValue(panel);
                 var donor = (ConsoleButton)WorldMapPointConsoleSpellActionPatches.ConfirmField.GetValue(panel);
@@ -65,6 +68,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private GlobalMapLocation _location;
         private ConsoleMultiNavigationCollection _navigation;
         private readonly List<Row> _rows = new List<Row>();
+        private readonly List<GameObject> _separators = new List<GameObject>();
+        private string _separatorSignature;
+        private Color _tone = Color.black;
         private ScrollRect _scroll;
         private RectTransform _content;
         private LayoutElement _viewportLayout;
@@ -84,13 +90,24 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 container.transform.SetParent(dialog.transform, false);
                 var self = container.AddComponent<TeleportConsoleDestinationRows>();
                 self._panel = panel; self._model = model; self._location = model.Location;
+                // Settle the native gamepad layout before any measurement; the
+                // appended container is still inactive.
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)dialog.transform);
                 self._rowHeight = Math.Max(LayoutUtility.GetPreferredHeight((RectTransform)donor.transform), ((RectTransform)donor.transform).rect.height);
                 if (self._rowHeight <= 0) throw new InvalidOperationException("Native gamepad action height is unproven.");
                 self._viewportLayout = container.AddComponent<LayoutElement>();
-                float width = ((RectTransform)dialog.transform).rect.width - dialog.GetComponent<LayoutGroup>().padding.horizontal;
-                if (width <= 0) throw new InvalidOperationException("Native gamepad destination width is unproven.");
+                // The settled active native confirm/actions are the visible
+                // parchment content region; the donor alone can be inactive.
+                var nativeExtent = WorldMapPointSpellActionRuntime.NativeActionExtent(dialog, container.transform,
+                    value => value is Button || value is ConsoleButton);
+                float scale = Math.Max(container.transform.lossyScale.x, 0.0001f);
+                float settledWidth = nativeExtent.Width > 0f ? (nativeExtent.Width - 8f) / scale :
+                    ((RectTransform)donor.transform).rect.width * (Math.Max(donor.transform.lossyScale.x, 0.0001f) / scale);
+                float width = TeleportContextLayoutPolicy.ActionRowsWidth(
+                    settledWidth,
+                    ((RectTransform)dialog.transform).rect.width - dialog.GetComponent<LayoutGroup>().padding.horizontal);
                 ((RectTransform)container.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-                self._viewportLayout.minWidth = width; self._viewportLayout.preferredWidth = width; self._viewportLayout.flexibleWidth = 1;
+                self._viewportLayout.minWidth = width; self._viewportLayout.preferredWidth = width; self._viewportLayout.flexibleWidth = 0;
                 container.AddComponent<RectMask2D>();
                 self._scroll = container.AddComponent<ScrollRect>();
                 self._scroll.horizontal = false; self._scroll.vertical = true;
@@ -113,10 +130,23 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 float nativeHeight = LayoutUtility.GetPreferredHeight((RectTransform)dialog.transform);
                 float anchorY = Game.GetCamera().WorldToViewportPoint(model.Location.LocationTooltipPoint.position).y;
                 self._maximumHeight = TeleportContextLayoutPolicy.MaximumRowsHeight(canvasHeight, anchorY, nativeHeight, self._rowHeight);
+                var donorLabel = donor.GetComponentInChildren<TextMeshProUGUI>(true);
+                self._tone = donorLabel == null ? Color.black : donorLabel.color;
                 foreach (var action in actions) self.Add(donor, action);
+                self.RefreshGroupSeparators();
                 self.Resize(); self._ready = true; container.SetActive(true);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(self._content);
                 LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)dialog.transform);
+                // Containment proven on the settled render geometry.
+                Vector3[] rowCorners = new Vector3[4];
+                foreach (Row row in self._rows)
+                {
+                    ((RectTransform)row.Button.transform).GetWorldCorners(rowCorners);
+                    if (!TeleportContextLayoutPolicy.RowInsideNativeExtent(
+                        Math.Min(rowCorners[0].x, rowCorners[2].x), Math.Max(rowCorners[0].x, rowCorners[2].x),
+                        nativeExtent.MinX, nativeExtent.MaxX))
+                        throw new InvalidOperationException("Appended gamepad spell rows exceed the settled native action extent.");
+                }
                 return self;
             }
             catch { container.SetActive(false); container.transform.SetParent(null, false); Destroy(container); throw; }
@@ -166,7 +196,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (fresh == null) { WorldMapPointConsoleSpellActionRuntime.Clear(_panel); return; }
                 var rolls = QualificationRolls;
                 _model.Cancel(); // Native disposal pops only the destination input layer.
-                TeleportContextConfirmationPresenter.Open(fresh, context, rolls);
+                TeleportContextConfirmationPresenter.Begin(fresh, context, rolls);
             }
             catch (Exception exception) { WorldMapPointSpellActionRuntime.Report(exception); }
         }
@@ -175,6 +205,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!_ready) return;
             try
             {
+                // An unrelated modal covering the popup invalidates the rows.
+                if (TeleportationConfirmationSurface.UnrelatedModalShown())
+                { WorldMapPointConsoleSpellActionRuntime.Clear(_panel); return; }
                 if (_panel == null || !Game.Instance.IsControllerGamepad || !ReferenceEquals(_model, WorldMapPointConsoleSpellActionPatches.Model(_panel)))
                 { WorldMapPointConsoleSpellActionRuntime.Clear(_panel); return; }
                 var context = TeleportationWorldMapAdapter.Capture(TeleportContextConfirmationPresenter.Pending);
@@ -191,9 +224,26 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     else { row.Action = fresh; row.Button.SetLabel(TeleportContextPresentation.Row(fresh, TeleportationText.Get)); }
                 }
                 if (_rows.Count == 0) WorldMapPointConsoleSpellActionRuntime.Clear(_panel);
-                else { Resize(); RegisterNavigation(); }
+                else { RefreshGroupSeparators(); Resize(); RegisterNavigation(); }
             }
             catch (Exception exception) { WorldMapPointConsoleSpellActionRuntime.Clear(_panel); WorldMapPointSpellActionRuntime.Report(exception); }
+        }
+        // Same modest hairline separation between spell and scroll action
+        // families as the desktop rows; owned by this container only.
+        private void RefreshGroupSeparators()
+        {
+            var signature = string.Join(",", _rows.Select(value => ((int)value.Action.Source.Kind).ToString(System.Globalization.CultureInfo.InvariantCulture)).ToArray());
+            if (string.Equals(signature, _separatorSignature, StringComparison.Ordinal)) return;
+            _separatorSignature = signature;
+            foreach (GameObject separator in _separators) if (separator != null) Destroy(separator);
+            _separators.Clear();
+            for (int index = 1; index < _rows.Count; index++)
+            {
+                if (_rows[index].Action.Source.Kind == _rows[index - 1].Action.Source.Kind) continue;
+                GameObject separator = TeleportationUiDivider.CreateRowSeparator(_content, "KMG_DestinationGroupRule", _tone);
+                separator.transform.SetSiblingIndex(_rows[index].Button.transform.GetSiblingIndex());
+                _separators.Add(separator);
+            }
         }
         private void LateUpdate()
         {
@@ -212,7 +262,17 @@ namespace KingmakerGunslinger.Spells.Teleportation
             }
             catch (Exception exception) { WorldMapPointConsoleSpellActionRuntime.Clear(_panel); WorldMapPointSpellActionRuntime.Report(exception); }
         }
-        private void Resize() { _viewportLayout.preferredHeight = Math.Min(_maximumHeight, _rows.Count * _rowHeight); }
+        private void Resize()
+        {
+            // The complete laid-out content: every row extent AND every group
+            // separator, plus the group's spacing and padding — sized
+            // deterministically from the values this container itself set.
+            var group = _content.GetComponent<VerticalLayoutGroup>();
+            float content = _rows.Count * _rowHeight + _separators.Count * TeleportationUiDivider.SeparatorHeight;
+            if (group != null) content += group.spacing * Math.Max(0, _rows.Count + _separators.Count - 1) + group.padding.vertical;
+            _viewportLayout.preferredHeight = TeleportContextLayoutPolicy.ViewportHeight(content, _maximumHeight);
+        }
+        internal float MaximumHeight { get { return _maximumHeight; } }
         private void RemoveNavigation()
         {
             if (_navigation == null) return;

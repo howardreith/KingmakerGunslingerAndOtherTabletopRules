@@ -37,6 +37,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!IsTeleportationDisabledFixture || !_request.ExitAfterCompletion || _workingSaveSmoke.WriteObserved ||
                 _context.FeatureModules.Active.TeleportationSpells || BlueprintBootstrap.TeleportationPublication != null ||
                 TeleportFamiliarityRuntime.Enabled || TeleportFamiliarityPatches.Installed || TeleportExplorationGuardPatches.Installed ||
+                TeleportSpecialistSpellCachePatches.Installed ||
                 WorldMapPointSpellActionPatches.Installed || WorldMapPointConsoleSpellActionPatches.Installed ||
                 game.IsControllerGamepad || map.TravelData != null || map.CurrentEncounterData != null)
                 throw new InvalidOperationException("Disabled interaction requires its guarded stationary working save with Teleportation OFF and no installed feature hooks.");

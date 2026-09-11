@@ -393,11 +393,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
             castStarts = movement.Starts; castStops = movement.Stops;
             var exactRolls = new TeleportationFixtureRolls(new int[0]);
-            var exact = OpenTeleportGamepadSpell(target, TeleportSpellKind.GreaterTeleport, TeleportCastSourceKind.Spontaneous, exactRolls);
-            foreach (int tick in WaitTeleportGamepadModal()) yield return tick;
-            TeleportInteractionAssert("greater-confirmation-rendered-text", "native modal presents the complete exact-arrival and seventh-level slot statement",
-                exact.Message, CaptureTeleportGamepadRendered(exact).Contains(exact.Message, StringComparer.OrdinalIgnoreCase));
-            ConfirmTeleportGamepadSpell(); yield return 0;
+            // Greater Teleport settles directly from its console row: the same
+            // native confirm input, no second modal, one use spent.
+            SelectTeleportGamepadPoint(target);
+            var exactRows = panel.GetComponentInChildren<TeleportConsoleDestinationRows>(true);
+            int exactIndex = exactRows.Actions.ToList().FindIndex(value => value.Source.Spell == TeleportSpellKind.GreaterTeleport &&
+                value.Source.Kind == TeleportCastSourceKind.Spontaneous);
+            if (exactIndex < 0) throw new InvalidOperationException("The requested real gamepad Greater Teleport source is absent.");
+            exactRows.QualificationRolls = exactRolls;
+            TeleportGamepadNavigation(panel).SetCurrentEntityManual(exactRows.Buttons[exactIndex]);
+            TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+            InvokeTeleportGamepadInput(panel, "OnConfirmPressed");
+            var exact = TeleportContextConfirmationPresenter.LastDirectCast;
+            if (exact == null || TeleportGamepadDialogModel() != null || panel.gameObject.activeInHierarchy)
+                throw new InvalidOperationException("Native gamepad Greater Teleport selection did not settle directly.");
+            TeleportInteractionAssert("greater-direct-settlement", "native gamepad Greater Teleport settles directly with no second modal",
+                "pending=" + TeleportContextConfirmationPresenter.Pending + ";modal=" + (TeleportGamepadDialogModel() != null),
+                !TeleportContextConfirmationPresenter.Pending && TeleportGamepadDialogModel() == null && !panel.gameObject.activeInHierarchy);
+            yield return 0;
             TeleportInteractionAssert("greater-real-commit", "native Greater Teleport uses one seventh-level slot, no destination roll, no route/time change", "transaction=" + exact.Transaction.State,
                 exact.Transaction.State == TeleportTransactionState.Completed && exact.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && exactRolls.D100Count == 0 &&
                 map.PartyLocation == target.Blueprint && movement.Starts == castStarts + 1 && movement.Stops == castStops + 1 && map.TravelData == null && player.GameTime == time);
