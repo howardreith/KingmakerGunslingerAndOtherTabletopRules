@@ -1,6 +1,10 @@
-# Kingmaker Gunslinger
+﻿# Kingmaker Gunslinger
 
-**0.0.121-unified-firearm-maintenance** (UMM 0.0.121) unifies firearm
+**0.0.122-teleportation-completion** (UMM 0.0.122) completes world-map
+teleportation: post-teleport movement arrows, Conjuration specialist slots, a
+compact destination menu, genuine scrolls with finite vendor stock and native
+activation safety. The prior **0.0.121-unified-firearm-maintenance** (UMM
+0.0.121) release unifies firearm
 maintenance into one full-round Repair Firearm action that restores a Broken
 or Wrecked firearm directly to Normal using one reusable shared-inventory
 Gunsmith's Kit: nothing is consumed and surviving loaded ammunition is

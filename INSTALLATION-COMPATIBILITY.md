@@ -1,7 +1,9 @@
-# Installation, updates, removal, and compatibility
+﻿# Installation, updates, removal, and compatibility
 
-Version: `0.0.121-unified-firearm-maintenance`.
-The installable archive is `KingmakerGunslinger-0.0.121-unified-firearm-maintenance.zip`.
+Version: `0.0.122-teleportation-completion`.
+The installable archive is `KingmakerGunslinger-0.0.122-teleportation-completion.zip`.
+The retained 0.0.121 archive is
+`KingmakerGunslinger-0.0.121-unified-firearm-maintenance.zip`.
 
 The retained 0.0.120 archive is
 `KingmakerGunslinger-0.0.120-elemental-races-completion.zip`.

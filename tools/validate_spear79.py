@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 import argparse
 import sys
@@ -22,8 +22,8 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("unified-firearm-maintenance"
-        if VERSION == "0.0.121" else "elemental-races-completion"
+    effective_suffix = ("teleportation-completion"
+        if VERSION in {"0.0.121", "0.0.122"} else "elemental-races-completion"
         if VERSION == "0.0.120" else "contextual-world-map-teleportation"
         if VERSION in {"0.0.118", "0.0.119"} else "elemental-char-gen-stabilization"
         if VERSION == "0.0.117" else "elemental-feats"
