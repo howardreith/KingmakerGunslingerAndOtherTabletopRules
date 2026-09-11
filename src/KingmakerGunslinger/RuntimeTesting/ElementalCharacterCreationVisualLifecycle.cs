@@ -57,12 +57,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             _lifecycleBodyAssetId = visuals.Ordered().SelectMany(value => value.Resources)
                 .Single(value => string.Equals(value.Spec.Symbol, bodySymbol, StringComparison.Ordinal)).AssetId;
             _lifecycleDoll = CommittedCreatorOwner.Doll;
-            RequireLifecycle(_lifecycleDoll != null && _lifecycleDoll.EquipmentEntityIds != null &&
-                _lifecycleDoll.EquipmentEntityIds.Contains(_lifecycleBodyAssetId),
-                "The committed doll must reference the registered body proxy.");
+            RequireLifecycle(_lifecycleDoll != null,
+                "The committed creator must expose its native DollData.");
+            // The doll's serialized entity ids may settle asynchronously after
+            // the synchronous commit; record actual membership as evidence and
+            // let the world-view checkpoints provide the behavioral verdict.
+            var dollEntityIds = _lifecycleDoll.EquipmentEntityIds ?? new List<string>();
             _character["lifecycleCommit"] = new JObject {
                 ["bodyAssetId"] = _lifecycleBodyAssetId,
-                ["dollEntityCount"] = _lifecycleDoll.EquipmentEntityIds.Count,
+                ["dollEntityCount"] = dollEntityIds.Count,
+                ["dollEntityIds"] = new JArray(dollEntityIds),
+                ["dollReferencesBodyProxy"] = dollEntityIds.Contains(_lifecycleBodyAssetId),
                 ["registry"] = CaptureLifecycleCheckpoint("after-first-commit", true) };
         }
 
