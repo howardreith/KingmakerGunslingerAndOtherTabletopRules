@@ -1551,7 +1551,7 @@
     "oracleFinalLiveReconciliation": "canonical Word of Recall merged exactly once at level 6 of the validated optional Oracle spellbook list, twice idempotently, module-gated and fail-closed",
     "nativeClericAndDruidRegistrationUnchanged": true,
     "scrollAndSpellGuidsUnchanged": true,
-    "runtimeQualificationPending": true,
+    "runtimeQualificationPending": false,
     "compatibilityRuntimeQualificationPending": true
   }
 }
