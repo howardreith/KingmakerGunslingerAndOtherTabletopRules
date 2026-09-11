@@ -858,11 +858,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationBaseline ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveCreatorVisualLifecycle ||
                     RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(_request.Scenario))
                 {
                     if (_elementalCharacterCreationBaseline == null)
                     {
                         if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                            _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveCreatorVisualLifecycle ||
                             (RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(_request.Scenario) &&
                                 !RuntimeTestScenarioCatalog.IsNereidProfileScenario(_request.Scenario)))
                         { RunWorkingSaveSmoke(); return; }
@@ -2350,6 +2352,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (IsMidgameWorkingScenario()) { PollWorkingMidgameFirearms(); }
                 else
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveCreatorVisualLifecycle ||
                     RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(_request.Scenario))
                 {
                     WorkingSaveSmokeEvidence loaded = _workingSaveSmoke.Stop();

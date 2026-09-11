@@ -59,6 +59,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase &&
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl &&
                 request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation &&
+                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveCreatorVisualLifecycle &&
                 !RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario)))
                 return;
             if (_request != null) throw new InvalidOperationException(

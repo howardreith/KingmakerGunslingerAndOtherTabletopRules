@@ -1,6 +1,6 @@
 ﻿# Kingmaker Gunslinger
 
-**0.0.122-teleportation-completion** (UMM 0.0.122) completes world-map
+**0.0.123-character-visibility-repair** (UMM 0.0.123) completes world-map
 teleportation: post-teleport movement arrows, Conjuration specialist slots, a
 compact destination menu, genuine scrolls with finite vendor stock and native
 activation safety. The prior **0.0.121-unified-firearm-maintenance** (UMM

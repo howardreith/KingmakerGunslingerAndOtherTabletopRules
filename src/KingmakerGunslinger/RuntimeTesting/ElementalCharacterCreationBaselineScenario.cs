@@ -99,6 +99,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase &&
                 request.Scenario != RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl &&
                 request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation &&
+                request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveCreatorVisualLifecycle &&
                 !RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario)))
                 throw new InvalidOperationException("Exact guarded creator-baseline request required.");
             _disabledControl = request.Scenario == RuntimeTestScenarioCatalog.DisposableGlobalTraitsKmgDisabledControl;
@@ -107,7 +108,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _nativeProfile = _elementalOff || RuntimeTestScenarioCatalog.IsNereidProfileScenario(request.Scenario);
             _nativeRespec = RuntimeTestScenarioCatalog.IsElementalNativeRespecScenario(request.Scenario);
             _regression = RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario);
-            _canCommit = _regression || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation;
+            _visualLifecycle = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveCreatorVisualLifecycle;
+            _canCommit = _regression || _visualLifecycle || request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation;
             if (_canCommit && !_nativeProfile && (request.Parameters == null || (string)request.Parameters["saveName"] != WorkingSaveSmokeScenario.ExpectedName ||
                 loaded == null || !loaded.CompletionCallbackObserved || !loaded.DescriptorReferenceCorrelated ||
                 string.IsNullOrEmpty(loaded.StableFingerprint) || loaded.SaveWritingApiObserved || !loaded.HooksRemoved))
@@ -119,13 +121,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("The exact Elemental-only OFF creator case requires registered save identities and automatic exit.");
             if (!_disabledControl && !_elementalOff && (!context.FeatureModules.Active.ElementalRaces || BlueprintBootstrap.ElementalRaces == null))
                 throw new InvalidOperationException("Elemental race prerequisites unavailable.");
+            if (_visualLifecycle && !request.ExitAfterCompletion)
+                throw new InvalidOperationException("The lifecycle boundary requires automatic process exit.");
             _races = _disabledControl || _elementalOff ? new[] { BlueprintRoot.Instance.Progression.CharacterRaces.Single(race =>
                 race.AssetGuid == "0a5d473ead98b0646b94495af250fdc4" && race.name == "HumanRace") }
                 : BlueprintBootstrap.ElementalRaces.OrderedRaces().OrderBy(race =>
                     ReferenceEquals(race, BlueprintBootstrap.ElementalRaces.Sylph.Race) ? 1 : 0).ToArray();
             if (_elementalOff) _races = Enumerable.Repeat(_races.Single(), 2).ToArray();
             _classGuid = "48ac8db94d5de7645906c7d0ad3bcfbd";
-            if (_regression || request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase)
+            if (_regression || _visualLifecycle || request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase)
             {
                 _races = new[] { BlueprintBootstrap.ElementalRaces.OrderedBlueprints().Single(value =>
                     value.Definition.Kind.ToString() == (string)request.Parameters["race"]).Race };
@@ -133,6 +137,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if ((string)request.Parameters["class"] == "Gunslinger")
                     _classGuid = "abca4797366d4df0831a418eee39069a";
                 if (_regression) _races = Enumerable.Repeat(_races[0], CreationVisitCount).ToArray();
+                if (_visualLifecycle) _races = Enumerable.Repeat(_races[0], 2).ToArray();
             }
         }
 
@@ -154,6 +159,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_commitCleanupPending) { PollCommittedCreatorCleanup(); return; }
                 if (_controller == null)
                 {
+                    if (VisualLifecyclePending && _raceIndex == 1) { PollLifecycleBoundary(); return; }
                     if (_raceIndex == _races.Length) { Finish(); return; }
                     BeginCharacter(); return;
                 }
@@ -262,6 +268,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _character["finalLevel"] = CommittedCreatorOwner.Progression.CharacterLevel;
                         _character["finalRaceGuid"] = CommittedCreatorOwner.Progression.Race.AssetGuid;
                         _character["completed"] = _successCallback && CommittedCreatorOwner.Progression.CharacterLevel == 1;
+                        if (_visualLifecycle && _raceIndex == 0)
+                            CaptureLifecycleCommit();
                         if (_regression) VerifySelectedRacialGraph("committed-unit", CommittedCreatorOwner);
                         QualifyNativeRespecCallback();
                         _commitCleanupPending = true; _settle = 12;
@@ -341,6 +349,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _buildUnitBefore = _build.Unit;
             CaptureInitialInnerAssets();
             if (_saveGuard == null) ArmSaveGuard();
+            if (_visualLifecycle) ArmUnloadObserver();
             _worldBefore = Game.Instance.State.Units.All.ToArray();
             CaptureCreatorMembership();
             VerifyRepeatedHelpfulReconciliation();
@@ -431,6 +440,20 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void BeginCharacter()
         {
+            // The lifecycle boundary destroys the previous UI's controller; a
+            // real player reopens the creator through the current UI after
+            // travel, so each visit must re-acquire the live controller and
+            // re-capture the originals its own cleanup must restore.
+            if (_build == null || !ReferenceEquals(_build,
+                    Game.Instance.UI.CharacterBuildController))
+            {
+                _build = Game.Instance.UI.CharacterBuildController;
+                if (_build == null)
+                    throw new InvalidOperationException(
+                        "The native creator controller was not rebuilt after the area boundary.");
+                _globalControllerBefore = Game.Instance.UI.LevelUpController;
+                _buildUnitBefore = _build.Unit;
+            }
             _character = new JObject { ["raceGuid"] = _races[_raceIndex].AssetGuid,
                 ["race"] = _races[_raceIndex].name, ["completed"] = false,
                 ["acceptance"] = "NOT-RUN", ["acceptanceFailures"] = new JArray(), ["steps"] = new JArray() };
@@ -438,6 +461,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _unit = _nativeRespec && _respecOriginal != null ? _respecOriginal :
                 new ChargenUnit(_canCommit && (_useRoll || _nativeRespec || _nativeProfile) ? BlueprintRoot.Instance.CustomCompanion :
                     BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            if (_visualLifecycle) _lifecycleFixtureIds.Add(_unit.UniqueId);
             _character["nativeMercenaryFixture"] = _unit.Descriptor.IsCustomCompanion();
             if (ReferenceEquals(_unit, _mainBefore)) throw new InvalidOperationException("Fixture cannot own the campaign character.");
             _character["fixtureId"] = _unit.UniqueId;
@@ -737,8 +761,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private void Capture(string stage)
         {
-            ((JArray)_character["steps"]).Add(new JObject { ["checkpoint"] = stage,
-                ["nativeBuild"] = ElementalCharacterCreationRoutingObserver.DescribeActiveBuild() });
+            var step = new JObject { ["checkpoint"] = stage,
+                ["nativeBuild"] = ElementalCharacterCreationRoutingObserver.DescribeActiveBuild() };
+            if (_visualLifecycle)
+                step["lifecycleDollRooms"] = DescribeLifecycleDollRooms();
+            ((JArray)_character["steps"]).Add(step);
             Write();
         }
         private void AcceptanceFailure(string failure)
@@ -757,9 +784,28 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private void CleanupCharacter()
         {
+            // Abort safety: a fixture kept alive for the lifecycle boundary must
+            // still be retired if the scenario finishes before that boundary ran.
+            if (_unit == null && _lifecycleUnit != null) { _unit = _lifecycleUnit; _lifecycleUnit = null; }
             CloseOwnedCreatorController();
             if (_nativeRespec) { CleanupNativeRespecActors(); return; }
-            if (_unit != null) { CleanupCreatorMembership(); _unit = null; }
+            if (_unit != null)
+            {
+                if (VisualLifecyclePending && _committed && _raceIndex == 0)
+                {
+                    // The lifecycle boundary keeps this committed mercenary fixture
+                    // registered across the native area reload and retires it
+                    // afterwards through the same owned cleanup path. Roll the
+                    // synchronously granted items back before the boundary so the
+                    // committed world view is the only state that crosses it.
+                    CleanupCreatorItems();
+                    _lifecycleUnit = _unit;
+                    _unit = null;
+                    return;
+                }
+                CleanupCreatorMembership();
+                _unit = null;
+            }
         }
         private void CloseOwnedCreatorController()
         {
@@ -840,21 +886,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ownedNativeProfile"] = _profileFixture?.Evidence.DeepClone(),
                     ["initialInnerAssets"] = new JArray(_initialInnerAssets.Select(value => value.Value)),
                     ["compatibilityRechecks"] = _compatibilityRechecks.DeepClone(),
-                    ["characters"] = _characters.DeepClone(), ["assetUnloads"] = _assetUnloads.DeepClone(), ["creatorCleanup"] = _creatorCleanupEvidence?.DeepClone(), ["instrumentationFailures"] = new JArray(_failures) }.ToString(Formatting.Indented));
+                    ["characters"] = _characters.DeepClone(), ["assetUnloads"] = _assetUnloads.DeepClone(), ["creatorCleanup"] = _creatorCleanupEvidence?.DeepClone(),
+                    ["lifecycleEvidence"] = _lifecycleEvidence.DeepClone(),
+                    ["instrumentationFailures"] = new JArray(_failures) }.ToString(Formatting.Indented));
         }
         private void Finish()
         {
             try { CleanupCharacter(); }
             catch (Exception error) { _failures.Add("cleanup: " + error); }
             bool membershipRestored = CreatorMembershipRestored();
+            string lifecycleDiagnostic;
+            bool lifecycleRestored;
+            try { lifecycleRestored = LifecycleRestorationSatisfied(out lifecycleDiagnostic); }
+            catch (Exception error)
+            {
+                lifecycleRestored = false;
+                lifecycleDiagnostic = "threw:" + error.Message;
+            }
             bool restored = !_started && _unit == null && _controller == null ||
+                (_visualLifecycle ? membershipRestored && lifecycleRestored :
                 (_worldBefore != null && CharacterCreationObservationIdentity.SameOrderedReferences(
                 _worldBefore, Game.Instance.State.Units.All.ToArray()) &&
                 ReferenceEquals(Game.Instance.UI.LevelUpController, _globalControllerBefore) &&
                 ReferenceEquals(_build.Unit, _buildUnitBefore) && _build.LevelUpController == null &&
                 ReferenceEquals(Game.Instance.Player.MainCharacter.Value, _mainBefore) &&
-                ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore) && membershipRestored);
-            if (!restored) _failures.Add("Original world unit membership or controller ownership was not restored.");
+                ReferenceEquals(Game.Instance.CurrentlyLoadedArea, _areaBefore) && membershipRestored));
+            if (!restored) _failures.Add("Original world unit membership or controller ownership was not restored" +
+                (_visualLifecycle ? "; lifecycle diagnostic: " + (lifecycleDiagnostic ?? "none") : "") + ".");
             if (_profileFixture != null)
             {
                 try { _profileFixture.Dispose(); }
@@ -862,6 +920,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             try { DisarmSaveGuard(); }
             catch (Exception error) { _failures.Add("save guard cleanup: " + error); }
+            try { DisarmUnloadObserver(); }
+            catch (Exception error) { _failures.Add("unload observer cleanup: " + error); }
             Result = ElementalCharacterCreationRoutingObserver.Run(_context, _request);
             Result.Assertions.Add(new RuntimeTestAssertion { Name = "actual-first-level-creators-observed",
                 Expected = _races.Length.ToString(), Observed = _characters.Count.ToString(), Status = _characters.Count == _races.Length &&
@@ -890,6 +950,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _characters.OfType<JObject>().All(row => (string)row["acceptance"] == "PASS" &&
                         (bool?)row["selectionContractComplete"] == true && (int?)row["racialSelectionCount"] == 0) &&
                     !BlueprintRoot.Instance.Progression.CharacterRaces.Any(race => BlueprintBootstrap.ElementalRaces.OrderedRaces().Contains(race))
+                    ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
+            if (_visualLifecycle) Result.Assertions.Add(new RuntimeTestAssertion {
+                Name = "lifecycle-area-boundary-observed",
+                Expected = "one committed creator, one native area reload, before/after registry and committed-world-view checkpoints captured",
+                Observed = "boundary=" + (_lifecycleBoundaryComplete ? "complete" : (_lifecycleStage ?? "not-started")) +
+                    ";beforeFirstLoss=" + (_lifecycleBefore == null || _lifecycleBefore["retentionEvaluation"] == null ? null : (string)_lifecycleBefore["retentionEvaluation"]["firstFailure"]) +
+                    ";afterFirstLoss=" + (_characters.OfType<JObject>().LastOrDefault()?["lifecycleAfter"]?["retentionEvaluation"]?["firstFailure"]),
+                Status = _lifecycleBoundaryComplete && _lifecycleBefore != null
                     ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
             if (_nativeProfile) Result.Assertions.Add(new RuntimeTestAssertion {
                 Name = "native-profile-empty-world-restored", Expected = "exact outer Player/scene/world restoration; no save loading",

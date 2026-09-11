@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker.Blueprints.CharGen;
 using Kingmaker.Visual.CharacterSystem;
+using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.ElementalRaces.Visuals
 {
@@ -84,6 +85,11 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
                 _registry.RegisteredCount != ResourceCount)
                 throw new InvalidOperationException(
                     "Elemental visual set inventory or order drifted.");
+            // The registered proxies and donors must stay reachable from native
+            // state for the whole session: mark their cache counters and hold
+            // them on a hidden persistent GameObject so neither the counter-based
+            // cleanup nor Unity's unused-asset sweep can destroy them.
+            _registry.AttachNativeAnchor();
         }
 
         internal int BlueprintCount
@@ -108,8 +114,34 @@ namespace KingmakerGunslinger.ElementalRaces.Visuals
 
         internal string[] NativeDependencyIds { get { return _registry.NativeDependencyIds; } }
 
+        internal ElementalRaceVisualResourceRegistry Registry
+        { get { return _registry; } }
+
         internal void RetainCharacterCreatorResources(ISet<string> ids, IList<UnityEngine.Object> assets)
         {
+            _registry.RetainCharacterCreatorResources(ids, assets);
+        }
+
+        /// <summary>
+        /// Damage-aware retention for the creator boundary: reconstruct first
+        /// when the exact resources were destroyed, then extend the native
+        /// initial-retention collections. An unrecoverable elemental state is
+        /// isolated and reported without aborting the native creator update.
+        /// </summary>
+        internal void EnsureCreatorResourcesRetained(ISet<string> ids,
+            IList<UnityEngine.Object> assets, ModLogger logger)
+        {
+            List<ElementalVisualResourceDamage> damage = _registry.AssessDamage();
+            if (ElementalVisualResourceRecoveryPolicy.RecoveryRequired(damage))
+            {
+                ElementalVisualResourceRecoveryReport report =
+                    ElementalVisualResourceRecovery.Heal(this, logger,
+                        "character-creator-update");
+                damage = _registry.AssessDamage();
+                if (!ElementalVisualResourceRecoveryPolicy
+                        .ShouldExtendRetentionAfterRecovery(damage))
+                    return;
+            }
             _registry.RetainCharacterCreatorResources(ids, assets);
         }
 

@@ -73,7 +73,7 @@ if ($scenarioMetadata.RequiresSaveName) {
         }
         $Parameters = $Parameters.Clone()
         $Parameters.saveName = $SaveName
-    } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')) {
+    } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec', 'working-save-creator-visual-lifecycle')) {
         $creatorParameterCount = if ($Scenario -ceq 'working-save-elemental-nereid-respec') { 4 } else { 3 }
         if ($Parameters.Count -ne $creatorParameterCount -or $Parameters.ContainsKey('saveName')) {
             throw 'Use typed -SaveName plus the exact creator parameters; bounded Nereid respec also requires sex.'

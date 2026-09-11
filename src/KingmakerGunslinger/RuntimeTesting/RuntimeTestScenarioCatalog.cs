@@ -149,6 +149,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-global-traits-kmg-disabled-control";
         internal const string WorkingSaveElementalCharacterCreationRegression =
             "working-save-elemental-character-creation-regression";
+        internal const string WorkingSaveCreatorVisualLifecycle =
+            "working-save-creator-visual-lifecycle";
         internal const string WorkingSaveElementalNativeRespec =
             "working-save-elemental-native-respec";
         internal const string DisposableElementalCharacterCreationCase =
@@ -563,6 +565,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableGlobalTraitsKmgDisabledControl,
                 WorkingSaveElementalCharacterCreation,
                 WorkingSaveElementalCharacterCreationRegression,
+                WorkingSaveCreatorVisualLifecycle,
                 WorkingSaveElementalNativeRespec,
                 WorkingSaveElementalDeferredMarkers,
                 WorkingSaveNereidCreation,
