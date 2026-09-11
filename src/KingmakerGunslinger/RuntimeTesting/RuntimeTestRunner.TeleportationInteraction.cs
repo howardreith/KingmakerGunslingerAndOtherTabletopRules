@@ -114,14 +114,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float previousBottom = float.NaN;
                 for (int scan = boundary - 1; scan >= 0; scan--)
                     if (info.characterInfo[scan].isVisible) { previousBottom = info.characterInfo[scan].bottomLeft.y; break; }
-                if (float.IsNaN(previousBottom) || previousBottom >= top)
+                if (float.IsNaN(previousBottom) || previousBottom == top)
                 { detail = "order-" + index + "-prev=" + previousBottom.ToString("0.#") + "-top=" + top.ToString("0.#"); return false; }
+                // TMP text-local space is y-down; "between the groups" is
+                // orientation-agnostic: strictly inside the open interval.
+                float low = Math.Min(previousBottom, top), high = Math.Max(previousBottom, top);
                 var rule = (RectTransform)rules[index - 1].transform;
                 float ruleY = rule.anchoredPosition.y;
                 detail += index + ":y=" + ruleY.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) +
-                    " in (" + previousBottom.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "," +
-                    top.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + ");";
-                if (!(ruleY > previousBottom + 0.5f) || !(ruleY < top - 0.5f)) return false;
+                    " in (" + low.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "," +
+                    high.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + ");";
+                if (!(ruleY > low + 0.5f) || !(ruleY < high - 0.5f)) return false;
             }
             return true;
         }
