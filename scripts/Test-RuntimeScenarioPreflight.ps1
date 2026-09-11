@@ -1109,6 +1109,25 @@ foreach ($invalid in @(
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } 'creator-regression-rejects-unscoped-request'
 }
 
+$creatorArgs.Scenario = 'working-save-creator-visual-lifecycle'
+foreach ($race in @('Ifrit', 'Oread', 'Sylph', 'Undine')) {
+    $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';race=$race;class='Fighter';allocation='point-buy'}
+    $request = New-KmgRuntimeRequest @creatorArgs -ExitAfterCompletion $true `
+        -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'kmg-visual-lifecycle-request-test')
+    $serialized = $request | ConvertTo-Json -Depth 8 | ConvertFrom-Json
+    Assert-True (@($serialized.parameters.PSObject.Properties).Count -eq 4 -and
+        $serialized.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING' -and
+        $serialized.parameters.race -ceq $race -and $serialized.parameters.class -ceq 'Fighter' -and
+        $serialized.parameters.allocation -ceq 'point-buy' -and $serialized.exitAfterCompletion -eq $true) "visual-lifecycle-exact-json-$race"
+}
+foreach ($invalid in @(
+    @{saveName='KMG_AUTOMATION_WORKING';race='Human';class='Fighter';allocation='point-buy'},
+    @{saveName='KMG_AUTOMATION_WORKING';race='Ifrit';class='Gunslinger';allocation='point-buy';extra=$true},
+    @{saveName='KMG_AUTOMATION_WORKING'})) {
+    $creatorArgs.Parameters = $invalid
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @creatorArgs } 'visual-lifecycle-rejects-unscoped-request'
+}
+
 $creatorArgs.Scenario = 'working-save-elemental-native-respec'
 foreach ($race in @('Ifrit', 'Oread', 'Sylph', 'Undine')) {
     $creatorArgs.Parameters = @{saveName='KMG_AUTOMATION_WORKING';race=$race;class='Fighter';allocation='point-buy'}
