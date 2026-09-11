@@ -80,6 +80,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'working-save-creator-visual-lifecycle' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'working-save-elemental-native-respec' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -1623,6 +1629,7 @@ function Assert-KmgRuntimeScenarioPreflight {
     }
     if ($metadata.RequiresSaveName) {
         $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')
+        $visualLifecycle = $Scenario -ceq 'working-save-creator-visual-lifecycle'
         $persistence = $Scenario -ceq 'disposable-teleportation-persistence'
         if ($persistence) {
             if ($Parameters.Count -ne 3 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath') -or
@@ -1651,7 +1658,7 @@ function Assert-KmgRuntimeScenarioPreflight {
             }
             if ($Parameters.saveName -cne $allowedName) { throw 'Persistence input is not owned by this phase transaction.' }
         }
-        $requiredParameterCount = if ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($creatorRegression -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $requiredParameterCount = if ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
@@ -1663,7 +1670,7 @@ function Assert-KmgRuntimeScenarioPreflight {
              $Parameters.fixtureCase -cnotin @('public117','deferred117'))) {
             throw 'The deferred-marker probe requires the exact public117 or deferred117 fixture case.'
         }
-        if ($creatorRegression -and (-not $Parameters.ContainsKey('race') -or
+        if (($creatorRegression -or $visualLifecycle) -and (-not $Parameters.ContainsKey('race') -or
             -not $Parameters.ContainsKey('class') -or -not $Parameters.ContainsKey('allocation') -or
             $Parameters.race -isnot [string] -or $Parameters.class -isnot [string] -or
             $Parameters.allocation -isnot [string] -or

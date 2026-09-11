@@ -239,6 +239,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveCreatorVisualLifecycle ||
                 (RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario) &&
                     !RuntimeTestScenarioCatalog.IsNereidProfileScenario(request.Scenario)) ||
                 RuntimeTestScenarioCatalog.IsMidgameWorkingScenario(request.Scenario) ||
@@ -369,6 +370,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ((string)request.Parameters["fixtureCase"] != "public117" && (string)request.Parameters["fixtureCase"] != "deferred117") ||
                     !request.ExitAfterCompletion)) return "deferred-marker-case-not-allowed";
                 bool creatorRegression = RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario);
+                bool visualLifecycle = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveCreatorVisualLifecycle;
                 bool nereidPersistence = request.Parameters?["qualificationTrait"]?.Type == JTokenType.String &&
                     RuntimeTestScenarioCatalog.IsNereidPersistenceScope(request.Scenario,
                         (string)request.Parameters["qualificationTrait"]);
@@ -376,16 +378,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool treacherousEffect = nereidPersistence && request.Parameters?["qualificationEffect"]?.Type == JTokenType.String &&
                     (string)request.Parameters["qualificationEffect"] == "TreacherousEarth";
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
-                if (request.Parameters == null || request.Parameters.Count != (persistence ? 3 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (persistence ? 3 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
-                if (creatorRegression && (request.Parameters["race"]?.Type != JTokenType.String ||
+                if ((creatorRegression || visualLifecycle) && (request.Parameters["race"]?.Type != JTokenType.String ||
                     request.Parameters["class"]?.Type != JTokenType.String ||
                     request.Parameters["allocation"]?.Type != JTokenType.String ||
                     !ElementalCharacterCreationRegressionPlan.IsAllowedCase((string)request.Parameters["race"],
                         (string)request.Parameters["class"], (string)request.Parameters["allocation"])))
                     return "character-creation-case-not-allowed";
+                if (visualLifecycle && !request.ExitAfterCompletion)
+                    return "creator-visual-lifecycle-exit-required";
                 if (RuntimeTestScenarioCatalog.IsElementalNativeRespecScenario(request.Scenario) &&
                     !ElementalCharacterCreationRegressionPlan.IsAllowedRespecCase((string)request.Parameters["race"],
                         (string)request.Parameters["class"], (string)request.Parameters["allocation"]))

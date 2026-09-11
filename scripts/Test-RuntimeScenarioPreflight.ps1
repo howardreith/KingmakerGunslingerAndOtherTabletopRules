@@ -83,6 +83,7 @@ $expected = @(
     'disposable-global-traits-kmg-disabled-control',
     'working-save-elemental-character-creation',
     'working-save-elemental-character-creation-regression',
+    'working-save-creator-visual-lifecycle',
     'working-save-elemental-native-respec',
     'working-save-elemental-deferred-markers',
     'working-save-elemental-nereid-creation',
