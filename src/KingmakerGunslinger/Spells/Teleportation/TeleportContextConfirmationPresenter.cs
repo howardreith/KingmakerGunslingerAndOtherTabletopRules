@@ -215,16 +215,19 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var box = DialogMessageBox.Instance;
             var label = box == null ? null : MessageLabelField.GetValue(box) as TextMeshProUGUI;
             if (label == null) return;
-            if (!string.Equals(label.text, Message)) { RemoveSectionRules(); return; }
+            var sections = TeleportContextPresentation.ConfirmationSections(_action, _familiarity, TeleportationText.Get);
+            // The native dialog renders the message wrapped in rich-text
+            // markup, so ownership is detected by the first section's plain
+            // text appearing inside the rendered label, never by equality.
+            if (label.text.IndexOf(sections[0], StringComparison.Ordinal) < 0) { RemoveSectionRules(); return; }
             TMP_TextInfo info = label.textInfo;
             if (info == null || info.characterInfo == null || info.characterInfo.Length == 0) return; // not rendered yet
             try
             {
-                var sections = TeleportContextPresentation.ConfirmationSections(_action, _familiarity, TeleportationText.Get);
                 int searched = 0;
                 for (int index = 1; index < sections.Count; index++)
                 {
-                    int boundary = SectionBoundary(info, sections[index], ref searched);
+                    int boundary = SectionBoundary(info, sections[index], label.text, ref searched);
                     if (boundary < 0) continue;
                     _sectionRules.Add(TeleportationUiDivider.CreateRule((RectTransform)label.transform,
                         "KMG_ConfirmSectionRule" + index.ToString(CultureInfo.InvariantCulture),
@@ -235,10 +238,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
             catch (Exception exception) { _sectionsDecorated = true; RemoveSectionRules(); WorldMapPointSpellActionRuntime.Report(exception); }
         }
         // Locates the first rendered character of a confirmation group, anchored
-        // at its exact position in the shown message.
-        private int SectionBoundary(TMP_TextInfo info, string section, ref int searched)
+        // at its exact position in the rendered (markup-wrapped) label text.
+        private int SectionBoundary(TMP_TextInfo info, string section, string renderedText, ref int searched)
         {
-            int at = Message.IndexOf(section, searched, StringComparison.Ordinal);
+            int at = renderedText.IndexOf(section, searched, StringComparison.Ordinal);
             if (at < 0) return -1;
             searched = at + 1;
             for (int index = 0; index < info.characterInfo.Length; index++)

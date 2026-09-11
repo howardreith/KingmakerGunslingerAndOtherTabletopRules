@@ -390,7 +390,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var unrelatedLabel = (TextMeshProUGUI)typeof(DialogMessageBox)
                         .GetField("m_Messagelabel", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(DialogMessageBox.Instance);
                     bool unrelatedClean = DialogMessageBox.Instance.IsShown && unrelatedLabel != null &&
-                        unrelatedLabel.text == "KMG unrelated fixture message" &&
+                        unrelatedLabel.text.Contains("KMG unrelated fixture message") &&
                         unrelatedLabel.GetComponentsInChildren<Transform>(true).All(value => !value.name.StartsWith("KMG_ConfirmSectionRule")) &&
                         UnityEngine.Object.FindObjectsOfType<TeleportContextConfirmationPresenter>().Length == 0;
                     TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke();
