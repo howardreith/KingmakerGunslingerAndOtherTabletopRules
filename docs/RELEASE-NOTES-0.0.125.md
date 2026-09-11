@@ -1,5 +1,11 @@
 ﻿# Release notes — 0.0.125-settlement-button-width
 
+This release is superseded by the Word of Recall Oracle eligibility
+repair: install `KingmakerGunslinger-0.0.126-word-of-recall-oracle.zip`
+(0.0.126-word-of-recall-oracle) so an optional Call of the Wild Oracle
+can use an existing Word of Recall scroll; it carries the settlement
+button width fix forward.
+
 Owner follow-up mission: one cosmetic fix. The owner screenshot showed the
 relabeled native **Settlement Teleport** button extending beyond the
 narrow native button behind it; the owner otherwise accepts the

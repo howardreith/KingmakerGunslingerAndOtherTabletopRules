@@ -1,7 +1,7 @@
 ﻿# Installation, updates, removal, and compatibility
 
-Version: `0.0.125-settlement-button-width`.
-The installable archive is `KingmakerGunslinger-0.0.125-settlement-button-width.zip`.
+Version: `0.0.126-word-of-recall-oracle`.
+The installable archive is `KingmakerGunslinger-0.0.126-word-of-recall-oracle.zip`.
 The retained 0.0.121 archive is
 `KingmakerGunslinger-0.0.121-unified-firearm-maintenance.zip`.
 

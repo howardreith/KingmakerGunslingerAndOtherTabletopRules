@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.0.126-word-of-recall-oracle
+
+- Fixed an owner-reported eligibility failure: a Call of the Wild Oracle with
+  zero Use Magic Device ranks could not use a Word of Recall scroll, even
+  though Word of Recall belongs on the cleric/oracle list at spell level 6.
+- Root cause: the teleportation base publication adds the canonical Word of
+  Recall to the native Cleric 6 and Druid 8 lists, but Call of the Wild keeps
+  the Oracle on its own separate OracleSpellList, so the native
+  class-list scroll predicate refused a zero-UMD Oracle.
+- The repair is a final-live reconciliation mirroring Shield Other's
+  qualified pattern: at the first idle update after all mods load, the
+  optional Oracle class is resolved through validated blueprint identity and
+  structure, and the canonical Word of Recall is merged exactly once at
+  level 6 of that class's actual final spell list — additive, idempotent,
+  module-gated, and fail-closed when the Oracle is absent, the module is
+  disabled, or a foreign duplicate exists.
+- Canonical spell and scroll GUIDs, native Cleric 6 / Druid 8 registration,
+  UMD rules, strategic-scroll inventory blocking, destinations, economics,
+  and teleport UI are unchanged; existing scrolls benefit without
+  replacement. 1,581 deterministic tests PASS (five new Oracle regression
+  tests); guarded runtime qualification documented in
+  docs/RELEASE-NOTES-0.0.126.md.
+
 ## 0.0.123-character-visibility-repair
 
 - Fixed newly created characters having invisible bodies while clothes and

@@ -85,7 +85,8 @@ def validate(root: Path) -> None:
     require_tokens(
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
-    release_suffix = ("settlement-button-width"
+    release_suffix = ("word-of-recall-oracle"
+        if VERSION == "0.0.126" else "settlement-button-width"
         if VERSION == "0.0.125" else "teleport-polish-specialist"
         if VERSION == "0.0.124" else "character-visibility-repair"
         if VERSION == "0.0.123" else "teleportation-completion"
