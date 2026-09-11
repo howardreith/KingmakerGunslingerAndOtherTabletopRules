@@ -13,9 +13,9 @@ in `Z-TELEPORTATION-MISSION.md` / `Z-TELEPORTATION-STATE.md`.
 - Active version: `0.0.124-teleport-polish-specialist`
 - FINAL artifact (all runtime results below attribute to this build):
   package `artifacts/local-runtime/0.0.124/KingmakerGunslinger-0.0.124-local-runtime.zip`
-  DLL sha256 `fd41a7973efd0e139f7e11f0ae4f9643fc7107008155e46cacf1b9c434ec4a35`
+  DLL sha256 `007921e837c1b24a2664d7d3c6aed80c334c212fb71af8771027dadb43ed5c16`
   deployment manifest
-  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260911T1214535881843Z/deployment.json`
+  `C:/Dev/KingmakerGunslingerLab/runtime-evidence/deployments/20260911T1608184364456Z/deployment.json`
   (installed == package == build exact-match guard PASS; owner
   FeatureModules.json preserved every deployment; rollback backups under
   `C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/`).
@@ -83,14 +83,16 @@ slots, never touches other schools/books. Pure decision logic lives in
 
 ## Runtime evidence (guarded, Steam App 640820, KMG_AUTOMATION_WORKING)
 
-FINAL-BUILD SWEEP — every teleportation scenario PASS on the exact final
-artifact (DLL fd41a797…, evidence dirs beneath
-`C:/Dev/KingmakerGunslingerLab/runtime-evidence/`, newest per scenario):
-specialist-cache PASS (twice: 20260911T1209… and 20260911T1218…), specialist
-PASS, casting PASS, interaction PASS, coexistence PASS, arrows PASS, scrolls
-PASS, travelers PASS, destinations PASS, coexistence-gamepad PASS, gamepad
-PASS (20260911T1215…, after the direct-settlement fixture). Zero save writes
-in every run (write sentinels asserted). Development fixes made during qualification:
+REVIEW-CORRECTION SWEEP — every teleportation scenario PASS on the exact
+final artifact (DLL 007921e8…): specialist-cache PASS (12/12 incl. the
+repaired-favorite world-map casts at both levels and the
+Conjuration-specialist-without-knowledge negative), interaction PASS (incl.
+confirmation-section-rules, confirmation-rule-placement with per-rule
+coordinates, confirmation-rules-cleaned-up, cast-duplicate-activation, and
+direct-blocked-by-unrelated-modal), casting PASS, specialist PASS,
+coexistence PASS, arrows PASS, scrolls PASS, gamepad PASS, travelers PASS,
+destinations PASS, coexistence-gamepad PASS (20260911T16xx evidence dirs).
+Zero save writes in every runn (write sentinels asserted). Development fixes made during qualification:
 scenario allowlisting (request validator + RuntimeAutomation metadata +
 version gate), inactive-donor extent regression (rows measured from ACTIVE
 native buttons — the donor Accept control is inactive at world-map points),
@@ -136,6 +138,16 @@ arrows fixtures routed through the direct settlement.
   Invoke-TeleportationHardeningQualification /
   Invoke-TeleportationPersistenceQualification); the disabled-scenario gate
   was updated to include the new patch's Installed flag.
+
+- 2026-09-11 (review corrections, final): the definitive battery passed on
+  DLL 007921e8 and the candidate was redeployed. Engineering fixes found by
+  the new scenario code itself during qualification: the native dialog
+  renders the message through GetSaberBookFormat (first character pulled
+  inside font/color/size tags), so ownership detection and section boundary
+  scans operate on the rendered label text with the trailing unsplit section
+  as the gate; the placement check is orientation-agnostic for TMP's y-down
+  text space; the destination viewport height is computed deterministically
+  from row and separator extents.
 
 ## Acceptance report (eight items)
 
