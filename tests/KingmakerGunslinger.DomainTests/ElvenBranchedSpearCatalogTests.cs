@@ -62,11 +62,11 @@ namespace KingmakerGunslinger.DomainTests
                 assembly.Contains("AssemblyVersion(\"0.0.123\")") &&
                 assembly.Contains("AssemblyFileVersion(\"0.0.123\")") &&
                 assembly.Contains("AssemblyInformationalVersion(\"0.0.123-character-visibility-repair\")"),
-                "Release and assembly identity are not transactionally pinned to the teleportation completion candidate.");
+                "Release and assembly identity are not transactionally pinned to the character visibility repair candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-teleportation-completion.zip") &&
+                "$($info.Id)-$($info.Version)-character-visibility-repair.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the teleportation completion archive.");
+                "Package identity is not pinned to the character visibility repair archive.");
             Assertions.True(runtime.Contains("active version 0.0.123") &&
                 localBuild.Contains("active version 0.0.123") &&
                 localBuild.Contains("local-runtime\\0.0.123"),
