@@ -1536,7 +1536,7 @@
   },
   "settlementButton125": {
     "deterministicTestCount": 1576,
-    "publicReleaseAuthorized": false,
+    "publicReleaseAuthorized": true,
     "settlementButtonWidenedToLabel": "label preferred width at the native font size plus the control native padding, capped by the settled native action region",
     "settlementButtonRestoreExact": true,
     "settlementButtonNoCumulativeGrowth": true,
