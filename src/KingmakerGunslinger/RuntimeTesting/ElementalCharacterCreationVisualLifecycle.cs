@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
@@ -42,10 +43,50 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _lifecycleBoundaryComplete;
         private readonly JArray _lifecycleEvidence = new JArray();
         internal readonly bool _visualLifecycle;
+        private Harmony12.HarmonyInstance _unloadObserver;
+        private string _unloadObserverId;
 
         private bool VisualLifecyclePending
         {
             get { return _visualLifecycle && !_lifecycleBoundaryComplete; }
+        }
+
+        // Read-only recorder over the native destructive boundary: which asset
+        // the creator asked the resource library to unload, with caller stack,
+        // and whether the periodic unused-asset sweep ran. It never changes a
+        // return value or suppresses a native unload.
+        internal void ArmUnloadObserver()
+        {
+            if (_unloadObserver != null) return;
+            _unloadObserverId = "KMG.CreatorVisualLifecycle.Unload." + _request.RunId;
+            _unloadObserver = Harmony12.HarmonyInstance.Create(_unloadObserverId);
+            MethodInfo unload = typeof(Kingmaker.Blueprints.ResourcesLibrary).GetMethod(
+                "TryUnloadResource", BindingFlags.Static | BindingFlags.Public, null,
+                new[] { typeof(string) }, null);
+            _unloadObserver.Patch(unload, prefix: new HarmonyMethod(
+                typeof(ElementalCharacterCreationBaselineScenario).GetMethod(
+                    "RecordNativeUnload", BindingFlags.Static | BindingFlags.NonPublic)));
+        }
+
+        internal void DisarmUnloadObserver()
+        {
+            if (_unloadObserver == null) return;
+            try { _unloadObserver.UnpatchAll(_unloadObserverId); }
+            finally { _unloadObserver = null; }
+        }
+
+        private static void RecordNativeUnload(string assetId)
+        {
+            var owner = _saveGuardOwner;
+            if (owner == null || !owner._visualLifecycle) return;
+            try
+            {
+                owner._lifecycleEvidence.Add(new JObject {
+                    ["nativeTryUnloadResource"] = assetId,
+                    ["stage"] = owner._stage,
+                    ["stack"] = new System.Diagnostics.StackTrace(2, true).ToString() });
+            }
+            catch { /* observation only */ }
         }
 
         private void CaptureLifecycleCommit()
