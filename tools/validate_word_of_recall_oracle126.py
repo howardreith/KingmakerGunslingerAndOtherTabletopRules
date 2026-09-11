@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Validate the Word of Recall Oracle scroll eligibility repair release candidate."""
 from __future__ import annotations
 import argparse
@@ -56,7 +56,7 @@ def validate(root: Path) -> None:
         "ownerReportedOracleScrollFailureConfirmed": True,
         "nativeClericAndDruidRegistrationUnchanged": True,
         "scrollAndSpellGuidsUnchanged": True,
-        "runtimeQualificationPending": True,
+        "runtimeQualificationPending": False,
         "compatibilityRuntimeQualificationPending": True,
     }
     for key, value in expected.items():
