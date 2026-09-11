@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
@@ -109,7 +109,7 @@ def validate(root: Path) -> None:
             raise AssertionError(f"Bodyguard static validation mismatch: {key}")
 
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleSettingsStore.cs",
-        ("CurrentSchemaVersion = 11" if VERSION in {"0.0.118", "0.0.119", "0.0.120", "0.0.121"}
+        ("CurrentSchemaVersion = 11" if VERSION in {"0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122"}
             else "CurrentSchemaVersion = 10"), "BodyguardFeatsId", "ElementalRacesId")
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleConfiguration.cs",
         'BodyguardFeatsId = "bodyguard-feats"', "BodyguardFeats ? 256 : 0",
@@ -131,8 +131,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("unified-firearm-maintenance"
-        if VERSION == "0.0.121" else "elemental-races-completion"
+    package_suffix = ("teleportation-completion"
+        if VERSION in {"0.0.121", "0.0.122"} else "elemental-races-completion"
         if VERSION == "0.0.120" else "contextual-world-map-teleportation"
         if VERSION in {"0.0.118", "0.0.119"} else "elemental-char-gen-stabilization"
         if VERSION == "0.0.117" else "elemental-feats"

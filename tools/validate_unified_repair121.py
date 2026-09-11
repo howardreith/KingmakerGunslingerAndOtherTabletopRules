@@ -10,6 +10,8 @@ import validate_teleportation119 as baseline
 
 VERSION = "0.0.121"
 INFORMATIONAL_VERSION = "0.0.121-unified-firearm-maintenance"
+PACKAGE = "KingmakerGunslinger-0.0.121-local-runtime.zip"
+PACKAGE_SUFFIX = "unified-firearm-maintenance"
 DETERMINISTIC_TEST_COUNT = 1561
 MANIFEST_TOTAL = 1886
 MANIFEST_ACTIVE = 1884
@@ -20,8 +22,8 @@ ELEMENTAL_ACTIVE = 240
 def validate(root: Path) -> None:
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
-    baseline.PACKAGE = "KingmakerGunslinger-0.0.121-local-runtime.zip"
-    baseline.PACKAGE_SUFFIX = "unified-firearm-maintenance"
+    baseline.PACKAGE = PACKAGE
+    baseline.PACKAGE_SUFFIX = PACKAGE_SUFFIX
     baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
     baseline.STATIC_KEY = "unifiedRepair121"
     baseline.MANIFEST_TOTAL = MANIFEST_TOTAL
@@ -37,7 +39,7 @@ def validate(root: Path) -> None:
         "dd0a344226c31e34d251702f5832e75525137260",
         "Nereid Fascination", "Treacherous Earth", "0.0.120")
     baseline.require_tokens(root / "docs/RELEASE-NOTES-0.0.121.md",
-        INFORMATIONAL_VERSION, "owner",
+        "0.0.121-unified-firearm-maintenance", "owner",
         "exactly one maintenance action", "reusable Gunsmith",
         "KNOWN-ISSUES.md", "1,554", "32/32", "16/16")
     baseline.require_tokens(root / "KNOWN-ISSUES.md",

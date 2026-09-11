@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using KingmakerGunslinger.AidAnotherCompatibility;
@@ -303,7 +303,7 @@ namespace KingmakerGunslinger.DomainTests
                         ((JArray)profile["modKeys"]).Values<string>()
                             .SequenceEqual(contract.Keys) &&
                         (string)profile["requiredGunslingerPackage"] ==
-                            "KingmakerGunslinger-0.0.121-local-runtime.zip" &&
+                            "KingmakerGunslinger-0.0.122-local-runtime.zip" &&
                         ((JArray)profile["scenarios"]).Values<string>()
                             .Contains("observe-aid-another-compatibility-contracts"),
                     "Required runtime profile is incomplete: " + contract.Id);

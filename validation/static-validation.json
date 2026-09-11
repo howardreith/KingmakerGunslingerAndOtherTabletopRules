@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.121-unified-firearm-maintenance",
-  "version": "0.0.121",
+  "milestone": "0.0.122-teleportation-completion",
+  "version": "0.0.122",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1490,5 +1490,24 @@
     "oldSaveAliasRuntimeAssertions": 16,
     "wreckedCombatAvailabilityOwnerDecisionPending": true,
     "retiredKitVendorSweepQualified": true
+  },
+  "teleportationCompletion122": {
+    "deterministicTestCount": 1561,
+    "publicReleaseAuthorized": true,
+    "ownerAcceptedPr": 12,
+    "scrollsRuntimeAssertions": 36,
+    "specialistRuntimeAssertions": 9,
+    "coexistenceRuntimeAssertions": 26,
+    "arrowsRuntimeAssertions": 8,
+    "castingRuntimeAssertions": 44,
+    "interactionRuntimeAssertions": 29,
+    "travelersRuntimeAssertions": 15,
+    "gamepadRuntimeAssertions": 39,
+    "persistencePhases": "15/12/8/4",
+    "moduleOnNoRefill": true,
+    "ordinaryUseRefusedBeforeActivation": true,
+    "variantActivationGuard": true,
+    "inAreaFallbackNeedNotRun": true,
+    "compatibilityRuntimeQualificationPending": true
   }
 }

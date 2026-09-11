@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
@@ -85,8 +85,8 @@ def validate(root: Path) -> None:
     require_tokens(
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
-    release_suffix = ("unified-firearm-maintenance"
-        if VERSION == "0.0.121" else "elemental-races-completion"
+    release_suffix = ("teleportation-completion"
+        if VERSION in {"0.0.121", "0.0.122"} else "elemental-races-completion"
         if VERSION == "0.0.120" else "contextual-world-map-teleportation"
         if VERSION in {"0.0.118", "0.0.119"} else "elemental-char-gen-stabilization"
         if VERSION == "0.0.117" else "elemental-feats"
