@@ -97,6 +97,34 @@ namespace KingmakerGunslinger.Spells.Teleportation
             TeleportDestinationRows owned;
             if (!ReferenceEquals(panel, null) && Owned.TryGetValue(panel, out owned) && ReferenceEquals(owned, rows)) Owned.Remove(panel);
         }
+        // The horizontal extent of the dialog's currently active native action
+        // buttons: the visible parchment content region. World corners of an
+        // inactive control read as zero, so the donor alone is never trusted.
+        internal static NativeActionExtentInfo NativeActionExtent(CanvasGroup dialog, Transform appended)
+        {
+            Vector3[] corners = new Vector3[4];
+            float width = 0f, minX = float.PositiveInfinity, maxX = float.NegativeInfinity;
+            foreach (Button button in dialog.GetComponentsInChildren<Button>(true))
+            {
+                if (button == null || !button.gameObject.activeInHierarchy ||
+                    button.transform.IsChildOf(appended) || appended.IsChildOf(button.transform)) continue;
+                ((RectTransform)button.transform).GetWorldCorners(corners);
+                float low = Math.Min(corners[0].x, corners[2].x), high = Math.Max(corners[0].x, corners[2].x);
+                width = Math.Max(width, high - low);
+                minX = Math.Min(minX, low);
+                maxX = Math.Max(maxX, high);
+            }
+            if (float.IsInfinity(minX) || width <= 0f) return NativeActionExtentInfo.Unproven;
+            return new NativeActionExtentInfo { Width = width, MinX = minX, MaxX = maxX };
+        }
+        internal struct NativeActionExtentInfo
+        {
+            internal float Width;
+            internal float MinX;
+            internal float MaxX;
+            internal static NativeActionExtentInfo Unproven
+            { get { return new NativeActionExtentInfo { Width = -1f, MinX = float.NegativeInfinity, MaxX = float.PositiveInfinity }; } }
+        }
         internal static void Report(Exception exception)
         {
             if (!Reported.Add(exception.GetType().FullName + ":" + exception.Message)) return;
@@ -154,15 +182,20 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 self._rowHeight = NativeLineHeight;
                 if (self._rowHeight <= 0) throw new InvalidOperationException("Native action height is unproven.");
                 self._viewportLayout = container.AddComponent<LayoutElement>();
-                // The settled native action button is the visible parchment
+                // The settled native action buttons are the visible parchment
                 // content region; the dialog canvas group can be wider than the
-                // parchment art. Rows are sized from the donor's world extent,
-                // capped by the padded dialog width, and never expand further.
-                Vector3[] donorCorners = new Vector3[4];
-                ((RectTransform)donor.transform).GetWorldCorners(donorCorners);
+                // parchment art. The donor itself can be inactive at world-map
+                // points (its world corners read as zero), so the extent comes
+                // from the dialog's active native buttons; the donor's own rect
+                // is the fallback when no native action is currently shown.
+                var nativeExtent = WorldMapPointSpellActionRuntime.NativeActionExtent(dialog, container.transform);
                 float scale = Math.Max(container.transform.lossyScale.x, 0.0001f);
+                // Fallback when no native action is currently shown: the donor's
+                // own laid-out rect (inactive controls still retain it).
+                float settledWidth = nativeExtent.Width > 0f ? nativeExtent.Width :
+                    ((RectTransform)donor.transform).rect.width * (Math.Max(donor.transform.lossyScale.x, 0.0001f) / scale);
                 float width = TeleportContextLayoutPolicy.ActionRowsWidth(
-                    Math.Abs(donorCorners[2].x - donorCorners[0].x) / scale,
+                    settledWidth,
                     ((RectTransform)dialog.transform).rect.width - dialog.GetComponent<LayoutGroup>().padding.horizontal);
                 ((RectTransform)container.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
                 self._viewportLayout.minWidth = width;
@@ -214,7 +247,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     ((RectTransform)row.Button.transform).GetWorldCorners(rowCorners);
                     if (!TeleportContextLayoutPolicy.RowInsideNativeExtent(
                         Math.Min(rowCorners[0].x, rowCorners[2].x), Math.Max(rowCorners[0].x, rowCorners[2].x),
-                        Math.Min(donorCorners[0].x, donorCorners[2].x), Math.Max(donorCorners[0].x, donorCorners[2].x)))
+                        nativeExtent.MinX, nativeExtent.MaxX))
                         throw new InvalidOperationException("Appended spell rows exceed the settled native action extent.");
                 }
                 return self;

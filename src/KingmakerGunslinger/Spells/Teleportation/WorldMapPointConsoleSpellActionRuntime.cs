@@ -93,14 +93,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 self._rowHeight = Math.Max(LayoutUtility.GetPreferredHeight((RectTransform)donor.transform), ((RectTransform)donor.transform).rect.height);
                 if (self._rowHeight <= 0) throw new InvalidOperationException("Native gamepad action height is unproven.");
                 self._viewportLayout = container.AddComponent<LayoutElement>();
-                // The settled native confirm button is the visible parchment
-                // content region; rows never exceed its world extent and never
-                // expand to the wider dialog canvas group.
-                Vector3[] donorCorners = new Vector3[4];
-                ((RectTransform)donor.transform).GetWorldCorners(donorCorners);
+                // The settled active native confirm/actions are the visible
+                // parchment content region; the donor alone can be inactive.
+                var nativeExtent = WorldMapPointSpellActionRuntime.NativeActionExtent(dialog, container.transform);
                 float scale = Math.Max(container.transform.lossyScale.x, 0.0001f);
+                float settledWidth = nativeExtent.Width > 0f ? nativeExtent.Width :
+                    ((RectTransform)donor.transform).rect.width * (Math.Max(donor.transform.lossyScale.x, 0.0001f) / scale);
                 float width = TeleportContextLayoutPolicy.ActionRowsWidth(
-                    Math.Abs(donorCorners[2].x - donorCorners[0].x) / scale,
+                    settledWidth,
                     ((RectTransform)dialog.transform).rect.width - dialog.GetComponent<LayoutGroup>().padding.horizontal);
                 ((RectTransform)container.transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
                 self._viewportLayout.minWidth = width; self._viewportLayout.preferredWidth = width; self._viewportLayout.flexibleWidth = 0;
@@ -140,7 +140,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     ((RectTransform)row.Button.transform).GetWorldCorners(rowCorners);
                     if (!TeleportContextLayoutPolicy.RowInsideNativeExtent(
                         Math.Min(rowCorners[0].x, rowCorners[2].x), Math.Max(rowCorners[0].x, rowCorners[2].x),
-                        Math.Min(donorCorners[0].x, donorCorners[2].x), Math.Max(donorCorners[0].x, donorCorners[2].x)))
+                        nativeExtent.MinX, nativeExtent.MaxX))
                         throw new InvalidOperationException("Appended gamepad spell rows exceed the settled native action extent.");
                 }
                 return self;
