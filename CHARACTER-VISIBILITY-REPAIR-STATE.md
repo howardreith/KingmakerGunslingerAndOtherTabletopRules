@@ -1,7 +1,32 @@
 # Character Visibility Repair — Working State and Resume Record
 
-Last updated: 2026-09-11 (repair implemented; source qualification passed;
-runtime qualification of the repaired build pending)
+Last updated: 2026-09-11 (final delivery checkpoint; see
+CHARACTER-VISIBILITY-REPAIR-REPORT.md for the mission report)
+
+## Final delivery identity (2026-09-11)
+
+- Final Build-Local on source `dc3367b5` (plus docs-only commits recorded at
+  push): 1,567 tests 0 failures; clean Release; strict package validation.
+- Package
+  `artifacts/local-runtime/0.0.122/KingmakerGunslinger-0.0.122-local-runtime.zip`
+  SHA-256 `839350AB046A08C2DFC95C694212F9BE9D4E285D5C30C430D51A7C9054552F5A`;
+  DLL SHA-256 `A872F2517E8819E422DFA45E2C81F825B144B8038E709A68BC849F595B56E73B`.
+- Installed live DLL SHA-256 verified EQUAL to the package DLL
+  (`A872F251…`, installed by the guarded harness deployment of the same
+  source; deterministic build confirmed byte-identity with the final
+  validated package). Rollback: pre-mission original
+  (`6965AAB9…`) preserved under `runtime-backups/live-mod/` via
+  `scripts/Restore-Live-Mod.ps1`.
+- Final-artifact native qualification recorded on this exact source:
+  lifecycle run 13 PASS, working-save-smoke PASS, main-menu four-race
+  creator baseline PASS (`20260911T0926453063457Z-…`, zero asset unloads).
+
+## Open follow-up gates
+
+Listed in CHARACTER-VISIBILITY-REPAIR-REPORT.md §5 (main-menu campaign-start
+commitment scenario, both-sexes matrix, browsing/cancellation repetition,
+save/full-exit/reload persistence, module-OFF and KMG-only comparisons on the
+final artifact). Probe scenarios and records are in place to continue.
 
 ## Current position
 
@@ -422,6 +447,19 @@ and re-captures the live UI controller.
 
 ## Deployment / installation state
 
-- No deployment performed by this mission. Installed artifact remains the
-  0.0.122 teleportation build (see baseline identities). No backup taken yet
-  (take immediately before any install).
+- The guarded harness's backup-first deployment installed the repaired
+  candidate: installed DLL SHA-256
+  `0F62AE0F8D363B376E0F4EDB388BDF745F75AEB27E37F7FAD48806931D9E114A`
+  (source commit `f6e204ca`, deployment manifest
+  `runtime-evidence/deployments/20260911T0640099468623Z/deployment.json`;
+  current HEAD `dc3367b5` changes records only, source-equivalent).
+- Original 0.0.122 teleportation build preserved in
+  `runtime-backups/live-mod/` (multiple dated backups; the pre-mission
+  original DLL SHA-256
+  `6965AAB9326BBEEF6DFF845B46DD6912C8081BBC87E6EEF88F875A0368E9CEC1`).
+  Rollback: `scripts/Restore-Live-Mod.ps1 -BackupDirectory <backup>` (must be
+  invoked via `powershell -Command "& '...' -Confirm:$false"` from the lab
+  shell; the `-File` form fails its ShouldProcess host under redirection).
+- Final delivery decision pending the remaining gates: either confirm this
+  installed candidate as the delivery (identity/MVID re-verified) or restore +
+  reinstall the exact final artifact after the last source change.
