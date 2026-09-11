@@ -123,11 +123,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     select(); foreach (int tick in wait()) yield return tick;
                     var kmgRows = desktop.GetComponentInChildren<TeleportDestinationRows>(true);
                     float innerWidth = ((RectTransform)kmgRows.transform).rect.width;
-                    TeleportInteractionAssert("compact-rows-fit", "two-line title/detail rows render within the native inner content width",
-                        "rows=" + kmgRows.Actions.Count + ";width=" + innerWidth.ToString("0.##"),
+                    // The settled native action buttons are the visible parchment
+                    // content region: rendered row extents must stay inside them.
+                    var nativeActionExtent = desktop.GetComponentsInChildren<UnityEngine.UI.Button>(true)
+                        .Where(value => value.GetComponentInParent<TeleportDestinationRows>() == null && value.gameObject.activeInHierarchy)
+                        .Select(value => {
+                            var corners = new UnityEngine.Vector3[4];
+                            ((RectTransform)value.transform).GetWorldCorners(corners);
+                            return new { min = UnityEngine.Mathf.Min(corners[0].x, corners[2].x), max = UnityEngine.Mathf.Max(corners[0].x, corners[2].x) };
+                        }).ToArray();
+                    float nativeMin = nativeActionExtent.Length == 0 ? float.NegativeInfinity : nativeActionExtent.Min(value => value.min);
+                    float nativeMax = nativeActionExtent.Length == 0 ? float.PositiveInfinity : nativeActionExtent.Max(value => value.max);
+                    TeleportInteractionAssert("compact-rows-fit", "two-line title/detail rows render within the settled native action extent",
+                        "rows=" + kmgRows.Actions.Count + ";width=" + innerWidth.ToString("0.##") +
+                            ";nativeExtent=" + nativeMin.ToString("0.##") + ".." + nativeMax.ToString("0.##"),
                         kmgRows.Actions.Count > 0 && kmgRows.Buttons.All(value => {
                             var rowLabel = value.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
-                            return rowLabel != null && rowLabel.preferredWidth <= innerWidth + 0.5f; }) &&
+                            var corners = new UnityEngine.Vector3[4];
+                            ((RectTransform)value.transform).GetWorldCorners(corners);
+                            return rowLabel != null && rowLabel.preferredWidth <= innerWidth + 0.5f &&
+                                UnityEngine.Mathf.Min(corners[0].x, corners[2].x) >= nativeMin - 0.5f &&
+                                UnityEngine.Mathf.Max(corners[0].x, corners[2].x) <= nativeMax + 0.5f; }) &&
                         kmgRows.Buttons.Select((value, index) => value.GetComponentInChildren<TMPro.TextMeshProUGUI>(true).text ==
                             TeleportContextPresentation.CompactRow(kmgRows.Actions[index], TeleportationText.Get)).All(value => value));
                     var controllers = nativeTeleportControllers;

@@ -61,7 +61,7 @@ def validate(root: Path) -> None:
             len(profile_ids) != expected_profile_count):
         raise AssertionError("compatibility profile IDs must be unique and match the release contract")
     craft = next(profile for profile in profiles if profile["id"] == "gunslinger-craft-magic-items")
-    expected_craft_disposition = ("NOT-TESTED" if VERSION in {"0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123"}
+    expected_craft_disposition = ("NOT-TESTED" if VERSION in {"0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124"}
                                   else "STATIC-AUDITED-ONLY" if VERSION == "0.0.72"
                                   else "RUNTIME-QUALIFIED-EXACT")
     if craft["disposition"] != expected_craft_disposition or craft["runtimeLoadableRequired"]:

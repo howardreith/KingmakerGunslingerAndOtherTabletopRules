@@ -647,6 +647,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationDestinations &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationArrows &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpecialistCache &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationScrolls &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationDisabled &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationContext &&
@@ -1798,12 +1799,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialistCache ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialistCache ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialistCache ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
@@ -1899,12 +1903,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialistCache ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialistCache ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialistCache ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
@@ -2448,6 +2455,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (IsTeleportationSpecialistFixture)
                 {
                     PollTeleportationSpecialist();
+                }
+                else if (IsTeleportationSpecialistCacheFixture)
+                {
+                    PollTeleportationSpecialistCache();
                 }
                 else if (IsTeleportationScrollsFixture)
                 {
@@ -5286,6 +5297,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDestinations ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationArrows ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialist ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpecialistCache ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationScrolls ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||

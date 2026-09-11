@@ -92,6 +92,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             PersistenceAssert("module-state", "Only phase C disables Teleportation; publication and all hooks agree",
                 _context.FeatureModules.Active.TeleportationSpells == enabled && TeleportFamiliarityRuntime.Enabled == enabled &&
                 TeleportFamiliarityPatches.Installed == enabled && TeleportExplorationGuardPatches.Installed == enabled &&
+                TeleportSpecialistSpellCachePatches.Installed == enabled &&
                 WorldMapPointSpellActionPatches.Installed == enabled && WorldMapPointConsoleSpellActionPatches.Installed == enabled &&
                 (BlueprintBootstrap.TeleportationPublication != null) == enabled, new { enabled });
             if (main == null || map.TravelData != null || map.CurrentEncounterData != null)

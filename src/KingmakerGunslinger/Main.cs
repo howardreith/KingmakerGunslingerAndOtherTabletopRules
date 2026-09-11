@@ -105,6 +105,7 @@ namespace KingmakerGunslinger
                 context.InstallPatches();
                 Spells.Teleportation.TeleportFamiliarityPatches.Install(context);
                 Spells.Teleportation.TeleportExplorationGuardPatches.Install(context);
+                Spells.Teleportation.TeleportSpecialistSpellCachePatches.Install(context);
                 Spells.Teleportation.TeleportationScrollVendorMigration.Install(context);
                 Spells.Teleportation.WorldMapPointSpellActionPatches.Install(context);
                 Spells.Teleportation.WorldMapPointConsoleSpellActionPatches.Install(context);

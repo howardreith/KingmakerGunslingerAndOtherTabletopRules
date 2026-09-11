@@ -109,7 +109,7 @@ def validate(root: Path) -> None:
             raise AssertionError(f"Bodyguard static validation mismatch: {key}")
 
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleSettingsStore.cs",
-        ("CurrentSchemaVersion = 11" if VERSION in {"0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123"}
+        ("CurrentSchemaVersion = 11" if VERSION in {"0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124"}
             else "CurrentSchemaVersion = 10"), "BodyguardFeatsId", "ElementalRacesId")
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleConfiguration.cs",
         'BodyguardFeatsId = "bodyguard-feats"', "BodyguardFeats ? 256 : 0",
@@ -131,7 +131,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "scripts/RuntimeAutomation.Common.ps1",
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
-    package_suffix = ("character-visibility-repair"
+    package_suffix = ("teleport-polish-specialist"
+        if VERSION == "0.0.124" else "character-visibility-repair"
         if VERSION == "0.0.123" else "teleportation-completion"
         if VERSION in {"0.0.121", "0.0.122"} else "elemental-races-completion"
         if VERSION == "0.0.120" else "contextual-world-map-teleportation"
