@@ -363,7 +363,13 @@ namespace KingmakerGunslinger.Spells.Teleportation
             }
         }
         private void Resize()
-        { _viewportLayout.preferredHeight = TeleportContextLayoutPolicy.ViewportHeight(LayoutUtility.GetPreferredHeight(_content), _maximumHeight); }
+        {
+            // A transient unproven preferred height (mid-transition frames)
+            // must not withdraw the rows: skip that frame's sizing; the
+            // strict policy still guards the initial Create sizing.
+            float preferred = LayoutUtility.GetPreferredHeight(_content);
+            if (preferred > 0f) _viewportLayout.preferredHeight = TeleportContextLayoutPolicy.ViewportHeight(preferred, _maximumHeight);
+        }
         internal float MaximumHeight { get { return _maximumHeight; } }
         internal void Remove()
         {
