@@ -440,6 +440,17 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void BeginCharacter()
         {
+            // The lifecycle boundary destroys the previous UI's controller; a
+            // real player reopens the creator through the current UI after
+            // travel, so each visit must re-acquire the live controller.
+            if (_build == null || !ReferenceEquals(_build,
+                    Game.Instance.UI.CharacterBuildController))
+            {
+                _build = Game.Instance.UI.CharacterBuildController;
+                if (_build == null)
+                    throw new InvalidOperationException(
+                        "The native creator controller was not rebuilt after the area boundary.");
+            }
             _character = new JObject { ["raceGuid"] = _races[_raceIndex].AssetGuid,
                 ["race"] = _races[_raceIndex].name, ["completed"] = false,
                 ["acceptance"] = "NOT-RUN", ["acceptanceFailures"] = new JArray(), ["steps"] = new JArray() };
