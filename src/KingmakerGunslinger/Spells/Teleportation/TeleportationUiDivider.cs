@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace KingmakerGunslinger.Spells.Teleportation
@@ -9,6 +9,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
     internal static class TeleportationUiDivider
     {
         private const float Height = 2f;
+        // The layout height a row-group separator contributes.
+        internal const float SeparatorHeight = 7f;
         private const float Alpha = 0.45f;
         // Restrained inset from both edges so the rule reads as parchment
         // decoration rather than a border.
@@ -44,8 +46,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
             rect.anchorMax = new Vector2(1f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
             var element = separator.AddComponent<LayoutElement>();
-            element.minHeight = 7f;
-            element.preferredHeight = 7f;
+            element.minHeight = SeparatorHeight;
+            element.preferredHeight = SeparatorHeight;
             element.flexibleHeight = 0f;
             var rule = CreateRule(rect, name + ".Rule", 0f, tone);
             var ruleRect = (RectTransform)rule.transform;

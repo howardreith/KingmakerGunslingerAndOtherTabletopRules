@@ -369,7 +369,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         message = sectioned.Message });
                     TeleportInteractionAssert("confirmation-section-rules",
                         "the rendered confirmation carries exactly one restrained rule between each factual group, inset from the label edges and non-interactive",
-                        "rules=" + sectioned.SectionRules.Count + ";sections=" + sections.Count,
+                        "rules=" + sectioned.SectionRules.Count + ";sections=" + sections.Count +
+                            ";label=" + (sectionLabel == null ? "null" : (sectionLabel.text.Length <= 48 ? sectionLabel.text : sectionLabel.text.Substring(0, 48))),
                         sectionLabel != null && sectioned.SectionRules.Count == sections.Count - 1 &&
                         sectioned.SectionRules.All(value => value != null && value.transform.parent == sectionLabel.transform &&
                             ((RectTransform)value.transform).rect.width < ((RectTransform)sectionLabel.transform).rect.width * 0.8f &&
@@ -396,7 +397,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 4; frame++) yield return 0;
                     TeleportInteractionAssert("confirmation-rules-cleaned-up",
                         "closing the confirmation removes every owned rule; an unrelated dialog shows its own text with no leftover decorations",
-                        "unrelatedClean=" + unrelatedClean + ";unrelatedResult=" + unrelatedResult,
+                        "unrelatedClean=" + unrelatedClean + ";unrelatedResult=" + unrelatedResult +
+                            ";unrelatedLabel=" + (unrelatedLabel == null ? "null" : (unrelatedLabel.text.Length <= 32 ? unrelatedLabel.text : unrelatedLabel.text.Substring(0, 32))),
                         unrelatedClean && unrelatedResult == DialogMessageBoxBase.BoxButton.No && !TeleportContextConfirmationPresenter.Pending);
                 }
                 // An unrelated active modal blocks even the direct Greater
