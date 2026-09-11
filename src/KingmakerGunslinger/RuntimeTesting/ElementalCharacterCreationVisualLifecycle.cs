@@ -55,9 +55,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] current = Game.Instance.State.Units.All.ToArray();
             if (_worldBefore == null || current.Length != _worldBefore.Length)
             {
+                var beforeIds = new HashSet<string>(_worldBefore == null
+                    ? Enumerable.Empty<string>() : _worldBefore.Select(value => value.UniqueId),
+                    StringComparer.Ordinal);
                 diagnostic = "unit-count worldBefore=" +
                     (_worldBefore == null ? -1 : _worldBefore.Length) +
-                    " current=" + current.Length;
+                    " current=" + current.Length + " extras=[" +
+                    string.Join("; ", current
+                        .Where(value => !beforeIds.Contains(value.UniqueId))
+                        .Take(4)
+                        .Select(value => value.UniqueId + ":" +
+                            (value.Descriptor == null ? "?" : value.Descriptor.CharacterName))
+                        .ToArray()) + "]";
                 return false;
             }
             for (int i = 0; i < current.Length; i++)
