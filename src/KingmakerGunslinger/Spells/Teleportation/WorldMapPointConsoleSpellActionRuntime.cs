@@ -95,7 +95,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 self._viewportLayout = container.AddComponent<LayoutElement>();
                 // The settled active native confirm/actions are the visible
                 // parchment content region; the donor alone can be inactive.
-                var nativeExtent = WorldMapPointSpellActionRuntime.NativeActionExtent(dialog, container.transform);
+                var nativeExtent = WorldMapPointSpellActionRuntime.NativeActionExtent(dialog, container.transform,
+                    value => value is Button || value is ConsoleButton);
                 float scale = Math.Max(container.transform.lossyScale.x, 0.0001f);
                 float settledWidth = nativeExtent.Width > 0f ? (nativeExtent.Width - 8f) / scale :
                     ((RectTransform)donor.transform).rect.width * (Math.Max(donor.transform.lossyScale.x, 0.0001f) / scale);
