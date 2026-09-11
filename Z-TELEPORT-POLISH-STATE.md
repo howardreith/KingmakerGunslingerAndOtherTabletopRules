@@ -1,4 +1,4 @@
-# Z teleport polish + specialist mission — durable state
+﻿# Z teleport polish + specialist mission — durable state
 
 Companion to `Z-TELEPORT-POLISH-AND-SPECIALIST-MISSION.md` (the contract,
 delivered as an attachment; eight requirements). This file records progress,
@@ -83,13 +83,14 @@ slots, never touches other schools/books. Pure decision logic lives in
 
 ## Runtime evidence (guarded, Steam App 640820, KMG_AUTOMATION_WORKING)
 
-Final-build sweep (evidence dirs beneath
+FINAL-BUILD SWEEP — every teleportation scenario PASS on the exact final
+artifact (DLL fd41a797…, evidence dirs beneath
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/`, newest per scenario):
-specialist-cache PASS (20260911T1211… and later), specialist PASS, casting
-PASS, interaction PASS, coexistence PASS, arrows PASS, scrolls PASS, gamepad
-PASS (20260911T12…, after the direct-settlement fixture), travelers PASS,
-destinations PASS, coexistence-gamepad PASS. Zero save writes in every run
-(write sentinels asserted). Development fixes made during qualification:
+specialist-cache PASS (twice: 20260911T1209… and 20260911T1218…), specialist
+PASS, casting PASS, interaction PASS, coexistence PASS, arrows PASS, scrolls
+PASS, travelers PASS, destinations PASS, coexistence-gamepad PASS, gamepad
+PASS (20260911T1215…, after the direct-settlement fixture). Zero save writes
+in every run (write sentinels asserted). Development fixes made during qualification:
 scenario allowlisting (request validator + RuntimeAutomation metadata +
 version gate), inactive-donor extent regression (rows measured from ACTIVE
 native buttons — the donor Accept control is inactive at world-map points),
