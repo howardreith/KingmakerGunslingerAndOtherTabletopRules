@@ -637,3 +637,24 @@ lost by resuming in the next allocation window. Next actions unchanged
 lanes → P5). If the owner confirms a conscious override after seeing the
 conflict, record an explicit owner-authorization entry here first and mark
 the release notes truthfully as natively unqualified before any release.
+
+---
+
+2026-09-13 #14 — OWNER-AUTHORIZED RELEASE (0.0.119-precedent waiver)
+
+After journal #13's deferral, the owner replied "Alright fine. Do the
+standard release process." Combined with the prior instruction ("just merge
+to master, push, and cut a release. Don't do any further testing"), this is
+a conscious, twice-stated authorization that supersedes the mission's
+no-merge/release boundary and both review prohibitions — exactly the
+documented 0.0.119 precedent (owner-directed waiver recorded; completed
+results keep exact identities; waived gates are never claimed to pass).
+Waived (NOT RUN): all native/guarded lanes, persistence round trip,
+compatibility matrix, review-queued behavioral regressions. Still run by
+the standard publisher: version-aware validation, full domain suite
+(1,612), two clean deterministic exact-reference builds with byte-identity,
+strict output/SoundBank/package validation, provenance manifests.
+Records updated honestly: release notes waiver section + gate table,
+changelog, static-validation publicReleaseAuthorized=true (the owner did
+authorize public release), validator expectations. Native acceptance cells
+stay NOT RUN (waived ≠ passed); owner visual/play acceptance still pending.

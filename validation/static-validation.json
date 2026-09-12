@@ -1556,7 +1556,7 @@
   },
   "firearmMaintenance127": {
     "deterministicTestCount": 1612,
-    "publicReleaseAuthorized": false,
+    "publicReleaseAuthorized": true,
     "fieldRepairBrokenOnlyOutOfCombat": true,
     "completedRestRestoresCarriedDamage": true,
     "committedBreakStopsSequence": true,
