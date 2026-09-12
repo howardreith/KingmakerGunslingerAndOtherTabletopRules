@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "productionTool": "Built-in image_gen; individual paintings, followed by GDI+ deterministic export.",
+  "referenceUse": "Owner native screenshots and protected project artwork inspected as style references. No extracted native pixels/fonts incorporated. Image-to-image sibling inputs are generated project-original paintings.",
+  "firstIfritPromptRecord": {
+    "status": "Original exact prompt remains in session tool call; this durable brief is a reconstruction, not a verbatim log.",
+    "brief": "Square hand-painted Kingmaker fantasy icon. General Ifrit ancestry: a central sculpted flame crest in volcanic dark rock with ember-gold edges, strong silhouette and one focal subject. Warm red-orange palette; textured painterly brushwork, dark teal-black background, no text, UI frame, shield or hand. Compare protected painted action art and supplied native racial screenshot. Distinguish ancestry from fire channeling hand and defensive shield."
+  },
+  "records": [
+    {
+      "key": "fire-affinity",
+      "prompt": "Use case: style-transfer. Using the reference ONLY for its painterly flame rendering, dark umber atmosphere, and warm amber palette, replace its subject entirely to create one new square fantasy RPG icon for Fire Affinity. Actual meaning: spellbook fire magic is stronger; NOT fire resistance, healing, ancestry, or a breath attack. Main silhouette: a broad, dark-bronze upward-facing cupped hand, seen at a clear three-quarter angle, channeling two large inward-curving ribbons of fire into one concentrated small bright flame above the palm. The hand and gathering inward movement dominate and read at 48px. Clearly different composition from the tall bare-flame heritage crest. Original hand-painted surfaces, restrained highlights, large clean forms, no tiny runes. Keep all important foreground within the central 78% of the square. Full-bleed subdued charcoal/umber background. No frame, border, UI, typography, watermark or logo. One individual icon only."
+    },
+    {
+      "key": "fire-resistance",
+      "prompt": "Use case: style-transfer. Use reference ONLY for its rich hand-painted ember material, warm amber highlights, and dark umber atmosphere. Replace the subject completely to create one new square fantasy RPG icon for Fire Resistance. Actual meaning: passive protection from fire, not immunity, attacking, ancestry or fire affinity. Strong main silhouette: a single broad dark weathered bronze kite shield in three-quarter view, its cool charcoal face intact and readable, a stream of fire from the upper left splitting around its outside edges instead of penetrating it. Few bold flame curves behind the shield, strong solid defensive central shape, warm rim light. This must look very different from the reference's bare flame crest and from a hand channeling fire. Readable at 48px; bold painted shapes, minimal sparks, clear negative space. Important foreground within central 78%. Full-bleed dark umber background. No frame, ornamental outside border, status rings, text, UI, watermark or logo. One individual icon only."
+    },
+    {
+      "key": "hydraulic-maneuver",
+      "prompt": "Use case: stylized-concept. One original square painted fantasy RPG ability icon for Hydraulic Maneuver, the parent choice of water-powered combat maneuvers. Actual action: a sculpted jet of water force redirects a creature's balance; NOT travel, summoning, healing, ice, or a generic wave crest. Composition: a large luminous cobalt/turquoise water arc, shaped like a broad curving arm of water, presses a plain dark humanoid target sideways at the waist. The small target's torso is tilted off balance, both arms out and both feet staggered. No facial detail or elaborate costume. Water occupies left and lower center; target on right; force reads left to right. Clear compact diagonal silhouette with no clutter; only a few large drops. Rich hand-painted gouache/oil fantasy icon finish, deliberate water highlights, deep midnight teal full-bleed background. Match the restrained dark-background luminous material style of the inspected project and pilot icons but use a cool water palette. Strong readability at 48px. All important foreground fully inside central 80% with 10% breathing space. No frame, ring, UI, text, arrows, labels, logo, watermark. ONE individual image, no sheet."
+    },
+    {
+      "key": "hydraulic-trip",
+      "prompt": "Use case: style-transfer. Create ONE original sibling icon for Hydraulic Maneuver — Trip. Reference is the parent water maneuver: keep its painterly water treatment, cobalt/cyan illumination and midnight teal background, but change the composition decisively. Show a plain dark full-body humanoid tipping backward as a single low crescent-shaped jet of water sweeps BOTH feet out from under it. The target's body is nearly horizontal, knees lifted, unmistakably FALLING, the water force low along the ground. No torso-height pushing; no generic wave crest. Big simple silhouette, no facial features or costume clutter, very few separate drops, strong leg/foot readability at 48px. Zoom out enough that head, hands, feet and main water arc are inside central 80% of image. Full-bleed subdued dark background. No border, frame, symbols, text, UI, status markers or watermark. One square individual painted fantasy RPG icon, not a sheet.",
+      "refs": [
+        "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png"
+      ]
+    },
+    {
+      "key": "elemental-strike",
+      "prompt": "Use case: stylized-concept. Paint ONE original square fantasy RPG feat icon for Elemental Strike. Main subject a bold steel blade angled from lower-left to upper-right with a single central point of impact. Around the impact form ONE compact interwoven four-element knot: an amber flame curl, a chunky green-brown stone shard, a pale silver wind ribbon, and a deep turquoise water curl. Four elements have equal visual weight. Do NOT use a tiny four-panel grid, four orbs, spellbook, four swords, hands, or a fire-only explosion. Metallic blade stays legible; supporting forms thick, broad and distinct. Painterly fantasy-game material rendering, restrained luminous highlights against dark neutral charcoal/umber background; rich colors with controlled saturation. Balanced readable composition at 48px. Main foreground confined to central 80% with breathing room around blade endpoints. Full-bleed quiet background. No frame, border, labels, words, glyph letters, UI or watermark. One individual icon only.",
+      "refs": null
+    },
+    {
+      "key": "teleport",
+      "prompt": "Use case: stylized-concept. Create ONE original square hand-painted fantasy RPG spell icon: Teleport, long-distance strategic travel. Subject: two separated small ancient arcane anchor stones, one near lower-left and one near upper-right; a single luminous curved discontinuity carries a simple cloaked traveler silhouette dissolving from the near anchor and re-forming at the distant one. The traveler is a broad simple dark shape edged in pale violet light, NOT a detailed portrait. Dominant silhouette an asymmetrical sweeping S connecting the two separated anchors, with visibly broken/discontinuous segments. This is long-range translocation, NOT a glowing doorway, a circular portal, walking down a road, or water-elemental summoning. Few large shapes and controlled glow, midnight indigo ground, muted amethyst and pale-gold accents on weathered stone, painterly brushwork with readable edges at 48px. All important objects within central 80%; quiet full-bleed dark background. No decorative frame, border, compass UI, letters, text, numerals, logos or watermark. ONE image, no labels, no grid."
+    },
+    {
+      "key": "word-of-recall",
+      "prompt": "Use case: stylized-concept. Create ONE original square hand-painted fantasy RPG spell icon: Word of Recall, returning to an established sanctuary. Dominant composition is a sturdy warm stone sanctuary/home seal, a compact three-dimensional roof-and-hearth silhouette centered high in the image. A single luminous golden thread curves inward from the lower edge, carrying one simple small traveler silhouette into the home's warm central light. Emphasize convergence and an anchored destination, a broad welcoming arch under a simple stone roof, no outward blast. Universal cleric/druid sanctuary: NO church, cross, deity logo, holy symbol, technological map pin, or modern house. Distinguish decisively from Teleport's two arcane anchors: ONE rooted destination with an inward returning path. Weathered earth/stone, muted moss-green and warm amber light, deep charcoal-green full-bleed background. Painterly fantasy icon rendering, bold forms, clear silhouette and readable gesture at 48px, minimal particles. Central 80% foreground with breathing room. No frame, border, lettering, UI, labels, watermark or logo. One individual icon only."
+    },
+    {
+      "key": "greater-teleport",
+      "prompt": "Use case: style-transfer. Create one original sibling icon for Greater Teleport. Reference is Teleport; retain the hand-painted violet/pale-gold magic and weathered anchor-stone material, but replace its scenic diagonal S composition entirely. New icon has TWO broad matching arcane anchor stones symmetrically left and right, connected by a short taut horizontal band of violet light behind ONE large centered traveler silhouette. The traveler resolves fully and confidently inside a stable four-corner destination-lock shape made of four short luminous gold bracket strokes. The main silhouette is wide, symmetrical and anchored, clearly unlike Teleport's winding diagonal broken path. Very close emblematic composition: no landscape, cliffs, distant mountains or tiny architecture; simple shapes that read at 48px. The traveler occupies 45% image height; anchors are each 55% image height. Quiet deep-indigo full-bleed background, controlled warm accents, restrained glow. Important foreground inside central 80%. No portal doorway, outside frame, circle UI, text, watermark, logo or sheet. ONE individual square finished painted game icon."
+    },
+    {
+      "key": "fire-affinity-v2",
+      "file": "fire-affinity",
+      "prompt": "Edit ONLY the Fire Affinity icon's composition and value hierarchy to fix small-size readability. Keep its original painted fire style, amber/bronze palette and dark background. Make the cupped hand the unmistakable dominant subject: a SOLID lighter desaturated bronze/tan hand occupying the lower 60% of the image with broad pale edge highlights, clearly distinct individual finger silhouette and palm. Reduce the bright fire to a small compact contained flame above the palm, about 25% image height. Two short inward ribbons gather toward that flame; no giant flame trails outside the hand. The current source looks like a flame with a nearly invisible hand at 48px; correct exactly that. Keep important foreground fully within central 80% except intentional wrist exit at bottom. No frame, text, UI or extra subjects. Single square icon."
+    },
+    {
+      "key": "greater-teleport-v2",
+      "file": "greater-teleport",
+      "prompt": "Edit ONLY the Greater Teleport icon to remove the FOUR bright GOLD CORNER BRACKETS around the traveler. They look like a baked-in UI selection overlay and must disappear completely. Preserve the two symmetric arcane anchor stones, large centered traveler, horizontal violet magical connection, dark indigo background and painterly materials. Strengthen the continuous short horizontal connection behind the traveler slightly to communicate a stable locked arrival. No replacement square, no outer ring, no crosshair or new overlay. Keep the figure clear, reduce a little loose particle clutter, retain original palette and the stable symmetrical silhouette distinct from ordinary Teleport. Single square icon."
+    }
+  ],
+  "revisionInputs": [
+    {
+      "key": "fire-affinity-v1",
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/revisions/fire-affinity-v1.png",
+      "sha256": "35025a8459cde1c4286879c85be0f22d80559706b762d92a2bbc8fe8e2562502",
+      "status": "superseded unapproved candidate; preserved edit input"
+    },
+    {
+      "key": "greater-teleport-v1",
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/revisions/greater-teleport-v1.png",
+      "sha256": "d576da0b8c361137728197f8cc1e970e2fb2375041dbb667ae2431b1d2b485db",
+      "status": "superseded unapproved candidate; preserved edit input"
+    }
+  ],
+  "imageInputs": [
+    {
+      "generation": "fire-affinity / fire-resistance",
+      "role": "style-only sibling reference",
+      "paths": [
+        "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png"
+      ]
+    },
+    {
+      "generation": "hydraulic-trip",
+      "role": "style-only sibling reference",
+      "paths": [
+        "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png"
+      ]
+    },
+    {
+      "generation": "greater-teleport",
+      "role": "style-only sibling reference",
+      "paths": [
+        "assets-source/original-icons/icon-overhaul-v2/pilot/sources/teleport.png"
+      ]
+    },
+    {
+      "generation": "fire-affinity-v2",
+      "role": "edit target",
+      "paths": [
+        "assets-source/original-icons/icon-overhaul-v2/pilot/revisions/fire-affinity-v1.png"
+      ]
+    },
+    {
+      "generation": "greater-teleport-v2",
+      "role": "edit target",
+      "paths": [
+        "assets-source/original-icons/icon-overhaul-v2/pilot/revisions/greater-teleport-v1.png"
+      ]
+    }
+  ]
+}

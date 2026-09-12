@@ -35,4 +35,9 @@ if ($LASTEXITCODE -ne 0) {
 & (Join-Path $PSScriptRoot 'Test-IconPolishRound2Assets.ps1') `
     -RepositoryRoot $repositoryRoot
 
+& $python.Source (Join-Path $repositoryRoot 'tools\validate_icon_catalog.py') --root $repositoryRoot
+if ($LASTEXITCODE -ne 0) { throw 'Icon authoring catalog validation failed.' }
+& $python.Source (Join-Path $repositoryRoot 'tools\test_icon_catalog.py')
+if ($LASTEXITCODE -ne 0) { throw 'Icon catalog corruption fixtures failed.' }
+
 Write-Host 'Version-aware repository validation passed.'

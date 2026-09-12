@@ -148,9 +148,12 @@ namespace KingmakerGunslinger.Feats
                 if (existing.Any(value => value != null &&
                     ReferenceEquals(value.Param.Blueprint, parameter))) continue;
                 string displayName = DisplayName(kinds[index]);
+                // Match the native/eastern selector path. Only this UI entry
+                // uses text; the saved blueprint parameter and its sprite stay
+                // intact for selected-feature consumers with different contracts.
                 result.Add(new FeatureUIData(feature, new FeatureParam(parameter),
-                    displayName, parameter.Description, parameter.Icon,
-                    displayName));
+                    displayName, parameter.Description, null,
+                    displayName.Substring(0, 1)));
             }
             return result.OrderBy(value => value == null ? string.Empty : value.Name,
                 StringComparer.CurrentCultureIgnoreCase).ToArray();

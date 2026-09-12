@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "authority": "Reference metadata; no native pixels or fonts committed.",
+  "projectReferences": [
+    {
+      "id": "gunslinger-actions",
+      "path": "assets/source/icons/playtest-icon-sheet-original.png",
+      "sha256": "763a368e951de867c68314bf5205618a28358dfb5e8e2b46ccd327e7ce8146e4",
+      "size": [
+        1254,
+        1254
+      ],
+      "family": "painted-action",
+      "approvalScope": "Protected source sheet; preservation only. Green source background is export chroma, not elemental palette policy.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "quick-clear",
+      "path": "assets/game/icons/quick-clear.png",
+      "sha256": "7e2711bffd7abb27f57d0b2322763f74e6929d483f12d45399d2a73f9931f196",
+      "size": [
+        128,
+        128
+      ],
+      "family": "painted-action",
+      "approvalScope": "Accepted usable-action identity; preserve current pixels and assignments.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "reload-firearm",
+      "path": "assets/game/icons/reload-firearm.png",
+      "sha256": "064905fd552d685f7ba1bd8e579e07e9977211e0ee8f7e3f8e8d24f0feefcad5",
+      "size": [
+        128,
+        128
+      ],
+      "family": "painted-action",
+      "approvalScope": "Accepted loading ACTION painting; Rapid Reload FEAT is a different family.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "repair-firearm",
+      "path": "assets/game/icons/repair-firearm.png",
+      "sha256": "cfcb7c94bd7e6f148437540a9ef5d655943df5045654ea614e1119d3de3be846",
+      "size": [
+        128,
+        128
+      ],
+      "family": "painted-action",
+      "approvalScope": "Accepted repair action; distinguish loading from repair.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "focused-aim",
+      "path": "assets/game/icons/focused-aim.png",
+      "sha256": "ba962ad9dbd58f52fad6097dd973508f98ac000db8629f698126c7c5026ec7a8",
+      "size": [
+        128,
+        128
+      ],
+      "family": "painted-action",
+      "approvalScope": "Protected Mysterious Stranger action; concentrated gesture and simple focal subject.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "shield-other-source",
+      "path": "assets-source/original-icons/shield-other/shield-other-generated-source.png",
+      "sha256": "b5f0e43280cbe9f32e50fe19bea6a5fa6d12c7dcaf8a5646623482d55c4e34f2",
+      "size": [
+        1254,
+        1254
+      ],
+      "family": "painted-magical",
+      "approvalScope": "Project-original shield and two linked lives; preserve candidate, no new blanket owner approval.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "shield-other",
+      "path": "assets/game/icons/shield-other.png",
+      "sha256": "deee4e10392f26e175ffe5bfeaee025284267c8ee8431e8c0c002bf9a4a8b076",
+      "size": [
+        128,
+        128
+      ],
+      "family": "painted-magical",
+      "approvalScope": "128px export of project-original ward; preserve its spell/buff graph.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "summon-dog",
+      "path": "assets-source/original-icons/expanded-summoning/sources/dog.png",
+      "sha256": "89b01a679453e71b3f135ebf2bab69a6433ab91412fb1ab6fda1034aeb20fe21",
+      "size": [
+        1254,
+        1254
+      ],
+      "family": "painted-creature",
+      "approvalScope": "Existing creature anatomy/material anchor; historical publication, not approval of new species.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "summon-eagle",
+      "path": "assets-source/original-icons/expanded-summoning/sources/eagle.png",
+      "sha256": "1a3dfd4d85e3f4330a87f8b764266e0c27d9304953556817df676963320803d1",
+      "size": [
+        1254,
+        1254
+      ],
+      "family": "painted-creature",
+      "approvalScope": "Existing wing/body silhouette anchor; preserve spell-root/variant conventions.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "negative-pistol",
+      "path": "assets/game/icons/firearm-monogram-pistol.png",
+      "sha256": "ec9ed32c71b137f8d8b65184b6e92e946d034a2ef329cd0f8fe7f52194e3f07d",
+      "size": [
+        64,
+        64
+      ],
+      "family": "rejected",
+      "approvalScope": "Thin custom path typography: rejected comparison, never an approved font anchor.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    },
+    {
+      "id": "negative-rapid-reload",
+      "path": "assets/game/icons/rapid-reload.png",
+      "sha256": "efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321",
+      "size": [
+        64,
+        64
+      ],
+      "family": "rejected",
+      "approvalScope": "Heavy partial ring/tool-like mark: negative comparison; retain bytes until approved replacement.",
+      "review": "source-file-inspected; owner scope from supplied mission"
+    }
+  ],
+  "candidateReferenceAuthority": "assets-source/original-icons/icon-overhaul-v2/pilot/pilot-manifest.json",
+  "nativeReferences": [
+    {
+      "id": "native-01",
+      "relativeIntakePath": "references/user-screenshots/01-ifrit-race.png",
+      "sha256": "4d1bf1bc93c8311d5d419730a03746dfc1351c4b0af18ee7d02d2f8f6bd43a88",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Ifrit race/traits; repeated unrelated Burning Hands is negative. Actual Burning Hands is native reuse."
+    },
+    {
+      "id": "native-02",
+      "relativeIntakePath": "references/user-screenshots/02-oread-race.png",
+      "sha256": "b5a3ea1317f005e9b6f468b2189d3658639be49950c7adc72e771e81b5a8d848",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Oread race/traits; repeated unrelated Stone Fist is negative. Actual Stone Fist stays native."
+    },
+    {
+      "id": "native-03",
+      "relativeIntakePath": "references/user-screenshots/03-sylph-race.png",
+      "sha256": "876e8eafdf67447672f017ba5fdbdff3afc6198fd8bc7c667c6260efbca9ec78",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Sylph race/traits; repeated unrelated Feather Step is negative. Actual Feather Step stays native."
+    },
+    {
+      "id": "native-04",
+      "relativeIntakePath": "references/user-screenshots/04-undine-heritages.png",
+      "sha256": "7804c8a8bfca59bbd35c244462a3f1e55b65ad3db50f0a28fd646aa6a99d91f6",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Undine heritage panel; original ancestry identity needed, native Blur spell remains correct."
+    },
+    {
+      "id": "native-05",
+      "relativeIntakePath": "references/user-screenshots/05-racial-feats.png",
+      "sha256": "0d4d1d21c374118ab5588a3b489764d5b205114ae660dcab53fec4608c6ea8ce",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Racial feat panel; Elemental Strike/Hydraulic Maneuver donor mismatch is negative; adjacent native emblems are style reference."
+    },
+    {
+      "id": "native-06",
+      "relativeIntakePath": "references/user-screenshots/06-blunderbuss-monogram.png",
+      "sha256": "423b66f113b44be4e2656c6644a3241ffb3fe2763c1f839d320527181b6639df",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Weapon Focus Blunderbuss B is rejected; neighboring native letters are style references."
+    },
+    {
+      "id": "native-07",
+      "relativeIntakePath": "references/user-screenshots/07-pistol-musket-nodachi.png",
+      "sha256": "d26c0de4f46957fccafa680795e5adab879e3d32fcdf43c0dda2c75d2ede628d",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Weapon Focus Pistol/Musket rejected; Nodachi lettering is protected positive benchmark."
+    },
+    {
+      "id": "native-08",
+      "relativeIntakePath": "references/user-screenshots/08-wakizashi-monogram.png",
+      "sha256": "f34f152a9baa1a3b5119fc3936343c330a829f9c26b0fda68544c6cdd3ffeb80",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Weapon Focus Wakizashi lettering positive; reported clipping requires current native UI confirmation before a local correction."
+    },
+    {
+      "id": "native-09",
+      "relativeIntakePath": "references/user-screenshots/09-katana-monogram.png",
+      "sha256": "b6c3d0334bbee1a3f8d3aa70a6ed93c26115359424192b04ce112744d0efeafb",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Weapon Focus Katana lettering protected positive benchmark."
+    },
+    {
+      "id": "native-10",
+      "relativeIntakePath": "references/user-screenshots/10-rapid-reload.png",
+      "sha256": "caca3eee11a89511d9814c6fe330e6e036520cd3a43230a7ed93e001644bc0d1",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Rapid Reload parent negative; Precise Strike/Shield Proficiency/Skill Focus neighbor emblems inform ring weight and negative space."
+    }
+  ]
+}
