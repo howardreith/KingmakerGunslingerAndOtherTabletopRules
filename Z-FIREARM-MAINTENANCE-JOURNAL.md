@@ -176,3 +176,58 @@ Results @ worktree (base 71af37ac + records commits + this slice):
 
 Next: P2 rest-restoration slice (StopRestProcess prefix coordinator +
 service), then P3 field-repair restriction; native qualification batch at P4.
+
+---
+
+2026-09-12 #4 — P2 implemented: completed-rest firearm maintenance (domain green)
+
+New files:
+- `src/KingmakerGunslinger/Gunsmithing/CompletedRestMaintenancePolicy.cs`
+  (pure): EvaluateRest (genuine-completion gate: RestSucceeded &&
+  !NightRandomEncounter && !SkipTime, then capable-repairer and kit checks),
+  EvaluateItem (Normal skip / Broken restore / Wrecked restore, invalid
+  throws), ShouldReportBlocked, DescribeRestored/DescribeBlocked honest
+  summaries.
+- `src/KingmakerGunslinger/Gunsmithing/CompletedRestMaintenancePatch.cs`:
+  Harmony prefix on `RestController.StopRestProcess` (attribute-discovered;
+  applied by `harmony.PatchAll` like CraftingRestResetPatch). Once-per-rest
+  guard keyed by `ReferenceEquals` on the RestStatus instance; only genuine
+  completions proceed. Participants = `Game.Player.AllCharacters`; capability
+  = `HasFact(BlueprintBootstrap.GunslingerClass.Gunsmithing)` (real feature
+  fact, all grant routes covered, no class-level shortcut); kit =
+  `KingmakerRepairKitInventory(Player.Inventory, GunsmithKit).Count() > 0`
+  (never consumed). Scope = shared inventory `Items` + participants'
+  `Body.AllSlots` (covers current + alternate weapon sets + additional
+  limbs), deduplicated by concrete reference. Restoration per item via
+  expected-state-guarded `FirearmRuntimeState.Service.Transition` +
+  `FirearmStateMachine.Repair` (same transition Quick Clear uses; no fresh
+  items; identity/round preservation inherited). Per-item try/catch with
+  exact failure logging; coordinator faults never break the native rest.
+  One aggregate summary per rest via native combat log + mod log; one
+  blocked explanation when damaged guns exist without gunsmith/kit. Runs at
+  the termination boundary BEFORE StopRestProcess's trailing autosave, so
+  restoration is captured by the post-rest autosave (R10 helper).
+  `CraftingRestResetPatch` untouched (independence asserted by test).
+
+Native-verification risks recorded for the runtime lanes:
+- Interrupted-then-resumed rest: if the resumed session REUSES the same
+  RestStatus with NightRandomEncounter still latched, the completion gate
+  would never fire. Fallback plan if observed: move the marker to the
+  TickSleepPhase completion branch (RemainingTime<=0 && !encounter). R06.
+- Scripted rests (StartScripted/m_ScriptedRest) may terminate without
+  StopRestProcess; world-map/inn routes unverified. R08.
+- `RestCompletionsSeen`/`MaintenanceRuns` counters exist for runtime
+  observation.
+
+Test-count bookkeeping: validator + active-chain blocks 1592→1601.
+
+Results @ worktree (P1 commit 97ff28d6 + this slice):
+- `scripts/test-domain.ps1 -Configuration Release`: **1601/1601 PASS, exit 0**
+  (+9 `rest-maintenance.*` cases: 6 pure-policy + 3 source-contract wiring).
+- Main project clean Release Rebuild: OK.
+- Repository validation: PASS (within test-domain run).
+- Acceptance R-rows: domain PARTIAL recorded for R01/R04/R05/R06/R07/R09;
+  R02/R03/R08/R10 remain fully NOT RUN (need native/scope/persistence
+  evidence). No runtime launches yet.
+
+Next: P3 field-repair restriction slice.

@@ -599,6 +599,8 @@
     <Compile Include="Gunsmithing\GunsmithingPlayerFacingReasonPolicy.cs" />
     <Compile Include="Gunsmithing\FirearmCraftingTransactionService.cs" />
     <Compile Include="Gunsmithing\CraftingRestResetPatch.cs" />
+    <Compile Include="Gunsmithing\CompletedRestMaintenancePolicy.cs" />
+    <Compile Include="Gunsmithing\CompletedRestMaintenancePatch.cs" />
     <Compile Include="Gunsmithing\BasicAmmunitionSaleValuePatch.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmRuntimeUseResolver.cs" />
     <Compile Include="Gunsmithing\BatteredFirearmSaleValueRuntime.cs" />
