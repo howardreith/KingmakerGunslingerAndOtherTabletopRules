@@ -46,7 +46,7 @@ def validate(root: Path) -> None:
         "out-of-combat, Broken-only full-round maintenance",
         "completed full rest",
         "misfire break",
-        "PENDING")
+        "WAIVED BY OWNER")
     static = json.loads((root / "validation/static-validation.json").read_text(encoding="utf-8"))
     if static.get("version") != VERSION or \
             static.get("milestone") != INFORMATIONAL_VERSION:
@@ -54,7 +54,7 @@ def validate(root: Path) -> None:
     state = static.get(STATIC_KEY, {})
     expected = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
-        "publicReleaseAuthorized": False,
+        "publicReleaseAuthorized": True,
         "fieldRepairBrokenOnlyOutOfCombat": True,
         "completedRestRestoresCarriedDamage": True,
         "committedBreakStopsSequence": True,

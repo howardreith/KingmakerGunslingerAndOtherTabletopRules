@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.0.127-firearm-maintenance (candidate; engineering qualification in progress)
+## 0.0.127-firearm-maintenance
+
+Released 2026-09-13 by explicit owner direction; the owner waived the
+remaining native-runtime qualification and review-queued behavioral
+regressions (see docs/RELEASE-NOTES-0.0.127.md for the exact waiver scope —
+those gates were not run and are not claimed to have passed).
 
 - Firearm maintenance, full-rest recovery, and misfire interruption were
   redesigned per the owner-approved `Z-FIREARM-MAINTENANCE` contract.

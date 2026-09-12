@@ -1,8 +1,15 @@
 # Release notes 0.0.127 — firearm maintenance, full-rest recovery, and misfire interruption
 
-**Status: engineering qualification IN PROGRESS on the 0.0.127 candidate.**
-This record is updated as gates complete; unrun gates stay explicitly
-marked. No public release is authorized by this document.
+**Status: RELEASED 2026-09-13 by explicit owner direction.** After being
+shown the conflict with the mission's no-release boundary and both same-day
+review verdicts, the owner instructed: "just merge to master, push, and cut
+a release. Don't do any further testing" and then "Do the standard release
+process." Following the documented 0.0.119 precedent, this supersedes the
+remaining native-runtime and behavioral-regression requirements. Completed
+results keep their exact identities below; **the native gates were WAIVED
+by the owner and were NOT run — this release makes no claim that they
+passed.** The publisher's deterministic build, full domain suite, strict
+output, SoundBank, and package validations all still ran.
 
 - Informational version: `0.0.127-firearm-maintenance`
 - Mission: `Z-FIREARM-MAINTENANCE` (assignment and approved contract in
@@ -36,11 +43,13 @@ marked. No public release is authorized by this document.
 | --- | --- |
 | Repository validation | PASS (dispatched 0.0.127 validator) |
 | Deterministic domain tests | PASS 1,611/1,611 (30 new mission cases) |
-| Clean Release build (exact references) | PENDING |
-| Installable package validation | PENDING |
-| Guarded native lanes (misfire interruption, field-repair rejection, completed-rest restoration, cancelled-rest no-op), 2 runs each | PENDING |
-| Persistence round trip (fresh-process load) | PENDING |
-| Compatibility/module matrix | PENDING |
+| Clean Release build (exact references) | PASS (publisher ran the full deterministic build/package pipeline twice with byte-identical hashes) |
+| Installable package validation | PASS (strict standalone UMM validation) |
+| Deterministic domain suite | PASS 1,612/1,612 |
+| Guarded native lanes (misfire interruption, field-repair rejection, completed-rest restoration, cancelled-rest no-op), 2 runs each | WAIVED BY OWNER 2026-09-13 — NOT RUN |
+| Persistence round trip (fresh-process load) | WAIVED BY OWNER 2026-09-13 — NOT RUN |
+| Compatibility/module matrix | WAIVED BY OWNER 2026-09-13 — NOT RUN |
+| Review-queued behavioral regressions (binding lifecycle, capability loss, sleep lifecycle, input routes) | WAIVED BY OWNER 2026-09-13 — NOT RUN |
 | Owner visual/play acceptance | PENDING (separately tracked) |
 
 Evidence index: `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`;
