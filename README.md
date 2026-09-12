@@ -34,6 +34,10 @@ trade open, and old saves load with exactly one visible maintenance action.
 Whether Wrecked repair should stay available during combat is an open owner
 decision recorded in `KNOWN-ISSUES.md`.
 
+Icon development follows the permanent [icon art guide](docs/ICON-ART-GUIDE.md),
+its [reference index](docs/art/ICON-REFERENCE-INDEX.md), and the
+[canonical icon catalog](assets-source/original-icons/icon-catalog.json).
+
 ### Retained public 0.0.120 Elemental Races behavior
 
 **0.0.120-elemental-races-completion** (UMM 0.0.120) adds Nereid Fascination

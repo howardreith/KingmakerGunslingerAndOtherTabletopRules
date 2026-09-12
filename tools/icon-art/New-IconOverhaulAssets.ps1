@@ -6,6 +6,9 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ($Mode -eq 'All' -or $Mode -eq 'Feat') {
+    throw 'Legacy firearm monogram/Rapid Reload generation is retired. Read docs/ICON-ART-GUIDE.md; pilot candidates use tools/icon-art/Export-IconPilot.ps1 and require owner approval before runtime promotion.'
+}
 Add-Type -AssemblyName System.Drawing
 
 $root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)

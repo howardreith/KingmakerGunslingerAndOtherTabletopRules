@@ -7749,9 +7749,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] expectedFirearmNames = { "Blunderbuss", "Musket",
                 "Pistol" };
             string[] expectedFirearmIconNames = {
-                "KMG_Icon_firearm-monogram-blunderbuss",
-                "KMG_Icon_firearm-monogram-musket",
-                "KMG_Icon_firearm-monogram-pistol" };
+                "native-monogram:B",
+                "native-monogram:M",
+                "native-monogram:P" };
             string[] nativeTopLevelIcons = native.Select(feature =>
                 feature.Icon == null ? "<null>" : feature.Icon.name).ToArray();
             bool nativeTopLevelIconsPreserved = nativeTopLevelIcons.All(name =>
@@ -7802,7 +7802,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string[] firearmIcons = menu.Where(item => item != null &&
                             item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
                                 "KMG_WeaponFocus_", StringComparison.Ordinal))
-                        .Select(item => item.Icon == null ? "<null>" : item.Icon.name)
+                        .Select(item => item.Icon == null ? "native-monogram:" +
+                            Kingmaker.UI.Common.UIUtility.GetAbilityAcronym(
+                                item.NameForAcronim) : item.Icon.name)
                         .ToArray();
                     return firearmNames.SequenceEqual(expectedFirearmNames) &&
                         firearmIcons.SequenceEqual(expectedFirearmIconNames);
@@ -7832,7 +7834,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string[] firearmIcons = menu.Where(item => item != null &&
                         item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
                             "KMG_WeaponFocus_", StringComparison.Ordinal))
-                    .Select(item => item.Icon == null ? "<null>" : item.Icon.name)
+                    .Select(item => item.Icon == null ? "native-monogram:" +
+                        Kingmaker.UI.Common.UIUtility.GetAbilityAcronym(
+                            item.NameForAcronim) : item.Icon.name)
                     .ToArray();
                 return names.SequenceEqual(names.OrderBy(name => name,
                            StringComparer.CurrentCultureIgnoreCase)) &&
