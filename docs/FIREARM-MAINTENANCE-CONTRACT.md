@@ -1,10 +1,32 @@
 # Firearm Maintenance — Behavioral Contract
 
-Status: **ACTIVE DESIGN (approved, locked)** — implemented by mission
-`Z-FIREARM-MAINTENANCE`. This document is the lasting developer/player contract
-for firearm maintenance, full-rest recovery, and misfire interruption. The
-approved behavior comes from `Z-FIREARM-MAINTENANCE-MISSION.md` §4 and does not
+Status: **IMPLEMENTED (0.0.127 candidate; domain-qualified 1611/1611, native
+qualification in progress)** — implemented by mission `Z-FIREARM-MAINTENANCE`.
+This document is the lasting developer/player contract for firearm
+maintenance, full-rest recovery, and misfire interruption. The approved
+behavior comes from `Z-FIREARM-MAINTENANCE-MISSION.md` §4 and does not
 weaken to match implementation results; deviations require owner review.
+
+Sections below keep both the approved `[CONTRACT]` text and the verified
+`[BASELINE]` pre-mission behavior. Implementation status (source map of
+what changed): §1 field repair — `FirearmActionPolicy` (combat → Wrecked →
+Normal → kit ordering), `FirearmRepairTransactionService` (Wrecked rejected
+before all else; `WreckedRequiresRest` status), `RepairTestMusketRuntime`
+(`Player.IsInCombat` gate), `RepairCommandStartBinding` (Harmony prefix on
+`UnitUseAbility.OnStart`, cleared on `OnEnded`; delivery requires the same
+concrete reference); §2 rest maintenance — `CompletedRestMaintenancePolicy`
+(pure) + `CompletedRestMaintenancePatch` (prefix on
+`RestController.StopRestProcess`, once-per-RestStatus, participants =
+`Player.AllCharacters` with `HasFact(Gunsmithing)`, kit via shared
+inventory, scope = inventory `Items` + `Body.AllSlots` deduplicated);
+§3 interruption — `BrokenSequenceInterruptionPolicy` (pure) +
+`BrokenSequenceSuppressionRuntime` (weak-keyed epochs + frame-scoped
+player-attack marker via `ClickUnitHandler.OnClick` prefix) wired at
+`FirearmMisfireRuntime.CommitConditionTransition`,
+`FreeActionFullAttackReloadPatch` (end-before-next-shot gate), and
+`EmptyFirearmAttackCommandPatch` (construction gate, epoch-checked resume);
+§4/§5 — unchanged protections re-verified by tests (`FieldRepairRestrictionTests.QuickClearRouteStaysCombatUsable`,
+rest of the 30-case mission suite).
 
 Investigation status markers: `[BASELINE …]` describes current (pre-mission)
 verified behavior; `[CONTRACT]` describes the approved target. Native boundary
@@ -323,3 +345,9 @@ it with actual callers and native boundaries.
   ClickUnitHandler/Brain attack-issuance routes, CreatedByPlayer coverage,
   UnitCommands cancel API). Domain baseline 1581/1581 PASS @ 71af37ac in the
   mission worktree.
+- 2026-09-12 (P1–P3 implemented): status header now maps each contract
+  section to its implementing sources (see above). Domain suite
+  1611/1611 PASS. Active texts, manifest notes, KNOWN-ISSUES design
+  question, changelog, and the player smoke test updated to the new
+  contract. Native qualification tracked in
+  `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`.

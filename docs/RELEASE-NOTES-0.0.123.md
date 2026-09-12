@@ -89,8 +89,8 @@ Foreign assemblies — `CraftMagicItems.dll` remains an externally installed
 optional mod and is never bundled.
 
 This release is superseded by the Word of Recall Oracle eligibility
-repair: install `KingmakerGunslinger-0.0.126-word-of-recall-oracle.zip`
-(0.0.126-word-of-recall-oracle) so an optional Call of the Wild Oracle can
+repair: install `KingmakerGunslinger-0.0.127-firearm-maintenance.zip`
+(0.0.127-firearm-maintenance) so an optional Call of the Wild Oracle can
 use an existing Word of Recall scroll; it carries the 0.0.125 settlement
 button, 0.0.124 teleport polish, and genuine Conjuration specialist-slot
 fixes forward.

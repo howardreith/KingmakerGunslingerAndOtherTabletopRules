@@ -1,15 +1,19 @@
 # Known issues and conservative adaptations
 
-- Unified firearm repair has one unresolved owner decision: combat
-  availability for Wrecked recovery. Historically, Broken-to-Normal Repair
-  had no combat gate (usable in combat as a full-round action), while
-  Wrecked-to-Broken Overhaul explicitly rejected active combat. The current
-  unified Repair Firearm has no combat gate, so both Broken and Wrecked
-  firearms can now be repaired during combat; only the Wrecked-in-combat
-  case is a behavior change. No repository decision record establishes the
-  intended unified behavior, so nothing was changed or invented — the owner
-  must decide whether unified Repair should reject active combat for
-  Wrecked (or all) firearms.
+- RESOLVED (Z-FIREARM-MAINTENANCE, 0.0.127): the unified repair combat
+  question is closed. Repair Firearm is now an out-of-combat, Broken-only
+  full-round maintenance action gated by the native party-level combat
+  authority; Wrecked firearms are restored automatically only after a
+  genuine completed full rest (a participating gunsmith with one reusable
+  kit maintains the whole party's carried Broken/Wrecked firearms, and a
+  Wrecked gun stays unloaded). The hidden legacy Overhaul alias delegates
+  to the same checks, Quick Clear keeps its distinct in-combat Broken
+  recovery, and a newly committed break during an attack sequence stops the
+  remainder of that sequence and its automatic continuations while a later
+  deliberate attack with the Broken gun stays possible. Native runtime
+  qualification status is tracked in
+  `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`; human visual/play acceptance
+  remains separately pending.
 - Brown-Fur `0.0.81` failed human review and is superseded. The repaired
   `0.0.82` artifact passed focused runtime, persistence, optional-mod profiles,
   the authoritative 16-state boundary, and human presentation/play acceptance.

@@ -1,6 +1,6 @@
 ﻿# Kingmaker Gunslinger
 
-**0.0.126-word-of-recall-oracle** (UMM 0.0.126) is one owner-reported
+**0.0.127-firearm-maintenance** (UMM 0.0.127) follows the owner-approved firearm maintenance redesign: Repair Firearm is an out-of-combat Broken-only full-round action, a genuine completed full rest restores carried Broken and Wrecked firearms to Normal, and a newly committed misfire break stops the remainder of its attack sequence. The previous **0.0.126-word-of-recall-oracle** release was one owner-reported
 eligibility repair: an optional Call of the Wild Oracle with zero Use Magic
 Device ranks can now read an existing Word of Recall scroll through the same
 native class-list check as a cleric, because the canonical spell is finally

@@ -1,30 +1,52 @@
-# Kingmaker Gunslinger 0.0.119 player smoke test
+# Kingmaker Gunslinger 0.0.127 player smoke test
 
-Keep a save before testing. Enable World-Map Teleportation Spells and restart.
-Learn and prepare the spells normally; existing characters receive no free grant.
-Teleport is Wizard/Sorcerer 5, Greater Teleport 7, and Word of Recall Cleric 6 or
-Druid 8. Existing spontaneous casters use normal level-up or respecialization.
+Firearm maintenance, full-rest recovery, and misfire interruption. Keep a
+disposable save before testing. A Gunslinger with the Gunsmithing feature,
+a reusable Gunsmith's Kit in the shared inventory, powder and balls, and at
+least one firearm are required. The development console
+(`--kmg-dev-console`, if enabled) can force the next natural d20 with
+`Force next natural roll` to make misfires deterministic.
 
-1. Stop on the world map and select a different, previously visited destination.
-   With no real available spell use, confirm the native interaction is unchanged.
-2. With a usable spell, choose native Travel first and verify no slot is spent.
-3. Select a Teleport source and inspect its caster, use count, familiarity and
-   exact odds. Cancel to verify no cost, then reopen and confirm a cast.
-4. Verify exactly one prepared use or correct-level spontaneous slot is spent.
-   Check the party stays on the world map, together, with no travel time advance.
-   Teleport failures may choose another visited legal point or cause mishap damage.
-5. Greater Teleport should arrive exactly at the selected point. Word of Recall
-   appears on Oleg's point before capital establishment and the capital afterward.
-6. Verify no local area opens. Reopen the point panel and check updated counts
-   and absence of duplicate rows. The party's current point offers no spell row.
+1. **Field repair (happy path).** Misfire a Normal firearm until it breaks
+   (forced natural roll 1 is reliable). Out of combat, use the full-round
+   Repair Firearm action: the exact equipped Broken gun becomes Normal,
+   surviving loaded rounds are kept, the Gunsmith's Kit count is unchanged,
+   and the item is never replaced (name, enchantments, origin stay).
+2. **Combat rejection.** Start a fight and try Repair Firearm, including
+   with a character who is not personally engaged while the party is in
+   combat. Availability and execution must be rejected with the combat
+   explanation, in both real-time-with-pause and turn-based.
+3. **Wrecked is rest-only.** Break the gun twice (Broken -> Wrecked). Field
+   repair must refuse with the completed-full-rest explanation, in and out
+   of combat; the hidden legacy Overhaul slot (if an old save has it) must
+   refuse identically. A Wrecked gun also cannot fire or reload.
+4. **Full-rest restoration.** With the gunsmith resting and the kit in the
+   shared inventory, complete a genuine full rest (camp): carried Broken
+   and Wrecked firearms - equipped, in alternate weapon sets, or anywhere
+   in the shared inventory - return to Normal in one step, the Wrecked gun
+   stays unloaded, exactly one concise summary appears, and nothing is
+   consumed. Rest without the kit (or without a gunsmith in the resting
+   party): damaged guns stay damaged and one clear explanation appears.
+   Cancelling the rest, waiting/skip-time, or an interrupted rest must not
+   repair anything; finishing the rest after an interruption repairs once.
+5. **Misfire interruption.** In combat, force a misfire that breaks the gun
+   during a full attack: the misfiring shot resolves (round spent, burst on
+   Broken->Wrecked), but no further iterative shot is fired, no auto-reload
+   continues the sequence, and real-time auto-attacking does not immediately
+   resume. Clicking a deliberate new attack with the still-Broken gun still
+   works and fires under the normal Broken penalties/misfire rules.
+6. **Quick Clear unchanged.** In combat with grit, Quick Clear still
+   restores a misfire-Broken gun (standard costs nothing but needs one
+   grit; move version spends one), rejects Wrecked and non-misfire states,
+   and never resumes the interrupted attack order by itself.
+7. **Regression spot-checks.** Ammunition crafting still works once per
+   rest and resets after resting; native bows/melee and other characters
+   are unaffected; save and reload after each step and confirm every
+   condition, loaded-round count, and item identity persists.
 
-Both Teleport families require a positive saved ordinary/migrated visit. A newly
-revealed point remains unavailable until ordinary arrival. A visit made with the
-module OFF may require a normal revisit ON. Check a save/reload on your separate
-high-level campaign; automated fresh-process persistence is qualified on the
-installed stack using development artifacts. The owner waived remaining
-final-artifact runtime repeats. Isolated optional-mod profiles and unusual late-campaign states
-remain unqualified. See TELEPORTATION-HARDENING-REPORT.md for exact evidence.
+Report anything that deviates, with the step number, combat mode, and the
+combat log lines shown. Automated qualification status and evidence:
+`docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`.
 
 ## Historical maintenance-loop guide
 
