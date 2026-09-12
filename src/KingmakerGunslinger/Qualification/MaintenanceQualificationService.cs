@@ -109,9 +109,19 @@ namespace KingmakerGunslinger.Qualification
                 return MaintenanceQualificationStage.Failed;
             }
 
+            if (state.IsEmpty && state.Condition == FirearmCondition.Broken)
+            {
+                // Field repair is Broken-only (mission Z-FIREARM-MAINTENANCE):
+                // the accelerated fixture seeds a misfire-broken firearm and
+                // the Repair checkpoint must restore it to Normal.
+                return MaintenanceQualificationStage.FixtureReady;
+            }
+
             if (state.IsEmpty && state.Condition == FirearmCondition.Wrecked)
             {
-                return MaintenanceQualificationStage.FixtureReady;
+                // A Wrecked firearm is rest-only and can never pass through
+                // the field-repair maintenance loop.
+                return MaintenanceQualificationStage.Failed;
             }
 
             if (state.IsEmpty && state.Condition == FirearmCondition.Normal)

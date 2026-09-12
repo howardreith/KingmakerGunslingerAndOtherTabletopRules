@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items;
 using KingmakerGunslinger.Bootstrap;
@@ -35,7 +35,7 @@ namespace KingmakerGunslinger.Blueprints
                 access.ConfigureNonStackable(clone,
                     LocalizationService.Create("KMG.Item.GunsmithKit.Name", "Gunsmith's Kit"),
                     LocalizationService.Create("KMG.Item.GunsmithKit.Description",
-                        "Reusable tool. Required in the shared inventory to repair a Broken or Wrecked firearm with Repair Firearm and to craft basic firearm ammunition. It is never consumed."),
+                        "Reusable tool. Required in the shared inventory to repair a Broken firearm with Repair Firearm (outside combat) and to craft basic firearm ammunition. It is never consumed. A Wrecked firearm is restored only by a completed full rest."),
                     LocalizationService.Create("KMG.Item.GunsmithKit.Flavor",
                         "Molds, measures, files, and compact hand tools in a fitted case."),
                     100, 2f);

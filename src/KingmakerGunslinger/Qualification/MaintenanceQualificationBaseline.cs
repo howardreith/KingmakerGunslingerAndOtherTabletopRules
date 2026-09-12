@@ -64,10 +64,10 @@ namespace KingmakerGunslinger.Qualification
 
             ExactState = exactState ?? throw new ArgumentNullException("exactState");
             SecondItemState = secondItemState ?? throw new ArgumentNullException("secondItemState");
-            if (!ExactState.IsEmpty || ExactState.Condition != FirearmCondition.Wrecked)
+            if (!ExactState.IsEmpty || ExactState.Condition != FirearmCondition.Broken)
             {
                 throw new ArgumentException(
-                    "The maintenance qualification baseline exact item must be empty/Wrecked.",
+                    "The maintenance qualification baseline exact item must be empty/Broken (field repair is Broken-only).",
                     "exactState");
             }
 

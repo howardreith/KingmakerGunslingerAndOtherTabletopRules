@@ -10,11 +10,14 @@ using KingmakerGunslinger.Actions;
 namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
-    /// Typed Kingmaker adapter for the player-facing unified Repair Firearm action.
-    /// It resolves one exact equipped firearm, requires a Broken or Wrecked state and
-    /// one reusable Gunsmith's Kit in the shared inventory, and executes the atomic
-    /// same-item repair to Normal only during ability delivery. The tool is never
-    /// consumed and surviving loaded ammunition is preserved.
+    /// Typed Kingmaker adapter for the player-facing Repair Firearm action:
+    /// an out-of-combat, Broken-only maintenance action. It resolves one
+    /// exact equipped Broken firearm, rejects active party combat through the
+    /// native player combat authority, requires one reusable Gunsmith's Kit
+    /// in the shared inventory, and executes the atomic same-item
+    /// Broken-to-Normal repair only during ability delivery. Wrecked
+    /// firearms are rest-only. The tool is never consumed and surviving
+    /// loaded ammunition is preserved.
     /// </summary>
     internal static class RepairTestMusketRuntime
     {
@@ -65,7 +68,8 @@ namespace KingmakerGunslinger.Recovery
                 FirearmActionKind.Repair,
                 firearm.Definition,
                 state,
-                inventory.RepairKits > 0);
+                inventory.RepairKits > 0,
+                IsPartyInCombat());
             if (!action.IsAvailable)
             {
                 return Rejected(action.Reason, weapon, firearm, inventory);
@@ -73,10 +77,16 @@ namespace KingmakerGunslinger.Recovery
 
             return new FirearmRepairAvailability(
                 true,
-                "Ready to repair this exact Broken or Wrecked firearm to Normal with the reusable Gunsmith's Kit. Nothing is consumed and every surviving loaded round is preserved; the item will not be replaced.",
+                "Ready to repair this exact Broken firearm to Normal with the reusable Gunsmith's Kit. Nothing is consumed and every surviving loaded round is preserved; the item will not be replaced.",
                 weapon,
                 firearm,
                 inventory);
+        }
+
+        internal static bool IsPartyInCombat()
+        {
+            Game game = Game.Instance;
+            return game != null && game.Player != null && game.Player.IsInCombat;
         }
 
         internal static FirearmRepairRuntimeResult Execute(

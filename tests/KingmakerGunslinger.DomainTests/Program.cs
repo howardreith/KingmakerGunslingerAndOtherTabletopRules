@@ -767,6 +767,16 @@ namespace KingmakerGunslinger.DomainTests
             Case("rest-maintenance.wiring-completion-boundary-once", CompletedRestMaintenanceTests.WiringUsesCompletionBoundaryAndOnceOnly),
             Case("rest-maintenance.wiring-scope-capability-evidence", CompletedRestMaintenanceTests.WiringScopeAndCapabilityAreEvidenceBased),
             Case("rest-maintenance.wiring-failures-isolated", CompletedRestMaintenanceTests.WiringFailuresNeverBreakTheRest),
+            Case("field-repair.combat-beats-eligibility", FieldRepairRestrictionTests.CombatBeatsEveryOtherEligibility),
+            Case("field-repair.wrecked-rest-only", FieldRepairRestrictionTests.WreckedIsRestOnly),
+            Case("field-repair.normal-and-missing-kit-rejected", FieldRepairRestrictionTests.NormalAndMissingKitRejected),
+            Case("field-repair.reload-unaffected", FieldRepairRestrictionTests.ReloadPolicyUnchangedByRepairRestriction),
+            Case("field-repair.transaction-rejects-wrecked", FieldRepairRestrictionTests.TransactionRejectsWreckedWithoutMutation),
+            Case("field-repair.party-combat-authority", FieldRepairRestrictionTests.RuntimeUsesPartyCombatAuthority),
+            Case("field-repair.command-start-binding", FieldRepairRestrictionTests.DeliveryRequiresCommandStartBinding),
+            Case("field-repair.legacy-alias-broken-only", FieldRepairRestrictionTests.LegacyAliasStaysBrokenOnlyDelegate),
+            Case("field-repair.no-wrecked-field-text", FieldRepairRestrictionTests.ActiveTextsNeverPromiseWreckedFieldRepair),
+            Case("field-repair.quick-clear-route-intact", FieldRepairRestrictionTests.QuickClearRouteStaysCombatUsable),
             Case("deadeye.second-increment-cost-one", DeadeyeSecondIncrementCostsOne),
             Case("deadeye.cost-scales", DeadeyeCostScalesBeyondFirst),
             Case("deadeye.first-increment-no-spend", DeadeyeFirstIncrementDoesNotSpend),
@@ -1927,11 +1937,12 @@ namespace KingmakerGunslinger.DomainTests
                 !logic.Contains("TimeController.GameTime") &&
                 !logic.Contains("yield return null") &&
                 logic.Contains("ReferenceEquals(completed.Weapon, start.Weapon)") &&
-                runtime.Contains("Broken or Wrecked firearm") &&
+                runtime.Contains("equipped Broken firearm") &&
+                runtime.Contains("IsPartyInCombat") &&
                 runtime.Contains("Gunsmith's Kit") &&
                 blueprint.Contains("\"Instantaneous\"") &&
                 blueprint.Contains("Wrecked"),
-                "Repair is not a prompt, exact-item, unified Broken-or-Wrecked atomic action.");
+                "Repair is not a prompt, exact-item, out-of-combat Broken-only atomic action with a rest-only Wrecked route.");
             Assertions.True(legacy.Contains("Hidden = true") &&
                 legacy.Contains("ActionBarAutoFillIgnored = true") &&
                 legacy.Contains("RepairTestMusketAbilityLogic.Create") &&

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using KingmakerGunslinger.Firearms;
 
@@ -77,9 +77,11 @@ namespace KingmakerGunslinger.DomainTests
                 !feature.Contains("overhaulAbility"),
                 "Gunsmithing must grant exactly one maintenance ability.");
             Assertions.True(
-                feature.Contains("repair a Broken or Wrecked firearm to Normal") &&
+                feature.Contains("repair a Broken firearm to Normal") &&
+                feature.Contains("outside combat") &&
+                feature.Contains("completed full rest") &&
                 feature.Contains("reusable Gunsmith's Kit"),
-                "The Gunsmithing feature text no longer describes unified repair.");
+                "The Gunsmithing feature text no longer describes out-of-combat Broken-only repair plus full-rest restoration.");
             string crafting = Read("src/KingmakerGunslinger/Blueprints",
                 "GunsmithingCraftingBlueprints.cs");
             Assertions.True(crafting.Contains("GoldCost != 22") &&
@@ -180,8 +182,9 @@ namespace KingmakerGunslinger.DomainTests
                     "Manifest demoted the still-registered identity " + symbol + ".");
             }
 
-            Assertions.True(manifest.Contains("Broken or Wrecked"),
-                "Manifest notes do not describe the unified repair behavior.");
+            Assertions.True(manifest.Contains("outside combat") &&
+                manifest.Contains("completed full rest"),
+                "Manifest notes do not describe out-of-combat Broken-only repair with rest-only Wrecked recovery.");
             Assertions.True(manifest.Contains("hidden legacy") ||
                 manifest.Contains("legacy alias"),
                 "Manifest notes do not describe the hidden legacy Overhaul alias.");
@@ -194,9 +197,10 @@ namespace KingmakerGunslinger.DomainTests
             string kit = Read("src/KingmakerGunslinger/Blueprints",
                 "FirearmRepairKitBlueprints.cs");
             Assertions.True(supply.Contains("Reusable tool") &&
-                supply.Contains("repair a Broken or Wrecked firearm") &&
-                supply.Contains("It is never consumed."),
-                "The Gunsmith's Kit description no longer documents repair reuse.");
+                supply.Contains("repair a Broken firearm") &&
+                supply.Contains("It is never consumed.") &&
+                supply.Contains("completed full rest"),
+                "The Gunsmith's Kit description no longer documents repair reuse and rest-only Wrecked recovery.");
             Assertions.True(supply.Contains("Obsolete: no longer used or sold") &&
                 kit.Contains("Obsolete: no longer used or sold"),
                 "A retired consumable kit is not clearly marked obsolete.");

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using Kingmaker.Blueprints;
@@ -28,7 +28,7 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ComponentName = "$KMG_LegacyOverhaulRepairAlias";
 
         private const string Description =
-            "Legacy maintenance action kept for save compatibility. It now performs the unified Repair Firearm operation: one full-round use with a reusable Gunsmith's Kit repairs the exact equipped Broken or Wrecked firearm to Normal, preserving loaded ammunition and consuming nothing.";
+            "Legacy maintenance action kept for save compatibility. It performs the same Repair Firearm operation: one full-round use outside combat with a reusable Gunsmith's Kit repairs the exact equipped Broken firearm to Normal, preserving loaded ammunition and consuming nothing. A Wrecked firearm requires a completed full rest.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,

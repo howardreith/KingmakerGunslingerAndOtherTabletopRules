@@ -10,6 +10,9 @@ namespace KingmakerGunslinger.Recovery
         Loaded = 3,
         // Retained at the numeric value previously used for an insufficient
         // consumable repair-kit count; the reusable-tool rejection keeps it.
-        InsufficientRepairKit = 4
+        InsufficientRepairKit = 4,
+        // A Wrecked firearm is no longer a field-repair target: only a
+        // completed full rest restores it (mission Z-FIREARM-MAINTENANCE).
+        WreckedRequiresRest = 5
     }
 }

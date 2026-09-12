@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -66,7 +66,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create("KMG.Gunslinger.Gunsmithing.Name", "Gunsmithing"),
                 LocalizationService.Create("KMG.Gunslinger.Gunsmithing.Description",
-                    "You can repair a Broken or Wrecked firearm to Normal with one full-round Repair Firearm action using a reusable Gunsmith's Kit; nothing is consumed and surviving loaded ammunition is preserved. Once per rest, the same kit lets you choose either 22 gp for 20 Black Powder Charges plus 20 Lead Balls, or 24 gp for 20 Paper Cartridges. The recipes share one entitlement. Gunslingers gain this feature automatically at 1st level."), null);
+                    "You can repair a Broken firearm to Normal with one full-round Repair Firearm action outside combat using a reusable Gunsmith's Kit; nothing is consumed and surviving loaded ammunition is preserved. Damaged carried firearms (including Wrecked ones) are also restored to Normal automatically after a completed full rest. Once per rest, the same kit lets you choose either 22 gp for 20 Black Powder Charges plus 20 Lead Balls, or 24 gp for 20 Paper Cartridges. The recipes share one entitlement. Gunslingers gain this feature automatically at 1st level."), null);
             return feature;
         }
     }

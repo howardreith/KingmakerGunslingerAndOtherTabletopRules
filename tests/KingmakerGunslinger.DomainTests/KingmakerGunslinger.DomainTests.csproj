@@ -363,6 +363,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUsePolicy.cs"><Link>Gunsmithing\BatteredFirearmUsePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\CompletedRestMaintenancePolicy.cs"><Link>Gunsmithing\CompletedRestMaintenancePolicy.cs</Link></Compile>
     <Compile Include="CompletedRestMaintenanceTests.cs" />
+    <Compile Include="FieldRepairRestrictionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\OriginatingUnitId.cs"><Link>Gunsmithing\OriginatingUnitId.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmOwnershipRecord.cs"><Link>Gunsmithing\BatteredFirearmOwnershipRecord.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmOwnershipLedger.cs"><Link>Gunsmithing\BatteredFirearmOwnershipLedger.cs</Link></Compile>

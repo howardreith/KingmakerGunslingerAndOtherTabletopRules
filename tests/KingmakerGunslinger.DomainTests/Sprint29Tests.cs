@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Qualification;
 using KingmakerGunslinger.Recovery;
@@ -41,19 +41,26 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void RepairTransactionWreckedToNormal()
         {
+            // Mission Z-FIREARM-MAINTENANCE: field repair is Broken-only; a
+            // Wrecked firearm is restored by a completed full rest, never by
+            // the ordinary repair action or the legacy Overhaul alias.
             var stateStore = new FakeFirearmRepairStateStore(WreckedState());
             var inventory = new FakeRepairKitInventory(1);
             FirearmRepairResult result = Repair(stateStore, inventory);
-            Assertions.Equal(FirearmRepairStatus.Repaired, result.Status,
-                "Wrecked repair status mismatch.");
-            Assertions.Equal(FirearmCondition.Normal, stateStore.State.Condition,
-                "A Wrecked firearm must repair directly to Normal, not Broken.");
+            Assertions.Equal(
+                FirearmRepairStatus.WreckedRequiresRest, result.Status,
+                "Wrecked field repair must fail with the rest-only status.");
+            Assertions.Equal(FirearmCondition.Wrecked,
+                stateStore.State.Condition,
+                "A rejected Wrecked repair must not change the condition.");
             Assertions.True(stateStore.State.IsEmpty,
-                "A repaired Wrecked firearm must stay empty.");
+                "A rejected Wrecked repair must leave the firearm empty.");
             Assertions.Equal(1, inventory.Kits,
-                "Wrecked repair must not spend the reusable tool.");
+                "A rejected Wrecked repair must not spend the reusable tool.");
             Assertions.Equal(0, inventory.RemoveCalls,
-                "Wrecked repair attempted a tool removal.");
+                "A rejected Wrecked repair attempted a tool removal.");
+            Assertions.Equal(0, stateStore.ReplaceCalls,
+                "A rejected Wrecked repair mutated the exact item state.");
         }
 
         private static void RepairTransactionLoadedSingleShotSuccess()
@@ -122,8 +129,10 @@ namespace KingmakerGunslinger.DomainTests
             var inventory = new FakeRepairKitInventory(1);
             for (int cycle = 0; cycle < 3; cycle++)
             {
+                // Every cycle misfires from Normal to Broken; a Broken-to-Wrecked
+                // second misfire is rest-only under the mission contract.
                 FirearmState loaded = LoadedState(2, LeadBall(),
-                    cycle == 0 ? FirearmCondition.Normal : FirearmCondition.Broken);
+                    FirearmCondition.Normal);
                 FirearmState damaged =
                     FirearmStateMachine.ApplyMisfireDamage(loaded);
                 var stateStore = new FakeFirearmRepairStateStore(damaged);
@@ -346,7 +355,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ability.Contains(
                     "ammunition still loaded in that firearm is preserved") &&
                 runtime.Contains("every surviving loaded round is preserved") &&
-                action.Contains("any loaded ammunition is preserved") &&
+                action.Contains("every surviving loaded round is preserved") &&
                 ability.Contains("reusable Gunsmith's Kit") &&
                 runtime.Contains("reusable Gunsmith's Kit"),
                 "Unified no-cost repair and ammunition preservation are not stated consistently.");
@@ -411,7 +420,7 @@ namespace KingmakerGunslinger.DomainTests
             MaintenanceQualificationBaseline baseline = MaintenanceBaseline();
             MaintenanceQualificationReport report = EvaluateMaintenance(
                 baseline,
-                WreckedState(),
+                BrokenState(),
                 5,
                 0,
                 1,
@@ -427,13 +436,13 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void MaintenanceRemovedOverhaulStageRejected()
         {
-            // The historical Overhaul checkpoint (Wrecked -> Broken) must no longer
-            // pass as a maintenance-loop stage: Broken is not a valid unified state.
+            // A Wrecked firearm is rest-only (mission Z-FIREARM-MAINTENANCE):
+            // it can never pass through the field-repair maintenance loop.
             MaintenanceQualificationBaseline baseline = MaintenanceBaseline();
             MaintenanceQualificationReport report = EvaluateMaintenance(
                 baseline,
-                BrokenState(),
-                6,
+                WreckedState(),
+                5,
                 0,
                 1,
                 1,
@@ -443,9 +452,9 @@ namespace KingmakerGunslinger.DomainTests
                 0,
                 0);
             Assertions.False(report.Passed,
-                "The removed two-step Overhaul intermediate state still passes.");
+                "A rest-only Wrecked state still passes the field-repair loop.");
             Assertions.Equal(MaintenanceQualificationStage.Failed, report.Stage,
-                "A Broken intermediate must classify as Failed, not a loop stage.");
+                "A Wrecked observation must classify as Failed, not a loop stage.");
         }
 
         private static void MaintenanceRepairPass()
@@ -531,7 +540,7 @@ namespace KingmakerGunslinger.DomainTests
             MaintenanceQualificationBaseline baseline = MaintenanceBaseline();
             MaintenanceQualificationReport report = EvaluateMaintenance(
                 baseline,
-                WreckedState(),
+                BrokenState(),
                 5,
                 0,
                 1,
@@ -549,7 +558,7 @@ namespace KingmakerGunslinger.DomainTests
             MaintenanceQualificationBaseline baseline = MaintenanceBaseline();
             MaintenanceQualificationReport report = EvaluateMaintenance(
                 baseline,
-                WreckedState(),
+                BrokenState(),
                 5,
                 0,
                 1,
@@ -569,7 +578,7 @@ namespace KingmakerGunslinger.DomainTests
                 "kmg-item-999999",
                 baseline.RuntimeReferenceHash,
                 baseline.Revision,
-                WreckedState(),
+                BrokenState(),
                 baseline.VisibleFirearms,
                 baseline.SecondRepositoryIdentity,
                 baseline.SecondRuntimeReferenceHash,
@@ -599,7 +608,7 @@ namespace KingmakerGunslinger.DomainTests
             MaintenanceQualificationReport report = MaintenanceQualificationSession.Evaluate(
                 MaintenanceObservation(
                     baseline,
-                    WreckedState(),
+                    BrokenState(),
                     5,
                     FirearmState.CreateEmpty(),
                     1,
@@ -640,7 +649,7 @@ namespace KingmakerGunslinger.DomainTests
                 "kmg-item-000001",
                 0x1111,
                 5,
-                WreckedState(),
+                BrokenState(),
                 2,
                 "kmg-item-000002",
                 0x2222,

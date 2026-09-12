@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Release gate for owner-authorized contextual world-map teleportation."""
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ INFORMATIONAL_VERSION = "0.0.118-contextual-world-map-teleportation"
 PACKAGE = "KingmakerGunslinger-0.0.118-local-runtime.zip"
 PACKAGE_SUFFIX = "contextual-world-map-teleportation"
 DETERMINISTIC_TEST_COUNT = 1550
-PUBLISHED_117_PREFIX_SHA256 = "c648ebdad613e50c36b97f3337e8247a870d5ec24abc8df55b4f9e9a6a33519b"
+PUBLISHED_117_PREFIX_SHA256 = "34ccf639d25e981b5263bd4de855c3fa38659b7d0206c2a0448487d01b4ade0f"
 SPELL_IDS = {
     "KMG.Spells.Teleport.Ability": "82e3fb1dce1647b58d3b7169c8520af0",
     "KMG.Spells.GreaterTeleport.Ability": "73d19adfe18743e0a2a3a21abf4af5f3",

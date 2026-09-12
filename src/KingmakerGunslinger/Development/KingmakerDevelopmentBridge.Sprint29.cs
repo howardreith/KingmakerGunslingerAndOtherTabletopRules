@@ -104,7 +104,7 @@ namespace KingmakerGunslinger.Development
 
             _stateService.Set(
                 target.Item,
-                FirearmStateMachine.Wreck(FirearmState.CreateEmpty()));
+                FirearmStateMachine.ApplyMisfireDamage(FirearmState.CreateEmpty()));
             _stateService.Set(second.Item, FirearmState.CreateEmpty());
 
             KingmakerRepairKitInventory tools = ResolveToolInventory();

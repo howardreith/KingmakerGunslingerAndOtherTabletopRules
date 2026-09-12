@@ -57,7 +57,7 @@ namespace KingmakerGunslinger.Development
             }
 
             ImmediateModeGui.Label(
-                "Unified firearm maintenance is active. Repair Firearm is one full-round action that changes the exact equipped Broken or Wrecked Test Musket (or other project firearm) straight to Normal using one reusable Gunsmith's Kit in the shared inventory; nothing is consumed and any loaded rounds are preserved. Reload then consumes one powder-and-ball pair to load it. The accelerated fixture below prints one concise identity, resource, fault, duplicate, and second-item PASS/FAIL matrix after every stage.");
+                "Unified firearm maintenance is active. Repair Firearm is one full-round out-of-combat action that changes the exact equipped Broken Test Musket (or other project firearm) straight to Normal using one reusable Gunsmith's Kit in the shared inventory; nothing is consumed and any loaded rounds are preserved. A Wrecked firearm is restored by a completed full rest. Reload then consumes one powder-and-ball pair to load it. The accelerated fixture below prints one concise identity, resource, fault, duplicate, and second-item PASS/FAIL matrix after every stage.");
 
             bool tracingWasEnabled = CombatTraceSettings.Enabled;
             bool tracingIsEnabled = ImmediateModeGui.Toggle(
@@ -284,7 +284,7 @@ namespace KingmakerGunslinger.Development
             ImmediateModeGui.Space(8f);
             ImmediateModeGui.Label("Player-facing unified Repair controls");
             ImmediateModeGui.Label(
-                "Granting Firearm Proficiency grants Reload Test Musket and Repair Test Musket. Repair Firearm is one full-round action that changes the exact equipped Broken or Wrecked firearm straight to Normal using a reusable Gunsmith's Kit in the shared inventory; nothing is consumed, loaded rounds are preserved, and the item is never replaced. The legacy Overhaul ability stays hidden and delegates to this same repair. Immediate controls bypass action economy and are diagnostics only.");
+                "Granting Firearm Proficiency grants Reload Test Musket and Repair Test Musket. Repair Firearm is one full-round out-of-combat action that changes the exact equipped Broken firearm straight to Normal using a reusable Gunsmith's Kit in the shared inventory; nothing is consumed, loaded rounds are preserved, and the item is never replaced. A Wrecked firearm is restored by a completed full rest. The legacy Overhaul ability stays hidden and delegates to this same repair. Immediate controls bypass action economy and are diagnostics only.");
 
             if (ImmediateModeGui.Button("Print Repair Test Musket readiness"))
             {
@@ -438,7 +438,7 @@ namespace KingmakerGunslinger.Development
                 Run(DevelopmentControls.WreckSelectedEquippedFirearmForDebug);
             }
 
-            if (ImmediateModeGui.Button("Repair first equipped Broken or Wrecked firearm to Normal (direct contract diagnostic)"))
+            if (ImmediateModeGui.Button("Repair first equipped Broken firearm to Normal (direct contract diagnostic)"))
             {
                 Run(DevelopmentControls.RepairFirstEquippedFirearmForDebug);
             }

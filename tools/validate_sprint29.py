@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Portable source and sealed-evidence validator for Sprint 29."""
 from __future__ import annotations
 
@@ -211,7 +211,7 @@ def validate(
         runtime,
         [
             "ExactEquippedFirearmResolver.TryResolve",
-            "Broken or Wrecked firearm",
+            "equipped Broken firearm",
             "Gunsmith's Kit",
             "FirearmRepairRuntimeResult",
         ],
@@ -267,7 +267,7 @@ def validate(
             "PrepareMaintenanceQualificationFixture",
             "RunMaintenanceQualificationImmediately",
             "DescribeMaintenanceQualification",
-            "FirearmStateMachine.Wreck(FirearmState.CreateEmpty())",
+            "FirearmStateMachine.ApplyMisfireDamage(FirearmState.CreateEmpty())",
             "FirearmState.CreateEmpty()",
             "tools.Add(1 - toolCount)",
             "MaintenanceQualificationSession.Begin",
