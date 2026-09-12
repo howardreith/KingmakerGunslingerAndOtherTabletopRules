@@ -95,7 +95,7 @@ frozen). P4's 0.0.127 validator supersedes the interim bump.
    (-ExpectedVersion 0.0.127); restore install after.
 5. P5: acceptance matrix, RELEASE-NOTES PENDING gates, final report.
 
-Review-disposition status: R1 FIXED(source)+pending native controls; R2
+Review-disposition status (2nd review CR2 of 2edebd75, journal #12): CR2-01 FIXED(source: capture-first + owning-command delivery correlation via native ExecutionProcess.Context) +lifecycle regressions queued; CR2-02 FIXED(source: notification at irrevocable pre-return boundary) +fault-injection regression queued; CR2-03 FIXED(source: crafting CanAct idiom + completed-rest predicate with IL-proven sleeping lifecycle) +rest regressions queued; CR2-04 FIXED(source: stack-scoped consumption + wrong-target no-erase) +native input lanes queued. HEAD 69fa2294. Earlier review: R1 FIXED(source)+pending native controls; R2
 FIXED(source+Dead Shot behavioral)+scatter slice pending; R3
 FIXED(policy+tests); R4 FIXED(source)+lifecycle slice pending; R5
 FIXED(source)+lifecycle slice pending; R6 PARTIAL(scenario corrected,
