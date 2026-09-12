@@ -47,3 +47,67 @@ Format: `YYYY-MM-DD #N — topic`. Concise entries; evidence paths under
 Strategy note: P1 (interruption) precedes P3 (repair restriction) per mission
 §6 ordering, to avoid shipping an intermediate candidate where accidental
 automation has harsher consequences.
+
+---
+
+2026-09-12 #2 — P0 source/native trace complete; pre-change domain baseline established
+
+- Read all 16 mission §5 source-map files in full. Baseline findings mirrored
+  into `docs/FIREARM-MAINTENANCE-CONTRACT.md` [BASELINE] sections:
+  - Field repair today: Broken **and** Wrecked eligible at policy
+    (`FirearmActionPolicy.EvaluateRepair`) and transaction
+    (`FirearmRepairTransactionService.GetRejection`); **no combat check**;
+    weapon bound only by two back-to-back checks inside ability delivery
+    (`RepairTestMusketAbilityLogic.TryPrepare`→`Complete`), not at command
+    issuance. Quick Clear already Broken-only via
+    `FirearmStateMachine.Repair` (shared low-level transition; must stay
+    combat-usable). Legacy Overhaul alias delegates to the same ability logic.
+  - Rest: only `CraftingRestResetPatch` (per-unit `ApplyRest` postfix).
+    Native rest state machine traced from
+    `private\charvis-native-il\Assembly-CSharp.il` (2.1.7b): phases
+    Manage/Camp/Sleep/Finished/SkipTime; `TickSleepPhase` sets
+    `RestSucceeded` each tick, on `RemainingTime<=0` → Finished +
+    `StopRestProcess` (genuine completion); `NightRandomEncounter` → Finished
+    + `StopRestProcess` (interrupted); mid-sleep `ApplyRestInterval` (per
+    unit via `HealAndApplyRest`) is transient, and `ApplyRest` is also called
+    by LevelUp/KingdomTimeline/KingdomTask/Recruit/Respec/CapitalCompanion
+    logic — per-unit ApplyRest is NOT a rest boundary.
+    `StopRestProcess` (started once at any termination via
+    LoadingProcess) checks RestSucceeded/SkipTime, preloads, and autosaves at
+    the end → P2 candidate: prefix on `StopRestProcess` gated on
+    `RestSucceeded && !NightRandomEncounter && !SkipTime`, before the
+    autosave. Scripted rest (`StartScripted`) also applies intervals;
+    world-map/inn routes deferred to runtime verification (R08).
+  - Attack continuation today: mid-sequence misfire does NOT stop the
+    sequence — `FullAttackAutoReloadPolicy.ContinueLoaded` keeps firing a
+    just-broken gun with surviving rounds; empty+Free reload reloads and
+    continues; `EmptyFirearmAttackCommandPatch.ResumeAttack` resumes pending
+    attacks for a Broken gun after reload. Committed degradation point =
+    `FirearmMisfireRuntime.CommitConditionTransition` (expected-state-guarded
+    transition + repository identity check); negation paths (Stranger's
+    Fortune, Expert Loading) return before it.
+  - Player intent (IL): `ClickUnitHandler.OnClick` →
+    `CreateAttackCommand` → `Commands.Run` + `CombatState.ManualTarget`.
+    Attack branch does NOT set `CreatedByPlayer` (only movement/interact/
+    auto-use branches do) → CreatedByPlayer cannot discriminate attack
+    intent. RTWP auto-attacks are Brain-issued (`BlueprintAiAttack`,
+    ManualTarget considerations). P1 suppression must be command/order-scoped;
+    consent signal candidates: click event bus / ManualTarget semantics.
+    `UnitCommands` exposes Run/AddToQueue/InterruptAll/
+    InterruptAiCommands/InterruptAndRemoveCommand/InterruptGroupCommand.
+- Test conventions: domain suite = dependency-free exe, pure policy/service
+  tests + source-contract string assertions
+  (`UnifiedFirearmRepairTests` asserts current "Broken or Wrecked" unified
+  text; to be updated explicitly in P3/P4).
+- Worktree environment fixes (machine-local, git-ignored, never committed):
+  copied `GamePath.props` and
+  `artifacts/inspection/bodyguard-native/Assembly-CSharp.il` from the main
+  checkout; without them the domain build loses Newtonsoft.Json reference
+  (2 bodyguard-runtime FAILs).
+- **Pre-change baseline: `scripts/test-domain.ps1 -Configuration Release` →
+  1581/1581 PASS, exit 0** @ 71af37ac (+ mission-records commit), log
+  `/tmp/domain-baseline2.log` (session-local). Inherited-failure note: the two
+  bodyguard-runtime IL-dump tests are environment-dependent, not source
+  failures; fixed by copying the generated artifact.
+- No source changes yet. Next slice: P1 design + implementation of
+  command-scoped interruption (see STATE next-actions).
