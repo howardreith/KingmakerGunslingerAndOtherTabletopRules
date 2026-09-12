@@ -24,16 +24,16 @@ Legend: `NOT RUN` (default), `PASS`, `FAIL`, `BLOCKED`, `AMBIGUOUS`, `N/A`
 
 | ID | Scenario / required outcome | Domain | Native | Evidence / notes |
 | --- | --- | --- | --- | --- |
-| R01 | Genuine complete rest with eligible participating gunsmith + kit restores Broken and Wrecked to Normal; Wrecked stays unloaded; no separate click or resource expenditure. | NOT RUN | NOT RUN | |
-| R02 | Shared carried guns, participant-equipped guns, alternate sets, two identical blueprints with distinct damage, duplicate references: correct concrete targets repaired once; no substitution. | NOT RUN | NOT RUN | |
+| R01 | Genuine complete rest with eligible participating gunsmith + kit restores Broken and Wrecked to Normal; Wrecked stays unloaded; no separate click or resource expenditure. | PARTIAL 2026-09-12: completion gate + item decisions + kit-never-consumed domain-tested (rest-maintenance.genuine-completion-qualifies, item-decisions-actual-condition, wiring tests). | NOT RUN | |
+| R02 | Shared carried guns, participant-equipped guns, alternate sets, two identical blueprints with distinct damage, duplicate references: correct concrete targets repaired once; no substitution. | PARTIAL 2026-09-12: scope-collection wiring asserted (inventory Items + Body.AllSlots + reference dedup, wiring-scope-capability-evidence); concrete-target behavior needs native run. | NOT RUN | |
 | R03 | Remote stash, vendor, ground loot, nonparticipant equipment unchanged; absent roster gunsmith does not qualify the rest. | NOT RUN | NOT RUN | |
-| R04 | Missing kit/capability or no eligible participating repairer: no repair. Multiple participants don't multiply work. Provider routes confirmed without a class-only shortcut. | NOT RUN | NOT RUN | |
-| R05 | Open/start/cancel rest, partial/interrupted non-completion, waiting/travel/time advancement, fatigue removal: no repair. | NOT RUN | NOT RUN | |
-| R06 | Interrupted rest subsequently genuinely completes: repairs once, after completion. | NOT RUN | NOT RUN | |
-| R07 | Repeated completion notifications, per-unit callbacks, re-entrancy: no duplicate effects/messages; early ineligible participant cannot preclude later eligible party context. | NOT RUN | NOT RUN | |
+| R04 | Missing kit/capability or no eligible participating repairer: no repair. Multiple participants don't multiply work. Provider routes confirmed without a class-only shortcut. | PARTIAL 2026-09-12: missing-prereq policy + capability-via-feature-fact wiring asserted (missing-prerequisites-no-repair, wiring-scope-capability-evidence). | NOT RUN | |
+| R05 | Open/start/cancel rest, partial/interrupted non-completion, waiting/travel/time advancement, fatigue removal: no repair. | PARTIAL 2026-09-12: non-completion gate domain-tested for encounter/skip-time/unsuccessful (non-completion-never-qualifies); cancel/open/partial UI routes need native runs. | NOT RUN | |
+| R06 | Interrupted rest subsequently genuinely completes: repairs once, after completion. | PARTIAL 2026-09-12: once-per-RestStatus guard wired (wiring-completion-boundary-once); resumed-rest flag-latch risk recorded in journal #4 (fallback: TickSleepPhase completion branch). | NOT RUN | |
+| R07 | Repeated completion notifications, per-unit callbacks, re-entrancy: no duplicate effects/messages; early ineligible participant cannot preclude later eligible party context. | PARTIAL 2026-09-12: single-prefix design (not per-unit ApplyRest) + once-only guard asserted; duplicate-notification behavior needs native run. | NOT RUN | |
 | R08 | Local camping, world-map, settlement/inn full-rest routes present in this build: verified boundary and scope; absent routes need evidence-backed N/A. | NOT RUN | NOT RUN | |
-| R09 | Restoration failure on one item doesn't corrupt other items or native rest; same-item rollback; honest partial-result reporting; crafting/rest reset independent. | NOT RUN | NOT RUN | |
-| R10 | Save/load before completion preserves damage; after completed restoration preserves Normal + exact rounds/identities; no repair on load or stale completion-marker replay. | NOT RUN | NOT RUN | |
+| R09 | Restoration failure on one item doesn't corrupt other items or native rest; same-item rollback; honest partial-result reporting; crafting/rest reset independent. | PARTIAL 2026-09-12: per-item isolation + honest summaries + crafting independence domain-tested (wiring-failures-isolated, summaries-honest). | NOT RUN | |
+| R10 | Save/load before completion preserves damage; after completed restoration preserves Normal + exact rounds/identities; no repair on load or stale completion-marker replay. | PARTIAL 2026-09-12: maintenance commits before the post-rest autosave (design + wiring); persistence needs native round trip. | NOT RUN | |
 
 ## Attack interruption and deliberate later firing
 
