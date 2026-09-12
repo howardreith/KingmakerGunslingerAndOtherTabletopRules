@@ -357,6 +357,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Reloading\ReloadActionEconomy.cs"><Link>Reloading\ReloadActionEconomy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Reloading\FullAttackAutoReloadPolicy.cs"><Link>Reloading\FullAttackAutoReloadPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firing\EmptyFirearmAttackPolicy.cs"><Link>Firing\EmptyFirearmAttackPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firing\BrokenSequenceInterruptionPolicy.cs"><Link>Firing\BrokenSequenceInterruptionPolicy.cs</Link></Compile>
+    <Compile Include="BrokenSequenceInterruptionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUseDecision.cs"><Link>Gunsmithing\BatteredFirearmUseDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUsePolicy.cs"><Link>Gunsmithing\BatteredFirearmUsePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\OriginatingUnitId.cs"><Link>Gunsmithing\OriginatingUnitId.cs</Link></Compile>

@@ -1334,7 +1334,7 @@
     "treacherousPlayerRespecSaveQualificationWaivedByOwner": true
   },
   "unifiedRepair121": {
-    "deterministicTestCount": 1581,
+    "deterministicTestCount": 1592,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -1511,7 +1511,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "characterVisibility123": {
-    "deterministicTestCount": 1581,
+    "deterministicTestCount": 1592,
     "compatibilityRuntimeQualificationPending": false,
     "publicReleaseAuthorized": true,
     "ownerAcceptedMissionReport": true,
@@ -1523,7 +1523,7 @@
     "remainingMatrixCellsDisclosed": true
   },
   "teleportPolish124": {
-    "deterministicTestCount": 1581,
+    "deterministicTestCount": 1592,
     "publicReleaseAuthorized": true,
     "specialistRootCauseConfirmed": "serialized per-book m_SpecialSpells cache derived only at feature activation and learn time; PostLoad never re-derives it",
     "loadSeamRepair": "Spellbook.PostLoad",
@@ -1535,7 +1535,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "settlementButton125": {
-    "deterministicTestCount": 1581,
+    "deterministicTestCount": 1592,
     "publicReleaseAuthorized": true,
     "settlementButtonWidenedToLabel": "label preferred width at the native font size plus the control native padding, capped by the settled native action region",
     "settlementButtonRestoreExact": true,
@@ -1544,7 +1544,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "wordOfRecallOracle126": {
-    "deterministicTestCount": 1581,
+    "deterministicTestCount": 1592,
     "publicReleaseAuthorized": true,
     "ownerReportedOracleScrollFailureConfirmed": true,
     "rootCause": "Call of the Wild keeps the Oracle on its own OracleSpellList, so the Cleric 6 base publication never reached it and the native IsInSpellListOfUnit class-list check refused a zero-UMD Oracle",

@@ -33,6 +33,9 @@ namespace KingmakerGunslinger.Misfires
         private static readonly ConditionalWeakTable<RuleAttackRoll, DischargeOutcome>
             CompletedOutcomes =
                 new ConditionalWeakTable<RuleAttackRoll, DischargeOutcome>();
+        private static readonly ConditionalWeakTable<RuleAttackRoll, object>
+            CommittedDegradations =
+                new ConditionalWeakTable<RuleAttackRoll, object>();
         private static readonly ForcedNaturalRollQueue ForcedRolls =
             new ForcedNaturalRollQueue();
         private static readonly FirearmMisfireService Service =
@@ -303,6 +306,10 @@ namespace KingmakerGunslinger.Misfires
                 if (condition.ChangesCondition)
                 {
                     CommitConditionTransition(context, condition);
+                    RecordCommittedDegradation(attackRoll, context.FirearmItem);
+                    Firing.BrokenSequenceSuppressionRuntime.OnCommittedDegradation(
+                        context.Wielder,
+                        context.FirearmItem);
                 }
 
                 if (decision.IsMisfire)
@@ -455,6 +462,36 @@ namespace KingmakerGunslinger.Misfires
                 DischargeOutcome outcome;
                 return CompletedOutcomes.TryGetValue(attackRoll, out outcome) &&
                     outcome.NonMisfire;
+            }
+        }
+
+        /// <summary>
+        /// Reports the exact firearm item whose condition was committed to a
+        /// worse state by this completed attack roll, if any. This is the
+        /// verified committed-degradation signal the sequence-interruption
+        /// gates consume; an effective overlay or a negated misfire never
+        /// appears here.
+        /// </summary>
+        internal static bool TryGetCommittedDegradation(
+            RuleAttackRoll attackRoll,
+            out object firearmItem)
+        {
+            firearmItem = null;
+            if (attackRoll == null) return false;
+            lock (ContextGate)
+            {
+                return CommittedDegradations.TryGetValue(attackRoll, out firearmItem);
+            }
+        }
+
+        private static void RecordCommittedDegradation(
+            RuleAttackRoll attackRoll,
+            object firearmItem)
+        {
+            lock (ContextGate)
+            {
+                CommittedDegradations.Remove(attackRoll);
+                CommittedDegradations.Add(attackRoll, firearmItem);
             }
         }
 
