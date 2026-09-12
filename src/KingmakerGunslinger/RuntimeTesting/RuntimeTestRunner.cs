@@ -765,6 +765,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunModLoadSmoke());
                     return;
                 }
+                if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.DisposableFirearmBreakInterruption)
+                {
+                    Complete(RunDisposableFirearmBreakInterruption());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
                     .ObserveKmgCompatibilityAssetAttribution)
                 {

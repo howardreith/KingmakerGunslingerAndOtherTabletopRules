@@ -398,3 +398,30 @@ prepare the native lanes:
 
 Session checkpoint: P0–P4c complete and pushed (HEAD 0991f641). P4d is the
 next slice; state file carries the full plan and candidate identity.
+
+---
+
+2026-09-12 #8 — P4d first guarded scenario: disposable-firearm-break-interruption
+
+- New `RuntimeTestRunner.FirearmMaintenance.cs` partial with
+  `RunDisposableFirearmBreakInterruption`: ChargenUnit fixtures + real
+  pistol, forced natural 1 through the real `Rulebook.Trigger(
+  RuleAttackWithWeapon)` pipeline (native discharge → misfire → committed
+  degradation → suppression), then the REAL patched
+  `UnitAttack.CreateAttackCommand` entry point: automatic construction
+  rejected + counted, player-frame construction allowed + suppression
+  consumed, Broken→Wrecked re-commit re-arms suppression and rejects again.
+  Full cleanup (Forget/RemoveItem/Dispose/CancelForcedNaturalRoll/
+  ClearForRuntimeTest). 5 assertions.
+- Registered: catalog const + Allowed set + dispatch branch + csproj +
+  PowerShell scenario metadata (`disposable-firearm-break-interruption`,
+  no save, mod-load readiness, basic timeout).
+- IMPORTANT: source changed ⇒ the 0.0.127 candidate DLL identity is
+  superseded. Rebuild via Build-Local before ANY native run; record the new
+  package/DLL SHA-256/MVID and run all native lanes on that new identity
+  (journal #6 identity is now historical).
+- Domain suite: 1611/1611 PASS. Repository validation PASS. Main project
+  compiles Release.
+- Remaining P4d scenarios: field-repair rejection (combat+Wrecked+alias),
+  completed-rest restoration + cancelled no-op, save/load persistence round
+  trip; then deployment + lanes x2 + restore + acceptance/report updates.
