@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.126-word-of-recall-oracle",
-  "version": "0.0.126",
+  "milestone": "0.0.127-firearm-maintenance",
+  "version": "0.0.127",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1552,6 +1552,16 @@
     "nativeClericAndDruidRegistrationUnchanged": true,
     "scrollAndSpellGuidsUnchanged": true,
     "runtimeQualificationPending": false,
+    "compatibilityRuntimeQualificationPending": true
+  },
+  "firearmMaintenance127": {
+    "deterministicTestCount": 1611,
+    "publicReleaseAuthorized": false,
+    "fieldRepairBrokenOnlyOutOfCombat": true,
+    "completedRestRestoresCarriedDamage": true,
+    "committedBreakStopsSequence": true,
+    "quickClearCombatRouteUnchanged": true,
+    "runtimeQualificationPending": true,
     "compatibilityRuntimeQualificationPending": true
   }
 }

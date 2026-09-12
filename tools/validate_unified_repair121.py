@@ -43,7 +43,7 @@ def validate(root: Path) -> None:
         "exactly one maintenance action", "reusable Gunsmith",
         "KNOWN-ISSUES.md", "1,554", "32/32", "16/16")
     baseline.require_tokens(root / "KNOWN-ISSUES.md",
-        "Unified firearm repair has one unresolved owner decision",
+        "RESOLVED (Z-FIREARM-MAINTENANCE, 0.0.127)",
         "Wrecked", "combat")
     static = json.loads((root / "validation/static-validation.json").read_text(encoding="utf-8"))
     if static.get("version") != VERSION or \

@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.0.127-firearm-maintenance (candidate; engineering qualification in progress)
+
+- Firearm maintenance, full-rest recovery, and misfire interruption were
+  redesigned per the owner-approved `Z-FIREARM-MAINTENANCE` contract.
+- Repair Firearm is now an out-of-combat, Broken-only full-round maintenance
+  action. It uses the native party-level combat authority (an active party
+  encounter rejects it even if the repairer is not personally engaged),
+  requires at least one reusable Gunsmith's Kit in the shared inventory,
+  binds its exact equipped target at genuine command commencement, and
+  rechecks that binding at delivery - a weapon or context change across the
+  full-round command prevents the repair and changes nothing. Wrecked
+  firearms are never field-repairable and receive a clear full-rest
+  explanation; the hidden legacy Overhaul alias delegates to these same
+  checks. Nothing is consumed and the exact item (with enchantments, origin,
+  and surviving loaded rounds) is preserved.
+- A genuine completed full rest now automatically restores the party's
+  carried Broken and Wrecked firearms to Normal: one participating
+  character with the Gunsmithing feature and one reusable kit cover shared
+  inventory plus party equipment (deduplicated), a Wrecked gun stays
+  unloaded, interrupted/cancelled/skip-time rests never qualify, and the
+  work happens once per completed rest before the native post-rest autosave.
+  A concise summary (or a clear cannot-restore explanation) is shown.
+- A newly committed misfire break during an attack sequence stops the
+  remainder of that sequence: remaining full-attack iterations end before
+  the next shot, no auto-reload or reload-resume continuation follows, and
+  real-time auto-attacking does not immediately resume. A later deliberate
+  player-issued attack with the Broken gun remains possible under ordinary
+  damaged-firearm rules; misfire-negation features and the battered
+  effective-Broken overlay never trigger the interruption.
+- Quick Clear, ammunition crafting (including its once-per-rest reset),
+  reload economics, misfire chances, Broken penalties, burst balance,
+  blueprint/save identities, and vendor behavior are unchanged.
+- 1,611 deterministic tests PASS (30 new mission regression tests).
+  Native runtime qualification status and evidence:
+  `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`.
+
 ## 0.0.126-word-of-recall-oracle
 
 - Fixed an owner-reported eligibility failure: a Call of the Wild Oracle with
