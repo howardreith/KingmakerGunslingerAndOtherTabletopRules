@@ -2,18 +2,19 @@
 
 **Mission ID:** `Z-FIREARM-MAINTENANCE`
 
-**Last updated:** 2026-09-12 (session 1 end; P4d scenario 1/4 done)
+**Last updated:** 2026-09-13 (review fixes R1–R5 + R6 partial + Dead Shot evidence; pushed 73328618)
 
 ## Mission status
 
-`IN_PROGRESS` — phase **P4d: guarded native qualification (scenario 1 of 4 written; remaining scenarios, rebuild, deployment, and runs pending)**
+`IN_PROGRESS` — phase **P1–P3 reopened per owner review of 35bee7ed and
+corrected (journal #9–#11); remaining: review regressions needing behavioral/
+native proof, scatter slice, remaining P4d scenarios, rebuild, lanes, P5**
 
-First incomplete acceptance IDs: ALL native cells `NOT RUN` (A/F/R domain
-PARTIAL where noted); W01–W02, C01–C06 pending native; R03/R08 fully
-`NOT RUN` (see `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`).
+First incomplete acceptance IDs: ALL native cells `NOT RUN`; several domain
+cells are policy/wiring-contract only (see the matrix NOTE at the top of
+`docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`); R03/R08 fully `NOT RUN`.
 
-Branch HEAD `f4060c6739df145f85f8a704be8e28630e2e3a21` (all work pushed;
-remote verified after every checkpoint).
+Branch HEAD `73328618` (all work pushed; remote verified per checkpoint).
 
 ## Candidate identity
 
@@ -73,35 +74,35 @@ frozen). P4's 0.0.127 validator supersedes the interim bump.
 
 ## Next concrete actions
 
-1. **P4d remaining scenarios** (follow `RuntimeTestRunner.FirearmMaintenance.cs`
-   + journal #7/#8 patterns; register catalog const + Allowed set + dispatch
-   branch + csproj + RuntimeAutomation.Common.ps1 metadata each time):
-   a. `disposable-field-repair-rejection`: fixture with Gunsmithing + kit +
-      Broken gun → RepairTestMusketRuntime.Evaluate available out of combat;
-      seed combat via Player.IsInCombat? (combat state on detached fixture —
-      verify a safe native way, e.g. Game.Instance.Player.IsInCombat
-      backing field or a real encounter; do NOT fake booleans) → rejected
-      with combat reason; Wrecked → rejected with full-rest reason (direct
-      Evaluate + ability delivery via AbilityExecutionContext like
-      RunDisposableGunsmithingCrafting + transaction status
-      WreckedRequiresRest).
-   b. `disposable-completed-rest-restoration`: verify which native route
-      reaches StopRestProcess from a guarded fixture (StartScripted vs camp
-      flow; R06/R08 flags); assert CompletedRestMaintenancePatch counters +
-      conditions → Normal (Wrecked unloaded) + once-only + summary; include
-      a non-termination case (skip-time/encounter flag) asserting no run.
-   c. persistence lane: request-local fixture + named disposable save round
-      trip IF an authorized write route exists (mission §2; otherwise mark
-      BLOCKED and report).
-2. **Rebuild** `scripts/Build-Local.ps1`; record new artifact identity here.
-3. **Deploy** via `scripts/Deploy-Local.ps1 -PackagePath <new package>`
-   (backup-first; record backup identity); run lanes x2 fresh launches via
-   `scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario <id>
-   -ExpectedVersion 0.0.127 ...`; evidence under
-   `C:\Dev\KingmakerGunslingerLabuntime-evidence\`.
-4. Restore live install (`scripts/Restore-Live-Mod.ps1` + recorded backup).
-5. P5: acceptance matrix native cells, RELEASE-NOTES-0.0.127 PENDING gates,
-   Z-FIREARM-MAINTENANCE-REPORT.md, final commit/push.
+1. **Review-regression behavioral slices** (extend
+   `RuntimeTestRunner.FirearmMaintenance.cs`, patterns in journal #7/#8/#11):
+   a. Scatter: real all-misfire scatter commit suppresses (two-target cone
+      fixture pattern at RuntimeTestRunner.cs ~26000; forced rolls {1,1}).
+   b. R1 native controls recorded for the interactive lanes: attack order for
+      unit B leaves A suppressed; real nonattack click records nothing
+      (CanAttack filter); controller/console route trace; brain re-issue
+      after click-return rejected (postfix-clear mechanism already covered
+      by the click-end-clears bridge assertion).
+   c. R4/R5 lifecycle slice: bind via a real UnitUseAbility
+      (RunDisposableGunsmithingCrafting pattern), then exercise
+      ineligible-at-start (combat seeded via a real encounter — verify a
+      safe native route, do NOT fake booleans), weapon change, cancellation,
+      unrelated-ability end, capability loss (feature removal) between
+      start and delivery, legacy Overhaul invocation.
+2. **Remaining P4d scenarios**: field-repair rejection; completed-rest
+   restoration (+ cancelled/interrupted no-op; verify which scripted route
+   reaches StopRestProcess); persistence round trip (named disposable save
+   IF an authorized write route exists — else BLOCKED).
+3. **Rebuild** Build-Local; record NEW package/DLL SHA-256/MVID here (two
+   builds superseded since journal #6).
+4. **Deploy + native lanes x2** via Invoke-KingmakerRuntimeTest
+   (-ExpectedVersion 0.0.127); restore install after.
+5. P5: acceptance matrix, RELEASE-NOTES PENDING gates, final report.
 
-No active processes, fixtures, or leases. Live install untouched (0.0.126
-release). Worktree has no dirty files between checkpoints.
+Review-disposition status: R1 FIXED(source)+pending native controls; R2
+FIXED(source+Dead Shot behavioral)+scatter slice pending; R3
+FIXED(policy+tests); R4 FIXED(source)+lifecycle slice pending; R5
+FIXED(source)+lifecycle slice pending; R6 PARTIAL(scenario corrected,
+bridge-labeled; matrix note added) — native/interactive proof outstanding.
+
+No active processes/leases; live install untouched (0.0.126 release).
