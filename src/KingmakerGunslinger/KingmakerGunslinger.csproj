@@ -956,6 +956,7 @@
     <Compile Include="Recovery\RepairTestMusketAbilityLogic.cs" />
     <Compile Include="Recovery\RepairTestMusketRuntime.cs" />
     <Compile Include="Recovery\RepairCommandStartBinding.cs" />
+    <Compile Include="Recovery\FirearmMaintenanceCapability.cs" />
     <Compile Include="Qualification\MaintenanceQualificationBaseline.cs" />
     <Compile Include="Qualification\MaintenanceQualificationObservation.cs" />
     <Compile Include="Qualification\MaintenanceQualificationReport.cs" />

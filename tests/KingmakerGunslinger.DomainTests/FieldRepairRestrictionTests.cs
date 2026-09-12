@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Firearms;
@@ -141,6 +141,28 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(source.Contains("IsPartyInCombat") &&
                 source.Contains("game.Player.IsInCombat"),
                 "Field repair must use the native party-level combat authority, not a personal-engagement check.");
+            Assertions.True(source.Contains(
+                    "FirearmMaintenanceCapability.CanMaintainFirearms(caster)"),
+                "Field repair availability must explicitly verify the Gunsmithing entitlement and ability to act (review R5).");
+        }
+
+        internal static void CapabilityEnforcedAtStartAndDelivery()
+        {
+            string capability = Read("src/KingmakerGunslinger/Recovery",
+                "FirearmMaintenanceCapability.cs");
+            Assertions.True(capability.Contains("IsDead") &&
+                capability.Contains("IsUnconscious") &&
+                capability.Contains("HasFact(gunslinger.Gunsmithing)"),
+                "The shared capability policy must require a living conscious gunsmith holding the real feature fact.");
+            string binding = Read("src/KingmakerGunslinger/Recovery",
+                "RepairCommandStartBinding.cs");
+            Assertions.True(binding.Contains(
+                    "FirearmMaintenanceCapability.CanMaintainFirearms(caster)") &&
+                binding.Contains("EligibleAtStart") &&
+                binding.Contains("binding.Command.IsFinished") &&
+                binding.Contains("ReferenceEquals(binding.Command, endedCommand)") &&
+                binding.Contains("BlueprintBootstrap.OverhaulTestMusketAbility"),
+                "Command start must enforce capability; delivery must enforce start eligibility and owning-command liveness; cleanup must be command-owned; the legacy alias must be recognized (review R4/R5).");
         }
 
         internal static void DeliveryRequiresCommandStartBinding()

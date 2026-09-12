@@ -425,3 +425,123 @@ next slice; state file carries the full plan and candidate identity.
 - Remaining P4d scenarios: field-repair rejection (combat+Wrecked+alias),
   completed-rest restoration + cancelled no-op, save/load persistence round
   trip; then deployment + lanes x2 + restore + acceptance/report updates.
+
+---
+
+2026-09-13 #9 — OWNER REVIEW of 35bee7ed: REQUEST CHANGES (R1–R6); P1–P3 reopened
+
+Review: head 35bee7ed vs base 71af37ac, source review only. Dispositions
+recorded; all six accepted as engineering defects/gaps to fix before native
+qualification. Statuses:
+- R1 (High) ACCEPTED — the engine-frame marker in
+  `BrokenSequenceSuppressionRuntime`/`PlayerClickPrefix` authorizes any
+  same-frame construction, not a verified player attack order. Fix: replace
+  the frame marker with narrowly scoped, one-shot, per-(executor,target)
+  authorization derived from the real click path (prefix records
+  selection∩attackable pairs; postfix clears; consumption requires exact
+  executor+target match); trace controller entry points; regressions per
+  review.
+- R2 (High) ACCEPTED — Dead Shot (and scatter/other deed paths) commit
+  firearm damage through their own guarded Transitions and bypass the new
+  interruption registration; the contract's "only commit point" claim is
+  wrong. Fix: inventory ALL production committed-degradation writers, route
+  them through a shared interruption notifier (ordinary misfire, Dead Shot,
+  scatter), preserving composite-shot and explosion semantics; correct the
+  contract source map.
+- R3 (Medium) ACCEPTED — `EvaluateConstruction`'s Normal→AllowAndConsume
+  branch lets the brain revive the cancelled order after repair. Fix:
+  suppression is released ONLY by a genuine new player order; repair
+  restores readiness, never the old order; future automatic continuations
+  associate with a valid new order. Replace the contrary domain test
+  (`ConstructionRepairedWeaponNeverLocked`).
+- R4 (Medium) ACCEPTED — repair binding is caster-keyed (clobbered by any
+  ability end), `EligibleAtStart` never enforced, capture faults leave
+  stale bindings, and the legacy Overhaul blueprint never gets a binding
+  (alias effectively broken). Fix: command-owned binding (owning
+  UnitUseAbility reference + still-running check at delivery), enforce
+  start eligibility, clear-on-fault, recognize both repair blueprints;
+  keep ordinary ineligibility a normal rejection.
+- R5 (Medium) ACCEPTED — field repair lacks explicit Gunsmithing
+  entitlement + able-to-act checks at start/delivery; rest participant
+  capability ignores death/lifecycle. Fix: shared explicit capability
+  policy (feature fact + alive/able), enforced at field command start and
+  delivery and for rest participants at the proven post-rest boundary.
+- R6 (Medium) ACCEPTED — first scenario conflates readiness with
+  authorization (empty gun for playerAllowed), post-Wrecked rejection
+  asserted against the wrong gate due to the same-frame marker, direct
+  `MarkPlayerAttackFrame` seeding proves nothing about the production
+  input route, and several new tests are source-contract only yet marked
+  as behavioral coverage. Fix: correct the scenario, separate
+  readiness/authorization lanes, drive the production input route
+  (ClickUnitHandler.OnClick with simulate) or label bridge tests, and
+  relabel acceptance-matrix domain cells that rest on source contracts
+  only.
+Retained per review: transaction-level WreckedRequiresRest, Quick Clear
+separation, exact-item approach, ApplyRest-vs-completion distinction,
+superseded-candidate tracking, native NOT RUN honesty.
+
+---
+
+2026-09-13 #10 — Review fixes R1–R5 implemented (domain green 1612/1612)
+
+- **R1 (order-scoped authorization)**: removed the engine-frame marker.
+  `BrokenSequenceSuppressionRuntime` now records one-shot
+  player-attack authorizations per (executor → clicked target) when
+  `ClickUnitHandler.OnClick` starts (prefix resolves the clicked
+  UnitEntityView; only currently selected units where the native
+  `clickedUnit.CanAttack(unit)` predicate holds are recorded, so
+  interaction clicks record nothing); a postfix discards all records when
+  the click returns; consumption (`TryConsumePlayerAttackAuthorization`)
+  requires the exact executor+target pair, is one-shot, and a leftover
+  from a faulting handler additionally expires with its engine frame.
+  The construction gate consumes the authorization for the exact order.
+- **R3 (repair does not revive the cancelled order)**:
+  `BrokenSequenceInterruptionPolicy.EvaluateConstruction` no longer takes
+  the firearm condition at all — only a genuine new player order returns
+  AllowAndConsume; suppressed+automatic stays RejectInterrupted even after
+  repair/reload (readiness is not consent). Contrary domain test replaced
+  by `ConstructionRepairDoesNotReviveCancelledOrder` (+ a structural
+  no-condition-in-policy assertion).
+- **R2 (all commit paths routed)**: `OnCommittedDegradation` is now the
+  documented shared entry, called after the guarded commit verifies in the
+  ordinary misfire path (existing), `DeadShotRuntime.Execute`
+  (conditionCommit), and `ScatterShotRuntime.Execute` (scatter misfire).
+  Composite-shot semantics unchanged (only future constructions gated).
+  Contract source map corrected (three commit points, one shared
+  notification). New wiring test `wiring-all-commit-paths-notify` asserts
+  call-after-commit ordering in all three files.
+- **R4 (command-owned binding)**: `RepairCommandStartBinding` stores the
+  owning `UnitUseAbility`; `OnEnded` removes the binding only when the
+  ending command owns it; delivery requires `EligibleAtStart` AND the
+  owning command not finished; capture failure clears the caster's
+  binding (fail closed); the start hook recognizes BOTH
+  `RepairTestMusketAbility` and `OverhaulTestMusketAbility`.
+- **R5 (explicit capability)**: new shared
+  `Recovery/FirearmMaintenanceCapability` (living + conscious + real
+  Gunsmithing feature fact). Enforced at field-repair availability, at
+  command-start eligibility, and for rest participants
+  (`AllCharacters.FindAll(IsLivingParticipant)` + HasFact).
+- **R6 (partial)**: scenario rewritten — readiness re-established
+  explicitly before the player-order assertion (labeled BRIDGE TEST for
+  the seam-injected authorization); real selection-filter negative
+  control (unselected executor gets no authorization); one-shot and
+  click-end-clearing assertions; post-Wrecked rejection now asserts the
+  interruption-gate path (correct counter). Acceptance matrix carries a
+  top note: wiring/source-contract tests do not prove behavior.
+- Count bookkeeping: 1612 (−1 invalid-condition case, +2 new wiring
+  tests); validator token MarkPlayerAttackFrame →
+  TryConsumePlayerAttackAuthorization.
+- Results: domain suite **1612/1612 PASS exit 0**; main project clean
+  Release Rebuild OK; repository validation PASS (within suite run).
+
+Still open from the review (next slices, behavioral):
+- R1 regressions needing native runs: attack for B vs A, real nonattack
+  click, controller/console route trace, exception-path authorization
+  bounds. Mechanisms covered by seam-level assertions only.
+- R2 behavioral: extend the guarded scenario with Dead Shot
+  (ExecuteForRuntimeTest with forced rolls) and scatter slices proving
+  suppression activates from their real commits.
+- R4/R5 behavioral lifecycles (binding ownership, capability loss between
+  start and delivery, dead-gunsmith rest) — runtime lanes.
+- Remaining P4d scenarios (repair rejection, rest, persistence), rebuild,
+  artifact identity, native lanes x2, P5.

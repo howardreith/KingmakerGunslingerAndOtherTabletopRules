@@ -147,6 +147,12 @@ namespace KingmakerGunslinger.Deeds
                         conditionCommit = Transition(firearm,
                             expectedCurrent, condition.After);
                         expectedCurrent = conditionCommit.Repository.State;
+                        // Verified committed degradation through the shared
+                        // interruption notification (same entry the ordinary
+                        // misfire path uses), so a Dead Shot break also stops
+                        // the sequence's automatic continuations.
+                        Firing.BrokenSequenceSuppressionRuntime
+                            .OnCommittedDegradation(casterEntity, firearm.Weapon);
                     }
                 }
 

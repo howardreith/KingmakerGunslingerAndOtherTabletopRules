@@ -17,35 +17,23 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ConstructionUnsuppressedAlwaysAllows()
         {
-            foreach (FirearmCondition condition in new[] {
-                FirearmCondition.Normal,
-                FirearmCondition.Broken,
-                FirearmCondition.Wrecked })
+            foreach (bool playerOrder in new[] { false, true })
             {
-                foreach (bool playerContext in new[] { false, true })
-                {
-                    Assertions.Equal(BrokenSequenceConstructionDecision.Allow,
-                        BrokenSequenceInterruptionPolicy.EvaluateConstruction(
-                            false, playerContext, condition),
-                        "Without a committed-break suppression every construction passes: " +
-                        condition + "/" + playerContext);
-                }
+                Assertions.Equal(BrokenSequenceConstructionDecision.Allow,
+                    BrokenSequenceInterruptionPolicy.EvaluateConstruction(
+                        false, playerOrder),
+                    "Without a committed-break suppression every construction passes: " +
+                    playerOrder);
             }
         }
 
         internal static void ConstructionAutomaticAfterBreakRejected()
         {
-            foreach (FirearmCondition condition in new[] {
-                FirearmCondition.Broken,
-                FirearmCondition.Wrecked })
-            {
-                Assertions.Equal(
-                    BrokenSequenceConstructionDecision.RejectInterrupted,
-                    BrokenSequenceInterruptionPolicy.EvaluateConstruction(
-                        true, false, condition),
-                    "Automatic recreation for a damaged weapon is interrupted: " +
-                    condition);
-            }
+            Assertions.Equal(
+                BrokenSequenceConstructionDecision.RejectInterrupted,
+                BrokenSequenceInterruptionPolicy.EvaluateConstruction(
+                    true, false),
+                "Automatic recreation of the interrupted order is rejected, including after the firearm was repaired or reloaded (readiness is not consent).");
         }
 
         internal static void ConstructionPlayerIssuedOrderConsumesSuppression()
@@ -53,38 +41,26 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(
                 BrokenSequenceConstructionDecision.AllowAndConsume,
                 BrokenSequenceInterruptionPolicy.EvaluateConstruction(
-                    true, true, FirearmCondition.Broken),
-                "A genuine player-issued attack order with the Broken firearm passes and consumes the suppression.");
-            Assertions.Equal(
-                BrokenSequenceConstructionDecision.AllowAndConsume,
-                BrokenSequenceInterruptionPolicy.EvaluateConstruction(
-                    true, true, FirearmCondition.Wrecked),
-                "A player-issued order is still the player's decision even for a Wrecked weapon.");
+                    true, true),
+                "A genuine player-issued attack order passes and consumes the suppression, whatever the firearm condition.");
         }
 
-        internal static void ConstructionRepairedWeaponNeverLocked()
+        internal static void ConstructionRepairDoesNotReviveCancelledOrder()
         {
+            // Review R3: repairing the firearm restores readiness, not the
+            // cancelled order. The policy takes no condition input at all —
+            // only a genuine new player order releases suppression — so a
+            // brain re-issue after Quick Clear/repair stays cancelled while
+            // any later deliberate order works normally.
             Assertions.Equal(
-                BrokenSequenceConstructionDecision.AllowAndConsume,
+                BrokenSequenceConstructionDecision.RejectInterrupted,
                 BrokenSequenceInterruptionPolicy.EvaluateConstruction(
-                    true, false, FirearmCondition.Normal),
-                "A weapon repaired back to Normal (e.g. Quick Clear) must never be gated, even automatically.");
-        }
-
-        internal static void ConstructionInvalidConditionFailsClosed()
-        {
-            bool threw = false;
-            try
-            {
-                BrokenSequenceInterruptionPolicy.EvaluateConstruction(
-                    true, false, (FirearmCondition)99);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                threw = true;
-            }
-            Assertions.True(threw,
-                "An unknown condition must fail closed instead of guessing an interruption decision.");
+                    true, false),
+                "A repaired firearm must not let the brain revive the cancelled order.");
+            string policy = Read("src/KingmakerGunslinger/Firing",
+                "BrokenSequenceInterruptionPolicy.cs");
+            Assertions.False(policy.Contains("FirearmCondition"),
+                "The interruption policy must not consult firearm condition: readiness is not player consent.");
         }
 
         internal static void FullAttackEndsAfterCommittedBreak()
@@ -150,9 +126,9 @@ namespace KingmakerGunslinger.DomainTests
                 "EmptyFirearmAttackCommandPatch.cs");
             Assertions.True(source.Contains(
                     "BrokenSequenceInterruptionPolicy.EvaluateConstruction(") &&
-                source.Contains("IsPlayerAttackContext") &&
+                source.Contains("TryConsumePlayerAttackAuthorization(executor, __1)") &&
                 source.Contains("BrokenSequenceSuppressionRuntime.ConsumeSuppression("),
-                "Attack construction must gate on suppression, player context, and consume on a deliberate order.");
+                "Attack construction must gate on suppression, consume the exact-order player authorization, and consume suppression on a deliberate order.");
             Assertions.True(source.Contains("RejectInterrupted") &&
                 source.Contains("broke during its attack sequence"),
                 "The interrupted-sequence rejection must be visible to the player.");
@@ -170,8 +146,50 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(source.Contains("ClickUnitHandler") &&
                 source.Contains("\"OnClick\"") &&
                 source.Contains("PlayerClickPrefix") &&
-                source.Contains("MarkPlayerAttackFrame"),
-                "The native player click handler must mark the player-attack frame for constructions inside it.");
+                source.Contains("PlayerClickPostfix") &&
+                source.Contains("BeginPlayerAttackClick") &&
+                source.Contains("EndPlayerAttackClick"),
+                "The native player click handler must open and close the order-scoped player authorization around itself.");
+        }
+
+        internal static void WiringAllCommitPathsNotifyInterruption()
+        {
+            // Review R2: every production committed-degradation writer must
+            // route through the shared interruption notification — the
+            // ordinary misfire, Dead Shot, and Scatter Shot.
+            string shared = Read("src/KingmakerGunslinger/Firing",
+                "BrokenSequenceSuppressionRuntime.cs");
+            Assertions.True(shared.Contains(
+                    "internal static void OnCommittedDegradation") &&
+                shared.Contains(
+                    "Dead Shot, and Scatter Shot all call this"),
+                "The shared committed-degradation notification must document itself as the single entry.");
+            string misfire = Read("src/KingmakerGunslinger/Misfires",
+                "FirearmMisfireRuntime.cs");
+            string deadShot = Read("src/KingmakerGunslinger/Deeds",
+                "DeadShotRuntime.cs");
+            string scatter = Read("src/KingmakerGunslinger/Scatter",
+                "ScatterShotRuntime.cs");
+            foreach (string source in new[] { misfire, deadShot, scatter })
+            {
+                Assertions.True(source.Contains(
+                        ".OnCommittedDegradation("),
+                    "A committed-degradation writer is not routed through the shared interruption notification.");
+            }
+            // The notification must fire only after the guarded transition
+            // commits and verifies, never for rolled-back or prevented breaks.
+            int deadCommit = deadShot.IndexOf(
+                "conditionCommit = Transition(firearm,", StringComparison.Ordinal);
+            int deadNotify = deadShot.IndexOf(
+                "OnCommittedDegradation(casterEntity", StringComparison.Ordinal);
+            Assertions.True(deadCommit >= 0 && deadNotify > deadCommit,
+                "Dead Shot must notify only after its condition commit verifies.");
+            int scatterCommit = scatter.IndexOf(
+                "Transition(firearm, expected, condition.After)", StringComparison.Ordinal);
+            int scatterNotify = scatter.IndexOf(
+                "OnCommittedDegradation(caster", StringComparison.Ordinal);
+            Assertions.True(scatterCommit >= 0 && scatterNotify > scatterCommit,
+                "Scatter must notify only after its condition commit verifies.");
         }
 
         internal static void WiringSuppressionStateStaysTransient()

@@ -188,6 +188,11 @@ namespace KingmakerGunslinger.Scatter
                     FirearmItemStateSnapshot conditionCommit =
                         Transition(firearm, expected, condition.After);
                     expected = conditionCommit.Repository.State;
+                    // Verified committed degradation through the shared
+                    // interruption notification, so a scatter misfire also
+                    // stops the sequence's automatic continuations.
+                    Firing.BrokenSequenceSuppressionRuntime
+                        .OnCommittedDegradation(caster, firearm.Weapon);
                     FirearmConditionTopNotification
                         .PublishAfterCommittedDegradation(
                         caster.CharacterName,

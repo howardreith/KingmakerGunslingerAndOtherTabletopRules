@@ -112,7 +112,11 @@ namespace KingmakerGunslinger.Gunsmithing
                 return;
             }
 
-            List<UnitEntityData> participants = game.Player.AllCharacters;
+            List<UnitEntityData> participants = game.Player.AllCharacters ==
+                null
+                ? null
+                : game.Player.AllCharacters.FindAll(
+                    FirearmMaintenanceCapability.IsLivingParticipant);
             bool hasCapableRepairer = participants != null &&
                 participants.Exists(unit => HasGunsmithingCapability(unit, gunsmithFeature));
             var kitInventory = new KingmakerRepairKitInventory(
@@ -245,8 +249,10 @@ namespace KingmakerGunslinger.Gunsmithing
             UnitEntityData unit,
             BlueprintFeature gunsmithFeature)
         {
-            return unit != null &&
-                unit.Descriptor != null &&
+            // Post-rest capability: a living participant that still holds the
+            // real Gunsmithing feature fact. Dead units never supply the
+            // skill; the post-rest boundary itself is not a sleeping flag.
+            return FirearmMaintenanceCapability.IsLivingParticipant(unit) &&
                 unit.Descriptor.HasFact(gunsmithFeature);
         }
 
