@@ -2,50 +2,28 @@
 
 **Mission ID:** `Z-FIREARM-MAINTENANCE`
 
-**Last updated:** 2026-09-12 (P4c complete; next P4d native qualification)
+**Last updated:** 2026-09-12 (session 1 end; P4d scenario 1/4 done)
 
 ## Mission status
 
-`IN_PROGRESS` — phase **P4d: guarded native runtime qualification on the immutable 0.0.127 candidate**
+`IN_PROGRESS` — phase **P4d: guarded native qualification (scenario 1 of 4 written; remaining scenarios, rebuild, deployment, and runs pending)**
 
 First incomplete acceptance IDs: ALL native cells `NOT RUN` (A/F/R domain
-PARTIAL where noted); W01–W02, C01–C06, Q01 partially (build/validation done,
-native pending); R03/R08 fully `NOT RUN`
-(see `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`).
+PARTIAL where noted); W01–W02, C01–C06 pending native; R03/R08 fully
+`NOT RUN` (see `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`).
 
-## Candidate identity (immutable for all remaining gates)
+Branch HEAD `f4060c6739df145f85f8a704be8e28630e2e3a21` (all work pushed;
+remote verified after every checkpoint).
 
-| Item | Value |
-| --- | --- |
-| Version | 0.0.127 (informational 0.0.127-firearm-maintenance) |
-| Source commit | `62285749fb7bd679fa452bf4ad4d6537aea762f5` (src/ identical at HEAD `0991f6411f1ed4786d23b48112c258c62899a355`; the later commit adds only tests/journal) |
-| Package | `artifacts/local-runtime/0.0.127/KingmakerGunslinger-0.0.127-local-runtime.zip` SHA-256 `97e4039f47a2153572ac938ab8225a8ac8b2abdf15521a36c69eb68badf2b72f` (strict UMM validation PASS; also `artifacts/packages/KingmakerGunslinger-0.0.127-firearm-maintenance.zip`) |
-| DLL SHA-256 | `bbceda4498092b2c0ff9aefe38c43382b8454d7be8c8bcc4776d52c8b995f835` |
-| DLL MVID | `204d1c6d-6f02-4650-8711-e82239dce9cb` |
-| Installed | NOT DEPLOYED yet (live install still 0.0.126 release); backup-first reversible deployment authorized for qualification only |
+## Candidate identity
 
-## Identity snapshot
-
-| Item | Value |
-| --- | --- |
-| Host | Windows 10 (10.0.19045 x64), Git Bash |
-| Lab root | `C:\Dev\KingmakerGunslingerLab` |
-| Worktree | `C:\Dev\KingmakerGunslingerLab\worktrees\firearm-maintenance` (isolated; main checkout left on `master`) |
-| Branch | `codex/z-firearm-maintenance-rest-safety` |
-| Base SHA | `71af37acc1dc7548fecb067bf753c11d6b90f893` (= `origin/master`, verified in sync after fetch) |
-| Current HEAD | P1 slice commit (see git log; base 71af37ac + records + P1) |
-| Last qualified/pushed commit | see journal latest entry; verify with `git log origin/codex/z-firearm-maintenance-rest-safety -1` |
-| Remote verification | wrapper `Guarded push PASS` after each checkpoint commit |
-| Dirty files | none between checkpoints (git-ignored machine-local: `GamePath.props`, `artifacts/` incl. bodyguard IL dump — never commit) |
-| Installed mod | `...\Pathfinder Kingmaker\Mods\KingmakerGunslinger` Info.json `0.0.126` (matches master release record) |
-| Installed DLL SHA-256 | NOT VERIFIED yet (record during baseline slice) |
-| Candidate version | NOT BUILT (expected next version 0.0.127 — confirm no later release before allocating) |
-| Build env | dotnet 8.0.424 SDK, Python 3.14.7, MSBuild via vswhere fallback, reference bundle present at lab `private\extracted-references\KingmakerGunslinger-private-build-references`, .NET 4.7 ref assemblies assumed present (verified by Build-Local on first run) |
-| Worktree script support | verified: `Get-KmgRepositoryRoot` resolves relative to script dir; push wrapper takes `-RepositoryRoot`; reference bundle walk-up reaches lab `private\` from worktrees\ |
-
-Other work preserved: main checkout clean on `master`; unrelated worktree
-`worktrees\share-transmutation-instant` (branch `codex/share-transmutation-instant`,
-clean at `636d70bf`) untouched.
+**SUPERSEDED — source changed after journal #6's build** (scenario code
+added in commits 0991f641..f4060c67; src/ deltas exist). Historical:
+0.0.127 build @ 6228574, package SHA-256 97e4039f...f72f, DLL SHA-256
+bbceda44...f835, MVID 204d1c6d-6f02-4650-8711-e82239dce9cb (strict UMM
+validation PASS; journal #6). Before any native run: rerun
+`scripts/Build-Local.ps1` and record the NEW package/DLL SHA-256/MVID;
+all native evidence must reference that identity.
 
 ## Implementation decisions so far
 
@@ -95,27 +73,35 @@ frozen). P4's 0.0.127 validator supersedes the interim bump.
 
 ## Next concrete actions
 
-1. **P4d — guarded native qualification** (on the immutable candidate above):
-   a. Write the guarded runtime scenario(s) under
-      `src/KingmakerGunslinger/RuntimeTesting/` following the existing
-      RuntimeTestRunner partial-class pattern (see
-      RuntimeTestRunner.TeleportationScrolls.cs for naming/assertions);
-      cover: (i) misfire-interruption (forced natural roll via the guarded
-      mechanism, full attack, verify no next shot/reload + counters
-      SequenceInterruptionRejections / full-attack.ended-after-committed-break
-      log), (ii) field-repair rejection (combat + Wrecked + legacy alias),
-      (iii) completed-rest restoration (camp; verify conditions → Normal,
-      Wrecked unloaded, once-only) and cancelled-rest no-op,
-      (iv) save/load persistence round trip with a named disposable fixture.
-   b. Register scenarios in the runner; rebuild candidate ONLY via
-      Build-Local if source changed (new DLL hash ⇒ rerun all native lanes
-      on the new identity).
-   c. Backup-first deploy via scripts/Deploy-Local.ps1 (records backup
-      identity); run `scripts/Invoke-KingmakerRuntimeTest.ps1` per lane
-      x2 fresh runs (Steam App ID 640820 enforced by the harness);
-      evidence under C:\Dev\KingmakerGunslingerLabuntime-evidence\.
-   d. Restore the pre-mission 0.0.126 install (scripts/Restore-Live-Mod.ps1)
-      unless owner separately authorizes leaving the candidate.
-   e. Update acceptance matrix native cells + release notes PENDING gates.
-2. P5: reconcile matrix, cleanup verification, final report
-   (Z-FIREARM-MAINTENANCE-REPORT.md), owner smoke test pointer.
+1. **P4d remaining scenarios** (follow `RuntimeTestRunner.FirearmMaintenance.cs`
+   + journal #7/#8 patterns; register catalog const + Allowed set + dispatch
+   branch + csproj + RuntimeAutomation.Common.ps1 metadata each time):
+   a. `disposable-field-repair-rejection`: fixture with Gunsmithing + kit +
+      Broken gun → RepairTestMusketRuntime.Evaluate available out of combat;
+      seed combat via Player.IsInCombat? (combat state on detached fixture —
+      verify a safe native way, e.g. Game.Instance.Player.IsInCombat
+      backing field or a real encounter; do NOT fake booleans) → rejected
+      with combat reason; Wrecked → rejected with full-rest reason (direct
+      Evaluate + ability delivery via AbilityExecutionContext like
+      RunDisposableGunsmithingCrafting + transaction status
+      WreckedRequiresRest).
+   b. `disposable-completed-rest-restoration`: verify which native route
+      reaches StopRestProcess from a guarded fixture (StartScripted vs camp
+      flow; R06/R08 flags); assert CompletedRestMaintenancePatch counters +
+      conditions → Normal (Wrecked unloaded) + once-only + summary; include
+      a non-termination case (skip-time/encounter flag) asserting no run.
+   c. persistence lane: request-local fixture + named disposable save round
+      trip IF an authorized write route exists (mission §2; otherwise mark
+      BLOCKED and report).
+2. **Rebuild** `scripts/Build-Local.ps1`; record new artifact identity here.
+3. **Deploy** via `scripts/Deploy-Local.ps1 -PackagePath <new package>`
+   (backup-first; record backup identity); run lanes x2 fresh launches via
+   `scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario <id>
+   -ExpectedVersion 0.0.127 ...`; evidence under
+   `C:\Dev\KingmakerGunslingerLabuntime-evidence\`.
+4. Restore live install (`scripts/Restore-Live-Mod.ps1` + recorded backup).
+5. P5: acceptance matrix native cells, RELEASE-NOTES-0.0.127 PENDING gates,
+   Z-FIREARM-MAINTENANCE-REPORT.md, final commit/push.
+
+No active processes, fixtures, or leases. Live install untouched (0.0.126
+release). Worktree has no dirty files between checkpoints.
