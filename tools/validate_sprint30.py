@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Portable source validator for Sprint 30 with inherited Sprint 29 checks."""
 from __future__ import annotations
 
@@ -135,7 +135,7 @@ def validate(
             "FirearmActionKind.Reload",
             "FirearmActionKind.Repair",
             "The firearm has capacity available to reload.",
-            "Only a Broken or Wrecked firearm can be repaired.",
+            "Only a Broken firearm can be repaired in the field.",
             "A reusable Gunsmith's Kit is required in the shared inventory.",
         ],
         "Generic action policy",

@@ -11,11 +11,14 @@ using UnityEngine;
 namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
-    /// Player-facing availability and delivery component for exact-item unified repair:
-    /// Broken or Wrecked to Normal with one reusable shared-inventory Gunsmith's Kit.
-    /// Mutation occurs only at the ability-delivery boundary after the full-round
-    /// command completes, so cancellation or interruption before delivery consumes
-    /// nothing and changes no state. Nothing is ever consumed on success either.
+    /// Player-facing availability and delivery component for exact-item field
+    /// repair: Broken to Normal, outside combat, with one reusable
+    /// shared-inventory Gunsmith's Kit. The exact firearm is bound at genuine
+    /// command commencement and must still match at delivery, so cancellation,
+    /// combat, or a target/context change across the preceding full-round
+    /// command consumes nothing and changes no state. Nothing is ever consumed
+    /// on success either. Wrecked firearms are restored only by a completed
+    /// full rest. Mutation occurs only at the ability-delivery boundary.
     /// </summary>
     [Serializable]
     public sealed class RepairTestMusketAbilityLogic :
@@ -75,7 +78,7 @@ namespace KingmakerGunslinger.Recovery
 
         public string GetReason()
         {
-            return "Requires exactly one equipped Broken or Wrecked firearm and a reusable Gunsmith's Kit in the shared inventory. Loaded ammunition is preserved and nothing is consumed.";
+            return "Requires exactly one equipped Broken firearm, a reusable Gunsmith's Kit in the shared inventory, and no active combat. Loaded ammunition is preserved and nothing is consumed; a Wrecked firearm requires a completed full rest.";
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
@@ -119,6 +122,12 @@ namespace KingmakerGunslinger.Recovery
                     m_GunsmithKit);
                 if (!start.IsAvailable || start.Weapon == null)
                     throw new InvalidOperationException(start.Reason);
+                Kingmaker.Items.ItemEntityWeapon boundAtCommandStart;
+                if (!RepairCommandStartBinding.TryGetBoundWeapon(
+                        context.Caster.Descriptor, out boundAtCommandStart) ||
+                    !ReferenceEquals(boundAtCommandStart, start.Weapon))
+                    throw new InvalidOperationException(
+                        "Repair Firearm delivery does not match the exact firearm bound at command start; the command was interrupted or its context changed.");
                 return true;
             }
             catch (Exception exception)

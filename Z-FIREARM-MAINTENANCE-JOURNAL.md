@@ -231,3 +231,78 @@ Results @ worktree (P1 commit 97ff28d6 + this slice):
   evidence). No runtime launches yet.
 
 Next: P3 field-repair restriction slice.
+
+---
+
+2026-09-12 #5 — P3 implemented: field repair Broken-only + out-of-combat (domain green)
+
+Source changes:
+- `Recovery/FirearmRepairStatus`: +`WreckedRequiresRest = 5`.
+- `Recovery/FirearmRepairTransactionService`: field entry now rejects
+  Wrecked before every other check (last line of defense; the ordinary
+  ability cannot restore Wrecked through the generic transaction). The
+  completed-rest route keeps its own guarded-transition entry (P2), and
+  Quick Clear keeps `FirearmStateMachine.Repair` (shared low-level
+  transition, combat-usable, untouched).
+- `Actions/FirearmActionPolicy`: repair ordering is combat → Wrecked →
+  Normal → kit, with the mission's reason strings; reload decisions
+  unchanged (old 4-arg Evaluate overload delegates with inCombat=false).
+- `Recovery/RepairTestMusketRuntime`: combat gate via
+  `Game.Instance.Player.IsInCombat` (native party-level authority — an
+  active party encounter rejects repair even if the caster is not
+  personally engaged); availability text now Broken-only.
+- `Recovery/RepairCommandStartBinding.cs` (new): Harmony prefix on
+  `UnitUseAbility.OnStart` binds the exact equipped firearm + start
+  eligibility (non-combat, kit, Broken) when the repair ability command
+  begins; postfix on `UnitUseAbility.OnEnded` clears it.
+  `RepairTestMusketAbilityLogic.TryPrepare` now requires
+  `ReferenceEquals(boundAtCommandStart, start.Weapon)` — the concrete
+  target is anchored at genuine command commencement, closing the
+  back-to-back-delivery-checks gap (F04).
+- Active user-facing texts updated to the new contract: ability, feature,
+  kit, legacy-alias descriptions; availability reasons; GetReason;
+  DevelopmentUi; Main bootstrap log; blueprints.json manifest notes.
+  Legacy Overhaul alias delegates to the same logic (inherits all checks).
+- Dev accelerated fixture (`KingmakerDevelopmentBridge.Sprint29` +
+  `MaintenanceQualificationService`/`Baseline`): seeds an empty
+  misfire-BROKEN target instead of Wrecked; stage classification updated
+  (Broken=FixtureReady, Wrecked=Failed/rest-only).
+
+Validator-chain maintenance (established patterns, each recorded):
+- tokens in `validate_sprint29` (runtime text, dev-harness seed) and
+  `validate_sprint30` (policy reason) updated to the new contract strings.
+- `blueprints.json` repair-entry notes sit inside hash-pinned manifest
+  prefixes (entries[:1869], entries[:1872] in validate_teleportation118/119);
+  the same notes were deliberately changed by the 0.0.121 unified-repair
+  release (pins were re-pinned then). Re-pinned both digests for the new
+  notes: 1869=34ccf639d25e981b5263bd4de855c3fa38659b7d0206c2a0448487d01b4ade0f,
+  1872=d63a4cdd831276e7173ab53aac6fd135d5ccbb1bbf6ab0c56a14eb2daaf8138e.
+- DETERMINISTIC_TEST_COUNT + active-chain static blocks → 1611.
+- Stray UTF-8 BOM introduced into blueprints.json by an edit script —
+  detected by validator ("Unexpected UTF-8 BOM"), stripped.
+
+Obsolete expectations explicitly replaced:
+- Sprint29 `repair.transaction.wrecked-to-normal` now asserts
+  WreckedRequiresRest + zero mutation; repeated-cycles test now misfires
+  from Normal each cycle (Broken→Wrecked is rest-only);
+  `MaintenanceRemovedOverhaulStageRejected` now asserts Wrecked is not a
+  loop stage; fixture/baseline tests use empty-Broken.
+- Sprint30 `generic.repair.wrecked-available` now asserts rejection.
+- `FourthPlaytestOverhaulMaintenance` asserts equipped-Broken runtime text
+  + party combat authority + Wrecked mention in the blueprint text.
+- `UnifiedFirearmRepairTests` text/manifest assertions updated.
+- New `FieldRepairRestrictionTests` (10 cases): combat beats all
+  eligibility, Wrecked rest-only, Normal/kit rejection, reload unaffected,
+  transaction defense, party-combat authority wiring, command-start
+  binding wiring, legacy alias, no active Wrecked-field text anywhere
+  (incl. manifest), Quick Clear route intact.
+
+Results @ worktree (P2 commit 72388f66 + this slice):
+- `scripts/test-domain.ps1 -Configuration Release`: **1611/1611 PASS, exit 0**
+- Main project clean Release Rebuild: OK.
+- Acceptance F-rows: domain PARTIAL recorded (F01/F02/F05 partially;
+  F03/F04 policy+wiring only) — native cells all NOT RUN. No runtime
+  launches yet.
+
+Next: P4 (docs/version 0.0.127 validator chain, full Build-Local pipeline,
+package validation, guarded native lanes ×2) then P5.

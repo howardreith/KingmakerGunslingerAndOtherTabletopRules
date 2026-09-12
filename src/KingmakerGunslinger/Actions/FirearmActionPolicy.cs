@@ -15,6 +15,17 @@ namespace KingmakerGunslinger.Actions
             FirearmState state,
             bool hasRequiredResources)
         {
+            return Evaluate(
+                action, definition, state, hasRequiredResources, false);
+        }
+
+        internal static FirearmActionDecision Evaluate(
+            FirearmActionKind action,
+            FirearmDefinition definition,
+            FirearmState state,
+            bool hasRequiredResources,
+            bool inCombat)
+        {
             if (definition == null)
             {
                 throw new ArgumentNullException("definition");
@@ -30,7 +41,7 @@ namespace KingmakerGunslinger.Actions
                 case FirearmActionKind.Reload:
                     return EvaluateReload(definition, state, hasRequiredResources);
                 case FirearmActionKind.Repair:
-                    return EvaluateRepair(state, hasRequiredResources);
+                    return EvaluateRepair(state, hasRequiredResources, inCombat);
                 default:
                     throw new ArgumentOutOfRangeException("action");
             }
@@ -64,19 +75,33 @@ namespace KingmakerGunslinger.Actions
 
         private static FirearmActionDecision EvaluateRepair(
             FirearmState state,
-            bool hasResources)
+            bool hasResources,
+            bool inCombat)
         {
-            if (state.Condition != FirearmCondition.Broken &&
-                state.Condition != FirearmCondition.Wrecked)
+            if (inCombat)
             {
                 return Rejected(
                     FirearmActionKind.Repair,
-                    "Only a Broken or Wrecked firearm can be repaired.");
+                    "Cannot repair firearms during combat.");
+            }
+
+            if (state.Condition == FirearmCondition.Wrecked)
+            {
+                return Rejected(
+                    FirearmActionKind.Repair,
+                    "This firearm is Wrecked and requires a completed full rest.");
+            }
+
+            if (state.Condition != FirearmCondition.Broken)
+            {
+                return Rejected(
+                    FirearmActionKind.Repair,
+                    "Only a Broken firearm can be repaired in the field.");
             }
 
             return hasResources
                 ? Available(FirearmActionKind.Repair,
-                    "The firearm is ready to repair; any loaded ammunition is preserved.")
+                    "The Broken firearm is ready to repair to Normal with the reusable Gunsmith's Kit. Nothing is consumed and every surviving loaded round is preserved; the item will not be replaced.")
                 : Rejected(FirearmActionKind.Repair,
                     "A reusable Gunsmith's Kit is required in the shared inventory.");
         }

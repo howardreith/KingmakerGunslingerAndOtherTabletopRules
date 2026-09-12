@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using KingmakerGunslinger.Actions;
 using KingmakerGunslinger.Firearms;
 
@@ -33,7 +33,9 @@ namespace KingmakerGunslinger.DomainTests
 
         private static void GenericRepairWreckedAvailable()
         {
-            AssertAvailable(FirearmActionKind.Repair, Empty(FirearmCondition.Wrecked), true);
+            // Mission Z-FIREARM-MAINTENANCE: field repair is Broken-only; a
+            // Wrecked firearm is rest-only and must be rejected by the policy.
+            AssertRejected(FirearmActionKind.Repair, Empty(FirearmCondition.Wrecked), true);
         }
 
         private static void GenericRepairNormalRejected()

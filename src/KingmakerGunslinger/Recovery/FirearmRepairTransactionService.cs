@@ -4,10 +4,13 @@ using KingmakerGunslinger.Firearms;
 namespace KingmakerGunslinger.Recovery
 {
     /// <summary>
-    /// Coordinates unified same-item Broken/Wrecked-to-Normal repair. The reusable
-    /// Gunsmith's Kit is verified in the shared inventory before mutation and is
-    /// never consumed, spent, or replaced. Eligibility is checked before mutation;
-    /// a later failure attempts to restore the exact pre-operation firearm state.
+    /// Coordinates the out-of-combat field repair of one exact Broken firearm
+    /// to Normal. Wrecked firearms are rejected here and require a completed
+    /// full rest; the separate completed-rest restoration route handles them.
+    /// The reusable Gunsmith's Kit is verified in the shared inventory before
+    /// mutation and is never consumed, spent, or replaced. Eligibility is
+    /// checked before mutation; a later failure attempts to restore the exact
+    /// pre-operation firearm state.
     /// </summary>
     internal sealed class FirearmRepairTransactionService
     {
@@ -117,8 +120,12 @@ namespace KingmakerGunslinger.Recovery
                 throw new ArgumentNullException("inventory");
             }
 
-            if (state.Condition != FirearmCondition.Broken &&
-                state.Condition != FirearmCondition.Wrecked)
+            if (state.Condition == FirearmCondition.Wrecked)
+            {
+                return FirearmRepairStatus.WreckedRequiresRest;
+            }
+
+            if (state.Condition != FirearmCondition.Broken)
             {
                 return FirearmRepairStatus.NotBroken;
             }

@@ -302,7 +302,7 @@
       "plannedType": "BlueprintAbility",
       "status": "active",
       "milestone": "Sprint 29",
-      "notes": "Full-round personal extraordinary ability that repairs a Broken or Wrecked firearm straight to Normal with one reusable shared-inventory Gunsmith's Kit; consumes nothing, preserves surviving loaded ammunition, and never replaces the item."
+      "notes": "Full-round personal extraordinary ability that repairs an equipped Broken firearm straight to Normal outside combat with one reusable shared-inventory Gunsmith's Kit; consumes nothing, preserves surviving loaded ammunition, and never replaces the item. A Wrecked firearm is restored only by a completed full rest."
     },
     {
       "symbol": "KMG.Firearms.EarlyPistolWeaponType",

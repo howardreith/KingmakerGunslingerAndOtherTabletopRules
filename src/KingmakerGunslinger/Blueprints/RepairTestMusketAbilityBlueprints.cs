@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using Kingmaker.Blueprints;
@@ -17,7 +17,7 @@ namespace KingmakerGunslinger.Blueprints
     /// Registers the single player-facing firearm maintenance action: a personal,
     /// extraordinary, full-round same-item repair that requires one reusable
     /// Gunsmith's Kit in the shared inventory, consumes nothing, and changes a
-    /// Broken or Wrecked firearm to Normal while preserving loaded ammunition.
+    /// Broken firearm to Normal outside combat while preserving loaded ammunition.
     /// </summary>
     internal static class RepairTestMusketAbilityBlueprints
     {
@@ -27,7 +27,7 @@ namespace KingmakerGunslinger.Blueprints
         internal const string ComponentName = "$KMG_RepairTestMusketLogic";
 
         private const string Description =
-            "Spend a full-round action to repair the exact equipped Broken or Wrecked firearm to Normal. Requires a reusable Gunsmith's Kit in the shared inventory; the kit is not consumed, nothing is spent, and ammunition still loaded in that firearm is preserved. This action does not replace the item.";
+            "Spend a full-round action outside combat to repair the exact equipped Broken firearm to Normal. Cannot be used during combat. Requires a reusable Gunsmith's Kit in the shared inventory; the kit is not consumed, nothing is spent, and ammunition still loaded in that firearm is preserved. A Wrecked firearm requires a completed full rest. This action does not replace the item.";
 
         internal static BlueprintAbility Register(
             BlueprintRegistry registry,

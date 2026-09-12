@@ -2,15 +2,15 @@
 
 **Mission ID:** `Z-FIREARM-MAINTENANCE`
 
-**Last updated:** 2026-09-12 (P2 source slice complete, domain green)
+**Last updated:** 2026-09-12 (P3 source slice complete, domain green)
 
 ## Mission status
 
-`IN_PROGRESS` — phase **P2 source implemented (domain layer); next P3**
+`IN_PROGRESS` — phase **P1–P3 source implemented (domain layer); next P4 (docs/version/pipeline/native)**
 
-First incomplete acceptance IDs: A-rows native cells all `NOT RUN` (A01/02/04/05/06/07 domain PARTIAL);
-R01/02/04/05/06/07/09/10 domain PARTIAL, R03/R08 fully `NOT RUN`; F/W/C/Q rows `NOT RUN`
-(see `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`).
+First incomplete acceptance IDs: ALL native cells `NOT RUN` (A/F/R domain
+PARTIAL where noted); W01–W02, C01–C06, Q01–Q03 `NOT RUN`; R03/R08 fully
+`NOT RUN` (see `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`).
 
 ## Identity snapshot
 
@@ -75,10 +75,12 @@ frozen). P4's 0.0.127 validator supersedes the interim bump.
 | Gate | Result | Evidence |
 | --- | --- | --- |
 | Identity verification | PASS | journal #1 |
-| Repository validation | PASS (worktree) | journal #1, #3 |
+| Repository validation | PASS (worktree) | journal #1–#5 |
 | Domain suite pre-change baseline | PASS 1581/1581 @ base | journal #2 |
-| Domain suite after P1 | **PASS 1592/1592, exit 0** | journal #3 (`scripts/test-domain.ps1 -Configuration Release`) |
-| Main project Release build after P1 | PASS (clean Rebuild compiles) | journal #3 |
+| Domain suite after P1 | PASS 1592/1592 | journal #3 |
+| Domain suite after P2 | PASS 1601/1601 | journal #4 |
+| Domain suite after P3 | **PASS 1611/1611, exit 0** | journal #5 |
+| Main project Release Rebuild (P1/P2/P3) | PASS each slice | journal #3–#5 |
 | Build/package (Build-Local pipeline) | NOT RUN (P4) | — |
 | Native runtime | NOT RUN | — |
 
@@ -96,31 +98,30 @@ domain suite (recorded in journal #2).
 
 ## Next concrete actions
 
-1. **P3 field-repair restriction slice**: make field repair Broken-only and
-   out-of-combat at all relevant boundaries:
-   - `Actions/FirearmActionPolicy.EvaluateRepair`: Broken-only reason text
-     (Wrecked → full-rest explanation); combat input plumbed from the runtime
-     adapter (native party-encounter authority — verify the combat check API,
-     prove in both combat modes).
-   - `Recovery/FirearmRepairTransactionService`: constrain the field-repair
-     entry (allowed-source parameter or dedicated overload) so the ordinary
-     ability cannot restore Wrecked through the generic transaction; rest
-     restoration keeps its own route; `FirearmStateMachine.Repair` stays
-     shared/combat-usable for Quick Clear.
-   - `Recovery/RepairTestMusketRuntime`: add the combat check + capability
-     binding; `RepairTestMusketAbilityLogic`: bind the concrete firearm at
-     real command commencement (not only inside delivery).
-   - Update availability reason strings; legacy Overhaul alias inherits via
-     the same logic; update `UnifiedFirearmRepairTests` expectations
-     explicitly + add new F-row domain tests; bump validator count/blocks;
-   run domain suite + main Rebuild; commit+push.
-2. After P3: P4 version allocation (0.0.127 validator chain), docs/text
-   updates (contract §1 baseline→implemented, KNOWN-ISSUES, changelog,
-   player smoke test), full Build-Local pipeline, package validation,
-   guarded native runtime lanes (A/F/R/W mandatory ×2 fresh runs), then P5.
-3. Runtime risks to verify in P4 lanes: resumed-rest flag latch (R06,
-   journal #4), scripted/world-map/inn rest routes (R08), console/radial
-   attack routes + same-frame AI edge (journal #3).
+1. **P4a — docs + contract closeout**: update
+   `docs/FIREARM-MAINTENANCE-CONTRACT.md` (implemented status per section),
+   `KNOWN-ISSUES.md`, `CHANGELOG.md`, player smoke-test guidance, and the
+   coverage/fidelity records if required by the repo ledger; close the old
+   Wrecked-in-combat design question with the new behavior.
+2. **P4b — version allocation + validator chain**: allocate 0.0.127
+   (verify no later release exists), create
+   `tools/validate_firearm_maintenance127.py` (following the 126 pattern:
+   baseline chain + new mission contracts + count 1611+docs tests),
+   wire `tools/validate_repository.py` dispatch, update `Info.json`,
+   `scripts/Build-Local.ps1` version pin, static-validation.json new block.
+3. **P4c — immutable candidate**: run full
+   `scripts/Build-Local.ps1` (validate + domain -Clean + exact build +
+   package) → record version/SHA-256/MVID/package hash; strict package
+   validation.
+4. **P4d — guarded native qualification** via
+   `scripts/Invoke-KingmakerRuntimeTest.ps1` with a new/reused guarded
+   scenario covering: misfire interruption (RTWP+TB), field-repair
+   rejection in combat + Wrecked, completed-rest restoration + cancelled
+   rest no-op, save round trip. Mandatory lanes ×2 fresh runs per mission
+   §7. Backup-first reversible deployment per mission §2; restore after
+   testing.
+5. P5: reconcile matrix, cleanup verification, final report + owner smoke
+   test.
 
 Update this file after every coherent slice. Keep it an index; details live in
 the journal and acceptance matrix.
