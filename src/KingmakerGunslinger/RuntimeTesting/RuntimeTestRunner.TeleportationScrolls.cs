@@ -120,6 +120,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var wizardRecall = zeroUmdSources.FirstOrDefault(value => value.CasterId == bookReader.UniqueId && value.Spell == TeleportSpellKind.WordOfRecall);
                 ScrollsAssert("reader-per-spell-negative", "qualifying for Teleport does not qualify the wizard for Word of Recall",
                     "recall=" + (wizardRecall == null ? "absent" : wizardRecall.Uses.ToString()), wizardRecall == null);
+                // --- Optional Oracle (Call of the Wild) positive control ---
+                // The owner's exact defect: a genuine CotW Oracle with zero UMD
+                // ranks who does NOT know Word of Recall. The fixture only
+                // attaches the class structure the native predicate reads; the
+                // production final-live reconciliation must supply the level-6
+                // list membership. Nothing here seeds the list or the spell.
+                var oracleClass = TeleportationFinalLiveReconciler.ResolveOracleClass(BlueprintBootstrap.Library);
+                var oracleReader = bookReader;
+                if (oracleClass == null)
+                    ScrollsAssert("oracle-optional-absent-safe", "a profile without the optional Oracle class records its absence and stays safe",
+                        "absent", true);
+                else
+                {
+                    AddScrollsClassList(oracleReader, oracleClass);
+                    var oracleLevels = oracleClass.Spellbook.SpellList.SpellsByLevel
+                        .Where(value => value != null && value.SpellLevel == TeleportationFinalLiveReconciler.OracleWordOfRecallLevel).ToArray();
+                    int oracleRefs = oracleLevels.Length == 1 ? oracleLevels[0].Spells.Count(value => ReferenceEquals(value, scrolls.WordOfRecall.Ability)) : 0;
+                    int oracleGuids = oracleLevels.Length == 1 ? oracleLevels[0].Spells.Count(value => value != null &&
+                        value.AssetGuid == scrolls.WordOfRecall.Ability.AssetGuid) : 0;
+                    ScrollsAssert("oracle-final-list-recall-exactly-once", "the production final-live reconciliation places the canonical Word of Recall exactly once at Oracle level 6",
+                        "levels=" + oracleLevels.Length + ";refs=" + oracleRefs + ";guids=" + oracleGuids,
+                        oracleLevels.Length == 1 && oracleRefs == 1 && oracleGuids == 1);
+                    bool oracleEligible = scrolls.WordOfRecall.Ability.IsInSpellListOfUnit(oracleReader.Descriptor);
+                    ScrollsAssert("oracle-native-classlist-eligibility", "an Oracle reader with zero UMD ranks passes the native class-list predicate for Word of Recall",
+                        "eligible=" + oracleEligible + ";umd=" + oracleReader.Descriptor.Stats.GetStat(StatType.SkillUseMagicDevice).BaseValue,
+                        oracleEligible && oracleReader.Descriptor.Stats.GetStat(StatType.SkillUseMagicDevice).BaseValue == 0);
+                    var oracleRow = TeleportationScrollAdapter.Enumerate(player).FirstOrDefault(value =>
+                        value.CasterId == oracleReader.UniqueId && value.Spell == TeleportSpellKind.WordOfRecall);
+                    ScrollsAssert("oracle-reader-row-offered", "the Oracle reader offers the Word of Recall scroll row through shared stock with zero UMD",
+                        "uses=" + (oracleRow == null ? "absent" : oracleRow.Uses.ToString()), oracleRow != null && oracleRow.Uses == 2);
+                    bool oracleKnows = oracleReader.Descriptor.Spellbooks.Any(ownedBook =>
+                        Enumerable.Range(0, 10).Any(spellLevel => ownedBook.GetKnownSpells(spellLevel).Any(value =>
+                            ReferenceEquals(value.Blueprint, scrolls.WordOfRecall.Ability))));
+                    ScrollsAssert("oracle-reader-not-know-spell", "scroll eligibility neither requires nor grants knowing Word of Recall",
+                        "knows=" + oracleKnows, !oracleKnows);
+                    ScrollsAssert("oracle-scroll-teaching-intact", "the standard Word of Recall scroll keeps teaching its own canonical spell",
+                        "teaches=" + scrolls.WordOfRecall.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>()
+                            .Single().CustomSpell.AssetGuid,
+                        scrolls.WordOfRecall.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>()
+                            .Single().CustomSpell == scrolls.WordOfRecall.Ability);
+                }
                 var druidRecallReader = party.Length > 2 ? party[2] : umdReader;
                 var druidRecall = zeroUmdSources.FirstOrDefault(value => value.CasterId == druidRecallReader.UniqueId && value.Spell == TeleportSpellKind.WordOfRecall);
                 ScrollsAssert("reader-druid-recall-zero-umd", "a druid-list reader with zero UMD ranks offers Word of Recall (Cleric 6 / Druid 8 list levels preserved)",
@@ -683,6 +724,84 @@ namespace KingmakerGunslinger.RuntimeTesting
                     knownAfter, readyFavorite, marketCommitted, labels = marketLabels.Length });
                 if (goldBefore < 5000) player.SpendMoney(player.Money - goldBefore);
                 marketVendor.Dispose();
+
+                // --- Oracle sanctuary activation: the owner's exact path ---
+                // Only when the production reconciliation actually offered the
+                // Oracle the Word of Recall row; a pre-repair or Oracle-absent
+                // process records the absence above and skips this block.
+                if (oracleClass != null)
+                {
+                    var oracleSourcesNow = TeleportationScrollAdapter.Enumerate(player).ToArray();
+                    var oracleRowNow = oracleSourcesNow.FirstOrDefault(value =>
+                        value.CasterId == oracleReader.UniqueId && value.Spell == TeleportSpellKind.WordOfRecall);
+                    if (oracleRowNow == null)
+                        CaptureTeleportScrolls("oracle-activation-skipped", new { reason = "row-absent" });
+                    else
+                    {
+                        var oleg = rules.AllLocations.Single(value => value.Blueprint.AssetGuid == WordOfRecallDestinationPolicy.OlegId);
+                        LocationData olegData;
+                        if (!map.Locations.TryGetValue(oleg.Blueprint, out olegData)) throw new InvalidOperationException("Oleg's Trading Post has no native map record.");
+                        setRevealed.Invoke(olegData, new object[] { true }); olegData.EdgesOpened = true; olegData.IsClosed = false;
+                        var recallState = TeleportationWorldMapAdapter.ReadRecall(player);
+                        ScrollsAssert("oracle-sanctuary-destination-known", "the working save resolves the Word of Recall sanctuary to Oleg's Trading Post before the capital",
+                            "known=" + recallState.Known + ";established=" + recallState.Established +
+                                ";destination=" + (recallState.DestinationId == null ? "null" : recallState.DestinationId),
+                            recallState.Known && !recallState.Established && recallState.DestinationId == WordOfRecallDestinationPolicy.OlegId);
+                        rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                        rig.ScrollTo(oleg.transform.position);
+                        for (int frame = 0; frame < 30; frame++) yield return 0;
+                        TeleportDestinationRows oracleRows = null;
+                        for (int attempt = 0; attempt < 3 && (oracleRows == null || oracleRows.Actions.Count == 0); attempt++)
+                        {
+                            SelectTeleportationCastingPoint(panel, oleg);
+                            foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                            for (int frame = 0; frame < 40; frame++)
+                            {
+                                oracleRows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                                if (oracleRows != null && oracleRows.Actions.Count > 0) break;
+                                yield return 0;
+                            }
+                        }
+                        var recallRow = oracleRows == null ? null : oracleRows.Actions.SingleOrDefault(value =>
+                            value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.Spell == TeleportSpellKind.WordOfRecall &&
+                            value.Source.CasterId == oracleReader.UniqueId);
+                        ScrollsAssert("oracle-sanctuary-row-composed", "the sanctuary destination composes the Word of Recall scroll row for the Oracle reader",
+                            "row=" + (recallRow == null ? "absent" : recallRow.Source.Uses.ToString(CultureInfo.InvariantCulture)),
+                            recallRow != null && recallRow.Source.Uses == 2);
+                        if (recallRow == null) throw new InvalidOperationException("The Oracle Word of Recall row was not composed at the sanctuary.");
+                        int recallStockBefore = TeleportationScrollAdapter.Stock(player.Party, scrolls.WordOfRecall);
+                        string oracleBooksBefore = string.Join("|", oracleReader.Descriptor.Spellbooks
+                            .Select(value => TeleportResourceFingerprint(value)).ToArray());
+                        oracleRows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
+                        oracleRows.Buttons[oracleRows.Actions.ToList().FindIndex(value => value.Key == recallRow.Key)].onClick.Invoke();
+                        var recallRequest = TeleportContextConfirmationPresenter.Current;
+                        if (recallRequest == null || !DialogMessageBox.Instance.IsShown)
+                            throw new InvalidOperationException("The Oracle Word of Recall confirmation did not open.");
+                        for (int frame = 0; frame < 8; frame++) yield return 0;
+                        TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                        for (int frame = 0; frame < 12; frame++) yield return 0;
+                        bool recallCommitted = recallRequest.Transaction.State == TeleportTransactionState.Completed &&
+                            recallRequest.Transaction.Result != null &&
+                            recallRequest.Transaction.Result.Status == TeleportExecutionStatus.Arrived &&
+                            recallRequest.Transaction.Result.DestinationId == oleg.Blueprint.AssetGuid;
+                        int recallStockAfter = TeleportationScrollAdapter.Stock(player.Party, scrolls.WordOfRecall);
+                        string oracleBooksAfter = string.Join("|", oracleReader.Descriptor.Spellbooks
+                            .Select(value => TeleportResourceFingerprint(value)).ToArray());
+                        bool oracleStillUnknown = !oracleReader.Descriptor.Spellbooks.Any(ownedBook =>
+                            Enumerable.Range(0, 10).Any(slotLevel => ownedBook.GetKnownSpells(slotLevel).Any(value =>
+                                ReferenceEquals(value.Blueprint, scrolls.WordOfRecall.Ability))));
+                        ScrollsAssert("oracle-sanctuary-cast-exactly-one", "the Oracle's Word of Recall scroll cast relocates the party to the sanctuary, consumes exactly one scroll and no book resource",
+                            "committed=" + recallCommitted + ";stock=" + recallStockBefore + "->" + recallStockAfter +
+                                ";booksUntouched=" + (oracleBooksBefore == oracleBooksAfter) + ";stillUnknown=" + oracleStillUnknown +
+                                ";party=" + map.PartyLocation.AssetGuid,
+                            recallCommitted && recallStockAfter == recallStockBefore - 1 &&
+                                oracleBooksBefore == oracleBooksAfter && oracleStillUnknown &&
+                                !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown);
+                        CaptureTeleportScrolls("oracle-sanctuary-cast", new {
+                            committed = recallCommitted, destination = oleg.Blueprint.AssetGuid,
+                            stockBefore = recallStockBefore, stockAfter = recallStockAfter });
+                    }
+                }
             }
 
             finally
@@ -784,7 +903,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _teleportationScrollsSteps = null;
             WriteTeleportationForensicJson(Path.Combine(_request.EvidenceDirectory, "teleportation-scrolls.json"), new {
                 schemaVersion = 1, runId = _request.RunId,
-                claims = "Real party scroll items compose shared-stock rows for book and UMD-only readers; one scroll cast consumes exactly one item with no slot and rebuilds arrows; native cancellation consumes nothing; vendor migration proves fresh-stock marker-only, batch-once per shared family, and buy-out persistence. Request-local items/stats/parts/world state; no save writes.",
+                claims = "Real party scroll items compose shared-stock rows for book and UMD-only readers; one scroll cast consumes exactly one item with no slot and rebuilds arrows; native cancellation consumes nothing; vendor migration proves fresh-stock marker-only, batch-once per shared family, and buy-out persistence; a genuine optional CotW Oracle with zero UMD ranks and no known Word of Recall reads the scroll through the production level-6 list reconciliation and casts it once at the sanctuary. Request-local items/stats/parts/world state; no save writes.",
                 captures = _teleportationScrollsCaptures, assertions = _teleportationScrollsAssertions,
                 saveWriteObserved = _workingSaveSmoke.WriteObserved, error = failure == null ? null : failure.ToString() });
             Complete(CreateResult(failure != null ? RuntimeTestStatuses.Error : _teleportationScrollsAssertions.All(value => value.Status == "PASS") ?
