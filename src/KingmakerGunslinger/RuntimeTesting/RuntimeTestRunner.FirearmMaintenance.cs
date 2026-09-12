@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -10,6 +10,8 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Firing;
@@ -59,6 +61,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool suppressedAgainAfterWreck = false;
             UnitCommand postWreckCommand = null;
             bool postWreckRejectedByInterruption = false;
+            bool deadShotCondition = false;
+            bool deadShotSuppressed = false;
             bool cleaned = false;
             try
             {
@@ -169,6 +173,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 postWreckRejectedByInterruption = postWreckCommand == null &&
                     EmptyFirearmAttackCommandPatch.SequenceInterruptionRejections >
                         beforeWreck;
+
+                stage = "dead-shot-commit-routes-interruption";
+                // Review R2 behavioral evidence: a real all-misfire Dead Shot
+                // (forced rolls through ExecuteForRuntimeTest) must suppress
+                // the interrupted sequence through the shared notification.
+                GunslingerClassBlueprintSet gunslinger =
+                    BlueprintBootstrap.GunslingerClass;
+                attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 11;
+                attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
+                attacker.Descriptor.Resources.Restore(
+                    gunslinger.Grit.Resource, 4);
+                BrokenSequenceSuppressionRuntime.ClearForRuntimeTest();
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Normal));
+                Deeds.DeadShotRuntime.ExecuteForRuntimeTest(
+                    attacker, target, 1, 1, 1);
+                deadShotCondition = FirearmRuntimeState.Service
+                    .GetOrCreate(weapon).Repository.State.Condition ==
+                    FirearmCondition.Broken;
+                deadShotSuppressed = BrokenSequenceSuppressionRuntime
+                    .IsSuppressed(attacker, weapon);
             }
             catch (Exception exception)
             {
@@ -240,6 +267,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 wreckedCommitted && suppressedAgainAfterWreck &&
                     postWreckRejectedByInterruption,
                 "second forced misfire through the native rule pipeline"));
+            assertions.Add(Assertion(
+                "dead-shot-commit-routes-interruption",
+                "a real all-misfire Dead Shot commit suppresses the sequence",
+                "conditionBroken=" + deadShotCondition +
+                ";suppressed=" + deadShotSuppressed,
+                deadShotCondition && deadShotSuppressed,
+                "DeadShotRuntime.ExecuteForRuntimeTest with forced 1s drives the deed's own commit through the shared notification"));
             assertions.Add(Assertion(
                 "fixture-cleaned",
                 "fixture weapon state, units, and forced rolls are cleaned",
