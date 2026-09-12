@@ -545,3 +545,20 @@ Still open from the review (next slices, behavioral):
   start and delivery, dead-gunsmith rest) — runtime lanes.
 - Remaining P4d scenarios (repair rejection, rest, persistence), rebuild,
   artifact identity, native lanes x2, P5.
+
+---
+
+2026-09-13 #11 — R2 behavioral evidence: Dead Shot slice in the guarded scenario
+
+- `disposable-firearm-break-interruption` gained a `dead-shot-commit-routes-
+  interruption` stage: a REAL all-misfire Dead Shot
+  (`DeadShotRuntime.ExecuteForRuntimeTest`, forced 1s, BAB 11, grit, pistol,
+  clean suppression slate) commits Broken through the deed's own guarded
+  transition and the shared notification activates suppression — behavioral
+  proof of the R2 routing, not a source-string assertion. Domain suite
+  1612/1612 PASS; main project Rebuild OK.
+- Scatter behavioral slice deferred to the next scenario extension (needs
+  the two-target cone fixture from the existing scatter slice at
+  RuntimeTestRunner.cs ~26000).
+- Commit: source changed again — rebuild + new artifact identity still
+  required before any native run.
