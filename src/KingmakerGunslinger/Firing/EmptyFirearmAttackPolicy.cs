@@ -9,7 +9,8 @@ namespace KingmakerGunslinger.Firing
         RejectUnloaded = 2,
         RejectWrecked = 3,
         RejectAmbiguous = 4,
-        QueueReload = 5
+        QueueReload = 5,
+        RejectInterrupted = 6
     }
 
     internal static class EmptyFirearmAttackPolicy

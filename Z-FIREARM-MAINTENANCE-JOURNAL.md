@@ -111,3 +111,68 @@ automation has harsher consequences.
   failures; fixed by copying the generated artifact.
 - No source changes yet. Next slice: P1 design + implementation of
   command-scoped interruption (see STATE next-actions).
+
+---
+
+2026-09-12 #3 — P1 implemented: newly-Broken sequence interruption (domain layer green)
+
+New files:
+- `src/KingmakerGunslinger/Firing/BrokenSequenceInterruptionPolicy.cs` (pure,
+  dependency-free): construction gate (Allow / AllowAndConsume /
+  RejectInterrupted), ShouldEndFullAttack, MayResumeCapturedAttack.
+- `src/KingmakerGunslinger/Firing/BrokenSequenceSuppressionRuntime.cs`:
+  weak-keyed per-(wielder, exact weapon) epoch + suppression registry;
+  frame-scoped player-attack marker; ClearForRuntimeTest seam. Process-memory
+  only — no persistence, no scene/save leakage.
+
+Wiring (4 points):
+1. `Misfires/FirearmMisfireRuntime`: after a verified
+   `CommitConditionTransition`, records the degradation on the exact
+   RuleAttackRoll (new CWT + `TryGetCommittedDegradation`) and notifies
+   `OnCommittedDegradation(wielder, firearmItem)`. Negation paths (Stranger's
+   Fortune, Expert Loading) and effective overlays never reach this point
+   (unchanged).
+2. `Firing/FreeActionFullAttackReloadPatch`: before each iterative shot, if
+   the previous completed shot of this command committed a degradation of the
+   same exact weapon → `EndRemainingAttacks` (existing helper, native Success
+   semantics) BEFORE the loaded/continue or free-reload decisions. The
+   misfiring shot itself resolves completely (round, miss, burst via
+   FinishAttack).
+3. `Firing/EmptyFirearmAttackCommandPatch`: construction gate runs before the
+   empty/Wrecked/auto-reload policy (no replacement reload is queued for an
+   interrupted sequence); new `RejectInterrupted` disposition + counter +
+   player-facing message; pending reload-resume continuations capture the
+   degradation epoch and cancel at resume if it advanced; new Harmony prefix
+   on `ClickUnitHandler.OnClick` marks the player-attack frame.
+4. Harmony 1.2 constraint discovered: **no finalizer support** (4-arg Patch),
+   so the player-attack context is frame-scoped (`UnityEngine.Time.frameCount`)
+   instead of a depth counter — leak-proof if the click handler faults.
+   Residual same-frame edge: an AI construction in the exact frame of a player
+   unit-click passes the gate (one-frame window); accepted for P1, to be
+   observed in native A02/A04 qualification. Console/radial-menu attack-issuance
+   routes may need additional player-intent entry points (native verification
+   will tell).
+
+Test-count bookkeeping (learned the established mechanism):
+- Active validator `tools/validate_word_of_recall_oracle126.py`
+  DETERMINISTIC_TEST_COUNT 1581→1592.
+- `validation/static-validation.json`: the active-chain blocks
+  {unifiedRepair121, characterVisibility123, teleportPolish124,
+  settlementButton125, wordOfRecallOracle126} carry the CURRENT count (they
+  are live current-expectation records updated per release — e.g.
+  teleportPolish124 block=1581 vs its module literal 1574); deeper historical
+  blocks stay frozen. P4's 0.0.127 validator supersedes this interim bump.
+
+Results @ worktree (base 71af37ac + records commits + this slice):
+- `scripts/test-domain.ps1 -Configuration Release`: **1592/1592 PASS, exit 0**
+  (baseline 1581 + 11 new `broken-sequence.*` cases: 7 pure-policy +
+  4 source-contract wiring).
+- Main project clean Release Rebuild: OK (compile of the Kingmaker-dependent
+  wiring, which the domain suite does not compile).
+- `scripts/validate-repository.ps1`: PASS (via test-domain).
+- Acceptance A-rows: domain-layer evidence recorded in
+  docs/FIREARM-MAINTENANCE-ACCEPTANCE.md as PARTIAL for A01/A02/A04/A05/A07;
+  all native cells remain NOT RUN. No runtime launches yet.
+
+Next: P2 rest-restoration slice (StopRestProcess prefix coordinator +
+service), then P3 field-repair restriction; native qualification batch at P4.

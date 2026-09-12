@@ -659,6 +659,8 @@
     <Compile Include="Firing\FirearmDischargeResult.cs" />
     <Compile Include="Firing\FirearmDischargeRuntime.cs" />
     <Compile Include="Firing\EmptyFirearmAttackPolicy.cs" />
+    <Compile Include="Firing\BrokenSequenceInterruptionPolicy.cs" />
+    <Compile Include="Firing\BrokenSequenceSuppressionRuntime.cs" />
     <Compile Include="Firing\EmptyFirearmAttackCommandPatch.cs" />
     <Compile Include="Firing\FreeActionFullAttackReloadPatch.cs" />
     <Compile Include="Firing\FirearmDischargeRuntimeDiagnostics.cs" />

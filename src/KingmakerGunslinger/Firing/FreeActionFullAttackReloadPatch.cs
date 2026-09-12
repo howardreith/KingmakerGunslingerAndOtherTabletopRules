@@ -11,6 +11,7 @@ using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Reloading;
+using KingmakerGunslinger.Misfires;
 using KingmakerGunslinger.Deeds;
 
 namespace KingmakerGunslinger.Firing
@@ -85,6 +86,23 @@ namespace KingmakerGunslinger.Firing
                     ReferenceEquals(firearm.Weapon, plannedWeapon);
                 if (!exactEquipped) return true;
                 recognizedFirearm = true;
+
+                // A verified committed degradation of this exact firearm during
+                // the previous shot of this command ends the remaining full
+                // attack before the next real shot or any associated reload;
+                // the misfiring shot itself has already resolved completely.
+                object degradedItem;
+                if (previous != null && previous.AttackRoll != null &&
+                    FirearmMisfireRuntime.TryGetCommittedDegradation(
+                        previous.AttackRoll, out degradedItem) &&
+                    ReferenceEquals(degradedItem, plannedWeapon))
+                {
+                    EndRemainingAttacks(ref __result,
+                        "full-attack.ended-after-committed-break",
+                        "weapon=" + firearm.Firearm.ItemDisplayName +
+                        ";kind=" + firearm.Definition.Kind);
+                    return false;
+                }
 
                 FirearmState currentState = firearm.Firearm.Repository.State;
                 ReloadTestMusketAvailability availability = null;
