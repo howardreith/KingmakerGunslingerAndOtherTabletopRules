@@ -147,12 +147,6 @@ namespace KingmakerGunslinger.Deeds
                         conditionCommit = Transition(firearm,
                             expectedCurrent, condition.After);
                         expectedCurrent = conditionCommit.Repository.State;
-                        // Verified committed degradation through the shared
-                        // interruption notification (same entry the ordinary
-                        // misfire path uses), so a Dead Shot break also stops
-                        // the sequence's automatic continuations.
-                        Firing.BrokenSequenceSuppressionRuntime
-                            .OnCommittedDegradation(casterEntity, firearm.Weapon);
                     }
                 }
 
@@ -189,6 +183,7 @@ namespace KingmakerGunslinger.Deeds
                 var result = new DeadShotExecutionResult(decision, outcome, probes,
                     delivery, before, expectedCurrent);
                 if (conditionCommit != null)
+                {
                     FirearmConditionTopNotification
                         .PublishAfterCommittedDegradation(
                             casterEntity.CharacterName,
@@ -196,6 +191,16 @@ namespace KingmakerGunslinger.Deeds
                             condition.Before.Condition,
                             condition.After.Condition,
                             "Dead Shot misfire");
+                    // Publish the interruption only at this verified
+                    // irrevocable boundary - after every fallible step of
+                    // the composite shot has completed - so a later failure
+                    // that rolls the firearm back can never leave a stale
+                    // suppression/epoch behind (review CR2-02). No
+                    // automatic continuation can run before this method
+                    // returns.
+                    Firing.BrokenSequenceSuppressionRuntime
+                        .OnCommittedDegradation(casterEntity, firearm.Weapon);
+                }
                 return result;
             }
             catch

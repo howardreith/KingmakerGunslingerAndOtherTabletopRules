@@ -151,18 +151,24 @@ namespace KingmakerGunslinger.DomainTests
             string capability = Read("src/KingmakerGunslinger/Recovery",
                 "FirearmMaintenanceCapability.cs");
             Assertions.True(capability.Contains("IsDead") &&
-                capability.Contains("IsUnconscious") &&
+                capability.Contains("!caster.State.IsConscious") &&
+                capability.Contains("!caster.State.CanAct") &&
+                capability.Contains("HasCondition(UnitCondition.Sleeping)") &&
                 capability.Contains("HasFact(gunslinger.Gunsmithing)"),
-                "The shared capability policy must require a living conscious gunsmith holding the real feature fact.");
+                "Field capability must use the crafting IsConscious+CanAct idiom; rest capability must accept only transient camping sleep (CR2-03).");
             string binding = Read("src/KingmakerGunslinger/Recovery",
                 "RepairCommandStartBinding.cs");
             Assertions.True(binding.Contains(
                     "FirearmMaintenanceCapability.CanMaintainFirearms(caster)") &&
+                binding.Contains("IdentifyRepairCaster") &&
+                binding.Contains("TryGetBoundWeaponForDelivery") &&
+                binding.Contains("FindOwningCommand(context)") &&
+                binding.Contains("ReferenceEquals(binding.Command, owner)") &&
                 binding.Contains("EligibleAtStart") &&
                 binding.Contains("binding.Command.IsFinished") &&
                 binding.Contains("ReferenceEquals(binding.Command, endedCommand)") &&
                 binding.Contains("BlueprintBootstrap.OverhaulTestMusketAbility"),
-                "Command start must enforce capability; delivery must enforce start eligibility and owning-command liveness; cleanup must be command-owned; the legacy alias must be recognized (review R4/R5).");
+                "Command start must capture the caster before fallible work, enforce capability, and be command-owned; delivery must correlate with the exact owning native command; the legacy alias must be recognized (review R4/CR2-01).");
         }
 
         internal static void DeliveryRequiresCommandStartBinding()
@@ -170,7 +176,7 @@ namespace KingmakerGunslinger.DomainTests
             string source = Read("src/KingmakerGunslinger/Recovery",
                 "RepairTestMusketAbilityLogic.cs");
             Assertions.True(source.Contains(
-                    "RepairCommandStartBinding.TryGetBoundWeapon") &&
+                    "RepairCommandStartBinding.TryGetBoundWeaponForDelivery") &&
                 source.Contains("ReferenceEquals(boundAtCommandStart, start.Weapon)"),
                 "Delivery must verify the exact firearm bound at genuine command commencement.");
             string binding = Read("src/KingmakerGunslinger/Recovery",

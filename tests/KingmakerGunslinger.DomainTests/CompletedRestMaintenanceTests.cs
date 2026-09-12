@@ -178,10 +178,10 @@ namespace KingmakerGunslinger.DomainTests
             string source = Read("src/KingmakerGunslinger/Gunsmithing",
                 "CompletedRestMaintenancePatch.cs");
             Assertions.True(source.Contains("game.Player.AllCharacters") &&
-                source.Contains("HasFact(gunsmithFeature)") &&
-                source.Contains("BlueprintBootstrap.GunslingerClass.Gunsmithing") &&
+                source.Contains(
+                    ".CanMaintainFirearmsAtCompletedRest(") &&
                 source.Contains("FirearmMaintenanceCapability.IsLivingParticipant"),
-                "Participation and capability must come from the native rest party filtered to living participants, holding the real Gunsmithing feature fact (review R5).");
+                "Participation must come from the native rest party filtered to living participants; repairer capability must use the completed-rest predicate with the camping-sleep lifecycle (review R5/CR2-03).");
             Assertions.True(source.Contains(
                     "new KingmakerRepairKitInventory(") &&
                 source.Contains("kitInventory.Count() > 0"),
