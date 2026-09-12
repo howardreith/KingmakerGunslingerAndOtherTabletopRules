@@ -133,7 +133,7 @@ namespace KingmakerGunslinger
                 logger.Info(
                     "development",
                     "ui.attached",
-                    "Attached controls for proficiency, item-token persistence, ammunition, condition-preserving full-round reload, player-facing unified full-round Broken-or-Wrecked-to-Normal Repair Firearm with a reusable Gunsmith's Kit, the accelerated maintenance qualification fixture and PASS/FAIL matrix, loaded-round attack enforcement, natural-roll misfire and native burst diagnostics, two-step destructive cleanup confirmation, weapon-only token reconciliation, and disabled-by-default firearm combat tracing.");
+                    "Attached controls for proficiency, item-token persistence, ammunition, condition-preserving full-round reload, player-facing full-round Broken-to-Normal Repair Firearm outside combat with a reusable Gunsmith's Kit, the accelerated maintenance qualification fixture and PASS/FAIL matrix, loaded-round attack enforcement, natural-roll misfire and native burst diagnostics, two-step destructive cleanup confirmation, weapon-only token reconciliation, and disabled-by-default firearm combat tracing.");
 
                 lock (LoadGate)
                 {

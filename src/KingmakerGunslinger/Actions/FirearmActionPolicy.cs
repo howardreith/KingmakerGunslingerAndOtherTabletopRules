@@ -89,21 +89,21 @@ namespace KingmakerGunslinger.Actions
             {
                 return Rejected(
                     FirearmActionKind.Repair,
-                    "This firearm is Wrecked and requires a completed full rest.");
+                    "This firearm is Wrecked. A full rest is required.");
             }
 
             if (state.Condition != FirearmCondition.Broken)
             {
                 return Rejected(
                     FirearmActionKind.Repair,
-                    "Only a Broken firearm can be repaired in the field.");
+                    "This firearm is not broken.");
             }
 
             return hasResources
                 ? Available(FirearmActionKind.Repair,
                     "The Broken firearm is ready to repair to Normal with the reusable Gunsmith's Kit. Nothing is consumed and every surviving loaded round is preserved; the item will not be replaced.")
                 : Rejected(FirearmActionKind.Repair,
-                    "A reusable Gunsmith's Kit is required in the shared inventory.");
+                    "Requires a Gunsmith's Kit.");
         }
 
         private static FirearmActionDecision Available(

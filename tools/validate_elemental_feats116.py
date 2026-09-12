@@ -134,7 +134,7 @@ def validate(root: Path) -> None:
         encoding="utf-8"))
     state = static.get(STATIC_KEY, {})
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "featIdentityCount": 25,
         "activeElementalIdentityCount": ELEMENTAL_ACTIVE,
         "elementalFeatCount": 11,

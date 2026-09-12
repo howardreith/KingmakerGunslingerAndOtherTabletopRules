@@ -34,11 +34,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly bool[] _avoidanceBefore;
         private readonly PropertyInfo _cameraProperty;
         private readonly CameraController _cameraBefore;
+        private readonly PropertyInfo _handsProperty = typeof(Game).GetProperty("HandsEquipmentController", Members);
+        private readonly UnitHandEquipmentController _ownedHands;
         private readonly SelectionManager _selectionBefore;
         private readonly PropertyInfo _selectionProperty;
         private GameObject _selectionObject;
         private SelectionManager _selection;
         private readonly GameMode _tickMode = new GameMode(GameModeType.Default, new IController[0]);
+        private readonly GameMode _firearmPauseMode = new GameMode(GameModeType.Pause, new IController[0]);
+        private GameMode[] _beforeFirearmPause;
+        private bool _firearmPaused;
         private readonly UnitActionController _actions = new UnitActionController();
         private readonly UnitCombatJoinController _join = new UnitCombatJoinController();
         private readonly UnitCombatPrepareController _prepare = new UnitCombatPrepareController();
@@ -50,9 +55,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal bool Restored { get; private set; }
         internal readonly JArray Turns = new JArray();
 
-        internal ElementalNativeTurnScope(UnitEntityData caster, UnitEntityData enemy, JArray observations, string label)
+        internal ElementalNativeTurnScope(UnitEntityData caster, UnitEntityData enemy, JArray observations, string label, bool turnBased = true)
         {
             _caster = caster; _enemy = enemy;
+            _ownedHands = Game.Instance.HandsEquipmentController ?? new UnitHandEquipmentController();
             observations.Add(new JObject { ["name"] = label + "native-turn-state", ["turns"] = Turns });
             if (Active != null || caster == null || enemy == null || ReferenceEquals(caster, enemy) ||
                 Game.Instance.Player.IsInCombat || CombatController.IsInTurnBasedCombat() ||
@@ -102,9 +108,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     caster.JoinCombat(); enemy.JoinCombat();
                     Game.Instance.Player.UpdateIsInCombat();
                     _join.Tick(); _prepare.Tick();
-                    SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = true;
+                    SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = turnBased;
                     Game.Instance.TurnBasedCombatController.Activate();
                 });
+                if (!turnBased)
+                {
+                    _selection.SelectUnit(caster.View, true, true, false);
+                    if (CombatController.IsInTurnBasedCombat() || !Game.Instance.Player.IsInCombat)
+                        throw new InvalidOperationException("Native RTWP fixture enrollment failed.");
+                    return;
+                }
                 EventBus.Subscribe(Game.Instance.TurnBasedCombatController); _subscribed = true;
                 if (Game.Instance.TurnBasedCombatController.RoundNumber != 1 ||
                     Game.Instance.TurnBasedCombatController.IsSurprised(caster) ||
@@ -129,12 +142,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             GameMode[] before = modes.ToArray();
             bool pause = Game.Instance.IsPaused;
             CameraController camera = Game.Instance.CameraController;
+            UnitHandEquipmentController hands = Game.Instance.HandsEquipmentController;
             bool scroll = SettingsRoot.Instance.CameraScrollToCurrentUnit.CurrentValue;
             float delta = Game.Instance.TimeController.DeltaTime, gameDelta = Game.Instance.TimeController.GameDeltaTime;
             modes.Push(_tickMode);
             try
             {
-                Game.Instance.IsPaused = false;
+                if (!_firearmPaused) Game.Instance.IsPaused = false;
+                // Main-menu mode transitions rebuild public gameplay services.
+                // Bind the same owned hands controller for each native scope,
+                // just as the camera dependency is scoped below.
+                _handsProperty.SetValue(Game.Instance, _ownedHands, null);
                 _cameraProperty.SetValue(Game.Instance, new CameraController(false, false, false), null);
                 SettingsRoot.Instance.CameraScrollToCurrentUnit.CurrentValue = false;
                 Game.Instance.TimeController.SetDeltaTime(0.25f);
@@ -146,8 +164,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TimeController.SetDeltaTime(delta);
                 Game.Instance.TimeController.SetGameDeltaTime(gameDelta);
                 _cameraProperty.SetValue(Game.Instance, camera, null);
+                _handsProperty.SetValue(Game.Instance, hands, null);
                 SettingsRoot.Instance.CameraScrollToCurrentUnit.CurrentValue = scroll;
-                Game.Instance.IsPaused = pause;
+                if (!_firearmPaused) Game.Instance.IsPaused = pause;
                 if (modes.Count != before.Length + 1 || !ReferenceEquals(modes.Peek(), _tickMode))
                     throw new InvalidOperationException("Native tick changed the scoped game-mode stack.");
                 modes.Pop();
@@ -220,6 +239,121 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         internal void Execute(Action action) { Tick(action); }
 
+        // Native CurrentMode reads the stack; IsPaused separately reads the
+        // registered mode count. Own both parts of the empty-controller Pause
+        // context across frames. Calling the public setter from the main-menu
+        // host can queue a future mode change instead of pausing the input.
+        // This sets only fixture context; command processing and costs stay native.
+        internal void SetFirearmPaused(bool value)
+        {
+            if (_firearmPaused == value) return;
+            var modes = (Stack<GameMode>)typeof(Game).GetField("m_GameModes", Members).GetValue(Game.Instance);
+            if (modes.Contains(_tickMode)) throw new InvalidOperationException("Pause transition inside a native tick.");
+            var counts = (int[])typeof(Game).GetField("m_ModesCount", Members).GetValue(Game.Instance);
+            int pauseIndex = (int)GameModeType.Pause;
+            if (counts[pauseIndex] != (_firearmPaused ? 1 : 0))
+                throw new InvalidOperationException("Native pause registration ownership changed.");
+            if (value)
+            {
+                if (Game.Instance.IsPaused || modes.Contains(_firearmPauseMode))
+                    throw new InvalidOperationException("A foreign pause exists in the disposable fixture.");
+                _beforeFirearmPause = modes.ToArray();
+                modes.Push(_firearmPauseMode);
+                counts[pauseIndex]++;
+                _firearmPaused = true;
+            }
+            else
+            {
+                if (!ReferenceEquals(modes.Peek(), _firearmPauseMode))
+                    throw new InvalidOperationException("Owned native pause mode was superseded.");
+                modes.Pop();
+                counts[pauseIndex]--;
+                _firearmPaused = false;
+                if (!CharacterCreationObservationIdentity.SameOrderedReferences(_beforeFirearmPause, modes.ToArray()))
+                    throw new InvalidOperationException("Native pause mode restoration was not exact.");
+                _beforeFirearmPause = null;
+            }
+            if (Game.Instance.IsPaused != value) throw new InvalidOperationException("Native pause state disagrees with the fixture.");
+            Turns.Add(new JObject { ["nativePaused"] = Game.Instance.IsPaused, ["frame"] = Time.frameCount });
+        }
+
+
+        internal void LeaveCombatForRecovery()
+        {
+            Tick(() => {
+                Game.Instance.TurnBasedCombatController.HandlePartyCombatStateChanged(false);
+                if (_caster.IsInCombat) _caster.LeaveCombat();
+                if (_enemy.IsInCombat) _enemy.LeaveCombat();
+                Game.Instance.Player.UpdateIsInCombat();
+            });
+            if (_caster.IsInCombat || _enemy.IsInCombat || Game.Instance.Player.IsInCombat)
+                throw new InvalidOperationException("Owned native combat did not end before recovery input.");
+        }
+
+
+        // Full native command/controller ticks for exactly the two owned actors.
+        // Animation act cues are supplied by the save-free fixture, never attack
+        // rules, cooldown resets, command authorization, or reload completion.
+        internal void PumpCommands()
+        {
+            if (_firearmPaused || Game.Instance.IsPaused)
+                throw new InvalidOperationException("Native command processing cannot be driven while paused.");
+            Tick(() => {
+                DrainFirearmCallbacks();
+                // Main-menu scenes do not run the default game controllers.
+                // Rebuild the real awake lists and advance owned visual handles;
+                // otherwise a native draw-weapon coroutine never releases hands.
+                new SleepingUnitsController().Tick();
+                _join.Tick(); _prepare.Tick();
+                Game.Instance.HandsEquipmentController.Tick();
+                foreach (var unit in new[] { _caster, _enemy })
+                {
+                    unit.View.AnimationManager.Tick();
+                    unit.View.AnimationManager.Update(0.25f);
+                }
+                var turn = Game.Instance.TurnBasedCombatController.CurrentTurn;
+                if (CombatController.IsInTurnBasedCombat() && turn != null)
+                    typeof(TurnController).GetMethod("Tick", Members).Invoke(turn, null);
+                else Game.Instance.Player.GameTime += TimeSpan.FromSeconds(0.25);
+                foreach (var unit in new[] { _caster, _enemy })
+                {
+                    _cooldowns.TickExact(unit);
+                    _buffs.TickExact(unit);
+                    foreach (var command in unit.Commands.Raw.Where(value => value != null).ToArray())
+                    {
+                        if (command.Animation != null) command.Animation.IsActed = true;
+                        var cast = command as UnitUseAbility;
+                        if (cast != null && cast.ExecutionProcess != null && !cast.ExecutionProcess.IsEnded)
+                            cast.ExecutionProcess.Tick();
+                    }
+                    typeof(UnitActionController).GetMethod("TickOnUnit", Members)
+                        .Invoke(_actions, new object[] { unit });
+                }
+                new Kingmaker.Controllers.Brain.AiBrainController().Tick();
+                Game.Instance.ProjectileController.Tick();
+            });
+        }
+
+        // The main-menu host does not run Game.Tick. Drain only callbacks
+        // produced by this firearm fixture through that native entry point,
+        // with the already-owned empty controller mode. Never invoke a private
+        // reload helper or manufacture its completion.
+        private void DrainFirearmCallbacks()
+        {
+            var pending = (List<Action>)typeof(Game).GetField("m_BeforeTickActions", Members).GetValue(Game.Instance);
+            if (pending.Count == 0) return;
+            string prefix = typeof(Firing.EmptyFirearmAttackCommandPatch).FullName + "+";
+            if (pending.Any(action => action == null || action.Method.DeclaringType == null ||
+                !action.Method.DeclaringType.FullName.StartsWith(prefix, StringComparison.Ordinal)))
+                throw new InvalidOperationException("Foreign scheduled callbacks in owned firearm fixture: " +
+                    string.Join(",", pending.Select(action => action == null ? "null" : action.Method.DeclaringType.FullName)));
+            Game.Instance.Tick();
+            Game.Instance.TimeController.SetDeltaTime(0.25f);
+            Game.Instance.TimeController.SetGameDeltaTime(0.25f);
+            if (pending.Count != 0) throw new InvalidOperationException("Native Game.Tick did not drain owned firearm callbacks.");
+        }
+        internal void FlushFirearmCallbacks() { Tick(DrainFirearmCallbacks); }
+
         internal void Drive(UnitUseAbility command)
         {
             var turn = Game.Instance.TurnBasedCombatController.CurrentTurn;
@@ -250,6 +384,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _disposed = true;
             try
             {
+                SetFirearmPaused(false);
                 _caster.Commands.InterruptAll(true); _caster.Commands.RemoveFinishedAndUpdateQueue();
                 _enemy.Commands.InterruptAll(true); _enemy.Commands.RemoveFinishedAndUpdateQueue();
                 if (_subscribed) { EventBus.Unsubscribe(Game.Instance.TurnBasedCombatController); _subscribed = false; }

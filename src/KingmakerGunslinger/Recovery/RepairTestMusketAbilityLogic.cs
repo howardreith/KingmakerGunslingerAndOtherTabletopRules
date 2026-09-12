@@ -78,7 +78,21 @@ namespace KingmakerGunslinger.Recovery
 
         public string GetReason()
         {
-            return "Requires exactly one equipped Broken firearm, a reusable Gunsmith's Kit in the shared inventory, and no active combat. Loaded ammunition is preserved and nothing is consumed; a Wrecked firearm requires a completed full rest.";
+            // The native interface has no caster argument. Never cache a
+            // caster-specific failure on this shared blueprint component.
+            return "Cannot repair right now.";
+        }
+
+        internal string GetReasonFor(AbilityData ability)
+        {
+            try
+            {
+                ValidateConfiguration();
+                FirearmRepairAvailability availability = RepairTestMusketRuntime.Evaluate(
+                    ability == null ? null : ability.Caster, m_TestMusket, m_GunsmithKit);
+                return availability.IsAvailable ? GetReason() : availability.Reason;
+            }
+            catch { return GetReason(); }
         }
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
@@ -112,8 +126,8 @@ namespace KingmakerGunslinger.Recovery
                     context.Caster == null ||
                     context.Caster.Descriptor == null)
                 {
-                    throw new InvalidOperationException(
-                        "The repair delivery has no concrete caster descriptor.");
+                    RecordRejection("Cannot repair right now.");
+                    return false;
                 }
 
                 start = RepairTestMusketRuntime.Evaluate(
@@ -121,13 +135,18 @@ namespace KingmakerGunslinger.Recovery
                     m_TestMusket,
                     m_GunsmithKit);
                 if (!start.IsAvailable || start.Weapon == null)
-                    throw new InvalidOperationException(start.Reason);
+                {
+                    RecordRejection(start.Reason);
+                    return false;
+                }
                 Kingmaker.Items.ItemEntityWeapon boundAtCommandStart;
                 if (!RepairCommandStartBinding.TryGetBoundWeaponForDelivery(
                         context, out boundAtCommandStart) ||
                     !ReferenceEquals(boundAtCommandStart, start.Weapon))
-                    throw new InvalidOperationException(
-                        "Repair Firearm delivery does not match the exact firearm bound at the owning command start; the command was interrupted, superseded, or its context changed.");
+                {
+                    RecordRejection("Cannot repair right now.");
+                    return false;
+                }
                 return true;
             }
             catch (Exception exception)
@@ -146,8 +165,11 @@ namespace KingmakerGunslinger.Recovery
                     context.Caster.Descriptor, m_TestMusket, m_GunsmithKit);
                 if (!completed.IsAvailable ||
                     !ReferenceEquals(completed.Weapon, start.Weapon))
-                    throw new InvalidOperationException(
-                        "Repair Firearm was interrupted or its exact item context changed.");
+                {
+                    RecordRejection(completed.IsAvailable
+                        ? "Cannot repair right now." : completed.Reason);
+                    return;
+                }
                 FirearmRepairRuntimeResult result = RepairTestMusketRuntime.Execute(
                     context.Caster.Descriptor, m_TestMusket, m_GunsmithKit);
                 RepairRuntimeDiagnostics.Record(result);
@@ -167,6 +189,13 @@ namespace KingmakerGunslinger.Recovery
             {
                 RecordFailure(exception);
             }
+        }
+
+        private static void RecordRejection(string reason)
+        {
+            ModContext modContext;
+            if (ModContext.TryGet(out modContext))
+                modContext.Logger.Info("recovery", "repair.rejected", reason);
         }
 
         private static void RecordFailure(Exception exception)

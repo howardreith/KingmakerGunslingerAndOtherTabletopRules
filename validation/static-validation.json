@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.127-firearm-maintenance",
-  "version": "0.0.127",
+  "milestone": "0.0.128-firearm-postrelease-hotfix",
+  "version": "0.0.128",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1562,6 +1562,16 @@
     "committedBreakStopsSequence": true,
     "quickClearCombatRouteUnchanged": true,
     "runtimeQualificationPending": true,
+    "compatibilityRuntimeQualificationPending": true
+  },
+  "firearmHotfix128": {
+    "deterministicTestCount": 1618,
+    "publicReleaseAuthorized": false,
+    "fieldRepairBrokenOnlyOutOfCombat": true,
+    "completedRestRestoresCarriedDamage": true,
+    "committedBreakStopsSequence": true,
+    "quickClearCombatRouteUnchanged": true,
+    "runtimeQualificationPending": false,
     "compatibilityRuntimeQualificationPending": true
   }
 }

@@ -1,4 +1,4 @@
-# Kingmaker Gunslinger 0.0.127 player smoke test
+# Kingmaker Gunslinger 0.0.128 player smoke test
 
 Firearm maintenance, full-rest recovery, and misfire interruption. Keep a
 disposable save before testing. A Gunslinger with the Gunsmithing feature,
