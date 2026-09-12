@@ -1,16 +1,28 @@
-# Z-FIREARM-MAINTENANCE — Mission State
+﻿# Z-FIREARM-MAINTENANCE — Mission State
 
 **Mission ID:** `Z-FIREARM-MAINTENANCE`
 
-**Last updated:** 2026-09-12 (P3 source slice complete, domain green)
+**Last updated:** 2026-09-12 (P4c complete; next P4d native qualification)
 
 ## Mission status
 
-`IN_PROGRESS` — phase **P1–P3 source implemented (domain layer); next P4 (docs/version/pipeline/native)**
+`IN_PROGRESS` — phase **P4d: guarded native runtime qualification on the immutable 0.0.127 candidate**
 
 First incomplete acceptance IDs: ALL native cells `NOT RUN` (A/F/R domain
-PARTIAL where noted); W01–W02, C01–C06, Q01–Q03 `NOT RUN`; R03/R08 fully
-`NOT RUN` (see `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`).
+PARTIAL where noted); W01–W02, C01–C06, Q01 partially (build/validation done,
+native pending); R03/R08 fully `NOT RUN`
+(see `docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`).
+
+## Candidate identity (immutable for all remaining gates)
+
+| Item | Value |
+| --- | --- |
+| Version | 0.0.127 (informational 0.0.127-firearm-maintenance) |
+| Source commit | `62285749fb7bd679fa452bf4ad4d6537aea762f5` (src/ identical at HEAD `0991f6411f1ed4786d23b48112c258c62899a355`; the later commit adds only tests/journal) |
+| Package | `artifacts/local-runtime/0.0.127/KingmakerGunslinger-0.0.127-local-runtime.zip` SHA-256 `97e4039f47a2153572ac938ab8225a8ac8b2abdf15521a36c69eb68badf2b72f` (strict UMM validation PASS; also `artifacts/packages/KingmakerGunslinger-0.0.127-firearm-maintenance.zip`) |
+| DLL SHA-256 | `bbceda4498092b2c0ff9aefe38c43382b8454d7be8c8bcc4776d52c8b995f835` |
+| DLL MVID | `204d1c6d-6f02-4650-8711-e82239dce9cb` |
+| Installed | NOT DEPLOYED yet (live install still 0.0.126 release); backup-first reversible deployment authorized for qualification only |
 
 ## Identity snapshot
 
@@ -74,54 +86,36 @@ frozen). P4's 0.0.127 validator supersedes the interim bump.
 
 | Gate | Result | Evidence |
 | --- | --- | --- |
-| Identity verification | PASS | journal #1 |
-| Repository validation | PASS (worktree) | journal #1–#5 |
-| Domain suite pre-change baseline | PASS 1581/1581 @ base | journal #2 |
-| Domain suite after P1 | PASS 1592/1592 | journal #3 |
-| Domain suite after P2 | PASS 1601/1601 | journal #4 |
-| Domain suite after P3 | **PASS 1611/1611, exit 0** | journal #5 |
-| Main project Release Rebuild (P1/P2/P3) | PASS each slice | journal #3–#5 |
-| Build/package (Build-Local pipeline) | NOT RUN (P4) | — |
+| Identity verification / repository validation | PASS each slice | journal #1–#6 |
+| Domain baseline @ base | PASS 1581/1581 | journal #2 |
+| Domain after P1/P2/P3 | PASS 1592/1601/1611 | journal #3/#4/#5 |
+| 0.0.127 source validation (full chain) | PASS | journal #6 |
+| Full Build-Local pipeline | **PASS exit 0** (validation + 1611/1611 + exact-reference build + strict package validation x2) | journal #6 |
 | Native runtime | NOT RUN | — |
-
-## Active processes / fixtures / cleanup
-
-- None. No runtime launches, no installs touched, no leases held, normal install
-  is the untouched 0.0.126 release (backup/restore not yet needed). Main
-  checkout and the unrelated `share-transmutation-instant` worktree untouched.
-
-## Blockers
-
-None. Worktree environment note (not a blocker): fresh worktrees need
-git-ignored `GamePath.props` and the bodyguard IL artifact copied in for the
-domain suite (recorded in journal #2).
 
 ## Next concrete actions
 
-1. **P4a — docs + contract closeout**: update
-   `docs/FIREARM-MAINTENANCE-CONTRACT.md` (implemented status per section),
-   `KNOWN-ISSUES.md`, `CHANGELOG.md`, player smoke-test guidance, and the
-   coverage/fidelity records if required by the repo ledger; close the old
-   Wrecked-in-combat design question with the new behavior.
-2. **P4b — version allocation + validator chain**: allocate 0.0.127
-   (verify no later release exists), create
-   `tools/validate_firearm_maintenance127.py` (following the 126 pattern:
-   baseline chain + new mission contracts + count 1611+docs tests),
-   wire `tools/validate_repository.py` dispatch, update `Info.json`,
-   `scripts/Build-Local.ps1` version pin, static-validation.json new block.
-3. **P4c — immutable candidate**: run full
-   `scripts/Build-Local.ps1` (validate + domain -Clean + exact build +
-   package) → record version/SHA-256/MVID/package hash; strict package
-   validation.
-4. **P4d — guarded native qualification** via
-   `scripts/Invoke-KingmakerRuntimeTest.ps1` with a new/reused guarded
-   scenario covering: misfire interruption (RTWP+TB), field-repair
-   rejection in combat + Wrecked, completed-rest restoration + cancelled
-   rest no-op, save round trip. Mandatory lanes ×2 fresh runs per mission
-   §7. Backup-first reversible deployment per mission §2; restore after
-   testing.
-5. P5: reconcile matrix, cleanup verification, final report + owner smoke
-   test.
-
-Update this file after every coherent slice. Keep it an index; details live in
-the journal and acceptance matrix.
+1. **P4d — guarded native qualification** (on the immutable candidate above):
+   a. Write the guarded runtime scenario(s) under
+      `src/KingmakerGunslinger/RuntimeTesting/` following the existing
+      RuntimeTestRunner partial-class pattern (see
+      RuntimeTestRunner.TeleportationScrolls.cs for naming/assertions);
+      cover: (i) misfire-interruption (forced natural roll via the guarded
+      mechanism, full attack, verify no next shot/reload + counters
+      SequenceInterruptionRejections / full-attack.ended-after-committed-break
+      log), (ii) field-repair rejection (combat + Wrecked + legacy alias),
+      (iii) completed-rest restoration (camp; verify conditions → Normal,
+      Wrecked unloaded, once-only) and cancelled-rest no-op,
+      (iv) save/load persistence round trip with a named disposable fixture.
+   b. Register scenarios in the runner; rebuild candidate ONLY via
+      Build-Local if source changed (new DLL hash ⇒ rerun all native lanes
+      on the new identity).
+   c. Backup-first deploy via scripts/Deploy-Local.ps1 (records backup
+      identity); run `scripts/Invoke-KingmakerRuntimeTest.ps1` per lane
+      x2 fresh runs (Steam App ID 640820 enforced by the harness);
+      evidence under C:\Dev\KingmakerGunslingerLabuntime-evidence\.
+   d. Restore the pre-mission 0.0.126 install (scripts/Restore-Live-Mod.ps1)
+      unless owner separately authorizes leaving the candidate.
+   e. Update acceptance matrix native cells + release notes PENDING gates.
+2. P5: reconcile matrix, cleanup verification, final report
+   (Z-FIREARM-MAINTENANCE-REPORT.md), owner smoke test pointer.

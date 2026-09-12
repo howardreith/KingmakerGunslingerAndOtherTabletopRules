@@ -356,3 +356,45 @@ package validation, guarded native lanes ×2) then P5.
 
 Next: P4d guarded native qualification (new scenario code + lanes x2),
 then P5 report. Runtime lanes must run on THIS exact candidate identity.
+
+---
+
+2026-09-12 #7 — P4d study: guarded-scenario fixture patterns identified
+
+No source changes this slice. Read the runtime-testing infrastructure to
+prepare the native lanes:
+- Scenario registration: `RuntimeTestScenarioCatalog` consts +
+  dispatch branches in `RuntimeTestRunner.cs` (~line 763+ `if
+  (_request.Scenario == RuntimeTestScenarioCatalog.X) { Complete(RunX()); }`).
+- Detached fixture pattern (from `RunDisposableGunsmithingCrafting` ~line
+  13251 and `RunDisposableGunslingerExpertLoading` ~line 26444):
+  `new Kingmaker.UI.LevelUp.ChargenUnit(BlueprintRoot.Instance.DefaultPlayerCharacter).Unit`,
+  `Descriptor.AddFact(...)` for features/abilities,
+  `Body.PrimaryHand.InsertItem(new ItemEntityWeapon(pistol))`,
+  `FirearmRuntimeState.Service.Set(weapon, new FirearmState(...))` to seed,
+  `FirearmMisfireRuntime.QueueForcedNaturalRoll(1)` for deterministic
+  misfires, `Rulebook.Trigger(new RuleAttackWithWeapon(attacker, target,
+  weapon, 0))` to drive the native attack roll (discharge → misfire →
+  committed degradation → suppression registry all run natively).
+- Cleanup pattern: `CancelForcedNaturalRoll()`,
+  `FirearmRuntimeState.Service.Forget(weapon)`, `RemoveItem(false)`,
+  unit `Dispose()`, inventory/money restore, reference snapshots before/after.
+- Observation surfaces for assertions: `FirearmConditionCombatLog.Attempts`,
+  `FirearmExplosionRuntimeDiagnostics.Scheduled`,
+  `BrokenSequenceSuppressionRuntime` (P1),
+  `CompletedRestMaintenancePatch.RestCompletionsSeen/MaintenanceRuns` (P2),
+  `EmptyFirearmAttackCommandPatch` counters (incl. new
+  SequenceInterruptionRejections).
+- Rest-lane note: a genuine full rest needs the native rest state machine;
+  candidate execution route for the fixture is
+  `RestController.StartScripted`/camp flow — must run the REAL completion
+  path (StopRestProcess prefix fires only from native termination); verify
+  which scripted route reaches StopRestProcess before writing assertions.
+- Remaining P4d work: write 4 scenario methods + catalog consts + dispatch
+  branches (+ PowerShell scenario contract updates in
+  scripts/RuntimeAutomation.Common.ps1 if the scenario allowlist requires
+  it), rebuild via Build-Local (new DLL identity ⇒ all native evidence on
+  the new artifact), deploy backup-first, run lanes x2, restore install.
+
+Session checkpoint: P0–P4c complete and pushed (HEAD 0991f641). P4d is the
+next slice; state file carries the full plan and candidate identity.
