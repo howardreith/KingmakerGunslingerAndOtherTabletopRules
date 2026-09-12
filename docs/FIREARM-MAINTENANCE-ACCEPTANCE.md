@@ -1,4 +1,4 @@
-# Firearm Maintenance — Acceptance Matrix
+﻿# Firearm Maintenance — Acceptance Matrix
 
 Stable gate IDs from `Z-FIREARM-MAINTENANCE-MISSION.md` §8. Do not delete or
 rename rows. Update observed results/evidence as gates run; a gate is PASS only
@@ -8,6 +8,13 @@ apply.
 
 Legend: `NOT RUN` (default), `PASS`, `FAIL`, `BLOCKED`, `AMBIGUOUS`, `N/A`
 (evidence-backed only).
+
+NOTE (owner review R6 of 35bee7ed): domain cells whose evidence cites
+`wiring-*` / source-contract tests are structural assertions over source
+text only. They do NOT prove behavior, eligibility, command ownership,
+participation, or native execution; those gates stay open until focused
+behavioral or native evidence exists. Cells citing executed pure-policy
+tests prove only the policy layer.
 
 ## Field maintenance (repair action)
 

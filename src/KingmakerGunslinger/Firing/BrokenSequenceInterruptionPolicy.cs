@@ -1,6 +1,3 @@
-using System;
-using KingmakerGunslinger.Firearms;
-
 namespace KingmakerGunslinger.Firing
 {
     internal enum BrokenSequenceConstructionDecision
@@ -14,40 +11,25 @@ namespace KingmakerGunslinger.Firing
     /// Pure decisions for stopping an attack sequence after a verified
     /// committed degradation of the exact firearm. The misfiring shot itself
     /// always finishes resolving under the existing rules; these gates only
-    /// prevent the next real shot and its automatic continuations. A genuine
-    /// player-issued attack order or a repaired weapon always passes.
+    /// prevent the next real shot and its automatic continuations.
+    /// Suppression is released ONLY by a genuine new player-issued attack
+    /// order for the same executor and target — repairing or reloading the
+    /// firearm restores readiness but never resurrects the cancelled order,
+    /// while any later deliberate order works normally and re-enables
+    /// ordinary automatic behavior for that weapon.
     /// </summary>
     internal static class BrokenSequenceInterruptionPolicy
     {
-        /// <summary>
-        /// Gate for a newly constructed attack command while the exact
-        /// weapon's preceding sequence was interrupted by a committed break.
-        /// Automatic recreation (brain re-issue, reload-resume work, confused
-        /// stalkers) is rejected; a player-issued order passes and consumes
-        /// the suppression. A weapon no longer damaged is never gated, so a
-        /// later repair such as Quick Clear cannot lock future firing.
-        /// </summary>
         internal static BrokenSequenceConstructionDecision EvaluateConstruction(
             bool sequenceSuppressed,
-            bool playerIssuedContext,
-            FirearmCondition actualCondition)
+            bool playerIssuedOrder)
         {
-            if (!Enum.IsDefined(typeof(FirearmCondition), actualCondition))
-            {
-                throw new ArgumentOutOfRangeException("actualCondition");
-            }
-
             if (!sequenceSuppressed)
             {
                 return BrokenSequenceConstructionDecision.Allow;
             }
 
-            if (actualCondition == FirearmCondition.Normal)
-            {
-                return BrokenSequenceConstructionDecision.AllowAndConsume;
-            }
-
-            return playerIssuedContext
+            return playerIssuedOrder
                 ? BrokenSequenceConstructionDecision.AllowAndConsume
                 : BrokenSequenceConstructionDecision.RejectInterrupted;
         }

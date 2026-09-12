@@ -1,4 +1,4 @@
-# Firearm Maintenance — Behavioral Contract
+﻿# Firearm Maintenance — Behavioral Contract
 
 Status: **IMPLEMENTED (0.0.127 candidate; domain-qualified 1611/1611, native
 qualification in progress)** — implemented by mission `Z-FIREARM-MAINTENANCE`.
@@ -240,15 +240,18 @@ notes record the verified hooks once traced.
     schedules `ResumeAttack`, which re-checks same-weapon, loaded, non-Wrecked
     effective, paper-mode, and turn-based standard-action availability —
     **a Broken gun resumes the interrupted order after reload today**.
-- Committed degradation point: `Misfires/FirearmMisfireRuntime.CommitConditionTransition`
-  (invoked from `AfterIsSuccessRoll` on the eligible `RuleAttackRoll`) runs an
-  expected-state-guarded `FirearmRuntimeState.Service.Transition` with
-  repository-identity verification and publishes the condition notification.
-  This is the only place Normal→Broken / Broken→Wrecked commits during an
-  attack — the natural, verified trigger for P1 interruption. Misfire
-  negation (Stranger's Fortune `TryIgnoreMisfire`, Expert Loading) returns
-  before it, so a prevented break never reaches the trigger (A07 baseline
-  already safe).
+- Committed degradation points (corrected per review R2): the ordinary
+  misfire commit in `Misfires/FirearmMisfireRuntime.CommitConditionTransition`
+  (invoked from `AfterIsSuccessRoll` on the eligible `RuleAttackRoll`), the
+  Dead Shot commit in `Deeds/DeadShotRuntime.Execute`, and the Scatter Shot
+  commit in `Scatter/ScatterShotRuntime` each run their own
+  expected-state-guarded `FirearmRuntimeState.Service.Transition`. ALL three
+  route through the shared interruption notification
+  (`Firing.BrokenSequenceSuppressionRuntime.OnCommittedDegradation`) after
+  their commit verifies — never before, never for a rolled-back or prevented
+  break (Stranger's Fortune / Expert Loading return before their commit
+  branches). Composite firing deeds keep their component-roll semantics:
+  only subsequent real discharges and automatic continuations are stopped.
 - Discharge gating: `Firing/FirearmDischargeRuntime.BeforeAttackRoll`
   consumes the round via the state machine (`Fire`), registers the eligible
   attack, and forces a miss for empty/Wrecked/fault; `DeadShotRuntime` and
@@ -267,11 +270,17 @@ notes record the verified hooks once traced.
     `DecisionContext`/`TargetInfo`/`HasManualTargetConsideration`/
     `ManualTargetConsideration` read `ManualTarget`. `UnitConfusionController`
     and `StalkerUnitController` also create attack commands.
-  - Consequence for P1 design: suppression must be scoped to the interrupted
-    command/order (cancel remaining iterations, cancel pending resume, block
-    immediate automatic re-issue) while a genuinely new player-issued order
-    passes; candidate consent signals are the native click event bus and
-    `ManualTarget` semantics, to be settled in P1 with focused tests.
+  - Consent design (review R1/R3): a Harmony prefix+postfix on
+    `ClickUnitHandler.OnClick` opens a narrowly scoped, one-shot
+    player-attack authorization for each currently selected unit against the
+    clicked target only where that target is attackable (the native
+    attack-vs-interaction predicate); the postfix discards it when the click
+    returns, consumption requires the exact (executor, target) pair, and a
+    leftover from a faulting handler expires with its engine frame.
+    Suppression is released ONLY by such a genuine new order — never by
+    repair, reload, time, or automatic target changes — so recovery restores
+    readiness without resurrecting the cancelled order, and any later
+    deliberate order re-enables ordinary automatic behavior for that weapon.
   - `UnitCommands` API available for native cancellation: `Run`,
     `AddToQueue(First)`, `AddToQueueOrRun`, `InterruptAll`,
     `InterruptAiCommands`, `InterruptAndRemoveCommand`, `InterruptMove`,

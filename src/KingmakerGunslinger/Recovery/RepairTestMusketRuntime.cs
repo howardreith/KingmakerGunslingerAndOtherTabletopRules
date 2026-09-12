@@ -36,6 +36,12 @@ namespace KingmakerGunslinger.Recovery
                 return Unavailable("Repair blueprint dependencies are not initialized.");
             }
 
+            if (!FirearmMaintenanceCapability.CanMaintainFirearms(caster))
+            {
+                return Unavailable(
+                    "This character lacks the Gunsmithing repair capability or cannot act right now.");
+            }
+
             ExactEquippedFirearmContext context;
             string rejection;
             if (!ExactEquippedFirearmResolver.TryResolve(caster, out context, out rejection))

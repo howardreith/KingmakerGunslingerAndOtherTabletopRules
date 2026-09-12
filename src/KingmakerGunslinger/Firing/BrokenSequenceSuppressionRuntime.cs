@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -8,22 +8,30 @@ namespace KingmakerGunslinger.Firing
     /// <summary>
     /// Runtime bookkeeping for the newly-Broken sequence interruption. Per
     /// (wielder, exact weapon) it counts committed degradations and holds the
-    /// interrupted-sequence suppression that is consumed by a genuine
-    /// player-issued attack order (or becomes inert when the weapon is
-    /// repaired). It also tracks the player-attack click context that
-    /// distinguishes deliberate orders from automatic command recreation; the
-    /// native click handler sets it around the whole click so constructions
-    /// inside it are provably player-issued. All state is process-memory
-    /// only and weakly keyed, so scene transitions and save/load cannot leak
-    /// it onto unrelated future commands.
+    /// interrupted-sequence suppression. Suppression is released ONLY by a
+    /// genuine new player attack order for that exact executor and target —
+    /// never by time, weapon repair, reload, or automatic target changes —
+    /// so a repaired firearm is usable again for deliberate orders while the
+    /// cancelled order's automatic continuations stay cancelled.
+    /// Player-attack authorization is scoped to the verified order itself:
+    /// when the native player unit-click handler starts, authorization is
+    /// recorded for each currently selected unit against the clicked target
+    /// only where that target is actually attackable; the authorization is
+    /// one-shot per executor, requires the exact (executor, target) pair at
+    /// consumption, and is cleared when the click handler returns normally
+    /// (a leftover from a faulting handler additionally expires with its
+    /// engine frame). All state is process-memory only and weakly keyed, so
+    /// scene transitions and save/load cannot leak it onto unrelated future
+    /// commands.
     /// </summary>
     internal static class BrokenSequenceSuppressionRuntime
     {
         private static readonly object Gate = new object();
         private static ConditionalWeakTable<object, Dictionary<object, Entry>>
             _suppressions = new ConditionalWeakTable<object, Dictionary<object, Entry>>();
-        private const int NoFrame = -1;
-        private static int _playerAttackFrame = NoFrame;
+        private static readonly Dictionary<object, PlayerAttackAuthorization>
+            _playerAttackAuthorizations =
+                new Dictionary<object, PlayerAttackAuthorization>();
 
         internal sealed class Entry
         {
@@ -31,6 +39,20 @@ namespace KingmakerGunslinger.Firing
             internal bool Suppressed;
         }
 
+        internal sealed class PlayerAttackAuthorization
+        {
+            internal object Executor;
+            internal object Target;
+            internal int Frame;
+        }
+
+        /// <summary>
+        /// Shared notification for every verified committed degradation of an
+        /// exact firearm during an attack sequence: the ordinary misfire
+        /// path, Dead Shot, and Scatter Shot all call this after their
+        /// guarded transition commits and verifies. A rolled-back or
+        /// prevented break must never reach this method.
+        /// </summary>
         internal static void OnCommittedDegradation(object wielder, object weapon)
         {
             if (wielder == null || weapon == null)
@@ -76,29 +98,132 @@ namespace KingmakerGunslinger.Firing
             }
         }
 
-        internal static bool IsPlayerAttackContext
+        /// <summary>
+        /// Called when the native player unit-click handler starts: records
+        /// one-shot player-attack authorization for each currently selected
+        /// unit against the clicked unit, but only for pairs the native
+        /// attack path itself would accept (the clicked unit is attackable
+        /// by that unit). Interaction-only clicks therefore record nothing.
+        /// </summary>
+        internal static void BeginPlayerAttackClick(
+            Kingmaker.EntitySystem.Entities.UnitEntityData clickedUnit)
         {
-            get
+            lock (Gate)
             {
-                int marked = Volatile.Read(ref _playerAttackFrame);
-                return marked != NoFrame && marked == CurrentFrame();
+                _playerAttackAuthorizations.Clear();
+                if (clickedUnit == null)
+                {
+                    return;
+                }
+
+                Kingmaker.Game game = Kingmaker.Game.Instance;
+                SelectionManagerBase selection =
+                    game == null || game.UI == null
+                        ? null
+                        : game.UI.SelectionManager;
+                List<Kingmaker.EntitySystem.Entities.UnitEntityData> selected =
+                    selection == null ? null : selection.SelectedUnits;
+                if (selected == null)
+                {
+                    return;
+                }
+
+                int frame = CurrentFrame();
+                foreach (Kingmaker.EntitySystem.Entities.UnitEntityData unit in selected)
+                {
+                    if (unit == null || unit.Descriptor == null ||
+                        !clickedUnit.CanAttack(unit))
+                    {
+                        continue;
+                    }
+
+                    _playerAttackAuthorizations[unit] =
+                        new PlayerAttackAuthorization
+                        {
+                            Executor = unit,
+                            Target = clickedUnit,
+                            Frame = frame
+                        };
+                }
             }
         }
 
         /// <summary>
-        /// Marks the current engine frame as carrying a genuine player attack
-        /// click. Frame scoping keeps the marker leak-proof: Harmony 1.2 has
-        /// no finalizer, so an exception inside the click handler can never
-        /// leave a persistent player-context behind.
+        /// Called when the native player unit-click handler returns
+        /// normally: every recorded authorization is discarded, so nothing
+        /// later in the same frame can inherit the click.
         /// </summary>
-        internal static void MarkPlayerAttackFrame()
+        internal static void EndPlayerAttackClick()
         {
-            Volatile.Write(ref _playerAttackFrame, CurrentFrame());
+            lock (Gate)
+            {
+                _playerAttackAuthorizations.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Consumes the player-attack authorization for an attack-command
+        /// construction only when it exactly matches the genuine order:
+        /// the same executor and the same clicked target, recorded by the
+        /// still-current click, one use only.
+        /// </summary>
+        internal static bool TryConsumePlayerAttackAuthorization(
+            object executor,
+            object target)
+        {
+            lock (Gate)
+            {
+                PlayerAttackAuthorization authorization;
+                if (executor == null ||
+                    !_playerAttackAuthorizations.TryGetValue(
+                        executor, out authorization))
+                {
+                    return false;
+                }
+
+                if (!ReferenceEquals(authorization.Target, target) ||
+                    authorization.Frame != CurrentFrame())
+                {
+                    _playerAttackAuthorizations.Remove(executor);
+                    return false;
+                }
+
+                _playerAttackAuthorizations.Remove(executor);
+                return true;
+            }
         }
 
         internal static int CurrentFrame()
         {
             return UnityEngine.Time.frameCount;
+        }
+
+        /// <summary>
+        /// Guarded runtime-test seam only: records one player-attack
+        /// authorization exactly as the verified click path would for an
+        /// already-selected, attackable pair. Ordinary play never calls it;
+        /// scenarios using it must label the assertion as a bridge test and
+        /// rely on the native interactive lanes for production input proof.
+        /// </summary>
+        internal static void AuthorizePlayerAttackOrderForRuntimeTest(
+            object executor,
+            object target)
+        {
+            lock (Gate)
+            {
+                if (executor == null || target == null)
+                {
+                    return;
+                }
+
+                _playerAttackAuthorizations[executor] =
+                    new PlayerAttackAuthorization
+                    {
+                        Executor = executor,
+                        Target = target,
+                        Frame = CurrentFrame()
+                    };
+            }
         }
 
         /// <summary>
@@ -111,9 +236,8 @@ namespace KingmakerGunslinger.Firing
             {
                 _suppressions =
                     new ConditionalWeakTable<object, Dictionary<object, Entry>>();
+                _playerAttackAuthorizations.Clear();
             }
-
-            Interlocked.Exchange(ref _playerAttackFrame, NoFrame);
         }
 
         private static Entry Find(object wielder, object weapon)

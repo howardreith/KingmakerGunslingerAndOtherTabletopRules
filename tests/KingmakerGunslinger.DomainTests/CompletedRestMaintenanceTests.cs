@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Gunsmithing;
@@ -179,8 +179,9 @@ namespace KingmakerGunslinger.DomainTests
                 "CompletedRestMaintenancePatch.cs");
             Assertions.True(source.Contains("game.Player.AllCharacters") &&
                 source.Contains("HasFact(gunsmithFeature)") &&
-                source.Contains("BlueprintBootstrap.GunslingerClass.Gunsmithing"),
-                "Participation and capability must come from the native rest party and the real Gunsmithing feature fact.");
+                source.Contains("BlueprintBootstrap.GunslingerClass.Gunsmithing") &&
+                source.Contains("FirearmMaintenanceCapability.IsLivingParticipant"),
+                "Participation and capability must come from the native rest party filtered to living participants, holding the real Gunsmithing feature fact (review R5).");
             Assertions.True(source.Contains(
                     "new KingmakerRepairKitInventory(") &&
                 source.Contains("kitInventory.Count() > 0"),

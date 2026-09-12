@@ -21,13 +21,17 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         /// <summary>
         /// Guarded native lane for the Z-FIREARM-MAINTENANCE sequence
-        /// interruption: a verified committed degradation of the exact
-        /// firearm during an attack suppresses automatic attack-command
-        /// recreation until a genuine player-issued order (or a repair)
-        /// releases it. The misfire itself is driven through the real
-        /// RuleAttackWithWeapon pipeline with a forced natural roll; the
-        /// construction gate is exercised through the real patched
+        /// interruption. The committed break is driven through the real
+        /// RuleAttackWithWeapon pipeline with a forced natural roll and the
+        /// construction gate through the real patched
         /// UnitAttack.CreateAttackCommand entry point.
+        ///
+        /// Bridge-test labeling (review R6): the player-order step injects
+        /// its authorization through the guarded runtime seam because this
+        /// headless scenario cannot perform a genuine native selection and
+        /// click; the unselected-click negative control DOES run the real
+        /// selection filter. Production input-path proof belongs to the
+        /// native interactive/owner lanes.
         /// </summary>
         private RuntimeTestResult RunDisposableFirearmBreakInterruption()
         {
@@ -40,18 +44,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             string stage = "fixture";
             long rejectionsBefore =
                 EmptyFirearmAttackCommandPatch.SequenceInterruptionRejections;
-            bool suppressedAfterBreak = false;
             bool conditionBroken = false;
-            UnitCommand automaticCommand = null;
+            bool suppressedAfterBreak = false;
+            bool unselectedClickAuthorizesNothing = true;
             bool automaticRejected = false;
             bool stillSuppressedAfterAutomatic = true;
+            bool readinessEstablished = false;
             UnitCommand playerCommand = null;
             bool playerAllowed = false;
             bool suppressionConsumed = false;
+            bool oneShotExhausted = true;
+            bool clickEndClears = true;
             bool wreckedCommitted = false;
             bool suppressedAgainAfterWreck = false;
             UnitCommand postWreckCommand = null;
-            bool postWreckRejected = false;
+            bool postWreckRejectedByInterruption = false;
             bool cleaned = false;
             try
             {
@@ -77,10 +84,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 suppressedAfterBreak = BrokenSequenceSuppressionRuntime
                     .IsSuppressed(attacker, weapon);
 
+                stage = "unselected-click-authorizes-nothing";
+                // The fixture attacker is not in the native selection, so the
+                // real Begin filter must record no authorization for it.
+                BrokenSequenceSuppressionRuntime.BeginPlayerAttackClick(target);
+                UnitCommand unselectedCommand = UnitAttack.CreateAttackCommand(
+                    attacker, target);
+                unselectedClickAuthorizesNothing = unselectedCommand == null;
+                BrokenSequenceSuppressionRuntime.EndPlayerAttackClick();
+
                 stage = "automatic-construction-rejected";
                 long before = EmptyFirearmAttackCommandPatch
                     .SequenceInterruptionRejections;
-                automaticCommand = UnitAttack.CreateAttackCommand(
+                UnitCommand automaticCommand = UnitAttack.CreateAttackCommand(
                     attacker, target);
                 automaticRejected = automaticCommand == null &&
                     EmptyFirearmAttackCommandPatch.SequenceInterruptionRejections >
@@ -89,12 +105,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .IsSuppressed(attacker, weapon);
 
                 stage = "player-issued-order-released";
-                BrokenSequenceSuppressionRuntime.MarkPlayerAttackFrame();
+                // Readiness is re-established explicitly (one loaded round in
+                // the Broken firearm): the authorization gate is what is
+                // under test, not ammunition readiness (review R6).
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Broken));
+                readinessEstablished = FirearmRuntimeState.Service
+                    .GetOrCreate(weapon).Repository.State.LoadedRounds == 1;
+                BrokenSequenceSuppressionRuntime
+                    .AuthorizePlayerAttackOrderForRuntimeTest(attacker, target);
                 playerCommand = UnitAttack.CreateAttackCommand(
                     attacker, target);
                 playerAllowed = playerCommand != null;
                 suppressionConsumed = !BrokenSequenceSuppressionRuntime
                     .IsSuppressed(attacker, weapon);
+
+                stage = "authorization-one-shot";
+                // The consumed order cannot authorize a second construction:
+                // a brain re-issue in the same conditions is still rejected.
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                    FirearmState.CurrentSchemaVersion, 1,
+                    FirearmStateTokenCatalog.DiagnosticLeadBall,
+                    FirearmCondition.Broken));
+                long beforeOneShot = EmptyFirearmAttackCommandPatch
+                    .SequenceInterruptionRejections;
+                BrokenSequenceSuppressionRuntime.OnCommittedDegradation(
+                    attacker, weapon);
+                UnitCommand secondCommand = UnitAttack.CreateAttackCommand(
+                    attacker, target);
+                oneShotExhausted = secondCommand == null &&
+                    EmptyFirearmAttackCommandPatch.SequenceInterruptionRejections >
+                        beforeOneShot;
+
+                stage = "click-end-clears";
+                BrokenSequenceSuppressionRuntime
+                    .AuthorizePlayerAttackOrderForRuntimeTest(attacker, target);
+                BrokenSequenceSuppressionRuntime.EndPlayerAttackClick();
+                UnitCommand clearedCommand = UnitAttack.CreateAttackCommand(
+                    attacker, target);
+                clickEndClears = clearedCommand == null;
 
                 stage = "wrecked-recommit";
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
@@ -115,7 +166,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SequenceInterruptionRejections;
                 postWreckCommand = UnitAttack.CreateAttackCommand(
                     attacker, target);
-                postWreckRejected = postWreckCommand == null &&
+                postWreckRejectedByInterruption = postWreckCommand == null &&
                     EmptyFirearmAttackCommandPatch.SequenceInterruptionRejections >
                         beforeWreck;
             }
@@ -149,27 +200,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 conditionBroken && suppressedAfterBreak,
                 "forced natural 1 through the real RuleAttackWithWeapon pipeline"));
             assertions.Add(Assertion(
+                "unselected-click-authorizes-nothing",
+                "a unit click records no authorization for an unselected executor",
+                "rejected=" + unselectedClickAuthorizesNothing,
+                unselectedClickAuthorizesNothing,
+                "real BeginPlayerAttackClick selection filter; bridge scenario context"));
+            assertions.Add(Assertion(
                 "automatic-construction-rejected",
                 "UnitAttack.CreateAttackCommand outside player intent returns null",
                 "rejected=" + automaticRejected +
-                ";counterDelta=" +
-                (EmptyFirearmAttackCommandPatch.SequenceInterruptionRejections -
-                    rejectionsBefore),
+                ";stillSuppressed=" + stillSuppressedAfterAutomatic,
                 automaticRejected && stillSuppressedAfterAutomatic,
-                "the real patched construction entry point with no player frame"));
+                "the real patched construction entry point with no authorization"));
             assertions.Add(Assertion(
                 "player-issued-order-released",
-                "a genuine player-issued construction passes and consumes suppression",
-                "allowed=" + playerAllowed + ";consumed=" + suppressionConsumed,
-                playerAllowed && suppressionConsumed,
-                "player-attack frame marked through the same runtime path as the click hook"));
+                "an authorized player order passes and consumes suppression",
+                "ready=" + readinessEstablished +
+                ";allowed=" + playerAllowed + ";consumed=" + suppressionConsumed,
+                readinessEstablished && playerAllowed && suppressionConsumed,
+                "BRIDGE TEST: authorization injected via guarded seam; native interactive lanes own production input proof"));
+            assertions.Add(Assertion(
+                "authorization-one-shot",
+                "a consumed order cannot authorize a second automatic construction",
+                "rejected=" + oneShotExhausted,
+                oneShotExhausted,
+                "re-suppressed weapon still rejected without a new order"));
+            assertions.Add(Assertion(
+                "click-end-clears",
+                "authorization discarded when the click handler returns",
+                "rejected=" + clickEndClears,
+                clickEndClears,
+                "BRIDGE TEST: EndPlayerAttackClick mirrors the patched postfix"));
             assertions.Add(Assertion(
                 "wrecked-recommit-resuppresses",
-                "Broken->Wrecked commit re-arms suppression and rejects construction",
+                "Broken->Wrecked commit re-arms suppression and rejects construction through the interruption gate",
                 "wrecked=" + wreckedCommitted +
                 ";resuppressed=" + suppressedAgainAfterWreck +
-                ";rejected=" + postWreckRejected,
-                wreckedCommitted && suppressedAgainAfterWreck && postWreckRejected,
+                ";rejectedByInterruption=" + postWreckRejectedByInterruption,
+                wreckedCommitted && suppressedAgainAfterWreck &&
+                    postWreckRejectedByInterruption,
                 "second forced misfire through the native rule pipeline"));
             assertions.Add(Assertion(
                 "fixture-cleaned",

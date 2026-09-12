@@ -55,6 +55,8 @@ namespace KingmakerGunslinger.Firing
                 "ReloadEndedPostfix", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo clickPrefix = typeof(EmptyFirearmAttackCommandPatch).GetMethod(
                 "PlayerClickPrefix", BindingFlags.NonPublic | BindingFlags.Static);
+            MethodInfo clickPostfix = typeof(EmptyFirearmAttackCommandPatch).GetMethod(
+                "PlayerClickPostfix", BindingFlags.NonPublic | BindingFlags.Static);
             MethodInfo onClick = typeof(Kingmaker.Controllers.Clicks.Handlers.ClickUnitHandler)
                 .GetMethod("OnClick", BindingFlags.Public | BindingFlags.Instance, null,
                 new[]
@@ -68,20 +70,40 @@ namespace KingmakerGunslinger.Firing
             if (create == null || prefix == null || ended == null || endedPostfix == null)
                 throw new MissingMethodException(
                     "Exact attack construction or reload completion contract was unavailable.");
-            if (onClick == null || clickPrefix == null)
+            if (onClick == null || clickPrefix == null ||
+                clickPostfix == null)
                 throw new MissingMethodException(
                     "Exact player attack click contract was unavailable.");
             harmony.Patch(create, new HarmonyMethod(prefix), null, null);
             harmony.Patch(ended, null, new HarmonyMethod(endedPostfix), null);
-            // Any attack command constructed on the engine frame of a native
-            // player unit click is a deliberate order. The frame-scoped marker
-            // cannot leak past the frame even if the click handler faults.
-            harmony.Patch(onClick, new HarmonyMethod(clickPrefix), null, null);
+            // The native player unit click opens a narrowly scoped
+            // authorization for its own selected executors against the
+            // clicked target; the postfix discards it as soon as the click
+            // returns, so later automatic work in the same frame cannot
+            // inherit the order.
+            harmony.Patch(onClick, new HarmonyMethod(clickPrefix),
+                new HarmonyMethod(clickPostfix), null);
         }
 
-        private static void PlayerClickPrefix()
+        private static void PlayerClickPrefix(UnityEngine.GameObject __0)
         {
-            BrokenSequenceSuppressionRuntime.MarkPlayerAttackFrame();
+            try
+            {
+                Kingmaker.View.UnitEntityView view = __0 == null
+                    ? null
+                    : __0.GetComponent<Kingmaker.View.UnitEntityView>();
+                BrokenSequenceSuppressionRuntime.BeginPlayerAttackClick(
+                    view == null ? null : view.EntityData);
+            }
+            catch
+            {
+                BrokenSequenceSuppressionRuntime.EndPlayerAttackClick();
+            }
+        }
+
+        private static void PlayerClickPostfix()
+        {
+            BrokenSequenceSuppressionRuntime.EndPlayerAttackClick();
         }
 
         private static bool Prefix(UnitEntityData __0, UnitEntityData __1,
@@ -107,8 +129,8 @@ namespace KingmakerGunslinger.Firing
                 BrokenSequenceInterruptionPolicy.EvaluateConstruction(
                     BrokenSequenceSuppressionRuntime.IsSuppressed(
                         executor, firearm.Weapon),
-                    BrokenSequenceSuppressionRuntime.IsPlayerAttackContext,
-                    firearm.Firearm.Repository.State.Condition);
+                    BrokenSequenceSuppressionRuntime
+                        .TryConsumePlayerAttackAuthorization(executor, __1));
             if (sequence == BrokenSequenceConstructionDecision.RejectInterrupted)
                 return Reject(executor, __1,
                     EmptyFirearmCommandDisposition.RejectInterrupted,

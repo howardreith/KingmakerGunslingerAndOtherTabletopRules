@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Validate the 0.0.127 firearm maintenance, rest recovery, and misfire interruption candidate."""
 from __future__ import annotations
 import argparse
@@ -13,7 +13,7 @@ VERSION = "0.0.127"
 INFORMATIONAL_VERSION = "0.0.127-firearm-maintenance"
 PACKAGE = "KingmakerGunslinger-0.0.127-local-runtime.zip"
 PACKAGE_SUFFIX = "firearm-maintenance"
-DETERMINISTIC_TEST_COUNT = 1611
+DETERMINISTIC_TEST_COUNT = 1612
 MANIFEST_TOTAL = 1886
 MANIFEST_ACTIVE = 1884
 STATIC_KEY = "firearmMaintenance127"
@@ -102,7 +102,7 @@ def validate(root: Path) -> None:
     require_tokens(root / "src/KingmakerGunslinger/Firing/EmptyFirearmAttackCommandPatch.cs",
         "RejectInterrupted",
         "MayResumeCapturedAttack(",
-        "MarkPlayerAttackFrame")
+        "TryConsumePlayerAttackAuthorization(")
     # Quick Clear keeps its own combat route.
     require_tokens(root / "src/KingmakerGunslinger/Deeds/QuickClearRuntime.cs",
         "FirearmStateMachine.Repair(before)")
