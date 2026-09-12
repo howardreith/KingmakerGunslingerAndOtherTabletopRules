@@ -768,7 +768,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableFirearmBreakInterruption)
                 {
-                    Complete(RunDisposableFirearmBreakInterruption());
+                    PollFirearmNativeInput();
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
@@ -30464,6 +30464,15 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
+            {
+                try { StopFirearmInput(); }
+                catch (Exception cleanup)
+                {
+                    result.Status = RuntimeTestStatuses.Fail;
+                    result.Diagnostics.Add("firearm input cleanup failed: " + cleanup);
+                }
+            }
             StopTeleportPersistence(result);
             StopTeleportationInteraction(result);
             StopTeleportationSpellbookUi(result);

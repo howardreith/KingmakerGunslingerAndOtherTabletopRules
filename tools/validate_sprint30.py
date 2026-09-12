@@ -135,8 +135,8 @@ def validate(
             "FirearmActionKind.Reload",
             "FirearmActionKind.Repair",
             "The firearm has capacity available to reload.",
-            "Only a Broken firearm can be repaired in the field.",
-            "A reusable Gunsmith's Kit is required in the shared inventory.",
+            "This firearm is not broken.",
+            "Requires a Gunsmith's Kit.",
         ],
         "Generic action policy",
     )
