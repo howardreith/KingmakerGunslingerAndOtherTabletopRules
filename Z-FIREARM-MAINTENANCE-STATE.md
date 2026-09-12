@@ -28,19 +28,15 @@ all native evidence must reference that identity.
 
 ## Implementation decisions so far
 
-**P1 (implemented this session, journal #3):** committed-degradation record in
-`FirearmMisfireRuntime` (per-RuleAttackRoll CWT + suppression registry keyed
-wielder/weapon); full-attack iterations end at the next `OnAction` prefix when
-the previous shot of the same command committed the break (before the
-loaded/free-reload decisions); `CreateAttackCommand` construction gate rejects
-automatic recreation while suppressed (never queues a replacement reload);
-pending reload-resume captures/rechecks a degradation epoch; player intent =
-frame-scoped marker set by a Harmony prefix on `ClickUnitHandler.OnClick`
-(Harmony 1.2 has NO finalizer → frame scoping, not a depth counter); repaired
-weapons never gated; suppression is process-memory/weak-keyed. Known edges for
-native qualification: same-frame AI construction during a player unit-click;
-console/radial-menu attack routes; RTWP brain re-issue; Dead Shot/scatter
-composite paths (A08).
+**P1 (HISTORICAL — first implementation, superseded by reviews R1/CR2-04 and
+R3; see journal #10/#12 for the current design):** the original frame-scoped
+click marker and the "repaired weapons are never gated" rule were defects and
+no longer exist. CURRENT behavior: player intent = one-shot per-(executor,
+clicked-target) authorizations recorded by the `ClickUnitHandler.OnClick`
+prefix only for selected attackable pairs, consumed only by a construction
+running with the genuine click handler still on the call stack; wrong-target
+queries never erase a valid authorization; suppression is released ONLY by a
+genuine new player order — repair/reload never revive the cancelled order.
 
 **P0 binding decisions** (details in contract + journal #2):
 - **P2 rest boundary candidate**: prefix on `RestController.StopRestProcess()`

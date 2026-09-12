@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker;
@@ -96,14 +96,21 @@ namespace KingmakerGunslinger.Recovery
 
         /// <summary>
         /// The delivery-time binding: the exact weapon bound at command
-        /// start, only when that binding recorded full start eligibility and
-        /// its owning command is still executing.
+        /// start, only when that binding recorded full start eligibility,
+        /// its owning command is still executing, and the command currently
+        /// requesting THIS delivery is exactly that owning command - proven
+        /// through the native UnitUseAbility to AbilityExecutionProcess to
+        /// AbilityExecutionContext relationship, so an older or overlapping
+        /// delivery cannot borrow a newer binding (review CR2-01).
         /// </summary>
-        internal static bool TryGetBoundWeapon(
-            UnitDescriptor caster,
+        internal static bool TryGetBoundWeaponForDelivery(
+            Kingmaker.UnitLogic.Abilities.AbilityExecutionContext context,
             out ItemEntityWeapon weapon)
         {
             weapon = null;
+            UnitDescriptor caster = context == null || context.Caster == null
+                ? null
+                : context.Caster.Descriptor;
             if (caster == null)
             {
                 return false;
@@ -124,8 +131,59 @@ namespace KingmakerGunslinger.Recovery
                     return false;
                 }
 
+                UnitUseAbility owner = FindOwningCommand(context);
+                if (!ReferenceEquals(binding.Command, owner))
+                {
+                    return false;
+                }
+
                 weapon = binding.Weapon;
                 return true;
+            }
+        }
+
+        /// <summary>
+        /// Resolves the exact UnitUseAbility whose AbilityExecutionProcess
+        /// produced this delivery context, by scanning the caster's live
+        /// commands and comparing the process's public context reference.
+        /// </summary>
+        private static UnitUseAbility FindOwningCommand(
+            Kingmaker.UnitLogic.Abilities.AbilityExecutionContext context)
+        {
+            try
+            {
+                Kingmaker.EntitySystem.Entities.UnitEntityData unit =
+                    context.Caster;
+                Kingmaker.UnitLogic.Commands.UnitCommands commands =
+                    unit == null ? null : unit.Commands;
+                if (commands == null)
+                {
+                    return null;
+                }
+
+                foreach (Kingmaker.UnitLogic.Commands.Base.UnitCommand
+                    command in commands)
+                {
+                    UnitUseAbility useAbility = command as UnitUseAbility;
+                    if (useAbility == null)
+                    {
+                        continue;
+                    }
+
+                    Kingmaker.Controllers.AbilityExecutionProcess process =
+                        useAbility.ExecutionProcess;
+                    if (process != null &&
+                        ReferenceEquals(process.Context, context))
+                    {
+                        return useAbility;
+                    }
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
             }
         }
 
@@ -150,15 +208,21 @@ namespace KingmakerGunslinger.Recovery
     {
         private static void Prefix(UnitUseAbility __instance)
         {
-            UnitDescriptor caster = null;
+            // Identify the repair command and capture its cleanup identity
+            // BEFORE any fallible work, so a failed capture actually
+            // invalidates the caster's existing binding (review CR2-01).
+            UnitDescriptor caster = IdentifyRepairCaster(__instance);
+            if (caster == null)
+            {
+                return;
+            }
+
             try
             {
-                caster = Run(__instance);
+                Run(__instance, caster);
             }
             catch (Exception exception)
             {
-                // A failed capture must not leave any existing binding for
-                // this caster: delivery then fails closed.
                 RepairCommandStartBinding.Bind(caster, null, false, null);
                 ModContext context;
                 if (ModContext.TryGet(out context))
@@ -172,7 +236,8 @@ namespace KingmakerGunslinger.Recovery
             }
         }
 
-        private static UnitDescriptor Run(UnitUseAbility command)
+        private static UnitDescriptor IdentifyRepairCaster(
+            UnitUseAbility command)
         {
             if (command == null ||
                 command.Spell == null ||
@@ -183,23 +248,22 @@ namespace KingmakerGunslinger.Recovery
             }
 
             UnitEntityData executor = command.Executor;
-            if (executor == null || executor.Descriptor == null)
-            {
-                return null;
-            }
+            return executor == null ? null : executor.Descriptor;
+        }
 
+        private static void Run(UnitUseAbility command, UnitDescriptor caster)
+        {
             ExactEquippedFirearmContext resolved;
             string reason;
             ItemEntityWeapon weapon = ExactEquippedFirearmResolver.TryResolve(
-                executor.Descriptor, out resolved, out reason)
+                caster, out resolved, out reason)
                 ? resolved.Weapon
                 : null;
 
             bool eligibleAtStart = weapon != null &&
-                IsEligibleAtCommandStart(executor.Descriptor, weapon);
+                IsEligibleAtCommandStart(caster, weapon);
             RepairCommandStartBinding.Bind(
-                executor.Descriptor, weapon, eligibleAtStart, command);
-            return executor.Descriptor;
+                caster, weapon, eligibleAtStart, command);
         }
 
         private static bool IsRepairAbility(

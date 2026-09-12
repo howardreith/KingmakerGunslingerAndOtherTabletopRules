@@ -112,6 +112,9 @@ namespace KingmakerGunslinger.Gunsmithing
                 return;
             }
 
+            // Equipment scope uses living participants; the gunsmith
+            // capability itself uses the completed-rest predicate (sleep
+            // lifecycle evidence in FirearmMaintenanceCapability).
             List<UnitEntityData> participants = game.Player.AllCharacters ==
                 null
                 ? null
@@ -249,11 +252,12 @@ namespace KingmakerGunslinger.Gunsmithing
             UnitEntityData unit,
             BlueprintFeature gunsmithFeature)
         {
-            // Post-rest capability: a living participant that still holds the
-            // real Gunsmithing feature fact. Dead units never supply the
-            // skill; the post-rest boundary itself is not a sleeping flag.
-            return FirearmMaintenanceCapability.IsLivingParticipant(unit) &&
-                unit.Descriptor.HasFact(gunsmithFeature);
+            // Post-rest capability through the completed-rest predicate:
+            // transient camping sleep (lifted inside the completion
+            // coroutine, after this prefix) is accepted; death, unconscious
+            // life-state, and genuine incapacity are rejected (CR2-03).
+            return FirearmMaintenanceCapability
+                .CanMaintainFirearmsAtCompletedRest(unit.Descriptor);
         }
 
         /// <summary>

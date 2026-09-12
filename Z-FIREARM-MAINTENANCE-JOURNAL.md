@@ -562,3 +562,56 @@ Still open from the review (next slices, behavioral):
   RuntimeTestRunner.cs ~26000).
 - Commit: source changed again — rebuild + new artifact identity still
   required before any native run.
+
+---
+
+2026-09-13 #12 — SECOND REVIEW (CR2-01..04) of 2edebd75: all four corrected
+
+Dispositions (all ACCEPTED, fixed in source this slice; regressions that
+need real commands/input/rest are queued for the guarded scenarios):
+- **CR2-01** — (A) capture defect: the OnStart prefix now identifies the
+  repair command and captures its caster BEFORE any fallible work
+  (`IdentifyRepairCaster`), so a faulting capture actually invalidates the
+  caster's existing binding. (B) delivery ownership: delivery now calls
+  `TryGetBoundWeaponForDelivery(context)`, which resolves the exact owning
+  `UnitUseAbility` through the native relationship
+  UnitUseAbility.ExecutionProcess → AbilityExecutionProcess.Context →
+  this context (public members, verified in IL) and requires
+  `ReferenceEquals(binding.Command, owner)` — an older/overlapping delivery
+  can no longer borrow a newer binding. Matching-command cleanup,
+  EligibleAtStart, !IsFinished, exact weapon, and both blueprint identities
+  retained.
+- **CR2-02** — Dead Shot's shared notification moved from after-the-commit
+  to the verified irrevocable boundary immediately before `return result`
+  (after delivery/explosion/notification/audio): any later fault now rolls
+  back through the existing catch with NO suppression/epoch ever published.
+  Scatter unchanged (no rollback path; review confirmed). Composite
+  single-discharge/burst semantics unchanged.
+- **CR2-03** — field capability now uses the ammunition-crafting idiom
+  (`IsDead || !IsConscious || !CanAct` reject). Rest repairer selection now
+  uses `CanMaintainFirearmsAtCompletedRest`: alive, not natively
+  unconscious, holds the fact, and CanAct OR transient camping Sleeping —
+  evidence: native `ApplySleepingState` runs INSIDE the
+  `<StopRestProcess>d__76` coroutine (IL_03c5), i.e., AFTER the completion
+  prefix, so validly-resting campers can still carry Sleeping at the
+  boundary while genuinely-incapable units do not.
+- **CR2-04** — production authorization consumption now requires the
+  genuine `ClickUnitHandler` frame to still be ON THE CONSUMING CALL STACK
+  (`StackTrace` check), so a leftover from a faulting handler is rejected
+  even for the exact pair in the same frame; wrong-target queries return
+  false WITHOUT erasing the executor's valid authorization (only successful
+  consumption or frame expiry removes records); postfix cleanup retained;
+  the guarded scenario seam now records explicitly-labeled Bridge records
+  (documented, stack check bypassed only for the labeled bridge).
+Durable-record corrections: STATE's P1 "Implementation decisions" paragraph
+is now unmistakably labeled HISTORICAL (frame marker + repaired-never-gated
+described superseded code); distinction recorded: the Dead Shot scenario
+stage is a WRITTEN behavioral test — it is not executed evidence until the
+native lanes run it on the final artifact (native cells all still NOT RUN).
+Tests updated to the new tokens (capability idiom, delivery correlation,
+stack-scope, completed-rest predicate); suite **1612/1612 PASS exit 0**;
+main project Release build OK. Queued regressions (per review): binding
+A/B-command overlap, ineligible-at-start persistence, capture-fault
+invalidation, capability loss start→delivery, reload-first player orders,
+rest sleep-lifecycle and participant scope — all in the guarded scenarios
+before final qualification.

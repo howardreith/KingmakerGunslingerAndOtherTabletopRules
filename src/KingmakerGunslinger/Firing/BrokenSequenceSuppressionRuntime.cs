@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -44,6 +44,10 @@ namespace KingmakerGunslinger.Firing
             internal object Executor;
             internal object Target;
             internal int Frame;
+            // Bridge records exist only through the guarded runtime-test
+            // seam; production records additionally require the genuine
+            // native click handler to still be on the consuming call stack.
+            internal bool Bridge;
         }
 
         /// <summary>
@@ -163,9 +167,16 @@ namespace KingmakerGunslinger.Firing
 
         /// <summary>
         /// Consumes the player-attack authorization for an attack-command
-        /// construction only when it exactly matches the genuine order:
-        /// the same executor and the same clicked target, recorded by the
-        /// still-current click, one use only.
+        /// construction only when it exactly matches the genuine order: the
+        /// same executor and the same clicked target, recorded by the
+        /// still-current click, one use only. A production authorization is
+        /// consumable only while the genuine native click handler is still
+        /// on the consuming call stack, so a leftover from a faulting
+        /// handler can never be inherited by later automatic work even in
+        /// the same frame (review CR2-04). A wrong-target query returns
+        /// false WITHOUT deleting the executor's authorization for its
+        /// legitimate target; only successful consumption or frame expiry
+        /// removes a record.
         /// </summary>
         internal static bool TryConsumePlayerAttackAuthorization(
             object executor,
@@ -181,8 +192,19 @@ namespace KingmakerGunslinger.Firing
                     return false;
                 }
 
-                if (!ReferenceEquals(authorization.Target, target) ||
-                    authorization.Frame != CurrentFrame())
+                if (authorization.Frame != CurrentFrame())
+                {
+                    _playerAttackAuthorizations.Remove(executor);
+                    return false;
+                }
+
+                if (!ReferenceEquals(authorization.Target, target))
+                {
+                    return false;
+                }
+
+                if (!authorization.Bridge &&
+                    !IsNativePlayerClickOnStack())
                 {
                     _playerAttackAuthorizations.Remove(executor);
                     return false;
@@ -191,6 +213,34 @@ namespace KingmakerGunslinger.Firing
                 _playerAttackAuthorizations.Remove(executor);
                 return true;
             }
+        }
+
+        /// <summary>
+        /// Proves the genuine native player unit-click handler is still
+        /// executing on this call stack: the only construction authorized
+        /// to consume a production player-attack order is one performed by
+        /// that handler itself.
+        /// </summary>
+        private static bool IsNativePlayerClickOnStack()
+        {
+            System.Diagnostics.StackTrace stack =
+                new System.Diagnostics.StackTrace(2, false);
+            for (int index = 0; index < stack.FrameCount; index++)
+            {
+                System.Reflection.MethodBase method =
+                    stack.GetFrame(index).GetMethod();
+                System.Type declaring = method == null
+                    ? null
+                    : method.DeclaringType;
+                if (declaring != null &&
+                    declaring.FullName ==
+                        "Kingmaker.Controllers.Clicks.Handlers.ClickUnitHandler")
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         internal static int CurrentFrame()
@@ -221,7 +271,8 @@ namespace KingmakerGunslinger.Firing
                     {
                         Executor = executor,
                         Target = target,
-                        Frame = CurrentFrame()
+                        Frame = CurrentFrame(),
+                        Bridge = true
                     };
             }
         }

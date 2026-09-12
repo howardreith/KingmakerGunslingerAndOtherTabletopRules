@@ -123,11 +123,11 @@ namespace KingmakerGunslinger.Recovery
                 if (!start.IsAvailable || start.Weapon == null)
                     throw new InvalidOperationException(start.Reason);
                 Kingmaker.Items.ItemEntityWeapon boundAtCommandStart;
-                if (!RepairCommandStartBinding.TryGetBoundWeapon(
-                        context.Caster.Descriptor, out boundAtCommandStart) ||
+                if (!RepairCommandStartBinding.TryGetBoundWeaponForDelivery(
+                        context, out boundAtCommandStart) ||
                     !ReferenceEquals(boundAtCommandStart, start.Weapon))
                     throw new InvalidOperationException(
-                        "Repair Firearm delivery does not match the exact firearm bound at command start; the command was interrupted or its context changed.");
+                        "Repair Firearm delivery does not match the exact firearm bound at the owning command start; the command was interrupted, superseded, or its context changed.");
                 return true;
             }
             catch (Exception exception)

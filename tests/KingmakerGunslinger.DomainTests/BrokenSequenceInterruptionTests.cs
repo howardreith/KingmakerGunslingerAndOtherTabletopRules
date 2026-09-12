@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Firing;
@@ -202,6 +202,9 @@ namespace KingmakerGunslinger.DomainTests
                 "BrokenSequenceSuppressionRuntime.cs");
             Assertions.True(runtime.Contains("ConditionalWeakTable"),
                 "Suppression bookkeeping must be weakly keyed so scene transitions and save/load cannot leak it.");
+            Assertions.True(runtime.Contains("IsNativePlayerClickOnStack") &&
+                runtime.Contains("ClickUnitHandler"),
+                "Production authorization consumption must prove the genuine native click handler is still on the call stack (review CR2-04).");
             Assertions.True(runtime.Contains("ClearForRuntimeTest"),
                 "The guarded runtime-test seam must exist for deterministic test resets.");
         }
