@@ -148,3 +148,18 @@ byte-identical results: 1,581/1,581 PASS each run.
   not exercised through a level-up UI scenario in this run.
 - No public release was published; the candidate remains on the mission
   branch pending owner approval.
+
+## Public release record
+
+Owner approved publication on 2026-09-11. PR #16 merged the mission branch
+to master (73b16a95). Tag `v0.0.126` published
+`KingmakerGunslinger-0.0.126-word-of-recall-oracle.zip`:
+https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.126
+Asset SHA-256
+`ee9c00eef064b2b93727051bd55311b622a5c7f8a0d4c695ce725bb370682edf`; release
+DLL SHA-256
+`1ed5dec089b9d6973342d6e9b425f5fa09afcd57bf8641b3c688dfd4e923756e`
+(Publish-Release default MSBuild pipeline; two deterministic builds matched,
+strict package validation PASS, `--latest`). The published source is the
+merge of the runtime-qualified branch; the exact-reference DLL qualified in
+game was `99a8ab3e...` from the same source.

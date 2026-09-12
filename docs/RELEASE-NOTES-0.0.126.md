@@ -46,6 +46,14 @@ was ever composed for one.
    from spellbooks; scroll use and learning remain separate native concerns,
    and a level-6 Oracle spell selection can now simply see the spell.
 
+Released as **KingmakerGunslinger 0.0.126** by owner approval on 2026-09-11
+after PR #16 merged (master 73b16a95). Tag v0.0.126 published
+KingmakerGunslinger-0.0.126-word-of-recall-oracle.zip
+(sha256 ee9c00eef064b2b93727051bd55311b622a5c7f8a0d4c695ce725bb370682edf;
+release DLL 1ed5dec089b9d6973342d6e9b425f5fa09afcd57bf8641b3c688dfd4e923756e,
+Publish-Release default MSBuild pipeline — same source as the runtime-qualified
+exact-reference builds of 1e4f4be2, carried into master unchanged by the merge).
+
 ## Evidence
 
 - Deterministic domain suite: 1,581 tests PASS (five new Oracle regression

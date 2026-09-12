@@ -52,7 +52,7 @@ def validate(root: Path) -> None:
     state = static.get(STATIC_KEY, {})
     expected = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
-        "publicReleaseAuthorized": False,
+        "publicReleaseAuthorized": True,
         "ownerReportedOracleScrollFailureConfirmed": True,
         "nativeClericAndDruidRegistrationUnchanged": True,
         "scrollAndSpellGuidsUnchanged": True,
