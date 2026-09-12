@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.125-settlement-button-width",
-  "version": "0.0.125",
+  "milestone": "0.0.126-word-of-recall-oracle",
+  "version": "0.0.126",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1334,7 +1334,7 @@
     "treacherousPlayerRespecSaveQualificationWaivedByOwner": true
   },
   "unifiedRepair121": {
-    "deterministicTestCount": 1576,
+    "deterministicTestCount": 1581,
     "projectMagicItemCount": 30,
     "distinctTargetCount": 30,
     "distinctExactAreaCount": 29,
@@ -1511,7 +1511,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "characterVisibility123": {
-    "deterministicTestCount": 1576,
+    "deterministicTestCount": 1581,
     "compatibilityRuntimeQualificationPending": false,
     "publicReleaseAuthorized": true,
     "ownerAcceptedMissionReport": true,
@@ -1523,7 +1523,7 @@
     "remainingMatrixCellsDisclosed": true
   },
   "teleportPolish124": {
-    "deterministicTestCount": 1576,
+    "deterministicTestCount": 1581,
     "publicReleaseAuthorized": true,
     "specialistRootCauseConfirmed": "serialized per-book m_SpecialSpells cache derived only at feature activation and learn time; PostLoad never re-derives it",
     "loadSeamRepair": "Spellbook.PostLoad",
@@ -1535,12 +1535,23 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "settlementButton125": {
-    "deterministicTestCount": 1576,
+    "deterministicTestCount": 1581,
     "publicReleaseAuthorized": true,
     "settlementButtonWidenedToLabel": "label preferred width at the native font size plus the control native padding, capped by the settled native action region",
     "settlementButtonRestoreExact": true,
     "settlementButtonNoCumulativeGrowth": true,
     "runtimeQualificationPending": true,
+    "compatibilityRuntimeQualificationPending": true
+  },
+  "wordOfRecallOracle126": {
+    "deterministicTestCount": 1581,
+    "publicReleaseAuthorized": false,
+    "ownerReportedOracleScrollFailureConfirmed": true,
+    "rootCause": "Call of the Wild keeps the Oracle on its own OracleSpellList, so the Cleric 6 base publication never reached it and the native IsInSpellListOfUnit class-list check refused a zero-UMD Oracle",
+    "oracleFinalLiveReconciliation": "canonical Word of Recall merged exactly once at level 6 of the validated optional Oracle spellbook list, twice idempotently, module-gated and fail-closed",
+    "nativeClericAndDruidRegistrationUnchanged": true,
+    "scrollAndSpellGuidsUnchanged": true,
+    "runtimeQualificationPending": false,
     "compatibilityRuntimeQualificationPending": true
   }
 }

@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.125\"") &&
-                props.Contains("<KmgVersion>0.0.125</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.125-settlement-button-width</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.125\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.125\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.125-settlement-button-width\")"),
-                "Release and assembly identity are not transactionally pinned to the settlement button width candidate.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.126\"") &&
+                props.Contains("<KmgVersion>0.0.126</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.126-word-of-recall-oracle</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.126\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.126\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.126-word-of-recall-oracle\")"),
+                "Release and assembly identity are not transactionally pinned to the Word of Recall Oracle candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-settlement-button-width.zip") &&
+                "$($info.Id)-$($info.Version)-word-of-recall-oracle.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the settlement button width archive.");
-            Assertions.True(runtime.Contains("active version 0.0.125") &&
-                localBuild.Contains("active version 0.0.125") &&
-                localBuild.Contains("local-runtime\\0.0.125"),
+                "Package identity is not pinned to the Word of Recall Oracle archive.");
+            Assertions.True(runtime.Contains("active version 0.0.126") &&
+                localBuild.Contains("active version 0.0.126") &&
+                localBuild.Contains("local-runtime\\0.0.126"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

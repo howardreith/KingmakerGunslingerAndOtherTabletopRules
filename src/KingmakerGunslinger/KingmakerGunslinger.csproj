@@ -922,6 +922,7 @@
     <Compile Include="Spells\Teleportation\TeleportationScrollVendorMigration.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollActivationGate.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollAdapter.cs" />
+    <Compile Include="Spells\Teleportation\TeleportationFinalLiveReconciler.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityRuntime.cs" />
     <Compile Include="Spells\Teleportation\TeleportFamiliarityPatches.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationInventory.cs" />
