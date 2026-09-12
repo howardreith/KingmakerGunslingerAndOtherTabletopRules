@@ -6,6 +6,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
+        internal const string DisposableFirearmBreakInterruption =
+            "disposable-firearm-break-interruption";
         internal const string DisposableTeleportationResources = "disposable-teleportation-resources";
         internal const string DisposableTeleportationDisabled = "disposable-teleportation-disabled";
         internal const string DisposableTeleportationDestinations = "disposable-teleportation-destinations";
@@ -501,6 +503,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new HashSet<string>(StringComparer.Ordinal)
             {
                 ModLoadSmoke,
+                DisposableFirearmBreakInterruption,
                 ObserveKmgCompatibilityAssetAttribution,
                 ObserveFeatureModuleSettings,
                 ObserveUrbanBarbarianRageInventory,
