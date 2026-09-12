@@ -306,3 +306,53 @@ Results @ worktree (P2 commit 72388f66 + this slice):
 
 Next: P4 (docs/version 0.0.127 validator chain, full Build-Local pipeline,
 package validation, guarded native lanes ×2) then P5.
+
+---
+
+2026-09-12 #6 — P4a/P4b/P4c: docs, 0.0.127 allocation, full pipeline green
+
+- P4a: KNOWN-ISSUES design question RESOLVED entry; CHANGELOG 0.0.127 entry;
+  SMOKE-TEST-GUIDE.md rewritten for 0.0.127 (7 steps: field repair, combat
+  rejection, Wrecked rest-only, full-rest restoration, misfire
+  interruption, Quick Clear, regressions; historical sections preserved);
+  contract doc status header now IMPLEMENTED with source map.
+- P4b: version 0.0.127 allocated (unused verified). New
+  `tools/validate_firearm_maintenance127.py` (mission contracts + static
+  block `firearmMaintenance127`, runtimeQualificationPending=true);
+  dispatch/Info.json/Directory.Build.props/AssemblyInfo/Build-Local pins/
+  package.ps1 suffix/README/INSTALLATION-COMPATIBILITY/Publish-Release/
+  RuntimeAutomation version gate (guarded runtime now expects
+  -ExpectedVersion 0.0.127)/DevelopmentUi banner (new milestone appended,
+  historical labels kept contiguous)/compatibility profile package pins
+  (15)/release-notes 123-125 current-install pointers updated. Validator
+  chain maintenance at established per-release points: sprint29/30 tokens,
+  teleportation118/119 manifest-prefix digests RE-PINNED for the new repair
+  manifest notes (same notes were re-pinned by the 121 release; new digests
+  1869=34ccf639d25e981b5263bd4de855c3fa38659b7d0206c2a0448487d01b4ade0f,
+  1872=d63a4cdd831276e7173ab53aac6fd135d5ccbb1bbf6ab0c56a14eb2daaf8138e),
+  CMI NOT-TESTED set, bodyguard schema/package ladders, spear79/audio96
+  suffix ladders, eastern-favored release-key/set, protection-110 sets,
+  unified-repair KNOWN-ISSUES token. RELEASE-NOTES-0.0.127.md created
+  (PENDING gates) with retained-baselines section.
+  Stray-BOM incidents from edit scripts caught by validators and stripped
+  (blueprints.json, Info.json, CHANGELOG, SMOKE-TEST-GUIDE).
+- P4c: domain-test version pins updated (elven-branched-spear
+  release-identity/archive/build pins, eastern-favored
+  requiredGunslingerPackage) — caught by the pipeline after my
+  validator-only check missed them (lesson recorded).
+- **Full `scripts/Build-Local.ps1` PASS (exit 0)**:
+  validation + 1611/1611 domain tests + exact-reference Release build +
+  strict UMM package validation (both packages).
+  Candidate identity:
+  - Source: 62285749fb7bd679fa452bf4ad4d6537aea762f5 (+ test-only
+    working-tree fixes, no src/ deltas)
+  - Package:
+    artifacts/local-runtime/0.0.127/KingmakerGunslinger-0.0.127-local-runtime.zip
+    SHA-256 97e4039f47a2153572ac938ab8225a8ac8b2abdf15521a36c69eb68badf2b72f
+    (also artifacts/packages/KingmakerGunslinger-0.0.127-firearm-maintenance.zip)
+  - DLL SHA-256 bbceda4498092b2c0ff9aefe38c43382b8454d7be8c8bcc4776d52c8b995f835
+    MVID 204d1c6d-6f02-4650-8711-e82239dce9cb
+  - No deployment performed.
+
+Next: P4d guarded native qualification (new scenario code + lanes x2),
+then P5 report. Runtime lanes must run on THIS exact candidate identity.
