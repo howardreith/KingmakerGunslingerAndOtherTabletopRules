@@ -47,10 +47,38 @@ notes record the verified hooks once traced.
   combat," "This firearm is Wrecked and requires a completed full rest," and a
   missing-kit explanation. Availability inspection must not mutate state.
 
-### [BASELINE] Current behavior — to be completed by P0 trace
+### [BASELINE] Current behavior (verified P0 trace, base 71af37ac)
 
-(pending; record current Wrecked-eligibility, combat check, and binding
-behavior in the journal and mirror the summary here)
+- `Actions/FirearmActionPolicy.EvaluateRepair` accepts **Broken and Wrecked**
+  ("Only a Broken or Wrecked firearm can be repaired.").
+- `Recovery/FirearmRepairTransactionService.GetRejection` likewise permits
+  Broken and Wrecked at the transaction layer; kit snapshot equality and
+  same-state rollback already present.
+- `Recovery/RepairTestMusketRuntime` has **no combat check at all**; it
+  resolves the one exact equipped firearm (persisted condition via
+  `FirearmRuntimeState.Service`, not the battered effective overlay), requires
+  ≥1 kit in `Game.Instance.Player.Inventory`, and executes the transaction.
+- `Recovery/RepairTestMusketAbilityLogic` is the full-round Standard ability
+  (`SetIsFullRoundAction(true)`). `IsAvailableFor` gates the UI; `Deliver`
+  runs `TryPrepare` (evaluate at delivery start) then `Complete`
+  (re-evaluate + `ReferenceEquals` weapon match) then `Execute`. **Both checks
+  are inside delivery** — nothing binds the concrete firearm at actual command
+  issuance, so a weapon/context change across the full-round interval is only
+  caught by the two back-to-back delivery checks (P3 gap per mission §4.1).
+- Quick Clear (`Deeds/QuickClearRuntime` + `QuickClearService`) is already
+  Broken-only, actual-condition based, uses `FirearmStateMachine.Repair`
+  directly (shared low-level transition, combat-usable), spends grit via
+  TrueGrit. Untouched by this mission's field-repair restriction.
+- Legacy Overhaul alias (`Blueprints/OverhaulTestMusketAbilityBlueprints`) is
+  hidden, `ActionBarAutoFillIgnored`, and delegates to
+  `RepairTestMusketAbilityLogic.Create` — it inherits whatever field checks the
+  unified ability has.
+- User-facing text still promises unified Broken-or-Wrecked full-round repair
+  in `GunsmithingBlueprints`, `GunsmithingSupplyBlueprints`,
+  `RepairTestMusketAbilityBlueprints`, the availability reason strings, and
+  `blueprints/blueprints.json` manifest notes (P4 updates these; the
+  `UnifiedFirearmRepairTests` source-contract assertions are updated with
+  them).
 
 ## 2. Rest maintenance (the Wrecked/Broken recovery route)
 
@@ -84,10 +112,52 @@ behavior in the journal and mirror the summary here)
   clear single explanation when damaged carried guns can't be restored for
   missing gunsmith/kit (not per participant); never report uncommitted repairs.
 
-### [BASELINE] Current behavior — to be completed by P0/P2 trace
+### [BASELINE] Current behavior and native rest boundaries (verified P0 trace)
 
-(pending; record the native rest completion route(s) found and current absence
-of rest restoration)
+- No rest-based firearm restoration exists today. The only rest hook is
+  `Gunsmithing/CraftingRestResetPatch`: a per-unit postfix on
+  `RestController.ApplyRest(UnitDescriptor)` that removes the ammunition
+  crafting once-per-rest marker — appropriate for its purpose, **not** a
+  full-rest completion boundary.
+- Native rest state machine (IL dump at
+  `private\charvis-native-il\Assembly-CSharp.il`, game 2.1.7b):
+  - `RestPhase`: Manage=0, Camp=1, Sleep=2, Finished=3, SkipTime=4.
+    `RestResult` flags: Unknown=1, Success=2, HuntingRandomEncounter=4,
+    NightRandomEncounter=8, SkipTime=16.
+  - `RestController.Tick()` dispatches per phase: Camp → `CampCoroutine` +
+    `TickCamp` (hunting/camping checks happen here); Sleep → first tick
+    `StartSleepPhase`, then `TickSleepPhase`; SkipTime → `SkipTime()` then
+    phase=Finished + `StopRestProcess`.
+  - `TickSleepPhase()`: if `Status.NightRandomEncounter` → phase=Finished +
+    `StopRestProcess` (interrupted). Otherwise sets `Status.RestSucceeded =
+    true` each tick; when `RemainingTime <= 0` → phase=Finished +
+    `StopRestProcess` (**genuine completion**). Otherwise advances game time
+    by the interval and — while sleeping — calls `ApplyRestInterval()` only
+    if `Status.ApplyRest` (incremental per-interval healing; a **transient
+    mid-sleep** callback, not a completion boundary). Supports
+    `RestUntilHealed` extension.
+  - `ApplyRestInterval()` is party-wide: iterates `Player.AllCharacters` +
+    `ExCompanions`, calls `HealAndApplyRest(unit, status)` which heals and
+    then calls `ApplyRest(unit.Descriptor)` per unit.
+  - `ApplyRest` is **also called natively outside camping** by
+    `LevelUpController`, `KingdomTimelineManager`, `KingdomTask`, `Recruit`,
+    `RespecCompanion`, and `CapitalCompanionLogic` — so any per-unit
+    `ApplyRest` postfix is not proof of a rest, let alone completion.
+  - `StopRestProcess()` (iterator `<StopRestProcess>d__76`) is the common
+    termination coroutine started at the completion boundary via
+    `LoadingProcess.StartLoadingProcess`: it checks
+    `RestSucceeded`/`SkipTime`, ticks entity creation/destruction, preloads
+    unit resources, and **autosaves at the end**
+    (`SaveManager.GetNextAutoslot` → `SaveGame`).
+  - **P2 integration point (candidate, to be runtime-verified):** a prefix on
+    `RestController.StopRestProcess()` — invoked exactly once per rest-process
+    termination — gated on `Status.RestSucceeded && !Status.NightRandomEncounter
+    && !Status.SkipTime`. It runs before preload/autosave, so committed
+    maintenance is captured by the post-rest autosave. An interrupted rest
+    that later resumes completes through the same path exactly once (R06).
+  - `StartScripted(bool immediate)` is a scripted/instant rest route that
+    also calls `ApplyRestInterval` (m_ScriptedRest). World-map and
+    settlement/inn routes to be confirmed at runtime for R08.
 
 ## 3. Newly Broken stops the current attack sequence
 
@@ -124,9 +194,70 @@ of rest restoration)
   not automatically multiple shots to cancel. Invariant: no subsequent real
   discharge or automatic resumption after the applicable committed break.
 
-### [BASELINE] Current behavior — to be completed by P0/P1 trace
+### [BASELINE] Current behavior and native command boundaries (verified P0 trace)
 
-(pending; record what currently happens after a mid-sequence break today)
+- Nothing today interrupts an attack sequence after a committed break:
+  - Full attacks: `Firing/FreeActionFullAttackReloadPatch` prefixes
+    `UnitAttack.OnAction` (instance, per-iterative-shot boundary where
+    `LastAttackRule` identifies the previous completed shot and
+    `PlannedAttack` the next). `Reloading/FullAttackAutoReloadPolicy` returns
+    `ContinueLoaded` whenever rounds remain — **a gun that just broke
+    mid-sequence keeps firing its remaining iteratives** (Broken preserves
+    surviving rounds after the misfired round was consumed). If empty and the
+    effective reload is Free (or free Lightning Reload), it **reloads and
+    continues the sequence**. Only Wrecked-effective or unavailable reload
+    ends the attack.
+  - Command construction: `Firing/EmptyFirearmAttackCommandPatch` prefixes
+    static `UnitAttack.CreateAttackCommand(executor, target)` and rejects
+    empty/Wrecked/ambiguous at construction; a loaded Broken gun constructs
+    freely (deliberate Broken attacks are already possible today and remain
+    so under the contract).
+  - Reload-resume: when an empty-gun attack is replaced by the auto-reload
+    ability, a `PendingAttack` is stored keyed by the reload
+    `UnitUseAbility`; `ReloadEndedPostfix` on `UnitUseAbility.OnEnded(bool)`
+    schedules `ResumeAttack`, which re-checks same-weapon, loaded, non-Wrecked
+    effective, paper-mode, and turn-based standard-action availability —
+    **a Broken gun resumes the interrupted order after reload today**.
+- Committed degradation point: `Misfires/FirearmMisfireRuntime.CommitConditionTransition`
+  (invoked from `AfterIsSuccessRoll` on the eligible `RuleAttackRoll`) runs an
+  expected-state-guarded `FirearmRuntimeState.Service.Transition` with
+  repository-identity verification and publishes the condition notification.
+  This is the only place Normal→Broken / Broken→Wrecked commits during an
+  attack — the natural, verified trigger for P1 interruption. Misfire
+  negation (Stranger's Fortune `TryIgnoreMisfire`, Expert Loading) returns
+  before it, so a prevented break never reaches the trigger (A07 baseline
+  already safe).
+- Discharge gating: `Firing/FirearmDischargeRuntime.BeforeAttackRoll`
+  consumes the round via the state machine (`Fire`), registers the eligible
+  attack, and forces a miss for empty/Wrecked/fault; `DeadShotRuntime` and
+  `ScatterVolleyRuntime` bypass ordinary discharge for their composite paths.
+- Player intent vs automation (IL evidence):
+  - Player attack clicks: `ClickUnitHandler.OnClick` → (auto-use ability
+    path or) `UnitAttack.CreateAttackCommand` → `UnitCommands.Run(command)` +
+    `CombatState.ManualTarget = target`. **The attack branch does not set
+    `UnitCommand.CreatedByPlayer`** — that flag is only set for
+    movement/interact/auto-use-ability commands (ClickGroundHandler,
+    ClickMapObjectHandler, ClickUnitHandler other branches, console
+    InGameInputLayer, AreaTransition). `CreatedByPlayer` therefore cannot
+    discriminate deliberate vs automatic attack commands.
+  - RTWP repeated auto-attacks are issued by the Brain:
+    `BlueprintAiAttack` builds attack commands, and
+    `DecisionContext`/`TargetInfo`/`HasManualTargetConsideration`/
+    `ManualTargetConsideration` read `ManualTarget`. `UnitConfusionController`
+    and `StalkerUnitController` also create attack commands.
+  - Consequence for P1 design: suppression must be scoped to the interrupted
+    command/order (cancel remaining iterations, cancel pending resume, block
+    immediate automatic re-issue) while a genuinely new player-issued order
+    passes; candidate consent signals are the native click event bus and
+    `ManualTarget` semantics, to be settled in P1 with focused tests.
+  - `UnitCommands` API available for native cancellation: `Run`,
+    `AddToQueue(First)`, `AddToQueueOrRun`, `InterruptAll`,
+    `InterruptAiCommands`, `InterruptAndRemoveCommand`, `InterruptMove`,
+    `InterruptGroupCommand`, `IsRunning`, `UpdateCombatTarget`.
+- Battered overlay (`Gunsmithing/BatteredFirearmRuntimeUseResolver` +
+  `BatteredFirearmUsePolicy`): computes an **effective** Broken overlay from
+  battered origin ownership; kept separate from the persisted actual
+  condition everywhere above (repair eligibility reads the actual condition).
 
 ## 4. Wrecked is unusable for firing
 
@@ -186,3 +317,9 @@ it with actual callers and native boundaries.
 
 - 2026-09-12: initial contract from mission §4; source map verified. Baseline
   sections intentionally pending P0 trace.
+- 2026-09-12 (P0 trace complete): filled all three [BASELINE] sections with
+  verified current behavior and native boundaries (rest state machine,
+  StopRestProcess completion coroutine, ApplyRest non-camping callers,
+  ClickUnitHandler/Brain attack-issuance routes, CreatedByPlayer coverage,
+  UnitCommands cancel API). Domain baseline 1581/1581 PASS @ 71af37ac in the
+  mission worktree.
