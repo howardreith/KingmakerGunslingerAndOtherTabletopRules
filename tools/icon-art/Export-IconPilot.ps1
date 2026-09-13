@@ -11,6 +11,25 @@ $reviewRoot = Join-Path $RepositoryRoot 'reports\icon-overhaul'
 New-Item -ItemType Directory -Path $sourceRoot,$exportRoot,$reviewRoot -Force | Out-Null
 $keys = @('general-ifrit','fire-affinity','fire-resistance','elemental-strike',
     'hydraulic-maneuver','hydraulic-trip','teleport','greater-teleport','word-of-recall','rapid-reload')
+# Approval freezes these originals and exports. Revisions need new paths and review;
+# rerunning a historical exporter must never erase an owner's pixel-bound decision.
+$manifestPath = Join-Path $pilotRoot 'pilot-manifest.json'
+if (Test-Path -LiteralPath $manifestPath) {
+    $existing = Get-Content -Raw -Encoding UTF8 -LiteralPath $manifestPath | ConvertFrom-Json
+    $approved = @($existing.records | Where-Object { $_.visualStatus -eq 'approved' })
+    if ($approved.Count -gt 0) {
+        if ($approved.Count -ne $keys.Count) { throw 'Partially approved pilot: export revisions separately.' }
+        foreach ($record in $approved) {
+            foreach ($kind in @('source','export')) {
+                $actual = (Get-FileHash -LiteralPath (Join-Path $RepositoryRoot $record.$kind) -Algorithm SHA256).Hash.ToLowerInvariant()
+                if ($actual -ne $record.($kind+'Sha256')) { throw "Approved pilot bytes changed: $($record.key) / $kind" }
+            }
+            if ($record.approvedHash -ne $record.exportSha256) { throw "Stale pilot approval: $($record.key)" }
+        }
+        Write-Output 'Verified 10 approved pilot sources/exports; preserved their bytes and approval records.'
+        return
+    }
+}
 function New-IconGraphics([Drawing.Bitmap]$bitmap) {
     $g = [Drawing.Graphics]::FromImage($bitmap)
     $g.SmoothingMode = [Drawing.Drawing2D.SmoothingMode]::AntiAlias

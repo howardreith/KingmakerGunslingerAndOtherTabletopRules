@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "electricity-resistance",
+  "behavior": "Passive electricity resistance 5; defense against lightning, not a lightning attack.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalRaceBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/electricity-resistance.png",
+  "sourceSha256": "eb88eb31eec328211bf18beb4b33bc8062b541f0e361190ad001ef75435b4d24",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-resistance.png",
+      "role": "approved defensive painting family"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square painted fantasy CRPG resistance icon. Supplied approved Fire Resistance image is the family reference: rich hand-painted materials, dark full-bleed textured ground, large durable shield DEFLECTING a specific energy, no harmed creature. Make a NEW silhouette and energy interaction, not a tinted copy. Broad readable shapes, subject about 80% of square, safe margin for shield edges; readable at 32/48/128 px. No text, UI border, insignia, equipment stats, state overlays, watermark or grid. Subject: a tall broad rectangular steel pavise shield, three-quarter view, firmly braced with a thick center spine. A single forked white-violet lightning bolt enters from upper left, divides around the outer shield edges, and grounds as two short branches below while the broad dark face stays safe. Rounded upper corners and flat bottom, large readable defensive shape different from a pointed fire shield. Cool gunmetal planes, silvery edge reflections, dark navy-violet background. No heraldry, magic rune, glowing eye, person or extra orbiting sparks.",
+  "visualStatus": "production-awaiting-owner-review"
+}

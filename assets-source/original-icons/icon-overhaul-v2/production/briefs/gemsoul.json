@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "gemsoul",
+  "behavior": "Gemsoul heritage; mineral ancestry, not the granted Color Spray.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/gemsoul.png",
+  "sourceSha256": "30c36651d87ae36fe4597b379468ecd1545ee1eeed57655a22942c6598880566",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painted ancestry style only"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: one large upright asymmetric hexagonal MINERAL PRISM in a short rough crystal base, sharply faceted emerald and smoky-violet quartz with a pale mint-white gleaming upper face. Only three broad primary facets, a single long sloping beveled point and one short side outgrowth. Luminous edges and deep inner mineral inclusions, dark moss-charcoal cavern background. Solid geological jewel silhouette, not a star, ice flake, light ray spell, jewelry setting, or array of tiny gems. Cool green with subtle purple reflections, no orange flame.",
+  "visualStatus": "production-awaiting-owner-review"
+}

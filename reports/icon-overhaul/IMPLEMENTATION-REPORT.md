@@ -1,8 +1,16 @@
-# Icon overhaul v2: pilot checkpoint
+# Icon overhaul v2 implementation record
 
-Status: **AWAITING_PILOT_APPROVAL**. The plan is approved; the ten new images are
-not. This is a technically qualified presentation prototype and an isolated art
-pilot, not the completed overhaul or a release.
+Status: **PRODUCTION_IN_PROGRESS**. The owner approved the ten actual pilot images
+and family direction: [exact decision and hashes](PILOT-APPROVAL.md).
+Twenty-five additional production originals now cover the remaining heritages,
+resistances and affinities. Review their [heritage](production-heritages.png),
+[resistance](production-resistance.png) and [affinity](production-affinities.png)
+thumbnail sheets. These new images await owner review and runtime integration.
+
+The technical evidence below records the previously qualified pilot artifact at
+commit `4f141921a830042442b617f2788f1cd0b34a7cb6`; its pending owner-review language
+predates the approval above. Final native UI evidence, final production acceptance
+and the completed overhaul remain separate pending gates. This is not a release.
 
 ## Review packet
 
@@ -10,7 +18,7 @@ pilot, not the completed overhaul or a release.
   32/48/64/128px export previews, parchment/dark backgrounds, grayscale and hashes.
 - [Contact sheet](pilot-contact-sheet.png): ten candidates at multiple sizes.
 - [Source/export manifest](../../assets-source/original-icons/icon-overhaul-v2/pilot/pilot-manifest.json):
-  exact originals, exports, dimensions, hashes and explicitly unapproved status.
+  exact originals, exports, dimensions, hashes and the recorded pilot approval.
 - [Production prompts](../../assets-source/original-icons/icon-overhaul-v2/pilot/production-prompts.json):
   prompts, reference roles and preserved revision inputs. The first Ifrit prompt
   is honestly labeled a reconstructed brief, not a verbatim transcript.

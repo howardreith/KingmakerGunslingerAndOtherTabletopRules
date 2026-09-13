@@ -1,189 +1,189 @@
 {
-    "schemaVersion":  1,
-    "authority":  "Candidate source/export record only; not runtime registration or visual approval.",
-    "exporter":  "tools/icon-art/Export-IconPilot.ps1",
-    "engine":  "Windows System.Drawing GDI+; HighQualityBicubic; TileFlipXY edges; SourceCopy ARGB32; no chroma key, sharpen, generation, or timestamps during painted export.",
-    "runtimeInstallation":  "none; isolated pilot exports are not packaged",
-    "records":  [
-                    {
-                        "key":  "general-ifrit",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
-                        "sourceSha256":  "24f303fb02f5c6f67f5c17be699bc4049440aec393cfecdbc6d83de36cd95bc6",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/general-ifrit.png",
-                        "exportSha256":  "839637f60fa9a268db577ad549d45fae9b77884465ca6c47e3988c70c9193341",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "fire-affinity",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
-                        "sourceSha256":  "4b138a149c0807e7bc3ac080fa7b61beefc52a58d0ea8bf2ec9a47360458cb2c",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/fire-affinity.png",
-                        "exportSha256":  "d5ef14e589d286ba39dc6ce8880f6ef3f8b4eb6454653c3d06c0ffe7543a4394",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "fire-resistance",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-resistance.png",
-                        "sourceSha256":  "5cdd9e8eca72c2014603bb7a52a92a3d8cc240157350f783039431736d321f2d",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/fire-resistance.png",
-                        "exportSha256":  "731f529ddd1caf072b7fc77e440cb1b824d78729c83d5b8ff6e7bf2ba8692a8e",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "elemental-strike",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
-                        "sourceSha256":  "0ae9a8a1580cfa489ea965b742421643dfdb9dbde5467548f55ab9930e154beb",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/elemental-strike.png",
-                        "exportSha256":  "4ef61ba290be43fea8917141b2eb0a4ba7c38b7d45274a5a1cb7b3a9e29ffa0b",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "hydraulic-maneuver",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
-                        "sourceSha256":  "593e205dae2b9c1acb84ca5dcbde15919339134f8c6c8c447e92f8d1c05d99c9",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/hydraulic-maneuver.png",
-                        "exportSha256":  "220226251a04ecb9e2fda4b8883aa8cabef3ceb3646d095f504c7ad3c0d9e397",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "hydraulic-trip",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-trip.png",
-                        "sourceSha256":  "5d3ac58c6b36f82cbaa244d69a04778db47a6f11906adf339abceb8fd3eded39",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/hydraulic-trip.png",
-                        "exportSha256":  "3d4052dd1bff02c9434857bd729b47d03998e7c6ec67520ad2b93e9aa2883de9",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "teleport",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/teleport.png",
-                        "sourceSha256":  "421121ee2dfb4ab1def3057ef2653fa374467440777a1ae57d6e7681167e5587",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/teleport.png",
-                        "exportSha256":  "debe99749ebfd00c6b66307b2a113f0427d29abb095355b47435524b6f760858",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "greater-teleport",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/greater-teleport.png",
-                        "sourceSha256":  "db963d8055e1e81513f0801315b4050c6e8db3582c4d67bbf5d3893f07c3a80c",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/greater-teleport.png",
-                        "exportSha256":  "0381ca8dff106fcff7173945a0cb08c96d34a0e65640c73b12b95e1ab043785a",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "word-of-recall",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/word-of-recall.png",
-                        "sourceSha256":  "bdbd658f74a77bdcd7efcd9fadd2e1326f47b5691fde02fb60e326c785a14ba5",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/word-of-recall.png",
-                        "exportSha256":  "5e0a4c5a5519abe46d026d7e5ccfd7be521655b3403e9b0caee149d0bc29e175",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "rapid-reload",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/pilot/sources/rapid-reload.png",
-                        "sourceSha256":  "4f0d0ec4659bb3f5e378bf1d9dbe1fa3884a4b0b41b2463fec76cbeb670e9a3a",
-                        "sourceSize":  [
-                                           512,
-                                           512
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/pilot/exports/rapid-reload.png",
-                        "exportSha256":  "5c3280145815f7b161602da161264ac1f43fb3ac3c4bf47ff907b0919a2aa9d3",
-                        "exportSize":  [
-                                           64,
-                                           64
-                                       ],
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "awaiting-owner-pilot-review",
-                        "approvedHash":  null
-                    }
-                ]
+  "schemaVersion": 1,
+  "authority": "Preserved pilot source/export record; approval is bound to exact exports in the canonical catalog and PILOT-APPROVAL.md. Not runtime registration or final acceptance.",
+  "exporter": "tools/icon-art/Export-IconPilot.ps1",
+  "engine": "Windows System.Drawing GDI+; HighQualityBicubic; TileFlipXY edges; SourceCopy ARGB32; no chroma key, sharpen, generation, or timestamps during painted export.",
+  "runtimeInstallation": "none; isolated pilot exports are not packaged",
+  "records": [
+    {
+      "key": "general-ifrit",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "sourceSha256": "24f303fb02f5c6f67f5c17be699bc4049440aec393cfecdbc6d83de36cd95bc6",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/general-ifrit.png",
+      "exportSha256": "839637f60fa9a268db577ad549d45fae9b77884465ca6c47e3988c70c9193341",
+      "exportSize": [
+        128,
+        128
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "839637f60fa9a268db577ad549d45fae9b77884465ca6c47e3988c70c9193341"
+    },
+    {
+      "key": "fire-affinity",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
+      "sourceSha256": "4b138a149c0807e7bc3ac080fa7b61beefc52a58d0ea8bf2ec9a47360458cb2c",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/fire-affinity.png",
+      "exportSha256": "d5ef14e589d286ba39dc6ce8880f6ef3f8b4eb6454653c3d06c0ffe7543a4394",
+      "exportSize": [
+        128,
+        128
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "d5ef14e589d286ba39dc6ce8880f6ef3f8b4eb6454653c3d06c0ffe7543a4394"
+    },
+    {
+      "key": "fire-resistance",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-resistance.png",
+      "sourceSha256": "5cdd9e8eca72c2014603bb7a52a92a3d8cc240157350f783039431736d321f2d",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/fire-resistance.png",
+      "exportSha256": "731f529ddd1caf072b7fc77e440cb1b824d78729c83d5b8ff6e7bf2ba8692a8e",
+      "exportSize": [
+        128,
+        128
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "731f529ddd1caf072b7fc77e440cb1b824d78729c83d5b8ff6e7bf2ba8692a8e"
+    },
+    {
+      "key": "elemental-strike",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "sourceSha256": "0ae9a8a1580cfa489ea965b742421643dfdb9dbde5467548f55ab9930e154beb",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/elemental-strike.png",
+      "exportSha256": "4ef61ba290be43fea8917141b2eb0a4ba7c38b7d45274a5a1cb7b3a9e29ffa0b",
+      "exportSize": [
+        128,
+        128
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "4ef61ba290be43fea8917141b2eb0a4ba7c38b7d45274a5a1cb7b3a9e29ffa0b"
+    },
+    {
+      "key": "hydraulic-maneuver",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "sourceSha256": "593e205dae2b9c1acb84ca5dcbde15919339134f8c6c8c447e92f8d1c05d99c9",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/hydraulic-maneuver.png",
+      "exportSha256": "220226251a04ecb9e2fda4b8883aa8cabef3ceb3646d095f504c7ad3c0d9e397",
+      "exportSize": [
+        128,
+        128
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "220226251a04ecb9e2fda4b8883aa8cabef3ceb3646d095f504c7ad3c0d9e397"
+    },
+    {
+      "key": "hydraulic-trip",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-trip.png",
+      "sourceSha256": "5d3ac58c6b36f82cbaa244d69a04778db47a6f11906adf339abceb8fd3eded39",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/hydraulic-trip.png",
+      "exportSha256": "3d4052dd1bff02c9434857bd729b47d03998e7c6ec67520ad2b93e9aa2883de9",
+      "exportSize": [
+        128,
+        128
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "3d4052dd1bff02c9434857bd729b47d03998e7c6ec67520ad2b93e9aa2883de9"
+    },
+    {
+      "key": "teleport",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/teleport.png",
+      "sourceSha256": "421121ee2dfb4ab1def3057ef2653fa374467440777a1ae57d6e7681167e5587",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/teleport.png",
+      "exportSha256": "debe99749ebfd00c6b66307b2a113f0427d29abb095355b47435524b6f760858",
+      "exportSize": [
+        128,
+        128
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "debe99749ebfd00c6b66307b2a113f0427d29abb095355b47435524b6f760858"
+    },
+    {
+      "key": "greater-teleport",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/greater-teleport.png",
+      "sourceSha256": "db963d8055e1e81513f0801315b4050c6e8db3582c4d67bbf5d3893f07c3a80c",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/greater-teleport.png",
+      "exportSha256": "0381ca8dff106fcff7173945a0cb08c96d34a0e65640c73b12b95e1ab043785a",
+      "exportSize": [
+        128,
+        128
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "0381ca8dff106fcff7173945a0cb08c96d34a0e65640c73b12b95e1ab043785a"
+    },
+    {
+      "key": "word-of-recall",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/word-of-recall.png",
+      "sourceSha256": "bdbd658f74a77bdcd7efcd9fadd2e1326f47b5691fde02fb60e326c785a14ba5",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/word-of-recall.png",
+      "exportSha256": "5e0a4c5a5519abe46d026d7e5ccfd7be521655b3403e9b0caee149d0bc29e175",
+      "exportSize": [
+        128,
+        128
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "5e0a4c5a5519abe46d026d7e5ccfd7be521655b3403e9b0caee149d0bc29e175"
+    },
+    {
+      "key": "rapid-reload",
+      "source": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/rapid-reload.png",
+      "sourceSha256": "4f0d0ec4659bb3f5e378bf1d9dbe1fa3884a4b0b41b2463fec76cbeb670e9a3a",
+      "sourceSize": [
+        512,
+        512
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/pilot/exports/rapid-reload.png",
+      "exportSha256": "5c3280145815f7b161602da161264ac1f43fb3ac3c4bf47ff907b0919a2aa9d3",
+      "exportSize": [
+        64,
+        64
+      ],
+      "technicalStatus": "candidate-export",
+      "visualStatus": "approved",
+      "approvedHash": "5c3280145815f7b161602da161264ac1f43fb3ac3c4bf47ff907b0919a2aa9d3"
+    }
+  ]
 }

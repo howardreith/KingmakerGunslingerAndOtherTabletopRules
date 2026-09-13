@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "lavasoul",
+  "behavior": "Lavasoul heritage identity: volcanic ancestry, not Firebelly spell or an attack.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/lavasoul.png",
+  "sourceSha256": "d707b55f4af1d0423fec816f34abc72133bb771acec894a70f6c905d54d2b54d",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painted ancestry style only"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a single weighty asymmetrical chunk of black volcanic basalt, roughly a broad jagged triangular monolith. Deep forked molten orange channels split three huge dark rock plates, visible molten core at their junction. Top edge has an uneven blunt ridge; the whole shape is solid stone, low and broad, without rising flames. Sooty charcoal background, vivid orange fissure light grazing coarse stone. Strong angular black mass and branching channels must distinguish it from the living flame reference.",
+  "visualStatus": "production-awaiting-owner-review"
+}

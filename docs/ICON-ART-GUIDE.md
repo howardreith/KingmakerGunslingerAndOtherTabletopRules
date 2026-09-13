@@ -91,7 +91,7 @@ final-artifact UI measurements. They are not a universal-size rule.
 | Profile | Inspected contract | Evidence/limit |
 |---|---|---|
 | project-painted-128 | Quick Clear, Reload Firearm, Repair Firearm, Focused Aim and Shield Other exports are 128x128 RGBA PNG. Pilot originals are preserved 1254x1254 RGB PNG. | Decoded indexed files. Native final layout is a separate gate. Full-bleed painted backgrounds are allowed. |
-| combat-emblem-64 | Existing Rapid Reload/parameter exports are 64x64 RGBA PNG with 512x512 legacy sources. Transparent emblem backgrounds reveal UI. | Decoded pixels and legacy manifest. The old thick partial arc is a negative reference; proposed pilot ring geometry is not universally approved. |
+| combat-emblem-64 | Existing Rapid Reload/parameter exports are 64x64 RGBA PNG with 512x512 sources. Transparent emblem backgrounds reveal UI. | Decoded pixels and manifests. The approved Rapid Reload pilot anchors this family; the old thick partial arc is a negative reference. Its ring geometry is not a universal requirement. |
 | native-selector-text | Explicit FeatureUIData retains null Icon. Desktop CharBuildSelectorItem.SetIcon shows m_AcronimText, calls UIUtility.GetAbilityAcronym, and derives background/color from the item name. | Installed-assembly inspection. Default selected-feature construction separately reads the parameter blueprint's icon. No PNG/font export is required by this selector route. |
 | summon-painted-128 | Existing manifest defines 77 individually sourced 128x128 RGBA exports with exact child placements. | Delegate export authority to that manifest. Historical publication does not approve new creatures. |
 
@@ -112,6 +112,7 @@ backgrounds and grayscale. Confirm repeat hashes on the recorded toolchain;
 do not assume cross-platform GDI identity.
 
     powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/icon-art/Export-IconPilot.ps1
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/icon-art/Export-IconProduction.ps1
     python tools/validate_icon_catalog.py
     python tools/test_icon_catalog.py
 
@@ -124,6 +125,13 @@ build-copy and package-validator support together.
 Normal builds never invoke an image model. Export begins with preserved reviewed
 originals. Do not normalize unrelated protected assets. Retire or redirect old
 generators when authority changes.
+
+The pilot and production exporters freeze files whose manifest records carry
+approval. Re-running them verifies those bytes instead of repainting, regenerating,
+or removing approval. Keep candidate revisions and their original prompts; an edit
+must retain its input and update the exact source/export hashes before review.
+Use `New-IconFamilyReview.ps1 -Name <family> -Keys <comma-separated-keys>` to make
+labeled thumbnail/grayscale art-inspection sheets from manifest-verified exports.
 
 ## Integration and catalog authority
 
@@ -141,8 +149,10 @@ add global icon/font getters. Preserve module-OFF/save-hydration behavior.
 
 The canonical catalog owns dispositions, protection, review decisions and exact
 mission consumer coverage. Unchanged legacy manifests remain export authorities;
-delegate by path/hash rather than keeping conflicting copies. The pilot manifest
-owns candidate source/export hashes, not runtime bindings or approval. Validation
+delegate by path/hash rather than keeping conflicting copies. The pilot and
+production manifests under `assets-source/original-icons/icon-overhaul-v2/` own
+source/export hashes; the catalog's per-concept `assetAuthority` selects exactly
+one of them. The catalog owns review evidence and consumer dispositions. Validation
 checks registry identity, delegated hashes, protection and required coverage.
 Intentional sharing uses one concept key; different selectable actions cannot
 hide duplicate art under different filenames.

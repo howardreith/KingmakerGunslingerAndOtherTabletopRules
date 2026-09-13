@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "smoke-affinity",
+  "behavior": "Smoke Affinity: Smokesoul +1 DC to Electricity spellbook spells; not a smoke attack.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/smoke-affinity.png",
+  "sourceSha256": "0d41386e2322ddb1370195ae4126ce14a76f80cccdf515edbc444025399d4ec1",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
+      "role": "approved affinity channeling-hand style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A clearly lit cool gray-brown hand held sideways, thumb and index finger gently guiding a THICK HORIZONTAL S-SHAPED PLUME OF ASH SMOKE across the palm. Two broad charcoal-to-pearl folds, the left fold above the thumb, the right fold rising beyond the small finger. Distinct low horizontal plume, smoke gathers rather than bursts. Cool lavender-gray illumination on fingers and palm, dark plum-charcoal ground. Absolutely no fire, orange heat, ember or burning hand.",
+  "visualStatus": "production-awaiting-owner-review"
+}

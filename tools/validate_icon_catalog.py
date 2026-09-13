@@ -11,6 +11,7 @@ from pathlib import Path
 
 CATALOG = "assets-source/original-icons/icon-catalog.json"
 PILOT = "assets-source/original-icons/icon-overhaul-v2/pilot/pilot-manifest.json"
+PRODUCTION = "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json"
 REFERENCES = "docs/art/icon-reference-records.json"
 DISPOSITIONS = {
     "original-required", "intentional-family-share", "native-semantic-reuse",
@@ -80,11 +81,12 @@ def png_info(path):
             raise ValueError("PNG scanline size mismatch")
     return {"size": [w, h], "depth": depth, "color": color, "interlace": interlace}
 
-def validate(root, catalog=None, pilot=None, references=None, registry=None):
+def validate(root, catalog=None, pilot=None, references=None, registry=None, production=None):
     """Optional in-memory documents support corruption tests without mutating files."""
     root = Path(root).resolve()
     catalog = read_json(root, CATALOG) if catalog is None else catalog
     pilot = read_json(root, PILOT) if pilot is None else pilot
+    production = read_json(root, PRODUCTION) if production is None else production
     references = read_json(root, REFERENCES) if references is None else references
     registry = read_json(root, "blueprints/blueprints.json") if registry is None else registry
     errors = []
@@ -155,10 +157,14 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None):
         require(bool(re.fullmatch("[0-9a-f]{64}", record["sha256"])), "Invalid local reference hash")
     require(references["candidateReferenceAuthority"] == PILOT, "Competing candidate reference authority")
 
-    records = {r["key"]: r for r in pilot["records"]}
-    require(len(records) == len(pilot["records"]), "Duplicate pilot key")
+    all_records = pilot["records"] + production["records"]
+    records = {r["key"]: r for r in all_records}
+    require(len(records) == len(all_records), "Duplicate asset key")
+    authorities = {r["key"]: manifest for manifest, document in
+                   [(PILOT, pilot), (PRODUCTION, production)] for r in document["records"]}
     exported_hashes = {}
     for key, record in records.items():
+        manifest = authorities[key]
         file_check(record["source"], record["sourceSha256"], record["sourceSize"])
         path = file_check(record["export"], record["exportSha256"], record["exportSize"])
         require(record["source"] != record["export"], "Export overwrites original: " + key)
@@ -171,17 +177,33 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None):
                 errors.append(str(exc))
         require(record["exportSize"] == ([64, 64] if key == "rapid-reload" else [128, 128]),
                 "Export profile mismatch: " + key)
-        require(record["export"].startswith("assets-source/original-icons/icon-overhaul-v2/pilot/exports/"),
-                "Pilot silently promoted to runtime: " + key)
+        require(record["export"] == str(Path(manifest).parent / "exports" / (key + ".png")).replace("\\", "/"),
+                "Candidate silently promoted or renamed: " + key)
+        if manifest == PRODUCTION:
+            brief_path = file_check(record["brief"])
+            if brief_path:
+                brief = read_json(root, record["brief"])
+                require(brief["key"] == key and brief["source"] == record["source"] and
+                        brief["sourceSha256"] == record["sourceSha256"], "Production brief/source mismatch: " + key)
+                require(bool(brief["behavior"]) and bool(brief["prompt"]), "Missing production brief: " + key)
+                for source in brief["implementationReferences"]:
+                    file_check(source)
+                for reference in brief["referenceImages"]:
+                    file_check(reference["path"])
+                    require(bool(reference["role"]), "Missing reference role: " + key)
+                for revision in brief.get("revisions", []):
+                    file_check(revision["path"], revision["sha256"])
         same = exported_hashes.setdefault(record["exportSha256"], key)
         require(same == key, "Distinct concepts duplicate artwork: " + same + " / " + key)
         concept = concepts.get(key)
-        require(concept is not None, "Uncataloged pilot: " + key)
+        require(concept is not None, "Uncataloged artwork: " + key)
         if concept:
-            require(concept["assetAuthority"] == {"manifest": PILOT, "key": key},
+            require(concept["assetAuthority"] == {"manifest": manifest, "key": key},
                     "Competing asset authority: " + key)
             review = concept["visualReview"]
             if review["status"] == "approved":
+                require(record["visualStatus"] == "approved",
+                        "Catalog approval not frozen in manifest: " + key)
                 require(review["reviewedExportSha256"] == record["exportSha256"],
                         "Stale visual approval hash: " + key)
                 require(bool(review.get("evidence")), "Approval lacks owner evidence: " + key)
@@ -195,11 +217,14 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None):
         else:
             require(concept and concept["visualReview"]["status"] == "approved",
                     "Pilot approval not recorded in catalog: " + key)
+            require(record["approvedHash"] == record["exportSha256"],
+                    "Stale manifest approval hash: " + key)
     for key, concept in concepts.items():
         require(bool(concept["sharingReason"]), "Missing sharing reason: " + key)
         authority = concept.get("assetAuthority")
         if authority:
-            require(authority["manifest"] == PILOT and authority["key"] in records,
+            require(authority["key"] in records and authority["key"] == key and
+                    authority["manifest"] == authorities.get(key),
                     "Unresolved asset authority: " + key)
         require(bool(concept["technicalStatus"]) and bool(concept["visualReview"]["status"]),
                 "Technical/visual status missing: " + key)

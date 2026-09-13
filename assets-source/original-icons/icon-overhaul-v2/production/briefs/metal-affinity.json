@@ -1,0 +1,31 @@
+{
+    "schemaVersion":  1,
+    "key":  "metal-affinity",
+    "behavior":  "Metal Affinity: Ironsoul +1 DC to Acid spellbook spells; no weapon attack.",
+    "implementationReferences":  [
+                                     "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+                                 ],
+    "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/metal-affinity.png",
+    "sourceSha256":  "21134cf5e5d5c70330568aeb610c6e78ec27a202a62d796b6f5155baa872a369",
+    "tool":  "built-in image_gen",
+    "referenceImages":  [
+                            {
+                                "path":  "assets-source/original-icons/icon-overhaul-v2/production/revisions/metal-affinity-v1.png",
+                                "role":  "Unapproved draft edited to remove misleading fire effects; preserve hand and steel silhouette"
+                            }
+                        ],
+    "prompt":  "Use case: lighting-weather edit. This is a Metal Affinity fantasy icon, NOT Fire Affinity. Correct only the misleading fire/heat lighting and effects. Keep the exact open steel ribbon shape, supporting hand pose and anatomy, scale, framing, rich hand-painted brushwork. Remove ALL orange fire, red/orange glow, sparks and embers. The metal is cool polished silver-steel, with soft neutral white reflected highlights and faint sage-gray sheen. The hand has natural brown skin brightly illuminated by diffuse silver-white light, not burning or glowing orange. Background is deep quiet graphite charcoal with a hint of desaturated olive, without luminous fire trails. Keep the central metal form strong and readable at 48px. No new symbols, text, border or objects.",
+    "visualStatus":  "production-awaiting-owner-review",
+    "revisions":  [
+                      {
+                          "path":  "assets-source/original-icons/icon-overhaul-v2/production/revisions/metal-affinity-v1.png",
+                          "sha256":  "e165b7f593121822dec9da5537b2432d3ad49033aac2e5e5fdf547e326c033ce",
+                          "reason":  "Misleading fire palette corrected"
+                      },
+                      {
+                          "path":  "assets-source/original-icons/icon-overhaul-v2/production/revisions/metal-affinity-v1.json",
+                          "sha256":  "3ca8e4b632af6417ef282d39c572191a2d1e085eb9e1839097eaf83298e74252",
+                          "reason":  "Exact original prompt and provenance"
+                      }
+                  ]
+}

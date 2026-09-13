@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "acid-affinity",
+  "behavior": "Earth Affinity (stable symbol AcidAffinity): Oread +1 DC to Acid spellbook spells under existing earth adaptation.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/acid-affinity.png",
+  "sourceSha256": "7112b562362f72d0d68b6f31d02f6e086b0bdc8638d44abe6450dfbfaf5b15f9",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
+      "role": "approved affinity channeling-hand style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A sturdy earthen hand rising from lower left with its broad palm held FLAT and level, supporting a levitating square weathered stone split into three horizontal sediment layers. Soft green mineral light threads the gaps; mossy coarse stone planes and pale jade illumination on the fingertips. Strong horizontal layered stone above a clear extended hand, rooted earthy brown-gray palette, not dripping poison, not a clenched Stone Fist attack, no crystal spires.",
+  "visualStatus": "production-awaiting-owner-review"
+}

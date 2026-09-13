@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "mistsoul",
+  "behavior": "Mistsoul heritage; mist-and-water ancestry, native Blur ability remains separate.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/mistsoul.png",
+  "sourceSha256": "f9700575989ab60f6de1ebf27b80436ec3c4362645b381e1821065b1e5efbff1",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved ancestry painting style only"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a single broad smooth pearl-teal WATER DROP silhouette partially enclosed by THREE LOW HORIZONTAL LAYERS OF MIST. Large shallow silvery fog banks cross its lower half, with one soft band drifting left and another right; rounded water top remains clearly visible. Low, wide composition rather than curling smoke or a wave. Cool sage-gray and quiet turquoise, luminous mist against deep desaturated green-blue background. No person, face, eye, hand, frost crystal, flame, vortex or spell glyph. Broad soft planes; dense water form behind diffuse mist.",
+  "visualStatus": "production-awaiting-owner-review"
+}

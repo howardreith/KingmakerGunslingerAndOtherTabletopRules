@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "crystal-affinity",
+  "behavior": "Crystal Affinity: Gemsoul +1 DC to actual Acid spellbook spells under existing earth adaptation.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/crystal-affinity.png",
+  "sourceSha256": "4a00033e34c24b2da71d901cffc83acb0c966e387d2273ac82b06eac4dccc49a",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
+      "role": "approved affinity channeling-hand style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A hand held upright three-quarter to viewer, fingers curved to cradle a FAN OF THREE WIDE MINERAL FACETS floating above its palm. The three asymmetrical transparent emerald and violet crystal blades form a broad angular fan with one pale white central glint. Skin catches mint light; dark forest-charcoal ground. Facets clearly separate, small handful rather than a towering heritage prism. Open supporting hand, not striking, no magic ray or rainbow spray.",
+  "visualStatus": "production-awaiting-owner-review"
+}

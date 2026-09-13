@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "metal-affinity",
+  "behavior": "Metal Affinity: Ironsoul +1 DC to Acid spellbook spells; no weapon attack.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/metal-affinity.png",
+  "sourceSha256": "e165b7f593121822dec9da5537b2432d3ad49033aac2e5e5fdf547e326c033ce",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
+      "role": "approved affinity channeling-hand style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A strong brown hand with fingers gently curling upward around a FLOATING BENT STRIP OF POLISHED STEEL shaped like a wide open horseshoe. The broad thick metal ribbon hovers horizontally above the large bright palm, brushed silver edges and warm copper reflections. One squared end at left and one curled end at upper right, clear open gap. Dark graphite forge background; no anvil, crafting hammer, blade, shield or closed ring. Restrained white reflected light on palm makes the hand readable.",
+  "visualStatus": "production-awaiting-owner-review"
+}

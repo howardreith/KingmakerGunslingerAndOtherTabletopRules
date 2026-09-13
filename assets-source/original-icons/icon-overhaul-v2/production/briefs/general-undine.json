@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "general-undine",
+  "behavior": "General Undine race and heritage root; water ancestry, not a combat maneuver.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/general-undine.png",
+  "sourceSha256": "b0fbf1b60656dd24d665ce1949538ca33bf38dff22246ab114305025ae82a567",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved ancestry painting style only"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a sculpted deep turquoise WAVE CREST, a single thick rising wave curling around one suspended clear teardrop. An upright elegant asymmetrical water crest with a broad rounded base, rolling left lip, scattered large pearl-white foam accents; the drop nestles inside the dark curl. Shimmering blue-green glasslike moving water, ivory highlights, dark navy sea ground. No people, victim, spear, hands, travel portal, shell jewelry or flat vector lines. Distinguish dense liquid/foam from pale airy wind.",
+  "visualStatus": "production-awaiting-owner-review"
+}

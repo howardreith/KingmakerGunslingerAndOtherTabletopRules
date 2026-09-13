@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "general-sylph",
+  "behavior": "General Sylph race and heritage root; broad air-current ancestry, not Feather Step.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/general-sylph.png",
+  "sourceSha256": "409d0b3f85f17c4d0f260a79b1e2155174fde9f162d9af73746ce26b47749fd3",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painted ancestry style only"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a broad sweeping SPIRAL OF WIND, a single elegant ivory-white air ribbon flowing from lower left into a large open counterclockwise curl and escaping toward upper right. Three thick layered translucent currents, a dark clear open center, wispy outer tips. Physical airy brushstroke volume rather than a flat graphic. Pale silver, faint turquoise highlights, deep desaturated blue-gray atmospheric background. Horizontal spacious crescent silhouette; no fire, water droplets, bird, feathers, wings, figure, spell circle or tornado touching ground.",
+  "visualStatus": "production-awaiting-owner-review"
+}
