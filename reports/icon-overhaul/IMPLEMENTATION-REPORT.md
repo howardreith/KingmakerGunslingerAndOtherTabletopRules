@@ -305,21 +305,21 @@ runtime claim applies to this isolated art checkpoint; all runtime PNGs remain
 unchanged. Post-build documentation records the result and does not claim the
 earlier full-tree build fingerprint.
 
-## Remaining gates and exact next work
+## Current native qualification and remaining gates
 
-1. Complete the guarded live elemental/strategic census and exact donor/protected
-   assignment snapshots before final mappings. Resolve remaining native
-   selected-feature and save-parameter-specific coverage through an authorized
-   fixture; do not claim the generic smoke supplies that evidence.
-2. Qualify native screens: new/disposable character
-   firearm feat rows beside native/Katana/Nodachi controls, nested Rapid Reload,
-   selected feat/character sheet, Wakizashi and Elven Branched Spear. A human
-   navigates unsupported screens; the permitted PID-bound capture helper records
-   images. No campaign save or write is needed for menu inspection.
-3. Resolve the three firearm fallback identities through qualified native routes
-   or an explicitly approved isolated fallback.
-4. Integrate exact owned mappings, including independent scroll icons; qualify
-   final exports/package, live bindings and actual native UI; restore the
-   installation; obtain separate final visual approval.
-5. Publish each qualified checkpoint using only the mandated wrapper.
-   No merge or public release is authorized.
+The 0.0.128 integration, viewport, selected-fact and scroll inventory reports
+record separate exact artifacts and their successful guarded checks. Current
+native scroll qualification adds 38 spellbook/item assertions and eleven final
+working-save assertions, with 16 original screenshots and exact installation
+restoration. The six inventory/description targets were inspected clear. See
+[scroll qualification](NATIVE-SCROLL-INVENTORY-QUALIFICATION.json) and the durable
+[mission state](../../planning/ICON-OVERHAUL-STATE.md) for exact hashes and earlier
+qualified firearm/creator/learning/protected evidence.
+
+Remaining work is native merchant scroll views, complete racial feat/action/
+variant/buff views, applicable higher dependent feat rendering, and confirmation
+of strategic text-only controls. The existing working save lacks saved firearm
+parameters; any new save/write fixture requires separate authorization. All 80
+later paintings and final native UI still need owner approval. The ten pilot
+images and family direction are approved. Publish qualified checkpoints through
+the mandated wrapper; no feature-to-master merge or release is authorized.

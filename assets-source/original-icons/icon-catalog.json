@@ -56,7 +56,7 @@
   "guide": "docs/ICON-ART-GUIDE.md",
   "referenceIndex": "docs/art/ICON-REFERENCE-INDEX.md",
   "sourceAuditStatus": "284 dispositions reconciled with source, guarded live census and protected native graphs; exact evidence in NATIVE-128-QUALIFICATION.json",
-  "runtimeIntegrationStatus": "89 paintings / 137 exact owned assignments and paired protected census qualified; actual Weapon Focus/Rapid Reload Total and character-sheet P/M/B qualified on 0.0.128; remaining native surfaces and final owner approval pending",
+  "runtimeIntegrationStatus": "complete painted census and actual Weapon Focus/Rapid Reload Total/sheet P/M/B qualified; three native scroll inventory/item descriptions qualified on 0.0.128; remaining native surfaces and owner approval pending",
   "delegatedManifests": [
     {
       "path": "assets-source/original-icons/icon-overhaul-assets.json",
@@ -7086,14 +7086,20 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Teleport",
       "module": "Teleportation",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual runtime inventory and item description qualified on 0.0.128",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v2-painting",
       "concept": "teleport",
       "disposition": "intentional-family-share",
       "reason": "Scroll requires explicit item assignment; intentionally share its own spell identity.",
       "baselineArt": "scroll-Teleport",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeScreenEvidence": {
+        "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
+        "status": "PASS actual inventory and item description; native merchant/strategic controls and owner UI approval pending",
+        "disposition": "matching canonical spell identity; native item frames and overlays preserved",
+        "report": "reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.Spells.GreaterTeleport.Scroll",
@@ -7101,14 +7107,20 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Greater Teleport",
       "module": "Teleportation",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual runtime inventory and item description qualified on 0.0.128",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v2-painting",
       "concept": "greater-teleport",
       "disposition": "intentional-family-share",
       "reason": "Scroll requires explicit item assignment; intentionally share its own spell identity.",
       "baselineArt": "scroll-GreaterTeleport",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeScreenEvidence": {
+        "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
+        "status": "PASS actual inventory and item description; native merchant/strategic controls and owner UI approval pending",
+        "disposition": "matching canonical spell identity; native item frames and overlays preserved",
+        "report": "reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.Spells.WordOfRecall.Scroll",
@@ -7116,14 +7128,20 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Word Of Recall",
       "module": "Teleportation",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual runtime inventory and item description qualified on 0.0.128",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v2-painting",
       "concept": "word-of-recall",
       "disposition": "intentional-family-share",
       "reason": "Scroll requires explicit item assignment; intentionally share its own spell identity.",
       "baselineArt": "scroll-WordOfRecall",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeScreenEvidence": {
+        "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
+        "status": "PASS actual inventory and item description; native merchant/strategic controls and owner UI approval pending",
+        "disposition": "matching canonical spell identity; native item frames and overlays preserved",
+        "report": "reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.Feats.FirearmWeaponFocus",

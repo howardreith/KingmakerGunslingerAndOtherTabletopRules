@@ -116,6 +116,46 @@ class NativeScreenEvidenceTests(unittest.TestCase):
             self.assertTrue(self.errors())
             state['targetRow'][key] = original
 
+    def prepare_scroll_row(self):
+        state = self.prepare_native_row()
+        self.evidence['records'][0]['stage'] = 'native-scroll-row:teleport'
+        state['surface'] = 'native-scroll-inventory'
+        state['targetRow'] = {'name':'Scroll of Teleport', 'itemGuid':'2c283c993b233df53b487fc7eeac2ba3',
+            'spellGuid':'82e3fb1dce1647b58d3b7169c8520af0', 'iconName':'KMG_Icon_teleport',
+            'renderedIconExact':True, 'spellIconMatchesItem':True, 'itemReferenceRetained':True,
+            'itemCount':1, 'charges':1, 'identified':True, 'otherItemRows':3, 'otherItemIconsExact':True}
+        return state
+
+    def test_scroll_requires_exact_item_spell_and_preserved_controls(self):
+        state = self.prepare_scroll_row()
+        self.assertEqual([], self.errors())
+        original_target = copy.deepcopy(state['targetRow'])
+        for item, spell, key in [('2a2b0185be1d2dba5aa1b5a24774e17d', '73d19adfe18743e0a2a3a21abf4af5f3', 'greater-teleport'),
+                                  ('42d3daeb7d503687df8953b47727372b', '596d85a666204d6ea5c0188e53f4b4de', 'word-of-recall')]:
+            state['targetRow'].update(itemGuid=item, spellGuid=spell, iconName='KMG_Icon_' + key)
+            self.assertEqual([], self.errors())
+        state['targetRow'] = original_target
+        for key,value in [('itemGuid','donor'), ('spellGuid','wrong-spell'), ('iconName','borrowed'),
+                          ('renderedIconExact',False), ('itemReferenceRetained',False), ('otherItemRows',0),
+                          ('otherItemRows',True), ('otherItemIconsExact',False), ('itemCount',2), ('itemCount',True), ('charges',0)]:
+            with self.subTest(key=key):
+                original = state['targetRow'][key]
+                state['targetRow'][key] = value
+                self.assertTrue(self.errors())
+                state['targetRow'][key] = original
+
+    def test_scroll_description_requires_actual_named_item_and_icon(self):
+        state = self.prepare_scroll_row()
+        self.evidence['records'][0]['stage'] = 'native-scroll-description:teleport'
+        state['surface'] = 'native-scroll-description'
+        state['description'] = {'shown':True, 'nameExact':True, 'tooltipItemExact':True, 'tooltipDataItemExact':True, 'matchingIcons':1}
+        self.assertEqual([], self.errors())
+        for key,value in [('shown',False), ('nameExact',False), ('tooltipItemExact',False), ('tooltipDataItemExact',False), ('matchingIcons',0)]:
+            original = state['description'][key]
+            state['description'][key] = value
+            self.assertTrue(self.errors())
+            state['description'][key] = original
+
     def test_native_extended_scroll_requires_exact_component_and_visible_row(self):
         viewport = self.prepare_native_row()['viewport']
         viewport.update(nativeApi='Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter',

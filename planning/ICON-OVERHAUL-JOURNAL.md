@@ -676,3 +676,61 @@ No approval is inferred before an answer. Full racial/action/buff, higher depend
 rendering and scroll inventory/tooltip/merchant evidence remain. Strategic controls
 use text-only native buttons in source; confirm live rather than adding icons.
 No new save/write authority or master merge/release is inferred.
+
+## 2026-09-13 — native scroll inventory extension started
+
+Selected-fact checkpoint `197f9f6198e4f2d706cf0ac64cc491c7e6ef3bca` was committed
+and published through the mandated wrapper. The original installation is restored.
+Read native Inventory, ItemSlot, SlotsGroup, FilterController, ItemEntity and
+TooltipTrigger contracts before adding the bounded capture phase to the existing
+spellbook fixture. It creates three separate identified scroll entities only when
+no matching stack preexists, uses native virtual-slot geometry and the existing
+description trigger, and restores all original item/UI state without use or trade.
+No production pixels, mappings, mechanics or request parameters change. The new
+partial is explicitly compiled; two focused provenance corruption cases cover
+exact scroll/spell/art identity, preserved controls and real description identity.
+Full build and runtime qualification remain pending.
+
+
+The first full build passed (1,629 domain cases, 16 native-capture corruption
+cases, 224 package files). Run
+`20260913T1757436387594Z-disposable-teleportation-spellbook-ui` remains ERROR:
+Teleport's actual slot and nine unchanged controls passed, but the fixture
+checked the tooltip object before native OpenDescriptionWindow initialized it.
+The cleanup assertion failed during exception unwinding and obscured the initial
+failure; the outer fixture restored successfully and observed no UI exceptions
+or save writes. Eleven PNGs are diagnostic, not qualification.
+Native IL confirms OpenDescriptionWindow calls SetupTooltipData, which collects
+the real slot object. The revision checks both the collected object and
+TooltipData.Item after normal opening, records each cleanup predicate separately,
+and retains the original exception while still failing any cleanup assertion.
+The first artifact is archived under `native-scroll-inventory-first-*`:
+DLL `c8e41b2e2a28b7cbe1c22ccea72ce8e918be0356f3c065d59c4f36910502538f`.
+The guarded restore succeeded and an independent hash comparison verified all
+136 original installation files. No production pixels or mappings changed.
+
+
+## 2026-09-13 — native scroll inventory qualified
+
+Build2 passed all 1,629 domain tests, 23 catalog, 16 native-capture, six paired
+and eleven request cases, clean Release and strict 224-file package validation.
+DLL `337140eba471f730d753307f785aedf07c95049b44829c04538bb8853a9b94c4`,
+MVID `4a268866-874b-425c-ba4c-40dfcf6a715b`.
+Run `20260913T1809335245829Z-disposable-teleportation-spellbook-ui` passed all
+38 assertions and produced 16 provenance-validated original PNGs. Each exact
+scroll slot and native description passed; all 15 inventory cleanup predicates
+passed for the 21 original items and three request-owned additions. Native
+tooltip initialization is invoked before checking its collected item and
+TooltipData.Item. All six target images were inspected clear at 1280x720.
+Final same-artifact working-save smoke also passed 11 assertions.
+Both game processes exited normally with no save writes. Audit verified all
+224 package files, three expected runtime additions and 136 original backup
+files. Guarded restore and independent path/hash comparison succeeded at
+`2026-09-13T18:17:26.642244+00:00`. Curated report:
+`reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json`; local gallery:
+`artifacts/icon-overhaul-v2/NATIVE-SCROLL-INVENTORY-REVIEW.html`.
+
+No production pixels or mappings changed. Merchant/native racial/action/buff
+coverage remains; native ShowAll filter and isolated VendorUI APIs were inspected
+as narrower reversible routes. Production80 and final native UI owner approvals
+remain pending. No new save/write, feature-to-master merge or release is inferred.

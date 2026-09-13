@@ -40,7 +40,7 @@ def validate(evidence, result, build, identity, directory):
             continue
         require(record.get('status') == 'captured-native-screen-awaiting-visual-inspection', 'Incomplete capture: ' + name)
         require(bool(record.get('stage')) and isinstance(record.get('nativeState'), dict), 'Missing native UI identity: ' + name)
-        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:')):
+        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:', 'native-scroll-row:')):
             state = record.get('nativeState', {})
             state = state if isinstance(state, dict) else {}
             viewport = state.get('viewport', {})
@@ -84,7 +84,7 @@ def validate(evidence, result, build, identity, directory):
                 require(bool(target.get('spellGuid')) and bool(target.get('classGuid')) and
                         target.get('previewOnly') is True and target.get('enabled') is True and
                         target.get('spellLevel') in (5, 7), 'Native learning row identity/preview differs: ' + name)
-            else:
+            elif record['stage'].startswith('native-selected-fact:'):
                 roots = {'1e1f627d26ad36f43bbd26cc2bf8ac7e', '09c9e82965fb4334b984a1e9df3bd088',
                          '31470b17e8446ae4ea0dacd6c5817d86', '7cf5edc65e785a24f9cf93af987d66b3',
                          'f4201c85a991369408740c6888362e20'}
@@ -115,6 +115,31 @@ def validate(evidence, result, build, identity, directory):
                                 and finite_heights
                                 and height >= preferred - 1,
                                 'Native Total preferred layout did not cover its own content: ' + name)
+        if record.get('stage', '').startswith(('native-scroll-row:', 'native-scroll-description:')):
+            state = record.get('nativeState', {})
+            target = state.get('targetRow', {})
+            strategic_items = {
+                '2c283c993b233df53b487fc7eeac2ba3': ('82e3fb1dce1647b58d3b7169c8520af0', 'teleport'),
+                '2a2b0185be1d2dba5aa1b5a24774e17d': ('73d19adfe18743e0a2a3a21abf4af5f3', 'greater-teleport'),
+                '42d3daeb7d503687df8953b47727372b': ('596d85a666204d6ea5c0188e53f4b4de', 'word-of-recall')}
+            expected = strategic_items.get(target.get('itemGuid'))
+            require(expected is not None and target.get('spellGuid') == expected[0] and
+                    target.get('iconName') == 'KMG_Icon_' + expected[1],
+                    'Native scroll item/spell/art identity differs: ' + name)
+            require(target.get('renderedIconExact') is True and target.get('spellIconMatchesItem') is True and
+                    target.get('itemReferenceRetained') is True and target.get('identified') is True and
+                    type(target.get('itemCount')) is int and target['itemCount'] == 1 and
+                    type(target.get('charges')) is int and target['charges'] == 1 and
+                    type(target.get('otherItemRows')) is int and target['otherItemRows'] > 0 and
+                    target.get('otherItemIconsExact') is True,
+                    'Native scroll slot/reference/control evidence differs: ' + name)
+            if record['stage'].startswith('native-scroll-description:'):
+                description = state.get('description', {})
+                require(state.get('surface') == 'native-scroll-description' and description.get('shown') is True and
+                        description.get('nameExact') is True and description.get('tooltipItemExact') is True and
+                        description.get('tooltipDataItemExact') is True and
+                        type(description.get('matchingIcons')) is int and description['matchingIcons'] > 0,
+                        'Native scroll description identity/icon is incomplete: ' + name)
         require(record.get('completedFrame', -1) > record.get('requestedFrame', 0), 'No completed render frame: ' + name)
         path = directory / name
         if not path.is_file():
