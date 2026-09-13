@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "sunsoul",
+  "behavior": "Sunsoul heritage identity: solar ancestry, not Flare Burst or a deity.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/sunsoul.png",
+  "sourceSha256": "40ae7bc1fec0f689f9479c928e696f49b23636d4e876b9bd824595953d082b20",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painted ancestry style only"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a warm antique-gold solar disk, tilted very slightly, with a solid textured amber center and eight bold unequal tapered rays cut into its silhouette. Sun made of luminous molten-gold mineral and warm light, not jewelry or a religious emblem. The long upper-right ray and broad left rays make the wheel feel hand-wrought and alive. Muted burnt-umber clouds behind it, bright central honey light and distinct dark gaps between rays. No face, no eye, no symbols, no flame-shaped crest. Read clearly as a sun at thumbnail scale.",
+  "visualStatus": "production-awaiting-owner-review"
+}

@@ -4,7 +4,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.dont_write_bytecode = True
-from validate_icon_catalog import CATALOG, PILOT, REFERENCES, read_json, validate, presentation_delta_matches
+from validate_icon_catalog import CATALOG, PILOT, PRODUCTION, REFERENCES, read_json, validate, presentation_delta_matches
 ROOT = Path(__file__).resolve().parents[1]
 
 class IconCatalogTests(unittest.TestCase):
@@ -12,6 +12,7 @@ class IconCatalogTests(unittest.TestCase):
     def setUpClass(cls):
         cls.catalog = read_json(ROOT, CATALOG)
         cls.pilot = read_json(ROOT, PILOT)
+        cls.production = read_json(ROOT, PRODUCTION)
         cls.references = read_json(ROOT, REFERENCES)
 
     def rejects(self, phrase, **documents):
@@ -60,6 +61,28 @@ class IconCatalogTests(unittest.TestCase):
             child[field] = parent[field]
         self.rejects("Distinct concepts duplicate artwork:", pilot=pilot)
 
+    def test_manifest_approval_cannot_follow_changed_pixels(self):
+        pilot = copy.deepcopy(self.pilot)
+        pilot["records"][0]["approvedHash"] = "0" * 64
+        self.rejects("Stale manifest approval hash:", pilot=pilot)
+
+    def test_production_is_not_approved_by_family_direction(self):
+        production = copy.deepcopy(self.production)
+        production["records"][0]["visualStatus"] = "approved"
+        production["records"][0]["approvedHash"] = production["records"][0]["exportSha256"]
+        self.rejects("Pilot approval not recorded in catalog:", production=production)
+
+    def test_missing_production_record_leaves_unresolved_authority(self):
+        production = copy.deepcopy(self.production)
+        production["records"].pop()
+        self.rejects("Unresolved asset authority:", production=production)
+
+    def test_pilot_exporter_cannot_erase_catalog_approval(self):
+        pilot = copy.deepcopy(self.pilot)
+        pilot["records"][0]["visualStatus"] = "awaiting-owner-pilot-review"
+        pilot["records"][0]["approvedHash"] = None
+        self.rejects("Catalog approval not frozen in manifest:", pilot=pilot)
+
     def test_saved_parameter_guid_cannot_drift(self):
         catalog = copy.deepcopy(self.catalog)
         catalog["uiEntries"][0]["parameterGuid"] = "0" * 32
@@ -74,4 +97,7 @@ class IconCatalogTests(unittest.TestCase):
         self.assertFalse(presentation_delta_matches(mutated, delta))
 
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    # PowerShell 5 wraps native stderr as NativeCommandError when logs redirect
+    # streams. Ordinary passing test progress belongs on stdout; failures still
+    # produce unittest's nonzero process exit code.
+    unittest.main(testRunner=unittest.TextTestRunner(stream=sys.stdout, verbosity=2))

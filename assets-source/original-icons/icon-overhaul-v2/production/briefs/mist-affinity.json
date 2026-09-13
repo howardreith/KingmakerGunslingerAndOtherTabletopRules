@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "mist-affinity",
+  "behavior": "Mist Affinity: Mistsoul +1 DC to Cold spellbook spells; not the Blur ability.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/mist-affinity.png",
+  "sourceSha256": "06e2be7643e19b1939d16db3af2e33704fd4e689c5bd1ae5ecd17f762c0a043f",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
+      "role": "approved affinity channeling-hand style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A broad relaxed hand shown PALM DOWN reaching diagonally from lower left toward upper right, gently parting TWO SOFT HORIZONTAL BANKS OF SILVERY MIST under its extended fingers. Pale sage-teal fog pools around the fingertips like low cloud; fingers and thumb catch cool white light with substantial readable anatomy. Airy soft layered shape, no coiling S-smoke, no water drop, no sharp ice, no orange light. Calm deep blue-green background and gently luminous fog.",
+  "visualStatus": "production-awaiting-owner-review"
+}

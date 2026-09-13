@@ -1,0 +1,484 @@
+{
+    "schemaVersion":  1,
+    "authority":  "Individual production sources/exports only; canonical catalog owns consumer bindings and owner review.",
+    "exporter":  "tools/icon-art/Export-IconProduction.ps1",
+    "engine":  "Windows System.Drawing GDI+; HighQualityBicubic; TileFlipXY; SourceCopy ARGB32. No generation, chroma removal, sharpening or timestamps.",
+    "runtimeInstallation":  "none; isolated production candidates pending integration",
+    "records":  [
+                    {
+                        "key":  "acid-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/acid-affinity.png",
+                        "sourceSha256":  "7112b562362f72d0d68b6f31d02f6e086b0bdc8638d44abe6450dfbfaf5b15f9",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/acid-affinity.png",
+                        "exportSha256":  "3497f155bb2a84063d307aaea81e8ddab4043da8437e4bdcdb7261a71be9a668",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "acid-resistance",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/acid-resistance.png",
+                        "sourceSha256":  "32de83c25d3bb807a0fdfceaf347d23a8a418ed2130937d1b56c388a79ce283b",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/acid-resistance.png",
+                        "exportSha256":  "e19624675dcb80c212aad7ba36eb90a8dd26c0718bee8c585ad0fffff9fd63bb",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-resistance.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "air-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/air-affinity.png",
+                        "sourceSha256":  "95e773b13ae949a54f1cb529a48f82ffd23bcbf0e1529a2a6d40097935566249",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/air-affinity.png",
+                        "exportSha256":  "2c854f2a1861be4e4c48e3a96da0c2d5640dc303e166160c63ecef3e7af548b8",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/air-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "cold-resistance",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/cold-resistance.png",
+                        "sourceSha256":  "550bf13a9fcf0db80081fb5e91464147744f802cf3039b782d90efe887f23791",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/cold-resistance.png",
+                        "exportSha256":  "a7d5d81c98583fe604c4232806829dc3561af2fa88a2e801331674a0b95cebd2",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/cold-resistance.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "crystal-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/crystal-affinity.png",
+                        "sourceSha256":  "4a00033e34c24b2da71d901cffc83acb0c966e387d2273ac82b06eac4dccc49a",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/crystal-affinity.png",
+                        "exportSha256":  "580c53b4b579bc02fb50cf860a92e25fc83cec85baa2197cf50049d960e64b27",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/crystal-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "electricity-resistance",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/electricity-resistance.png",
+                        "sourceSha256":  "eb88eb31eec328211bf18beb4b33bc8062b541f0e361190ad001ef75435b4d24",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/electricity-resistance.png",
+                        "exportSha256":  "874338c2b734e966b6de731e11f71c6edab49b07e21e3dd5310f3e0533063c1f",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/electricity-resistance.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "gemsoul",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/gemsoul.png",
+                        "sourceSha256":  "30c36651d87ae36fe4597b379468ecd1545ee1eeed57655a22942c6598880566",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/gemsoul.png",
+                        "exportSha256":  "ae299940c0c2ad7679c11497cad2f27ece810891b84fed4b19470ed074b39cdc",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/gemsoul.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "general-oread",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/general-oread.png",
+                        "sourceSha256":  "53cf817b42b93c019a8318b2b7d260038ca5e50a69c031ce68d203395dda0493",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/general-oread.png",
+                        "exportSha256":  "6e7038b66235f8a7e22e5ff293f23954ca68088551b48daa9bdb40fd7545112b",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-oread.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "general-sylph",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/general-sylph.png",
+                        "sourceSha256":  "409d0b3f85f17c4d0f260a79b1e2155174fde9f162d9af73746ce26b47749fd3",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/general-sylph.png",
+                        "exportSha256":  "1c0bac3cc876890baf97d3771a188dc5f99c93afac402798d66b8537700a8cc5",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-sylph.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "general-undine",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/general-undine.png",
+                        "sourceSha256":  "b0fbf1b60656dd24d665ce1949538ca33bf38dff22246ab114305025ae82a567",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/general-undine.png",
+                        "exportSha256":  "83248b89438432027afc34d8c5986a32df7c83b66a46eacb7dc67d4a19dab1ff",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-undine.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "ice-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/ice-affinity.png",
+                        "sourceSha256":  "82312a4f5d46805dcb4e8043feba0c503301bb9207e3b864a30e87c4d6a84c70",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/ice-affinity.png",
+                        "exportSha256":  "2ecd3bdb92973a49b5a42c703f315c46fb46c14aa56d6956394285ccb2b48c3a",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/ice-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "ironsoul",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/ironsoul.png",
+                        "sourceSha256":  "b683e4ae9fe7ee650c86dde1f1602932e5c473b952a4d81a5c06eb3ec5c3b1bc",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/ironsoul.png",
+                        "exportSha256":  "57fc93739bfa19afd71eea45bad58a3b328a92e1e56b464ce77381dcd3166f02",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/ironsoul.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "lavasoul",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/lavasoul.png",
+                        "sourceSha256":  "d707b55f4af1d0423fec816f34abc72133bb771acec894a70f6c905d54d2b54d",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/lavasoul.png",
+                        "exportSha256":  "efaa4f807a2fda8b40530055a993f8c56f1c9d564445f93e489b1405ce73d310",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/lavasoul.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "lightning-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/lightning-affinity.png",
+                        "sourceSha256":  "a305de6e0766536a936e45a29b0d65dcc276053177489140e1d6efa3564d8b62",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/lightning-affinity.png",
+                        "exportSha256":  "52939c9eb36b7b8bedc7c9172697aa6996957183075ff9585294d1c6c72a4c21",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/lightning-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "magma-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magma-affinity.png",
+                        "sourceSha256":  "269cf7ee1098caf61333c547c8c55467a0f6f4a44ea54a2442c1c1b3014c29d2",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/magma-affinity.png",
+                        "exportSha256":  "7b81b87fa8c869d87d234fd3005831f2979ee6bb85de30b7f77276a34c34165b",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/magma-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "metal-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/metal-affinity.png",
+                        "sourceSha256":  "21134cf5e5d5c70330568aeb610c6e78ec27a202a62d796b6f5155baa872a369",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/metal-affinity.png",
+                        "exportSha256":  "185520fdc6bc771a3fbaec65182f0475942d156af883229119c1a0ae08bf7895",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/metal-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "mist-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/mist-affinity.png",
+                        "sourceSha256":  "06e2be7643e19b1939d16db3af2e33704fd4e689c5bd1ae5ecd17f762c0a043f",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/mist-affinity.png",
+                        "exportSha256":  "04964be0db78d661539b501af4f78cd3aa8727c27c28686fcf3d6201809862a0",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/mist-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "mistsoul",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/mistsoul.png",
+                        "sourceSha256":  "f9700575989ab60f6de1ebf27b80436ec3c4362645b381e1821065b1e5efbff1",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/mistsoul.png",
+                        "exportSha256":  "1d40bead315dcceed10152d8349b7e29ec378f05f3947f3290729ebc4844c9c5",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/mistsoul.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "rimesoul",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/rimesoul.png",
+                        "sourceSha256":  "09fc24f89f806d55d30ba8e2eb57cbdcbaec9773dcff5cd97bbde2134c00399b",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/rimesoul.png",
+                        "exportSha256":  "610b0c32bbe57aba1354f370da80222533c0e8625d00c1596cdcda64ba72013a",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/rimesoul.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "smoke-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/smoke-affinity.png",
+                        "sourceSha256":  "0d41386e2322ddb1370195ae4126ce14a76f80cccdf515edbc444025399d4ec1",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/smoke-affinity.png",
+                        "exportSha256":  "ba87d30aafc55e276a7f58a6f7e3423887d9d1632ea8c1346cddd0263c2b75a9",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/smoke-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "smokesoul",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/smokesoul.png",
+                        "sourceSha256":  "c676ea11b622909de52dfc1b4f5162d13cb070efaaf8772b30c4a7216eebc1a7",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/smokesoul.png",
+                        "exportSha256":  "9d4b50f8156209f8e6fcaf57cba0524d893ec71aef7d217d21ae524a6517a179",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/smokesoul.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "solar-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/solar-affinity.png",
+                        "sourceSha256":  "e9292c147abad97a80484b803feb6393ea9a24464269e8ba3bd59e4a1c96bead",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/solar-affinity.png",
+                        "exportSha256":  "7e73b7926547e58e23401bc86bf5a374265679a5d453448603436025d6544114",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/solar-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "stormsoul",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/stormsoul.png",
+                        "sourceSha256":  "4cbf92e39931ea7defe03a861b9755ffd9653e8f5ad5308bbd3b1e2a78ff6bd8",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/stormsoul.png",
+                        "exportSha256":  "17dcaf00bd536228b757205416760b8f1bc77500ba2ddf5dd315ca6a8175470a",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/stormsoul.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "sunsoul",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/sunsoul.png",
+                        "sourceSha256":  "40ae7bc1fec0f689f9479c928e696f49b23636d4e876b9bd824595953d082b20",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/sunsoul.png",
+                        "exportSha256":  "78891535f589bb396b4f94d4676c3d3115dcda68ebb93d0985ac84b6ceb25541",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/sunsoul.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "water-affinity",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/water-affinity.png",
+                        "sourceSha256":  "7b4f85be14178186b5584f1773acff693239d92ecc74fe2d4abcef41d3a1a701",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/water-affinity.png",
+                        "exportSha256":  "a8c68a30694f6e4cb73a341bf4b8e6e75179254eec02e57bbceff3f0a8a5a985",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/water-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    }
+                ]
+}

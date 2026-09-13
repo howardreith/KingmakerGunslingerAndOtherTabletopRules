@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "water-affinity",
+  "behavior": "Water Affinity: Undine +1 DC to Cold spellbook spells under existing water adaptation.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/water-affinity.png",
+  "sourceSha256": "7b4f85be14178186b5584f1773acff693239d92ecc74fe2d4abcef41d3a1a701",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
+      "role": "approved affinity channeling-hand style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A cupped blue-gray hand in side view, large thumb in foreground and rounded fingers to the right, holding a THICK RISING SCOOP OF TURQUOISE WATER. Water loops into a low open horseshoe above the palm, a large rounded droplet rises at the upper left, and the base remains pooled in the hand. Glossy dense liquid with smooth painted ivory reflections and a few broad foam notes. Deep teal ground, cool silver light clearly on hand; no ice, mist, fire or attack.",
+  "visualStatus": "production-awaiting-owner-review"
+}

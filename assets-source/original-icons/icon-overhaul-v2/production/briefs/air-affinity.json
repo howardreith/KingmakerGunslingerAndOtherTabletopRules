@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "air-affinity",
+  "behavior": "Air Affinity: Sylph +1 DC to actual Electricity spellbook spells under existing air adaptation.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/air-affinity.png",
+  "sourceSha256": "95e773b13ae949a54f1cb529a48f82ffd23bcbf0e1529a2a6d40097935566249",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
+      "role": "approved affinity channeling-hand style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A graceful hand rising vertically from lower right, palm open toward the viewer; a broad IVORY WIND RIBBON passes BETWEEN spread fingers and makes one clear open arc above them. Light wind has three simple smooth pale strokes, no droplets. Silver-cyan illumination makes all finger shapes and palm bright against midnight desaturated blue. The strong vertical hand and open wind arch distinguish it from a freestanding heritage spiral. No feathers, flight, lightning bolt or target.",
+  "visualStatus": "production-awaiting-owner-review"
+}

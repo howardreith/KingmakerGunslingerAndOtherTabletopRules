@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "lightning-affinity",
+  "behavior": "Lightning Affinity: Stormsoul +1 DC to Electricity spellbook spells; affinity, not Shocking Grasp.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritagePolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/lightning-affinity.png",
+  "sourceSha256": "a305de6e0766536a936e45a29b0d65dcc276053177489140e1d6efa3564d8b62",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-affinity.png",
+      "role": "approved affinity channeling-hand style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A large upward-facing cool brown hand with thumb and forefinger raised, gently containing ONE BROAD ANGULAR FORK OF WHITE-VIOLET LIGHTNING arcing between the two fingertips. A zigzag forms a high diagonal above the palm; two folded fingers remain visible lower down. No target or forward attack. Silver-lilac light illuminates entire hand, slate-violet ground. Bold broken zigzag silhouette distinct from a wind ribbon and a storm cloud. No fire, orange, blue liquid, separate runic symbol or tiny sparks cloud.",
+  "visualStatus": "production-awaiting-owner-review"
+}

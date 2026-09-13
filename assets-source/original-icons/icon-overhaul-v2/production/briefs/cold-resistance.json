@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "key": "cold-resistance",
+  "behavior": "Passive cold resistance 5; defense against cold, not an ice damage spell.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalRaceBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/cold-resistance.png",
+  "sourceSha256": "550bf13a9fcf0db80081fb5e91464147744f802cf3039b782d90efe887f23791",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/fire-resistance.png",
+      "role": "approved defensive painting family"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: one square painted fantasy CRPG resistance icon. Supplied approved Fire Resistance image is the family reference: rich hand-painted materials, dark full-bleed textured ground, large durable shield DEFLECTING a specific energy, no harmed creature. Make a NEW silhouette and energy interaction, not a tinted copy. Broad readable shapes, subject about 80% of square, safe margin for shield edges; readable at 32/48/128 px. No text, UI border, insignia, equipment stats, state overlays, watermark or grid. Subject: a wide bronze-and-iron shield with a shallow arch top and scalloped lower edge facing an icy wind from the left. Pale blue frozen gusts and three blunt ice fragments break and flow around its face; thick rime clings only to its outer left rim, while the warm muted bronze center remains visibly clear. Low broad defensive mass, solid shield plane and obvious diverted cold stream; distinct from long pointed fire shield and lightning pavise. Dark slate-blue background, pearl-white frost against warm brown metal, no flames or snowflake emblem or person.",
+  "visualStatus": "production-awaiting-owner-review"
+}
