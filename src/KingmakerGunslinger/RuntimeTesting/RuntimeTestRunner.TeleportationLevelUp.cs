@@ -29,6 +29,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool IsTeleportationLevelUpFixture { get { return _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp; } }
         private IEnumerable<int> RunTeleportationLevelUp()
         {
+            _teleportationNativeIconScreens = new NativeIconScreenEvidence(_request);
             var game = Game.Instance; var player = game.Player; var ui = game.UI;
             var controller = ui.CharacterBuildController;
             var originalBackend = ui.LevelUpController;
@@ -105,6 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var snapshot in uiSnapshots) snapshot.Restore();
                 game.IsPaused = originalPaused;
                 Application.logMessageReceived -= ObserveTeleportSpellbookUiException;
+                _teleportationNativeIconScreens?.Dispose();
                 bool unchanged = owner.Descriptor.Progression.Experience == originalExperience && owner.Descriptor.Progression.CharacterLevel == originalLevel &&
                     owner.Descriptor.Progression.Classes.SequenceEqual(originalClasses) && originalClassLevels.SequenceEqual(originalClasses.Select(value => value.Level)) &&
                     owner.Descriptor.Progression.Features.Enumerable.SequenceEqual(originalFeatures) && uiSnapshots.All(value => value.IsRestored()) &&
@@ -198,6 +200,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     controller.Spells.CurrentSpellSelectionData.SpellList.AssetGuid == TeleportationSpellListPublication.WizardListId &&
                     row.GetComponentsInChildren<TextMeshProUGUI>(true).Any(value => value.isActiveAndEnabled && !value.isTextTruncated &&
                         string.Equals(value.GetParsedText(), spell.Name, StringComparison.OrdinalIgnoreCase)));
+                foreach (int frame in _teleportationNativeIconScreens.CaptureRow("native-learning-row:" + caseId,
+                    (RectTransform)row.transform, () => new JObject {
+                        ["targetRow"] = new JObject { ["spellGuid"] = spell.AssetGuid, ["name"] = spell.Name,
+                            ["spellLevel"] = row.SpellLevel, ["classGuid"] = entry.Class.AssetGuid,
+                            ["previewOnly"] = !backend.AutoCommit && !ReferenceEquals(backend.Preview, owner.Descriptor),
+                            ["enabled"] = row.Toggle.interactable },
+                        ["phase"] = controller.CurrentPhase.ToString(), ["ownerId"] = owner.UniqueId },
+                    () => ReferenceEquals(controller.LevelUpController, backend) && controller.IsShow &&
+                        row != null && row.BlueprintAbility == spell && ReferenceEquals(currentRow(), row))) yield return frame;
                 row.Toggle.isOn = true;
                 foreach (int tick in WaitTeleportLevelUpUi(() => backend.Preview.GetSpellbook(entry.Class.Spellbook).IsKnown(spell), "native preview spell selection")) yield return tick;
                 TeleportSpellbookUiAssert("preview-only-" + caseId, "native selector learns the exact spell only in the isolated preview",

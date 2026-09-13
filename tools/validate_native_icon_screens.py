@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import struct
@@ -39,6 +40,39 @@ def validate(evidence, result, build, identity, directory):
             continue
         require(record.get('status') == 'captured-native-screen-awaiting-visual-inspection', 'Incomplete capture: ' + name)
         require(bool(record.get('stage')) and isinstance(record.get('nativeState'), dict), 'Missing native UI identity: ' + name)
+        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:')):
+            state = record.get('nativeState', {})
+            state = state if isinstance(state, dict) else {}
+            viewport = state.get('viewport', {})
+            viewport = viewport if isinstance(viewport, dict) else {}
+            require(viewport.get('nativeApi') == 'UnityEngine.UI.ScrollRect.normalizedPosition' and
+                    viewport.get('rowActive') is True and viewport.get('rowVerticallyVisible') is True and
+                    viewport.get('restored') is True, 'Native row viewport/restoration is incomplete: ' + name)
+            values = [viewport.get(key) for key in ('rowMinY', 'rowMaxY', 'viewportMinY', 'viewportMaxY')]
+            finite = all(isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) for value in values)
+            require(finite and values[2] - 1 <= values[0] < values[1] <= values[3] + 1,
+                    'Native row is outside its recorded vertical viewport: ' + name)
+            target = state.get('targetRow', {})
+            target = target if isinstance(target, dict) else {}
+            require(bool(target.get('name')), 'Native row target identity is missing: ' + name)
+            if record['stage'].startswith('native-weapon-row:'):
+                require(target.get('featureGuid') == '1e1f627d26ad36f43bbd26cc2bf8ac7e' and
+                        bool(target.get('acronym')) and target.get('iconIsNull') is True and
+                        (bool(target.get('parameterGuid')) or isinstance(target.get('category'), int)),
+                        'Native weapon row identity/presentation differs: ' + name)
+                exotic_proficiencies = {
+                    0x004b4d47: '017d586ec4546feabf6eaaa67ce74a3f',
+                    0x004b4d48: 'b14f7d9b2b665801a9d5b916c6be4ea9',
+                    0x004b4d49: '93ef81404f085e2a8b261bdab15d5a08'}
+                proficiency = exotic_proficiencies.get(target.get('category'))
+                if proficiency:
+                    require(target.get('learnedProficiencyGuid') == proficiency and
+                            target.get('proficiencyPresent') is True,
+                            'Native exotic weapon row lacks its learned proficiency: ' + name)
+            else:
+                require(bool(target.get('spellGuid')) and bool(target.get('classGuid')) and
+                        target.get('previewOnly') is True and target.get('enabled') is True and
+                        target.get('spellLevel') in (5, 7), 'Native learning row identity/preview differs: ' + name)
         require(record.get('completedFrame', -1) > record.get('requestedFrame', 0), 'No completed render frame: ' + name)
         path = directory / name
         if not path.is_file():

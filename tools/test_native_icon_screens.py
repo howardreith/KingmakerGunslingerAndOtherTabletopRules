@@ -80,6 +80,55 @@ class NativeScreenEvidenceTests(unittest.TestCase):
         self.evidence['records'] = []
         self.assertTrue(self.errors())
 
+    def prepare_native_row(self):
+        record = self.evidence['records'][0]
+        record['stage'] = 'native-weapon-row:Pistol'
+        record['nativeState'] = {
+            'viewport': {'nativeApi':'UnityEngine.UI.ScrollRect.normalizedPosition', 'rowActive':True,
+                         'rowVerticallyVisible':True, 'restored':True, 'rowMinY':20, 'rowMaxY':60,
+                         'viewportMinY':0, 'viewportMaxY':200},
+            'targetRow': {'name':'Pistol', 'featureGuid':'1e1f627d26ad36f43bbd26cc2bf8ac7e',
+                          'parameterGuid':'pistol', 'acronym':'P', 'iconIsNull':True}}
+        return record['nativeState']
+
+    def test_active_row_outside_viewport_or_unrestored_scroll_is_rejected(self):
+        state = self.prepare_native_row()
+        self.assertEqual([], self.errors())
+        for key,value in [('rowMinY',-50), ('rowMaxY',250), ('rowMaxY',float('nan')),
+                          ('rowActive',False), ('rowVerticallyVisible',False), ('restored',False)]:
+            with self.subTest(key=key,value=value):
+                original = state['viewport'][key]
+                state['viewport'][key] = value
+                self.assertTrue(self.errors())
+                state['viewport'][key] = original
+        state['targetRow']['iconIsNull'] = False
+        self.assertTrue(self.errors())
+
+    def test_learning_capture_requires_exact_preview_and_spell_row(self):
+        state = self.prepare_native_row()
+        self.evidence['records'][0]['stage'] = 'native-learning-row:Wizard-5'
+        state['targetRow'] = {'name':'Teleport', 'spellGuid':'teleport', 'classGuid':'wizard',
+                              'spellLevel':5, 'previewOnly':True, 'enabled':True}
+        self.assertEqual([], self.errors())
+        for key,value in [('spellGuid',''), ('classGuid',''), ('spellLevel',4), ('previewOnly',False), ('enabled',False)]:
+            original = state['targetRow'][key]
+            state['targetRow'][key] = value
+            self.assertTrue(self.errors())
+            state['targetRow'][key] = original
+
+    def test_exotic_row_requires_its_actual_learned_proficiency(self):
+        state = self.prepare_native_row()
+        state['targetRow'].update(name='Wakizashi', parameterGuid=None, category=0x004b4d48,
+                                  acronym='WK', learnedProficiencyGuid='b14f7d9b2b665801a9d5b916c6be4ea9',
+                                  proficiencyPresent=True)
+        self.assertEqual([], self.errors())
+        for key, value in [('learnedProficiencyGuid','93ef81404f085e2a8b261bdab15d5a08'),
+                           ('learnedProficiencyGuid',None), ('proficiencyPresent',False)]:
+            original = state['targetRow'][key]
+            state['targetRow'][key] = value
+            self.assertTrue(self.errors())
+            state['targetRow'][key] = original
+
 
 if __name__ == '__main__':
     unittest.main(testRunner=unittest.TextTestRunner(stream=sys.stdout, verbosity=2))

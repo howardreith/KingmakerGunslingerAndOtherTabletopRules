@@ -1,0 +1,611 @@
+{
+  "schemaVersion": 1,
+  "status": "TECHNICALLY_QUALIFIED_CAPTURE_EXTENSION; COMPLETE_NATIVE_UI_AND_OWNER_APPROVAL_PENDING",
+  "scope": "Native ScrollRect row captures and legal disposable Fighter proficiency/Weapon Focus choices; existing Wizard/Sorcerer learning preview captures. No production artwork, mapping, monogram adapter or gameplay change.",
+  "artifact": {
+    "generatedAtUtc": "2026-09-13T14:35:01.9915584Z",
+    "commit": "75017b3e039a16dbfd44b9212e4983de53be8249",
+    "branch": "codex/icon-art-overhaul-v2",
+    "sourceStateSha256": "600da30a7d2636ffd427e3f7df6efab527383bf0da1ecc4532c653b4fd6a5696",
+    "version": "0.0.128",
+    "packageSha256": "f10fbb0db787bbf23d3ef23f825e5d98ca661db95155ff3fcb646413fcd500e6",
+    "dllSha256": "b5ebd760f91f8e8657705b3403fbdf107ab5e3ad539f65ce1c106c9ba39b8df7",
+    "dllMvid": "d6adc4c1-20ed-4435-baab-e863f39d1fa6"
+  },
+  "inheritedQualification": {
+    "commit": "75017b3e039a16dbfd44b9212e4983de53be8249",
+    "record": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+    "reason": "Production pixels, assignments, firearm presentation adapter and upstream 0.0.128 mechanics are unchanged; this extension alters only guarded capture/fixture code and its evidence validation."
+  },
+  "buildChecks": {
+    "repositoryValidation": "PASS",
+    "catalogCases": 22,
+    "pairedEvidenceCases": 6,
+    "nativeScreenshotCases": 10,
+    "currentVersionRequestCases": 11,
+    "domainTests": 1629,
+    "domainFailures": 0,
+    "cleanRelease": "PASS",
+    "strictPackageFiles": 224
+  },
+  "diagnosticAttempts": [
+    {
+      "runId": "20260913T1414198052000Z-b4ffa9638c244d8f8869d216d70867c4",
+      "status": "FAIL",
+      "dllMvid": "39c076c1-95a4-4c7d-ae5d-2565b86560f2",
+      "resultSha256": "1fc86f0eea0767c5449470b6cc33442463481db604fe4c893398f28f3f351712",
+      "reason": "First fixture required untrained exotic categories from Gunslinger Weapon Focus. Native filtering was correct; replaced assumption with legal Fighter proficiency then Weapon Focus."
+    },
+    {
+      "runId": "20260913T1418382766746Z-6b9086d6167d4c0181efe771084b036b",
+      "status": "PASS",
+      "assertions": 31,
+      "screens": 4,
+      "dllMvid": "39c076c1-95a4-4c7d-ae5d-2565b86560f2",
+      "resultSha256": "d6cbe7555f9e1b635fa9ef6bdea8ef80776eb4e6e427e7f1d667037f59dd2e7c",
+      "limit": "Earlier isolated learning success; current artifact was rerun below."
+    },
+    {
+      "status": "COMPILE_FAIL",
+      "log": "artifacts/icon-overhaul-v2/native-viewport-build-2.log",
+      "reason": "Missing UnitDescriptor.HasFact extension import. Corrected to inspected native Progression.Features.HasFact; no package or deployment from failed build."
+    },
+    {
+      "status": "PREFLIGHT_STOP",
+      "reason": "Immediate smoke launch was held while the PASS learning game PID 12088 exited normally. No second game was launched. Smoke then ran separately after read-only process verification."
+    }
+  ],
+  "runs": [
+    {
+      "runId": "20260913T1435518780618Z-81c9c3920f1d49bda61ab7a4a483c129",
+      "directory": "20260913T1435518624782Z-disposable-elemental-character-creation-case",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "f51acf8ff6cf06fd22c54d13683e551b2f67781f88b36f2ae80c09f0fa791260",
+      "parameters": {
+        "race": "Ifrit",
+        "class": "Gunslinger",
+        "allocation": "point-buy"
+      },
+      "screens": 32,
+      "screensSha256": "3b443b9f6ffe35471fb9b509b764e7660f3ad583b7040d6506333aa4789611cb"
+    },
+    {
+      "runId": "20260913T1439436826897Z-20ff149205034290b864453dd5efa6b5",
+      "directory": "20260913T1439436605463Z-disposable-elemental-character-creation-case",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "9b9b09e2337ad6980c224d1df4b48c12c15d2ae20e754d1e407d7db1d7e6ba8c",
+      "parameters": {
+        "race": "Ifrit",
+        "class": "Fighter",
+        "allocation": "point-buy"
+      },
+      "screens": 34,
+      "screensSha256": "349e45e1b1f8723d37f45db0d731db2f8553c27249b3839a6ad233ac006f23ef"
+    },
+    {
+      "runId": "20260913T1444148012276Z-3beddecdf4db443abba7e987ffbd4f5d",
+      "directory": "20260913T1444147593938Z-disposable-elemental-character-creation-case",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "c1d3283779dda23b5c1a155951d4ff57e056901e840fd483c1ead89830435a2d",
+      "parameters": {
+        "race": "Oread",
+        "class": "Fighter",
+        "allocation": "point-buy"
+      },
+      "screens": 34,
+      "screensSha256": "d8c4fd04a91adcea531496692d5e42671d44d9356b6a5602e8f2a6b1c361f867"
+    },
+    {
+      "runId": "20260913T1447442326883Z-1fe107e1fc784f5c99964dbac046a046",
+      "directory": "20260913T1447442326883Z-disposable-elemental-character-creation-case",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "932a3bbebff9ac35aa8478e4d87242aeac9c6ac921372ff131a3af91f5ad3ac7",
+      "parameters": {
+        "race": "Sylph",
+        "class": "Fighter",
+        "allocation": "point-buy"
+      },
+      "screens": 34,
+      "screensSha256": "4df4c1600530ad75e5aa6fbd811ab90e34470a7fdda239982d6f806648e3190b"
+    },
+    {
+      "runId": "20260913T1451157402419Z-59fd3b03b6bf4e3ba89dc4e6935b2a42",
+      "directory": "20260913T1451157402419Z-disposable-teleportation-level-up",
+      "scenario": "disposable-teleportation-level-up",
+      "status": "PASS",
+      "assertions": 31,
+      "resultSha256": "743084838395cf40d59b560fb524f7457c398f8893a30e97195700af827a87e6",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      },
+      "screens": 4,
+      "screensSha256": "5503ea4f178fbf7d9bcf33c98449d1ec8d587fdc2dfcb38b60fa6a4c5cd06d90"
+    },
+    {
+      "runId": "20260913T1456024443032Z-8c28e62ab02b423dad7659070e12b882",
+      "directory": "20260913T1456024286695Z-working-save-smoke",
+      "scenario": "working-save-smoke",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "fa82ff2595d1d9485c21fccd350843190b173517cb1f3c8becd2d1ba95bc330a",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      }
+    }
+  ],
+  "nativeTargets": [
+    {
+      "runId": "20260913T1435518780618Z-81c9c3920f1d49bda61ab7a4a483c129",
+      "file": "native-ui-026.png",
+      "stage": "native-weapon-row:Pistol",
+      "width": 1280,
+      "height": 720,
+      "sha256": "7f53eb4892c28ea44c1bd4ade304c44a13c22bd20043489f164584b552f8f79b",
+      "target": {
+        "name": "Pistol",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": "8b39bd79d27048dda58e0a513e529f2c",
+        "category": null,
+        "acronym": "P",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": null,
+        "proficiencyPresent": false
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -31.9995155,
+        "rowMaxY": 32.00048,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.0,
+        "captureX": 3.0420253e-07,
+        "captureY": 0.3143667,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1435518780618Z-81c9c3920f1d49bda61ab7a4a483c129",
+      "file": "native-ui-027.png",
+      "stage": "native-weapon-row:Musket",
+      "width": 1280,
+      "height": 720,
+      "sha256": "9be02e052398016f718d6944e36b2f240f8c4d3e493690a8dc02713e4d1fdcb2",
+      "target": {
+        "name": "Musket",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": "939f52fce6ec4c5d8df2bb1cf793416a",
+        "category": null,
+        "acronym": "M",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": null,
+        "proficiencyPresent": false
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -32.0000038,
+        "rowMaxY": 31.9999924,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.0,
+        "captureX": 3.0420253e-07,
+        "captureY": 0.373506576,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1435518780618Z-81c9c3920f1d49bda61ab7a4a483c129",
+      "file": "native-ui-028.png",
+      "stage": "native-weapon-row:Blunderbuss",
+      "width": 1280,
+      "height": 720,
+      "sha256": "4096dc1f2d38b4e315ed72ff1f7d89a843481d739b7d14e85fc8d51503a491b8",
+      "target": {
+        "name": "Blunderbuss",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": "79579fdb7d494f4fb0e618f6e4c33990",
+        "category": null,
+        "acronym": "B",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": null,
+        "proficiencyPresent": false
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -17.4999828,
+        "rowMaxY": 46.5000076,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.00000012,
+        "captureX": 3.0420253e-07,
+        "captureY": 1.0,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1435518780618Z-81c9c3920f1d49bda61ab7a4a483c129",
+      "file": "native-ui-029.png",
+      "stage": "native-weapon-row:Nodachi",
+      "width": 1280,
+      "height": 720,
+      "sha256": "572252247b016ed40d64ac4e213031615938a4c69cddd94d73e95390c9804973",
+      "target": {
+        "name": "Nodachi",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": null,
+        "category": 4934986,
+        "acronym": "NO",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": null,
+        "proficiencyPresent": false
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -32.0000038,
+        "rowMaxY": 31.9999924,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.0,
+        "captureX": 3.0420253e-07,
+        "captureY": 0.353793353,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1439436826897Z-20ff149205034290b864453dd5efa6b5",
+      "file": "native-ui-030.png",
+      "stage": "native-weapon-row:Wakizashi",
+      "width": 1280,
+      "height": 720,
+      "sha256": "cdced59b0cbb77c4fc7195641aa6951b254902aa67a839350e63d0a3454232ba",
+      "target": {
+        "name": "Wakizashi",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": null,
+        "category": 4934984,
+        "acronym": "WK",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": "b14f7d9b2b665801a9d5b916c6be4ea9",
+        "proficiencyPresent": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -167.499313,
+        "rowMaxY": -103.499283,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.0,
+        "captureX": 3.0420253e-07,
+        "captureY": -2.27743087e-07,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1439436826897Z-20ff149205034290b864453dd5efa6b5",
+      "file": "native-ui-031.png",
+      "stage": "native-weapon-row:Nodachi",
+      "width": 1280,
+      "height": 720,
+      "sha256": "4e0cd85413337b16d599ebf89eaf5b1c63c731f2504c61e32be212c6f334a921",
+      "target": {
+        "name": "Nodachi",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": null,
+        "category": 4934986,
+        "acronym": "NO",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": "b14f7d9b2b665801a9d5b916c6be4ea9",
+        "proficiencyPresent": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -31.999752,
+        "rowMaxY": 32.0002441,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.00000012,
+        "captureX": 3.0420253e-07,
+        "captureY": 0.368314654,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1444148012276Z-3beddecdf4db443abba7e987ffbd4f5d",
+      "file": "native-ui-030.png",
+      "stage": "native-weapon-row:Katana",
+      "width": 1280,
+      "height": 720,
+      "sha256": "60cebd14f8f6a69805f8b3a18d7bdedc27b2a11f7d55db7acee9b22f509dadeb",
+      "target": {
+        "name": "Katana",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": null,
+        "category": 4934985,
+        "acronym": "KA",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": "93ef81404f085e2a8b261bdab15d5a08",
+        "proficiencyPresent": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -31.999752,
+        "rowMaxY": 32.0002441,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.0,
+        "captureX": 3.0420253e-07,
+        "captureY": 0.5530161,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1444148012276Z-3beddecdf4db443abba7e987ffbd4f5d",
+      "file": "native-ui-031.png",
+      "stage": "native-weapon-row:Nodachi",
+      "width": 1280,
+      "height": 720,
+      "sha256": "aae33262884dc06fb4e4ef6926abd802a23df92a5f5858cf97d034c57627a0cc",
+      "target": {
+        "name": "Nodachi",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": null,
+        "category": 4934986,
+        "acronym": "NO",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": "93ef81404f085e2a8b261bdab15d5a08",
+        "proficiencyPresent": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -31.999752,
+        "rowMaxY": 32.0002441,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.00000012,
+        "captureX": 3.0420253e-07,
+        "captureY": 0.347792238,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1447442326883Z-1fe107e1fc784f5c99964dbac046a046",
+      "file": "native-ui-030.png",
+      "stage": "native-weapon-row:Elven Branched Spear",
+      "width": 1280,
+      "height": 720,
+      "sha256": "6bf7acda924adeb5ede83adeac2da02eb99006e40b8eca72f4e8083ff22f59eb",
+      "target": {
+        "name": "Elven Branched Spear",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": null,
+        "category": 4934983,
+        "acronym": "EB",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": "017d586ec4546feabf6eaaa67ce74a3f",
+        "proficiencyPresent": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -32.0000038,
+        "rowMaxY": 31.9999924,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.0,
+        "captureX": 3.0420253e-07,
+        "captureY": 0.860851943,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1447442326883Z-1fe107e1fc784f5c99964dbac046a046",
+      "file": "native-ui-031.png",
+      "stage": "native-weapon-row:Nodachi",
+      "width": 1280,
+      "height": 720,
+      "sha256": "2ab37ce9febf2f04fd70552656d2c5c03a2909fda30076ec040aa083fda0264c",
+      "target": {
+        "name": "Nodachi",
+        "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+        "parameterGuid": null,
+        "category": 4934986,
+        "acronym": "NO",
+        "iconIsNull": true,
+        "learnedProficiencyGuid": "017d586ec4546feabf6eaaa67ce74a3f",
+        "proficiencyPresent": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -31.999752,
+        "rowMaxY": 32.0002441,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 3.0420253e-07,
+        "originalY": 1.00000012,
+        "captureX": 3.0420253e-07,
+        "captureY": 0.347792238,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1451157402419Z-59fd3b03b6bf4e3ba89dc4e6935b2a42",
+      "file": "native-ui-000.png",
+      "stage": "native-learning-row:ba34257984f4c41408ce1dc2004e342e-5",
+      "width": 1280,
+      "height": 720,
+      "sha256": "bb345e5ea09b94f77493db863509b3e5d6c595fb19a7d97f0b471902cf051bf4",
+      "target": {
+        "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+        "name": "Teleport",
+        "spellLevel": 5,
+        "classGuid": "ba34257984f4c41408ce1dc2004e342e",
+        "previewOnly": true,
+        "enabled": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -31.9999962,
+        "rowMaxY": 31.9999924,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 5.08615958e-05,
+        "originalY": 1.0,
+        "captureX": 5.08615958e-05,
+        "captureY": 0.855838358,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1451157402419Z-59fd3b03b6bf4e3ba89dc4e6935b2a42",
+      "file": "native-ui-001.png",
+      "stage": "native-learning-row:ba34257984f4c41408ce1dc2004e342e-7",
+      "width": 1280,
+      "height": 720,
+      "sha256": "059b342b99f5f4e90e08f697bf0b54449a40d7011c9498a960d500a2d1e23ae9",
+      "target": {
+        "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+        "name": "Greater Teleport",
+        "spellLevel": 7,
+        "classGuid": "ba34257984f4c41408ce1dc2004e342e",
+        "previewOnly": true,
+        "enabled": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -31.9999962,
+        "rowMaxY": 31.9999924,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 5.08615958e-05,
+        "originalY": 1.0,
+        "captureX": 5.08615958e-05,
+        "captureY": 0.97275573,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1451157402419Z-59fd3b03b6bf4e3ba89dc4e6935b2a42",
+      "file": "native-ui-002.png",
+      "stage": "native-learning-row:b3a505fb61437dc4097f43c3f8f9a4cf-5",
+      "width": 1280,
+      "height": 720,
+      "sha256": "2da5872d1180839376d8c620e0bcaa12692225130643e944d13c4d52683919f9",
+      "target": {
+        "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+        "name": "Teleport",
+        "spellLevel": 5,
+        "classGuid": "b3a505fb61437dc4097f43c3f8f9a4cf",
+        "previewOnly": true,
+        "enabled": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -31.9998283,
+        "rowMaxY": 32.000164,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 5.08615958e-05,
+        "originalY": 0.9999995,
+        "captureX": 5.08615958e-05,
+        "captureY": 0.0268954225,
+        "restored": true
+      }
+    },
+    {
+      "runId": "20260913T1451157402419Z-59fd3b03b6bf4e3ba89dc4e6935b2a42",
+      "file": "native-ui-003.png",
+      "stage": "native-learning-row:b3a505fb61437dc4097f43c3f8f9a4cf-7",
+      "width": 1280,
+      "height": 720,
+      "sha256": "91b4c25a1f9a544dada3b7d7b2aa3d8ae48e735d5793ac2e6e60170e4b600360",
+      "target": {
+        "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+        "name": "Greater Teleport",
+        "spellLevel": 7,
+        "classGuid": "b3a505fb61437dc4097f43c3f8f9a4cf",
+        "previewOnly": true,
+        "enabled": true
+      },
+      "viewport": {
+        "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+        "rowActive": true,
+        "rowVerticallyVisible": true,
+        "rowMinY": -31.9998741,
+        "rowMaxY": 32.00011,
+        "viewportMinY": -313.5,
+        "viewportMaxY": 313.5,
+        "originalX": 5.08615958e-05,
+        "originalY": 1.0,
+        "captureX": 5.08615958e-05,
+        "captureY": 0.7541208,
+        "restored": true
+      }
+    }
+  ],
+  "visualObservations": [
+    "P/M/B and neighboring native/Nodachi rows are clear and unobscured in Ifrit/Gunslinger 026/028 at 1280x720.",
+    "Wakizashi 030 is fully visible at 1280x720; native Saber_Dist32 size 32 reports neither overflow nor truncation. Reported clipping was not reproduced at this scale, so no lettering correction was made.",
+    "Katana 030 preserves clear KA lettering; Elven Branched Spear 030 preserves clear native EB lettering. Every targeted scroll state was restored.",
+    "All four Wizard/Sorcerer learning captures show the exact Teleport or Greater Teleport row clear and centered in the real learning menu. They qualify preview/cancel presentation, not a saved level or learned spell.",
+    "The ordinary creator Total screen still has an empty doll; it is not appearance qualification. Selected firearm facts below its viewport and real character-sheet rendering remain pending."
+  ],
+  "installationRestoration": {
+    "verifiedAtUtc": "2026-09-13T14:59:42.817672+00:00",
+    "originalFilesExact": true,
+    "fileCount": 136,
+    "gameClosed": true,
+    "originalVersion": "0.0.117",
+    "originalSettingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "auditedPackageFiles": 224,
+    "auditedRuntimeAdditions": 3,
+    "auditedBackupFiles": 136,
+    "restoreAuditSha256": "d0a7314e868e009a0fc692e924bf19dc32e06a93e750f70ede5b1b323ec062e8",
+    "backupId": "20260913T1435273568626Z"
+  },
+  "pending": [
+    "Selected firearm fact/character-sheet rendering, full racial feat/action/variant/buff views, strategic destination controls and scroll inventory/tooltip/merchant views.",
+    "Existing working save lacks firearm blueprint parameters; new save creation or writing requires separate owner authorization.",
+    "Final native UI and eighty production paintings await owner approval; ten exact pilot images alone are approved."
+  ]
+}
