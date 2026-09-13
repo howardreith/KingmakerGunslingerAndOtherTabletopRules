@@ -62,8 +62,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
         }
         public TeleportExecutionResult Execute(WorldMapPointSpellAction action, Action materialEffectStarting)
         {
-            if (_world == null || Resource == null || Resource.ObserveExpenditure() != TeleportExpenditure.ExactlyOne)
-                throw new InvalidOperationException("A proven single spellbook expenditure is required before any effect.");
+            if (_world == null || Resource == null || !TeleportCastTransaction.VerifiedUse(action, Resource, Resource.ObserveExpenditure()))
+                throw new InvalidOperationException("A verified single native resource use is required before any effect.");
             var result = TeleportOutcomeResolver.Resolve(action.Source.Spell, Familiarity,
                 action.Destination.Id, action.OriginId, _world, materialEffectStarting);
             if (result.Status != TeleportExecutionStatus.Arrived) _world.VerifyRulesFailure();

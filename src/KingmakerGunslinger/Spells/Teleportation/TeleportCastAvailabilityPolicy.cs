@@ -12,6 +12,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         Moving = 2048, AdvancingTravel = 4096, RelocationPending = 8192, UnknownState = 16384
     }
     internal enum TeleportCastSourceKind { Unknown, Prepared, Spontaneous, Scroll }
+    internal enum TeleportScrollCostKind { Scroll, Charge, Reusable }
     [Flags]
     internal enum TeleportCastSourceFacts
     {
@@ -27,12 +28,17 @@ namespace KingmakerGunslinger.Spells.Teleportation
         internal TeleportCastSourceSnapshot(string casterId, int partyOrder, string casterName,
             string bookId, string bookName, TeleportSpellKind spell, TeleportCastSourceKind kind,
             int spellLevel, int casterLevel, int uses, TeleportCastSourceFacts facts,
-            TeleportScrollActivationChance activationChance = null, string scrollGroupId = null)
+            TeleportScrollActivationChance activationChance = null, string scrollGroupId = null,
+            TeleportScrollCostKind scrollCost = TeleportScrollCostKind.Scroll, int scrollCharges = 1, bool scrollPreservationPossible = false)
         { CasterId = casterId; PartyOrder = partyOrder; CasterName = casterName; BookId = bookId;
             BookName = bookName; Spell = spell; Kind = kind; SpellLevel = spellLevel; CasterLevel = casterLevel;
-            Uses = uses; Facts = facts; ActivationChance = activationChance; ScrollGroupId = scrollGroupId; }
+            Uses = uses; Facts = facts; ActivationChance = activationChance; ScrollGroupId = scrollGroupId;
+            ScrollCost = scrollCost; ScrollCharges = scrollCharges; ScrollPreservationPossible = scrollPreservationPossible; }
         internal TeleportScrollActivationChance ActivationChance { get; private set; }
         internal string ScrollGroupId { get; private set; }
+        internal TeleportScrollCostKind ScrollCost { get; private set; }
+        internal int ScrollCharges { get; private set; }
+        internal bool ScrollPreservationPossible { get; private set; }
         internal string CasterId { get; private set; }
         internal int PartyOrder { get; private set; }
         internal string CasterName { get; private set; }

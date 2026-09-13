@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 
 namespace KingmakerGunslinger.Spells.Teleportation
@@ -14,7 +14,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         // native path still consumed stays spent with no teleport and no refund.
         ActivationRefused, ActivationFailedSpent
     }
-    internal enum TeleportActivationOutcome { NotAttempted, Succeeded, RefusedUnspent, FailedSpent }
+    internal enum TeleportActivationOutcome { NotAttempted, Succeeded, RefusedUnspent, FailedSpent, SucceededPreserved }
     internal interface ITeleportCastResource
     {
         // Capture happens only after current destination/state/caster/book revalidation.
@@ -43,6 +43,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
         internal string Diagnostic { get; private set; }
         internal bool MaterialEffectStarted { get; private set; }
         internal TeleportExecutionResult Result { get; private set; }
+        // Only a scroll adapter with an attributed native preservation outcome
+        // may commit with no debit. Missing spending evidence is never a free cast.
+        internal static bool VerifiedUse(WorldMapPointSpellAction action, ITeleportCastResource resource, TeleportExpenditure expenditure)
+        {
+            if (resource.ActivationOutcome == TeleportActivationOutcome.SucceededPreserved)
+                return action.Source.Kind == TeleportCastSourceKind.Scroll && expenditure == TeleportExpenditure.None;
+            return expenditure == TeleportExpenditure.ExactlyOne;
+        }
         internal void Cancel()
         {
             if (Interlocked.CompareExchange(ref _settled, 1, 0) == 0) State = TeleportTransactionState.Cancelled;
@@ -72,11 +80,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (activation == TeleportActivationOutcome.FailedSpent)
                 {
                     State = TeleportTransactionState.ActivationFailedSpent;
-                    Diagnostic = "Native item activation failed its rules check and the item was consumed; no teleport occurred.";
+                    Diagnostic = "Native item activation failed its rules check; observed expenditure is recorded separately. No teleport occurred.";
                     return;
                 }
                 TeleportExpenditure expenditure = resource.ObserveExpenditure();
-                if (expenditure != TeleportExpenditure.ExactlyOne)
+                if (!VerifiedUse(_action, resource, expenditure))
                 {
                     State = expenditure == TeleportExpenditure.None ? TeleportTransactionState.TechnicalFailureUnspent :
                         TeleportTransactionState.AmbiguousExpenditure;
