@@ -151,6 +151,14 @@ Inspect late compatibility/publication overwrites. Assign exact owned identities
 do not extend the recursive substring fallback, repaint foreign blueprints or
 add global icon/font getters. Preserve module-OFF/save-hydration behavior.
 
+`Blueprints/OwnedIconAssignments.cs` contains the explicit elemental/strategic
+bindings. Its keys extend the existing cache, and its single application stage
+runs after registration/publication, just before the bootstrap result. Each
+symbol is resolved against the installed blueprint manifest with an exact type
+and GUID check. The Teleportation module's independent registration-failure
+boundary is preserved. This table has no separate sprite cache or runtime art
+catalog parser.
+
 The canonical catalog owns dispositions, protection, review decisions and exact
 mission consumer coverage. Unchanged legacy manifests remain export authorities;
 delegate by path/hash rather than keeping conflicting copies. The pilot and
@@ -158,6 +166,11 @@ production manifests under `assets-source/original-icons/icon-overhaul-v2/` own
 source/export hashes; the catalog's per-concept `assetAuthority` selects exactly
 one of them. The catalog owns review evidence and consumer dispositions. Validation
 checks registry identity, delegated hashes, protection and required coverage.
+Each integrated concept's `runtimeExport` declares its source path, installed
+path and cache key. The catalog validator compares the compiled binding table
+with the exact intended consumers. Build and package validation use
+`scripts/IconCatalog.Common.ps1` to require the same final export hashes at
+their installed destinations.
 Intentional sharing uses one concept key; different selectable actions cannot
 hide duplicate art under different filenames.
 
@@ -215,3 +228,7 @@ Before concluding any icon task, verify graph coverage, inspected references,
 durable originals/exports/provenance, protection/package checks, correctly
 labeled native UI evidence and approval hashes. Update this guide and its
 validators when the contract changes; do not silently redefine an approved family.
+
+For the guarded live assignment audit, follow
+[Icon consumer census](ICON-CONSUMER-CENSUS.md). It records real before/after
+Sprite references and graph links without navigating UI or modifying saves.

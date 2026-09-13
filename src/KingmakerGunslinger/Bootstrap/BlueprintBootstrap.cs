@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using Kingmaker.Blueprints;
@@ -1152,6 +1152,11 @@ namespace KingmakerGunslinger.Bootstrap
                     "persistence.repository-ready",
                     "Configured the item-owned firearm-state token repository. Sprint 19 save/restart evidence passed; broader merchant and compatibility qualification remains ongoing.");
 
+                RuntimeTesting.IconConsumerCensus.CaptureBeforeOwnedMapping(
+                    context, library, manifest);
+                if (!RuntimeTesting.IconConsumerCensus.IsControlRequest)
+                    OwnedIconAssignments.Apply(library, manifest, teleportation != null);
+                RuntimeTesting.IconConsumerCensus.CaptureAfterOwnedMapping();
                 return new BlueprintInitializationResult(
                     diagnosticFeature,
                     firearmProficiency,

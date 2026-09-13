@@ -331,6 +331,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmProficiencyPolicy.cs"><Link>Domain\FirearmProficiencyPolicy.cs</Link></Compile>
     <Compile Include="FirearmAudioTests.cs" />
     <Compile Include="FirearmFeatIconTests.cs" />
+    <Compile Include="IconGraphSnapshotTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\IconCensusControlPolicy.cs"><Link>RuntimeTesting\IconCensusControlPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\IconGraphSnapshot.cs"><Link>RuntimeTesting\IconGraphSnapshot.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundEventCatalog.cs"><Link>Audio\FirearmSoundEventCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankManifest.cs"><Link>Audio\FirearmSoundBankManifest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Audio\FirearmSoundBankManifestLoader.cs"><Link>Audio\FirearmSoundBankManifestLoader.cs</Link></Compile>

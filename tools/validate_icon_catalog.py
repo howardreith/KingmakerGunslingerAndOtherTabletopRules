@@ -103,6 +103,41 @@ def production_brief_errors(brief, concept, consumers, concepts):
         errors.append("Production brief lacks forbidden interpretations: " + key)
     return errors
 
+def runtime_mapping_errors(root, catalog, source_text=None):
+    """Check compiled exact bindings and the source/installed destination contract."""
+    mapping = catalog.get("runtimeMapping")
+    concepts = {c["key"]: c for c in catalog["concepts"]}
+    if not mapping:
+        return ["Integrated exports lack compiled mapping authority"] if any(c.get("runtimeExport") for c in concepts.values()) else []
+    errors = []
+    if source_text is None:
+        source_text = inside(root, mapping["source"]).read_text(encoding="utf-8-sig")
+    observed = re.findall(r'new Binding\("([^"]+)", "([^"]+)", typeof\((\w+)\)\)', source_text)
+    expected = {(c["symbol"], c["concept"], c["type"]) for c in catalog["consumers"]
+                if concepts[c["concept"]]["family"] == "painted-magical"}
+    if len(observed) != len(set(observed)) or set(observed) != expected or source_text.count("new Binding(") != len(observed):
+        errors.append("Compiled owned icon bindings disagree with exact catalog consumers")
+    keys = {row[1] for row in expected}
+    if mapping["paintedConsumerCount"] != len(expected) or mapping["paintedConceptCount"] != len(keys):
+        errors.append("Integrated icon coverage counts disagree")
+    for key in keys:
+        runtime = concepts[key].get("runtimeExport", {})
+        if runtime != {"path": f"assets/game/icons/{key}.png", "installedPath": f"assets/icons/{key}.png", "cacheKey": key}:
+            errors.append("Integrated icon path/cache contract mismatch: " + key)
+    census = (root / "src/KingmakerGunslinger/RuntimeTesting/IconConsumerCensus.cs").read_text(encoding="utf-8-sig")
+    prefix_region = census.split("string[] CoveragePrefixes = {", 1)[1].split("};", 1)[0]
+    if re.findall(r'"([^"]+)"', prefix_region) != catalog["coveragePrefixes"]:
+        errors.append("Live icon census prefixes disagree with catalog")
+    additional_region = census.split("string[] AdditionalSymbols = {", 1)[1].split("};", 1)[0]
+    if re.findall(r'"([^"]+)"', additional_region) != catalog["additionalRequiredSymbols"]:
+        errors.append("Live icon census additional identities disagree with catalog")
+    reuse = re.findall(r'new\[\] \{ "([^"]+)", "([^"]+)" \}', census)
+    expected_reuse = [(c["symbol"], catalog["currentArtSources"][c["currentArt"]]["nativeDonorGuid"])
+                      for c in catalog["consumers"] if c["disposition"] == "native-semantic-reuse"]
+    if reuse != expected_reuse:
+        errors.append("Live native icon reuse rules disagree with catalog")
+    return errors
+
 def validate(root, catalog=None, pilot=None, references=None, registry=None, production=None):
     """Optional in-memory documents support corruption tests without mutating files."""
     root = Path(root).resolve()
@@ -149,6 +184,7 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None, pro
             require(presentation_delta_matches(target.read_text(encoding="utf-8"), delta),
                     "Change outside authorized presentation delta: " + delta["path"])
     entries = {e["symbol"]: e for e in registry["entries"]}
+    errors.extend(runtime_mapping_errors(root, catalog))
     required = {s for s in entries if any(s.startswith(p) for p in catalog["coveragePrefixes"])}
     required.update(catalog["additionalRequiredSymbols"])
     consumers = catalog["consumers"]
@@ -164,6 +200,15 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None, pro
         if original:
             require(consumer["guid"] == original["guid"] and consumer["type"] == original["plannedType"],
                     "Identity mismatch: " + symbol)
+            expected_presence = ("resource-cache" if original["plannedType"] == "EquipmentEntity" else "registered") if original["status"] == "active" else "reserved-diagnostic-not-registered"
+            require(consumer.get("runtimePresence", "registered") == expected_presence,
+                    "Runtime registration contract mismatch: " + symbol)
+            if expected_presence == "reserved-diagnostic-not-registered":
+                require(symbol == "KMG.ElementalRaces.Diagnostics.ProbeRace" and original["status"] == "reserved" and
+                        consumer["disposition"] == "hidden-internal", "Unexpected absent consumer exception: " + symbol)
+            if expected_presence == "resource-cache":
+                require(consumer["disposition"] == "protected-existing" and consumer["concept"] == "protected-appearance",
+                        "Appearance resource protection missing: " + symbol)
         require(consumer["disposition"] in DISPOSITIONS, "Invalid disposition: " + symbol)
         require(consumer["concept"] in concepts, "Unknown concept: " + symbol)
         require(consumer["currentArt"] in catalog["currentArtSources"], "Unknown art source: " + symbol)
@@ -251,6 +296,9 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None, pro
             require(authority["key"] in records and authority["key"] == key and
                     authority["manifest"] == authorities.get(key),
                     "Unresolved asset authority: " + key)
+            runtime = concept.get("runtimeExport")
+            if runtime and key in records:
+                file_check(runtime["path"], records[key]["exportSha256"], records[key]["exportSize"])
         require(bool(concept["technicalStatus"]) and bool(concept["visualReview"]["status"]),
                 "Technical/visual status missing: " + key)
 

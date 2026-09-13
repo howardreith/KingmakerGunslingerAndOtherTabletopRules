@@ -498,6 +498,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             ElementalCharacterCreationRoutingObserver.Arm(decision.Request);
+            IconConsumerCensus.Arm(decision.Request);
             var runner = new RuntimeTestRunner(decision.Request, context);
             context.ModEntry.OnUpdate += runner.OnUpdate;
             context.Logger.Info(

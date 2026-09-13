@@ -314,6 +314,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal),
                 "Unity Mod Manager ModEntry.Info.Version");
 
+            var censusFiles = new List<string>();
+            IconConsumerCensus.Exercise(context, request, assertions, censusFiles);
             bool pass = assertions.All(value => value.Status ==
                 RuntimeTestStatuses.Pass);
             return new RuntimeTestResult
@@ -344,7 +346,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExceptionSummary = string.Empty,
                 EvidenceFiles = records.Select(value => Path.Combine(
                         request.EvidenceDirectory, (string)value["fileName"]))
-                    .Concat(new[] { indexPath }).ToList(),
+                    .Concat(new[] { indexPath }).Concat(censusFiles).ToList(),
                 AutomaticExitRequested = request.ExitAfterCompletion,
                 EvidenceDirectory = request.EvidenceDirectory
             };

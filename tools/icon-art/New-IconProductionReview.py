@@ -74,7 +74,7 @@ dialog::backdrop { background:#000b; } #original { display:block; width:auto; he
 <header>
 <h1>Kingmaker icon collection</h1>
 <p>89 painted identities and the Rapid Reload emblem, preserved as individual originals and reproducible exports.</p>
-<p class="note"><strong>Art inspection only.</strong> The ten pilot images and family direction are approved. The 80 production images await final owner review. Integration and native game-screen qualification are still pending. P/M/B use the native lettering route and are not represented by generated lettering here.</p>
+<p class="note"><strong>Art inspection only.</strong> The ten pilot images and family direction are approved. The 80 production images await final owner review. The evidence report records current integration and native game-screen qualification. P/M/B use the native lettering route and are not represented by generated lettering here.</p>
 <nav><a href="PILOT-APPROVAL.md">Pilot approval</a><a href="../../docs/ICON-ART-GUIDE.md">Art guide</a><a href="../../assets-source/original-icons/icon-catalog.json">Canonical catalog</a><a href="IMPLEMENTATION-REPORT.md">Evidence and limits</a></nav>
 </header>
 <div class="controls" aria-label="Review controls">

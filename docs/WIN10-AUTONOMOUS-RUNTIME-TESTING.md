@@ -144,12 +144,21 @@ substitute for them.
 `icon-overhaul-visual-evidence` is a save-free, read-only supporting-visual
 scenario. It resolves the live Rapid Reload children, native Weapon Focus
 parameters, supported firearm items, all 30 Eastern items, and all 12 Elven
-Branched Spear items from the loaded blueprint graph, then renders five exact
+Branched Spear items from the loaded blueprint graph, then renders eleven exact
 1920x1200 PNG layouts through a Unity `Camera` and `RenderTexture`. Its
 structured exact-set/icon/count assertions are mechanical evidence. The PNGs
 are deliberately labeled in-game live-sprite facsimiles: they support human
 perceptual review but are not evidence that the scenario navigated native menus
 or inventory UI.
+
+The icon-overhaul v2 extension also captures a request-scoped structured census
+before the explicit owned-art assignment stage and compares it immediately
+afterward and after initialization. It covers the 284 catalog consumers, 137
+painted bindings, 21 native semantic-reuse consumers, graph/component references,
+and every other observed icon-bearing library object's unchanged assignment.
+The art catalog remains build-time metadata. This extension performs no input,
+save operation, native donor mutation or native screenshot capture; see
+[ICON-CONSUMER-CENSUS.md](ICON-CONSUMER-CENSUS.md).
 
 `sprint30-runtime-selftest` is not production-allowlisted in this iteration.
 The existing typed Reload, Overhaul, and Repair adapters require a concrete

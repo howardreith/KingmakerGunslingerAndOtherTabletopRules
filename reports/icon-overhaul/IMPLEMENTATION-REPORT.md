@@ -1,14 +1,46 @@
 # Icon overhaul v2 implementation record
 
-Status: **ART_CANDIDATES_COMPLETE_INTEGRATION_PENDING**. The owner approved the ten actual pilot images
+Status: **PAINTED_INTEGRATION_QUALIFIED; FIREARM/NATIVE_UI_PENDING**. The owner approved the ten actual pilot images
 and family direction: [exact decision and hashes](PILOT-APPROVAL.md).
 All 80 additional production originals and deterministic 128px RGBA exports are
 preserved. The [full collection](PRODUCTION-REVIEW.html) presents all 89 painted
 identities plus Rapid Reload, with family/search filters, small-size controls,
 grayscale, original sources, exact hashes and per-icon briefs. The 80 new images
-await final owner review; runtime integration and native UI qualification remain.
+await final owner review. The installed artifact now maps 89 paintings to 137
+exact consumers. The paired live census and working-save smoke passed;
+native icon screen evidence remains pending.
 
-The pilot technical evidence below records the previously qualified artifact at
+## Qualified painted integration
+
+[Exact artifact and runs](PAINTED-INTEGRATION-QUALIFICATION.json) record repository
+validation, 22 catalog tests, six paired-evidence corruption tests, eleven request
+preflight/JSON checks, all 1,618 domain tests, clean Release and strict 224-file
+package validation. Candidate/control runs passed 19 assertions each; the exact
+working-save smoke passed eleven. The control suppresses only owned icon mapping
+in its explicit, automatically exiting no-save request.
+
+The mandatory paired comparison covers 284 catalog identities, all 137 mappings,
+89 installed exports, 28 appearance resources, one reserved absence, 21 native
+reuse consumers, 35,756 other observed icon assignments and 255 owned graphs.
+Three foreign icons and strategic spell-list additions changed during late
+initialization in both runs. Their complete transitions match the control;
+all original component references remain preserved. No identity exemption was
+added. Earlier diagnostic failures and the corrected request serializer are
+recorded in the journal. The serializer-only rebuild reproduced the identical
+package, DLL and MVID before the prior candidate was paired with the true control.
+
+Package SHA-256: `952462ca1eb766404e8b21d493b5e4d31964963c921157c2041bef810cc9b9d5`.
+DLL SHA-256: `a5f518be3a77ddc9df1431e9d7ac5f411fba873ecf9809884bf7e952ea062e33`.
+No save-writing API was observed. All temporary files and the backup were audited;
+all 136 original `0.0.117` installation paths/hashes were restored exactly.
+
+Rapid Reload installation, complete native firearm presentation, affected module
+boundaries, saved firearm-parameter observation and real native icon screens
+remain. The unrelated historical preflight script has stale version fixtures;
+it remains unchanged and is not reported as passing. The focused current-version
+icon request checks passed. Final visual approval is still pending.
+
+The historical pilot technical evidence below records the previously qualified artifact at
 commit `4f141921a830042442b617f2788f1cd0b34a7cb6`; its pending owner-review language
 predates the approval above. Final native UI evidence, final production acceptance
 and the completed overhaul remain separate pending gates. This is not a release.
@@ -58,8 +90,10 @@ This work uses `codex/icon-art-overhaul-v2`.
 The canonical catalog protects 117 existing runtime images/bundles and the exact
 ProjectAssetIcons, custom weapon selector and Shield Other assignment source.
 Existing legacy manifests continue to own their unchanged export records. All
-current runtime PNGs, accepted actions/items, native/eastern controls, bundles,
-audio, appearances, GUIDs and serialized parameters remain unchanged.
+previously installed PNGs, accepted actions/items, native/eastern controls,
+bundles, audio, appearances, GUIDs and serialized parameters remain unchanged.
+The integration adds 89 runtime exports; their catalog entries retain baseline
+donors separately from the current explicit owned mappings.
 
 ## Permanent authoring standard and inventory
 
@@ -70,8 +104,9 @@ Root AGENTS and README now lead to:
   eleven inspected project files and ten indexed local native screenshots.
 - [Canonical catalog](../../assets-source/original-icons/icon-catalog.json).
 
-The catalog contains 284 exact registered blueprint consumers: 247 elemental and
-strategic records, plus 37 firearm records. Its dispositions are 109
+The catalog contains 284 exact identities: 247 elemental/strategic and 37 firearm
+records. Live registration comprises 255 blueprints, 28 separate appearance
+resources and one reserved diagnostic absence. Its dispositions are 109
 original-required, 47 intentional-family-share, 21 native-semantic-reuse,
 44 protected-existing and 63 hidden-internal. A further fifteen exact UI entries
 cover five native firearm feat families times three parameters. The existing
@@ -81,8 +116,8 @@ There are 93 original/family identities requiring final resolution, including
 three firearm fallback identities that may ultimately use native presentation.
 Ninety have preserved originals and exports; the three firearm lettering
 identities use a native presentation prototype. **Ten pilot images are approved;
-no new raster identity is integrated yet.** Counts are source inventory, not a
-completed live census.
+137 painted consumers are mapped and passed the paired live census.**
+Native UI and final visual acceptance remain separate.
 
 The inventory explicitly covers all 21 published alternate traits; ten selectors
 and ten retain choices; held-touch delivery; hydraulic and wind children; Nereid
@@ -101,7 +136,7 @@ It selected original group-ward painting, an original mundane reach emblem,
 and species-specific creature painting respectively. No other agent/service
 was used and none of those gameplay examples was implemented.
 
-## Pilot production and self-review
+## Historical pilot production and self-review
 
 The available built-in image tool produced nine individual paintings. Sources
 are preserved byte-for-byte, with the two superseded edit inputs retained.
@@ -121,13 +156,14 @@ Exports are nine 128x128 RGBA paintings and one 64x64 RGBA emblem. Repeat export
 produced the identical manifest hash
 `6061ddf726b3d318d046ee8b9b404af1339f1b8d6abcdec0d6613522d1f925ce`.
 The script uses recorded GDI+ sampling and does not call a model during export.
-All candidates remain outside runtime asset/package directories.
+At this historical pilot checkpoint, all candidates remained outside runtime
+asset/package directories. The later painted integration is qualified above.
 
 The retired firearm generator's All/Feat modes now fail with a guide-directed
 explanation; its wrapper exports isolated pilot candidates. Item generation and
 protected item pixels were not run or rewritten.
 
-## Native firearm prototype
+## Historical native firearm prototype
 
 The only production behavior delta is at NativeFirearmFeatIntegration.Append:
 the explicit FeatureUIData constructor receives null Icon and the single-letter

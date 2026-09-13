@@ -2,14 +2,25 @@
 import copy
 import sys
 import unittest
+from functools import lru_cache
+from unittest.mock import patch
 from pathlib import Path
 sys.dont_write_bytecode = True
-from validate_icon_catalog import CATALOG, PILOT, PRODUCTION, REFERENCES, read_json, validate, presentation_delta_matches, production_brief_errors
+import validate_icon_catalog as validator
+from validate_icon_catalog import CATALOG, PILOT, PRODUCTION, REFERENCES, read_json, validate, presentation_delta_matches, production_brief_errors, runtime_mapping_errors
 ROOT = Path(__file__).resolve().parents[1]
 
 class IconCatalogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        # These corruption fixtures alter only in-memory documents. Inspect each
+        # immutable disk asset once per test process; all expected-hash, path and
+        # identity comparisons still run for every independently mutated document.
+        # Standalone repository validation remains uncached.
+        for name in ("inside", "sha256", "png_info"):
+            cached = patch.object(validator, name, lru_cache(maxsize=None)(getattr(validator, name)))
+            cached.start()
+            cls.addClassCleanup(cached.stop)
         cls.catalog = read_json(ROOT, CATALOG)
         cls.pilot = read_json(ROOT, PILOT)
         cls.production = read_json(ROOT, PRODUCTION)
@@ -100,6 +111,26 @@ class IconCatalogTests(unittest.TestCase):
         errors = production_brief_errors(brief, concepts[record["key"]], self.catalog["consumers"], concepts)
         self.assertTrue(any("confusion comparisons" in e for e in errors), errors)
 
+    def test_compiled_mapping_cannot_omit_a_child_action(self):
+        source = (ROOT / self.catalog["runtimeMapping"]["source"]).read_text(encoding="utf-8")
+        source = "\n".join(line for line in source.splitlines()
+                           if 'new Binding("KMG.ElementalRaces.Feats.HydraulicManeuver.DisarmAbility"' not in line)
+        self.assertIn("Compiled owned icon bindings disagree with exact catalog consumers",
+                      runtime_mapping_errors(ROOT, self.catalog, source))
+
+    def test_compiled_mapping_cannot_repaint_a_native_spell_clone(self):
+        source = (ROOT / self.catalog["runtimeMapping"]["source"]).read_text(encoding="utf-8")
+        source += '\nnew Binding("KMG.ElementalRaces.Ifrit.BurningHandsAbility", "general-ifrit", typeof(BlueprintAbility))'
+        self.assertIn("Compiled owned icon bindings disagree with exact catalog consumers",
+                      runtime_mapping_errors(ROOT, self.catalog, source))
+
+    def test_integrated_export_cannot_use_source_path_as_install_path(self):
+        catalog = copy.deepcopy(self.catalog)
+        record = next(c for c in catalog["concepts"] if c["key"] == "teleport")
+        record["runtimeExport"]["installedPath"] = record["runtimeExport"]["path"]
+        self.assertIn("Integrated icon path/cache contract mismatch: teleport",
+                      runtime_mapping_errors(ROOT, catalog))
+
     def test_pilot_exporter_cannot_erase_catalog_approval(self):
         pilot = copy.deepcopy(self.pilot)
         pilot["records"][0]["visualStatus"] = "awaiting-owner-pilot-review"
@@ -110,6 +141,24 @@ class IconCatalogTests(unittest.TestCase):
         catalog = copy.deepcopy(self.catalog)
         catalog["uiEntries"][0]["parameterGuid"] = "0" * 32
         self.rejects("UI parameter identity mismatch:", catalog=catalog)
+
+    def test_reserved_diagnostic_cannot_claim_ordinary_registration(self):
+        catalog = copy.deepcopy(self.catalog)
+        probe = next(c for c in catalog["consumers"] if c["symbol"] == "KMG.ElementalRaces.Diagnostics.ProbeRace")
+        probe["runtimePresence"] = "registered"
+        self.rejects("Runtime registration contract mismatch:", catalog=catalog)
+
+    def test_active_consumer_cannot_skip_live_census(self):
+        catalog = copy.deepcopy(self.catalog)
+        feature = next(c for c in catalog["consumers"] if c["symbol"] == "KMG.ElementalRaces.Ifrit.Race")
+        feature["runtimePresence"] = "reserved-diagnostic-not-registered"
+        self.rejects("Runtime registration contract mismatch:", catalog=catalog)
+
+    def test_visual_resource_cannot_claim_blueprint_registration(self):
+        catalog = copy.deepcopy(self.catalog)
+        resource = next(c for c in catalog["consumers"] if c["type"] == "EquipmentEntity")
+        resource["runtimePresence"] = "registered"
+        self.rejects("Runtime registration contract mismatch:", catalog=catalog)
 
     def test_presentation_exception_preserves_all_other_code(self):
         delta = self.catalog["authorizedPresentationDeltas"][0]
