@@ -359,6 +359,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Firing\EmptyFirearmAttackPolicy.cs"><Link>Firing\EmptyFirearmAttackPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firing\BrokenSequenceInterruptionPolicy.cs"><Link>Firing\BrokenSequenceInterruptionPolicy.cs</Link></Compile>
     <Compile Include="BrokenSequenceInterruptionTests.cs" />
+    <Compile Include="FirearmAttackOrderLedgerTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Firing\FirearmAttackOrderLedger.cs"><Link>Firing\FirearmAttackOrderLedger.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUseDecision.cs"><Link>Gunsmithing\BatteredFirearmUseDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUsePolicy.cs"><Link>Gunsmithing\BatteredFirearmUsePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\CompletedRestMaintenancePolicy.cs"><Link>Gunsmithing\CompletedRestMaintenancePolicy.cs</Link></Compile>

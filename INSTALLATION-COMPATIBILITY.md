@@ -1,7 +1,7 @@
 ﻿# Installation, updates, removal, and compatibility
 
-Version: `0.0.127-firearm-maintenance`.
-The installable archive is `KingmakerGunslinger-0.0.127-firearm-maintenance.zip`.
+Candidate version: `0.0.128-firearm-postrelease-hotfix` (qualification in progress).
+The candidate archive is `KingmakerGunslinger-0.0.128-firearm-postrelease-hotfix.zip`.
 The retained 0.0.121 archive is
 `KingmakerGunslinger-0.0.121-unified-firearm-maintenance.zip`.
 
