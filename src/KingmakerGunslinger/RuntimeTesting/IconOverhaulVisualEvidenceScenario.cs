@@ -84,8 +84,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OrderBy(value => value.Name, StringComparer.Ordinal).ToArray();
             Entry[] weaponFocusChoices = firearmMenu.Select(value => new Entry(
                 value.Name, "Blueprint fallback; menu uses native " +
-                    value.NameForAcronim, new FeatureUIData(value.Feature,
-                        value.Param).Icon,
+                    value.NameForAcronim, ParameterFallbackIcon(value),
                 value.Param.Blueprint.name + ":" +
                     value.Param.Blueprint.AssetGuid)).ToArray();
             Entry[] blunderbussComparators = SelectParameterRows(
@@ -316,6 +315,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             var censusFiles = new List<string>();
             IconConsumerCensus.Exercise(context, request, assertions, censusFiles);
+            FirearmMonogramEvidence.Exercise(request, assertions, censusFiles);
             bool pass = assertions.All(value => value.Status ==
                 RuntimeTestStatuses.Pass);
             return new RuntimeTestResult
@@ -399,10 +399,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             value.Name).OrderBy(value => value,
                                 StringComparer.Ordinal).ToArray()));
                 FeatureUIData match = matches[0];
-                FeatureUIData rendered = match.Icon == null
-                    ? new FeatureUIData(match.Feature, match.Param)
-                    : match;
-                if (rendered.Icon == null)
+                Sprite rendered = match.Icon == null ? ParameterFallbackIcon(match) : match.Icon;
+                if (rendered == null)
                     throw new InvalidOperationException(
                         "Weapon Focus row has no native parameter icon: " +
                         requestedName + ";identity=" +
@@ -410,9 +408,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 selected.Add(new Entry(match.Name, match.Icon == null
                     ? "Blueprint fallback; native text " + match.NameForAcronim
                     : "Weapon Focus category",
-                    rendered.Icon, ParameterIdentity(match)));
+                    rendered, ParameterIdentity(match)));
             }
             return selected.ToArray();
+        }
+
+        private static Sprite ParameterFallbackIcon(FeatureUIData value)
+        {
+            // These explicitly labeled facsimiles show retained blueprint
+            // fallback pixels. Native text needs separate real-screen evidence.
+            var parameter = value.Param == null ? null : value.Param.Blueprint as BlueprintFeature;
+            return parameter != null ? parameter.Icon : new FeatureUIData(value.Feature, value.Param).Icon;
         }
 
         private static string ParameterIdentity(FeatureUIData value)

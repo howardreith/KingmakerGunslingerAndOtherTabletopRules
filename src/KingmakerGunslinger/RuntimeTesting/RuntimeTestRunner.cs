@@ -769,7 +769,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableFirearmBreakInterruption)
                 {
-                    Complete(RunDisposableFirearmBreakInterruption());
+                    PollFirearmNativeInput();
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog
@@ -8232,14 +8232,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EmptyFirearmAttackCommandPatch.AutoReloadReplacements ==
                         replacementsBeforeWrecked;
                 turnBasedPolicy =
-                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
-                        false, false, false) &&
-                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
-                        true, true, true) &&
-                    !EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
-                        true, true, false) &&
-                    !EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
-                        true, false, true);
+                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsAttackQueue(false, false) &&
+                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsAttackQueue(false, true) &&
+                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsAttackQueue(true, true) &&
+                    !EmptyFirearmAttackCommandPatch.TurnBasedAllowsAttackQueue(true, false);
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 0, null,
@@ -8317,9 +8313,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         wreckedRejected,
                     "exact weapon reference re-resolution, completion result, and Wrecked policy"),
                 Assertion("automatic-reload-turn-based-action-policy",
-                    "RTwP resumes; turn-based resumes only with a current turn and unused standard action",
+                    "RTwP queues; turn-based queues only on the exact actor turn; native cooldowns govern execution",
                     observed, turnBasedPolicy,
-                    "fail-closed turn-based standard-action continuation gate"),
+                    "synthetic actor-turn queue gate; actual action costs and hover prediction are covered by the native firearm input scenario"),
                 Assertion("automatic-reload-no-ammunition-loop",
                     "two consecutive native polls reject without mutation",
                     observed, noAmmoLoop,
@@ -13641,7 +13637,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsFirearmParameter(item.Param)));
             BlueprintItem[] gunslingerStock = ModuleGunslingerStockItems();
             int capitalGunslingerRows = CountFixedRows(smith, gunslingerStock);
-            int installedBtslTables = 0, btslGunslingerRows = 0;
+            var retiredMaintenanceStock = new BlueprintItem[] { BlueprintBootstrap.FirearmRepairKit,
+                BlueprintBootstrap.GunsmithingSupplies.OverhaulKit };
+            int retiredMaintenanceRows = CountFixedRows(smith, retiredMaintenanceStock);
+            int installedBtslTables = 0, btslGunslingerRows = 0, expectedBtslGunslingerRows = 0;
             for (int index = 0; index < BeneathStolenLandsVendorBlueprints.TableGuids.Length;
                 index++)
             {
@@ -13653,6 +13652,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (table == null) continue;
                 installedBtslTables++;
                 btslGunslingerRows += CountFixedRows(table, gunslingerStock);
+                // Existing publication splits six weapons and four current
+                // supplies across the two native vendor kinds. Retired kits
+                // remain in the owned target set solely for absence checks.
+                expectedBtslGunslingerRows += BeneathStolenLandsVendorBlueprints.IsHonestGuyTable(table.AssetGuid) ? 6 : 4;
+                retiredMaintenanceRows += CountFixedRows(table, retiredMaintenanceStock);
             }
             int rareLootRows = 0;
             foreach (RareFirearmCampaignLootBlueprints.TargetSpec spec in
@@ -13949,6 +13953,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";nativeParameters=" + firearmParameterCount +
                 ";capitalGunslinger=" + capitalGunslingerRows +
                 ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
+                ";expectedBtslGunslinger=" + expectedBtslGunslingerRows + ";retiredMaintenanceRows=" + retiredMaintenanceRows +
                 ";rareLoot=" + rareLootRows + ";shieldLists=" +
                 shieldObservation.PublishedLists + "/" +
                 shieldObservation.ExpectedPublishedLists +
@@ -14025,9 +14030,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fighterFirearmFeatures == (expectedGunslinger ? 1 : 0) &&
                         fighterFirearmAll == (expectedGunslinger ? 1 : 0) &&
                         firearmParameterCount == (expectedGunslinger ? 15 : 0) &&
-                        capitalGunslingerRows == (expectedGunslinger ? 12 : 0) &&
+                        capitalGunslingerRows == (expectedGunslinger ? 10 : 0) && retiredMaintenanceRows == 0 &&
                         btslGunslingerRows == (expectedGunslinger ?
-                            installedBtslTables * 6 : 0) &&
+                            expectedBtslGunslingerRows : 0) &&
                         rareLootRows == (expectedGunslinger ? 5 : 0),
                     "class, feat catalogs, native parameter menus, vendors, and fixed loot"),
                 Assertion("feature-module-legacy-firearm-proficiency",
@@ -14229,8 +14234,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             MidgamePublicationContracts(assertions, expectedGunslinger);
             ObserveTeleportationSpellPublication(assertions);
-            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+            var iconEvidenceFiles = new List<string>();
+            FirearmMonogramEvidence.Exercise(_request, assertions, iconEvidenceFiles);
+            var result = CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
+            result.EvidenceFiles = iconEvidenceFiles;
+            return result;
         }
 
         private RuntimeTestResult RunShieldOtherInventoryObservation()
@@ -30469,6 +30478,15 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
+            {
+                try { StopFirearmInput(); }
+                catch (Exception cleanup)
+                {
+                    result.Status = RuntimeTestStatuses.Fail;
+                    result.Diagnostics.Add("firearm input cleanup failed: " + cleanup);
+                }
+            }
             StopTeleportPersistence(result);
             StopTeleportationInteraction(result);
             StopTeleportationSpellbookUi(result);

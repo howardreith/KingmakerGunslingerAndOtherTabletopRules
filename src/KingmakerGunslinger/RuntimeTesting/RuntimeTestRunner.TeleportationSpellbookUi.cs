@@ -21,6 +21,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Spells.Teleportation;
+using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -30,6 +31,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private IEnumerator<int> _teleportationSpellbookUiSteps;
         private Stopwatch _teleportationSpellbookUiWatch;
+        private NativeIconScreenEvidence _teleportationNativeIconScreens;
         private readonly List<RuntimeTestAssertion> _teleportationSpellbookUiAssertions = new List<RuntimeTestAssertion>();
         private readonly List<object> _teleportationSpellbookUiCaptures = new List<object>();
         private readonly List<object> _teleportationSpellbookUiExceptions = new List<object>();
@@ -51,8 +53,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception) { failure = failure == null ? exception : new AggregateException(failure, exception); }
             _teleportationSpellbookUiSteps = null;
             WriteTeleportationSpellbookUi(failure == null ? null : failure.ToString());
-            Complete(CreateResult(failure != null ? RuntimeTestStatuses.Error : _teleportationSpellbookUiAssertions.All(value => value.Status == "PASS") ?
-                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, _teleportationSpellbookUiAssertions, failure == null ? null : failure.ToString()));
+            var result = CreateResult(failure != null ? RuntimeTestStatuses.Error : _teleportationSpellbookUiAssertions.All(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, _teleportationSpellbookUiAssertions, failure == null ? null : failure.ToString());
+            _teleportationNativeIconScreens?.AppendEvidence(result.EvidenceFiles);
+            Complete(result);
         }
         private void StopTeleportationSpellbookUi(RuntimeTestResult result)
         {
@@ -62,6 +66,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             try { steps.Dispose(); }
             catch (Exception exception) { error += " " + exception; result.Status = RuntimeTestStatuses.Error; }
             WriteTeleportationSpellbookUi(error); result.Diagnostics.Add(error);
+            _teleportationNativeIconScreens?.AppendEvidence(result.EvidenceFiles);
         }
         private void WriteTeleportationSpellbookUi(string error)
         {
@@ -81,6 +86,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private IEnumerable<int> RunTeleportationSpellbookUi()
         {
+            _teleportationNativeIconScreens = new NativeIconScreenEvidence(_request);
             var game = Game.Instance; var player = game.Player; var ui = game.UI;
             if (!_context.FeatureModules.Active.TeleportationSpells || BlueprintBootstrap.TeleportationPublication == null || game.IsControllerGamepad ||
                 game.CurrentMode != GameModeType.Default || ui.SpellBookController == null || ui.ServiceWindow == null || ui.ServiceWindow.WindowTabs.IsShow ||
@@ -176,6 +182,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var snapshot in uiSnapshots) snapshot.Restore();
                 game.IsPaused = originalPaused;
                 Application.logMessageReceived -= ObserveTeleportSpellbookUiException;
+                _teleportationNativeIconScreens?.Dispose();
                 bool restored = fixture.IsRestored() && uiSnapshots.All(value => value.IsRestored()) &&
                     ui.SelectionManagerPC.SelectedUnits.SequenceEqual(originalSelection) && player.Party.SequenceEqual(originalParty) &&
                     originalPositions.SequenceEqual(originalParty.Select(value => value.Position)) && ReferenceEquals(game.CurrentlyLoadedArea, originalArea) &&
@@ -230,6 +237,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             TeleportSpellbookUiAssert("description-" + caseId, "native description builder renders the complete world-map instructions without a material-component exception",
                 "labels=" + labels.Length, description.gameObject.activeInHierarchy && labels.Any(value => !value.isTextTruncated &&
                     string.Equals(value.GetParsedText(), entry.Spell.Description, StringComparison.OrdinalIgnoreCase)));
+            foreach (int frame in _teleportationNativeIconScreens.Capture("spell-description-" + caseId,
+                JObject.FromObject(new { spell = entry.Spell.AssetGuid, name = entry.Spell.Name, book = entry.Book.Blueprint.AssetGuid,
+                    entry.Level, controller.CurrentPageIndex, icon = row.SpellImage.sprite.name,
+                    texts = labels.Select(value => new { value.name, parsed = value.GetParsedText(), value.isTextTruncated, value.isTextOverflowing }).ToArray() }),
+                () => !_workingSaveSmoke.WriteObserved && controller.IsShow && ReferenceEquals(controller.CurrentSpellbook, entry.Book) &&
+                    controller.SelectedSpell != null && controller.SelectedSpell.Blueprint == entry.Spell &&
+                    row.gameObject.activeInHierarchy && description.gameObject.activeInHierarchy)) yield return frame;
             tooltip.CloseDescriptionWindow();
             if (!entry.Book.Blueprint.Spontaneous)
             {
@@ -243,6 +257,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "before=" + before + ";after=" + prepared.Length + ";shown=" + shownSlots.Length,
                     prepared.Length == before + 1 && shownSlots.Length > 0 && !prepared.Last().Available);
                 entry.Book.Rest();
+                for (int frame = 0; frame < 8; frame++) yield return 0;
+                foreach (int frame in _teleportationNativeIconScreens.Capture("spell-preparation-" + caseId,
+                    JObject.FromObject(new { spell = entry.Spell.AssetGuid, book = entry.Book.Blueprint.AssetGuid, entry.Level,
+                        preparationCount = prepared.Length, visibleSlots = shownSlots.Length }),
+                    () => !_workingSaveSmoke.WriteObserved && controller.IsShow && ReferenceEquals(controller.CurrentSpellbook, entry.Book) &&
+                        row.gameObject.activeInHierarchy && !description.gameObject.activeInHierarchy)) yield return frame;
             }
             TeleportSpellbookUiAssert("local-unusable-" + caseId, "rested strategic spell is unavailable for local-area casting and absent from native metamagic selection",
                 "available=" + row.SpellData.IsAvailable, !row.SpellData.IsAvailable && !controller.SpellBookView.GetMetamagicSpells().Contains(entry.Spell));

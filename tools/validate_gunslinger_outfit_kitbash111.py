@@ -129,7 +129,7 @@ def validate(root: Path) -> None:
         raise AssertionError("0.0.111 static release identity mismatch")
     state = static.get(STATIC_KEY, {})
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "nativeOnly": True,
         "customAssetsAdded": False,
         "maleLinkCount": 2,

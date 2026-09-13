@@ -104,7 +104,7 @@ function Assert-Sha256([string]$RelativePath, [string]$Expected) {
 }
 
 $protected = [ordered]@{
-    'assets/game/icons/rapid-reload.png' = 'efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321'
+    'assets-source/original-icons/icon-overhaul-v2/references/rapid-reload-rejected.png' = 'efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321'
     'assets/game/icons/early-pistol.png' = '1cd06b9aeea63b4842951568812791e50e8fd9472884078449dd84c1c9bf0719'
     'assets/game/icons/musket.png' = '638077254f298a626f3fa8a8c098bb1e9f2c4f3678df90a1e28920f4a9ffd086'
     'assets/game/icons/blunderbuss.png' = 'e5923f9b5820eef3ca3d41e5af559b09ef8ea21b0052dc04909fd72f73ac929f'

@@ -92,7 +92,7 @@ final-artifact UI measurements. They are not a universal-size rule.
 |---|---|---|
 | project-painted-128 | Quick Clear, Reload Firearm, Repair Firearm, Focused Aim and Shield Other exports are 128x128 RGBA PNG. Pilot originals are preserved 1254x1254 RGB PNG. | Decoded indexed files. Native final layout is a separate gate. Full-bleed painted backgrounds are allowed. |
 | combat-emblem-64 | Existing Rapid Reload/parameter exports are 64x64 RGBA PNG with 512x512 sources. Transparent emblem backgrounds reveal UI. | Decoded pixels and manifests. The approved Rapid Reload pilot anchors this family; the old thick partial arc is a negative reference. Its ring geometry is not a universal requirement. |
-| native-selector-text | Explicit FeatureUIData retains null Icon. Desktop CharBuildSelectorItem.SetIcon shows m_AcronimText, calls UIUtility.GetAbilityAcronym, and derives background/color from the item name. | Installed-assembly inspection. Default selected-feature construction separately reads the parameter blueprint's icon. No PNG/font export is required by this selector route. |
+| native-selector-text | FeatureUIData retains null Icon. Desktop CharBuildSelectorItem.SetIcon shows m_AcronimText; character-sheet CharSComponentChupaChups uses AbilityAbbreviation. Both use UIUtility.GetAbilityAcronym with native decoration. | Inspect the actual entry type: parametrized/selected data uses the firearm constructor adapter, while Rapid Reload's static Items list needs an exact owned-selection adapter. Preserve fallback sprites, filtering, count and order. Native rendering remains a separate check. No PNG/font export is required by these routes. |
 | summon-painted-128 | Existing manifest defines 77 individually sourced 128x128 RGBA exports with exact child placements. | Delegate export authority to that manifest. Historical publication does not approve new creatures. |
 
 The supplied 1920x1200 desktop references show approximately 48px racial icon
@@ -125,6 +125,14 @@ build-copy and package-validator support together.
 Normal builds never invoke an image model. Export begins with preserved reviewed
 originals. Do not normalize unrelated protected assets. Retire or redirect old
 generators when authority changes.
+
+Rapid Reload's approved v2 pilot is its current source/export authority. The
+rejected former runtime PNG is retained under `icon-overhaul-v2/references` for
+historical validation and negative-reference inspection. The old dedicated
+chroma generator and broad feat generators must fail before writing runtime
+assets. Historical records do not authorize restoring their rejected output.
+See [firearm presentation](FIREARM-FEAT-ICON-MAP.md) for the exact UI filter and
+fallback contracts.
 
 The pilot and production exporters freeze files whose manifest records carry
 approval. Re-running them verifies those bytes instead of repainting, regenerating,
@@ -207,6 +215,9 @@ paths. Capture actual screens for placement, scale and state through permitted
 tools; request a bounded supervised capture if required. Record source/DLL/package
 hashes, version and profile. Changed candidates need impacted final-artifact
 checks again. Report unavailable evidence honestly.
+The [native screen workflow](ICON-NATIVE-UI-EVIDENCE.md) describes request-only
+holds in the existing creator and spellbook fixtures. Keep these real captures
+separate from the live-sprite facsimiles and record remaining uncovered surfaces.
 
 ## Future examples: no gameplay authorization
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.props" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Common.props')" />
   <Import Project="..\..\GamePath.props" Condition="Exists('..\..\GamePath.props')" />
@@ -663,6 +663,10 @@
     <Compile Include="Firing\EmptyFirearmAttackPolicy.cs" />
     <Compile Include="Firing\BrokenSequenceInterruptionPolicy.cs" />
     <Compile Include="Firing\BrokenSequenceSuppressionRuntime.cs" />
+    <Compile Include="Firing\FirearmAttackOrderLedger.cs" />
+    <Compile Include="Firing\NativeFirearmAttackOrder.cs" />
+    <Compile Include="Firing\NativeFirearmAttackOrderPatch.cs" />
+    <Compile Include="Recovery\RepairAvailabilityReasonPatch.cs" />
     <Compile Include="Firing\EmptyFirearmAttackCommandPatch.cs" />
     <Compile Include="Firing\FreeActionFullAttackReloadPatch.cs" />
     <Compile Include="Firing\FirearmDischargeRuntimeDiagnostics.cs" />
@@ -843,6 +847,8 @@
     <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />
     <Compile Include="Feats\FirearmWeaponFeatBonus.cs" />
     <Compile Include="Feats\NativeFirearmFeatIntegration.cs" />
+    <Compile Include="Feats\FirearmNativeMonogramPolicy.cs" />
+    <Compile Include="Feats\FirearmNativeMonogramPresentation.cs" />
     <Compile Include="Feats\PrerequisiteFirearmProficiency.cs" />
     <Compile Include="Feats\FirearmWeaponFeatPolicy.cs" />
     <Compile Include="Blueprints\FirearmFeatBlueprints.cs" />
@@ -999,6 +1005,17 @@
     <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmMaintenance.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmRepairWarnings.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmInputNegatives.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmManualInput.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmAdditionalInput.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewCoexistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewCosts.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewRetarget.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewReloadTurns.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewOwnership.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewMerge.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmRestCompatibility.cs" />
     <Compile Include="RuntimeTesting\SummonSameTurnActivationScenario.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningVariantMenuObservation.cs" />
     <Compile Include="RuntimeTesting\OptionalModCompatibilityObserver.cs" />
@@ -1011,9 +1028,12 @@
     <Compile Include="RuntimeTesting\EasternWeaponCombatScenario.cs" />
     <Compile Include="RuntimeTesting\WeaponPresentationEvidenceScenario.cs" />
     <Compile Include="RuntimeTesting\IconOverhaulVisualEvidenceScenario.cs" />
+    <Compile Include="RuntimeTesting\NativeIconScreenEvidence.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeIcons.cs" />
     <Compile Include="RuntimeTesting\IconConsumerCensus.cs" />
     <Compile Include="RuntimeTesting\IconGraphSnapshot.cs" />
     <Compile Include="RuntimeTesting\IconCensusControlPolicy.cs" />
+    <Compile Include="RuntimeTesting\FirearmMonogramEvidence.cs" />
     <Compile Include="RuntimeTesting\RuntimeBuildIdentity.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestScenarioCatalog.cs" />
     <Compile Include="RuntimeTesting\CompatibilityAttributionRuntimeControl.cs" />

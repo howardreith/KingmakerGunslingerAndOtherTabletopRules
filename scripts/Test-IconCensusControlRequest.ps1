@@ -4,7 +4,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
-$iconControlArgs = @{Scenario='icon-overhaul-visual-evidence'; ExpectedVersion='0.0.127';
+$iconRepository = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
+$iconVersion = (Get-KmgModInfo -RepositoryRoot $iconRepository).Version
+$iconControlArgs = @{Scenario='icon-overhaul-visual-evidence'; ExpectedVersion=$iconVersion;
     TimeoutSeconds=300; ExitAfterCompletion=$true; Parameters=@{iconCensusControl=$true}}
 function Assert-IconControlRejected([string]$Name) {
     $rejected = $false

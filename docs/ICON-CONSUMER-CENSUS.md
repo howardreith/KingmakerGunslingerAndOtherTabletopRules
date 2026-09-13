@@ -43,6 +43,8 @@ the runtime scenario executes. Required checks include:
   native donor's Sprite reference.
 - Installed export hashes and executing DLL/MVID are recorded for independent
   comparison with the authoring catalog and immutable Build-Local artifact.
+  The export inventory includes the approved 64px Rapid Reload parent as well
+  as the 89 painted 128px exports.
 
 Late compatibility initialization may fill previously empty foreign icons or
 append spell-list components. A live scenario result alone cannot accept these
@@ -87,3 +89,12 @@ Painted integration passed the candidate/control comparison and canonical
 working-save smoke. Exact runs, artifact hashes and restoration are in
 [the curated qualification](../reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json).
 Native icon screen review and firearm completion remain separate work.
+
+The icon scenario and module observer also run `FirearmMonogramEvidence` against
+the real native constructors: fifteen supported parameter/root combinations,
+three Rapid Reload children, ten hidden legacy controls and the available native
+weapon categories. Selected-feature and character-sheet data must keep exact
+parameters and fallback blueprint sprites while using P/M/B native text. This
+does not establish a saved-parameter disk round trip or rendered typography.
+For real screen capture, use the separately labeled
+[native UI evidence workflow](ICON-NATIVE-UI-EVIDENCE.md).

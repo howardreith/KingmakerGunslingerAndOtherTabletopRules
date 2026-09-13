@@ -51,7 +51,7 @@ def validate(root: Path) -> None:
         raise AssertionError("Static validation does not identify the unified repair release.")
     state = static.get("unifiedRepair121", {})
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "publicReleaseAuthorized": True,
         "unifiedRepairRuntimeAssertions": 32,
         "oldSaveAliasRuntimeAssertions": 16,

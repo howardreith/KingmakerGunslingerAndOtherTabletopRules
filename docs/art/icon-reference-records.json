@@ -124,14 +124,14 @@
     },
     {
       "id": "negative-rapid-reload",
-      "path": "assets/game/icons/rapid-reload.png",
+      "path": "assets-source/original-icons/icon-overhaul-v2/references/rapid-reload-rejected.png",
       "sha256": "efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321",
       "size": [
         64,
         64
       ],
       "family": "rejected",
-      "approvalScope": "Heavy partial ring/tool-like mark: negative comparison; retain bytes until approved replacement.",
+      "approvalScope": "Rejected heavy partial ring/tool-like mark, preserved as a historical negative reference. The approved pilot emblem now owns the runtime export.",
       "review": "source-file-inspected; owner scope from supplied mission"
     }
   ],

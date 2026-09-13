@@ -16,7 +16,7 @@ Read [the guide](../ICON-ART-GUIDE.md) and [catalog](../../assets-source/origina
 | summon-dog / painted-creature | [assets-source/original-icons/expanded-summoning/sources/dog.png](../../assets-source/original-icons/expanded-summoning/sources/dog.png) (1254x1254) | 89b01a679453e71b3f135ebf2bab69a6433ab91412fb1ab6fda1034aeb20fe21 | Existing creature anatomy/material anchor; historical publication, not approval of new species. |
 | summon-eagle / painted-creature | [assets-source/original-icons/expanded-summoning/sources/eagle.png](../../assets-source/original-icons/expanded-summoning/sources/eagle.png) (1254x1254) | 1a3dfd4d85e3f4330a87f8b764266e0c27d9304953556817df676963320803d1 | Existing wing/body silhouette anchor; preserve spell-root/variant conventions. |
 | negative-pistol / rejected | [assets/game/icons/firearm-monogram-pistol.png](../../assets/game/icons/firearm-monogram-pistol.png) (64x64) | ec9ed32c71b137f8d8b65184b6e92e946d034a2ef329cd0f8fe7f52194e3f07d | Thin custom path typography: rejected comparison, never an approved font anchor. |
-| negative-rapid-reload / rejected | [assets/game/icons/rapid-reload.png](../../assets/game/icons/rapid-reload.png) (64x64) | efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321 | Heavy partial ring/tool-like mark: negative comparison; retain bytes until approved replacement. |
+| negative-rapid-reload / rejected | [archived rejected Rapid Reload](../../assets-source/original-icons/icon-overhaul-v2/references/rapid-reload-rejected.png) (64x64) | efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321 | Heavy partial ring/tool-like mark: archived negative comparison; the approved pilot emblem now owns the runtime export. |
 
 ## Approved pilot anchors
 
