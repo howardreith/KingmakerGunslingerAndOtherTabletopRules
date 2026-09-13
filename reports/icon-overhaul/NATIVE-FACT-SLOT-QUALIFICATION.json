@@ -1,0 +1,2501 @@
+{
+  "schemaVersion": 1,
+  "status": "TECHNICALLY_QUALIFIED_NATIVE_FACT_PRESENTATION; COMPLETE_UI_AND_OWNER_APPROVAL_PENDING",
+  "scope": "Exact P/M/B native Total/character-sheet fact slots, bounded native Total fitter, guarded captures and ownership cleanup. No new art, feat identity, prerequisite, saved parameter or gameplay change.",
+  "artifact": {
+    "generatedAtUtc": "2026-09-13T16:50:44.3164962Z",
+    "commit": "32be894c920a44390dd820c04be4f55a5c6877a2",
+    "branch": "codex/icon-art-overhaul-v2",
+    "sourceStateSha256": "601a789472926949042b429a5c0b5d48c34d141e01ceebd94dcfaf9ddaf60c3d",
+    "version": "0.0.128",
+    "packageSha256": "1d2700bb0fcf069a05857071579456366aa43a3129643e4dbed0d115a163061b",
+    "dllSha256": "1fe901a2d2fae111ba68116db319c0e625a399f29d5dd933536a4f8643c602d5",
+    "dllMvid": "2276caa3-7c42-4cb0-98a1-d683706e0540"
+  },
+  "currentMaster": "9dc2b6301d97bc83540845240544d34b6fad4b48",
+  "buildChecks": {
+    "repositoryValidation": "PASS",
+    "catalogCases": 23,
+    "pairedEvidenceCases": 6,
+    "nativeScreenshotCases": 14,
+    "currentVersionRequestCases": 11,
+    "domainTests": 1629,
+    "domainFailures": 0,
+    "cleanRelease": "PASS",
+    "strictPackageFiles": 224
+  },
+  "qualification": {
+    "guardedSteamRuns": 9,
+    "assertions": 185,
+    "originalNativeScreens": 255,
+    "workingMercenaries": 6,
+    "saveWritesObserved": false
+  },
+  "runs": [
+    {
+      "runId": "20260913T1701336920253Z-6cf45791a8ca4ada8ff4b685a0cfb84e",
+      "directory": "20260913T1701336829742Z-working-save-elemental-character-creation-regression",
+      "scenario": "working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "assertions": 12,
+      "resultSha256": "5f57e7b886934a33fe3db134d2849cffd5b7f1ed8178fb3262b361fc1f04e9dc",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING",
+        "race": "Ifrit",
+        "class": "Gunslinger",
+        "allocation": "roll"
+      },
+      "screenCount": 98,
+      "screensSha256": "4945607529851ec85e2ead3c45ef97b29dc6a2d47bd245ce6828c4d9f9826e15",
+      "provenanceErrors": [],
+      "targets": [
+        {
+          "file": "native-ui-028.png",
+          "sha256": "df85aee2817d8b377ec353549321de792ef5ed29d116cf41df0c4fecf389f933",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Pistol))",
+          "surface": "creator-total",
+          "ownerId": "1e1a15f2-76ed-46f0-ad8a-022de1acbe11",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Pistol))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "8b39bd79d27048dda58e0a513e529f2c",
+            "expectedLetter": "P",
+            "nativeGlyph": "P",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 19,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1461.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.5008,
+            "rowMaxY": -168.499084,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -730.5,
+            "captureX": 0.0,
+            "captureY": 0.0287711564,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -730.500244
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1461.0,
+              "anchoredY": 299.0027,
+              "localY": 299.0027,
+              "scaleY": 1.0,
+              "preferredHeight": 1461.0,
+              "viewportMinY": -431.4974,
+              "viewportMaxY": 1029.50281,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-030.png",
+          "sha256": "75437664369fc973bf2995241559f1dea0d7b966687bc76fb43d20b48a3a8da5",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Pistol))",
+          "surface": "creator-total",
+          "ownerId": "1e1a15f2-76ed-46f0-ad8a-022de1acbe11",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Pistol))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "8b39bd79d27048dda58e0a513e529f2c",
+            "expectedLetter": "P",
+            "nativeGlyph": "P",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1333.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500549,
+            "rowMaxY": -168.49884,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -666.5,
+            "captureX": 0.0,
+            "captureY": 0.03272227,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -666.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1333.0,
+              "anchoredY": 235.00293,
+              "localY": 235.00293,
+              "scaleY": 1.0,
+              "preferredHeight": 1333.0,
+              "viewportMinY": -431.497131,
+              "viewportMaxY": 901.5031,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-031.png",
+          "sha256": "a4e778ac0260df83ecf9f3cef843cfe3ecc876c19c082e1df5d49b9e51667d8a",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Pistol))",
+          "surface": "character-sheet",
+          "ownerId": "1e1a15f2-76ed-46f0-ad8a-022de1acbe11",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Pistol))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "8b39bd79d27048dda58e0a513e529f2c",
+            "expectedLetter": "P",
+            "nativeGlyph": "P",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 27,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 2849.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -279.0,
+            "rowMaxY": -215.0,
+            "viewportMinY": -705.4,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-060.png",
+          "sha256": "7afcd6587d487591c438fe7858c0ba650d1921eef76d466758c53a08eaf729f8",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Musket))",
+          "surface": "creator-total",
+          "ownerId": "887f0bf0-a688-442e-8780-a8aa7696b257",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Musket))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "939f52fce6ec4c5d8df2bb1cf793416a",
+            "expectedLetter": "M",
+            "nativeGlyph": "M",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1333.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500549,
+            "rowMaxY": -168.49884,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -666.5,
+            "captureX": 0.0,
+            "captureY": 0.03272227,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -666.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1333.0,
+              "anchoredY": 235.00293,
+              "localY": 235.00293,
+              "scaleY": 1.0,
+              "preferredHeight": 1333.0,
+              "viewportMinY": -431.497131,
+              "viewportMaxY": 901.5031,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-062.png",
+          "sha256": "7332b5aa9a549bbef8458cdd5e8e2759f748d083194ddc5aa116b1ad96ee6919",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Musket))",
+          "surface": "creator-total",
+          "ownerId": "887f0bf0-a688-442e-8780-a8aa7696b257",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Musket))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "939f52fce6ec4c5d8df2bb1cf793416a",
+            "expectedLetter": "M",
+            "nativeGlyph": "M",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1333.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500549,
+            "rowMaxY": -168.49884,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -666.5,
+            "captureX": 0.0,
+            "captureY": 0.03272227,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -666.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1333.0,
+              "anchoredY": 235.00293,
+              "localY": 235.00293,
+              "scaleY": 1.0,
+              "preferredHeight": 1333.0,
+              "viewportMinY": -431.497131,
+              "viewportMaxY": 901.5031,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-063.png",
+          "sha256": "82a89fd410971932bb09b318b31db6232e8425f93fcbeb72fdbd7dc0aa910702",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Musket))",
+          "surface": "character-sheet",
+          "ownerId": "887f0bf0-a688-442e-8780-a8aa7696b257",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Musket))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "939f52fce6ec4c5d8df2bb1cf793416a",
+            "expectedLetter": "M",
+            "nativeGlyph": "M",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 24,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 2569.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -279.0,
+            "rowMaxY": -215.0,
+            "viewportMinY": -705.4,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-092.png",
+          "sha256": "7c9b9704f728f27a97b4941b2d66f08fc2f89f36965d87f9ef60d1b2644ac424",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Blunderbuss))",
+          "surface": "creator-total",
+          "ownerId": "f3df4c56-b96d-4177-9402-52aeac178dc1",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Blunderbuss))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "79579fdb7d494f4fb0e618f6e4c33990",
+            "expectedLetter": "B",
+            "nativeGlyph": "B",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1333.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500549,
+            "rowMaxY": -168.49884,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -666.5,
+            "captureX": 0.0,
+            "captureY": 0.03272227,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -666.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1333.0,
+              "anchoredY": 235.00293,
+              "localY": 235.00293,
+              "scaleY": 1.0,
+              "preferredHeight": 1333.0,
+              "viewportMinY": -431.497131,
+              "viewportMaxY": 901.5031,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-094.png",
+          "sha256": "409efeeab796f82563b6afd0d76ea0dfd5a47edbd9972b0cdcf1dd8f9a452587",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Blunderbuss))",
+          "surface": "creator-total",
+          "ownerId": "f3df4c56-b96d-4177-9402-52aeac178dc1",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Blunderbuss))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "79579fdb7d494f4fb0e618f6e4c33990",
+            "expectedLetter": "B",
+            "nativeGlyph": "B",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 19,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1461.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.5008,
+            "rowMaxY": -168.499084,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -730.5,
+            "captureX": 0.0,
+            "captureY": 0.0287711564,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -730.500244
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1461.0,
+              "anchoredY": 299.0027,
+              "localY": 299.0027,
+              "scaleY": 1.0,
+              "preferredHeight": 1461.0,
+              "viewportMinY": -431.4974,
+              "viewportMaxY": 1029.50281,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-096.png",
+          "sha256": "c9ba81f88bb73fbe4ecc386f6d3aeff0d410e5306597c24b89d9461092e57f02",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Blunderbuss))",
+          "surface": "creator-total",
+          "ownerId": "f3df4c56-b96d-4177-9402-52aeac178dc1",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Blunderbuss))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "79579fdb7d494f4fb0e618f6e4c33990",
+            "expectedLetter": "B",
+            "nativeGlyph": "B",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1333.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500549,
+            "rowMaxY": -168.49884,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -666.5,
+            "captureX": 0.0,
+            "captureY": 0.03272227,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -666.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1333.0,
+              "anchoredY": 235.00293,
+              "localY": 235.00293,
+              "scaleY": 1.0,
+              "preferredHeight": 1333.0,
+              "viewportMinY": -431.497131,
+              "viewportMaxY": 901.5031,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-097.png",
+          "sha256": "92c161715e43aa9ba286711e7b6c777fdfbdd28a0fc2292c7aefb54ee1aa5739",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Blunderbuss))",
+          "surface": "character-sheet",
+          "ownerId": "f3df4c56-b96d-4177-9402-52aeac178dc1",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Blunderbuss))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "79579fdb7d494f4fb0e618f6e4c33990",
+            "expectedLetter": "B",
+            "nativeGlyph": "B",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 24,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 2569.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -279.0,
+            "rowMaxY": -215.0,
+            "viewportMinY": -705.4,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "totalFit": []
+        }
+      ],
+      "creatorCleanup": {
+        "crossSceneExact": true,
+        "remoteCompanionsExact": true,
+        "partyCharactersExact": true,
+        "inventoryReferencesExact": true,
+        "inventoryCountsExact": true,
+        "moneyExact": true,
+        "respecPauseExact": true
+      },
+      "characters": [
+        {
+          "ownerId": "1e1a15f2-76ed-46f0-ad8a-022de1acbe11",
+          "acceptance": "PASS",
+          "completed": true,
+          "sheet": {
+            "ownerId": "1e1a15f2-76ed-46f0-ad8a-022de1acbe11",
+            "status": "native-selected-fact-captured",
+            "originalCharacter": null,
+            "originalSection": 0,
+            "creatorBackendRestored": true,
+            "totalLayoutRestored": true,
+            "characterRestored": true,
+            "sectionRestored": true,
+            "serviceClosed": true,
+            "groupUnchanged": true,
+            "selectionUnchanged": true,
+            "partyUnchanged": true,
+            "areaAndTimeUnchanged": true,
+            "pauseRestored": true
+          }
+        },
+        {
+          "ownerId": "887f0bf0-a688-442e-8780-a8aa7696b257",
+          "acceptance": "PASS",
+          "completed": true,
+          "sheet": {
+            "ownerId": "887f0bf0-a688-442e-8780-a8aa7696b257",
+            "status": "native-selected-fact-captured",
+            "originalCharacter": null,
+            "originalSection": 0,
+            "creatorBackendRestored": true,
+            "totalLayoutRestored": true,
+            "characterRestored": true,
+            "sectionRestored": true,
+            "serviceClosed": true,
+            "groupUnchanged": true,
+            "selectionUnchanged": true,
+            "partyUnchanged": true,
+            "areaAndTimeUnchanged": true,
+            "pauseRestored": true
+          }
+        },
+        {
+          "ownerId": "f3df4c56-b96d-4177-9402-52aeac178dc1",
+          "acceptance": "PASS",
+          "completed": true,
+          "sheet": {
+            "ownerId": "f3df4c56-b96d-4177-9402-52aeac178dc1",
+            "status": "native-selected-fact-captured",
+            "originalCharacter": null,
+            "originalSection": 0,
+            "creatorBackendRestored": true,
+            "totalLayoutRestored": true,
+            "characterRestored": true,
+            "sectionRestored": true,
+            "serviceClosed": true,
+            "groupUnchanged": true,
+            "selectionUnchanged": true,
+            "partyUnchanged": true,
+            "areaAndTimeUnchanged": true,
+            "pauseRestored": true
+          }
+        }
+      ],
+      "loadedIdentitySha256": "9a8351fb4728902a5b34e09d18f5ccf4315d373af89b88609ecd59138b8c51b2",
+      "requestSha256": "63c1022ea9839feaae409ddcaa7206abfddc5e375c2f1d3cd97f14714125cdb9",
+      "startedUtc": "2026-09-13T17:10:48.5669584Z",
+      "endedUtc": "2026-09-13T17:10:52.4827383Z"
+    },
+    {
+      "runId": "20260913T1711019628624Z-10be02e3bb564707a559f25148be5795",
+      "directory": "20260913T1711019472876Z-working-save-elemental-character-creation-regression",
+      "scenario": "working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "assertions": 12,
+      "resultSha256": "d4df9e90f08d2d029558713c7ed2dbe735ddb07ef836e476c0ff1a5111d941f0",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING",
+        "race": "Undine",
+        "class": "Gunslinger",
+        "allocation": "roll"
+      },
+      "screenCount": 86,
+      "screensSha256": "26c3c9e8a3a75fd456b94f06c8e8c81224e6652ba54a59f5b4db96044333f0ed",
+      "provenanceErrors": [],
+      "targets": [
+        {
+          "file": "native-ui-024.png",
+          "sha256": "22891710b496f04cea4ecbe996c9779cc9e349f96348571c36804c256f71072c",
+          "stage": "native-selected-fact:Rapid Reload (Pistol)",
+          "surface": "creator-total",
+          "ownerId": "2973b9e0-219e-4f35-b4e7-73de4f499876",
+          "target": {
+            "name": "Rapid Reload (Pistol)",
+            "featureGuid": "070f4f07b5164d8a82d647a93539746d",
+            "parameterGuid": null,
+            "expectedLetter": "P",
+            "nativeGlyph": "P",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 17,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1397.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500687,
+            "rowMaxY": -168.498978,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -698.5,
+            "captureX": 0.0,
+            "captureY": 0.0306197871,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -698.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1397.0,
+              "anchoredY": 267.0028,
+              "localY": 267.0028,
+              "scaleY": 1.0,
+              "preferredHeight": 1397.0,
+              "viewportMinY": -431.497253,
+              "viewportMaxY": 965.503,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-026.png",
+          "sha256": "d73267b8ac8d4df5f75fdfe70d5b9ece62575a23b75db6fd7207e5138c92175e",
+          "stage": "native-selected-fact:Rapid Reload (Pistol)",
+          "surface": "creator-total",
+          "ownerId": "2973b9e0-219e-4f35-b4e7-73de4f499876",
+          "target": {
+            "name": "Rapid Reload (Pistol)",
+            "featureGuid": "070f4f07b5164d8a82d647a93539746d",
+            "parameterGuid": null,
+            "expectedLetter": "P",
+            "nativeGlyph": "P",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1397.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500687,
+            "rowMaxY": -168.498978,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -698.5,
+            "captureX": 0.0,
+            "captureY": 0.0306197871,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -698.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1397.0,
+              "anchoredY": 267.0028,
+              "localY": 267.0028,
+              "scaleY": 1.0,
+              "preferredHeight": 1397.0,
+              "viewportMinY": -431.497253,
+              "viewportMaxY": 965.503,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-027.png",
+          "sha256": "a41216ebb7c259234acc44a2797d2adc6fcbcd82c13e5b1f0adf4160f498e3a7",
+          "stage": "native-selected-fact:Rapid Reload (Pistol)",
+          "surface": "character-sheet",
+          "ownerId": "2973b9e0-219e-4f35-b4e7-73de4f499876",
+          "target": {
+            "name": "Rapid Reload (Pistol)",
+            "featureGuid": "070f4f07b5164d8a82d647a93539746d",
+            "parameterGuid": null,
+            "expectedLetter": "P",
+            "nativeGlyph": "P",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 24,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 2639.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -279.0,
+            "rowMaxY": -215.0,
+            "viewportMinY": -705.4,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-052.png",
+          "sha256": "f336e19ddc18daf039a8dbf00ab4322d92cef4ae67a26ef5a933baf05cbbe64c",
+          "stage": "native-selected-fact:Rapid Reload (Musket)",
+          "surface": "creator-total",
+          "ownerId": "8ac75d0b-61e4-4bbc-bca1-daa47bc88c70",
+          "target": {
+            "name": "Rapid Reload (Musket)",
+            "featureGuid": "128963c18e0d48268d8696f9f14513d2",
+            "parameterGuid": null,
+            "expectedLetter": "M",
+            "nativeGlyph": "M",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1397.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500687,
+            "rowMaxY": -168.498978,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -698.5,
+            "captureX": 0.0,
+            "captureY": 0.0306197871,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -698.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1397.0,
+              "anchoredY": 267.0028,
+              "localY": 267.0028,
+              "scaleY": 1.0,
+              "preferredHeight": 1397.0,
+              "viewportMinY": -431.497253,
+              "viewportMaxY": 965.503,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-054.png",
+          "sha256": "5042d031951e94055ceabb6dc00583bdd8d69faa50ebcb8bec2ab0cbf6bda6f0",
+          "stage": "native-selected-fact:Rapid Reload (Musket)",
+          "surface": "creator-total",
+          "ownerId": "8ac75d0b-61e4-4bbc-bca1-daa47bc88c70",
+          "target": {
+            "name": "Rapid Reload (Musket)",
+            "featureGuid": "128963c18e0d48268d8696f9f14513d2",
+            "parameterGuid": null,
+            "expectedLetter": "M",
+            "nativeGlyph": "M",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1397.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500687,
+            "rowMaxY": -168.498978,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -698.5,
+            "captureX": 0.0,
+            "captureY": 0.0306197871,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -698.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1397.0,
+              "anchoredY": 267.0028,
+              "localY": 267.0028,
+              "scaleY": 1.0,
+              "preferredHeight": 1397.0,
+              "viewportMinY": -431.497253,
+              "viewportMaxY": 965.503,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-055.png",
+          "sha256": "08c7b1962e22af67b4ac8b25aee4fd38d1a74c696f1bd38eb50fbfd903e61de3",
+          "stage": "native-selected-fact:Rapid Reload (Musket)",
+          "surface": "character-sheet",
+          "ownerId": "8ac75d0b-61e4-4bbc-bca1-daa47bc88c70",
+          "target": {
+            "name": "Rapid Reload (Musket)",
+            "featureGuid": "128963c18e0d48268d8696f9f14513d2",
+            "parameterGuid": null,
+            "expectedLetter": "M",
+            "nativeGlyph": "M",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 23,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 2569.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -279.0,
+            "rowMaxY": -215.0,
+            "viewportMinY": -705.4,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-080.png",
+          "sha256": "a7d50d21501d99bf3cc058ab7128cee05278c773514966266855b0876abbc565",
+          "stage": "native-selected-fact:Rapid Reload (Blunderbuss)",
+          "surface": "creator-total",
+          "ownerId": "91dc1419-0101-4654-bc1e-5bd16afe9fb5",
+          "target": {
+            "name": "Rapid Reload (Blunderbuss)",
+            "featureGuid": "40c69ab4ea844bd8a087cb8e84235bd9",
+            "parameterGuid": null,
+            "expectedLetter": "B",
+            "nativeGlyph": "B",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1397.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500687,
+            "rowMaxY": -168.498978,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -698.5,
+            "captureX": 0.0,
+            "captureY": 0.0306197871,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -698.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1397.0,
+              "anchoredY": 267.0028,
+              "localY": 267.0028,
+              "scaleY": 1.0,
+              "preferredHeight": 1397.0,
+              "viewportMinY": -431.497253,
+              "viewportMaxY": 965.503,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-082.png",
+          "sha256": "6bf6fe19092eda0d99dd69be63b87628fc6e9e8dee1cf1f08dd43524ac0ec6d0",
+          "stage": "native-selected-fact:Rapid Reload (Blunderbuss)",
+          "surface": "creator-total",
+          "ownerId": "91dc1419-0101-4654-bc1e-5bd16afe9fb5",
+          "target": {
+            "name": "Rapid Reload (Blunderbuss)",
+            "featureGuid": "40c69ab4ea844bd8a087cb8e84235bd9",
+            "parameterGuid": null,
+            "expectedLetter": "B",
+            "nativeGlyph": "B",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 17,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1397.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500687,
+            "rowMaxY": -168.498978,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -698.5,
+            "captureX": 0.0,
+            "captureY": 0.0306197871,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -698.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1397.0,
+              "anchoredY": 267.0028,
+              "localY": 267.0028,
+              "scaleY": 1.0,
+              "preferredHeight": 1397.0,
+              "viewportMinY": -431.497253,
+              "viewportMaxY": 965.503,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-084.png",
+          "sha256": "fe15ebeb7c180596a826c43090838f042d60632c7513d12bea3112ef0352e16b",
+          "stage": "native-selected-fact:Rapid Reload (Blunderbuss)",
+          "surface": "creator-total",
+          "ownerId": "91dc1419-0101-4654-bc1e-5bd16afe9fb5",
+          "target": {
+            "name": "Rapid Reload (Blunderbuss)",
+            "featureGuid": "40c69ab4ea844bd8a087cb8e84235bd9",
+            "parameterGuid": null,
+            "expectedLetter": "B",
+            "nativeGlyph": "B",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 16,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1397.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.500687,
+            "rowMaxY": -168.498978,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -698.5,
+            "captureX": 0.0,
+            "captureY": 0.0306197871,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -698.5001
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1397.0,
+              "anchoredY": 267.0028,
+              "localY": 267.0028,
+              "scaleY": 1.0,
+              "preferredHeight": 1397.0,
+              "viewportMinY": -431.497253,
+              "viewportMaxY": 965.503,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "native-ui-085.png",
+          "sha256": "c748ea7707e42340679a8ec2584a48a465a326bee28108915926a040f41cd00a",
+          "stage": "native-selected-fact:Rapid Reload (Blunderbuss)",
+          "surface": "character-sheet",
+          "ownerId": "91dc1419-0101-4654-bc1e-5bd16afe9fb5",
+          "target": {
+            "name": "Rapid Reload (Blunderbuss)",
+            "featureGuid": "40c69ab4ea844bd8a087cb8e84235bd9",
+            "parameterGuid": null,
+            "expectedLetter": "B",
+            "nativeGlyph": "B",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 23,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 2569.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -279.0,
+            "rowMaxY": -215.0,
+            "viewportMinY": -705.4,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "totalFit": []
+        }
+      ],
+      "creatorCleanup": {
+        "crossSceneExact": true,
+        "remoteCompanionsExact": true,
+        "partyCharactersExact": true,
+        "inventoryReferencesExact": true,
+        "inventoryCountsExact": true,
+        "moneyExact": true,
+        "respecPauseExact": true
+      },
+      "characters": [
+        {
+          "ownerId": "2973b9e0-219e-4f35-b4e7-73de4f499876",
+          "acceptance": "PASS",
+          "completed": true,
+          "sheet": {
+            "ownerId": "2973b9e0-219e-4f35-b4e7-73de4f499876",
+            "status": "native-selected-fact-captured",
+            "originalCharacter": null,
+            "originalSection": 0,
+            "creatorBackendRestored": true,
+            "totalLayoutRestored": true,
+            "characterRestored": true,
+            "sectionRestored": true,
+            "serviceClosed": true,
+            "groupUnchanged": true,
+            "selectionUnchanged": true,
+            "partyUnchanged": true,
+            "areaAndTimeUnchanged": true,
+            "pauseRestored": true
+          }
+        },
+        {
+          "ownerId": "8ac75d0b-61e4-4bbc-bca1-daa47bc88c70",
+          "acceptance": "PASS",
+          "completed": true,
+          "sheet": {
+            "ownerId": "8ac75d0b-61e4-4bbc-bca1-daa47bc88c70",
+            "status": "native-selected-fact-captured",
+            "originalCharacter": null,
+            "originalSection": 0,
+            "creatorBackendRestored": true,
+            "totalLayoutRestored": true,
+            "characterRestored": true,
+            "sectionRestored": true,
+            "serviceClosed": true,
+            "groupUnchanged": true,
+            "selectionUnchanged": true,
+            "partyUnchanged": true,
+            "areaAndTimeUnchanged": true,
+            "pauseRestored": true
+          }
+        },
+        {
+          "ownerId": "91dc1419-0101-4654-bc1e-5bd16afe9fb5",
+          "acceptance": "PASS",
+          "completed": true,
+          "sheet": {
+            "ownerId": "91dc1419-0101-4654-bc1e-5bd16afe9fb5",
+            "status": "native-selected-fact-captured",
+            "originalCharacter": null,
+            "originalSection": 0,
+            "creatorBackendRestored": true,
+            "totalLayoutRestored": true,
+            "characterRestored": true,
+            "sectionRestored": true,
+            "serviceClosed": true,
+            "groupUnchanged": true,
+            "selectionUnchanged": true,
+            "partyUnchanged": true,
+            "areaAndTimeUnchanged": true,
+            "pauseRestored": true
+          }
+        }
+      ],
+      "loadedIdentitySha256": "0899d62bec518afdd84c1cdc5189e678d1c540e295336e004c9c3dbfa62af985",
+      "requestSha256": "c21713b414b011ad044d54d638b14bbd3d833493c43c4b73fd20ef240c05931c",
+      "startedUtc": "2026-09-13T17:19:01.0183709Z",
+      "endedUtc": "2026-09-13T17:19:04.8608922Z"
+    },
+    {
+      "runId": "20260913T1722312759859Z-86816233980344a39f01e9088b61d8ac",
+      "directory": "20260913T1722312497814Z-disposable-elemental-character-creation-case",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "807c8d409b99883c62a12998271442cc01b67ef4eb5007be9dd38a9dc5629ebf",
+      "parameters": {
+        "race": "Ifrit",
+        "class": "Gunslinger",
+        "allocation": "point-buy"
+      },
+      "screenCount": 33,
+      "screensSha256": "25703ed208230c14d99d8771d9660bc9679e215e66fd3ca7f0889e82c2a27faf",
+      "provenanceErrors": [],
+      "targets": [
+        {
+          "file": "native-ui-026.png",
+          "sha256": "9c64b8f2c2d9c2c8d6640fd5c2b29d69fceaf66af62d6e08930193ff759ce0a2",
+          "stage": "native-weapon-row:Pistol",
+          "surface": null,
+          "ownerId": null,
+          "target": {
+            "name": "Pistol",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "8b39bd79d27048dda58e0a513e529f2c",
+            "category": null,
+            "acronym": "P",
+            "iconIsNull": true,
+            "learnedProficiencyGuid": null,
+            "proficiencyPresent": false
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 3975.00049,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.9995155,
+            "rowMaxY": 32.00048,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 3.0420253e-07,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 3.0420253e-07,
+            "captureY": 0.3143667,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.000122070313
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-027.png",
+          "sha256": "0f8bfaf030b93ec3d52467938747ce946df7515221501e370533d7843363da82",
+          "stage": "native-weapon-row:Musket",
+          "surface": null,
+          "ownerId": null,
+          "target": {
+            "name": "Musket",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "939f52fce6ec4c5d8df2bb1cf793416a",
+            "category": null,
+            "acronym": "M",
+            "iconIsNull": true,
+            "learnedProficiencyGuid": null,
+            "proficiencyPresent": false
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 3975.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.0000038,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 3.0420253e-07,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -0.000122070313,
+            "captureX": 3.0420253e-07,
+            "captureY": 0.373506576,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.000244140625
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-028.png",
+          "sha256": "54a4969b6cd3ce47f6c84dd845e3efa28441a0dbdbc1564d62e84533c12ad5de",
+          "stage": "native-weapon-row:Blunderbuss",
+          "surface": null,
+          "ownerId": null,
+          "target": {
+            "name": "Blunderbuss",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "79579fdb7d494f4fb0e618f6e4c33990",
+            "category": null,
+            "acronym": "B",
+            "iconIsNull": true,
+            "learnedProficiencyGuid": null,
+            "proficiencyPresent": false
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 3975.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -17.4999828,
+            "rowMaxY": 46.5000076,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 3.0420253e-07,
+            "originalY": 1.00000012,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -0.000244140625,
+            "captureX": 3.0420253e-07,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-029.png",
+          "sha256": "510a3d850ef5d7af22a82d370a326a51a094c8fe43411595509fa2de0478aba4",
+          "stage": "native-weapon-row:Nodachi",
+          "surface": null,
+          "ownerId": null,
+          "target": {
+            "name": "Nodachi",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": null,
+            "category": 4934986,
+            "acronym": "NO",
+            "iconIsNull": true,
+            "learnedProficiencyGuid": null,
+            "proficiencyPresent": false
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 3975.00049,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.0000038,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 3.0420253e-07,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 3.0420253e-07,
+            "captureY": 0.353793353,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.000122070313
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-032.png",
+          "sha256": "6878ce668c388f38bcb14ce968fb520f8c861ba7fbfb6a52996665b60c5d62fa",
+          "stage": "native-selected-fact:Weapon Focus (Weapon Focus (Pistol))",
+          "surface": "creator-total",
+          "ownerId": "2ba4a1ea-e414-4cea-8164-1fe2c7d79721",
+          "target": {
+            "name": "Weapon Focus (Weapon Focus (Pistol))",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": "8b39bd79d27048dda58e0a513e529f2c",
+            "expectedLetter": "P",
+            "nativeGlyph": "P",
+            "glyphActive": true,
+            "glyphTruncated": false,
+            "glyphOverflowing": false,
+            "font": "Saber_Dist32",
+            "nativeBackground": true,
+            "factAndParameterRetained": true,
+            "fallbackIconPresent": true,
+            "otherFactRows": 19,
+            "otherFactIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "DescriptionView",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 1461.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -232.5008,
+            "rowMaxY": -168.499084,
+            "viewportMinY": -401.0,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 315.0,
+            "originalContentY": -730.5,
+            "captureX": 0.0,
+            "captureY": 0.0287711564,
+            "restored": true,
+            "restoredContentX": 315.0,
+            "restoredContentY": -730.500244
+          },
+          "totalFit": [
+            {
+              "name": "Content",
+              "height": 1461.0,
+              "anchoredY": 299.0027,
+              "localY": 299.0027,
+              "scaleY": 1.0,
+              "preferredHeight": 1461.0,
+              "viewportMinY": -431.4974,
+              "viewportMaxY": 1029.50281,
+              "verticalFit": "PreferredSize",
+              "horizontalFit": "Unconstrained",
+              "fitterEnabled": true,
+              "firearmFitApplied": true,
+              "originalVerticalFit": "PreferredSize",
+              "originalHorizontalFit": "Unconstrained",
+              "originalFitterEnabled": false,
+              "layoutElements": [
+                {
+                  "ignoreLayout": false,
+                  "minHeight": 862.03,
+                  "preferredHeight": -1.0,
+                  "flexibleHeight": -1.0
+                }
+              ],
+              "components": [
+                "UnityEngine.RectTransform",
+                "Kingmaker.UI.VerticalLayoutGroupWorkaround",
+                "Kingmaker.UI.Common.ContentSizeFitterExtended",
+                "UnityEngine.UI.LayoutElement",
+                "UnityEngine.CanvasRenderer",
+                "UnityEngine.UI.Image",
+                "KingmakerGunslinger.Feats.FirearmNativeTotalFit"
+              ]
+            }
+          ]
+        }
+      ],
+      "creatorCleanup": null,
+      "characters": [
+        {
+          "ownerId": null,
+          "acceptance": "PASS",
+          "completed": false,
+          "sheet": null
+        }
+      ],
+      "loadedIdentitySha256": "019763811f3c51fcf87edf1f62c8ea08851ba7fc5225c1c8e590173dc0d54916",
+      "requestSha256": "fcc2de7f7dce35acd455b93e8b5a9d38bc96a702162972d15ea01550af2e6660",
+      "startedUtc": "2026-09-13T17:25:10.6176729Z",
+      "endedUtc": "2026-09-13T17:25:13.6396953Z"
+    },
+    {
+      "runId": "20260913T1725204785352Z-ca47812f2f4e4eb398248a8a1acb99d0",
+      "directory": "20260913T1725204785352Z-disposable-elemental-character-creation-case",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "bf7ef996b4e01ff7b8944fa5fe1d12504a9e6c4b6efe5d138fb8e002c48b9d89",
+      "parameters": {
+        "race": "Ifrit",
+        "class": "Fighter",
+        "allocation": "point-buy"
+      },
+      "screenCount": 34,
+      "screensSha256": "d509c16bc05880f3484256e8f724c688c612e33e6a0553abef1d1bad707743f9",
+      "provenanceErrors": [],
+      "targets": [
+        {
+          "file": "native-ui-030.png",
+          "sha256": "eea87a29d5dacc8d7a287ab1ddc07dd81a4b2c4d192a7215065558b209a049cf",
+          "stage": "native-weapon-row:Wakizashi",
+          "surface": null,
+          "ownerId": null,
+          "target": {
+            "name": "Wakizashi",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": null,
+            "category": 4934984,
+            "acronym": "WK",
+            "iconIsNull": true,
+            "learnedProficiencyGuid": "b14f7d9b2b665801a9d5b916c6be4ea9",
+            "proficiencyPresent": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 3843.00024,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -167.499313,
+            "rowMaxY": -103.499283,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 3.0420253e-07,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 3.0420253e-07,
+            "captureY": -2.27743087e-07,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.00048828125
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-031.png",
+          "sha256": "f8bccddc82271bd164c2498c02242acb897477cb734af88d160b09bee01923c8",
+          "stage": "native-weapon-row:Nodachi",
+          "surface": null,
+          "ownerId": null,
+          "target": {
+            "name": "Nodachi",
+            "featureGuid": "1e1f627d26ad36f43bbd26cc2bf8ac7e",
+            "parameterGuid": null,
+            "category": 4934986,
+            "acronym": "NO",
+            "iconIsNull": true,
+            "learnedProficiencyGuid": "b14f7d9b2b665801a9d5b916c6be4ea9",
+            "proficiencyPresent": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 3843.00049,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.999752,
+            "rowMaxY": 32.0002441,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 3.0420253e-07,
+            "originalY": 1.00000012,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -0.00048828125,
+            "captureX": 3.0420253e-07,
+            "captureY": 0.368314654,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.000610351563
+          },
+          "totalFit": []
+        }
+      ],
+      "creatorCleanup": null,
+      "characters": [
+        {
+          "ownerId": null,
+          "acceptance": "PASS",
+          "completed": false,
+          "sheet": null
+        }
+      ],
+      "loadedIdentitySha256": "073499ff337a99dcba748f2509490dfc7ce3b3630f2da244a2f5bd4da1f70b53",
+      "requestSha256": "c44f2c16c7acf78a3b209761d4ceebf902dd56ae4df2030aeae84c2ca9f062ac",
+      "startedUtc": "2026-09-13T17:28:08.0457419Z",
+      "endedUtc": "2026-09-13T17:28:11.1074169Z"
+    },
+    {
+      "runId": "20260913T1728174640819Z-2313bae8d3804f0ebc1ed0454d6a425c",
+      "directory": "20260913T1728174485008Z-disposable-firearm-dependent-feats",
+      "scenario": "disposable-firearm-dependent-feats",
+      "status": "PASS",
+      "assertions": 12,
+      "resultSha256": "f223126f800f2f8bee71dc4fbbf22c77b7f9d590bc49a1bb9e9497b632c3cbc4",
+      "parameters": {},
+      "loadedIdentitySha256": "f28a2d4fbdb253dc6e4422f3214838f81c3dc5e2aa6bb6fc3135e22868732729",
+      "requestSha256": "6f38ec024376aaa2050ed40066bdef9619ee1a9e8143a3b70ddeffaaefe66efb",
+      "startedUtc": "2026-09-13T17:28:25.6389525Z",
+      "endedUtc": "2026-09-13T17:29:58.2457481Z"
+    },
+    {
+      "runId": "20260913T1730052119979Z-bc5f8108561e4fa89b8985c0657c6109",
+      "directory": "20260913T1730052119979Z-observe-feature-module-settings",
+      "scenario": "observe-feature-module-settings",
+      "status": "PASS",
+      "assertions": 42,
+      "resultSha256": "5073f981b806cc7339f79c4752191ee5bd44d675d05527a3657e14e9826d1e16",
+      "parameters": {
+        "gunslinger": false,
+        "acadamaeGraduate": true,
+        "shieldOther": true,
+        "expandedSummoning": true,
+        "elvenBranchedSpears": true,
+        "easternWeapons": true,
+        "brownFurTransmuter": true,
+        "urbanBarbarian": true,
+        "bodyguardFeats": true,
+        "protectionFromAlignmentControlImmunity": true,
+        "elementalRaces": true,
+        "teleportationSpells": true
+      },
+      "loadedIdentitySha256": "944da6cedb9eefa1c52ad950cb4095993271459ed82c74faecfb8f954ff8eb2a",
+      "requestSha256": "de9f0dadf8890b8e6c7ba417997533da824d6d918b5d36a99192b80744d69c5f",
+      "startedUtc": "2026-09-13T17:30:12.4160764Z",
+      "endedUtc": "2026-09-13T17:31:50.3025483Z"
+    },
+    {
+      "runId": "20260913T1731575795535Z-ec044a59c60d48a1b42db55b8c55050f",
+      "directory": "20260913T1731575650404Z-observe-feature-module-settings",
+      "scenario": "observe-feature-module-settings",
+      "status": "PASS",
+      "assertions": 43,
+      "resultSha256": "9d98aa58bcab5cb431b656562bd9a3f8b5ecef794573ed24662656266b1dc084",
+      "parameters": {
+        "gunslinger": true,
+        "acadamaeGraduate": true,
+        "shieldOther": true,
+        "expandedSummoning": true,
+        "elvenBranchedSpears": true,
+        "easternWeapons": false,
+        "brownFurTransmuter": true,
+        "urbanBarbarian": true,
+        "bodyguardFeats": true,
+        "protectionFromAlignmentControlImmunity": true,
+        "elementalRaces": true,
+        "teleportationSpells": true
+      },
+      "loadedIdentitySha256": "349c1a95e2f6e700a8413b9fcfbd2a6d9f4268b1eb83e34d564bc268865ff13b",
+      "requestSha256": "0723f7be91c77ffa897f643fb37395137c18f82c4a7f8d8e2a612d37a0d26e84",
+      "startedUtc": "2026-09-13T17:32:05.7353904Z",
+      "endedUtc": "2026-09-13T17:33:41.4615147Z"
+    },
+    {
+      "runId": "20260913T1733487998629Z-22dfb8947ecf447888fd6f7512080f1b",
+      "directory": "20260913T1733487998629Z-disposable-teleportation-level-up",
+      "scenario": "disposable-teleportation-level-up",
+      "status": "PASS",
+      "assertions": 31,
+      "resultSha256": "b8fcf3bbeb6bba5945bb260e33d382a26e59bb22968b3957c36dc5c8936f0827",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      },
+      "screenCount": 4,
+      "screensSha256": "e24e03115dfed418bdf01179308a7eee6e2b49e13b3c96e3c58f2e750a6f6699",
+      "provenanceErrors": [],
+      "targets": [
+        {
+          "file": "native-ui-000.png",
+          "sha256": "1a4ad1d0a70f35b27b23d9a33b21092cfa0529fc16ff8c9fd42bcd02f3af61a0",
+          "stage": "native-learning-row:ba34257984f4c41408ce1dc2004e342e-5",
+          "surface": null,
+          "ownerId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+          "target": {
+            "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+            "name": "Teleport",
+            "spellLevel": 5,
+            "classGuid": "ba34257984f4c41408ce1dc2004e342e",
+            "previewOnly": true,
+            "enabled": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 14261.002,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.9999962,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 5.08615958e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 284.0,
+            "originalContentY": -7130.5,
+            "captureX": 5.08615958e-05,
+            "captureY": 0.855838358,
+            "restored": true,
+            "restoredContentX": 284.0,
+            "restoredContentY": -7130.5
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-001.png",
+          "sha256": "14f025768e472573ecf4c32cd07d682855796ac79c881e12e4db9c7aadd91132",
+          "stage": "native-learning-row:ba34257984f4c41408ce1dc2004e342e-7",
+          "surface": null,
+          "ownerId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+          "target": {
+            "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+            "name": "Greater Teleport",
+            "spellLevel": 7,
+            "classGuid": "ba34257984f4c41408ce1dc2004e342e",
+            "previewOnly": true,
+            "enabled": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 19475.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.9999962,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 5.08615958e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 284.0,
+            "originalContentY": -9737.5,
+            "captureX": 5.08615958e-05,
+            "captureY": 0.97275573,
+            "restored": true,
+            "restoredContentX": 284.0,
+            "restoredContentY": -9737.5
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-002.png",
+          "sha256": "ef2691f9b916899e25c2474582209bbae4c16b705d5506660ffa5fb6e084de5d",
+          "stage": "native-learning-row:b3a505fb61437dc4097f43c3f8f9a4cf-5",
+          "surface": null,
+          "ownerId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+          "target": {
+            "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+            "name": "Teleport",
+            "spellLevel": 5,
+            "classGuid": "b3a505fb61437dc4097f43c3f8f9a4cf",
+            "previewOnly": true,
+            "enabled": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 2579.00049,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.9998283,
+            "rowMaxY": 32.000164,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 5.08615958e-05,
+            "originalY": 0.9999995,
+            "horizontalEnabled": true,
+            "originalContentX": 284.0,
+            "originalContentY": -1289.499,
+            "captureX": 5.08615958e-05,
+            "captureY": 0.0268954225,
+            "restored": true,
+            "restoredContentX": 284.0,
+            "restoredContentY": -1289.49951
+          },
+          "totalFit": []
+        },
+        {
+          "file": "native-ui-003.png",
+          "sha256": "7d65333132657d2af37288abe03b1db1d788d9602e7e16451d6eb9f1208c4e91",
+          "stage": "native-learning-row:b3a505fb61437dc4097f43c3f8f9a4cf-7",
+          "surface": null,
+          "ownerId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+          "target": {
+            "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+            "name": "Greater Teleport",
+            "spellLevel": 7,
+            "classGuid": "b3a505fb61437dc4097f43c3f8f9a4cf",
+            "previewOnly": true,
+            "enabled": true
+          },
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 2447.00049,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.9998741,
+            "rowMaxY": 32.00011,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 5.08615958e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 284.0,
+            "originalContentY": -1223.5,
+            "captureX": 5.08615958e-05,
+            "captureY": 0.7541208,
+            "restored": true,
+            "restoredContentX": 284.0,
+            "restoredContentY": -1223.50012
+          },
+          "totalFit": []
+        }
+      ],
+      "loadedIdentitySha256": "871731410b9189eaeb700ee2837d2f84c9014277fba150ed6fed384a3098074e",
+      "requestSha256": "138229ecb44d087304bb0c19ed44e988c53ebfd60e920dd1924a7dc47c784e9e",
+      "startedUtc": "2026-09-13T17:33:56.5308790Z",
+      "endedUtc": "2026-09-13T17:36:42.8854312Z"
+    },
+    {
+      "runId": "20260913T1736507546549Z-cf427a3cc51d4c009ce58aa067e9087c",
+      "directory": "20260913T1736507546549Z-working-save-smoke",
+      "scenario": "working-save-smoke",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "97c3be477340cd2d373d9099afa3ce492620fbe390af373e43d3ad23fbec7a73",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      },
+      "loadedIdentitySha256": "a2b646f3965e7e6a51975cd560cd63b765757533c4c94c595ad6a2491afdd7bd",
+      "requestSha256": "b8c4c1e3c6483eb9bca67c1be0c41cd01a714223c674d197c9a8bae4a1baca6e",
+      "startedUtc": "2026-09-13T17:36:59.4745789Z",
+      "endedUtc": "2026-09-13T17:39:25.2124624Z"
+    }
+  ],
+  "priorDiagnosticArtifacts": [
+    {
+      "archivePrefix": "native-fact-slot-first",
+      "artifact": {
+        "sourceStateSha256": "1024ddcd5432affecf8a9f48cb152e5e03680e9ca485290cb28669dcb4effc78",
+        "packageSha256": "7edaa505729418289e344997c040f13cca0ce1d8c492a2f4861b6c45bc2e3541",
+        "dllSha256": "00a8a526a795bc00adac3202874a5c539697a4dc048201db7915ccd2f92c3c35",
+        "dllMvid": "aed9dfbc-efe3-41cd-8b97-0ef34c4497f4"
+      },
+      "restoration": {
+        "verifiedAtUtc": "2026-09-13T15:31:25.114875+00:00",
+        "files": 136,
+        "originalPathsAndHashesExact": true
+      }
+    },
+    {
+      "archivePrefix": "native-fact-slot-second",
+      "artifact": {
+        "sourceStateSha256": "d06dadef98b4ea8b72d919018de11bbe453be9fb32b1fc1ed47354aa85d54cf8",
+        "packageSha256": "2ec80c6a825b01abc0bbd1c466419b044518aba4b54c780c85c9fc0ac3527787",
+        "dllSha256": "82d9162ce65748307db333adc37212a0ed76fe39f11a01192b97d28b6bce8e38",
+        "dllMvid": "0f2c464e-4186-45e2-abc2-10641f059fb6"
+      },
+      "restoration": {
+        "verifiedAtUtc": "2026-09-13T15:54:56.171430+00:00",
+        "files": 136,
+        "originalPathsAndHashesExact": true
+      }
+    },
+    {
+      "archivePrefix": "native-fact-slot-third",
+      "artifact": {
+        "sourceStateSha256": "0c519346713783492eb5cca5ad21837ad63e82ebf76760371f8b2f04d85db281",
+        "packageSha256": "1985d72447adab14cfd8cc2ced995ff9d231465d059d6f8241f23cf4aa5a34f7",
+        "dllSha256": "ade51effb9d937c726fed4bb6187ed24f0c7bc2ae5808d9f753c014c4dac0145",
+        "dllMvid": "398d03c0-7017-4f69-9481-051e12a22c93"
+      },
+      "restoration": {
+        "verifiedAtUtc": "2026-09-13T16:06:47.521890+00:00",
+        "files": 136,
+        "originalPathsAndHashesExact": true
+      }
+    },
+    {
+      "archivePrefix": "native-fact-slot-fourth",
+      "artifact": {
+        "sourceStateSha256": "1b5de885704aff396702bf292f9cf0b4e6c6de89dc1a25560a496286fa361b62",
+        "packageSha256": "b77828728045766f94ba2baf2743710ee0a734e3b099566b20bb69dc6c6e6a96",
+        "dllSha256": "33053bc2bfbdd683c0d9f212af0d8dc6c3397369fb5925553c100d8abfb307fa",
+        "dllMvid": "02711b78-ec51-4dc7-bfe3-ba995067b5e6"
+      },
+      "restoration": {
+        "verifiedUtc": "2026-09-13T16:22:34.282091+00:00",
+        "liveRoot": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Pathfinder Kingmaker\\Mods\\KingmakerGunslinger",
+        "backupDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260913T1610449240322Z",
+        "fileCount": 136,
+        "allPathsAndHashesMatchOriginal": true
+      }
+    },
+    {
+      "archivePrefix": "native-fact-slot-fifth",
+      "artifact": {
+        "sourceStateSha256": "f6117d9b33138c97e9c46def7d3c80c16868d785bc67c02e003db2a35948eb46",
+        "packageSha256": "4985d471d439e8bb3a423f7c235eb84c28df6912a20b1553e2ec924a0adfc260",
+        "dllSha256": "2ae1e48a56746fddcc5a0d337a0992608837240ff62b71edf306e6077c169070",
+        "dllMvid": "549fcf90-d68f-4025-b3d7-9f7501f22571"
+      },
+      "restoration": {
+        "verifiedUtc": "2026-09-13T16:33:27.820626+00:00",
+        "backupDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260913T1628223553751Z",
+        "fileCount": 136,
+        "allPathsAndHashesMatchOriginal": true
+      }
+    },
+    {
+      "archivePrefix": "native-fact-slot-sixth",
+      "artifact": {
+        "sourceStateSha256": "015ffbf9815e618c7aba6ef4e88bded7d6da3280b07958de6868028b9a5e6c2c",
+        "packageSha256": "fc083bc35f7066d09cb8582869d35b5aa623c010ddd4c973385cbfd0d979e4ff",
+        "dllSha256": "f796336f751f5a357b42aeb47434b630ae3413ac68b6bc5e9ba4b318d985c87d",
+        "dllMvid": "59e4e738-f93f-404a-8d03-403248775b70"
+      },
+      "restoration": {
+        "verifiedUtc": "2026-09-13T16:47:56.782048+00:00",
+        "backupDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260913T1636551942597Z",
+        "fileCount": 136,
+        "allPathsAndHashesMatchOriginal": true
+      }
+    }
+  ],
+  "diagnosticAttempts": [
+    {
+      "status": "COMPILE_FAIL",
+      "builds": [
+        1,
+        3
+      ],
+      "reason": "Incorrect native phase transform assumption, then missing partial Compile item. Neither failure was deployed."
+    },
+    {
+      "status": "FAIL",
+      "builds": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "reason": "Below-fold Total fact remained outside native scroll extent; early adapter Compile omission also detected. Correct glyph alone never qualified the viewport."
+    },
+    {
+      "status": "FAIL",
+      "builds": [
+        5
+      ],
+      "reason": "Immediate native layout exposed unstable normalization on a disabled horizontal axis. Capture now verifies enabled axes plus exact content position and velocity."
+    },
+    {
+      "status": "PARTIAL_ONLY",
+      "builds": [
+        8
+      ],
+      "reason": "No-save creator PASS11, but working sheet FAIL before opening because native hide retained the owned global backend. Existing ownership-checked cleanup now restores the exact original backend before sheet display."
+    },
+    {
+      "status": "FAIL",
+      "directory": "20260913T1651528053788Z-working-save-elemental-character-creation-regression",
+      "dllMvid": "2276caa3-7c42-4cb0-98a1-d683706e0540",
+      "reason": "300-second creator deadline expired on third mercenary after two successful sheets. Full creator cleanup passed; game exited normally. Same DLL rerun at allowed timeout900 passed all three characters for both races."
+    },
+    {
+      "status": "PREFLIGHT_STOP",
+      "reason": "Collector-generated Python bytecode changed the source fingerprint. No game launched. Exact owned cache moved to ignored artifacts; bytecode disabled. Original source fingerprint and complete reusable-deployment guard verified before fixed batch2."
+    }
+  ],
+  "visualObservations": [
+    "All six current Weapon Focus/Rapid Reload character sheets were inspected. Actual native P/M/B, font, background and icon controls are clear without glyph clipping at 1280x720.",
+    "Actual Total preferred height was 1461 rather than disabled-fitter extent862.03. Native vertical fitting reveals the target; no fixed height or individual row relocation. Every committed sheet verifies original Total layout and creator backend restoration.",
+    "Current no-save Total P and Fighter Wakizashi controls were inspected clear; Nodachi/native categories, fallback sprites and original fact references remain intact.",
+    "Native test character names overlap the sheet header and the ordinary creator doll is empty. Neither is claimed as polished character-appearance qualification.",
+    "Native Weapon Focus labels repeat Weapon Focus. The icon adapter preserves those existing names; this non-icon finding is recorded for separate review.",
+    "Remote disposable mercenary special abilities are deactivated. These sheets do not qualify active action bars, variant menus or visible buffs.",
+    "All four current Wizard/Sorcerer Teleport/Greater Teleport learning rows were inspected clear and centered in the native viewport; this remains preview/cancel evidence, not saved spell learning."
+  ],
+  "inheritedEvidence": [
+    "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+    "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json"
+  ],
+  "installationRestoration": {
+    "verifiedUtc": "2026-09-13T17:40:52.842003+00:00",
+    "backupDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260913T1651099443819Z",
+    "fileCount": 136,
+    "allPathsAndHashesMatchOriginal": true,
+    "wrapperNote": "Restore-Live-Mod completed and verified its DLL. The caller incorrectly tested LASTEXITCODE after a pure PowerShell script; independent full-file verification proves restoration.",
+    "gameClosed": true,
+    "auditedPackageFiles": 224,
+    "auditedRuntimeAdditions": 3,
+    "restoreAuditSha256": "379e2b69d1b398e40cbfaf413ecb09a9305091f7a4f200b321d8c42b528bd2f6",
+    "originalVersion": "0.0.117"
+  },
+  "pending": [
+    "Full racial feat/action/variant/buff views, higher dependent feat rendered surfaces as applicable, strategic no-icon control confirmation and scroll inventory/tooltip/merchant views.",
+    "Existing working save has no supported P/M/B parameter fixture. A new save or write requires separate owner authorization; none is inferred.",
+    "Eighty production paintings and final native UI still await owner approval. Only ten exact pilot images and family direction are approved."
+  ]
+}

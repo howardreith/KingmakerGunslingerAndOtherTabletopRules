@@ -33,6 +33,13 @@ class IconCatalogTests(unittest.TestCase):
     def test_current_candidate_is_technically_consistent(self):
         self.assertEqual([], validate(ROOT))
 
+    def test_source_file_without_compile_item_is_rejected(self):
+        project = (ROOT / 'src/KingmakerGunslinger/KingmakerGunslinger.csproj').read_text(encoding='utf-8-sig')
+        self.assertEqual([], validator.compiled_authority_errors(ROOT, self.catalog, project))
+        omitted = project.replace('    <Compile Include="Feats\\FirearmNativeFactSlotMonogram.cs" />', '')
+        self.assertTrue(any('FirearmNativeFactSlotMonogram.cs' in error
+                            for error in validator.compiled_authority_errors(ROOT, self.catalog, omitted)))
+
     def test_omitted_consumer_is_not_silently_hidden(self):
         catalog = copy.deepcopy(self.catalog)
         catalog["consumers"] = [c for c in catalog["consumers"]

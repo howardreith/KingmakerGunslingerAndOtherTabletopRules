@@ -1,5 +1,68 @@
 # Icon overhaul v2 journal
 
+## Native selected-fact diagnostics and narrower scrolling
+
+The first native compile failed because `CharBPhaseTotal` is a phase object, not a
+Component. The corrected source obtains its existing `CharBNewAbilities` component.
+Build 2 passed repository validation, eleven capture fixtures, all 1,629 domain
+tests, clean exact-reference Release and strict 224-file packaging. Its diagnostic
+MVID was `aed9dfbc-efe3-41cd-8b97-0ef34c4497f4`.
+
+The no-save Ifrit/Gunslinger run in `20260913T1526405323582Z-disposable-elemental-character-creation-case`
+found the selected Weapon Focus/Pistol fact, but failed viewport qualification:
+row Y `-796.9735:-732.9718` against `-401:0`. It is not a visual PASS. The capture
+had searched only Unity `ScrollRect`; local native inspection also established
+Kingmaker's separate `ScrollRectExtended` and its normal `ScrollToRectCenter` API.
+The next candidate recognizes the nearest eligible implementation and retains
+diagnostic bounds/images even on failure. A twelfth corruption fixture covers
+that exact API/component and rejects offscreen rows. The original installation
+was independently restored to all 136 paths/hashes before source work resumed.
+
+The same bounded extension adds actual sheet capture before the existing rolled
+Gunslinger mercenary regression's cleanup. Normal legal choices cover P/M/B across
+its three actors, with Undine covering Rapid Reload. The actual service window,
+native facts and prior UI/world context are checked; no active-party enrollment
+or save write is introduced. This new candidate still requires full build/runtime
+qualification. Raw diagnostic artifacts and the first candidate are local only.
+
+Build 3 caught a missing explicit project Compile item for the new sheet partial.
+Inspection also found that the standalone fact-slot adapter was absent from the
+project in build 2; that diagnostic DLL therefore never contained the new adapter.
+Neither build is claimed as fact-slot qualification. Both new files are now
+explicitly included. A focused catalog corruption test rejects a cataloged icon
+authority omitted from the compiled project (23 catalog tests pass), and a direct
+exact-reference compile passes before the next complete Build-Local gate.
+
+Build 4 passed all full gates with 23 catalog, twelve screenshot, six paired and
+eleven request cases, 1,629 domain tests and a 224-file package. MVID
+`0f2c464e-4186-45e2-abc2-10641f059fb6`, package
+`2ec80c6a825b01abc0bbd1c466419b044518aba4b54c780c85c9fc0ac3527787`.
+Both `20260913T1544156567190Z-disposable-elemental-character-creation-case`
+and `20260913T1549264498462Z-working-save-elemental-character-creation-regression`
+failed the same Total viewport condition. The actual selected fact reports native
+P, Saber_Dist32, no overflow/truncation, exact background/fact/parameter/fallback,
+and nineteen unchanged control facts. The actual component is Unity ScrollRect,
+not ScrollRectExtended; content height is 862.030151 at scroll Y zero while the
+target remains `-796.9735:-732.9718` below a `-401:0` viewport. The second route
+stopped before its first native commit/sheet, so neither is claimed as qualified.
+Both images retain the real scrolled list. All temporary package/backup bytes
+were audited and the original 136-file installation was restored exactly.
+The next bounded observation uses Unity's existing immediate layout rebuild and
+records actual parent geometry; no custom dimensions or row relocation are added.
+
+Build 5 passed all full gates (MVID `398d03c0-7017-4f69-9481-051e12a22c93`).
+Its `20260913T1559574501116Z-disposable-elemental-character-creation-case` run
+captured a visible native Pistol selector, but failed the normalized scroll
+restoration check before Total. Original normalized X was `3.0420253e-07`, capture
+X was `1`, while content height differed by only about 0.00025 native units.
+The next candidate limits the explicit layout rebuild to selected facts, restores
+only enabled axes and verifies actual content position as well as active-axis
+normalization and velocity. It records original/restored geometry; a thirteenth
+corruption fixture rejects real displacement/non-finite values. This does not
+retroactively qualify the failed run. All 224 package files, three known runtime
+additions and 136 backup files were audited; the original installation was again
+restored and independently verified before editing.
+
 ## 2026-09-13 first integrated native screens and static-menu correction
 
 The owner-requested master integration built successfully with 1,629/1,629
@@ -529,3 +592,87 @@ will qualify this exact native component and its P/M/B text route; the original
 fact/parameter/sprite and all other rows must remain intact. Full racial feat,
 action/variant/buff, strategic-control and scroll views remain pending. No final
 owner approval or save-writing authority is inferred from these technical passes.
+
+## 2026-09-13 — selected-fact consumer extension started
+
+Committed and pushed the viewport qualification as `32be894c920a44390dd820c04be4f55a5c6877a2`.
+Read the guide, reference index, catalog, current native implementation and installed
+IL before extending presentation. `CharSComponentAbilitySlot.SetFeature(Feature)`
+reads Fact.Icon. Separately, CharBNewAbilities receives actual Feature objects from
+LevelUpTotalStats.BuildDifference and calls SetData(IUIDataProvider). Neither path
+constructs FeatureUIData itself. The working adapter targets only these exact
+overloads, matches the existing five integrated roots/three official parameters
+or three Rapid Reload children, and uses native SetIcon/TMP. It preserves the
+original border/mask call sequence and never changes facts, names, parameters,
+ranks, blueprint sprites, fonts or unrelated rows.
+
+The working Total capture correlates the actual Feature owner/reference and
+parameter, reveals its row, checks the real glyph/background and requires preserved
+non-firearm control icons. Incorrect presentation keeps a diagnostic screenshot
+before failing. Eleven focused provenance/corruption tests pass, including rejection
+of a constructor-only-looking or unrelated selected-fact record. Full build/runtime
+qualification of this extension is still pending. No game is running or candidate
+installed at this preparation checkpoint; broader sheet/menu evidence remains open.
+
+Build 6 passed all build gates (23 catalog, 13 screenshot, 1,629 domain and 224 package files), but run `20260913T1611037093503Z-disposable-elemental-character-creation-case` remains FAIL. All four native weapon rows restored their actual content position correctly. The final Total row had correct P/native font/background and 19 unchanged control icons, with exact scroll restoration; it remained outside the viewport. Its Content height was 862.03 despite a native preferred height of 1,461, while the Feats grid began at -1,130. Rebuilding layout alone did not change this. The diagnostic package/DLL/MVID are retained in `native-fact-slot-fourth-*`; all 136 original live files were independently verified restored at 16:22:34 UTC.
+
+The next bounded candidate uses native PreferredSize only for a firearm-containing Total list whose enabled fitter is actually MinSize, and restores the prior mode on hide/disable/refill. Runtime metadata records the actual before/current mode; a different mode causes no production override. The sheet probe checks Total mode restoration after native commit. No icon pixels, fact identity, saved parameter, prerequisite, font or row position changes. This is unqualified work until its build and guarded native checks pass.
+
+Build 7 passed 23 catalog, 14 screenshot, 1,629 domain and 224-file package checks. Guarded no-save run `20260913T1628481531961Z-disposable-elemental-character-creation-case` still FAIL: the exact native Total fitter was observed as PreferredSize but disabled, so the conditional MinSize adapter correctly applied no change. All four weapon viewports, Total scroll restoration, actual P glyph and 19 other fact icons remained correct. The fifth diagnostic package is `4985d471d439e8bb3a423f7c235eb84c28df6912a20b1553e2ec924a0adfc260`, DLL `2ae1e48a56746fddcc5a0d337a0992608837240ff62b71edf306e6077c169070`, MVID `549fcf90-d68f-4025-b3d7-9f7501f22571`. All 136 original files were independently restored at 16:33:27 UTC.
+
+Build 8 replaces the unobserved MinSize hypothesis: only an exact firearm-containing Total list with a disabled PreferredSize fitter activates the existing native fitter, with horizontal fitting temporarily Unconstrained. It restores both original horizontal mode and enabled state. This avoids a fixed height and leaves width under its existing parent layout. Native metadata/negative tests require that exact before/after contract; the committed-sheet probe requires exact cleanup. Still unqualified pending runtime.
+
+Build 8 passed all local gates. Its no-save run `20260913T1637327955790Z-disposable-elemental-character-creation-case` PASS (11 assertions, 33 native PNGs), and capture provenance validation PASS. The actual Total content became 1,461 units; native P was visible, unclipped and inspected clear. The expected disabled PreferredSize fitter was enabled with horizontal Unconstrained, and original scroll coordinates restored within 0.001 native units. The exact fact/parameter/fallback and 19 other icons were retained. Package `fc083bc35f7066d09cb8582869d35b5aa623c010ddd4c973385cbfd0d979e4ff`, DLL `f796336f751f5a357b42aeb47434b630ae3413ac68b6bc5e9ba4b318d985c87d`, MVID `59e4e738-f93f-404a-8d03-403248775b70`.
+
+Working run `20260913T1641298358705Z-working-save-elemental-character-creation-regression` remains FAIL. Both initial and post-round-trip Total captures were visible/correct (heights 1,461 and 1,333), but the first sheet capture stopped before opening: native OnHide cleared the visible LevelUpController while retaining its same owned global reference. All recorded UI, original cross-scene membership, remote/active party, inventory references/counts and money restored exactly; no save write was observed. The fixed batch stopped before Undine. All 136 original installation files were independently restored after auditing this sixth diagnostic artifact.
+
+The next capture-only correction invokes the existing CloseOwnedCreatorController ownership-checked cleanup after native commit/hide and before the sheet. It retains the registered actor for display while restoring the original global controller and presenter unit. The production glyph/layout adapter is unchanged from the passing no-save artifact. The overall selected-fact extension remains unqualified until working sheet and boundary checks pass.
+
+
+## 2026-09-13 — selected-fact and character-sheet qualification complete
+
+Build 9 passed repository validation, 23 catalog, 14 native screenshot, six paired
+evidence and eleven request cases, 1,629 domain tests, clean Release and the strict
+224-file package. Source `601a789472926949042b429a5c0b5d48c34d141e01ceebd94dcfaf9ddaf60c3d`,
+package `1d2700bb0fcf069a05857071579456366aa43a3129643e4dbed0d115a163061b`,
+DLL `1fe901a2d2fae111ba68116db319c0e625a399f29d5dd933536a4f8643c602d5`,
+MVID `2276caa3-7c42-4cb0-98a1-d683706e0540`, based on published `32be894c`.
+
+Its first working run `20260913T1651528053788Z-working-save-elemental-character-creation-regression`
+remains FAIL: two complete sheets passed, but the third character exceeded the
+creator's 300-second request deadline. CompletionTimeout600 does not control that
+deadline. The guard cleaned all seven final invariants and the game exited normally;
+no process was killed. Same-DLL reruns at the allowed Timeout900 completed all three
+Ifrit Weapon Focus and all three Undine Rapid Reload characters: PASS24, 184 captures,
+all ten sheet restoration flags for every actor, and both seven-check creator cleanups.
+All six actual P/M/B sheets were inspected clear; names/remote inactive abilities
+are recorded as fixture limits, not appearance/action-bar qualification.
+
+The first seven-case boundary batch stopped before launching any game because a
+local collector import generated an untracked Python bytecode file. That exact owned
+file was moved into ignored artifacts; collectors now disable bytecode and run with
+`python -B`. Source fingerprint returned exactly to 601a... and the full reusable
+deployment guard passed. No manifest, source or policy bypass occurred.
+
+Fixed boundary batch2 then passed ordinary Gunslinger/Fighter creator cases (11 each),
+dependent feats (12), Gunslinger OFF (42), Eastern OFF (43), learning (31) and working
+smoke (11). Together with both sheet regressions this is nine PASS runs, 185 assertions
+and 255 native PNGs. All five capture manifests pass provenance validation. Current
+Total P, Wakizashi and all four Wizard/Sorcerer learning rows were inspected clear.
+The earlier timeout's 80 diagnostic images are excluded from qualified capture totals.
+
+All 224 temporary package files, three known runtime additions and 136 backup files
+passed the audit. Restore-Live-Mod completed successfully; the caller's subsequent
+LASTEXITCODE check incorrectly treated a pure PowerShell script as a native program.
+No restore was repeated. Independent verification at `2026-09-13T17:40:52.842003+00:00` proves all 136
+original installation paths/hashes and settings are exact. The game exited normally;
+no save write was observed. Package/manifest/audit/restoration copies are archived as
+`native-fact-slot-qualified-128-*`; curated record is
+`reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json`.
+
+Production images are unchanged. The owner has been asked to review the 80 new
+paintings in the concrete production packet while independent native UI work continues.
+No approval is inferred before an answer. Full racial/action/buff, higher dependent
+rendering and scroll inventory/tooltip/merchant evidence remain. Strategic controls
+use text-only native buttons in source; confirm live rather than adding icons.
+No new save/write authority or master merge/release is inferred.

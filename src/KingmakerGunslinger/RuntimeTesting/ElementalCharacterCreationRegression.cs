@@ -96,6 +96,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Native mercenary cross-scene registration did not complete.");
                 _settle = 2; return;
             }
+            if (PauseForNativeIconSheet()) return;
             _commitCleanupPending = false;
             EndCharacter();
         }

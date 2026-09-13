@@ -55,8 +55,8 @@
   "coverageRule": "Exact symbol/GUID/type coverage for each prefix and explicit firearm family; registry changes anywhere require deliberate catalog baseline review. UI entries and delegated summoning consumers are additionally checked.",
   "guide": "docs/ICON-ART-GUIDE.md",
   "referenceIndex": "docs/art/ICON-REFERENCE-INDEX.md",
-  "sourceAuditStatus": "247 elemental/strategic records inspected; native graph/localized names/publication and assignment snapshots await guarded live census.",
-  "runtimeIntegrationStatus": "89 paintings mapped to 137 exact owned consumers; 0.0.128 paired census and protected assignments qualified; native Weapon Focus and learning viewports qualified; complete native UI and final owner approval pending",
+  "sourceAuditStatus": "284 dispositions reconciled with source, guarded live census and protected native graphs; exact evidence in NATIVE-128-QUALIFICATION.json",
+  "runtimeIntegrationStatus": "89 paintings / 137 exact owned assignments and paired protected census qualified; actual Weapon Focus/Rapid Reload Total and character-sheet P/M/B qualified on 0.0.128; remaining native surfaces and final owner approval pending",
   "delegatedManifests": [
     {
       "path": "assets-source/original-icons/icon-overhaul-assets.json",
@@ -7167,7 +7167,13 @@
         "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
         "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
         "blueprintFallback": "preserved",
-        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+        "factSlotPresentation": {
+          "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+          "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+          "status": "working candidate; actual native slot qualification pending",
+          "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height."
+        }
       }
     },
     {
@@ -7186,7 +7192,13 @@
         "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
         "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
         "blueprintFallback": "preserved",
-        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+        "factSlotPresentation": {
+          "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+          "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+          "status": "working candidate; actual native slot qualification pending",
+          "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height."
+        }
       }
     },
     {
@@ -7205,7 +7217,13 @@
         "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
         "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
         "blueprintFallback": "preserved",
-        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+        "factSlotPresentation": {
+          "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+          "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+          "status": "working candidate; actual native slot qualification pending",
+          "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height."
+        }
       }
     },
     {
@@ -7264,7 +7282,13 @@
         "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
         "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
         "blueprintFallback": "preserved",
-        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+        "factSlotPresentation": {
+          "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+          "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+          "status": "working candidate; actual native slot qualification pending",
+          "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height."
+        }
       }
     },
     {
@@ -7283,7 +7307,13 @@
         "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
         "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
         "blueprintFallback": "preserved",
-        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+        "factSlotPresentation": {
+          "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+          "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+          "status": "working candidate; actual native slot qualification pending",
+          "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height."
+        }
       }
     },
     {
@@ -7302,7 +7332,13 @@
         "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
         "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
         "blueprintFallback": "preserved",
-        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+        "factSlotPresentation": {
+          "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+          "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+          "status": "working candidate; actual native slot qualification pending",
+          "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height."
+        }
       }
     },
     {
@@ -7658,9 +7694,17 @@
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
-      "visualReview": "native Weapon Focus viewport inspected: clear native P/M/B; actual selected-fact/character-sheet rendering and owner approval pending",
+      "visualReview": "Actual native Weapon Focus selector, Total and character-sheet P/M/B inspected clear; final owner UI approval pending",
       "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
-      "viewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json"
+      "viewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      },
+      "factSlotEvidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/WeaponFocus/Musket",
@@ -7675,9 +7719,17 @@
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
-      "visualReview": "native Weapon Focus viewport inspected: clear native P/M/B; actual selected-fact/character-sheet rendering and owner approval pending",
+      "visualReview": "Actual native Weapon Focus selector, Total and character-sheet P/M/B inspected clear; final owner UI approval pending",
       "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
-      "viewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json"
+      "viewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      },
+      "factSlotEvidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/WeaponFocus/Pistol",
@@ -7692,9 +7744,17 @@
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
-      "visualReview": "native Weapon Focus viewport inspected: clear native P/M/B; actual selected-fact/character-sheet rendering and owner approval pending",
+      "visualReview": "Actual native Weapon Focus selector, Total and character-sheet P/M/B inspected clear; final owner UI approval pending",
       "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
-      "viewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json"
+      "viewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      },
+      "factSlotEvidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/GreaterWeaponFocus/Blunderbuss",
@@ -7710,7 +7770,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/GreaterWeaponFocus/Musket",
@@ -7726,7 +7793,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/GreaterWeaponFocus/Pistol",
@@ -7742,7 +7816,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/WeaponSpecialization/Blunderbuss",
@@ -7758,7 +7839,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/WeaponSpecialization/Musket",
@@ -7774,7 +7862,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/WeaponSpecialization/Pistol",
@@ -7790,7 +7885,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/GreaterWeaponSpecialization/Blunderbuss",
@@ -7806,7 +7908,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/GreaterWeaponSpecialization/Musket",
@@ -7822,7 +7931,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/GreaterWeaponSpecialization/Pistol",
@@ -7838,7 +7954,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/ImprovedCritical/Blunderbuss",
@@ -7854,7 +7977,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/ImprovedCritical/Musket",
@@ -7870,7 +8000,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     },
     {
       "id": "native-firearm/ImprovedCritical/Pistol",
@@ -7886,7 +8023,14 @@
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
       "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "factSlotPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeFactSlotMonogram.cs",
+        "rule": "Exact native SetFeature(Feature) and SetData(IUIDataProvider) consumers; real Feature objects only; five integrated roots with exact P/M/B parameters or three official Rapid Reload children; native SetIcon/TMP with original border/mask sequence; references and blueprint fallbacks preserved",
+        "status": "Weapon Focus and Rapid Reload actual Total/character-sheet P/M/B qualified; other dependent roots retain data coverage with rendered coverage pending",
+        "totalLayout": "Only an exact firearm-containing CharBNewAbilities list with a disabled native PreferredSize fitter activates vertical fitting, leaving width unconstrained by the fitter; enabled state and horizontal mode restored on hide/disable or refill. No individual row movement or fixed height.",
+        "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+      }
     }
   ],
   "outOfScopeAudit": [
@@ -7925,6 +8069,13 @@
       "disposition": "protected-existing",
       "finding": "Original project painting; preserve spell/buff assignment and source/export bytes.",
       "source": "assets-source/original-icons/shield-other/SOURCE.md"
+    },
+    {
+      "module": "Native firearm feat names",
+      "disposition": "review-out-of-scope",
+      "finding": "Actual Total/sheet label repeats Weapon Focus: Weapon Focus (Weapon Focus (Pistol/Musket/Blunderbuss)). The icon adapters preserve existing names. Separate naming review needed.",
+      "source": "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs",
+      "evidence": "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
     }
   ],
   "authorizedPresentationDeltas": [

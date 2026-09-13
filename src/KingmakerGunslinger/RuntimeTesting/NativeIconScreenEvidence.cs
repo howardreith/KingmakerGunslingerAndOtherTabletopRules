@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using Kingmaker.UI.Common;
+using KingmakerGunslinger.Feats;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -127,64 +129,173 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (!Supports(_request) || target == null || describe == null || ownsStableUi == null || !ownsStableUi())
                 throw new InvalidOperationException("Native row capture requires an existing request-owned row.");
-            var scroll = target.GetComponentsInParent<ScrollRect>(true).FirstOrDefault(value =>
-                value.isActiveAndEnabled && value.vertical && value.viewport != null && value.content != null &&
-                target.IsChildOf(value.content));
-            if (scroll == null || !scroll.vertical)
+            // Kingmaker's inner lists can use its separate ScrollRectExtended.
+            // Searching only Unity ScrollRect can accidentally move an outer page.
+            var scroll = target.GetComponentsInParent<Component>(true)
+                .Where(value => value is ScrollRect || value is ScrollRectExtended)
+                .Select(value => new NativeRowScroll(value)).FirstOrDefault(value =>
+                    value.Active && value.Vertical && value.Viewport != null && value.Content != null &&
+                    target.IsChildOf(value.Content));
+            if (scroll == null)
                 throw new InvalidOperationException("The exact native row has no supported vertical scroll viewport.");
-            Vector2 originalPosition = scroll.normalizedPosition, originalVelocity = scroll.velocity;
+            Vector2 originalPosition = scroll.Position, originalVelocity = scroll.Velocity;
+            Vector2 originalContentPosition = scroll.Content.anchoredPosition;
+            bool originalHorizontal = scroll.Horizontal;
             int recordIndex = _records.Count;
             try
             {
                 Canvas.ForceUpdateCanvases();
-                scroll.StopMovement();
-                var bounds = RowBounds(scroll.viewport, target);
-                var content = RowBounds(scroll.viewport, scroll.content);
-                float range = content.size.y - scroll.viewport.rect.height;
-                if (range > 0)
-                    scroll.verticalNormalizedPosition = Mathf.Clamp01(scroll.verticalNormalizedPosition -
-                        (scroll.viewport.rect.center.y - bounds.center.y) / range);
+                float contentHeightBeforeLayout = RowBounds(scroll.Viewport, scroll.Content).size.y;
+                // Finish the native layout calculation for pooled nested rows.
+                // Never assign a fabricated content height or move a row itself.
+                bool rebuildFactLayout = stage.StartsWith("native-selected-fact:", StringComparison.Ordinal);
+                if (rebuildFactLayout) LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.Content);
+                Canvas.ForceUpdateCanvases();
+                scroll.Reveal(target);
                 for (int frame = 0; frame < 4; frame++)
                 {
                     yield return 0;
-                    if (target == null || scroll == null || !ownsStableUi())
+                    if (target == null || !scroll.Active || !ownsStableUi())
                         throw new InvalidOperationException("Native row ownership changed during viewport settlement.");
                 }
-                bounds = RowBounds(scroll.viewport, target);
-                Rect view = scroll.viewport.rect;
+                var bounds = RowBounds(scroll.Viewport, target);
+                Rect view = scroll.Viewport.rect;
                 bool visible = bounds.min.y >= view.yMin - 1 && bounds.max.y <= view.yMax + 1 &&
                     bounds.center.x >= view.xMin && bounds.center.x <= view.xMax;
                 var state = describe();
                 state["viewport"] = new JObject {
-                    ["nativeApi"] = "UnityEngine.UI.ScrollRect.normalizedPosition",
+                    ["nativeApi"] = scroll.Api, ["scrollType"] = scroll.Component.GetType().FullName,
+                    ["scrollObject"] = scroll.Component.name, ["contentObject"] = scroll.Content.name,
+                    ["viewportObject"] = scroll.Viewport.name, ["contentHeight"] = RowBounds(scroll.Viewport, scroll.Content).size.y,
                     ["rowActive"] = target.gameObject.activeInHierarchy,
                     ["rowVerticallyVisible"] = visible,
                     ["rowMinY"] = bounds.min.y, ["rowMaxY"] = bounds.max.y,
                     ["viewportMinY"] = view.yMin, ["viewportMaxY"] = view.yMax,
                     ["originalX"] = originalPosition.x, ["originalY"] = originalPosition.y,
-                    ["captureX"] = scroll.normalizedPosition.x, ["captureY"] = scroll.normalizedPosition.y,
+                    ["horizontalEnabled"] = originalHorizontal,
+                    ["originalContentX"] = originalContentPosition.x, ["originalContentY"] = originalContentPosition.y,
+                    ["captureX"] = scroll.Position.x, ["captureY"] = scroll.Position.y,
                     ["restored"] = false };
+                state["nativeLayout"] = new JObject {
+                    ["api"] = rebuildFactLayout ? "UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate" :
+                        "UnityEngine.Canvas.ForceUpdateCanvases",
+                    ["contentHeightBefore"] = contentHeightBeforeLayout,
+                    ["contentHeightAfter"] = RowBounds(scroll.Viewport, scroll.Content).size.y,
+                    ["targetAncestors"] = DescribeRowLayout(target, scroll.Viewport) };
+                // Preserve the exact native image and bounds even when revealing
+                // the target fails; a diagnostic capture never qualifies the row.
+                foreach (int frame in Capture(stage, state, () => target != null && scroll.Active &&
+                    target.gameObject.activeInHierarchy && ownsStableUi())) yield return frame;
                 if (!visible) throw new InvalidOperationException("Native scrolling did not reveal " + stage +
                     "; row=" + bounds.min.y + ":" + bounds.max.y + "; viewport=" + view.yMin + ":" + view.yMax);
-                foreach (int frame in Capture(stage, state, () => target != null && scroll != null &&
-                    target.gameObject.activeInHierarchy && ownsStableUi())) yield return frame;
             }
             finally
             {
                 bool restored = false;
-                if (scroll != null)
+                if (scroll.Component != null)
                 {
-                    scroll.normalizedPosition = originalPosition;
-                    scroll.velocity = originalVelocity;
-                    restored = (scroll.normalizedPosition - originalPosition).sqrMagnitude < 0.000001f &&
-                        scroll.velocity == originalVelocity;
+                    scroll.RestorePosition(originalPosition);
+                    scroll.Velocity = originalVelocity;
+                    // A fitting, disabled horizontal axis has no meaningful
+                    // normalized coordinate; Unity can report either zero or
+                    // one after tiny layout rounding. Check its real position.
+                    restored = scroll.Horizontal == originalHorizontal &&
+                        Mathf.Abs(scroll.Position.y - originalPosition.y) < 0.001f &&
+                        (!originalHorizontal || Mathf.Abs(scroll.Position.x - originalPosition.x) < 0.001f) &&
+                        (scroll.Content.anchoredPosition - originalContentPosition).sqrMagnitude < 0.0001f &&
+                        scroll.Velocity == originalVelocity;
                 }
                 if (_records.Count > recordIndex)
                 {
                     _records[recordIndex]["nativeState"]["viewport"]["restored"] = restored;
+                    if (scroll.Component != null)
+                    {
+                        _records[recordIndex]["nativeState"]["viewport"]["restoredContentX"] = scroll.Content.anchoredPosition.x;
+                        _records[recordIndex]["nativeState"]["viewport"]["restoredContentY"] = scroll.Content.anchoredPosition.y;
+                    }
                     Write();
                 }
                 if (!restored) throw new InvalidOperationException("Native row scroll state was not restored.");
+            }
+        }
+
+        private static JArray DescribeRowLayout(RectTransform target, RectTransform viewport)
+        {
+            var rows = new JArray();
+            for (Transform node = target; node != null && rows.Count < 20; node = node.parent)
+            {
+                var rect = node as RectTransform;
+                if (rect == null) continue;
+                var bounds = RowBounds(viewport, rect);
+                var fitter = rect.GetComponent<ContentSizeFitterExtended>();
+                var firearmFit = rect.GetComponent<FirearmNativeTotalFit>();
+                rows.Add(new JObject { ["name"] = rect.name, ["height"] = rect.rect.height,
+                    ["anchoredY"] = rect.anchoredPosition.y, ["localY"] = rect.localPosition.y,
+                    ["scaleY"] = rect.localScale.y, ["preferredHeight"] = LayoutUtility.GetPreferredHeight(rect),
+                    ["viewportMinY"] = bounds.min.y, ["viewportMaxY"] = bounds.max.y,
+                    ["verticalFit"] = fitter == null ? null : FirearmNativeTotalFit.Mode(fitter).ToString(),
+                    ["horizontalFit"] = fitter == null ? null : FirearmNativeTotalFit.Mode(fitter, false).ToString(),
+                    ["fitterEnabled"] = fitter != null && fitter.enabled,
+                    ["firearmFitApplied"] = firearmFit != null && firearmFit.Applied,
+                    ["originalVerticalFit"] = firearmFit == null ? null : firearmFit.Original.ToString(),
+                    ["originalHorizontalFit"] = firearmFit == null ? null : firearmFit.OriginalHorizontal.ToString(),
+                    ["originalFitterEnabled"] = firearmFit == null ? null : (JToken)firearmFit.OriginalEnabled,
+                    ["layoutElements"] = new JArray(rect.GetComponents<LayoutElement>().Select(element => new JObject {
+                        ["ignoreLayout"] = element.ignoreLayout, ["minHeight"] = element.minHeight,
+                        ["preferredHeight"] = element.preferredHeight, ["flexibleHeight"] = element.flexibleHeight })),
+                    ["components"] = new JArray(rect.GetComponents<Component>()
+                        .Where(component => component != null).Select(component => component.GetType().FullName)) });
+            }
+            return rows;
+        }
+
+        private sealed class NativeRowScroll
+        {
+            private readonly ScrollRect _standard;
+            private readonly ScrollRectExtended _extended;
+            internal readonly Component Component;
+            internal NativeRowScroll(Component component)
+            { Component = component; _standard = component as ScrollRect; _extended = component as ScrollRectExtended; }
+            internal bool Active => Component != null && (_standard != null ? _standard.isActiveAndEnabled : _extended.isActiveAndEnabled);
+            internal bool Vertical => _standard != null ? _standard.vertical : _extended.vertical;
+            internal bool Horizontal => _standard != null ? _standard.horizontal : _extended.horizontal;
+            internal RectTransform Viewport => _standard != null ? _standard.viewport : _extended.viewport;
+            internal RectTransform Content => _standard != null ? _standard.content : _extended.content;
+            internal string Api => _standard != null ? "UnityEngine.UI.ScrollRect.normalizedPosition" :
+                "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter";
+            internal Vector2 Position => _standard != null ? _standard.normalizedPosition : _extended.normalizedPosition;
+            internal void RestorePosition(Vector2 value)
+            {
+                if (_standard != null)
+                {
+                    _standard.verticalNormalizedPosition = value.y;
+                    if (_standard.horizontal) _standard.horizontalNormalizedPosition = value.x;
+                }
+                else
+                {
+                    _extended.verticalNormalizedPosition = value.y;
+                    if (_extended.horizontal) _extended.horizontalNormalizedPosition = value.x;
+                }
+            }
+            internal Vector2 Velocity
+            {
+                get => _standard != null ? _standard.velocity : _extended.velocity;
+                set { if (_standard != null) _standard.velocity = value; else _extended.velocity = value; }
+            }
+            internal void Reveal(RectTransform target)
+            {
+                if (_extended != null)
+                {
+                    _extended.StopMovement();
+                    _extended.ScrollToRectCenter(target, Content);
+                    return;
+                }
+                _standard.StopMovement();
+                var bounds = RowBounds(Viewport, target);
+                float range = RowBounds(Viewport, Content).size.y - Viewport.rect.height;
+                if (range > 0)
+                    _standard.verticalNormalizedPosition = Mathf.Clamp01(_standard.verticalNormalizedPosition -
+                        (Viewport.rect.center.y - bounds.center.y) / range);
             }
         }
 

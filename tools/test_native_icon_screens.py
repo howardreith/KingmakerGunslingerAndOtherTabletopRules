@@ -116,6 +116,29 @@ class NativeScreenEvidenceTests(unittest.TestCase):
             self.assertTrue(self.errors())
             state['targetRow'][key] = original
 
+    def test_native_extended_scroll_requires_exact_component_and_visible_row(self):
+        viewport = self.prepare_native_row()['viewport']
+        viewport.update(nativeApi='Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter',
+                        scrollType='Kingmaker.UI.Common.ScrollRectExtended', contentObject='Content', viewportObject='Viewport')
+        self.assertEqual([], self.errors())
+        for key,value in [('nativeApi','unknown'), ('scrollType','UnityEngine.UI.ScrollRect'),
+                          ('contentObject',''), ('viewportObject',''), ('rowVerticallyVisible',False)]:
+            original = viewport[key]
+            viewport[key] = value
+            self.assertTrue(self.errors())
+            viewport[key] = original
+
+    def test_inactive_axis_normalization_cannot_hide_actual_content_displacement(self):
+        viewport = self.prepare_native_row()['viewport']
+        viewport.update(horizontalEnabled=False, originalX=0, captureX=1,
+                        originalContentX=0, originalContentY=0, restoredContentX=0, restoredContentY=0)
+        self.assertEqual([], self.errors())
+        for key,value in [('restoredContentX',1), ('restoredContentY',1), ('restoredContentX',float('nan'))]:
+            original = viewport[key]
+            viewport[key] = value
+            self.assertTrue(self.errors())
+            viewport[key] = original
+
     def test_exotic_row_requires_its_actual_learned_proficiency(self):
         state = self.prepare_native_row()
         state['targetRow'].update(name='Wakizashi', parameterGuid=None, category=0x004b4d48,
@@ -128,6 +151,50 @@ class NativeScreenEvidenceTests(unittest.TestCase):
             state['targetRow'][key] = value
             self.assertTrue(self.errors())
             state['targetRow'][key] = original
+
+    def prepare_selected_fact(self):
+        state = self.prepare_native_row()
+        self.evidence['records'][0]['stage'] = 'native-selected-fact:Weapon Focus (Pistol)'
+        target = state['targetRow']
+        target.update(parameterGuid='8b39bd79d27048dda58e0a513e529f2c', expectedLetter='P', nativeGlyph='P',
+                      glyphActive=True, glyphTruncated=False, glyphOverflowing=False, font='native-font',
+                      nativeBackground=True, factAndParameterRetained=True, fallbackIconPresent=True,
+                      otherFactRows=3, otherFactIconsExact=True)
+        return state
+
+    def test_selected_fact_requires_real_glyph_parameter_and_preserved_controls(self):
+        state = self.prepare_selected_fact()
+        target = state['targetRow']
+        self.assertEqual([], self.errors())
+        for key,value in [('nativeGlyph','WF'), ('expectedLetter','M'), ('parameterGuid','unrelated'),
+                          ('featureGuid','unrelated'), ('glyphActive',False), ('glyphTruncated',True),
+                          ('glyphOverflowing',True), ('font',''), ('nativeBackground',False),
+                          ('factAndParameterRetained',False), ('fallbackIconPresent',False),
+                          ('otherFactRows',0), ('otherFactIconsExact',False)]:
+            with self.subTest(key=key):
+                original = target[key]
+                target[key] = value
+                self.assertTrue(self.errors())
+                target[key] = original
+        target.update(featureGuid='070f4f07b5164d8a82d647a93539746d', parameterGuid=None)
+        self.assertEqual([], self.errors())
+
+    def test_total_layout_correction_requires_native_mode_and_sufficient_extent(self):
+        state = self.prepare_selected_fact()
+        ancestor = {'firearmFitApplied':True, 'fitterEnabled':True, 'originalFitterEnabled':False,
+                    'originalVerticalFit':'PreferredSize', 'verticalFit':'PreferredSize',
+                    'horizontalFit':'Unconstrained', 'originalHorizontalFit':'PreferredSize',
+                    'height':1461, 'preferredHeight':1461}
+        state['nativeLayout'] = {'targetAncestors':[ancestor]}
+        self.assertEqual([], self.errors())
+        for key,value in [('fitterEnabled',False), ('originalFitterEnabled',True), ('originalVerticalFit','Clamp'),
+                          ('verticalFit','MinSize'), ('horizontalFit','MinSize'), ('originalHorizontalFit',None),
+                          ('height',862), ('height',float('nan')), ('preferredHeight',None)]:
+            with self.subTest(key=key):
+                original = ancestor[key]
+                ancestor[key] = value
+                self.assertTrue(self.errors())
+                ancestor[key] = original
 
 
 if __name__ == '__main__':
