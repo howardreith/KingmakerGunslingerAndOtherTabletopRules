@@ -83,12 +83,13 @@ def validate(root: Path) -> None:
     production_root = root / "src/KingmakerGunslinger"
     warning_publishers = []
     for path in production_root.rglob("*.cs"):
-        # This request-local observer records the game's native repair warning;
-        # it never publishes an overlay or changes global notification behavior.
-        if path.name == "RuntimeTestRunner.FirearmRepairWarnings.cs" and "RuntimeTesting" in path.parts:
+        # These request-local observers record native repair / teleport warnings.
+        # They never publish overlays or change global notification behavior.
+        if path.name in {"RuntimeTestRunner.FirearmRepairWarnings.cs",
+                         "RuntimeTestRunner.TeleportationCasting.cs"} and "RuntimeTesting" in path.parts:
             observer = path.read_text(encoding="utf-8")
-            if "RaiseEvent" in observer:
-                raise AssertionError("The repair runtime observer must never publish warning events.")
+            if "RaiseEvent" in observer or "SendWarning" in observer:
+                raise AssertionError("Runtime notification observers must never publish warning events.")
             continue
         source = path.read_text(encoding="utf-8")
         if "IWarningNotificationUIHandler" in source or \

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -69,17 +69,17 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 TeleportationConfirmationSurface.Available() != null,
                 actions.Select(value => value == null ? (TeleportSpellKind)(-1) : value.Source.Spell).ToArray());
         }
-        // One entry point for every destination action. Greater Teleport casts
-        // immediately; every other spell opens its owned native confirmation.
+        // One entry point for every destination action. Greater Teleport and Recall cast
+        // immediately; ordinary Teleport opens its owned native confirmation.
         internal static void Begin(WorldMapPointSpellAction action, TeleportationWorldMapContext context, ITeleportationRolls qualificationRolls = null)
         {
-            if (action != null && action.Source.Spell == TeleportSpellKind.GreaterTeleport) OpenDirect(action, context, qualificationRolls);
+            if (action != null && TeleportBeginPolicy.IsDirect(action.Source.Spell)) OpenDirect(action, context, qualificationRolls);
             else Open(action, context, qualificationRolls);
         }
 
         internal static void Open(WorldMapPointSpellAction action, TeleportationWorldMapContext context, ITeleportationRolls qualificationRolls = null)
         {
-            if (Pending || action == null || context == null || !context.Usable) return;
+            if (!CanExecute(action) || context == null || !context.Usable) return;
             var surface = TeleportationConfirmationSurface.Available();
             if (surface == null) return;
             Kingmaker.UnitLogic.Spellbook openedBook = null;
@@ -116,7 +116,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             }
             catch { self.Cancel(true); throw; }
         }
-        // The Greater Teleport direct flow: no confirmation dialog is opened and
+        // The exact-spell direct flow: no confirmation dialog is opened and
         // no confirmation surface is required. The cast revalidates and settles
         // synchronously through the same transaction, execution, reentrancy
         // (Pending) and announcement machinery as a confirmed cast.
@@ -330,11 +330,17 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     message = TeleportContextPresentation.ArrivalMessage(_action.Source.Spell, result.Outcome, name, TeleportationText.Get);
                 }
             }
-            else message = Transaction.State == TeleportTransactionState.ActivationRefused ?
-                TeleportationText.Get("Result.ActivationRefused", "{0} could not activate the scroll. Nothing was consumed; you may try again or choose another reader.") :
-                Transaction.State == TeleportTransactionState.ActivationFailedSpent ?
-                TeleportationText.Get("Result.ActivationFailedSpent", "{0} failed to activate the scroll and it was consumed. No teleport occurred.") :
-                Transaction.State == TeleportTransactionState.TechnicalFailureCompensated ?
+            else if (_action.Source.Kind == TeleportCastSourceKind.Scroll &&
+                (Transaction.State == TeleportTransactionState.ActivationRefused ||
+                 Transaction.State == TeleportTransactionState.ActivationFailedSpent))
+            {
+                TeleportExpenditure spent = TeleportExpenditure.Ambiguous;
+                try { if (Execution.Resource != null) spent = Execution.Resource.ObserveExpenditure(); }
+                catch { /* Missing expenditure evidence must never claim a refund. */ }
+                message = TeleportContextPresentation.ScrollActivationFailure(_action.Source.CasterName,
+                    _action.Source.Spell, spent, TeleportationText.Get);
+            }
+            else message = Transaction.State == TeleportTransactionState.TechnicalFailureCompensated ?
                 TeleportationText.Get("Result.Compensated", "The cast could not complete. Its exact spell use was restored.") :
                 Transaction.State == TeleportTransactionState.TechnicalFailureSpent || Transaction.State == TeleportTransactionState.AmbiguousExpenditure ?
                 TeleportationText.Get("Result.Uncertain", "The cast encountered a technical failure. Check the party and the selected spellbook; the spell use could not be safely restored.") :

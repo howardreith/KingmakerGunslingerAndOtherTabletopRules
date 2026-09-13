@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -495,13 +495,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         InvokeTeleportGamepadInput(panel, "OnCancelPressed");
                     }
                     var dice = new TeleportationFixtureRolls(new int[0]);
-                    var cast = OpenTeleportGamepadSpell(required, TeleportSpellKind.WordOfRecall, TeleportCastSourceKind.Prepared, dice);
-                    foreach (int tick in WaitTeleportGamepadModal()) yield return tick;
-                    bool displayed = CaptureTeleportGamepadRendered(cast).Contains(cast.Message, StringComparer.OrdinalIgnoreCase);
-                    ConfirmTeleportGamepadSpell(); yield return 0;
+                    SelectTeleportGamepadPoint(required);
+                    var recallPanel = TeleportGamepadPanel();
+                    var recallRows = recallPanel.GetComponentInChildren<TeleportConsoleDestinationRows>(true);
+                    int recallIndex = recallRows.Actions.ToList().FindIndex(value => value.Source.Spell == TeleportSpellKind.WordOfRecall && value.Source.Kind == TeleportCastSourceKind.Prepared);
+                    if (recallIndex < 0) throw new InvalidOperationException("Native controller Recall source is absent.");
+                    recallRows.QualificationRolls = dice;
+                    var recallButton = recallRows.Buttons[recallIndex];
+                    var recallEvent = (Action)typeof(ConsoleButton).GetField("m_OnConfirmAction", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(recallButton);
+                    if (recallEvent == null) throw new InvalidOperationException("The original native controller action is unavailable.");
+                    TeleportGamepadNavigation(recallPanel).SetCurrentEntityManual(recallButton);
+                    TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                    InvokeTeleportGamepadInput(recallPanel, "OnConfirmPressed");
+                    recallEvent(); // Original controller action in the same frame.
+                    var cast = TeleportContextConfirmationPresenter.LastDirectCast;
+                    bool displayed = cast != null && TeleportGamepadDialogModel() == null && !recallPanel.gameObject.activeInHierarchy;
+                    yield return 0;
+                    recallEvent(); // Later stale callback survives native widget destruction.
                     CaptureTeleportInteraction("console-recall-result", new { established, displayed, transaction = cast.Transaction.State.ToString(), cast.Execution.LastEvidence });
                     TeleportInteractionAssert("recall-" + (established ? "capital" : "precapital") + "-real-commit",
-                        "native Recall confirmation spends one preparation, exact world-map point, no dice, route, time or familiarity change",
+                        "native direct Recall spends one preparation, exact world-map point, no confirmation, dice, route, time or familiarity change",
                         "transaction=" + cast.Transaction.State, displayed && cast.Transaction.State == TeleportTransactionState.Completed &&
                         cast.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && dice.D100Count == 0 && dice.D10Count == 0 &&
                         map.PartyLocation == required.Blueprint && movement.Starts == starts + 1 && map.TravelData == null && player.GameTime == time &&

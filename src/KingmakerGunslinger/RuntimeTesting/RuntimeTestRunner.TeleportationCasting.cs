@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -6,6 +6,7 @@ using Kingmaker;
 using Kingmaker.Globalmap;
 using Kingmaker.Globalmap.State;
 using Kingmaker.Kingdom;
+using Kingmaker.PubSubSystem;
 using Kingmaker.UI;
 using Kingmaker.UI.GlobalMap;
 using Kingmaker.UnitLogic;
@@ -19,6 +20,15 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private sealed class TeleportNotificationObserver : IWarningNotificationUIHandler, IDisposable
+        {
+            internal readonly List<string> Text = new List<string>();
+            internal TeleportNotificationObserver() { EventBus.Subscribe(this); }
+            public void HandleWarning(string text, bool addToLog = true) { Text.Add(text); }
+            public void HandleWarning(WarningNotificationType warningType, bool addToLog = true)
+            { Text.Add("<native enum:" + warningType + ">"); }
+            public void Dispose() { EventBus.Unsubscribe(this); }
+        }
         private string _teleportationNativeActions;
         private static GlobalMapMessageBox TeleportationFixturePanel()
         {
@@ -120,9 +130,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var dice = new TeleportationFixtureRolls(spec.Roll == 0 ? new int[0] : new[] { spec.Roll });
                 // Greater Teleport settles directly from its row with no second
                 // confirmation; every other spell goes through the native dialog.
-                bool direct = spec.Spell == TeleportSpellKind.GreaterTeleport;
+                bool direct = TeleportBeginPolicy.IsDirect(spec.Spell);
                 TeleportCastTransaction transaction;
                 TeleportationCastExecution execution;
+                string[] notifications;
+                using (var observed = new TeleportNotificationObserver())
+                {
                 if (direct)
                 {
                     var outcome = InvokeTeleportationFixtureDirectCast(panel, spec.Target, spec.Spell, spec.Source, dice);
@@ -136,6 +149,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     execution = request.Execution;
                     TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
                 }
+                    notifications = observed.Text.ToArray();
+                }
+                assertions.Add(Assertion("teleportation-ui-" + spec.Name + "-native-notification",
+                    direct ? "no native warning publication for a successful direct spell" : "ordinary Teleport retains one outcome notification",
+                    string.Join(" | ", notifications),
+                    direct ? notifications.Length == 0 : notifications.Length == 1 && notifications[0].Contains("Teleport:"), path));
                 captures.Add(new { step = spec.Name, direct, transaction = transaction.State.ToString(),
                     diagnostic = transaction.Diagnostic, result = execution.LastEvidence,
                     resource = execution.Resource == null ? null : execution.Resource.Evidence() });
@@ -144,7 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var result = transaction.Result;
                 bool exact = spec.Outcome == TeleportOutcomeKind.OnTarget;
                 assertions.Add(Assertion("teleportation-ui-" + spec.Name, direct ?
-                    "native row settles the Greater Teleport cast directly: one real slot, exact relocation, no confirmation dialog" :
+                    "native row settles the exact spell directly: one real slot, exact relocation, no confirmation dialog" :
                     "native row -> native Cast confirmation -> one real slot -> protected canonical relocation",
                     "outcome=" + result.Outcome + ";point=" + result.DestinationId,
                     result.Status == TeleportExecutionStatus.Arrived && result.Outcome == spec.Outcome &&
@@ -337,7 +356,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (index < 0) throw new InvalidOperationException("Guarded direct cast source is absent from native contextual actions.");
             rows.QualificationRolls = rolls;
             TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
-            rows.Buttons[index].onClick.Invoke();
+            var originalEvent = rows.Buttons[index].onClick;
+            originalEvent.Invoke();
+            originalEvent.Invoke(); // Same frame, before yielding, through the original event.
             var outcome = TeleportContextConfirmationPresenter.LastDirectCast;
             if (outcome == null || DialogMessageBox.Instance.IsShown || panel.gameObject.activeInHierarchy)
                 throw new InvalidOperationException("Selected native Greater Teleport row did not settle directly with the destination presenter closed and no confirmation opened.");

@@ -32,8 +32,21 @@ excludes known/selected spells and applies the normal view filter. None of these
 paths requires matching SpellListComponent metadata. No production Oracle
 repair is justified by this evidence yet; Sayan's configuration remains open.
 
-Current code confirms Recall opens confirmation, scroll rows multiply by
-reader, and activation-failure text can retain an unresolved `{0}`.
+Direct Recall now uses the existing Greater Teleport dispatcher and shared
+transaction guard. Desktop/controller original action callbacks are consumed
+before synchronous settlement; unrelated modals still block both direct spells.
+Successful Recall and Greater Teleport are quiet at the native warning boundary.
+Scroll failures now format the actual reader and spell with independently
+observed expenditure (none / exactly one / uncertain), without `{0}` leakage.
+Scroll actions still multiply by reader; consolidation/ranking is next.
+
+Owner clarified Sayan advanced 13→14 and obtained the spell through the favored
+class bonus; equivalent earlier natural availability is acceptable. Installed
+ZFavoredClass uses its Oracle book's list and a specific-level native parametrized
+selector, with a prerequisite for one higher spell level. That native iterator
+also reads SpellsFiltered and excludes known spells without SpellListComponent
+metadata. The installed normal 13→14 sixth-level choice count still needs a live
+table capture before attributing the report to choice entitlement.
 
 Required acceptance remains pending: native Oracle candidate/selection,
 commit/cancel and spontaneous cast; direct Recall from all resource kinds;
@@ -74,8 +87,40 @@ PowerShell repetition above has the complete successful orchestration.
 Original installed mod backup: `runtime-backups/live-mod/20260913T1328415126859Z`.
 Settings retain the original hash. No game process remains after the passing run.
 
-NOT RUN: completed Oracle level-up/newly learned spontaneous cast; new direct
-Recall, automatic-reader UI/ranking, notification acceptance; final candidate
+Direct-cast checkpoint: repository validation, 1,623/1,623 complete domain tests,
+clean exact-reference Release build, and strict standalone package PASS.
+Corrected fixture artifact ZIP SHA-256
+`bf421b411a2360d3a32422f6b88c3c9dc5ef5795b8fc70d3dbe5438deb40efb7`;
+DLL `fffbbc15cf4387675b4cdf57c94305bd77a522fc09479daf0d59754eeca620e3`;
+MVID `6b9456e5-12d6-4e6f-a4b8-505537585ce7`; source fingerprint
+`f449a29de7c8f18eb1199d9dcce0301deda47dda282c2fddd31ef5620bbba9e1`
+on base 59e97eef (uncommitted direct changes). Deployment
+`20260913T1359587761724Z`; settings retain the original hash.
+
+Guarded Steam / working-save evidence:
+- `20260913T1351213722683Z-disposable-teleportation-casting`: 52/52 PASS.
+  Actual desktop direct prepared Recall reaches both sanctuaries, spends one,
+  no dialog; production warning observer sees zero direct success messages and
+  one retained message for each ordinary Teleport on/off/similar outcome.
+- `20260913T1352503487268Z-disposable-teleportation-scrolls`: 45/45 PASS.
+  Native unknown-spell zero-UMD Oracle scroll activation, one scroll spent,
+  exact Oleg arrival, quiet warning boundary, same-frame and later original
+  event replays do not spend again. This is still explicit-reader code.
+  Those two runs used ZIP `b08ffb0fbf6e01379c732fa54b0f9caa2d89b9e920fe29e08e0413d43fd58a1c`,
+  DLL `6e4b5a6c2dba2f7f7b19a42a25e0b16de91be4137b86a5cc25294d628312c7cd`.
+- `20260913T1354572749461Z-disposable-teleportation-gamepad`: ERROR in the
+  new fixture's stale Unity widget invocation after a successful direct cast.
+  Replaced widget access with the retained native m_OnConfirmAction callback.
+- `20260913T1359596003845Z-disposable-teleportation-gamepad`: 39/39 PASS on
+  the corrected artifact; direct Recall at both sanctuaries, native controller
+  action replay same frame and later, exact resources/cleanup, zero exceptions.
+- `20260913T1402468713473Z-disposable-teleportation-interaction`: 34/34 PASS
+  on the corrected artifact; native modal/stale/depletion/cancel/movement and
+  Travel controls retained. No save writes in these runs.
+
+NOT RUN: completed Oracle level-up/newly learned spontaneous cast;
+automatic-reader UI/ranking; named failure wording observed at production
+notification boundary (formatter tests alone pass); final combined candidate
 qualification; module boundary/optional profile repeats. The first fixture
 checkpoint does not claim any of those owner goals complete.
 Runtime work uses Steam App 640820 and guarded requests with authorized
