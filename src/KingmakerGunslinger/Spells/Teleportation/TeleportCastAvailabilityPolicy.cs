@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 
 namespace KingmakerGunslinger.Spells.Teleportation
@@ -26,10 +26,13 @@ namespace KingmakerGunslinger.Spells.Teleportation
     {
         internal TeleportCastSourceSnapshot(string casterId, int partyOrder, string casterName,
             string bookId, string bookName, TeleportSpellKind spell, TeleportCastSourceKind kind,
-            int spellLevel, int casterLevel, int uses, TeleportCastSourceFacts facts)
+            int spellLevel, int casterLevel, int uses, TeleportCastSourceFacts facts,
+            TeleportScrollActivationChance activationChance = null, string scrollGroupId = null)
         { CasterId = casterId; PartyOrder = partyOrder; CasterName = casterName; BookId = bookId;
             BookName = bookName; Spell = spell; Kind = kind; SpellLevel = spellLevel; CasterLevel = casterLevel;
-            Uses = uses; Facts = facts; }
+            Uses = uses; Facts = facts; ActivationChance = activationChance; ScrollGroupId = scrollGroupId; }
+        internal TeleportScrollActivationChance ActivationChance { get; private set; }
+        internal string ScrollGroupId { get; private set; }
         internal string CasterId { get; private set; }
         internal int PartyOrder { get; private set; }
         internal string CasterName { get; private set; }

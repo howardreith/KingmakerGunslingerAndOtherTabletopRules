@@ -29,8 +29,9 @@ already offers Recall. `ApplySpellbook.Apply` creates choices from the effective
 class book's SpellsKnown difference. `CharBSelectorLayer.FillSpellLevel` reads
 that selection's `SpellList.GetSpells(level)` (filtered list); row refresh
 excludes known/selected spells and applies the normal view filter. None of these
-paths requires matching SpellListComponent metadata. No production Oracle
-repair is justified by this evidence yet; Sayan's configuration remains open.
+paths requires matching SpellListComponent metadata. No additional production Oracle
+repair is justified: the preserved final-list reconciler already supplies the
+normal native candidate. The exact Sayan archetype remains unavailable.
 
 Direct Recall now uses the existing Greater Teleport dispatcher and shared
 transaction guard. Desktop/controller original action callbacks are consumed
@@ -45,8 +46,10 @@ class bonus; equivalent earlier natural availability is acceptable. Installed
 ZFavoredClass uses its Oracle book's list and a specific-level native parametrized
 selector, with a prerequisite for one higher spell level. That native iterator
 also reads SpellsFiltered and excludes known spells without SpellListComponent
-metadata. The installed normal 13→14 sixth-level choice count still needs a live
-table capture before attributing the report to choice entitlement.
+metadata. The live installed table now confirms normal sixth-level known allowances
+0/1/2/2 at Oracle levels 11/12/13/14: 11→12 grants one normal choice, while
+13→14 grants zero. This demonstrates the normal-choice entitlement distinction;
+it does not claim to reproduce Sayan's unprovided archetype or FCB selection.
 
 Required acceptance remains pending: native Oracle candidate/selection,
 commit/cancel and spontaneous cast; direct Recall from all resource kinds;
@@ -118,8 +121,42 @@ Guarded Steam / working-save evidence:
   on the corrected artifact; native modal/stale/depletion/cancel/movement and
   Travel controls retained. No save writes in these runs.
 
-NOT RUN: completed Oracle level-up/newly learned spontaneous cast;
-automatic-reader UI/ranking; named failure wording observed at production
+Oracle learning checkpoint: repository validation, 1,627/1,627 domain tests,
+clean exact-reference Release build and strict package PASS. ZIP SHA-256
+`10f2b60f3ce34544f221c22d461fbe0518a01af17a44690c0aa73bc301669535`;
+DLL `622d26391ae3b12359da46aea58b6662bf0f3a7340df8ae0724b39798d2a290a`.
+Guarded Steam run `20260913T1444488744643Z-disposable-teleportation-level-up`:
+47/47 PASS, zero exceptions, exact owned fixture/party/inventory cleanup, no
+save write. A native spawned disposable Oracle, no archetype, advances through
+native class/feature/spell choices to Oracle 11, then uses the real character
+build UI for 11→12. The canonical Recall appears exactly once at level 6,
+cancel leaves Oracle 11 unknown, the actual Complete button commits Oracle 12,
+the sole normal sixth-level choice is occupied and cannot be spent again, and
+the canonical Oracle book knows Recall exactly once. No Recall AddKnown or
+candidate-list injection is used. Native spontaneous Recall then spends one
+sixth-level slot, reaches Oleg directly and quietly; original action replays
+same frame and later spend nothing else. Race/gender/alignment are copied
+from the named working save's first suitable party member; initial CHA18,
+INT10/WIS12, with remaining native choices filled by the bounded helper.
+The existing unknown-Recall zero-UMD Oracle remains a separate scroll control.
+
+Earlier learning fixture runs `20260913T1433448837799Z` and
+`20260913T1441197477094Z` failed their acceptance accounting while actual
+candidate/cancel/commit/casting succeeded. Native class processing also grants
+two sixth-level spells at completion, so total known-spell count is not the
+normal choice count. The final assertion checks the exact native selection,
+exhausted choice, unchanged ordinary allowance, and canonical learned identity.
+Native character seeding added two starter items; their synchronous positive
+deltas are captured and removed in the final passing cleanup.
+
+The new four reader-policy tests cover exact d20 thresholds, take-10,
+conditional success bonus, item failure probability, no-check preference and
+stable ties. This pure policy is not yet wired to action composition. Native
+adapter work traces RuleCastSpell, RuleSkillCheck and installed CotW handlers;
+active unsupported activation behavior must remain explicit, never receive a
+heuristic score. Automatic UI/native activation qualification is still pending.
+
+NOT RUN: automatic-reader UI/ranking; named failure wording observed at production
 notification boundary (formatter tests alone pass); final combined candidate
 qualification; module boundary/optional profile repeats. The first fixture
 checkpoint does not claim any of those owner goals complete.
