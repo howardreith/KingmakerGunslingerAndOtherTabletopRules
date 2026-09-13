@@ -102,6 +102,7 @@ namespace KingmakerGunslinger.RuntimeTesting
              request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
              request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
+             request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp);
 
         internal NativeIconScreenEvidence(RuntimeTestRequest request)

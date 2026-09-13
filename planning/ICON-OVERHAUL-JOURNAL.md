@@ -845,3 +845,60 @@ Eleven consumer dispositions updated. Raw native images/IL/packages stay local.
 Only technical qualification is asserted; eighty production images and final UI
 approval remain pending. Next: strategic native text controls and remaining
 actions/variants/buffs, dependent rendered feats and the saved-parameter prerequisite.
+
+### 2026-09-13 — Native strategic text-control qualification
+
+Continued from published racial checkpoint `42fbd3e53a26d445c7f8cd2ce3d8b5c6367b6b34`.
+Source inspection confirms TeleportDestinationRows.Add uses a native two-line
+CompactRow text button with no spell/scroll image assignment. Six consumer
+dispositions record that source contract. The narrow capture extension holds
+the existing interaction scenario's six prepared/spontaneous Teleport/Greater
+Teleport controls, preserving actual Buttons, stable fresh action keys/text,
+native background/control references, source resources, familiarity and travel
+state. It observes exceptions and uses the existing viewport/overlay restoration.
+One corruption case rejects wrong sources, clipped text, invented spell images,
+missing controls and altered resources. No icon, mechanic or scroll fixture is
+changed; Word of Recall/scroll-specific screenshots are not claimed from this
+test. Build 1 passed repository validation, 1,629 domain tests, clean Release
+and the 224-file package gate. Runtime
+`20260913T1936054333538Z-disposable-teleportation-interaction` failed the existing
+reopen-height assertion (449.22, then seven 454 measurements). All six capture
+checks, native-context retention and exception checks passed; the overall
+41/42 result remains FAIL. Full outer cleanup passed. The package and diagnostic
+evidence were preserved; all 136 original installed files/settings were verified
+restored at `2026-09-13T19:41:02.915867+00:00`.
+
+The existing reopen loop measured after one frame despite native fade/layout
+work. It now uses the existing native panel readiness wait and canvas update
+before each of the eight measurements. The exact stability assertion is
+unchanged. Build 2 supplied the successful fresh qualification below. The journal's
+earlier UTF-8 text was restored exactly after a local script encoding error;
+the historical entries, art and source behavior were unaffected.
+
+
+Build 2 passed all source gates: 23 catalog, 20 native-capture, six paired,
+eleven request and 1,629 domain tests, clean Release and the strict 224-file
+package. Artifact based on `42fbd3e5`: source `e7c6c8947475119f16147ab5ee1c18099842f1d619d967e2ca16a0cc110a2e00`;
+package `d2038e25959549e2b904d9d390f1e9519e1996421749c1cfd2eb1154bafe8e35`; DLL `a3c3313b3b4e92e56b5343a072beb2010ce1cc1647849ea590ee4e7d64cacb49`;
+MVID `e191952f-d7e3-4526-8da0-e1d1f385799a`. Two guarded Steam PASS runs:
+
+- `20260913T1951218865405Z-disposable-teleportation-interaction`: 42 assertions;
+  all eight reopen heights exactly 454, six captures, exact native context and
+  full outer restoration. Three native movement starts/stops balance. No UI
+  exceptions or save writes. Each 1280x720 capture was inspected with its full
+  target label and all six buttons plus native Travel/Cancel visible.
+- `20260913T1954466168350Z-working-save-smoke`: 11 assertions on the same artifact.
+
+Game exited normally. Audit passed all 224 installed package files, three known
+runtime additions and 136 backup files. All 136 original files/settings verified
+restored at `2026-09-13T19:58:53.537420+00:00`. Immutable local archive prefix:
+`native-strategic-controls-qualified-128-*`; native gallery:
+`artifacts/icon-overhaul-v2/NATIVE-STRATEGIC-CONTROL-REVIEW.html`.
+Curated evidence: `reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json`.
+Six explicit non-icon strategic surface dispositions are recorded; actual
+captures cover Teleport/Greater Teleport prepared/spontaneous controls. Recall
+and scroll-specific rows have source evidence for the shared renderer, without
+invented separate screenshot coverage. Art and gameplay are unchanged.
+Eighty production images and final UI approval remain pending. Continue native
+racial action/variant/buff review and higher dependent rendered feats; no new
+saves or writes are authorized for the missing saved-parameter prerequisite.

@@ -183,6 +183,30 @@ class NativeScreenEvidenceTests(unittest.TestCase):
                 self.assertTrue(self.errors())
                 state['targetRow'][key] = original
 
+    def test_strategic_text_control_requires_real_source_and_unmodified_native_presentation(self):
+        state = self.prepare_native_row()
+        self.evidence['records'][0]['stage'] = 'native-strategic-control:0'
+        state['surface'] = 'native-strategic-text-control'
+        target = state['targetRow'] = dict(name='Teleport\nCaster / Wizard / 2 uses', sourceKey='destination/caster/book/0',
+            spellKind='Teleport', spellGuid='82e3fb1dce1647b58d3b7169c8520af0', sourceKind='Prepared',
+            bookGuid='native-book', casterId='native-caster', uses=2, labelExact=True, labelTruncated=False,
+            labelOverflowing=False, nativeFont='native-font', buttonActive=True, buttonInteractable=True,
+            nativeImageCount=1, canonicalSpellImages=0, nativeImageNames=['native-background'],
+            nativeImagesRetained=True, nativeControlCount=2, nativeControlsRetained=True, contextAndResourcesRetained=True)
+        self.assertEqual([], self.errors())
+        target.update(spellKind='GreaterTeleport', spellGuid='73d19adfe18743e0a2a3a21abf4af5f3', sourceKind='Spontaneous')
+        self.assertEqual([], self.errors())
+        for key,value in [('spellGuid','wrong-spell'), ('sourceKind','synthetic'), ('uses',0), ('uses',True),
+                          ('name','one line'), ('labelExact',False), ('labelTruncated',True), ('labelOverflowing',True),
+                          ('canonicalSpellImages',1), ('canonicalSpellImages',False), ('nativeImageCount',0),
+                          ('nativeImageNames',[]), ('nativeImagesRetained',False), ('nativeControlCount',0),
+                          ('nativeControlCount',True), ('nativeControlsRetained',False), ('contextAndResourcesRetained',False)]:
+            with self.subTest(key=key):
+                original=target[key]
+                target[key]=value
+                self.assertTrue(self.errors())
+                target[key]=original
+
     def test_scroll_description_requires_actual_named_item_and_icon(self):
         state = self.prepare_scroll_row()
         self.evidence['records'][0]['stage'] = 'native-scroll-description:teleport'
