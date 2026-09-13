@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private WorldMapPointSpellAction _action;
         private TeleportationWorldMapContext _openedContext;
         private Kingmaker.UnitLogic.Spellbook _openedBook;
+        private Kingmaker.Items.ItemEntity _openedScrollItem;
         private Action<DialogMessageBoxBase.BoxButton> _callback;
         private TeleportFamiliarity _familiarity;
         private bool _settled;
@@ -69,25 +70,50 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 TeleportationConfirmationSurface.Available() != null,
                 actions.Select(value => value == null ? (TeleportSpellKind)(-1) : value.Source.Spell).ToArray());
         }
-        // One entry point for every destination action. Greater Teleport casts
-        // immediately; every other spell opens its owned native confirmation.
+        // One entry point for every destination action. Greater Teleport and Recall cast
+        // immediately; ordinary Teleport opens its owned native confirmation.
         internal static void Begin(WorldMapPointSpellAction action, TeleportationWorldMapContext context, ITeleportationRolls qualificationRolls = null)
         {
-            if (action != null && action.Source.Spell == TeleportSpellKind.GreaterTeleport) OpenDirect(action, context, qualificationRolls);
-            else Open(action, context, qualificationRolls);
+            if (!CanExecute(action) || context == null || !context.Usable) return;
+            var point = ResourcesLibrary.TryGetBlueprint<BlueprintLocation>(action.Destination.Id);
+            var fresh = TeleportationWorldMapAdapter.Compose(context, point).SingleOrDefault(value => value.Key == action.Key);
+            if (fresh == null) { Unavailable(action, context); return; }
+            if (!fresh.ReaderResolved)
+            {
+                TeleportationCombatLog.Publish(TeleportationText.Get("ScrollReaderUnsupported",
+                    "The best scroll reader could not be determined with the party's current effects. Nothing was spent."), TeleportTransactionState.Invalidated);
+                return;
+            }
+            if (TeleportBeginPolicy.IsDirect(fresh.Source.Spell)) OpenDirect(fresh, context, qualificationRolls);
+            else Open(fresh, context, qualificationRolls);
+        }
+
+        internal static void Unavailable(WorldMapPointSpellAction action, TeleportationWorldMapContext context)
+        {
+            if (TeleportationConfirmationSurface.UnrelatedModalShown()) return;
+            string message = context != null && context.Usable && action.Source.Kind == TeleportCastSourceKind.Scroll &&
+                TeleportationScrollAdapter.GroupStock(context.Player, action.Source) > 0 &&
+                !TeleportationScrollAdapter.Enumerate(context.Player).Any(value =>
+                    WorldMapPointSpellActionComposer.ScrollKey(value) == WorldMapPointSpellActionComposer.ScrollKey(action.Source)) ?
+                string.Format(CultureInfo.CurrentCulture, TeleportationText.Get("ScrollNoReader",
+                    "No eligible traveling-party member can activate the Scroll of {0}. Nothing was spent."),
+                    TeleportContextPresentation.SpellName(action.Source.Spell, TeleportationText.Get)) :
+                TeleportationText.Get("SourceUnavailable", "This spell source is no longer available. Nothing was spent.");
+            TeleportationCombatLog.Publish(message, TeleportTransactionState.Invalidated);
         }
 
         internal static void Open(WorldMapPointSpellAction action, TeleportationWorldMapContext context, ITeleportationRolls qualificationRolls = null)
         {
-            if (Pending || action == null || context == null || !context.Usable) return;
+            if (!CanExecute(action) || context == null || !context.Usable) return;
             var surface = TeleportationConfirmationSurface.Available();
             if (surface == null) return;
             Kingmaker.UnitLogic.Spellbook openedBook = null;
+            Kingmaker.Items.ItemEntity openedScrollItem = null;
             if (action.Source.Kind == TeleportCastSourceKind.Scroll)
             {
-                // Inventory-backed sources bind the shared stock, not a book;
-                // the exact item is re-resolved at capture time.
-                if (TeleportationScrollAdapter.Resolve(action.Source) == null) return;
+                var scroll = TeleportationScrollAdapter.Resolve(action.Source);
+                if (scroll == null || !action.ReaderResolved) return;
+                openedScrollItem = scroll.Item;
             }
             else
             {
@@ -102,6 +128,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 self._action = action;
                 self._openedContext = context;
                 self._openedBook = openedBook;
+                self._openedScrollItem = openedScrollItem;
                 self._familiarity = TeleportationCastExecution.FamiliarityFor(context, action.Destination.Id);
                 self.Transaction = new TeleportCastTransaction(action);
                 self.Execution = qualificationRolls == null ? new TeleportationCastExecution() : new TeleportationCastExecution(qualificationRolls);
@@ -110,13 +137,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 _current = self;
                 EventBus.RaiseEvent<IDialogMessageBoxUIHandler>(handler => handler.HandleOpen(self.Message,
                     DialogMessageBoxBase.BoxType.Dialog, self._callback,
-                    TeleportationText.Get("Confirm", "Cast"), TeleportationText.Get("Cancel", "Cancel"), null, null));
+                    action.Source.Kind == TeleportCastSourceKind.Scroll ? TeleportationText.Get("ConfirmScroll", "Use Scroll") :
+                        TeleportationText.Get("Confirm", "Cast"), TeleportationText.Get("Cancel", "Cancel"), null, null));
                 self._opened = true;
                 if (!surface.Shown || !self.OwnsCallback()) self.Cancel(false);
             }
             catch { self.Cancel(true); throw; }
         }
-        // The Greater Teleport direct flow: no confirmation dialog is opened and
+        // The exact-spell direct flow: no confirmation dialog is opened and
         // no confirmation surface is required. The cast revalidates and settles
         // synchronously through the same transaction, execution, reentrancy
         // (Pending) and announcement machinery as a confirmed cast.
@@ -168,11 +196,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var source = fresh == null ? null : TeleportationSpellbookAdapter.Resolve(fresh.Source);
             if (fresh != null && fresh.Source.Kind == TeleportCastSourceKind.Scroll)
             {
-                // Inventory-backed sources stay valid while their shared stock is
-                // unchanged; no physical book identity participates.
-                return TeleportationScrollAdapter.Resolve(fresh.Source) != null &&
+                // Confirmation binds this reader and physical item. A changed
+                // winner cancels before expenditure, preserving the risk consent.
+                var scroll = TeleportationScrollAdapter.Resolve(fresh.Source);
+                return fresh.ReaderResolved && fresh.Source.Key == _action.Source.Key && scroll != null &&
+                    ReferenceEquals(scroll.Item, _openedScrollItem) &&
                     fresh.Source.Uses == _action.Source.Uses && fresh.Source.Kind == _action.Source.Kind &&
                     fresh.Source.SpellLevel == _action.Source.SpellLevel &&
+                    fresh.Source.ScrollCost == _action.Source.ScrollCost && fresh.Source.ScrollPreservationPossible == _action.Source.ScrollPreservationPossible &&
                     fresh.Destination.OrdinaryArrivals == _action.Destination.OrdinaryArrivals &&
                     TeleportationCastExecution.FamiliarityFor(context, point.AssetGuid) == _familiarity;
             }
@@ -330,11 +361,22 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     message = TeleportContextPresentation.ArrivalMessage(_action.Source.Spell, result.Outcome, name, TeleportationText.Get);
                 }
             }
-            else message = Transaction.State == TeleportTransactionState.ActivationRefused ?
-                TeleportationText.Get("Result.ActivationRefused", "{0} could not activate the scroll. Nothing was consumed; you may try again or choose another reader.") :
-                Transaction.State == TeleportTransactionState.ActivationFailedSpent ?
-                TeleportationText.Get("Result.ActivationFailedSpent", "{0} failed to activate the scroll and it was consumed. No teleport occurred.") :
-                Transaction.State == TeleportTransactionState.TechnicalFailureCompensated ?
+            else if (_action.Source.Kind == TeleportCastSourceKind.Scroll &&
+                (Transaction.State == TeleportTransactionState.ActivationRefused ||
+                 Transaction.State == TeleportTransactionState.ActivationFailedSpent))
+            {
+                TeleportExpenditure spent = TeleportExpenditure.Ambiguous; bool chargeOnly = false;
+                try
+                {
+                    if (Execution.Resource != null) spent = Execution.Resource.ObserveExpenditure();
+                    if (spent == TeleportExpenditure.ExactlyOne && Execution.Resource is TeleportationScrollCastResource)
+                        chargeOnly = ((TeleportationScrollCastResource)Execution.Resource).ChargeOnlySpent;
+                }
+                catch { spent = TeleportExpenditure.Ambiguous; /* Never guess or lose the failure notification. */ }
+                message = TeleportContextPresentation.ScrollActivationFailure(_action.Source.CasterName,
+                    _action.Source.Spell, spent, TeleportationText.Get, chargeOnly);
+            }
+            else message = Transaction.State == TeleportTransactionState.TechnicalFailureCompensated ?
                 TeleportationText.Get("Result.Compensated", "The cast could not complete. Its exact spell use was restored.") :
                 Transaction.State == TeleportTransactionState.TechnicalFailureSpent || Transaction.State == TeleportTransactionState.AmbiguousExpenditure ?
                 TeleportationText.Get("Result.Uncertain", "The cast encountered a technical failure. Check the party and the selected spellbook; the spell use could not be safely restored.") :

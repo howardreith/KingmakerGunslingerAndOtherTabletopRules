@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -423,10 +423,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (!_ready || !gameObject.activeInHierarchy || !_rows.Contains(row) || TeleportContextConfirmationPresenter.Pending) return;
                 var context = TeleportationWorldMapAdapter.Capture(false);
                 var current = TeleportationWorldMapAdapter.Compose(context, _location.Blueprint).SingleOrDefault(value => value.Key == row.Action.Key);
-                if (current == null) { WorldMapPointSpellActionRuntime.Clear(_panel); return; }
+                if (current == null) { _ready = false; TeleportContextConfirmationPresenter.Unavailable(row.Action, context); WorldMapPointSpellActionRuntime.Clear(_panel); return; }
                 // Hide the destination presenter before executing; its global
                 // Accept handler can no longer start normal travel. Greater
-                // Teleport settles directly; other spells confirm first.
+                // Teleport and Recall settle directly; ordinary Teleport confirms first.
+                _ready = false; // Consume this original action event before any synchronous settlement.
                 _panel.Hide();
                 TeleportContextConfirmationPresenter.Begin(current, context, QualificationRolls);
             }

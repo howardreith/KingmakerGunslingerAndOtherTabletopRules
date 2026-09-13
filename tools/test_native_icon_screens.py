@@ -106,8 +106,9 @@ class NativeScreenEvidenceTests(unittest.TestCase):
 
     def test_learning_capture_requires_exact_preview_and_spell_row(self):
         state = self.prepare_native_row()
-        self.evidence['records'][0]['stage'] = 'native-learning-row:Wizard-5'
-        state['targetRow'] = {'name':'Teleport', 'spellGuid':'teleport', 'classGuid':'wizard',
+        self.evidence['records'][0]['stage'] = 'native-learning-row:ba34257984f4c41408ce1dc2004e342e-5'
+        state['targetRow'] = {'name':'Teleport', 'spellGuid':'82e3fb1dce1647b58d3b7169c8520af0',
+                              'classGuid':'ba34257984f4c41408ce1dc2004e342e',
                               'spellLevel':5, 'previewOnly':True, 'enabled':True}
         self.assertEqual([], self.errors())
         for key,value in [('spellGuid',''), ('classGuid',''), ('spellLevel',4), ('previewOnly',False), ('enabled',False)]:
@@ -115,6 +116,24 @@ class NativeScreenEvidenceTests(unittest.TestCase):
             state['targetRow'][key] = value
             self.assertTrue(self.errors())
             state['targetRow'][key] = original
+
+    def test_oracle_recall_requires_exact_native_class_spell_level_and_preview(self):
+        state = self.prepare_native_row()
+        record = self.evidence['records'][0]
+        record['stage'] = 'native-learning-row:32c02466b2364c8a906e6e4761175099-6'
+        state['targetRow'] = {'name':'Word of Recall', 'spellGuid':'596d85a666204d6ea5c0188e53f4b4de',
+                              'classGuid':'32c02466b2364c8a906e6e4761175099',
+                              'spellLevel':6, 'previewOnly':True, 'enabled':True}
+        self.assertEqual([], self.errors())
+        for key, value in [('classGuid','ba34257984f4c41408ce1dc2004e342e'),
+                           ('spellGuid','82e3fb1dce1647b58d3b7169c8520af0'),
+                           ('spellLevel',5), ('previewOnly',False), ('enabled',False)]:
+            original = state['targetRow'][key]
+            state['targetRow'][key] = value
+            self.assertTrue(self.errors())
+            state['targetRow'][key] = original
+        record['stage'] += '-mismatched-stage'
+        self.assertTrue(self.errors())
 
     def prepare_scroll_row(self):
         state = self.prepare_native_row()

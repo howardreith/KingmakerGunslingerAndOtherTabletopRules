@@ -72,7 +72,17 @@ dependency-free test suite, production compilation, strict build-output
 validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
-## Current 0.0.119 publication authorization
+## Current 0.0.129 publication authorization
+
+The owner accepted the completed Recall/automatic-reader mission and explicitly
+requested merge, push and a new full public release on 2026-09-13. Use version
+0.0.129 from merged, clean, pushed master, with the existing exact-reference
+publisher and current notes. Preserve the accepted candidate's evidence and
+limitations in Z-RECALL-AND-SMART-SCROLL-STATE.md. Focused guarded runtime checks
+qualify the versioned artifact before publication; verify the downloaded public
+ZIP/checksum/manifest and preserve installed settings and other mods.
+
+## Historical 0.0.119 publication authorization
 
 The owner subsequently instructed: "You can forego the remaining tests. Please
 wrap things up, commit, push to origin, and cut the release." This supersedes

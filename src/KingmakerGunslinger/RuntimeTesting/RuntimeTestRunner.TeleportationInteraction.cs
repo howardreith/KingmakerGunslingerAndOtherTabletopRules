@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -265,35 +265,84 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TeleportContextPresentation.CompactRow(rows.Actions[index], TeleportationText.Get)).All(value => value));
                 TeleportInteractionAssert("native-actions-retained", "native action order, labels, flags and serialized callbacks unchanged",
                     "same=" + (nativeActions == TeleportationNativeButtons(panel)), nativeActions == TeleportationNativeButtons(panel));
-                // Settle the camera before measuring reopen geometry: the native
-                // camera lerps toward the selected point, and a still-moving
-                // anchor legitimately changes the available viewport each reopen.
-                var settledPosition = rig.GetPosition();
-                for (int settle = 0; settle < 120; settle++)
+                // Native edge scrolling can continue while a guarded runner has
+                // no mouse input. Isolate ONLY this geometry comparison through
+                // the bool setting's in-memory cache, never its persisting setter.
+                var edgeSetting = Kingmaker.UI.SettingsUI.SettingsRoot.Instance.ScreenEdgeScrolling;
+                var edgeCache = typeof(Kingmaker.UI.SettingsUI.SettingsEntityBool).GetField("m_Cached", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (edgeSetting == null || edgeCache == null || edgeCache.FieldType != typeof(bool?))
+                    throw new InvalidOperationException("Native edge-scroll cache contract differs.");
+                object originalEdgeCache = edgeCache.GetValue(edgeSetting);
+                bool edgeWasOn = edgeSetting.CurrentValue;
+                try
                 {
-                    yield return 0;
-                    var nowPosition = rig.GetPosition();
-                    if ((nowPosition - settledPosition).magnitude < 0.0005f) break;
-                    settledPosition = nowPosition;
+                    edgeCache.SetValue(edgeSetting, (bool?)false);
+                    CaptureTeleportInteraction("reopen-edge-scroll-isolated", new { edgeWasOn,
+                        originalCache = originalEdgeCache == null ? "uncached" : originalEdgeCache.ToString() });
+                    rig.ScrollTo(target.transform.position);
+                    // A fixed frame cap can expire while the native camera still
+                    // lerps (especially at uncapped FPS). Observe the projected point
+                    // used by production sizing, and fail if it never settles. No
+                    // camera transform, time input or production layout is changed.
+                    var settleWatch = Stopwatch.StartNew();
+                    var stableWatch = Stopwatch.StartNew();
+                    var settledAnchor = Game.GetCamera().WorldToScreenPoint(target.LocationTooltipPoint.position);
+                    int stableFrames = 0, settleFrames = 0;
+                    double nextCameraSample = 0;
+                    while (stableFrames < 4 || stableWatch.Elapsed.TotalSeconds < 0.25)
+                    {
+                        if (settleWatch.Elapsed.TotalSeconds >= nextCameraSample)
+                        {
+                            var camera = Game.GetCamera();
+                            var projection = camera.WorldToScreenPoint(target.LocationTooltipPoint.position);
+                            var cameraPosition = camera.transform.position;
+                            var rigTarget = rig.GetPosition();
+                            var tooltipPosition = target.LocationTooltipPoint.position;
+                            CaptureTeleportInteraction("reopen-camera-sample", new { elapsedSeconds = settleWatch.Elapsed.TotalSeconds,
+                                stableSeconds = stableWatch.Elapsed.TotalSeconds, settleFrames, stableFrames,
+                                screen = new { projection.x, projection.y, projection.z },
+                                camera = new { cameraPosition.x, cameraPosition.y, cameraPosition.z },
+                                target = new { rigTarget.x, rigTarget.y, rigTarget.z },
+                                tooltip = new { tooltipPosition.x, tooltipPosition.y, tooltipPosition.z } });
+                            nextCameraSample += 0.5;
+                        }
+                        if (settleWatch.Elapsed.TotalSeconds > 10)
+                            throw new InvalidOperationException("Native projected point did not settle before reopen measurements.");
+                        yield return 0; settleFrames++;
+                        var nowAnchor = Game.GetCamera().WorldToScreenPoint(target.LocationTooltipPoint.position);
+                        if ((nowAnchor - settledAnchor).magnitude > 0.001f)
+                        { settledAnchor = nowAnchor; stableFrames = 0; stableWatch.Restart(); }
+                        else stableFrames++;
+                    }
+                    CaptureTeleportInteraction("reopen-camera-settled", new { settleFrames, stableFrames,
+                        elapsedSeconds = settleWatch.Elapsed.TotalSeconds, stableSeconds = stableWatch.Elapsed.TotalSeconds,
+                        projectedX = settledAnchor.x, projectedY = settledAnchor.y, projectedZ = settledAnchor.z });
+                    float firstViewportHeight = rows.GetComponent<ScrollRect>().viewport.rect.height;
+                    var reopenedHeights = new List<float>();
+                    for (int repeat = 0; repeat < 8; repeat++)
+                    {
+                        panel.OnLocationSelect(target.Blueprint, false);
+                        // Keep the icon checkpoint's native fade/layout readiness
+                        // inside the upstream camera-stabilized comparison.
+                        foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                        Canvas.ForceUpdateCanvases();
+                        reopenedHeights.Add(panel.GetComponentInChildren<TeleportDestinationRows>(true).GetComponent<ScrollRect>().viewport.rect.height);
+                    }
+                    CaptureTeleportInteraction("reopen-viewport-heights", new { firstViewportHeight, reopenedHeights });
+                    // Reopens measure a settled camera and must be exactly stable; the
+                    // first append measures a fresh, differently-anchored body and may
+                    // legitimately differ from the settled reopen height.
+                    TeleportInteractionAssert("reopen-viewport-stable", "each settled reopen measures the same native body with one container of six distinct rows",
+                        "first=" + firstViewportHeight.ToString("0.##") + ";heights=" + string.Join(",", reopenedHeights.Select(value => value.ToString("0.##")).ToArray()),
+                        reopenedHeights.Count == 8 && reopenedHeights.All(value => value > 0 && Math.Abs(value - reopenedHeights[0]) < 0.01f));
                 }
-                float firstViewportHeight = rows.GetComponent<ScrollRect>().viewport.rect.height;
-                var reopenedHeights = new List<float>();
-                for (int repeat = 0; repeat < 8; repeat++)
+                finally
                 {
-                    panel.OnLocationSelect(target.Blueprint, false);
-                    // Reopening restarts native fade/layout work. Measure only
-                    // after the same native readiness wait used for first open.
-                    foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
-                    Canvas.ForceUpdateCanvases();
-                    reopenedHeights.Add(panel.GetComponentInChildren<TeleportDestinationRows>(true).GetComponent<ScrollRect>().viewport.rect.height);
+                    edgeCache.SetValue(edgeSetting, originalEdgeCache);
+                    bool edgeRestored = Equals(edgeCache.GetValue(edgeSetting), originalEdgeCache);
+                    TeleportInteractionAssert("reopen-camera-setting-restored", "exact original edge-scroll cache restored without invoking a settings setter or save",
+                        "restored=" + edgeRestored, edgeRestored);
                 }
-                CaptureTeleportInteraction("reopen-viewport-heights", new { firstViewportHeight, reopenedHeights });
-                // Reopens measure a settled camera and must be exactly stable; the
-                // first append measures a fresh, differently-anchored body and may
-                // legitimately differ from the settled reopen height.
-                TeleportInteractionAssert("reopen-viewport-stable", "each settled reopen measures the same native body with one container of six distinct rows",
-                    "first=" + firstViewportHeight.ToString("0.##") + ";heights=" + string.Join(",", reopenedHeights.Select(value => value.ToString("0.##")).ToArray()),
-                    reopenedHeights.Count == 8 && reopenedHeights.All(value => value > 0 && Math.Abs(value - reopenedHeights[0]) < 0.01f));
                 rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
                 TeleportInteractionAssert("reopen-deferred-cleanup", "reopening across deferred Unity destruction keeps exactly one container and six distinct rows",
                     "containers=" + panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length,

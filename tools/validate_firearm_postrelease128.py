@@ -13,7 +13,7 @@ VERSION = "0.0.128"
 INFORMATIONAL_VERSION = "0.0.128-firearm-postrelease-hotfix"
 PACKAGE = "KingmakerGunslinger-0.0.128-local-runtime.zip"
 PACKAGE_SUFFIX = "firearm-postrelease-hotfix"
-DETERMINISTIC_TEST_COUNT = 1629
+DETERMINISTIC_TEST_COUNT = 1639
 MANIFEST_TOTAL = 1886
 MANIFEST_ACTIVE = 1884
 STATIC_KEY = "firearmHotfix128"
@@ -37,7 +37,7 @@ def validate(root: Path) -> None:
     baseline.MANIFEST_TOTAL = MANIFEST_TOTAL
     baseline.MANIFEST_ACTIVE = MANIFEST_ACTIVE
     # Retained static records are the exact 0.0.127 snapshots (1,612 cases).
-    # Current Program.cs includes the seven icon census/monogram cases (1,629).
+    # Current Program.cs combines the 1,632 upstream cases with seven icon cases.
     inherited = baseline
     while inherited is not None:
         inherited.ARCHIVED_TEST_COUNT = 1612
@@ -73,7 +73,8 @@ def validate(root: Path) -> None:
     for key, value in expected.items():
         if state.get(key) != value:
             raise AssertionError(f"firearmHotfix128 static mismatch: {key}")
-    require_tokens(root / "docs/RELEASE-NOTES-0.0.128.md", INFORMATIONAL_VERSION,
+    require_tokens(root / "docs/RELEASE-NOTES-0.0.128.md",
+        "0.0.128-firearm-postrelease-hotfix",
         "candidate", "native", "reload", "NOT RUN")
     require_tokens(root / "src/KingmakerGunslinger/Recovery/RepairAvailabilityReasonPatch.cs",
         "GetContextualReason", "IAbilityAvailabilityProvider", "AbilityData")

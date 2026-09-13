@@ -81,9 +81,18 @@ def validate(evidence, result, build, identity, directory):
                             target.get('proficiencyPresent') is True,
                             'Native exotic weapon row lacks its learned proficiency: ' + name)
             elif record['stage'].startswith('native-learning-row:'):
-                require(bool(target.get('spellGuid')) and bool(target.get('classGuid')) and
+                arcane_classes = ('ba34257984f4c41408ce1dc2004e342e', 'b3a505fb61437dc4097f43c3f8f9a4cf')
+                learning_pairs = {(class_guid, spell_guid, level)
+                                  for class_guid in arcane_classes
+                                  for spell_guid, level in (('82e3fb1dce1647b58d3b7169c8520af0', 5),
+                                                           ('73d19adfe18743e0a2a3a21abf4af5f3', 7))}
+                # v0.0.129 adds the existing optional Oracle's normal Recall
+                # choice. Accept only its exact canonical class/spell/level.
+                learning_pairs.add(('32c02466b2364c8a906e6e4761175099', '596d85a666204d6ea5c0188e53f4b4de', 6))
+                require((target.get('classGuid'), target.get('spellGuid'), target.get('spellLevel')) in learning_pairs and
                         target.get('previewOnly') is True and target.get('enabled') is True and
-                        target.get('spellLevel') in (5, 7), 'Native learning row identity/preview differs: ' + name)
+                        record['stage'] == 'native-learning-row:' + str(target.get('classGuid')) + '-' + str(target.get('spellLevel')),
+                        'Native learning row identity/preview differs: ' + name)
             elif record['stage'].startswith('native-racial-feat-row:'):
                 keys = ['elemental-strike', 'scorching-weapons', 'inner-flame', 'blazing-aura', 'firesight',
                         'airy-step', 'wings-of-air', 'cloud-gazer', 'inner-breath', 'hydraulic-maneuver', 'triton-portal']

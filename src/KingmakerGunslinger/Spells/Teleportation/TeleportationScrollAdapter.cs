@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -23,6 +23,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
     {
         internal sealed class ScrollGroup
         {
+            internal string Id;
             internal TeleportSpellKind Spell;
             internal int CasterLevel;
             internal int SpellLevel;
@@ -51,7 +52,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
                         group.SpellLevel, group.CasterLevel, group.Items.Sum(value => value.Count),
                         TeleportCastSourceFacts.ActiveParty | TeleportCastSourceFacts.LivingAvailableCaster |
                         TeleportCastSourceFacts.ScrollStock | TeleportCastSourceFacts.ExactSpell |
-                        TeleportCastSourceFacts.RealResource));
+                        TeleportCastSourceFacts.RealResource,
+                        TeleportScrollReaderAdapter.Read(reader, group.Items[0]), group.Id,
+                        !group.Items[0].IsSpendCharges ? TeleportScrollCostKind.Reusable :
+                            group.Items[0].Charges > 1 || group.Representative.RestoreChargesOnRest ? TeleportScrollCostKind.Charge : TeleportScrollCostKind.Scroll,
+                        group.Items[0].Charges, reader.Descriptor.State.Features.HandOfMagusDan));
                 }
             }
             return result;
@@ -88,7 +93,27 @@ namespace KingmakerGunslinger.Spells.Teleportation
         {
             return left.CasterLevel == right.CasterLevel && left.SpellLevel == right.SpellLevel &&
                 left.SpendCharges == right.SpendCharges && left.Charges == right.Charges &&
-                left.RestoreChargesOnRest == right.RestoreChargesOnRest;
+                left.RestoreChargesOnRest == right.RestoreChargesOnRest &&
+                left.RequireUMDIfCasterHasNoSpellInSpellList == right.RequireUMDIfCasterHasNoSpellInSpellList &&
+                string.Equals(BlueprintContract(left), BlueprintContract(right), StringComparison.Ordinal);
+        }
+
+        private static string BlueprintContract(BlueprintItemEquipmentUsable scroll)
+        {
+            // Unknown item components retain their own blueprint identity.
+            // CopyScroll is teaching metadata, already checked against Ability.
+            bool ordinary = scroll.ComponentsArray.All(value => value is Kingmaker.Blueprints.Items.Components.CopyScroll);
+            return string.Join(":", new[] { scroll.Ability.AssetGuid, scroll.CasterLevel.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                scroll.SpellLevel.ToString(System.Globalization.CultureInfo.InvariantCulture), scroll.SpendCharges.ToString(),
+                scroll.Charges.ToString(System.Globalization.CultureInfo.InvariantCulture), scroll.RestoreChargesOnRest.ToString(),
+                scroll.RequireUMDIfCasterHasNoSpellInSpellList.ToString(), ordinary ? "ordinary" : scroll.AssetGuid });
+        }
+        private static string ItemContract(ItemEntity item)
+        {
+            bool enchanted = item.EnchantmentsCollection != null && item.EnchantmentsCollection.Enumerable.Any();
+            return "scroll:" + BlueprintContract((BlueprintItemEquipmentUsable)item.Blueprint) + ":" +
+                item.Charges.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" + item.IsIdentified +
+                (enchanted ? ":item:" + System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(item).ToString("X8") : "");
         }
 
         internal static bool MatchesContract(BlueprintItemEquipmentUsable item, ScrollGroup group)
@@ -122,10 +147,12 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     var kind = AssociatedSpell(entity.Blueprint);
                     if (kind == null) continue;
                     var usable = (BlueprintItemEquipmentUsable)entity.Blueprint;
-                    var group = groups.FirstOrDefault(value => value.Spell == kind.Value && MatchesContract(usable, value));
+                    if (usable.SpendCharges && entity.Charges <= 0) continue;
+                    string contract = ItemContract(entity);
+                    var group = groups.FirstOrDefault(value => value.Spell == kind.Value && value.Id == contract && MatchesContract(usable, value));
                     if (group == null)
                     {
-                        group = new ScrollGroup { Spell = kind.Value, CasterLevel = usable.CasterLevel,
+                        group = new ScrollGroup { Id = contract, Spell = kind.Value, CasterLevel = usable.CasterLevel,
                             SpellLevel = usable.SpellLevel, Representative = usable };
                         groups.Add(group);
                     }
@@ -150,6 +177,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 kind == TeleportSpellKind.GreaterTeleport ? scrolls.GreaterTeleport : scrolls.WordOfRecall);
         }
 
+        internal static int GroupStock(Player player, TeleportCastSourceSnapshot snapshot)
+        {
+            if (player == null || snapshot == null) return 0;
+            var group = CollectGroups(player).SingleOrDefault(value => snapshot.ScrollGroupId != null ? value.Id == snapshot.ScrollGroupId :
+                value.Spell == snapshot.Spell && value.Representative.AssetGuid == snapshot.BookId);
+            return group == null ? 0 : group.Items.Sum(value => value.Count);
+        }
+
         internal static TeleportationScrollCastSource Resolve(TeleportCastSourceSnapshot snapshot)
         {
             if (snapshot == null || snapshot.Kind != TeleportCastSourceKind.Scroll) return null;
@@ -157,7 +192,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (player == null) return null;
             var groups = CollectGroups(player);
             var group = groups.FirstOrDefault(value => value.Spell == snapshot.Spell &&
-                string.Equals(value.Representative.AssetGuid, snapshot.BookId, StringComparison.Ordinal));
+                (snapshot.ScrollGroupId != null ? value.Id == snapshot.ScrollGroupId :
+                    string.Equals(value.Representative.AssetGuid, snapshot.BookId, StringComparison.Ordinal)));
             if (group == null || !group.Items.Any(value => value.Count > 0)) return null;
             // Deterministic binding: first item in traveling-party order, then
             // collection order. Equivalent stacks aggregate; the choice stays
@@ -175,7 +211,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     // The bound item's material metadata must match what the
                     // snapshot promised: the exact variant group, never a
                     // silent substitution.
-                    if (usable.CasterLevel != snapshot.CasterLevel || usable.SpellLevel != snapshot.SpellLevel) continue;
+                    if (usable.CasterLevel != snapshot.CasterLevel || usable.SpellLevel != snapshot.SpellLevel ||
+                        ItemContract(entity) != group.Id) continue;
                     return new TeleportationScrollCastSource(snapshot, entity);
                 }
             }
@@ -189,11 +226,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         // spellbook is required beyond what native activation itself needs.
         internal static bool IsReader(Kingmaker.EntitySystem.Entities.UnitEntityData unit, ScrollGroup group)
         {
-            if (unit == null || unit.Descriptor == null || unit.Descriptor.State.IsDead ||
-                unit.Descriptor.State.IsUnconscious || !unit.Descriptor.State.CanAct) return false;
-            var ability = AbilityFor(group);
-            if (ability != null && ability.IsInSpellListOfUnit(unit.Descriptor)) return true;
-            return unit.Descriptor.HasUMDSkill && group.Representative.RequireUMDIfCasterHasNoSpellInSpellList;
+            return group != null && group.Items.Count > 0 && TeleportScrollReaderAdapter.Eligible(unit, group.Items[0]);
         }
 
         internal static Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility AbilityFor(ScrollGroup group)
@@ -263,6 +296,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private int _restoreAttempted;
         private TeleportActivationOutcome _activation = TeleportActivationOutcome.NotAttempted;
         private object _activationEvidence;
+        private bool _attributedNativeOutcome;
 
         internal TeleportationScrollCastResource(TeleportationScrollCastSource source)
         {
@@ -277,7 +311,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
 
         internal TeleportActivationOutcome Activation { get { return _activation; } }
         internal object ActivationEvidence { get { return _activationEvidence; } }
+        internal int NativeEventCount { get; private set; }
+        internal string ActualReaderId { get; private set; }
+        internal bool RequiredUmd { get; private set; }
 
+        internal bool ChargeOnlySpent { get { return _beforeStock == CurrentStock() && ObserveExpenditure() == TeleportExpenditure.ExactlyOne; } }
         public TeleportActivationOutcome ActivationOutcome { get { return _activation; } }
 
         public void Spend()
@@ -294,6 +332,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var observer = new TeleportScrollActivationObserver();
             Kingmaker.PubSubSystem.EventBus.Subscribe(observer);
             bool attempted;
+            bool preservationPossible = reader.Descriptor.State.Features.HandOfMagusDan && _item is ItemEntityUsable;
             using (var authorization = TeleportationScrollActivationGate.Authorization.TryOpen(reader, _item))
             {
                 try
@@ -310,6 +349,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 finally
                 {
                     Kingmaker.PubSubSystem.EventBus.Unsubscribe(observer);
+                    _attributedNativeOutcome = observer.Event != null &&
+                        ReferenceEquals(observer.Event.Spell.Caster, reader.Descriptor) && ReferenceEquals(observer.Event.Spell.SourceItem, _item);
                 }
             }
             TeleportExpenditure expenditure = ObserveExpenditure();
@@ -329,22 +370,39 @@ namespace KingmakerGunslinger.Spells.Teleportation
             else if (observer.Event.IsUMDFailed)
             {
                 // A failed UMD check is a rules failure: no consumption, no teleport.
-                _activation = TeleportActivationOutcome.RefusedUnspent;
+                _activation = expenditure == TeleportExpenditure.None ? TeleportActivationOutcome.RefusedUnspent : TeleportActivationOutcome.FailedSpent;
             }
             else if (!observer.Event.Success)
             {
                 // A failed cast keeps the native consumption; no teleport, no refund.
                 _activation = TeleportActivationOutcome.FailedSpent;
             }
+            else if (attempted && observer.EventCount == 1 && expenditure == TeleportExpenditure.None &&
+                (!_item.IsSpendCharges || preservationPossible && observer.PreservationRollCount == 1 && observer.PreservationRoll <= 25))
+                _activation = TeleportActivationOutcome.SucceededPreserved;
             else _activation = TeleportActivationOutcome.Succeeded;
+            NativeEventCount = observer.EventCount;
+            ActualReaderId = observer.Event == null ? null : observer.Event.Initiator.UniqueId;
+            RequiredUmd = observer.Event != null && observer.Event.UseMagicDeviceCheck != null;
             _activationEvidence = new { attempted, observer.Success, observer.IsUMDFailed,
-                observer.UmdRoll, umdDC = observer.UmdDc, expenditure = expenditure.ToString() };
+                observer.UmdRoll, umdDC = observer.UmdDc, nativeEvents = observer.EventCount,
+                actualReaderId = observer.Event == null ? null : observer.Event.Initiator.UniqueId,
+                actualScrollId = observer.Event == null || observer.Event.Spell.SourceItem == null ? null : observer.Event.Spell.SourceItem.Blueprint.AssetGuid,
+                preservationPossible, observer.PreservationRollCount, observer.PreservationRoll,
+                expenditure = expenditure.ToString() };
         }
 
         public TeleportExpenditure ObserveExpenditure()
         {
             int delta = _beforeStock - CurrentStock();
-            return delta == 1 ? TeleportExpenditure.ExactlyOne : delta == 0 ? TeleportExpenditure.None : TeleportExpenditure.Ambiguous;
+            if (delta == 1 && _beforeCharges == 1 &&
+                (_beforeCount == 1 && _item.Collection == null && _item.Charges == 0 ||
+                 ReferenceEquals(_collection, _item.Collection) && _item.Count == _beforeCount - 1 && _item.Charges == 1))
+                return TeleportExpenditure.ExactlyOne;
+            if (delta != 0 || !ReferenceEquals(_collection, _item.Collection) || _item.Count != _beforeCount)
+                return TeleportExpenditure.Ambiguous;
+            int charges = _beforeCharges - _item.Charges;
+            return charges == 1 ? TeleportExpenditure.ExactlyOne : charges == 0 ? TeleportExpenditure.None : TeleportExpenditure.Ambiguous;
         }
 
         public bool RestoreAndVerifyExactResource()
@@ -352,18 +410,26 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (_restoreAttempted > 0) return ObserveExpenditure() == TeleportExpenditure.None;
             // A native activation already attributed its consumption; a later
             // technical exception never refunds a legitimate native debit.
-            if (_activation == TeleportActivationOutcome.Succeeded || _activation == TeleportActivationOutcome.FailedSpent)
+            if (_attributedNativeOutcome || _activation == TeleportActivationOutcome.Succeeded ||
+                _activation == TeleportActivationOutcome.SucceededPreserved || _activation == TeleportActivationOutcome.FailedSpent)
                 return false;
             if (_spendAttempted == 0 || ObserveExpenditure() != TeleportExpenditure.ExactlyOne) return false;
             _restoreAttempted++;
-            _collection.Add(_item.Blueprint, 1);
+            if (ChargeOnlySpent) _item.Charges = _beforeCharges;
+            else if (_item.Collection == null && _beforeCount == 1 && _item.Count == 1)
+            { _item.Charges = _beforeCharges; _collection.Add(_item, true); }
+            else if (ReferenceEquals(_collection, _item.Collection) && _item.Count == _beforeCount - 1)
+            { _item.IncrementCount(1); _item.Charges = _beforeCharges; }
+            else return false;
+            // Reuse the exact captured item, preserving its remaining charges,
+            // enchantments and other metadata; never grant a fresh blueprint copy.
             return ObserveExpenditure() == TeleportExpenditure.None;
         }
 
         public object Evidence()
         {
             return new { kind = "scroll", scrollId = _item.Blueprint.AssetGuid, readerId = _source.Snapshot.CasterId,
-                boundChargesBefore = _beforeCharges, boundCountBefore = _beforeCount, boundCountNow = _item.Count,
+                boundChargesBefore = _beforeCharges, boundChargesNow = _item.Charges, boundCountBefore = _beforeCount, boundCountNow = _item.Count,
                 stockBefore = _beforeStock, stockNow = CurrentStock(),
                 spendAttempted = _spendAttempted, restoreAttempted = _restoreAttempted,
                 activation = _activation.ToString(), activationEvidence = _activationEvidence };
@@ -378,9 +444,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
 
     // Request-local rulebook observer around exactly one native activation.
     internal sealed class TeleportScrollActivationObserver :
-        Kingmaker.PubSubSystem.IGlobalRulebookHandler<RuleCastSpell>
+        Kingmaker.PubSubSystem.IGlobalRulebookHandler<RuleCastSpell>,
+        Kingmaker.PubSubSystem.IGlobalRulebookHandler<Kingmaker.RuleSystem.Rules.RuleRollDice>
     {
         internal RuleCastSpell Event { get; private set; }
+        internal int EventCount { get; private set; }
         internal bool Attributed { get; private set; }
         internal void MarkUnattributed() { Attributed = false; }
         internal bool? Success { get { return Event == null ? (bool?)null : Event.Success; } }
@@ -389,8 +457,20 @@ namespace KingmakerGunslinger.Spells.Teleportation
         { get { return Event == null || Event.UseMagicDeviceCheck == null ? (int?)null : Event.UseMagicDeviceCheck.RollResult; } }
         internal int? UmdDc
         { get { return Event == null || Event.UseMagicDeviceCheck == null ? (int?)null : (int)Event.UseMagicDeviceCheck.DC; } }
+        internal int PreservationRollCount { get; private set; }
+        internal int? PreservationRoll { get; private set; }
+        public void OnEventAboutToTrigger(Kingmaker.RuleSystem.Rules.RuleRollDice evt) { }
+        public void OnEventDidTrigger(Kingmaker.RuleSystem.Rules.RuleRollDice evt)
+        {
+            // SpendCharges runs after the completed native cast, as its own
+            // top-level d100 event. Nested spell-effect dice cannot authorize a waiver.
+            if (Event == null || !ReferenceEquals(evt.Initiator, Event.Initiator) || EventCount != 1 ||
+                evt.DiceFormula.Rolls != 1 || evt.DiceFormula.Dice != Kingmaker.RuleSystem.DiceType.D100 ||
+                Game.Instance.Rulebook.Context.EventStack.Count() != 1) return;
+            PreservationRollCount++; PreservationRoll = (int)evt.Result;
+        }
         public void OnEventAboutToTrigger(RuleCastSpell evt) { }
         public void OnEventDidTrigger(RuleCastSpell evt)
-        { if (Event == null) { Event = evt; Attributed = true; } }
+        { EventCount++; if (Event == null) { Event = evt; Attributed = true; } }
     }
 }
