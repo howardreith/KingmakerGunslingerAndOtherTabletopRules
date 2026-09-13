@@ -56,7 +56,7 @@
   "guide": "docs/ICON-ART-GUIDE.md",
   "referenceIndex": "docs/art/ICON-REFERENCE-INDEX.md",
   "sourceAuditStatus": "247 elemental/strategic records inspected; native graph/localized names/publication and assignment snapshots await guarded live census.",
-  "runtimeIntegrationStatus": "89 painted identities mapped to 137 exact owned consumers; runtime qualification and firearm completion pending",
+  "runtimeIntegrationStatus": "89 paintings mapped to 137 exact owned consumers; 0.0.128 paired census and protected assignments qualified; native Weapon Focus and learning viewports qualified; complete native UI and final owner approval pending",
   "delegatedManifests": [
     {
       "path": "assets-source/original-icons/icon-overhaul-assets.json",
@@ -682,22 +682,23 @@
     {
       "consumer": "Quick Clear / Reload Firearm / Repair Firearm and other accepted Gunslinger actions",
       "expected": "Same cached sprite keys and exact owned consumers via ProjectAssetIcons.ApplyFact",
-      "liveEvidence": "pending"
+      "liveEvidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json: paired protected transitions and exact native data controls"
     },
     {
       "consumer": "Native Weapon Focus and dependent feat roots",
       "expected": "Original native root sprite; no firearm-specific replacement",
-      "liveEvidence": "pending"
+      "liveEvidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json: paired protected transitions and exact native data controls"
     },
     {
       "consumer": "Katana / Nodachi / Wakizashi / Elven Branched Spear selector entries",
-      "expected": "CustomWeaponSelectorRuntime native text route unchanged; no global font edit; Wakizashi clipping inspection pending",
-      "liveEvidence": "pending"
+      "expected": "CustomWeaponSelectorRuntime native text route unchanged; no global font edit; WK clipping not reproduced in current 1280x720 native inspection",
+      "liveEvidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json: paired protected transitions and exact native data controls",
+      "nativeViewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json"
     },
     {
       "consumer": "Keen Senses / Slow and Steady / exact native racial SLAs",
       "expected": "Native donors untouched; no shared texture mutation",
-      "liveEvidence": "pending"
+      "liveEvidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json: paired protected transitions and exact native data controls"
     }
   ],
   "currentArtSources": {
@@ -7657,8 +7658,9 @@
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
-      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "visualReview": "native Weapon Focus viewport inspected: clear native P/M/B; actual selected-fact/character-sheet rendering and owner approval pending",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "viewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/WeaponFocus/Musket",
@@ -7673,8 +7675,9 @@
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
-      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "visualReview": "native Weapon Focus viewport inspected: clear native P/M/B; actual selected-fact/character-sheet rendering and owner approval pending",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "viewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/WeaponFocus/Pistol",
@@ -7689,8 +7692,9 @@
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
       "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
-      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
-      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      "visualReview": "native Weapon Focus viewport inspected: clear native P/M/B; actual selected-fact/character-sheet rendering and owner approval pending",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+      "viewportEvidence": "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/GreaterWeaponFocus/Blunderbuss",

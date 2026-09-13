@@ -463,3 +463,69 @@ rows and capture of the existing cancel-only strategic spell learning fixture.
 Racial action/buff, character-sheet, scroll and strategic control views remain.
 The working-save firearm-parameter prerequisite and final visual approval are
 explicit pending gates; no new save/write authorization is inferred.
+
+## 2026-09-13 — native viewport and learning evidence
+
+Published the current-master integration as `75017b3e039a16dbfd44b9212e4983de53be8249`
+through the required wrapper. A subsequent bounded capture extension preserves
+native ScrollRect position/velocity while holding one exact row in its viewport.
+It also captures the existing cancel-only Wizard/Sorcerer learning fixture.
+
+The first viewport artifact passed repository validation, 1,629 domain tests,
+clean Release and 224-file package validation. Source hash:
+`f7d8ab0069b4c8b7f0c6d66b00e8515858777690df1ea971d4691f6416c0e85c`;
+DLL `170899e4358521fcff79d938e83b4d966f72b8039fb561028da20a5e3fad6c09`;
+MVID `39c076c1-95a4-4c7d-ae5d-2565b86560f2`;
+package `83889890c46e5688b19244c4d205b95481060e9f3a37dd257955e21a1a930415`.
+Its Ifrit/Gunslinger creator failed with `Sequence contains no matching element`
+while assembling capture targets: P/M/B and Nodachi were present, but untrained
+exotic categories were correctly absent. The 26 diagnostic frames do not qualify
+that run. The correction uses the existing Fighter case's two native feat choices
+to learn an exotic proficiency normally before choosing Weapon Focus. No fact
+grant, prerequisite change or new runtime request parameter is introduced.
+
+The same first artifact passed all 31 native learning checks, run
+`20260913T1418382766746Z-6b9086d6167d4c0181efe771084b036b`, with four completed
+1600x900 captures for Wizard/Sorcerer Teleport/Greater Teleport. Provenance validation
+passed; inspected Wizard Teleport is clear and centered in the real learning list.
+Every viewport was restored. This is an isolated preview/cancel test, not a level
+commit or saved spell-learning claim. All installed package/backup files were
+audited and all 136 original live files independently restored afterward. The
+first package, build manifest and restoration audit are retained as ignored
+`viewport-first-*` artifacts. Neither diagnostic nor partial PASS replaces the
+preceding nine-run qualification record.
+
+The first revised Fighter build passed all 1,629 domain cases but failed exact
+native compilation because this partial file had no `UnitDescriptor.HasFact`
+extension import. It was not packaged or deployed. The check now uses the native
+`Progression.Features.HasFact` collection method verified in the installed
+selection implementation; the complete build gates are repeated after that fix.
+
+The corrected viewport candidate passed all build gates and six guarded Steam
+runs: four creator cases (11 each), learning (31) and working smoke (11), totaling
+86 assertions. Source `600da30a7d2636ffd427e3f7df6efab527383bf0da1ecc4532c653b4fd6a5696`,
+DLL `b5ebd760f91f8e8657705b3403fbdf107ab5e3ad539f65ce1c106c9ba39b8df7`,
+MVID `d6adc4c1-20ed-4435-baab-e863f39d1fa6`, package
+`f10fbb0db787bbf23d3ef23f825e5d98ca661db95155ff3fcb646413fcd500e6`.
+The exact runs, hashes, ten weapon targets and four learning targets are in
+`reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json`. All five native capture
+manifests passed provenance validation; there are 138 unmodified PNGs. Inspected
+P/M/B, NO, WK, KA and EB are clear; WK's native 32-point Saber_Dist32 text reports
+no overflow/truncation at 1280x720. No eastern/spear lettering code was changed.
+All four current Wizard/Sorcerer learning targets are clear and unobscured.
+
+The immediate smoke preflight correctly stopped while the successful learning
+process was still shutting down. It exited normally; smoke was launched separately
+after read-only process verification. No force-kill, concurrent launch or guard
+bypass occurred. All 224 temporary package files, three fully explained additions
+and 136 backup files were audited. At 14:59:42 UTC, independent verification matched
+all 136 original 0.0.117 installation paths/hashes and original settings. The game
+is closed and the candidate package/manifest/audit are archived locally.
+
+Native IL inspection found that the real selected-fact/character-sheet slot reads
+Fact.Icon directly, bypassing the previously qualified FeatureUIData constructor.
+The visible Total capture does not expose the below-fold firearm feat. Next work
+will qualify this exact native component and its P/M/B text route; the original
+fact/parameter/sprite and all other rows must remain intact. Full racial feat,
+action/variant/buff, strategic-control and scroll views remain pending. No final
+owner approval or save-writing authority is inferred from these technical passes.

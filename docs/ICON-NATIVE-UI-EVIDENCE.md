@@ -2,7 +2,7 @@
 
 `NativeIconScreenEvidence` captures the real game framebuffer using the installed
 Unity `ScreenCapture.CaptureScreenshot(string)` API. It runs only inside the
-existing guarded creator and spellbook scenarios with automatic exit enabled.
+existing guarded creator, spellbook and learning scenarios with automatic exit enabled.
 It does not construct substitute screens, edit pixels, send input, or authorize
 any save operation. The mission's [current state](../planning/ICON-OVERHAUL-STATE.md)
 records whether a particular artifact has actually passed these checks.
@@ -19,6 +19,17 @@ This changes only the test fixture's choice; eligibility and production menus
 remain unchanged. Other creator scenarios retain their existing choice policy.
 The capture also checks actual Rapid Reload row data and the active TMP glyph;
 constructor-only evidence previously missed the static menu's raw feature path.
+The exact Gunslinger case additionally reveals existing Weapon Focus P/M/B and
+Nodachi rows through their own native `ScrollRect`. The already allowlisted Fighter
+case first learns its exotic proficiency through the native feat choices, then
+chooses Weapon Focus with its other feat: Wakizashi for Ifrit, Katana for Oread,
+and Elven Branched Spear for Sylph/Undine, when the matching module is enabled.
+The capture requires the exact proficiency in the native preview; it never grants
+facts directly. Untrained exotic categories are correctly absent from the native
+Weapon Focus list. The viewport helper preserves
+the normalized position and velocity, waits for layout, verifies vertical row
+bounds, and restores scrolling before the creator continues. Target parameter/
+category identities accompany those captures. No selection or eligibility is changed.
 
 The supported creator routes are `disposable-elemental-character-creation-baseline`,
 `disposable-elemental-character-creation-case`,
@@ -35,6 +46,13 @@ prepared-spell view while capturing. Its six physical book/spell pairings cover
 Teleport, Greater Teleport and Word of Recall. Original spellbooks, resources,
 action bars, selection, party, area, time and settings must still be restored by
 the existing fixture. Local casting remains disabled for the strategic spells.
+
+`disposable-teleportation-level-up` now captures the already qualified native
+Wizard/Sorcerer learning rows through the same viewport hold. Its existing isolated
+preview, exact row identity, native prerequisites and cancel/cleanup assertions
+remain mandatory. The capture never commits a level or writes a save. This
+extension passed its current-artifact preview/cancel qualification in the
+[viewport record](../reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json).
 
 Use the existing runtime orchestrator through Steam App ID 640820, the exact
 validated package/deployment manifests and current version. For example, supply
@@ -75,7 +93,8 @@ hashes, observations and review decisions in the mission report.
 Run `tools/validate_native_icon_screens.py --evidence <run>/native-ui-screens.json
 --build-manifest <exact-package>.build-local.json` to check the paired runtime
 result, loaded-build identity, capture MVID, completed frames, PNG hashes and
-dimensions, and restored overlay state. Its seven corruption fixtures run in
+dimensions, restored overlay state and explicit row viewport/restoration metadata.
+Its ten corruption fixtures run in
 repository validation. This check reports provenance only; inspect the images.
 
 These hooks do not yet cover native inventory/merchant scroll views, strategic
@@ -91,3 +110,18 @@ targets are clear, but some right-hand progression content retains a hover panel
 An empty creator doll in these fixtures is not appearance qualification. The three
 strategic descriptions were inspected without target occlusion. Owner approval and
 the remaining native surfaces are still pending.
+
+The subsequent [viewport checkpoint](../reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json)
+records six passing runs, 86 assertions, 138 original screenshots and verified
+136-file restoration. Its ten weapon targets include native P/M/B, NO, WK, KA and
+EB. The inspected WK glyph has no overflow/truncation at 1280x720; no clipping
+correction was needed at that scale. All four learning rows are clear. Its first
+fixture assumption failed because untrained exotics are correctly filtered;
+the successful Fighter cases learned proficiency through normal feat choices.
+
+Actual selected facts still require direct inspection: the installed native
+`CharSComponentAbilitySlot.SetFeature(Feature)` reads `Fact.Icon`, independently
+of `FeatureUIData`/`UIFeature`. The initial Total screen shows only the top of its
+New Abilities list; below-fold feat icons are not qualified by that image. Any
+correction must use that exact consumer's native text route and preserve the
+fact, parameter, name, rank, fallback sprite and unrelated native/eastern rows.

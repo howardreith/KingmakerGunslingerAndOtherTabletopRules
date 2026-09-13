@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -97,7 +99,8 @@ namespace KingmakerGunslinger.RuntimeTesting
              request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase ||
              request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
              request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression ||
-             request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi);
+             request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
+             request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp);
 
         internal NativeIconScreenEvidence(RuntimeTestRequest request)
         {
@@ -114,6 +117,84 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string path = Path.Combine(_request.EvidenceDirectory, (string)record["file"]);
                 if (File.Exists(path)) files.Add(path);
             }
+        }
+
+        // Reveal an existing native row without selecting it or changing its
+        // availability. The caller retains the controller/row identity, and the
+        // exact scroll state is restored before its state machine may continue.
+        internal IEnumerable<int> CaptureRow(string stage, RectTransform target,
+            Func<JObject> describe, Func<bool> ownsStableUi)
+        {
+            if (!Supports(_request) || target == null || describe == null || ownsStableUi == null || !ownsStableUi())
+                throw new InvalidOperationException("Native row capture requires an existing request-owned row.");
+            var scroll = target.GetComponentsInParent<ScrollRect>(true).FirstOrDefault(value =>
+                value.isActiveAndEnabled && value.vertical && value.viewport != null && value.content != null &&
+                target.IsChildOf(value.content));
+            if (scroll == null || !scroll.vertical)
+                throw new InvalidOperationException("The exact native row has no supported vertical scroll viewport.");
+            Vector2 originalPosition = scroll.normalizedPosition, originalVelocity = scroll.velocity;
+            int recordIndex = _records.Count;
+            try
+            {
+                Canvas.ForceUpdateCanvases();
+                scroll.StopMovement();
+                var bounds = RowBounds(scroll.viewport, target);
+                var content = RowBounds(scroll.viewport, scroll.content);
+                float range = content.size.y - scroll.viewport.rect.height;
+                if (range > 0)
+                    scroll.verticalNormalizedPosition = Mathf.Clamp01(scroll.verticalNormalizedPosition -
+                        (scroll.viewport.rect.center.y - bounds.center.y) / range);
+                for (int frame = 0; frame < 4; frame++)
+                {
+                    yield return 0;
+                    if (target == null || scroll == null || !ownsStableUi())
+                        throw new InvalidOperationException("Native row ownership changed during viewport settlement.");
+                }
+                bounds = RowBounds(scroll.viewport, target);
+                Rect view = scroll.viewport.rect;
+                bool visible = bounds.min.y >= view.yMin - 1 && bounds.max.y <= view.yMax + 1 &&
+                    bounds.center.x >= view.xMin && bounds.center.x <= view.xMax;
+                var state = describe();
+                state["viewport"] = new JObject {
+                    ["nativeApi"] = "UnityEngine.UI.ScrollRect.normalizedPosition",
+                    ["rowActive"] = target.gameObject.activeInHierarchy,
+                    ["rowVerticallyVisible"] = visible,
+                    ["rowMinY"] = bounds.min.y, ["rowMaxY"] = bounds.max.y,
+                    ["viewportMinY"] = view.yMin, ["viewportMaxY"] = view.yMax,
+                    ["originalX"] = originalPosition.x, ["originalY"] = originalPosition.y,
+                    ["captureX"] = scroll.normalizedPosition.x, ["captureY"] = scroll.normalizedPosition.y,
+                    ["restored"] = false };
+                if (!visible) throw new InvalidOperationException("Native scrolling did not reveal " + stage +
+                    "; row=" + bounds.min.y + ":" + bounds.max.y + "; viewport=" + view.yMin + ":" + view.yMax);
+                foreach (int frame in Capture(stage, state, () => target != null && scroll != null &&
+                    target.gameObject.activeInHierarchy && ownsStableUi())) yield return frame;
+            }
+            finally
+            {
+                bool restored = false;
+                if (scroll != null)
+                {
+                    scroll.normalizedPosition = originalPosition;
+                    scroll.velocity = originalVelocity;
+                    restored = (scroll.normalizedPosition - originalPosition).sqrMagnitude < 0.000001f &&
+                        scroll.velocity == originalVelocity;
+                }
+                if (_records.Count > recordIndex)
+                {
+                    _records[recordIndex]["nativeState"]["viewport"]["restored"] = restored;
+                    Write();
+                }
+                if (!restored) throw new InvalidOperationException("Native row scroll state was not restored.");
+            }
+        }
+
+        private static Bounds RowBounds(RectTransform viewport, RectTransform target)
+        {
+            var corners = new Vector3[4];
+            target.GetWorldCorners(corners);
+            var bounds = new Bounds(viewport.InverseTransformPoint(corners[0]), Vector3.zero);
+            foreach (var corner in corners.Skip(1)) bounds.Encapsulate(viewport.InverseTransformPoint(corner));
+            return bounds;
         }
 
         internal IEnumerable<int> Capture(string stage, JToken state, Func<bool> ownsStableUi)
