@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -773,12 +773,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         string oracleBooksBefore = string.Join("|", oracleReader.Descriptor.Spellbooks
                             .Select(value => TeleportResourceFingerprint(value)).ToArray());
                         oracleRows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
-                        oracleRows.Buttons[oracleRows.Actions.ToList().FindIndex(value => value.Key == recallRow.Key)].onClick.Invoke();
-                        var recallRequest = TeleportContextConfirmationPresenter.Current;
-                        if (recallRequest == null || !DialogMessageBox.Instance.IsShown)
-                            throw new InvalidOperationException("The Oracle Word of Recall confirmation did not open.");
+                        TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                        var recallEvent = oracleRows.Buttons[oracleRows.Actions.ToList().FindIndex(value => value.Key == recallRow.Key)].onClick;
+                        using (var notices = new TeleportNotificationObserver())
+                        {
+                            recallEvent.Invoke();
+                            recallEvent.Invoke();
+                            ScrollsAssert("recall-direct-success-quiet", "native warning boundary publishes no successful Recall announcement",
+                                "count=" + notices.Text.Count, notices.Text.Count == 0);
+                        }
+                        var recallRequest = TeleportContextConfirmationPresenter.LastDirectCast;
+                        if (recallRequest == null || DialogMessageBox.Instance.IsShown)
+                            throw new InvalidOperationException("The Oracle Word of Recall did not cast directly.");
                         for (int frame = 0; frame < 8; frame++) yield return 0;
-                        TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                        recallEvent.Invoke(); // Later stale callback cannot authorize another attempt.
                         for (int frame = 0; frame < 12; frame++) yield return 0;
                         bool recallCommitted = recallRequest.Transaction.State == TeleportTransactionState.Completed &&
                             recallRequest.Transaction.Result != null &&

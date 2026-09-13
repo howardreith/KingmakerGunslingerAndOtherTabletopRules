@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -57,11 +57,22 @@ namespace KingmakerGunslinger.Spells.Teleportation
         { return Title(action, text) + "\n" + Detail(action, text); }
         internal static string SettlementTeleportLabel(Translate text)
         { return text("SettlementTeleport", "Settlement Teleport"); }
-        // A verified successful Greater Teleport arrival announces nothing. Every
+        // Verified Greater Teleport and Recall arrivals announce nothing. Every
         // other result — arrival by ordinary Teleport, rules failures, uncertain
         // expenditure — keeps its actionable player message.
         internal static bool SuppressSuccessAnnouncement(TeleportSpellKind spell, TeleportExecutionStatus status)
-        { return spell == TeleportSpellKind.GreaterTeleport && status == TeleportExecutionStatus.Arrived; }
+        { return TeleportBeginPolicy.IsDirect(spell) && status == TeleportExecutionStatus.Arrived; }
+        internal static string ScrollActivationFailure(string reader, TeleportSpellKind spell,
+            TeleportExpenditure spent, Translate text)
+        {
+            string outcome = spent == TeleportExpenditure.None ?
+                text("Result.ScrollUnconsumed", "No scroll was consumed.") :
+                spent == TeleportExpenditure.ExactlyOne ?
+                text("Result.ScrollConsumed", "One scroll was consumed. No teleport occurred.") :
+                text("Result.ScrollConsumptionUnknown", "Scroll consumption could not be verified. Check your inventory before trying again.");
+            return Format(text("Result.ScrollActivationFailed", "{0} failed to activate the Scroll of {1}."),
+                reader, SpellName(spell, text)) + "\n" + outcome;
+        }
         // Outcome-appropriate arrival sentences. An unnamed destination never
         // substitutes a noun into the "arrived at {destination}" template; the
         // complete sentence comes from its own localization entry.

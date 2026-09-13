@@ -1,4 +1,4 @@
-﻿using KingmakerGunslinger.Spells.Teleportation;
+using KingmakerGunslinger.Spells.Teleportation;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -112,8 +112,23 @@ namespace KingmakerGunslinger.DomainTests
                 "Mishap-limit failures still announce.");
             Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.Teleport, TeleportExecutionStatus.Arrived),
                 "Ordinary Teleport still reports its outcome.");
-            Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.WordOfRecall, TeleportExecutionStatus.Arrived),
-                "Word of Recall still reports its outcome.");
+            Assertions.True(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.WordOfRecall, TeleportExecutionStatus.Arrived),
+                "Verified Recall arrival is quiet");
+            Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.WordOfRecall, TeleportExecutionStatus.NoLegalAlternate),
+                "Recall failures remain actionable");
+        }
+        internal static void ScrollFailureNamesTheActualReaderAndVerifiedExpenditure()
+        {
+            foreach (TeleportExpenditure spent in System.Enum.GetValues(typeof(TeleportExpenditure)))
+            {
+                string message = TeleportContextPresentation.ScrollActivationFailure("Reader A",
+                    TeleportSpellKind.WordOfRecall, spent, English);
+                Assertions.True(message.StartsWith("Reader A failed to activate the Scroll of Word of Recall."), "Actual reader and spell are named.");
+                Assertions.False(message.Contains("{0}") || message.Contains("arrived"), "No unresolved template or false arrival.");
+                Assertions.Equal(spent == TeleportExpenditure.None, message.Contains("No scroll was consumed."), "No-consumption claim requires exact evidence.");
+                Assertions.Equal(spent == TeleportExpenditure.ExactlyOne, message.Contains("One scroll was consumed."), "Consumption claim requires exact evidence.");
+                Assertions.Equal(spent == TeleportExpenditure.Ambiguous, message.Contains("could not be verified"), "Uncertainty is explicit.");
+            }
         }
         internal static void ConfirmationShowsExactOddsAndOrdinaryCount()
         {

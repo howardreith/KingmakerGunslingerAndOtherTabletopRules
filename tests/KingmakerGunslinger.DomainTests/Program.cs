@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.oracle.ReconcilerSourceContract", TeleportationOracleRecallTests.ReconcilerSourceContract),
             Case("teleportation.oracle.BasePublicationPreservedContract", TeleportationOracleRecallTests.BasePublicationPreservedContract),
             Case("teleportation.oracle.ScrollIdentityPreservedContract", TeleportationOracleRecallTests.ScrollIdentityPreservedContract),
+            Case("teleportation.presentation.ScrollFailureNamesTheActualReaderAndVerifiedExpenditure", TeleportationContextTests.ScrollFailureNamesTheActualReaderAndVerifiedExpenditure),
             Case("teleportation.presentation.PreparedRowIncludesCurrentCount", TeleportationContextTests.PreparedRowIncludesCurrentCount),
             Case("teleportation.presentation.CompactRowUsesTitleAndDetailLines", TeleportationContextTests.CompactRowUsesTitleAndDetailLines),
             Case("teleportation.presentation.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous", TeleportationContextTests.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous),
