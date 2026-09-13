@@ -1033,6 +1033,7 @@
     <Compile Include="RuntimeTesting\IconOverhaulVisualEvidenceScenario.cs" />
     <Compile Include="RuntimeTesting\NativeIconScreenEvidence.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeIcons.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeFeatIcons.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeSheet.cs" />
     <Compile Include="RuntimeTesting\IconConsumerCensus.cs" />
     <Compile Include="RuntimeTesting\IconGraphSnapshot.cs" />

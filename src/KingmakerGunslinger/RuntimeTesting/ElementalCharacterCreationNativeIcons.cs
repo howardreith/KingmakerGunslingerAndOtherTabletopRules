@@ -56,6 +56,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> CaptureNativeIconSequence(string stage)
         {
             foreach (int frame in _nativeIconScreens.Capture(stage, DescribeNativeIconRows(), OwnsNativeIconBuild)) yield return frame;
+            foreach (int frame in CaptureNativeRacialFeatMenu()) yield return frame;
             if ((_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase || NativeSheetCase) &&
                 (string)_request.Parameters["class"] == "Gunslinger" &&
                 (stage.EndsWith(":Total", StringComparison.Ordinal) || stage.EndsWith(":TotalInChargen", StringComparison.Ordinal)))

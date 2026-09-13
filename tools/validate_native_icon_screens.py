@@ -40,7 +40,7 @@ def validate(evidence, result, build, identity, directory):
             continue
         require(record.get('status') == 'captured-native-screen-awaiting-visual-inspection', 'Incomplete capture: ' + name)
         require(bool(record.get('stage')) and isinstance(record.get('nativeState'), dict), 'Missing native UI identity: ' + name)
-        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:', 'native-scroll-row:', 'native-scroll-merchant-row:')):
+        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:', 'native-scroll-row:', 'native-scroll-merchant-row:', 'native-racial-feat-row:')):
             state = record.get('nativeState', {})
             state = state if isinstance(state, dict) else {}
             viewport = state.get('viewport', {})
@@ -84,6 +84,27 @@ def validate(evidence, result, build, identity, directory):
                 require(bool(target.get('spellGuid')) and bool(target.get('classGuid')) and
                         target.get('previewOnly') is True and target.get('enabled') is True and
                         target.get('spellLevel') in (5, 7), 'Native learning row identity/preview differs: ' + name)
+            elif record['stage'].startswith('native-racial-feat-row:'):
+                keys = ['elemental-strike', 'scorching-weapons', 'inner-flame', 'blazing-aura', 'firesight',
+                        'airy-step', 'wings-of-air', 'cloud-gazer', 'inner-breath', 'hydraulic-maneuver', 'triton-portal']
+                feats = {f'e116e1e0a17a4aceb001{index:012d}': key for index, key in enumerate(keys, 1)}
+                race_indices = {'Ifrit': [1, 2, 3, 4, 5], 'Oread': [1], 'Sylph': [1, 6, 7, 8, 9], 'Undine': [1, 10, 11]}
+                expected = [f'e116e1e0a17a4aceb001{index:012d}' for index in race_indices.get(state.get('race'), [])]
+                guid = target.get('featureGuid')
+                require(state.get('surface') == 'native-racial-feat-selector' and state.get('showAll') is True and
+                        bool(expected) and state.get('expectedFeatGuids') == expected and guid in expected and
+                        record['stage'] == 'native-racial-feat-row:' + str(guid) and
+                        target.get('iconName') == 'KMG_Icon_' + feats.get(guid, 'invalid'),
+                        'Native racial feat identity/art/race/filter differs: ' + name)
+                markers = target.get('nativeMarkers', {})
+                require(target.get('renderedIconExact') is True and target.get('titleExact') is True and
+                        isinstance(target.get('nativeEligibility'), str) and bool(target['nativeEligibility'].strip()) and
+                        type(target.get('nativeInteractable')) is bool and
+                        target.get('selectionAndEligibilityRetained') is True and target.get('nativeMarkersRetained') is True and
+                        isinstance(markers, dict) and set(markers) == {'m_DisableMark', 'm_ForbiddenMark', 'm_AllreadyUsedMark'} and
+                        all(type(value) is bool for value in markers.values()) and
+                        type(target.get('otherIconRows')) is int and target['otherIconRows'] > 0 and target.get('otherIconsExact') is True,
+                        'Native racial feat rendered icon/title/eligibility/controls differ: ' + name)
             elif record['stage'].startswith('native-selected-fact:'):
                 roots = {'1e1f627d26ad36f43bbd26cc2bf8ac7e', '09c9e82965fb4334b984a1e9df3bd088',
                          '31470b17e8446ae4ea0dacd6c5817d86', '7cf5edc65e785a24f9cf93af987d66b3',

@@ -126,6 +126,45 @@ class NativeScreenEvidenceTests(unittest.TestCase):
             'itemCount':1, 'charges':1, 'identified':True, 'otherItemRows':3, 'otherItemIconsExact':True}
         return state
 
+    def prepare_racial_feat_row(self):
+        state = self.prepare_native_row()
+        guid = 'e116e1e0a17a4aceb001000000000001'
+        self.evidence['records'][0]['stage'] = 'native-racial-feat-row:' + guid
+        state.update(surface='native-racial-feat-selector', race='Oread', showAll=True, expectedFeatGuids=[guid])
+        state['targetRow'] = dict(name='Elemental Strike', featureGuid=guid, iconName='KMG_Icon_elemental-strike',
+            renderedIconExact=True, titleExact=True, nativeEligibility='CanSelect', nativeInteractable=True,
+            selectionAndEligibilityRetained=True, nativeMarkersRetained=True, otherIconRows=8, otherIconsExact=True,
+            nativeMarkers=dict(m_DisableMark=False, m_ForbiddenMark=False, m_AllreadyUsedMark=False))
+        return state
+
+    def test_racial_feat_requires_its_real_art_title_and_preserved_eligibility(self):
+        target = self.prepare_racial_feat_row()['targetRow']
+        self.assertEqual([], self.errors())
+        # A disabled native row is valid evidence; enabling it is not required.
+        target.update(nativeEligibility='PrerequisitesNotMet', nativeInteractable=False)
+        target['nativeMarkers']['m_DisableMark'] = True
+        self.assertEqual([], self.errors())
+        for key, value in [('featureGuid','unrelated'), ('iconName','borrowed'), ('renderedIconExact',False),
+                           ('titleExact',False), ('nativeEligibility',''), ('nativeInteractable',None),
+                           ('selectionAndEligibilityRetained',False), ('nativeMarkersRetained',False),
+                           ('nativeMarkers',{}), ('otherIconRows',0), ('otherIconRows',True), ('otherIconsExact',False)]:
+            with self.subTest(key=key):
+                original = target[key]
+                target[key] = value
+                self.assertTrue(self.errors())
+                target[key] = original
+
+    def test_racial_feat_requires_exact_native_filter_race_and_target_set(self):
+        state = self.prepare_racial_feat_row()
+        for key, value in [('surface','mock-list'), ('showAll',False), ('race','Ifrit'), ('race','unknown'),
+                           ('expectedFeatGuids',[])]:
+            original = state[key]
+            state[key] = value
+            self.assertTrue(self.errors())
+            state[key] = original
+        self.evidence['records'][0]['stage'] = 'native-racial-feat-row:unrelated'
+        self.assertTrue(self.errors())
+
     def test_scroll_requires_exact_item_spell_and_preserved_controls(self):
         state = self.prepare_scroll_row()
         self.assertEqual([], self.errors())

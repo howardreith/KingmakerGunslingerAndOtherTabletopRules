@@ -249,7 +249,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return rows;
         }
 
-        private sealed class NativeRowScroll
+        internal sealed class NativeRowScroll
         {
             private readonly ScrollRect _standard;
             private readonly ScrollRectExtended _extended;

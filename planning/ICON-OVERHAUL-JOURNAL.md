@@ -791,3 +791,57 @@ source uses fresh visible feat blueprints without HideNotAvailibleInUI. Preserve
 eligibility and native disabled states; do not manufacture legal selections.
 Strategic text-only controls and active action/variant/buff views remain separate.
 All 80 later paintings and final native UI still await owner approval.
+
+
+### 2026-09-13 — Native racial feat menu implementation (not yet qualified)
+
+Continued from merchant checkpoint `3d46cad39ab74ab4f68dd228c02e57b1af40de5c`.
+The exact disposable Gunslinger creator uses its real general-feat ShowAll toggle
+and native rows. Native eligibility, markers, preview facts and selection are
+retained; original filter and both supported scroll types are restored. Missing
+targets or restoration fail a required result assertion. Eleven consumer
+dispositions now reference this pending native evidence. Two negative evidence
+fixtures cover art/identity/state/control corruption and wrong filter/race/set.
+No icon pixels, gameplay prerequisites, publication or approved family changed.
+Build and runtime qualification are next; original live installation is restored.
+
+Build 1 passed repository validation, 23 catalog, 19 native capture, six paired,
+eleven request and 1,629 domain tests, then failed exact Release compilation on
+a local/lambda variable-name collision (CS0136). Renamed the lambda parameter;
+no artifact was deployed. Full qualification is rerun on the corrected source.
+
+
+### 2026-09-13 — All eleven native racial feat rows qualified
+
+Corrected build 2 passed all required gates: 23 catalog, 19 native capture, six
+paired, eleven request and 1,629 domain tests, clean Release and the strict
+224-file package. Artifact source `1be9713bfda492491794b14cff5df70519ecda191f0602df82b7c7e46acff5f7`;
+package `c625fb133c823b18b184cb807c50f029953b9f10e4bfdefabda5d9ebb6241747`; DLL `1d06760cc82b28a483f387d549725d8b1a10aeb072b6f7c5fb73ae4f0bc7e24a`;
+MVID `954660fc-44bf-487e-9caa-8664d0ac8343`. The preliminary deployment count check mistook a
+PowerShell JSON array wrapper for the list. Before any deployment mutation,
+independent comparison proved all 136 original paths/hashes unchanged; corrected
+check passed. This was neither installation drift nor an approval rejection.
+
+Four exact disposable point-buy Gunslinger creator cases (Ifrit/Oread/Sylph/Undine)
+and same-artifact working-save smoke passed: **59 assertions, 138 native captures,
+fourteen focused targets and eleven distinct feats**. Every target was inspected
+clear at 1280x720; actual icons, titles, native eligibility/markers and ordinary
+controls were exact. Native ShowAll can include wrong-race unavailable entries;
+the target set uses the race policy. No prerequisites were bypassed. Original
+filter, scroll, selection and facts restored in all cases. Native final review
+was reached and canceled without a committed character or new save. Exact runs:
+- `20260913T1901332484934Z-disposable-elemental-character-creation-case` — 12 PASS assertions.
+- `20260913T1905050196959Z-disposable-elemental-character-creation-case` — 12 PASS assertions.
+- `20260913T1909031122668Z-disposable-elemental-character-creation-case` — 12 PASS assertions.
+- `20260913T1912467856504Z-disposable-elemental-character-creation-case` — 12 PASS assertions.
+- `20260913T1916076110117Z-working-save-smoke` — 11 PASS assertions.
+
+All game processes exited normally. The audit verified all 224 packaged files,
+three known runtime additions and 136 backup files. Original installation and
+settings independently verified restored at `2026-09-13T19:19:47.653542+00:00`.
+Curated record: `reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json`.
+Local originals/gallery: `artifacts/icon-overhaul-v2/NATIVE-RACIAL-FEAT-REVIEW.html`.
+Eleven consumer dispositions updated. Raw native images/IL/packages stay local.
+Only technical qualification is asserted; eighty production images and final UI
+approval remain pending. Next: strategic native text controls and remaining
+actions/variants/buffs, dependent rendered feats and the saved-parameter prerequisite.
