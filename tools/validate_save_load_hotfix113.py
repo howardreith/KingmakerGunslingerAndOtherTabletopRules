@@ -155,7 +155,7 @@ def validate(root: Path) -> None:
             static.get("milestone") != INFORMATIONAL_VERSION:
         raise AssertionError("0.0.113 static release identity mismatch")
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "paperToggleAuthoritative": "activatable-is-on",
         "paperModeReadOnly": True,
         "paperModePostLoadMutation": False,

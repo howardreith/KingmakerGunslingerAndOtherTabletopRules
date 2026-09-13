@@ -45,8 +45,8 @@ namespace KingmakerGunslinger.DomainTests
                     Assertions.False(decision.IsAvailable,
                         "Combat must reject repair regardless of state or kit: " +
                         condition + "/" + kit);
-                    Assertions.True(decision.Reason.Contains("combat"),
-                        "The combat rejection must name combat: " + decision.Reason);
+                    Assertions.Equal("Cannot repair firearms during combat.", decision.Reason,
+                        "Combat has one exact contextual rejection.");
                 }
             }
         }
@@ -58,10 +58,8 @@ namespace KingmakerGunslinger.DomainTests
                 State(FirearmCondition.Wrecked), true, false);
             Assertions.False(decision.IsAvailable,
                 "A Wrecked firearm must never be field-repair eligible.");
-            Assertions.True(decision.Reason.Contains("Wrecked") &&
-                decision.Reason.Contains("full rest"),
-                "The Wrecked rejection must point at the completed full rest: " +
-                decision.Reason);
+            Assertions.Equal("This firearm is Wrecked. A full rest is required.", decision.Reason,
+                "Wrecked has one exact contextual rejection.");
         }
 
         internal static void NormalAndMissingKitRejected()
@@ -76,9 +74,10 @@ namespace KingmakerGunslinger.DomainTests
                 State(FirearmCondition.Broken), false, false);
             Assertions.False(noKit.IsAvailable,
                 "A Broken firearm without a kit must not be repair eligible.");
-            Assertions.True(noKit.Reason.Contains("Gunsmith's Kit"),
-                "The missing-kit rejection must name the reusable kit: " +
-                noKit.Reason);
+            Assertions.Equal("Requires a Gunsmith's Kit.", noKit.Reason,
+                "The missing-kit rejection must name the reusable kit briefly.");
+            Assertions.Equal("This firearm is not broken.", normal.Reason,
+                "A Normal gun has its own contextual rejection.");
             FirearmActionDecision broken = FirearmActionPolicy.Evaluate(
                 FirearmActionKind.Repair, Definition(),
                 State(FirearmCondition.Broken), true, false);

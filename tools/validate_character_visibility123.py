@@ -43,7 +43,7 @@ def validate(root: Path) -> None:
         "request-bound activation gate", "one native activation",
         "Hassuf fallback", "no refill", "1,561", "36/36", "15/12/8/4")
     require_tokens(root / "docs/RELEASE-NOTES-0.0.123.md",
-        INFORMATIONAL_VERSION, "owner",
+        "0.0.123-character-visibility-repair", "owner",
         "invisible bodies", "UpdateDollCoroutine", "AssetBundle.Unload(true)",
         "1,567", "run 13", "zero asset unloads",
         "character-creator visual lifecycle")
@@ -53,7 +53,7 @@ def validate(root: Path) -> None:
         raise AssertionError("Static validation does not identify the character visibility repair release.")
     state = static.get("characterVisibility123", {})
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "publicReleaseAuthorized": True,
         "ownerAcceptedMissionReport": True,
         "rootCauseConfirmed": "creator doll-update removal passes and counter-based cache cleanups destroy shared visual resources",

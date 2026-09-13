@@ -294,7 +294,7 @@ namespace KingmakerGunslinger.Gunsmithing
                     {
                         AddIfMarkedFirearm(
                             candidates,
-                            slot == null ? null : slot.Item as ItemEntityWeapon);
+                            slot == null ? null : slot.MaybeItem as ItemEntityWeapon);
                     }
                 }
             }

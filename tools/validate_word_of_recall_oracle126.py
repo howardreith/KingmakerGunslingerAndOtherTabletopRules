@@ -39,7 +39,7 @@ def validate(root: Path) -> None:
     baseline.validate(root)
     # The 0.0.125 release record remains authoritative history.
     require_tokens(root / "docs/RELEASE-NOTES-0.0.125.md",
-        INFORMATIONAL_VERSION, "owner", "narrow native button")
+        "0.0.125-settlement-button-width", "owner", "narrow native button")
     require_tokens(root / "docs/RELEASE-NOTES-0.0.126.md",
         "0.0.126-word-of-recall-oracle", "Owner reported",
         "Word of Recall", "Oracle", "zero-UMD",
@@ -51,7 +51,7 @@ def validate(root: Path) -> None:
         raise AssertionError("Static validation does not identify the Word of Recall Oracle release.")
     state = static.get(STATIC_KEY, {})
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "publicReleaseAuthorized": True,
         "ownerReportedOracleScrollFailureConfirmed": True,
         "nativeClericAndDruidRegistrationUnchanged": True,

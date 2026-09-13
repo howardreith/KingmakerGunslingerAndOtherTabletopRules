@@ -22,7 +22,8 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("firearm-maintenance"
+    effective_suffix = ("firearm-postrelease-hotfix"
+        if VERSION == "0.0.128" else "firearm-maintenance"
         if VERSION == "0.0.127" else "word-of-recall-oracle"
         if VERSION == "0.0.126" else "settlement-button-width"
         if VERSION == "0.0.125" else "teleport-polish-specialist"

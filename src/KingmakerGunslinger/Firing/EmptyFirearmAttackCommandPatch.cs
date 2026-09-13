@@ -10,6 +10,7 @@ using KingmakerGunslinger.Reloading;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace KingmakerGunslinger.Firing
 {
@@ -26,8 +27,8 @@ namespace KingmakerGunslinger.Firing
         private static long _sequenceInterruptionRejections;
         private static long _evaluatedAttacks;
         private static readonly object PendingGate = new object();
-        private static readonly Dictionary<UnitUseAbility, PendingAttack> Pending =
-            new Dictionary<UnitUseAbility, PendingAttack>();
+        private static readonly ConditionalWeakTable<UnitUseAbility, PendingAttack> Pending =
+            new ConditionalWeakTable<UnitUseAbility, PendingAttack>();
         internal static long Rejected { get { return Interlocked.Read(ref _rejected); } }
         internal static long AutoReloadReplacements
         { get { return Interlocked.Read(ref _autoReloadReplacements); } }
@@ -53,57 +54,12 @@ namespace KingmakerGunslinger.Firing
                 new[] { typeof(bool) }, null);
             MethodInfo endedPostfix = typeof(EmptyFirearmAttackCommandPatch).GetMethod(
                 "ReloadEndedPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo clickPrefix = typeof(EmptyFirearmAttackCommandPatch).GetMethod(
-                "PlayerClickPrefix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo clickPostfix = typeof(EmptyFirearmAttackCommandPatch).GetMethod(
-                "PlayerClickPostfix", BindingFlags.NonPublic | BindingFlags.Static);
-            MethodInfo onClick = typeof(Kingmaker.Controllers.Clicks.Handlers.ClickUnitHandler)
-                .GetMethod("OnClick", BindingFlags.Public | BindingFlags.Instance, null,
-                new[]
-                {
-                    typeof(UnityEngine.GameObject),
-                    typeof(UnityEngine.Vector3),
-                    typeof(int),
-                    typeof(bool),
-                    typeof(bool)
-                }, null);
             if (create == null || prefix == null || ended == null || endedPostfix == null)
                 throw new MissingMethodException(
                     "Exact attack construction or reload completion contract was unavailable.");
-            if (onClick == null || clickPrefix == null ||
-                clickPostfix == null)
-                throw new MissingMethodException(
-                    "Exact player attack click contract was unavailable.");
             harmony.Patch(create, new HarmonyMethod(prefix), null, null);
             harmony.Patch(ended, null, new HarmonyMethod(endedPostfix), null);
-            // The native player unit click opens a narrowly scoped
-            // authorization for its own selected executors against the
-            // clicked target; the postfix discards it as soon as the click
-            // returns, so later automatic work in the same frame cannot
-            // inherit the order.
-            harmony.Patch(onClick, new HarmonyMethod(clickPrefix),
-                new HarmonyMethod(clickPostfix), null);
-        }
-
-        private static void PlayerClickPrefix(UnityEngine.GameObject __0)
-        {
-            try
-            {
-                Kingmaker.View.UnitEntityView view = __0 == null
-                    ? null
-                    : __0.GetComponent<Kingmaker.View.UnitEntityView>();
-                BrokenSequenceSuppressionRuntime.BeginPlayerAttackClick(
-                    view == null ? null : view.EntityData);
-            }
-            catch
-            {
-                BrokenSequenceSuppressionRuntime.EndPlayerAttackClick();
-            }
-        }
-
-        private static void PlayerClickPostfix()
-        {
-            BrokenSequenceSuppressionRuntime.EndPlayerAttackClick();
+            NativeFirearmAttackOrderPatch.Install(harmony);
         }
 
         private static bool Prefix(UnitEntityData __0, UnitEntityData __1,
@@ -129,17 +85,14 @@ namespace KingmakerGunslinger.Firing
                 BrokenSequenceInterruptionPolicy.EvaluateConstruction(
                     BrokenSequenceSuppressionRuntime.IsSuppressed(
                         executor, firearm.Weapon),
-                    BrokenSequenceSuppressionRuntime
-                        .TryConsumePlayerAttackAuthorization(executor, __1));
+                    NativeFirearmAttackOrder
+                        .ClaimConstruction(executor, __1, firearm.Weapon));
             if (sequence == BrokenSequenceConstructionDecision.RejectInterrupted)
                 return Reject(executor, __1,
                     EmptyFirearmCommandDisposition.RejectInterrupted,
                     firearm.Firearm.ItemDisplayName +
                     " broke during its attack sequence; issue a new attack order to fire it again.",
                     ref __result);
-            if (sequence == BrokenSequenceConstructionDecision.AllowAndConsume)
-                BrokenSequenceSuppressionRuntime.ConsumeSuppression(
-                    executor, firearm.Weapon);
             bool autoReload = IsReloadAutoUse(executor);
             bool reloadLegal = autoReload &&
                 executor.GetAvailableAutoUseAbility() != null;
@@ -187,18 +140,42 @@ namespace KingmakerGunslinger.Firing
                         new Kingmaker.Utility.TargetWrapper(executor));
                     Kingmaker.Items.ItemEntityWeapon capturedWeapon =
                         ResolveExactWeapon(executor);
-                    lock (PendingGate)
-                        Pending[command] = new PendingAttack(executor, target,
-                            firearmWeapon: capturedWeapon,
-                            paperMode: PaperCartridgeModeRuntime.IsActive(
-                                executor.Descriptor,
-                                BlueprintBootstrap.PaperCartridgeMode.Marker),
-                            degradationEpoch: BrokenSequenceSuppressionRuntime
-                                .GetDegradationEpoch(executor, capturedWeapon));
+                    CaptureReload(command, executor, target, capturedWeapon);
                     result = command;
                 }
             }
             return false;
+        }
+
+        internal static void CaptureReload(UnitUseAbility command, UnitEntityData executor,
+            UnitEntityData target, Kingmaker.Items.ItemEntityWeapon weapon)
+        {
+            if (command == null || weapon == null || target == null) return;
+            NativeFirearmAttackOrder.CaptureReloadBinding(command, executor, weapon);
+            lock (PendingGate)
+            {
+                Pending.Remove(command);
+                Pending.Add(command, new PendingAttack(executor, target, weapon,
+                    PaperCartridgeModeRuntime.IsActive(executor.Descriptor,
+                        BlueprintBootstrap.PaperCartridgeMode.Marker),
+                    BrokenSequenceSuppressionRuntime.GetDegradationEpoch(executor, weapon)));
+            }
+        }
+
+        internal static void TransferPendingReload(UnitUseAbility proposed, UnitUseAbility survivor)
+        {
+            if (proposed == null || survivor == null || ReferenceEquals(proposed, survivor)) return;
+            // Called only after native merging retained this command and the
+            // new explicit order was accepted. Move its immutable target/item
+            // capture; never rewrite an already-scheduled old callback.
+            lock (PendingGate)
+            {
+                PendingAttack pending;
+                if (!Pending.TryGetValue(proposed, out pending)) return;
+                Pending.Remove(proposed);
+                Pending.Remove(survivor);
+                Pending.Add(survivor, pending);
+            }
         }
 
         private static Kingmaker.Items.ItemEntityWeapon ResolveExactWeapon(
@@ -211,9 +188,10 @@ namespace KingmakerGunslinger.Firing
                     out resolved, out reason) ? resolved.Weapon : null;
         }
 
-        private static void ReloadEndedPostfix(UnitUseAbility __instance, bool __0)
+        private static void ReloadEndedPostfix(UnitUseAbility __instance)
         {
-            CompletePending(__instance, __0, true, false);
+            // Native OnEnded(bool) controls event publication, not interruption.
+            CompletePending(__instance, __instance.Result != UnitCommand.ResultType.Success, true, false);
         }
 
         internal static UnitCommand CompletePendingForRuntimeTest(UnitUseAbility command,
@@ -231,10 +209,12 @@ namespace KingmakerGunslinger.Firing
                 if (command == null || !Pending.TryGetValue(command, out pending))
                     return null;
                 Pending.Remove(command);
+                pending.Binding = NativeFirearmAttackOrder.Get(command);
             }
             if (interrupted || (!runtimeObservedSuccess &&
                 command.Result != UnitCommand.ResultType.Success))
             {
+                NativeFirearmAttackOrder.Interrupted(command);
                 Interlocked.Increment(ref _autoReloadCanceledAttacks);
                 return null;
             }
@@ -257,8 +237,17 @@ namespace KingmakerGunslinger.Firing
             UnitEntityData target = pending == null ? null : pending.Target;
             ExactEquippedFirearmContext resolved;
             string reason;
+            if (pending != null && !NativeFirearmAttackOrder.MayResume(pending.Binding))
+            {
+                // A newer command may already continue this same accepted
+                // order. Discard this callback without revoking its successor.
+                Interlocked.Increment(ref _autoReloadCanceledAttacks);
+                return null;
+            }
             if (executor == null || executor.Descriptor == null || target == null ||
-                target.Descriptor == null || !IsReloadAutoUse(executor) ||
+                target.Descriptor == null || target.Descriptor.State.IsDead ||
+                !executor.CanAttack(target) || !executor.Descriptor.State.CanAct ||
+                !IsReloadAutoUse(executor) ||
                 !ExactEquippedFirearmResolver.TryResolve(executor.Descriptor,
                     out resolved, out reason) ||
                 !ReferenceEquals(resolved.Weapon, pending.FirearmWeapon) ||
@@ -270,8 +259,9 @@ namespace KingmakerGunslinger.Firing
                     pending.DegradationEpoch,
                     BrokenSequenceSuppressionRuntime.GetDegradationEpoch(
                         executor, resolved.Weapon)) ||
-                !TurnBasedAllowsStandardAttack())
+                !TurnBasedAllowsAttackQueue(executor))
             {
+                NativeFirearmAttackOrder.Invalidate(pending == null ? null : pending.Binding);
                 Interlocked.Increment(ref _autoReloadCanceledAttacks);
                 return null;
             }
@@ -286,23 +276,25 @@ namespace KingmakerGunslinger.Firing
             return attack;
         }
 
-        private static bool TurnBasedAllowsStandardAttack()
+        private static bool TurnBasedAllowsAttackQueue(UnitEntityData executor)
         {
             TurnBased.Controllers.CombatController controller = Kingmaker.Game.Instance == null
                 ? null : Kingmaker.Game.Instance.TurnBasedCombatController;
-            if (controller == null ||
-                !TurnBased.Controllers.CombatController.IsInTurnBasedCombat()) return true;
-            TurnBased.Controllers.TurnController turn = controller.CurrentTurn;
-            return TurnBasedAllowsStandardAttack(true, turn != null,
-                turn != null && turn.ActionsStates != null &&
-                turn.ActionsStates.Standard != null &&
-                turn.ActionsStates.Standard.CanUse);
+            bool turnBased = controller != null &&
+                TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
+            var turn = controller == null ? null : controller.CurrentTurn;
+            // CanUse includes UI hover predictions, not just spent actions.
+            // Submit this continuation once to the native queue. Its actual
+            // cooldown gate controls execution; native turn-end interruption
+            // revokes ownership instead of creating a cross-turn retry.
+            return TurnBasedAllowsAttackQueue(turnBased,
+                turn != null && ReferenceEquals(turn.Unit, executor));
         }
 
-        internal static bool TurnBasedAllowsStandardAttack(bool isTurnBased,
-            bool hasCurrentTurn, bool standardActionAvailable)
+        internal static bool TurnBasedAllowsAttackQueue(bool isTurnBased,
+            bool isActorTurn)
         {
-            return !isTurnBased || (hasCurrentTurn && standardActionAvailable);
+            return !isTurnBased || isActorTurn;
         }
 
         private sealed class PendingAttack
@@ -323,6 +315,7 @@ namespace KingmakerGunslinger.Firing
             internal Kingmaker.Items.ItemEntityWeapon FirearmWeapon { get; private set; }
             internal bool PaperMode { get; private set; }
             internal int DegradationEpoch { get; private set; }
+            internal NativeFirearmAttackOrder.Binding Binding;
         }
     }
 }

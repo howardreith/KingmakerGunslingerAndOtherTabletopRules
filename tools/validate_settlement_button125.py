@@ -42,7 +42,7 @@ def validate(root: Path) -> None:
         "special-spell cache", "Spellbook.PostLoad",
         "1,574")
     require_tokens(root / "docs/RELEASE-NOTES-0.0.125.md",
-        INFORMATIONAL_VERSION, "owner screenshot",
+        "0.0.125-settlement-button-width", "owner screenshot",
         "Settlement Teleport", "narrow native button",
         "label preferred width", "native padding",
         "native action region", "restored byte-for-byte",
@@ -53,7 +53,7 @@ def validate(root: Path) -> None:
         raise AssertionError("Static validation does not identify the settlement button width release.")
     state = static.get("settlementButton125", {})
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "publicReleaseAuthorized": True,
         "settlementButtonWidenedToLabel": "label preferred width at the native font size plus the control native padding, capped by the settled native action region",
         "settlementButtonRestoreExact": True,

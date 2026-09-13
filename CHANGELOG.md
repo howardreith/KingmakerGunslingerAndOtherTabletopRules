@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.128-firearm-postrelease-hotfix
+
+Unpublished hotfix candidate for contextual Repair Firearm rejection and explicit Broken-firearm reattack, including native reload continuation and paused orders. Review revisions preserve native coexisting commands, retargeted/merged survivors, and actual reload/turn lifetimes. Native mechanical qualification: 413/413 PASS (all original 145 retained); domain suite: 1,622/1,622 PASS. Completed-rest collection now skips empty equipment slots. See docs/FIREARM-POSTRELEASE-HOTFIX-QUALIFICATION.md for exact scope and evidence.
+
+
 ## 0.0.127-firearm-maintenance
 
 Released 2026-09-13 by explicit owner direction; the owner waived the

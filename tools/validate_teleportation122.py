@@ -41,7 +41,7 @@ def validate(root: Path) -> None:
         "exactly one maintenance action", "reusable Gunsmith",
         "KNOWN-ISSUES.md", "1,554", "32/32", "16/16")
     require_tokens(root / "docs/RELEASE-NOTES-0.0.122.md",
-        INFORMATIONAL_VERSION, "owner",
+        "0.0.122-teleportation-completion", "owner",
         "request-bound activation gate", "one native activation",
         "Hassuf fallback", "no refill", "1,561", "36/36", "15/12/8/4")
     static = json.loads((root / "validation/static-validation.json").read_text(encoding="utf-8"))
