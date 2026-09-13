@@ -28,25 +28,37 @@ namespace KingmakerGunslinger.Recovery
         {
             if (caster == null)
             {
-                return Unavailable("No concrete caster descriptor is available.");
+                return Unavailable("Cannot repair right now.");
             }
 
             if (testMusket == null || gunsmithKit == null)
             {
-                return Unavailable("Repair blueprint dependencies are not initialized.");
+                return Unavailable("Cannot repair right now.");
             }
+
+            // Party combat wins over equipment, kit, and capability failures.
+            if (IsPartyInCombat())
+                return Unavailable("Cannot repair firearms during combat.");
+
+            if (caster.State == null || caster.State.IsDead ||
+                !caster.State.IsConscious || !caster.State.CanAct)
+                return Unavailable("Cannot repair right now.");
 
             if (!FirearmMaintenanceCapability.CanMaintainFirearms(caster))
             {
                 return Unavailable(
-                    "This character lacks the Gunsmithing repair capability or cannot act right now.");
+                    "Requires Gunsmithing.");
             }
 
             ExactEquippedFirearmContext context;
             string rejection;
             if (!ExactEquippedFirearmResolver.TryResolve(caster, out context, out rejection))
             {
-                return Unavailable(rejection);
+                return Unavailable(rejection == "Equip exactly one marked firearm."
+                    ? "Equip a firearm to repair."
+                    : rejection != null && rejection.IndexOf("ambiguous", StringComparison.OrdinalIgnoreCase) >= 0
+                    ? "Equip only one firearm to repair."
+                    : "Cannot repair right now.");
             }
 
             ItemEntityWeapon weapon = context.Weapon;
@@ -150,7 +162,7 @@ namespace KingmakerGunslinger.Recovery
             Game game = Game.Instance;
             if (game == null || game.Player == null || game.Player.Inventory == null)
             {
-                reason = "The active campaign has no shared inventory.";
+                reason = "Cannot repair right now.";
                 return false;
             }
 

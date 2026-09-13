@@ -43,7 +43,7 @@ def validate(root: Path) -> None:
         "1,567", "run 13", "zero asset unloads",
         "character-creator visual lifecycle")
     require_tokens(root / "docs/RELEASE-NOTES-0.0.124.md",
-        INFORMATIONAL_VERSION, "owner",
+        "0.0.124-teleport-polish-specialist", "owner",
         "special-spell cache", "Spellbook.PostLoad",
         "m_SpecialSpells", "favorite slot",
         "world extent", "settled-extent width", "somewhere else",
@@ -55,7 +55,7 @@ def validate(root: Path) -> None:
         raise AssertionError("Static validation does not identify the teleport polish specialist release.")
     state = static.get("teleportPolish124", {})
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "publicReleaseAuthorized": True,
         "compatibilityRuntimeQualificationPending": True,
         "specialistRootCauseConfirmed": "serialized per-book m_SpecialSpells cache derived only at feature activation and learn time; PostLoad never re-derives it",

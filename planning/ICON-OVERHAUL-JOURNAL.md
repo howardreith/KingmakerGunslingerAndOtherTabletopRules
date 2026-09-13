@@ -1,5 +1,185 @@
 # Icon overhaul v2 journal
 
+## 2026-09-13 first integrated native screens and static-menu correction
+
+The owner-requested master integration built successfully with 1,629/1,629
+domain cases, repository/asset validation, 22 catalog, six paired-control,
+seven screenshot-corruption and eleven request-format checks, clean Release
+and a validated 224-file package. The upstream compiled input-wrapper check
+passed all ten synthetic cases. Hotfix production files match the merged master.
+Package `665b4d7e16e4349282897ca61a82009fcec904ad3a52347f89897564171988fe`;
+DLL `15b2f40c092f3905fd3ab358ef19c1e3d7a2e8f53d92aa2b57c76b6812679065`;
+MVID `c827e94d-dd34-42dd-9688-9bd37c95dad2`; source fingerprint
+`f06cc32b0bafbb04559516e742039df24614c2e51632e8ebaee34721b347592e`.
+
+Four guarded disposable Gunslinger creator runs passed all eleven assertions
+each, producing 28 Ifrit, 28 Oread, 28 Sylph and 24 Undine native 1280x720 frames.
+Run IDs: `20260913T1300483227258Z-ff8b1c91c41c4d5f974a98f9ed1993dd`,
+`20260913T1304592794269Z-3fd9b526a15d4fa69232792a665523fa`,
+Sylph evidence directory `20260913T1307305696043Z-disposable-elemental-character-creation-case`,
+and `20260913T1310045107346Z-f89160e501c7433992f511eb83436929`.
+UMM's normal close/restoration succeeded in every run. Inspected the four
+heritage menus and Ifrit Weapon Focus: paintings are legible, with the native
+B beside unchanged native weapon-category lettering. P/M were outside that
+Weapon Focus viewport. The save-free Ifrit final-review frame has an empty
+central doll panel; these cancellation-fixture screenshots do not establish
+character/model visibility qualification. Appearance assets and code are unchanged.
+
+Undine's actual Rapid Reload submenu exposed old thin bitmap letters despite
+the constructor data checks passing. Installed IL shows the static selection
+Items getter returns raw BlueprintFeature objects; the parametrized/sheet data
+constructor is not that menu route. Added an exact Rapid Reload Items adapter
+that wraps only existing official entries with null-icon P/M/B data, preserving
+order/count, names/descriptions, feature/parameter references, native filtering
+and all blueprint fallback sprites. Extended the live data check to enumerate
+the actual Items property, and the creator check to require actual active TMP
+glyphs. No global icon getter/font change or new choice publication was made.
+
+Spellbook run `20260913T1313187975453Z-14874036b1194029aa1b9494e9836017`
+passed 31 assertions, ten native captures and the screenshot provenance check.
+Inspected Teleport and Word of Recall in their native description windows;
+art is correct. An incidental hover tip obscured unrelated book content.
+Installed IL verifies `TooltipsController.SetTemporaryCooldown()` clears only
+the hover constructor and starts the native 0.3-second delay. Capture now holds
+that temporary cooldown while allowing real frames to settle; explicit
+description windows stay open and no mouse/input or preference changes occur.
+
+The creator's result uses the exact assembly identity plus MVID/PID, whereas
+other scenarios use the bare identity. Corrected the screenshot validator to
+accept only those two exact formats derived from the loaded-build record,
+with a negative test for the wrong PID. Earlier first-artifact capture records
+passed every other check after an exact checked in-memory normalization; no
+raw evidence was altered.
+
+Final working smoke passed all eleven checks in evidence directory
+`20260913T1317415123047Z-working-save-smoke`. Audited all 224 package files,
+three explained temporary additions and the exact backup before restoring;
+independently verified all 136 original paths/hashes, including schema-10
+settings. Preserved this first integrated artifact and raw evidence locally.
+The static-menu and hover correction now awaits the next full build and live
+qualification; the merge commit remains deferred. No final-art approval claim.
+
+## 2026-09-13 requested master integration and native capture repair
+
+The owner explicitly requested the newly merged Gunslinger update and allowed
+rebase or equivalent integration. Fetched master
+`9dc2b6301d97bc83540845240544d34b6fad4b48` (PR #18, version `0.0.128`).
+Used a non-rewriting merge into `codex/icon-art-overhaul-v2`; no force-push,
+master mutation or release. Preserved all 32 local changed/untracked files in
+an ignored hashed archive and retained a named stash before applying them to
+the merge. Git reported no textual conflicts. The merge commit is deferred
+until combined qualification; the hotfix's production files remain unchanged.
+The combined suite contains 1,629 cases (1,622 upstream plus seven icon cases).
+The current validator count follows that suite; upstream's archived 0.0.127
+static snapshots retain their original 1,612 counts.
+
+Before integration, the screenshot-instrumented `0.0.127` candidate had package
+`e964f280d7e7b7d6b39679099165077f42f7d0114ce102a738554dc1a8a5ff64`,
+DLL `9f210b8ad29bbe974feeddaeec49b650f1824a79b953e528726738aa0e7f6a5b`,
+MVID `0c8753f1-4306-4e8d-ba66-62f8d0f74b87` and source fingerprint
+`eda0a522eb930c15d07799592ec0ff5bdc2050fcb3fab886ebe1718b48a1fdb8`.
+The corrected Eastern-OFF observer passed all 42 assertions in
+`20260913T0723397334492Z-888c4e1978724da49c86f835cec7e394`.
+The real Ifrit creator passed 11 in
+`20260913T0719277730303Z-c05aaa03283a4736b319b4db3352f224` and generated
+28 completed native screenshots. Inspection found UMM's startup window covering
+the creator; these frames are diagnostic only and do not qualify appearance.
+The following working smoke passed all 11 checks (evidence directory
+`20260913T0730584837400Z-working-save-smoke`). Audited all 224 temporary package
+files, three explained additions and the exact backup before restoration;
+independently verified all 136 original installation paths/hashes afterward.
+The original schema-10 settings are restored; the game is closed.
+
+Inspected installed UMM IL: its public `UI.ToggleWindow(false)` releases the
+blocking Canvas and restores cursor state without a settings-save operation.
+The capture helper now requires both settings indexes to be `-1` and the game
+callback list empty before using that API, verifies closure across capture
+frames, and restores the original open state during fixture cleanup. Unexpected
+UI state fails closed. New negative evidence checks reject the earlier
+unobserved overlay, wrong run/artifact, incomplete/modified PNGs, unsafe names,
+unfinished frames and missing restoration. Native appearance and owner approval
+remain separate from those checks. This implementation awaits the combined
+build and guarded live qualification.
+
+The first integrated validation attempt rejected the focused icon request
+fixture's stale literal `0.0.127` before compilation or deployment. The fixture
+now reads the active version from repository metadata while retaining every
+invalid-request test and the strict production preflight. This prevents future
+baseline updates from making the focused request suite test an obsolete version.
+
+## 2026-09-13 first firearm artifact and native capture preparation
+
+Installed the approved Rapid Reload export (SHA-256
+`5c3280145815f7b161602da161264ac1f43fb3ac3c4bf47ff907b0919a2aa9d3`),
+archived the rejected old bytes, retired the extra chroma generator and updated
+only its historical validation delegation. Rewrote the stale firearm icon map.
+The first domain attempt stopped on a historical source token for the replaced
+facsimile fallback call; corrected that focused test. Build-Local then passed
+all 1,619 domain cases, repository/catalog checks, clean Release and 224-file
+packaging. Source state `66fa87af6a3d1212951efbad17d889f9c408e2a191beab346e72764c68aec483`;
+package `77712c80249376424e8ed38e00f31b236fbe9522b090270fc09d80ee32438fa3`;
+DLL `5d8b95a292751214bc617d0157d6fc8cb841f951da2be354b295ad77025a2c7f`;
+MVID `9f8e380e-6be7-40b6-b408-924a1b919a38`.
+
+Candidate `20260913T0651329184269Z-d4ca17e5fc214129bf6a04dbca78699f`
+and control `20260913T0653551492970Z-edbb11e706824333a12a79d5903ff0fb`
+passed 27 assertions each; the paired comparison passed all 90 exports and
+protected transitions/graphs. All 15 native parameter entries, three Rapid
+children, ten hidden legacy controls and 395 other native category entries
+retained the exact required data. Dependent firearm feat run
+`20260913T0656221324919Z-c808bc789da84a808caef91621a4c7e3` passed 12 assertions;
+Gunslinger-OFF `20260913T0659045021475Z-b4656459da9e4133b378ef070aa963cc`
+passed 42. None of these results is native rendered-screen acceptance.
+
+Eastern-OFF `20260913T0701467723675Z-7cdcec22175246479589996805548315`
+failed one existing vendor-count assertion; every monogram assertion passed.
+The observer still expected 12 capital rows and six rows in every DLC table.
+Inspected production explicitly publishes ten capital rows, six Honest Guy
+equipment rows and four Xelliren supply rows, excluding retired maintenance
+kits. Corrected only the observer and added an explicit retired-row absence
+check. This failure remains excluded from qualification pending a new build/run.
+
+Working smoke `20260913T0705478323884Z-fe58d070450745c4ac2a9a531f10f2f0`
+passed all 11 assertions. Every temporary package file,
+settings/previous-settings file, loader cache and backup was audited before
+restoration; all 136 original installed paths/hashes then matched exactly.
+The intermediate restoration audit correctly rejected the OFF-profile previous
+settings sidecar; the final all-ON native startup rotated it to the expected
+all-ON bytes before restoration. First artifact and raw audit copies are retained
+under ignored `artifacts/icon-overhaul-v2/firearm-first-*`.
+
+Read only the exactly identified working-save archive: its header and SHA-256
+`20fefb4195729c369c1d3b2624aaf4a61b43bd112a417c55a66f16e37323b46b`
+matched, and all eight JSON members contain zero P/M/B parameter GUIDs. This is
+a missing saved-fact fixture, not a parameter round-trip PASS. No save changed;
+new save creation/writes remain a separate permission gate.
+
+Added request-only native screenshot holds to the existing creator and spellbook
+fixtures, with stable ownership, actual rendered rows/TMP data, completed PNG
+hashes and explicit native evidence labels. These latest additions and the
+observer correction are not yet built or runtime-qualified. Inventory/merchant,
+strategic, action/buff screens and final owner approval remain outstanding.
+
+## 2026-09-13 firearm presentation in progress
+
+Published painted checkpoint `84c2ed9ed25e244e9cdb3e9e689ae72db3619a9f`
+through the unchanged required wrapper; the worktree was clean afterward.
+Inspected the installed FeatureUIData and UIFeature constructor chains. Added
+a two-argument constructor postfix restricted to exact integrated native feat
+roots with official saved blueprint parameters and the three registered Rapid
+Reload children. It changes only the UI object's Icon and NameForAcronim.
+Blueprint sprites, names, descriptions, parameters and publication flags remain
+outside this setter. No Gunslinger-ON gate is used for already saved facts.
+
+Added a pure scope test (expected domain total 1,619), retained explicitly labeled
+blueprint-sprite facsimiles through a direct fallback reader, and prepared live
+native data-construction checks for five feat families, Rapid Reload, hidden
+legacy controls and native/eastern categories. Real rendered UI is still a
+separate gate. These new source changes are not yet built or runtime-qualified.
+Next: install the approved Rapid Reload export while preserving the rejected
+legacy reference, retire its extra generator, update narrow legacy validation,
+then qualify the complete firearm presentation change and capture native UI.
+
 ## 2026-09-13 painted integration qualified
 
 The clean rebuild after the request serializer fix passed repository validation,
@@ -241,3 +421,45 @@ Four serialized guarded Steam launches passed 66 assertions: live icon reference
 Restored original 0.0.117 installation and verified 136/136 paths and hashes, including original settings. The report records the extra-file precheck caveat involving the runtime-created FeatureModules.json.previous file; its temporary contents were not independently hashed before restoration. All final original files were verified afterward.
 
 Ran the exact push wrapper; it rejected codex/icon-art-overhaul-v2 because the branch is not allowlisted. No bypass or policy edit. State is AWAITING_PILOT_APPROVAL. Next work requires the owner's actual-image decision, bounded supervised native UI inspection, and then approved family production. Full integration and final visual acceptance remain outstanding. Exact commands, artifact hashes, run IDs, limits and restoration evidence are in reports/icon-overhaul/IMPLEMENTATION-REPORT.md and PILOT-QUALIFICATION.json.
+
+## 2026-09-13 — corrected native presentation qualified on current master
+
+Integrated owner-requested master `9dc2b6301d97bc83540845240544d34b6fad4b48`
+(0.0.128) with published icon parent `84c2ed9` using an ordinary feature-branch
+merge. No history rewrite, original-branch overwrite, feature-to-master merge or
+release. All hotfix production Actions/Firing/Recovery/Gunsmithing files match
+that upstream commit. The pre-integration stash and independent worktree archive
+remain preserved. The current-version icon request test derives Info.json's version;
+archived validation counters retain upstream 1,612 and active 0.0.128 uses 1,629.
+
+The corrected artifact (source `06070cfcaafa950c427cc04aeea5f2d4fb1a643053c7ef25421d5a8964017ccc`,
+DLL `037ffbd4314ad2f07f0acb916c73476ecbd62b6c8f8bdf238b7b6020b388998c`,
+MVID `16ab23f5-129d-415f-9e57-e597fe7a46ae`) passed all build/package gates.
+Nine guarded runs passed: Undine 11; mercenary 12; candidate/control 27 each;
+dependent feats 12; Gunslinger OFF 42; Eastern OFF 43; spellbook 31; smoke 11.
+Exact run IDs and hashes are in `reports/icon-overhaul/NATIVE-128-QUALIFICATION.json`.
+The paired census preserves 35,756 protected transitions and 255 owned graphs.
+426 all-ON/Gunslinger-OFF and 411 Eastern-OFF firearm data/control records are exact.
+
+Current native screenshots total 116 and pass the independent provenance validator.
+Undine021 shows all three genuine native P/M/B Rapid Reload glyphs; this corrects
+the first candidate's raw static Items bypass. Mercenary002 has distinct heritage
+art in its clear left pane; an unrelated right hover panel remains. Mercenary026
+shows protected actions but an empty central doll, so no appearance PASS is claimed.
+Spellbook000/002/006 show Teleport/Greater Teleport/Word of Recall correctly framed,
+without hover occlusion. The local native gallery links originals; it is not a
+substitute for remaining UI coverage or owner approval.
+
+After final smoke, all 224 installed package files, three known runtime additions
+and 136 backup files passed the restoration audit. The exact original 136-file
+0.0.117 installation and schema-10 settings were independently restored at
+2026-09-13 14:00 UTC. No save writes were observed. Candidate package/manifest/audit
+are preserved under ignored `native-qualified-128-*`. Catalog curation now labels
+six active firearm parameter/child consumers native-monogram and twelve retained
+legacy wrappers protected-existing; it does not silently publish or repaint them.
+
+The next native work is bounded viewport inspection of existing weapon/eastern
+rows and capture of the existing cancel-only strategic spell learning fixture.
+Racial action/buff, character-sheet, scroll and strategic control views remain.
+The working-save firearm-parameter prerequisite and final visual approval are
+explicit pending gates; no new save/write authorization is inferred.

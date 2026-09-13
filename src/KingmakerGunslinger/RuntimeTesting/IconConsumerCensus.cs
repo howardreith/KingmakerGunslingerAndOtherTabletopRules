@@ -303,7 +303,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 });
             }
             bool reuseExact = reuse.Count == 21 && reuse.Count == NativeReuse.Length && reuse.All(row => (bool)row["sameSpriteReference"]);
-            var exports = new JArray(OwnedIconAssignments.IconKeys.Select(key => {
+            var exports = new JArray(OwnedIconAssignments.IconKeys.Concat(new[] { "rapid-reload" }).Distinct(StringComparer.Ordinal).Select(key => {
                 Sprite icon = ProjectAssetIcons.RequireIcon(key);
                 string path = Path.Combine(context.ModEntry.Path, "assets", "icons", key + ".png");
                 return new JObject {

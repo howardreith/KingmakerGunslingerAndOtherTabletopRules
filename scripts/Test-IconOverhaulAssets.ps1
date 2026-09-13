@@ -102,6 +102,17 @@ foreach ($record in $records) {
     $key = [string]$record.key
     $sourcePath = Join-Path $root ([string]$record.sourcePath)
     $finalPath = Join-Path $root ([string]$record.finalPath)
+    # Preserve the historical 107/108 pixels and metadata as an archive. The
+    # active Rapid Reload export is independently owned by the v2 catalog.
+    if ($key -ceq 'rapid-reload') {
+        $finalPath = Join-Path $root 'assets-source/original-icons/icon-overhaul-v2/references/rapid-reload-rejected.png'
+        . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
+        $active = @(Get-KmgIntegratedIconRecords -RepositoryRoot $root | Where-Object { $_.Key -ceq 'rapid-reload' })
+        if ($active.Count -ne 1 -or
+            (Get-FileHash -LiteralPath (Join-Path $root $active[0].SourceRelativePath) -Algorithm SHA256).Hash.ToLowerInvariant() -cne $active[0].Sha256) {
+            throw 'Rapid Reload runtime export does not match its canonical v2 authority.'
+        }
+    }
     if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf) -or
         -not (Test-Path -LiteralPath $finalPath -PathType Leaf)) {
         throw "Icon source/final pair is missing: $key"

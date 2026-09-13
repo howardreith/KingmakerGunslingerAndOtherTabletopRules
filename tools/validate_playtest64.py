@@ -42,7 +42,7 @@ def validate(root: Path) -> None:
     require(root / "src/KingmakerGunslinger/Firearms/FirearmConditionPresentation.cs",
             "Capacity ", "Misfire ", "Condition: ")
     require(root / "tools/New-RapidReloadIcon.ps1",
-            "rapid-reload-chroma-source.png", "rapid-reload.png")
+            "retired", "docs/ICON-ART-GUIDE.md", "Export-IconPilot.ps1")
 
 
 def main() -> int:

@@ -122,34 +122,20 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void WiringConstructionGateAndPlayerClickContext()
         {
-            string source = Read("src/KingmakerGunslinger/Firing",
-                "EmptyFirearmAttackCommandPatch.cs");
-            Assertions.True(source.Contains(
-                    "BrokenSequenceInterruptionPolicy.EvaluateConstruction(") &&
-                source.Contains("TryConsumePlayerAttackAuthorization(executor, __1)") &&
-                source.Contains("BrokenSequenceSuppressionRuntime.ConsumeSuppression("),
-                "Attack construction must gate on suppression, consume the exact-order player authorization, and consume suppression on a deliberate order.");
-            Assertions.True(source.Contains("RejectInterrupted") &&
-                source.Contains("broke during its attack sequence"),
-                "The interrupted-sequence rejection must be visible to the player.");
-            int gate = source.IndexOf(
-                "BrokenSequenceInterruptionPolicy.EvaluateConstruction(",
-                StringComparison.Ordinal);
-            int emptyPolicy = source.IndexOf("EmptyFirearmAttackPolicy.Evaluate(",
-                StringComparison.Ordinal);
-            Assertions.True(emptyPolicy > gate,
-                "The interruption gate must run before the empty/Wrecked/auto-reload policy so no replacement reload is queued for an interrupted sequence.");
-            Assertions.True(source.Contains("degradationEpoch: BrokenSequenceSuppressionRuntime") &&
-                source.Contains("MayResumeCapturedAttack(") &&
-                source.Contains("GetDegradationEpoch("),
-                "Pending reload-resume continuations must capture and recheck the degradation epoch.");
-            Assertions.True(source.Contains("ClickUnitHandler") &&
-                source.Contains("\"OnClick\"") &&
-                source.Contains("PlayerClickPrefix") &&
-                source.Contains("PlayerClickPostfix") &&
-                source.Contains("BeginPlayerAttackClick") &&
-                source.Contains("EndPlayerAttackClick"),
-                "The native player click handler must open and close the order-scoped player authorization around itself.");
+            string source = Read("src/KingmakerGunslinger/Firing", "EmptyFirearmAttackCommandPatch.cs");
+            string input = Read("src/KingmakerGunslinger/Firing", "NativeFirearmAttackOrderPatch.cs");
+            string order = Read("src/KingmakerGunslinger/Firing", "NativeFirearmAttackOrder.cs");
+            Assertions.True(source.Contains("ClaimConstruction(executor, __1, firearm.Weapon)") &&
+                !source.Contains("ConsumeSuppression"), "A proposal cannot release suppression.");
+            Assertions.True(source.Contains("MayResume(pending.Binding)") &&
+                source.Contains("MayResumeCapturedAttack("), "Reload retains order and epoch.");
+            Assertions.True(input.Contains("ClickUnitHandler") && input.Contains("InGameInputLayer") &&
+                input.Contains("CreateAutoUse") && input.Contains("CreateControllerAttack"),
+                "Both native inputs and reload-first dispatch are adapted.");
+            Assertions.True(order.Contains("bool owned = ReferenceEquals(accepted.Executor, actor)") &&
+                order.Contains("Ledger.Accept(binding.Order"), "Only an owned submitted command can accept.");
+            Assertions.False(order.Contains("StackTrace") || order.Contains("frameCount") ||
+                order.Contains("Bridge"), "No frame, stack, or test-bridge authorization.");
         }
 
         internal static void WiringAllCommitPathsNotifyInterruption()
@@ -161,8 +147,7 @@ namespace KingmakerGunslinger.DomainTests
                 "BrokenSequenceSuppressionRuntime.cs");
             Assertions.True(shared.Contains(
                     "internal static void OnCommittedDegradation") &&
-                shared.Contains(
-                    "Dead Shot, and Scatter Shot all call this"),
+                shared.Contains("after a verified item commit"),
                 "The shared committed-degradation notification must document itself as the single entry.");
             string misfire = Read("src/KingmakerGunslinger/Misfires",
                 "FirearmMisfireRuntime.cs");
@@ -202,9 +187,9 @@ namespace KingmakerGunslinger.DomainTests
                 "BrokenSequenceSuppressionRuntime.cs");
             Assertions.True(runtime.Contains("ConditionalWeakTable"),
                 "Suppression bookkeeping must be weakly keyed so scene transitions and save/load cannot leak it.");
-            Assertions.True(runtime.Contains("IsNativePlayerClickOnStack") &&
-                runtime.Contains("ClickUnitHandler"),
-                "Production authorization consumption must prove the genuine native click handler is still on the call stack (review CR2-04).");
+            string ledger = Read("src/KingmakerGunslinger/Firing", "FirearmAttackOrderLedger.cs");
+            Assertions.True(ledger.Contains("ConditionalWeakTable") && !runtime.Contains("StackTrace"),
+                "Order state is weak-keyed and not stack-derived.");
             Assertions.True(runtime.Contains("ClearForRuntimeTest"),
                 "The guarded runtime-test seam must exist for deterministic test resets.");
         }

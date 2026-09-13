@@ -1,49 +1,49 @@
 # Icon overhaul v2 implementation record
 
-Status: **PAINTED_INTEGRATION_QUALIFIED; FIREARM/NATIVE_UI_PENDING**. The owner approved the ten actual pilot images
-and family direction: [exact decision and hashes](PILOT-APPROVAL.md).
-All 80 additional production originals and deterministic 128px RGBA exports are
-preserved. The [full collection](PRODUCTION-REVIEW.html) presents all 89 painted
-identities plus Rapid Reload, with family/search filters, small-size controls,
-grayscale, original sources, exact hashes and per-icon briefs. The 80 new images
-await final owner review. The installed artifact now maps 89 paintings to 137
-exact consumers. The paired live census and working-save smoke passed;
-native icon screen evidence remains pending.
+The icon branch now incorporates master `9dc2b630` (0.0.128) at the owner's request,
+with published history preserved. Native firearm presentation and the creator/spellbook
+capture path passed the current technical checkpoint. **The overhaul remains in progress:**
+complete native UI coverage and final owner visual approval are pending.
 
-## Qualified painted integration
+[Exact artifact, nine guarded runs and restoration](NATIVE-128-QUALIFICATION.json)
+record all 1,629 domain tests, clean Release, the 224-file package and focused validators.
+Candidate/control passed 27 checks each, dependent feats 12, Gunslinger OFF 42,
+Eastern OFF 43, Undine creator 11, real Ifrit mercenary regression 12, spellbook 31
+and final working smoke 11. The paired census preserves 35,756 protected transitions
+and 255 owned graphs. Every temporary settings transaction was restored, and all
+136 original installation paths/hashes were independently restored afterward.
 
-[Exact artifact and runs](PAINTED-INTEGRATION-QUALIFICATION.json) record repository
-validation, 22 catalog tests, six paired-evidence corruption tests, eleven request
-preflight/JSON checks, all 1,618 domain tests, clean Release and strict 224-file
-package validation. Candidate/control runs passed 19 assertions each; the exact
-working-save smoke passed eleven. The control suppresses only owned icon mapping
-in its explicit, automatically exiting no-save request.
+Rapid Reload now uses the approved parent emblem and real native P/M/B child rows.
+The selected/sheet data constructor preserves exact saved blueprint parameters and
+fallback sprites; a separate exact `Items` adapter handles the native static menu.
+The first integrated candidate exposed that previously missed raw-menu path, which
+was corrected and then checked against both actual entries and rendered TMP glyphs.
+Full selection/level-up data, 426 all-ON/Gunslinger-OFF control rows and 411 Eastern-OFF
+rows pass. Complete chosen-feat/sheet rendering and saved-parameter checks remain.
 
-The mandatory paired comparison covers 284 catalog identities, all 137 mappings,
-89 installed exports, 28 appearance resources, one reserved absence, 21 native
-reuse consumers, 35,756 other observed icon assignments and 255 owned graphs.
-Three foreign icons and strategic spell-list additions changed during late
-initialization in both runs. Their complete transitions match the control;
-all original component references remain preserved. No identity exemption was
-added. Earlier diagnostic failures and the corrected request serializer are
-recorded in the journal. The serializer-only rebuild reproduced the identical
-package, DLL and MVID before the prior candidate was paired with the true control.
+There are 116 current native screenshots with verified provenance. Inspected Rapid
+Reload, heritage and strategic descriptions show the intended art at native size.
+The [local native review](../../artifacts/icon-overhaul-v2/NATIVE-REVIEW.html) links
+unmodified screenshots; it is separate from the [90-image art review](PRODUCTION-REVIEW.html).
+Some creator frames still have a hover panel over unrelated content, and their empty
+central doll is not character-visibility proof. No screenshot implies owner approval.
 
-Package SHA-256: `952462ca1eb766404e8b21d493b5e4d31964963c921157c2041bef810cc9b9d5`.
-DLL SHA-256: `a5f518be3a77ddc9df1431e9d7ac5f411fba873ecf9809884bf7e952ea062e33`.
-No save-writing API was observed. All temporary files and the backup were audited;
-all 136 original `0.0.117` installation paths/hashes were restored exactly.
+Current package: `5c0bcf9aade76d2cb51b453dca83e25d46c8ad8c542a518fc64f6cd96ea85cd5`.
+DLL: `037ffbd4314ad2f07f0acb916c73476ecbd62b6c8f8bdf238b7b6020b388998c`.
+The exact build record identifies merged uncommitted source based on `84c2ed9`; it
+is not mislabeled as a clean build of the later merge commit.
 
-Rapid Reload installation, complete native firearm presentation, affected module
-boundaries, saved firearm-parameter observation and real native icon screens
-remain. The unrelated historical preflight script has stale version fixtures;
-it remains unchanged and is not reported as passing. The focused current-version
-icon request checks passed. Final visual approval is still pending.
+All 89 paintings plus Rapid Reload have preserved originals/exports. Only the ten
+pilot images and family direction are approved; eighty production paintings await
+owner review. Remaining native scope includes weapon/eastern viewport inspection,
+chosen feats/character sheets, learning, racial actions/variants/buffs, strategic
+controls and scroll inventory/merchant views. The authorized working archive has
+no supported firearm parameter fixture. New save creation/writes need separate
+mission authority; none occurred. Continue independent work before that gate.
 
-The historical pilot technical evidence below records the previously qualified artifact at
-commit `4f141921a830042442b617f2788f1cd0b34a7cb6`; its pending owner-review language
-predates the approval above. Final native UI evidence, final production acceptance
-and the completed overhaul remain separate pending gates. This is not a release.
+The previous painted-only 0.0.127 checkpoint remains in
+[its exact qualification record](PAINTED-INTEGRATION-QUALIFICATION.json), with earlier
+failures and corrections preserved in the journal. This is no release or feature-to-master merge.
 
 ## Review packet
 
@@ -67,8 +67,8 @@ The recorded pilot decision establishes the heritage/affinity/resistance,
 elemental/hydraulic, strategic travel and mundane emblem family direction. It does
 not approve the additional 80 images or unresolved native UI surfaces.
 
-The P/M/B prototype uses the real native text route in production UI-entry
-objects. Its actual native-screen comparison is still pending. The review page
+P/M/B uses the real native text route in production UI-entry objects. Rapid Reload
+rendering passed; the remaining native parameter/chosen/sheet comparison is pending. The review page
 does not substitute a PC font or the retained blueprint PNGs for that evidence.
 
 ## Intake and protected baseline
@@ -106,9 +106,9 @@ Root AGENTS and README now lead to:
 
 The catalog contains 284 exact identities: 247 elemental/strategic and 37 firearm
 records. Live registration comprises 255 blueprints, 28 separate appearance
-resources and one reserved diagnostic absence. Its dispositions are 109
+resources and one reserved diagnostic absence. Its current dispositions are 91
 original-required, 47 intentional-family-share, 21 native-semantic-reuse,
-44 protected-existing and 63 hidden-internal. A further fifteen exact UI entries
+56 protected-existing, six native-monogram and 63 hidden-internal. A further fifteen exact UI entries
 cover five native firearm feat families times three parameters. The existing
 summoning manifest retains authority over its 77 art identities and placements.
 

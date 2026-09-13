@@ -1107,6 +1107,13 @@
       "evidenceClass": "structured-live-paired-census",
       "liveStatus": "qualified",
       "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+    },
+    "rapid-reload-v2": {
+      "source": "src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs",
+      "assignment": "Rapid Reload parent retains its existing rapid-reload cache key, now exported from the approved v2 emblem. Child blueprint fallbacks remain unchanged.",
+      "nativeDonorGuid": null,
+      "evidenceClass": "source-integration",
+      "liveStatus": "pending"
     }
   },
   "concepts": [
@@ -3533,12 +3540,12 @@
     },
     {
       "key": "firearm-pistol",
-      "name": "Pistol selected-feature fallback",
+      "name": "Pistol native monogram",
       "family": "native-ornamental",
-      "sharingReason": "Preserve parameter blueprint sprite until each selected-feature consumer has a qualified native route or owner-approved fallback.",
+      "sharingReason": "Native text for exact integrated feat parameters and official Rapid Reload children; original non-null blueprint sprites retained for independently inspected consumers. No saved parameter conversion.",
       "exportProfile": "none",
       "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "technicalStatus": "native-data-and-Rapid-Reload-rendering-qualified; complete-selected-and-sheet-screen-review-pending",
       "visualReview": {
         "status": "not-reviewed",
         "reviewedExportSha256": null,
@@ -3547,12 +3554,12 @@
     },
     {
       "key": "firearm-musket",
-      "name": "Musket selected-feature fallback",
+      "name": "Musket native monogram",
       "family": "native-ornamental",
-      "sharingReason": "Preserve parameter blueprint sprite until each selected-feature consumer has a qualified native route or owner-approved fallback.",
+      "sharingReason": "Native text for exact integrated feat parameters and official Rapid Reload children; original non-null blueprint sprites retained for independently inspected consumers. No saved parameter conversion.",
       "exportProfile": "none",
       "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "technicalStatus": "native-data-and-Rapid-Reload-rendering-qualified; complete-selected-and-sheet-screen-review-pending",
       "visualReview": {
         "status": "not-reviewed",
         "reviewedExportSha256": null,
@@ -3561,12 +3568,12 @@
     },
     {
       "key": "firearm-blunderbuss",
-      "name": "Blunderbuss selected-feature fallback",
+      "name": "Blunderbuss native monogram",
       "family": "native-ornamental",
-      "sharingReason": "Preserve parameter blueprint sprite until each selected-feature consumer has a qualified native route or owner-approved fallback.",
+      "sharingReason": "Native text for exact integrated feat parameters and official Rapid Reload children; original non-null blueprint sprites retained for independently inspected consumers. No saved parameter conversion.",
       "exportProfile": "none",
       "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "technicalStatus": "native-data-and-Rapid-Reload-rendering-qualified; complete-selected-and-sheet-screen-review-pending",
       "visualReview": {
         "status": "not-reviewed",
         "reviewedExportSha256": null,
@@ -3577,20 +3584,29 @@
       "key": "rapid-reload",
       "name": "Rapid Reload",
       "family": "combat-emblem",
-      "sharingReason": "Owner-approved pilot identity; equivalent feature/action/effect or scroll consumers may share this concept. Final native UI integration remains pending.",
+      "sharingReason": "Approved loading emblem for the Rapid Reload feat parent; weapon children use native P/M/B text. Reload Firearm action painting is preserved.",
       "exportProfile": "combat-emblem-64",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/pilot/pilot-manifest.json",
         "key": "rapid-reload"
       },
-      "technicalStatus": "isolated-pilot-export",
+      "technicalStatus": "packaged-and-live-qualified; native-Rapid-Reload-menu-inspected; final-UI-review-pending",
       "visualReview": {
         "status": "approved",
         "reviewedExportSha256": "5c3280145815f7b161602da161264ac1f43fb3ac3c4bf47ff907b0919a2aa9d3",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
       },
-      "reviewGroup": "combat-emblem"
+      "reviewGroup": "combat-emblem",
+      "runtimeExport": {
+        "path": "assets/game/icons/rapid-reload.png",
+        "installedPath": "assets/icons/rapid-reload.png",
+        "cacheKey": "rapid-reload"
+      },
+      "legacyRuntimeExport": {
+        "path": "assets-source/original-icons/icon-overhaul-v2/references/rapid-reload-rejected.png",
+        "sha256": "efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321"
+      }
     }
   ],
   "consumers": [
@@ -7144,8 +7160,14 @@
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "firearm-pistol",
       "concept": "firearm-pistol",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "native-monogram",
+      "reason": "Native UI adapters retain exact blueprint identity and fallback sprite. Current parameterized selections and selected/sheet data use P/M/B; Rapid Reload actual Items and rendered glyphs are qualified. Complete native screen and saved-parameter review remain pending.",
+      "uiPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
+        "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
+        "blueprintFallback": "preserved",
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.Feats.WeaponFocusMusket",
@@ -7157,8 +7179,14 @@
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "firearm-musket",
       "concept": "firearm-musket",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "native-monogram",
+      "reason": "Native UI adapters retain exact blueprint identity and fallback sprite. Current parameterized selections and selected/sheet data use P/M/B; Rapid Reload actual Items and rendered glyphs are qualified. Complete native screen and saved-parameter review remain pending.",
+      "uiPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
+        "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
+        "blueprintFallback": "preserved",
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.Feats.WeaponFocusBlunderbuss",
@@ -7170,8 +7198,14 @@
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "firearm-blunderbuss",
       "concept": "firearm-blunderbuss",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "native-monogram",
+      "reason": "Native UI adapters retain exact blueprint identity and fallback sprite. Current parameterized selections and selected/sheet data use P/M/B; Rapid Reload actual Items and rendered glyphs are qualified. Complete native screen and saved-parameter review remain pending.",
+      "uiPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
+        "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
+        "blueprintFallback": "preserved",
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.Feats.WeaponFocusRifle",
@@ -7205,12 +7239,13 @@
       "type": "BlueprintFeatureSelection",
       "name": "Rapid Reload",
       "module": "Gunslinger",
-      "publication": "published-source; runtime pending",
+      "publication": "published; current live census and native creator verified",
       "surface": "creation and level-up selection / tooltip",
-      "currentArt": "rapid-legacy",
+      "currentArt": "rapid-reload-v2",
       "concept": "rapid-reload",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Approved parent export assigned through the existing cache; native creator shows the exact emblem. Final owner UI approval remains pending.",
+      "baselineArt": "rapid-legacy"
     },
     {
       "symbol": "KMG.Feats.RapidReloadPistol",
@@ -7222,8 +7257,14 @@
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "firearm-pistol",
       "concept": "firearm-pistol",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "native-monogram",
+      "reason": "Native UI adapters retain exact blueprint identity and fallback sprite. Current parameterized selections and selected/sheet data use P/M/B; Rapid Reload actual Items and rendered glyphs are qualified. Complete native screen and saved-parameter review remain pending.",
+      "uiPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
+        "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
+        "blueprintFallback": "preserved",
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.Feats.RapidReloadMusket",
@@ -7235,8 +7276,14 @@
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "firearm-musket",
       "concept": "firearm-musket",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "native-monogram",
+      "reason": "Native UI adapters retain exact blueprint identity and fallback sprite. Current parameterized selections and selected/sheet data use P/M/B; Rapid Reload actual Items and rendered glyphs are qualified. Complete native screen and saved-parameter review remain pending.",
+      "uiPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
+        "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
+        "blueprintFallback": "preserved",
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.Feats.RapidReloadBlunderbuss",
@@ -7248,8 +7295,14 @@
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "firearm-blunderbuss",
       "concept": "firearm-blunderbuss",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "native-monogram",
+      "reason": "Native UI adapters retain exact blueprint identity and fallback sprite. Current parameterized selections and selected/sheet data use P/M/B; Rapid Reload actual Items and rendered glyphs are qualified. Complete native screen and saved-parameter review remain pending.",
+      "uiPresentation": {
+        "source": "src/KingmakerGunslinger/Feats/FirearmNativeMonogramPresentation.cs",
+        "rule": "Exact registered native parameter constructor; exact Rapid Reload Items/selected/sheet data only",
+        "blueprintFallback": "preserved",
+        "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.Feats.RapidReloadRifle",
@@ -7283,12 +7336,12 @@
       "type": "BlueprintFeature",
       "name": "Greater Weapon Focus Pistol",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-pistol",
       "concept": "firearm-pistol",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.GreaterWeaponFocusMusket",
@@ -7296,12 +7349,12 @@
       "type": "BlueprintFeature",
       "name": "Greater Weapon Focus Musket",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-musket",
       "concept": "firearm-musket",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.GreaterWeaponFocusBlunderbuss",
@@ -7309,12 +7362,12 @@
       "type": "BlueprintFeature",
       "name": "Greater Weapon Focus Blunderbuss",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-blunderbuss",
       "concept": "firearm-blunderbuss",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.GreaterWeaponFocusRifle",
@@ -7361,12 +7414,12 @@
       "type": "BlueprintFeature",
       "name": "Weapon Specialization Pistol",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-pistol",
       "concept": "firearm-pistol",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.WeaponSpecializationMusket",
@@ -7374,12 +7427,12 @@
       "type": "BlueprintFeature",
       "name": "Weapon Specialization Musket",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-musket",
       "concept": "firearm-musket",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.WeaponSpecializationBlunderbuss",
@@ -7387,12 +7440,12 @@
       "type": "BlueprintFeature",
       "name": "Weapon Specialization Blunderbuss",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-blunderbuss",
       "concept": "firearm-blunderbuss",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.WeaponSpecializationRifle",
@@ -7439,12 +7492,12 @@
       "type": "BlueprintFeature",
       "name": "Greater Weapon Specialization Pistol",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-pistol",
       "concept": "firearm-pistol",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.GreaterWeaponSpecializationMusket",
@@ -7452,12 +7505,12 @@
       "type": "BlueprintFeature",
       "name": "Greater Weapon Specialization Musket",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-musket",
       "concept": "firearm-musket",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.GreaterWeaponSpecializationBlunderbuss",
@@ -7465,12 +7518,12 @@
       "type": "BlueprintFeature",
       "name": "Greater Weapon Specialization Blunderbuss",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-blunderbuss",
       "concept": "firearm-blunderbuss",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.GreaterWeaponSpecializationRifle",
@@ -7517,12 +7570,12 @@
       "type": "BlueprintFeature",
       "name": "Improved Critical Pistol",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-pistol",
       "concept": "firearm-pistol",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.ImprovedCriticalMusket",
@@ -7530,12 +7583,12 @@
       "type": "BlueprintFeature",
       "name": "Improved Critical Musket",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-musket",
       "concept": "firearm-musket",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.ImprovedCriticalBlunderbuss",
@@ -7543,12 +7596,12 @@
       "type": "BlueprintFeature",
       "name": "Improved Critical Blunderbuss",
       "module": "Gunslinger",
-      "publication": "source registration; published/retained family per FirearmFeatBlueprints",
-      "surface": "selection / character-sheet feature / tooltip",
+      "publication": "legacy wrapper retained; hidden and absent from current selection catalogs in the live dependent-feat scenario",
+      "surface": "legacy saved feature / tooltip; current selection uses the native parametrized root",
       "currentArt": "firearm-blunderbuss",
       "concept": "firearm-blunderbuss",
-      "disposition": "original-required",
-      "reason": "Historical fallback is still installed and visually rejected. Selector null sprite does not change this blueprint."
+      "disposition": "protected-existing",
+      "reason": "Retained legacy wrapper and fallback sprite are unchanged. The current visible equivalent is separately cataloged among the fifteen native-firearm UI entries; do not publish or restyle the wrapper."
     },
     {
       "symbol": "KMG.Feats.ImprovedCriticalRifle",
@@ -7603,8 +7656,9 @@
       "nativeAcronym": "B",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/WeaponFocus/Musket",
@@ -7618,8 +7672,9 @@
       "nativeAcronym": "M",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/WeaponFocus/Pistol",
@@ -7633,8 +7688,9 @@
       "nativeAcronym": "P",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/GreaterWeaponFocus/Blunderbuss",
@@ -7648,8 +7704,9 @@
       "nativeAcronym": "B",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/GreaterWeaponFocus/Musket",
@@ -7663,8 +7720,9 @@
       "nativeAcronym": "M",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/GreaterWeaponFocus/Pistol",
@@ -7678,8 +7736,9 @@
       "nativeAcronym": "P",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/WeaponSpecialization/Blunderbuss",
@@ -7693,8 +7752,9 @@
       "nativeAcronym": "B",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/WeaponSpecialization/Musket",
@@ -7708,8 +7768,9 @@
       "nativeAcronym": "M",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/WeaponSpecialization/Pistol",
@@ -7723,8 +7784,9 @@
       "nativeAcronym": "P",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/GreaterWeaponSpecialization/Blunderbuss",
@@ -7738,8 +7800,9 @@
       "nativeAcronym": "B",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/GreaterWeaponSpecialization/Musket",
@@ -7753,8 +7816,9 @@
       "nativeAcronym": "M",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/GreaterWeaponSpecialization/Pistol",
@@ -7768,8 +7832,9 @@
       "nativeAcronym": "P",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/ImprovedCritical/Blunderbuss",
@@ -7783,8 +7848,9 @@
       "nativeAcronym": "B",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/ImprovedCritical/Musket",
@@ -7798,8 +7864,9 @@
       "nativeAcronym": "M",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     },
     {
       "id": "native-firearm/ImprovedCritical/Pistol",
@@ -7813,8 +7880,9 @@
       "nativeAcronym": "P",
       "menuIcon": "null (explicit FeatureUIData overload)",
       "mechanics": "Unchanged FeatureParam(parameter); original gating/order/categories/native parent sprite preserved.",
-      "technicalStatus": "prototype-awaiting-runtime",
-      "visualReview": "native-screen-pending"
+      "technicalStatus": "qualified-native-full-and-level-up-data; selected-and-sheet-construction; affected-module-boundaries",
+      "visualReview": "complete-native-menu-and-selected-screen-review-pending; no owner approval",
+      "evidence": "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json"
     }
   ],
   "outOfScopeAudit": [

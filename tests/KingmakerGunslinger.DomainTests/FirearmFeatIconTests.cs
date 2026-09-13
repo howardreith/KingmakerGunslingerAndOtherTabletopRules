@@ -9,6 +9,25 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class FirearmFeatIconTests
     {
+        internal static void NativeMonogramScopeIsExact()
+        {
+            var official = OfficialFirearmSupport.Kinds;
+            string[] expected = { "P", "M", "B" };
+            string letter;
+            for (int index = 0; index < official.Length; index++)
+            {
+                Assertions.True(Feats.FirearmNativeMonogramPolicy.TryLetter(official[index], true, false, out letter) &&
+                    letter == expected[index], "Integrated native firearm parameter lost its exact letter.");
+                Assertions.True(Feats.FirearmNativeMonogramPolicy.TryLetter(official[index], false, true, out letter) &&
+                    letter == expected[index], "Registered Rapid Reload child lost its exact letter.");
+                Assertions.False(Feats.FirearmNativeMonogramPolicy.TryLetter(official[index], false, false, out letter),
+                    "An unrelated firearm feature acquired the native override.");
+            }
+            foreach (var kind in new[] { FirearmKind.Unknown, FirearmKind.Rifle, FirearmKind.Revolver })
+                Assertions.False(Feats.FirearmNativeMonogramPolicy.TryLetter(kind, true, true, out letter),
+                    "A legacy or unrecognized firearm acquired the native override.");
+        }
+
         internal static void OfficialSupportBoundaryIsExact()
         {
             FirearmKind[] expected = { FirearmKind.Pistol,
@@ -201,7 +220,8 @@ namespace KingmakerGunslinger.DomainTests
                 "value.Param != null",
                 "BlueprintItemEquipmentBelt", "BeltOfConstitution2",
                 "KMG_Icon_cord-of-stubborn-resolve",
-                "new FeatureUIData(match.Feature, match.Param)",
+                "ParameterFallbackIcon(match)",
+                "parameter.Icon : new FeatureUIData(value.Feature, value.Param).Icon",
                 "value.Param.WeaponCategory.HasValue",
                 "ReferenceEquals(",
                 "feats.WeaponFocusChoices[iconIndex].Icon",

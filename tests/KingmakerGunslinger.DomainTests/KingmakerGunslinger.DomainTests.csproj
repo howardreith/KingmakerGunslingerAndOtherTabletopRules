@@ -331,6 +331,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmProficiencyPolicy.cs"><Link>Domain\FirearmProficiencyPolicy.cs</Link></Compile>
     <Compile Include="FirearmAudioTests.cs" />
     <Compile Include="FirearmFeatIconTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Feats\FirearmNativeMonogramPolicy.cs"><Link>Feats\FirearmNativeMonogramPolicy.cs</Link></Compile>
     <Compile Include="IconGraphSnapshotTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\IconCensusControlPolicy.cs"><Link>RuntimeTesting\IconCensusControlPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\IconGraphSnapshot.cs"><Link>RuntimeTesting\IconGraphSnapshot.cs</Link></Compile>
@@ -362,6 +363,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Firing\EmptyFirearmAttackPolicy.cs"><Link>Firing\EmptyFirearmAttackPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firing\BrokenSequenceInterruptionPolicy.cs"><Link>Firing\BrokenSequenceInterruptionPolicy.cs</Link></Compile>
     <Compile Include="BrokenSequenceInterruptionTests.cs" />
+    <Compile Include="FirearmAttackOrderLedgerTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Firing\FirearmAttackOrderLedger.cs"><Link>Firing\FirearmAttackOrderLedger.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUseDecision.cs"><Link>Gunsmithing\BatteredFirearmUseDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\BatteredFirearmUsePolicy.cs"><Link>Gunsmithing\BatteredFirearmUsePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Gunsmithing\CompletedRestMaintenancePolicy.cs"><Link>Gunsmithing\CompletedRestMaintenancePolicy.cs</Link></Compile>

@@ -44,9 +44,9 @@ def validate(root: Path) -> None:
         "GenericSpell(bool communal)",
         "Buff(ProtectionAlignment alignment)",
         "+2 deflection bonus", "+2 resistance bonus",
-        ("prevents new charm, domination, and similar effects" if VERSION in {"0.0.117", "0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127"}
+        ("prevents new charm, domination, and similar effects" if VERSION in {"0.0.117", "0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127", "0.0.128"}
             else "domination, charm, or comparable mental-control effect"),
-        ("under the control of" if VERSION in {"0.0.117", "0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127"}
+        ("under the control of" if VERSION in {"0.0.117", "0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127", "0.0.128"}
             else "recognized by this mod"), "already active",
         "Protection from \" + ProtectionName(alignment)")
     for token in ("return \"Evil\"", "return \"Good\"",
@@ -150,7 +150,7 @@ def validate(root: Path) -> None:
         raise AssertionError("0.0.110 static release identity mismatch")
     state = static.get(STATIC_KEY, {})
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "protectionBuffCount": 5,
         "playerDescriptionTargetCount": 15,
         "playerAbilityDescriptionCount": 10,

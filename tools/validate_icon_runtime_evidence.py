@@ -81,9 +81,10 @@ def validate(census, build, catalog):
         concept = concepts[spec["concept"]]
         if concept.get("runtimeExport") and not census["controlRun"]:
             icon = row["after"]
+            size = 64 if concept["exportProfile"] == "combat-emblem-64" else 128
             require(not icon["isNull"] and icon["name"] == "KMG_Icon_" + concept["runtimeExport"]["cacheKey"], "Wrong live icon: " + symbol)
-            require(icon.get("textureWidth") == 128 and icon.get("textureHeight") == 128 and
-                    icon.get("rect") == [0, 0, 128, 128] and icon.get("pixelsPerUnit") == 100,
+            require(icon.get("textureWidth") == size and icon.get("textureHeight") == size and
+                    icon.get("rect") == [0, 0, size, size] and icon.get("pixelsPerUnit") == 100,
                     "Live sprite geometry differs: " + symbol)
         elif concept.get("runtimeExport"):
             require(row["before"] == row["after"], "Control mapping was not disabled: " + symbol)
