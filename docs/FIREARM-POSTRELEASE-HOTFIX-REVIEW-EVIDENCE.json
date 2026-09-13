@@ -154,5 +154,15 @@
     "restoreBackupName": "20260913T0543590921304Z",
     "saveMutationAttempts": 0,
     "documentationNote": "Any later evidence-only commit changes documentation, not the qualified source, DLL or package."
+  },
+  "exploratoryConfigurationLimit": {
+    "runId": "20260913T0415398638839Z-5c0acadc9c884542af4989c946443777",
+    "status": "FAIL before running-merge boundary",
+    "configuration": "Legacy revolver batch reload",
+    "observation": "Real manual reload did not load a round; powder remained unchanged. This probe is not counted as passing coverage.",
+    "dllSha256": "f00d5c71fda5baa0e5fc390eacfff3dbfd088331954d4f77043ede0013f420af",
+    "runtimeResultSha256": "d5de5566470334632440a589a1b0e2050bfc963910483eb02eaaf8378c5a4385",
+    "nativeTraceSha256": "e4ceda26d7564c06428a2f55e1f92436046c8d49175cb55c052bab6ebeb96187",
+    "qualificationBoundary": "The final already-spent running merge uses the production pistol plus real native paper reload. Legacy batch-reload behavior was not changed or qualified by this focused hotfix."
   }
 }

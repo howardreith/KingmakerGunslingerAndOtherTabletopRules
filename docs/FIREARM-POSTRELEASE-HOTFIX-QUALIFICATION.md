@@ -344,3 +344,10 @@ backup `20260913T0543590921304Z`: **138/138 identical**, including the original
 manifest/build/control-flow hashes and restoration identities. The earlier NOT
 RUN boundaries remain explicit. PR #18 is updated for review; it is not merged,
 and no public release or tag is created.
+
+Exploratory configuration limit: an earlier legacy-revolver batch-reload probe
+failed before reaching the running-merge boundary (no loaded round and no powder
+spent). It is not counted as passing coverage. The final running/already-spent
+merge proof uses the production pistol plus a real native paper reload. Legacy
+batch-reload behavior was not changed or qualified by this focused hotfix; its
+failed run identity is retained in the curated evidence.

@@ -44,3 +44,7 @@ Final review candidate: compiled source `fc6c5cb220f7501fa20fc1709b085fd10b58b7a
 `c0c2c0c83db19f2b0bd71cd4393f5a0b09b1a8adadb29a9725d8541d257960e6`; DLL SHA-256
 `ce65373e73f40573fc9f715d30ef181da0d5b07db4be38d9be8261b6ce59b8b8`. DLL MVID `2a1e57fe-63ef-49ce-b69c-3cbf7de95372`.
 Later evidence-only documentation does not change this qualified artifact.
+
+Legacy batch-reload behavior remains outside this native qualification; the
+running-merge proof uses a pistol with a real native paper reload. The earlier
+failed exploratory probe is documented in the qualification evidence.
