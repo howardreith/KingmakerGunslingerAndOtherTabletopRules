@@ -1,5 +1,7 @@
 # Recall learning, direct casting, and automatic scroll readers
 
+Status: **PUBLISHED AND INSTALLED** — [full release v0.0.129](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.129), published `2026-09-13T18:30:43Z`.
+
 Owner mission, 2026-09-13. The implementation and guarded mechanical acceptance
 are complete with the explicit limits below. The prior
 [Oracle scroll repair](Z-WORD-OF-RECALL-ORACLE-STATE.md) is preserved. No merge or
@@ -7,9 +9,9 @@ public release was authorized during that qualification. The owner subsequently
 authorized merge, remote push and a new full release; release sealing is recorded
 below.
 
-## Configuration and provenance
+## Accepted-candidate configuration and provenance
 
-- Branch: `codex/z-recall-and-smart-scroll-ui`; master remains
+- Acceptance branch: `codex/z-recall-and-smart-scroll-ui`; master then remained
   `9dc2b6301d97bc83540845240544d34b6fad4b48` (0.0.128). The older 0.0.126 anchor
   was not restored. No pre-existing local changes were discarded.
 - Installed profile: CotW 1.14.4c-2.1, balance fixes enabled, plus BagOfTricks,
@@ -310,3 +312,85 @@ The guarded runtime preflight passes all 471 checks. Its positive cases were
 still pinned to 0.0.126 and its expected catalog omitted the already-existing
 firearm-break-interruption scenario; release preparation updates those test
 expectations only. Historical producer pins and all rejection guards remain.
+
+### Observed release result
+
+Preparation commit `0e7547e4e412eacd1ad9777ca99b275036cb74b3` passed all required
+source/domain/build/package gates and was pushed with the approved helper. The
+owner-authorized merge was pushed to master as
+`69e488aeba443007df27dbe096873f95d047d31c`; annotated tag `v0.0.129` resolves to
+that commit both locally and remotely. The publication is the GitHub latest full
+release: `isDraft=false`, `isPrerelease=false`. Later evidence-only documentation
+does not move the tag or alter the published package.
+
+The publisher ran two clean exact-reference Release builds for staging, then two
+more for publication with `-Publish -ConfirmReleaseReady`. All four passed the
+complete 1,632-case suite and strict output/SoundBank/135-file UMM package gates,
+and produced the same ZIP/DLL hashes as the runtime-tested binary. The downloaded
+public ZIP independently passed strict package validation; public checksums,
+manifest, GitHub asset digest and all 135 installed files match. The installed
+FeatureModules bytes retain their original hash above. No final runtime or build
+gate was waived.
+
+| Release artifact | Verified value |
+| --- | --- |
+| ZIP | `KingmakerGunslinger-0.0.129-recall-and-smart-scrolls.zip` (23,896,889 bytes) |
+| ZIP SHA-256 | `facd41f739d4fb99721feb6f68e384deee12f08b61fed9850726749406e390f8` |
+| DLL SHA-256 | `7e62290c1eea0748517b99d508287bb2134032f3b15493be7ad5c5446c1cc076` |
+| DLL MVID | `b861a9b6-848b-4075-9ad5-c300d4f2470a` |
+| Source-state SHA-256 | `a241ba08b5d298c65a45d11ec40ce18d4445435e3833b5b85be18f074fc6b20b` |
+| Public manifest SHA-256 | `29ee8cb28ffb2a46903869462e226a8fc3c7017fcfce217a99717a6c1d55528f` |
+| Public checksum-file SHA-256 | `4709a63bf659dda80da89aaba1c33ceed292fe044153fd3e579c7f4a04ab117e` |
+
+Payload comparison with the accepted candidate confirms identical 135-file
+inventory: 129 files unchanged; only DLL provenance/version, Info.json and four
+player documents differ. Source comparison confirms only assembly version
+attributes and the development-panel version label changed after acceptance.
+Gameplay, fixture code, assets and blueprint identities remain unchanged.
+
+Final artifact: **307/307 native assertions across eight fresh guarded Steam
+App 640820 processes PASS**, with exact commit/DLL/MVID/package attestation at
+each launch. The installed compatibility profile is the accepted profile above;
+main inventory SHA-256 is
+`0d2559b9c81b15bb667c7508f88e880d5207ba8e1d3575fb24b0a16e53e80e87`.
+The focused wrapper retains all existing save, source, launch and restoration
+guards; SHA-256 `c021362c79317470d16d611a7608ec7cb71ca14f68c9cc081a599e32f0d36e71`.
+
+| Guarded scenario | Module | Assertions | Evidence directory |
+| --- | --- | ---: | --- |
+| native-contracts | ON | 22 PASS | `20260913T1817293948545Z-observe-teleportation-native-contracts` |
+| interaction | ON | 35 PASS | `20260913T1818090920040Z-disposable-teleportation-interaction` |
+| scrolls | ON | 65 PASS | `20260913T1819176103460Z-disposable-teleportation-scrolls` |
+| casting | ON | 54 PASS | `20260913T1820293939454Z-disposable-teleportation-casting` |
+| gamepad | ON | 51 PASS | `20260913T1821321887639Z-disposable-teleportation-gamepad` |
+| level-up | ON | 47 PASS | `20260913T1824185066614Z-disposable-teleportation-level-up` |
+| working-save-smoke | ON | 11 PASS | `20260913T1825499754884Z-working-save-smoke` |
+
+The optional-absent registration run
+`20260913T1827218434267Z-observe-teleportation-native-contracts` adds **22/22 PASS**.
+Transaction `compat-20260913T182717Z-b70543d1d589` reports `Restored` with
+`restorationVerified=true`, including exact FeatureModules restoration. This
+remains save-free startup proof; no absent-Oracle gameplay claim is added.
+
+Main transaction `recall-release129-native-20260913T1817274031557Z` reports PASS,
+85 protected pre-existing saves unchanged, no owned saves, no failures, complete
+Mods/settings restoration and no game process. The final independent audit
+checked every assertion and Steam request/artifact identity; there were no failed
+release runtime attempts. The release is installed and Kingmaker is closed.
+
+The release-level Oracle flow repeats candidate display, cancel, native commit
+and spontaneous Recall casting using one ordinary choice. Production scroll
+failures identify their actual reader, one real native attempt, and the observed
+no-consumption/scroll/charge result. Direct successes remain quiet and ordinary
+Teleport outcomes remain visible. These are native runtime results, separate
+from the earlier accepted-candidate matrix and pure policy tests.
+
+All prior NOT RUN limits remain: Sayan's exact favored-class/archetype path,
+save-backed gameplay without CotW, final pixel/physical-device acceptance and
+manufactured ambiguous-consumption runtime coverage. The broader historical
+feature-settings vendor-observer failure is not relabelled as a pass. Unsupported
+reader-ranking behavior still follows the documented fail-closed contract.
+
+Ignored machine evidence is retained under `artifacts/recall-smart-scroll`
+(`release129-artifact-audit.json`, `release129-public-verification.json`, build,
+publication and download-validation logs). Only this curated record is committed.
