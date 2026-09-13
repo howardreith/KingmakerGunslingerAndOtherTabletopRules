@@ -193,7 +193,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (!_ready || !gameObject.activeInHierarchy || !_rows.Contains(row) || TeleportContextConfirmationPresenter.Pending) return;
                 var context = TeleportationWorldMapAdapter.Capture(false);
                 var fresh = TeleportationWorldMapAdapter.Compose(context, _location.Blueprint).SingleOrDefault(value => value.Key == row.Action.Key);
-                if (fresh == null) { WorldMapPointConsoleSpellActionRuntime.Clear(_panel); return; }
+                if (fresh == null) { _ready = false; TeleportContextConfirmationPresenter.Unavailable(row.Action, context); WorldMapPointConsoleSpellActionRuntime.Clear(_panel); return; }
                 _ready = false; // Consume this original action event before any synchronous settlement.
                 var rolls = QualificationRolls;
                 _model.Cancel(); // Native disposal pops only the destination input layer.

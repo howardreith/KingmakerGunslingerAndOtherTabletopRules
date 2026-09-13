@@ -38,6 +38,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 .ThenBy(value => value.CasterId, StringComparer.Ordinal).ToArray();
             if (eligible.Length == 0) return null;
             if (eligible.Length == 1) return eligible[0];
+            // A proven no-check success has the maximum possible chance and
+            // wins the specified tie even against an unscored check route.
+            var guaranteed = eligible.FirstOrDefault(value => value.ActivationChance != null &&
+                value.ActivationChance.Supported && value.ActivationChance.NoCheck);
+            if (guaranteed != null) return guaranteed;
             if (eligible.Any(value => value.ActivationChance == null || !value.ActivationChance.Supported)) return null;
             return eligible.OrderByDescending(value => value.ActivationChance.Probability)
                 .ThenByDescending(value => value.ActivationChance.NoCheck).ThenBy(value => value.PartyOrder)

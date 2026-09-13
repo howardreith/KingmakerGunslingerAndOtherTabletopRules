@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private WorldMapPointSpellAction _action;
         private TeleportationWorldMapContext _openedContext;
         private Kingmaker.UnitLogic.Spellbook _openedBook;
+        private Kingmaker.Items.ItemEntity _openedScrollItem;
         private Action<DialogMessageBoxBase.BoxButton> _callback;
         private TeleportFamiliarity _familiarity;
         private bool _settled;
@@ -73,8 +74,32 @@ namespace KingmakerGunslinger.Spells.Teleportation
         // immediately; ordinary Teleport opens its owned native confirmation.
         internal static void Begin(WorldMapPointSpellAction action, TeleportationWorldMapContext context, ITeleportationRolls qualificationRolls = null)
         {
-            if (action != null && TeleportBeginPolicy.IsDirect(action.Source.Spell)) OpenDirect(action, context, qualificationRolls);
-            else Open(action, context, qualificationRolls);
+            if (!CanExecute(action) || context == null || !context.Usable) return;
+            var point = ResourcesLibrary.TryGetBlueprint<BlueprintLocation>(action.Destination.Id);
+            var fresh = TeleportationWorldMapAdapter.Compose(context, point).SingleOrDefault(value => value.Key == action.Key);
+            if (fresh == null) { Unavailable(action, context); return; }
+            if (!fresh.ReaderResolved)
+            {
+                TeleportationCombatLog.Publish(TeleportationText.Get("ScrollReaderUnsupported",
+                    "The best scroll reader could not be determined with the party's current effects. Nothing was spent."), TeleportTransactionState.Invalidated);
+                return;
+            }
+            if (TeleportBeginPolicy.IsDirect(fresh.Source.Spell)) OpenDirect(fresh, context, qualificationRolls);
+            else Open(fresh, context, qualificationRolls);
+        }
+
+        internal static void Unavailable(WorldMapPointSpellAction action, TeleportationWorldMapContext context)
+        {
+            if (TeleportationConfirmationSurface.UnrelatedModalShown()) return;
+            string message = context != null && context.Usable && action.Source.Kind == TeleportCastSourceKind.Scroll &&
+                TeleportationScrollAdapter.GroupStock(context.Player, action.Source) > 0 &&
+                !TeleportationScrollAdapter.Enumerate(context.Player).Any(value =>
+                    WorldMapPointSpellActionComposer.ScrollKey(value) == WorldMapPointSpellActionComposer.ScrollKey(action.Source)) ?
+                string.Format(CultureInfo.CurrentCulture, TeleportationText.Get("ScrollNoReader",
+                    "No eligible traveling-party member can activate the Scroll of {0}. Nothing was spent."),
+                    TeleportContextPresentation.SpellName(action.Source.Spell, TeleportationText.Get)) :
+                TeleportationText.Get("SourceUnavailable", "This spell source is no longer available. Nothing was spent.");
+            TeleportationCombatLog.Publish(message, TeleportTransactionState.Invalidated);
         }
 
         internal static void Open(WorldMapPointSpellAction action, TeleportationWorldMapContext context, ITeleportationRolls qualificationRolls = null)
@@ -83,11 +108,12 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var surface = TeleportationConfirmationSurface.Available();
             if (surface == null) return;
             Kingmaker.UnitLogic.Spellbook openedBook = null;
+            Kingmaker.Items.ItemEntity openedScrollItem = null;
             if (action.Source.Kind == TeleportCastSourceKind.Scroll)
             {
-                // Inventory-backed sources bind the shared stock, not a book;
-                // the exact item is re-resolved at capture time.
-                if (TeleportationScrollAdapter.Resolve(action.Source) == null) return;
+                var scroll = TeleportationScrollAdapter.Resolve(action.Source);
+                if (scroll == null || !action.ReaderResolved) return;
+                openedScrollItem = scroll.Item;
             }
             else
             {
@@ -102,6 +128,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 self._action = action;
                 self._openedContext = context;
                 self._openedBook = openedBook;
+                self._openedScrollItem = openedScrollItem;
                 self._familiarity = TeleportationCastExecution.FamiliarityFor(context, action.Destination.Id);
                 self.Transaction = new TeleportCastTransaction(action);
                 self.Execution = qualificationRolls == null ? new TeleportationCastExecution() : new TeleportationCastExecution(qualificationRolls);
@@ -110,7 +137,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 _current = self;
                 EventBus.RaiseEvent<IDialogMessageBoxUIHandler>(handler => handler.HandleOpen(self.Message,
                     DialogMessageBoxBase.BoxType.Dialog, self._callback,
-                    TeleportationText.Get("Confirm", "Cast"), TeleportationText.Get("Cancel", "Cancel"), null, null));
+                    action.Source.Kind == TeleportCastSourceKind.Scroll ? TeleportationText.Get("ConfirmScroll", "Use Scroll") :
+                        TeleportationText.Get("Confirm", "Cast"), TeleportationText.Get("Cancel", "Cancel"), null, null));
                 self._opened = true;
                 if (!surface.Shown || !self.OwnsCallback()) self.Cancel(false);
             }
@@ -168,9 +196,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
             var source = fresh == null ? null : TeleportationSpellbookAdapter.Resolve(fresh.Source);
             if (fresh != null && fresh.Source.Kind == TeleportCastSourceKind.Scroll)
             {
-                // Inventory-backed sources stay valid while their shared stock is
-                // unchanged; no physical book identity participates.
-                return TeleportationScrollAdapter.Resolve(fresh.Source) != null &&
+                // Confirmation binds this reader and physical item. A changed
+                // winner cancels before expenditure, preserving the risk consent.
+                var scroll = TeleportationScrollAdapter.Resolve(fresh.Source);
+                return fresh.ReaderResolved && fresh.Source.Key == _action.Source.Key && scroll != null &&
+                    ReferenceEquals(scroll.Item, _openedScrollItem) &&
                     fresh.Source.Uses == _action.Source.Uses && fresh.Source.Kind == _action.Source.Kind &&
                     fresh.Source.SpellLevel == _action.Source.SpellLevel &&
                     fresh.Destination.OrdinaryArrivals == _action.Destination.OrdinaryArrivals &&
