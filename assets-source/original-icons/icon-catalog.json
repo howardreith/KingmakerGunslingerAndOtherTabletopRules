@@ -56,7 +56,7 @@
   "guide": "docs/ICON-ART-GUIDE.md",
   "referenceIndex": "docs/art/ICON-REFERENCE-INDEX.md",
   "sourceAuditStatus": "247 elemental/strategic records inspected; native graph/localized names/publication and assignment snapshots await guarded live census.",
-  "runtimeIntegrationStatus": "Only native firearm selector prototype changed; all new raster art remains isolated pilot material.",
+  "runtimeIntegrationStatus": "not-integrated; 89 painted candidates and Rapid Reload ready for exact consumer mapping",
   "delegatedManifests": [
     {
       "path": "assets-source/original-icons/icon-overhaul-assets.json",
@@ -1137,7 +1137,8 @@
         "reviewedExportSha256": "839637f60fa9a268db577ad549d45fae9b77884465ca6c47e3988c70c9193341",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "heritages"
     },
     {
       "key": "fire-resistance",
@@ -1155,7 +1156,8 @@
         "reviewedExportSha256": "731f529ddd1caf072b7fc77e440cb1b824d78729c83d5b8ff6e7bf2ba8692a8e",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "resistance"
     },
     {
       "key": "fire-affinity",
@@ -1173,7 +1175,8 @@
         "reviewedExportSha256": "d5ef14e589d286ba39dc6ce8880f6ef3f8b4eb6454653c3d06c0ffe7543a4394",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "affinities"
     },
     {
       "key": "native-burning-hands",
@@ -1205,7 +1208,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-oread.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-oread.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "acid-resistance",
@@ -1223,11 +1227,12 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-resistance.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-resistance.json",
+      "reviewGroup": "resistance"
     },
     {
       "key": "acid-affinity",
-      "name": "Acid Affinity",
+      "name": "Earth Affinity",
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
@@ -1241,7 +1246,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "native-stone-fist",
@@ -1273,7 +1279,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-sylph.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-sylph.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "electricity-resistance",
@@ -1291,7 +1298,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/electricity-resistance.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/electricity-resistance.json",
+      "reviewGroup": "resistance"
     },
     {
       "key": "air-affinity",
@@ -1309,7 +1317,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/air-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/air-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "native-feather-step",
@@ -1341,7 +1350,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-undine.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-undine.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "cold-resistance",
@@ -1359,7 +1369,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/cold-resistance.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/cold-resistance.json",
+      "reviewGroup": "resistance"
     },
     {
       "key": "water-affinity",
@@ -1377,7 +1388,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/water-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/water-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "hydraulic-push",
@@ -1385,13 +1397,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "hydraulic-push"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-push.json",
+      "reviewGroup": "hydraulic"
     },
     {
       "key": "protected-appearance",
@@ -1423,7 +1440,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/lavasoul.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/lavasoul.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "sunsoul",
@@ -1441,7 +1459,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/sunsoul.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/sunsoul.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "gemsoul",
@@ -1459,7 +1478,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/gemsoul.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/gemsoul.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "ironsoul",
@@ -1477,7 +1497,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ironsoul.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ironsoul.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "smokesoul",
@@ -1495,7 +1516,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/smokesoul.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/smokesoul.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "stormsoul",
@@ -1513,7 +1535,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/stormsoul.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/stormsoul.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "mistsoul",
@@ -1531,7 +1554,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/mistsoul.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/mistsoul.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "rimesoul",
@@ -1549,7 +1573,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/rimesoul.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/rimesoul.json",
+      "reviewGroup": "heritages"
     },
     {
       "key": "magma-affinity",
@@ -1567,7 +1592,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magma-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magma-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "solar-affinity",
@@ -1585,7 +1611,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/solar-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/solar-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "crystal-affinity",
@@ -1603,7 +1630,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/crystal-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/crystal-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "metal-affinity",
@@ -1621,7 +1649,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/metal-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/metal-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "smoke-affinity",
@@ -1639,7 +1668,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/smoke-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/smoke-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "lightning-affinity",
@@ -1657,7 +1687,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/lightning-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/lightning-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "mist-affinity",
@@ -1675,7 +1706,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/mist-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/mist-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "ice-affinity",
@@ -1693,7 +1725,8 @@
         "reviewedExportSha256": null,
         "evidence": null
       },
-      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ice-affinity.json"
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ice-affinity.json",
+      "reviewGroup": "affinities"
     },
     {
       "key": "native-firebelly",
@@ -1743,13 +1776,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "unerring-weapon"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/unerring-weapon.json",
+      "reviewGroup": "hand-actions"
     },
     {
       "key": "native-expeditious-retreat",
@@ -1799,13 +1837,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "chill-touch"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/chill-touch.json",
+      "reviewGroup": "hand-actions"
     },
     {
       "key": "unerring-weapon-primary",
@@ -1813,13 +1856,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "unerring-weapon-primary"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/unerring-weapon-primary.json",
+      "reviewGroup": "hand-actions"
     },
     {
       "key": "unerring-weapon-secondary",
@@ -1827,13 +1875,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "unerring-weapon-secondary"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/unerring-weapon-secondary.json",
+      "reviewGroup": "hand-actions"
     },
     {
       "key": "elemental-strike",
@@ -1851,7 +1904,8 @@
         "reviewedExportSha256": "4ef61ba290be43fea8917141b2eb0a4ba7c38b7d45274a5a1cb7b3a9e29ffa0b",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "feats"
     },
     {
       "key": "scorching-weapons",
@@ -1859,13 +1913,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "scorching-weapons"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/scorching-weapons.json",
+      "reviewGroup": "feats"
     },
     {
       "key": "inner-flame",
@@ -1873,13 +1932,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "inner-flame"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/inner-flame.json",
+      "reviewGroup": "feats"
     },
     {
       "key": "blazing-aura",
@@ -1887,13 +1951,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "blazing-aura"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/blazing-aura.json",
+      "reviewGroup": "feats"
     },
     {
       "key": "firesight",
@@ -1901,13 +1970,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "firesight"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/firesight.json",
+      "reviewGroup": "feats"
     },
     {
       "key": "airy-step",
@@ -1915,13 +1989,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "airy-step"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/airy-step.json",
+      "reviewGroup": "feats"
     },
     {
       "key": "wings-of-air",
@@ -1929,13 +2008,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "wings-of-air"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/wings-of-air.json",
+      "reviewGroup": "feats"
     },
     {
       "key": "cloud-gazer",
@@ -1943,13 +2027,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "cloud-gazer"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/cloud-gazer.json",
+      "reviewGroup": "feats"
     },
     {
       "key": "inner-breath",
@@ -1957,13 +2046,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "inner-breath"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/inner-breath.json",
+      "reviewGroup": "feats"
     },
     {
       "key": "hydraulic-maneuver",
@@ -1981,7 +2075,8 @@
         "reviewedExportSha256": "220226251a04ecb9e2fda4b8883aa8cabef3ceb3646d095f504c7ad3c0d9e397",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "feats"
     },
     {
       "key": "triton-portal",
@@ -1989,13 +2084,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "triton-portal"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/triton-portal.json",
+      "reviewGroup": "feats"
     },
     {
       "key": "hydraulic-bull-rush",
@@ -2003,13 +2103,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "hydraulic-bull-rush"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-bull-rush.json",
+      "reviewGroup": "hydraulic"
     },
     {
       "key": "hydraulic-disarm",
@@ -2017,13 +2122,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "hydraulic-disarm"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-disarm.json",
+      "reviewGroup": "hydraulic"
     },
     {
       "key": "hydraulic-trip",
@@ -2041,7 +2151,8 @@
         "reviewedExportSha256": "3d4052dd1bff02c9434857bd729b47d03998e7c6ec67520ad2b93e9aa2883de9",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "hydraulic"
     },
     {
       "key": "hydraulic-blind",
@@ -2049,153 +2160,208 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "hydraulic-blind"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-blind.json",
+      "reviewGroup": "hydraulic"
     },
     {
       "key": "ifrit-energy-resistance-selection",
       "name": "Ifrit Energy Resistance selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "ifrit-energy-resistance-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ifrit-energy-resistance-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "ifrit-elemental-affinity-selection",
       "name": "Ifrit Elemental Affinity selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "ifrit-elemental-affinity-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ifrit-elemental-affinity-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "ifrit-racial-spell-like-ability-selection",
       "name": "Ifrit Racial Spell Like Ability selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "ifrit-racial-spell-like-ability-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ifrit-racial-spell-like-ability-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "oread-energy-resistance-selection",
       "name": "Oread Energy Resistance selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "oread-energy-resistance-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/oread-energy-resistance-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "oread-elemental-affinity-selection",
       "name": "Oread Elemental Affinity selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "oread-elemental-affinity-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/oread-elemental-affinity-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "oread-racial-spell-like-ability-selection",
       "name": "Oread Racial Spell Like Ability selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "oread-racial-spell-like-ability-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/oread-racial-spell-like-ability-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "sylph-energy-resistance-selection",
       "name": "Sylph Energy Resistance selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "sylph-energy-resistance-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/sylph-energy-resistance-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "sylph-elemental-affinity-selection",
       "name": "Sylph Elemental Affinity selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "sylph-elemental-affinity-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/sylph-elemental-affinity-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "sylph-racial-spell-like-ability-selection",
       "name": "Sylph Racial Spell Like Ability selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "sylph-racial-spell-like-ability-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/sylph-racial-spell-like-ability-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "undine-racial-spell-like-ability-selection",
       "name": "Undine Racial Spell Like Ability selection",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Static role/race category identity intentionally shared by the existing selector and its retain/no-additional-replacement choice; no new power or active-state badge.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "undine-racial-spell-like-ability-selection"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/undine-racial-spell-like-ability-selection.json",
+      "reviewGroup": "selectors"
     },
     {
       "key": "wildfire-heart",
@@ -2203,13 +2369,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "wildfire-heart"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/wildfire-heart.json",
+      "reviewGroup": "ifrit-traits"
     },
     {
       "key": "brazen-flame",
@@ -2217,13 +2388,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "brazen-flame"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/brazen-flame.json",
+      "reviewGroup": "ifrit-traits"
     },
     {
       "key": "fire-in-the-blood",
@@ -2231,13 +2407,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "fire-in-the-blood"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/fire-in-the-blood.json",
+      "reviewGroup": "ifrit-traits"
     },
     {
       "key": "efreeti-magic",
@@ -2245,13 +2426,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "efreeti-magic"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/efreeti-magic.json",
+      "reviewGroup": "ifrit-traits"
     },
     {
       "key": "forge-hardened",
@@ -2259,13 +2445,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "forge-hardened"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/forge-hardened.json",
+      "reviewGroup": "ifrit-traits"
     },
     {
       "key": "fire-insight",
@@ -2273,13 +2464,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "fire-insight"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/fire-insight.json",
+      "reviewGroup": "ifrit-traits"
     },
     {
       "key": "crystalline-form",
@@ -2287,13 +2483,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "crystalline-form"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/crystalline-form.json",
+      "reviewGroup": "oread-traits"
     },
     {
       "key": "earth-insight",
@@ -2301,13 +2502,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "earth-insight"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/earth-insight.json",
+      "reviewGroup": "oread-traits"
     },
     {
       "key": "granite-skin",
@@ -2315,13 +2521,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "granite-skin"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/granite-skin.json",
+      "reviewGroup": "oread-traits"
     },
     {
       "key": "stone-in-the-blood",
@@ -2329,13 +2540,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "stone-in-the-blood"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/stone-in-the-blood.json",
+      "reviewGroup": "oread-traits"
     },
     {
       "key": "treacherous-earth",
@@ -2343,13 +2559,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "treacherous-earth"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/treacherous-earth.json",
+      "reviewGroup": "oread-traits"
     },
     {
       "key": "air-insight",
@@ -2357,13 +2578,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "air-insight"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/air-insight.json",
+      "reviewGroup": "sylph-traits"
     },
     {
       "key": "breeze-kissed",
@@ -2371,13 +2597,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "breeze-kissed"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-kissed.json",
+      "reviewGroup": "sylph-traits"
     },
     {
       "key": "like-the-wind",
@@ -2385,13 +2616,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "like-the-wind"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/like-the-wind.json",
+      "reviewGroup": "sylph-traits"
     },
     {
       "key": "secretive",
@@ -2399,13 +2635,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "secretive"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/secretive.json",
+      "reviewGroup": "sylph-traits"
     },
     {
       "key": "storm-in-the-blood",
@@ -2413,13 +2654,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "storm-in-the-blood"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/storm-in-the-blood.json",
+      "reviewGroup": "sylph-traits"
     },
     {
       "key": "thunderous-resilience",
@@ -2427,13 +2673,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "thunderous-resilience"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/thunderous-resilience.json",
+      "reviewGroup": "sylph-traits"
     },
     {
       "key": "whispering-wind",
@@ -2441,13 +2692,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "whispering-wind"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/whispering-wind.json",
+      "reviewGroup": "sylph-traits"
     },
     {
       "key": "acid-breath",
@@ -2455,13 +2711,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "acid-breath"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-breath.json",
+      "reviewGroup": "undine-traits"
     },
     {
       "key": "nereid-fascination",
@@ -2469,13 +2730,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "nereid-fascination"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/nereid-fascination.json",
+      "reviewGroup": "undine-traits"
     },
     {
       "key": "ooze-breath",
@@ -2483,13 +2749,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "ooze-breath"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ooze-breath.json",
+      "reviewGroup": "undine-traits"
     },
     {
       "key": "native-enlarge-person",
@@ -2525,13 +2796,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "deflect-next-ray"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/deflect-next-ray.json",
+      "reviewGroup": "hand-actions"
     },
     {
       "key": "breeze-gust",
@@ -2539,13 +2815,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "breeze-gust"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-gust.json",
+      "reviewGroup": "wind-actions"
     },
     {
       "key": "breeze-bull-rush",
@@ -2553,13 +2834,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "breeze-bull-rush"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-bull-rush.json",
+      "reviewGroup": "wind-actions"
     },
     {
       "key": "breeze-trip",
@@ -2567,13 +2853,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "breeze-trip"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-trip.json",
+      "reviewGroup": "wind-actions"
     },
     {
       "key": "calm-winds",
@@ -2581,13 +2872,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "calm-winds"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/calm-winds.json",
+      "reviewGroup": "wind-actions"
     },
     {
       "key": "renew-winds",
@@ -2595,13 +2891,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "renew-winds"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/renew-winds.json",
+      "reviewGroup": "wind-actions"
     },
     {
       "key": "teleport",
@@ -2619,7 +2920,8 @@
         "reviewedExportSha256": "debe99749ebfd00c6b66307b2a113f0427d29abb095355b47435524b6f760858",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "strategic"
     },
     {
       "key": "greater-teleport",
@@ -2637,7 +2939,8 @@
         "reviewedExportSha256": "0381ca8dff106fcff7173945a0cb08c96d34a0e65640c73b12b95e1ab043785a",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "strategic"
     },
     {
       "key": "word-of-recall",
@@ -2655,7 +2958,8 @@
         "reviewedExportSha256": "5e0a4c5a5519abe46d026d7e5ccfd7be521655b3403e9b0caee149d0bc29e175",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "strategic"
     },
     {
       "key": "shake-free",
@@ -2663,13 +2967,18 @@
       "family": "painted-magical",
       "sharingReason": "New visible identity; no final art approved.",
       "exportProfile": "project-painted-128",
-      "assetAuthority": null,
-      "technicalStatus": "inventory-only",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "shake-free"
+      },
+      "technicalStatus": "candidate-export; not integrated",
       "visualReview": {
-        "status": "not-reviewed",
+        "status": "awaiting-owner-production-review",
         "reviewedExportSha256": null,
         "evidence": null
-      }
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/shake-free.json",
+      "reviewGroup": "undine-traits"
     },
     {
       "key": "retained-firearms",
@@ -2743,7 +3052,8 @@
         "reviewedExportSha256": "5c3280145815f7b161602da161264ac1f43fb3ac3c4bf47ff907b0919a2aa9d3",
         "evidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
         "scope": "pilot-image-and-family-direction"
-      }
+      },
+      "reviewGroup": "combat-emblem"
     }
   ],
   "consumers": [
@@ -2868,7 +3178,7 @@
       "symbol": "KMG.ElementalRaces.Oread.AcidAffinity",
       "guid": "619db6814d9c45ae90f1d3dde9815402",
       "type": "BlueprintFeature",
-      "name": "Acid Affinity",
+      "name": "Earth Affinity",
       "module": "ElementalRaces",
       "publication": "published-source; runtime pending",
       "surface": "selection / character-sheet feature / tooltip",
@@ -6715,5 +7025,6 @@
       "after": "                // Match the native/eastern selector path. Only this UI entry\n                // uses text; the saved blueprint parameter and its sprite stay\n                // intact for selected-feature consumers with different contracts.\n                result.Add(new FeatureUIData(feature, new FeatureParam(parameter),\n                    displayName, parameter.Description, null,\n                    displayName.Substring(0, 1)));",
       "authorization": "Icon overhaul v2 mission section 6; exact UI constructor only. Entire remaining source must match baseline."
     }
-  ]
+  ],
+  "artProductionStatus": "complete-main-scope-candidates"
 }

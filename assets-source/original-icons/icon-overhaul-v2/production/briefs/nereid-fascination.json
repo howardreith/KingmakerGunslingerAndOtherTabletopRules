@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "nereid-fascination",
+  "behavior": "Nereid Fascination: temporary nearby-humanoid fascination aura, native Fascinate behavior; not paralysis or control.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalNereidPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/nereid-fascination.png",
+  "sourceSha256": "4b831ece0908301a8c30a0cc561df81c8e9e2cd2a17ed3e2e05f55546f088453",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "role": "approved painted water/action style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized cool light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.  Do not copy the reference composition, use only its painted texture and strong magical-material highlights. A serene WATER-FORMED HUMAN BUST faces slightly left, large entrancing eyes and calm expression, shoulders and hair sculpted from soft translucent blue-green water. THREE BROAD RIPPLE ARCS converge gently toward the face from the outer sides, focusing attention inward. The face is the clear main subject, rimmed in luminous turquoise and silver, dark navy ground. Body below shoulders dissolves into still water, no full elemental warrior. No fire, weapon, chains, puppet strings, hypnosis spiral, closed travel ring, extra eyes, paralysis statue, runes or nudity.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A serene WATER-FORMED HUMAN BUST faces slightly left, large entrancing eyes and calm expression, shoulders and hair sculpted from soft translucent blue-green water. THREE BROAD RIPPLE ARCS converge gently toward the face from the outer sides, focusing attention inward. The face is the clear main subject, rimmed in luminous turquoise and silver, dark navy ground. Body below shoulders dissolves into still water, no full elemental warrior. No fire, weapon, chains, puppet strings, hypnosis spiral, closed travel ring, extra eyes, paralysis statue, runes or nudity.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "undine-traits",
+  "confusedWith": [
+    "acid-breath",
+    "ooze-breath",
+    "shake-free"
+  ],
+  "uiSurfaces": [
+    "effects and conditions / tooltip",
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "no full elemental warrior.",
+    "No fire, weapon, chains, puppet strings, hypnosis spiral, closed travel ring, extra eyes, paralysis statue, runes or nudity."
+  ]
+}

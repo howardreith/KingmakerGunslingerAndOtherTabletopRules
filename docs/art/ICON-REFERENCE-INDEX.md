@@ -24,6 +24,11 @@ Read [the guide](../ICON-ART-GUIDE.md) and [catalog](../../assets-source/origina
 
 ## Native references: local only
 
+The [full production review](../../reports/icon-overhaul/PRODUCTION-REVIEW.html)
+contains all 80 later paintings beside these ten approved anchors. Later images
+remain candidates; their brief references and preserved revision inputs do not
+grant them anchor approval. Inspect final native placement separately.
+
 The supplied intake remains at `incoming-assets/icon-overhaul` in the lab. Relative paths below resolve there, not inside the repository. Do not publish these images or extracted game fonts/textures. Screenshots informed style; their pixels were not incorporated into production icons.
 
 | ID | Intake-relative file | SHA-256 | Subject / region and interpretation |

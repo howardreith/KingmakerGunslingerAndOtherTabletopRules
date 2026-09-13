@@ -15,5 +15,30 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: one dark compact STORM CLOUD with a bright split thunderbolt breaking downward from it, two large crooked silver-white forks that form a bold inverted Y. The storm cloud is rounded with a thick bright lit top and slate-violet undersides; cloud and forks form one compact readable vertical composition. Desaturated midnight blue ground and faint cold violet light around the lightning; a little rain mist but no detailed landscape. Thick major bolt, not many tiny lines. No hands, weapon, storm figure, explosion, flame, rune or UI badge.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: one dark compact STORM CLOUD with a bright split thunderbolt breaking downward from it, two large crooked silver-white forks that form a bold inverted Y. The storm cloud is rounded with a thick bright lit top and slate-violet undersides; cloud and forks form one compact readable vertical composition. Desaturated midnight blue ground and faint cold violet light around the lightning; a little rain mist but no detailed landscape. Thick major bolt, not many tiny lines. No hands, weapon, storm figure, explosion, flame, rune or UI badge.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "heritages",
+  "confusedWith": [
+    "gemsoul",
+    "general-ifrit",
+    "general-oread",
+    "general-sylph",
+    "general-undine",
+    "ironsoul",
+    "lavasoul",
+    "mistsoul",
+    "rimesoul",
+    "smokesoul",
+    "sunsoul"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark.",
+    "no detailed landscape.",
+    "No hands, weapon, storm figure, explosion, flame, rune or UI badge."
+  ]
 }

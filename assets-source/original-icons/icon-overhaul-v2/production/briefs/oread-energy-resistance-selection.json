@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "key": "oread-energy-resistance-selection",
+  "behavior": "Oread Energy Resistance selector and retain entry: stone protection category, no extra armor or new active defense.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/oread-energy-resistance-selection.png",
+  "sourceSha256": "9a313cd1417c141f848bf6b874c53458b58360ada3842aa9ee1dfeefbc2bc724",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square hand-painted fantasy CRPG TRAIT-CATEGORY icon, a restrained static symbol for a selection category and its retain choice, not a new spell or active buff. Use supplied approved project art for deliberate rich brushwork and material lighting, not its composition. One bold centered subject legible at 32/48/128px, about 80% of square, important edges at least 7% inside canvas. Deep full-bleed charcoal ground. No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark. THREE BROAD HEXAGONAL STONE SHIELD PLATES overlap in a compact downward-pointing cluster. Blunt charcoal-gray rock faces with restrained pale jade edges; front hexagon has one simple vertical mineral vein, no writing. One at upper-left, one upper-right, front lower-center, each large enough to read, all within the frame. Strong chunky angular protective silhouette, quiet dark olive-black ground. No fist, person, acid splash attack, fire, ice, metal blade or circular ornament.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "THREE BROAD HEXAGONAL STONE SHIELD PLATES overlap in a compact downward-pointing cluster. Blunt charcoal-gray rock faces with restrained pale jade edges; front hexagon has one simple vertical mineral vein, no writing. One at upper-left, one upper-right, front lower-center, each large enough to read, all within the frame. Strong chunky angular protective silhouette, quiet dark olive-black ground. No fist, person, acid splash attack, fire, ice, metal blade or circular ornament.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "selectors",
+  "confusedWith": [
+    "ifrit-elemental-affinity-selection",
+    "ifrit-energy-resistance-selection",
+    "ifrit-racial-spell-like-ability-selection",
+    "oread-elemental-affinity-selection",
+    "oread-racial-spell-like-ability-selection",
+    "sylph-elemental-affinity-selection",
+    "sylph-energy-resistance-selection",
+    "sylph-racial-spell-like-ability-selection",
+    "undine-racial-spell-like-ability-selection"
+  ],
+  "uiSurfaces": [
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark.",
+    "no writing.",
+    "No fist, person, acid splash attack, fire, ice, metal blade or circular ornament."
+  ]
+}

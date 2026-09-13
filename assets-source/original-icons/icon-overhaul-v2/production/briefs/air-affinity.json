@@ -15,5 +15,30 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A graceful hand rising vertically from lower right, palm open toward the viewer; a broad IVORY WIND RIBBON passes BETWEEN spread fingers and makes one clear open arc above them. Light wind has three simple smooth pale strokes, no droplets. Silver-cyan illumination makes all finger shapes and palm bright against midnight desaturated blue. The strong vertical hand and open wind arch distinguish it from a freestanding heritage spiral. No feathers, flight, lightning bolt or target.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A graceful hand rising vertically from lower right, palm open toward the viewer; a broad IVORY WIND RIBBON passes BETWEEN spread fingers and makes one clear open arc above them. Light wind has three simple smooth pale strokes, no droplets. Silver-cyan illumination makes all finger shapes and palm bright against midnight desaturated blue. The strong vertical hand and open wind arch distinguish it from a freestanding heritage spiral. No feathers, flight, lightning bolt or target.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "affinities",
+  "confusedWith": [
+    "acid-affinity",
+    "crystal-affinity",
+    "fire-affinity",
+    "ice-affinity",
+    "lightning-affinity",
+    "magma-affinity",
+    "metal-affinity",
+    "mist-affinity",
+    "smoke-affinity",
+    "solar-affinity",
+    "water-affinity"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark.",
+    "no droplets.",
+    "No feathers, flight, lightning bolt or target."
+  ]
 }

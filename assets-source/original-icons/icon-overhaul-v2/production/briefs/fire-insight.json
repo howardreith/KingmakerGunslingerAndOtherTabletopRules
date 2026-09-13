@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "key": "fire-insight",
+  "behavior": "Fire Insight adds two rounds to fire-subtype creatures summoned by Summon Monster or Summon Nature's Ally.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/fire-insight.png",
+  "sourceSha256": "0ec3056912edf6a6b334b7000645a63b5eb36dc25c09e440213a538659811020",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painterly elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized warm light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A SMALL FIRE ELEMENTAL with recognizable head, broad torso and two up-curled flame arms is SUSTAINED ABOVE a low simple glowing SUMMONING MARK. Its lower body narrows into a flame tail just above a thin incomplete horizontal amber ellipse, with two upward supporting wisps. All creature and ellipse inside frame. Bright yellow-orange silhouette, deep brown-black ground. The posture is stable and summoned, not lunging at a target. No eye, book, clock, numeral, runes, circular UI frame, travel gate or human caster.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A SMALL FIRE ELEMENTAL with recognizable head, broad torso and two up-curled flame arms is SUSTAINED ABOVE a low simple glowing SUMMONING MARK. Its lower body narrows into a flame tail just above a thin incomplete horizontal amber ellipse, with two upward supporting wisps. All creature and ellipse inside frame. Bright yellow-orange silhouette, deep brown-black ground. The posture is stable and summoned, not lunging at a target. No eye, book, clock, numeral, runes, circular UI frame, travel gate or human caster.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "ifrit-traits",
+  "confusedWith": [
+    "air-insight",
+    "brazen-flame",
+    "earth-insight",
+    "efreeti-magic",
+    "fire-in-the-blood",
+    "forge-hardened",
+    "triton-portal",
+    "wildfire-heart"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No eye, book, clock, numeral, runes, circular UI frame, travel gate or human caster."
+  ]
+}

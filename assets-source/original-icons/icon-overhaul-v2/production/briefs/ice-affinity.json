@@ -15,5 +15,29 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A strong cool brown hand angled upward from lower center, thumb and index finger gently cradling a SINGLE WIDE ANGULAR ICE WEDGE horizontally over the palm. The translucent blue wedge branches into two blunt frosted shelves to the left and one tapering pale prong to the upper right, heavy silver-white frost edge and deep glacial blue core. Clearly broad crystal/hand silhouette rather than an attacking claw or snowflake. Ice lights the skin cool white, midnight navy ground, no orange light, flame, skull or target.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A strong cool brown hand angled upward from lower center, thumb and index finger gently cradling a SINGLE WIDE ANGULAR ICE WEDGE horizontally over the palm. The translucent blue wedge branches into two blunt frosted shelves to the left and one tapering pale prong to the upper right, heavy silver-white frost edge and deep glacial blue core. Clearly broad crystal/hand silhouette rather than an attacking claw or snowflake. Ice lights the skin cool white, midnight navy ground, no orange light, flame, skull or target.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "affinities",
+  "confusedWith": [
+    "acid-affinity",
+    "air-affinity",
+    "crystal-affinity",
+    "fire-affinity",
+    "lightning-affinity",
+    "magma-affinity",
+    "metal-affinity",
+    "mist-affinity",
+    "smoke-affinity",
+    "solar-affinity",
+    "water-affinity"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark.",
+    "no orange light, flame, skull or target."
+  ]
 }

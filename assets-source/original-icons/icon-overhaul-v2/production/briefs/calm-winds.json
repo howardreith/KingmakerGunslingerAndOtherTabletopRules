@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "calm-winds",
+  "behavior": "Calm Winds voluntarily suppresses ready Breeze-Kissed defense; swift action; same identity on Winds Calmed buff.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/calm-winds.png",
+  "sourceSha256": "8486b6abaec2c7a76d41d725849c0dbfccc014cc94460df82c04b0fb8749b969",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painterly action/feat style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. This is the WIND action family: broad luminous ivory-silver air ribbons, soft blue shadows, deep midnight blue ground. No orange fire, electric bolts, turquoise liquid, droplets or icy particles. A LARGE HUMAN HAND held PALM DOWN horizontally in the upper center, fingers gently extended toward right, presses the air into STILLNESS. Beneath the palm, two broad silver wind ribbons settle into LOW FLAT HORIZONTAL LINES and softly fade outward near the ground. Main silhouette is a descending quiet hand over flattened air. Natural warm-neutral skin against cool silver air. No upward vortex, clenched fist, recharge battery, clock, pause symbol, text, closed UI ring, grass or waves of water.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A LARGE HUMAN HAND held PALM DOWN horizontally in the upper center, fingers gently extended toward right, presses the air into STILLNESS. Beneath the palm, two broad silver wind ribbons settle into LOW FLAT HORIZONTAL LINES and softly fade outward near the ground. Main silhouette is a descending quiet hand over flattened air. Natural warm-neutral skin against cool silver air. No upward vortex, clenched fist, recharge battery, clock, pause symbol, text, closed UI ring, grass or waves of water.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "wind-actions",
+  "confusedWith": [
+    "breeze-bull-rush",
+    "breeze-gust",
+    "breeze-trip",
+    "renew-winds"
+  ],
+  "uiSurfaces": [
+    "effects and conditions / tooltip",
+    "granted action / variants / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No orange fire, electric bolts, turquoise liquid, droplets or icy particles.",
+    "No upward vortex, clenched fist, recharge battery, clock, pause symbol, text, closed UI ring, grass or waves of water."
+  ]
+}

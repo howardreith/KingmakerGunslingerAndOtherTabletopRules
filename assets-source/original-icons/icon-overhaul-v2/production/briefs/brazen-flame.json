@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "brazen-flame",
+  "behavior": "Brazen Flame adds 1 fire damage on successful melee attacks; moment of close contact, not temporary weapon empowerment.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/brazen-flame.png",
+  "sourceSha256": "06481d20eef6f5d2cb56c8b1822b8e96a8f0965cde43643f8eeb1fa370e90639",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painterly elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized warm light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A LARGE CLENCHED HUMAN FIST punches from left toward a dark shoulder silhouette on the right. One small bright ORANGE FLAME flares exactly at the knuckle contact, curling upward into a compact crescent. Broad forearm and fist occupy most of frame, knuckles intact, dark target only a partial rounded shape. Deliberate close melee impact, no wound or blood. No sword, free-floating fireball, aura, projectile trail, metal gauntlet or shield.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A LARGE CLENCHED HUMAN FIST punches from left toward a dark shoulder silhouette on the right. One small bright ORANGE FLAME flares exactly at the knuckle contact, curling upward into a compact crescent. Broad forearm and fist occupy most of frame, knuckles intact, dark target only a partial rounded shape. Deliberate close melee impact, no wound or blood. No sword, free-floating fireball, aura, projectile trail, metal gauntlet or shield.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "ifrit-traits",
+  "confusedWith": [
+    "efreeti-magic",
+    "fire-in-the-blood",
+    "fire-insight",
+    "forge-hardened",
+    "wildfire-heart"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "no wound or blood.",
+    "No sword, free-floating fireball, aura, projectile trail, metal gauntlet or shield."
+  ]
+}

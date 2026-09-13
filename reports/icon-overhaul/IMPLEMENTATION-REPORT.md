@@ -1,19 +1,25 @@
 # Icon overhaul v2 implementation record
 
-Status: **PRODUCTION_IN_PROGRESS**. The owner approved the ten actual pilot images
+Status: **ART_CANDIDATES_COMPLETE_INTEGRATION_PENDING**. The owner approved the ten actual pilot images
 and family direction: [exact decision and hashes](PILOT-APPROVAL.md).
-Twenty-five additional production originals now cover the remaining heritages,
-resistances and affinities. Review their [heritage](production-heritages.png),
-[resistance](production-resistance.png) and [affinity](production-affinities.png)
-thumbnail sheets. These new images await owner review and runtime integration.
+All 80 additional production originals and deterministic 128px RGBA exports are
+preserved. The [full collection](PRODUCTION-REVIEW.html) presents all 89 painted
+identities plus Rapid Reload, with family/search filters, small-size controls,
+grayscale, original sources, exact hashes and per-icon briefs. The 80 new images
+await final owner review; runtime integration and native UI qualification remain.
 
-The technical evidence below records the previously qualified pilot artifact at
+The pilot technical evidence below records the previously qualified artifact at
 commit `4f141921a830042442b617f2788f1cd0b34a7cb6`; its pending owner-review language
 predates the approval above. Final native UI evidence, final production acceptance
 and the completed overhaul remain separate pending gates. This is not a release.
 
 ## Review packet
 
+- [Full production review](PRODUCTION-REVIEW.html): all 90 art identities, including
+  the ten approved pilot images and 80 production candidates.
+- [Production manifest](../../assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json):
+  individual sources/exports, exact hashes, and complete implementation-informed
+  briefs. Three revised production drafts remain preserved with their prompts.
 - [Interactive pilot review](PILOT-REVIEW.html): enlarged originals, adjustable
   32/48/64/128px export previews, parchment/dark backgrounds, grayscale and hashes.
 - [Contact sheet](pilot-contact-sheet.png): ten candidates at multiple sizes.
@@ -25,11 +31,9 @@ and the completed overhaul remain separate pending gates. This is not a release.
 - [Curated qualification](PILOT-QUALIFICATION.json): artifact identity, exact run
   IDs, assertion counts, restored installation and explicit evidence limits.
 
-The requested decisions concern the three-role heritage/affinity/resistance
-family, multi-element and hydraulic action language, the travel/recall family,
-and the Rapid Reload loading emblem. Approval of these images establishes
-direction for production; it does not approve unseen family members or unresolved
-native UI surfaces.
+The recorded pilot decision establishes the heritage/affinity/resistance,
+elemental/hydraulic, strategic travel and mundane emblem family direction. It does
+not approve the additional 80 images or unresolved native UI surfaces.
 
 The P/M/B prototype uses the real native text route in production UI-entry
 objects. Its actual native-screen comparison is still pending. The review page
@@ -75,8 +79,10 @@ summoning manifest retains authority over its 77 art identities and placements.
 
 There are 93 original/family identities requiring final resolution, including
 three firearm fallback identities that may ultimately use native presentation.
-Ten have isolated pilot candidates. **No final new raster identity is integrated
-or visually approved.** Counts are source inventory, not a completed live census.
+Ninety have preserved originals and exports; the three firearm lettering
+identities use a native presentation prototype. **Ten pilot images are approved;
+no new raster identity is integrated yet.** Counts are source inventory, not a
+completed live census.
 
 The inventory explicitly covers all 21 published alternate traits; ten selectors
 and ten retain choices; held-touch delivery; hydraulic and wind children; Nereid
@@ -144,7 +150,7 @@ The runtime facsimile scenario now labels blueprint fallback sprites explicitly
 and separately records the native acronym route. It never presents those PNGs
 as proof of actual native typography.
 
-## Qualification
+## Historical pilot qualification
 
 The repository's Build-Local orchestrator passed:
 
@@ -210,30 +216,62 @@ contents were not independently hashed before restoration. The complete
 post-restoration hash comparison is the evidence for the final installation;
 the earlier extra-file check is not represented as PASS.
 
-The exact mandated push wrapper refused the new branch because it is absent
-from its allowlist. No policy edit, alternate push, history rewrite, merge, tag
-or release was attempted. The owner has been asked to add
-`codex/icon-art-overhaul-v2` to the wrapper's AllowedBranches.
+The wrapper initially refused the new branch. The owner subsequently added
+`codex/icon-art-overhaul-v2` to its allowlist. The unchanged mandated wrapper
+successfully published pilot commit `4f141921a830042442b617f2788f1cd0b34a7cb6`
+and production-foundations commit `4914a48409175610b8ecde73ff388d36a1101edd`.
+No policy edit, alternate push, history rewrite, merge, tag or release occurred.
+
+## Complete production art checkpoint
+
+The 80 production paintings complete the scoped heritage, resistance, affinity,
+racial feat, alternate trait, support-action and selector art. Shared retain
+choices and feature/action/buff identities remain explicit catalog relationships.
+Independent hydraulic, wind and held-weapon children have distinct compositions.
+Native spell exceptions and protected art remain unchanged.
+
+Reviewed every family at 32/48/64px and in grayscale using twelve labeled contact
+sheets. Metal Affinity was revised to remove fire, Inner Flame to retain the full
+weapon silhouette, and Breeze-Kissed to show a straight arrow redirected by wind.
+The exact prior originals and prompts remain in production/revisions. Chill Touch
+uses negative-energy imagery; Triton Portal shows summoned water elementals;
+selectors communicate a static choice category. No mechanics were invented.
+
+All 80 briefs record implemented behavior, actual UI surfaces, focal subjects,
+confusable identities, forbidden interpretations, references and generation
+provenance. An initial Acid Breath request produced no image after a tool safety
+rejection; the exact failure and successful benign symbolic retry are recorded
+in its brief. No fallback service or credentials were used.
+
+The canonical validator now rejects incomplete production coverage or missing
+creative-brief surfaces. Sixteen focused tests cover those failures alongside
+protected files, identities, approval hashes and exact constructor scope.
+The gallery is generated from verified manifests and does not generate pixels.
+The complete checkpoint passed `Build-Local.ps1` with exit 0: repository
+validation, 16 focused tests, all 1,612 domain tests, clean Release compilation,
+build-output validation and strict installable-package validation. Repeat export
+left all 187 checked PNG/manifest files unchanged. Gallery links, 90 unique
+records, approval counts and JavaScript syntax also passed. See the
+[exact checkpoint evidence](PRODUCTION-QUALIFICATION.json). No game deployment or
+runtime claim applies to this isolated art checkpoint; all runtime PNGs remain
+unchanged. Post-build documentation records the result and does not claim the
+earlier full-tree build fingerprint.
 
 ## Remaining gates and exact next work
 
-1. Obtain an explicit owner decision against the ten pilot hashes. Do not begin
-   mass generation on silence or plan approval.
-2. Arrange a bounded supervised native-screen session: new/disposable character
+1. Complete the guarded live elemental/strategic census and exact donor/protected
+   assignment snapshots before final mappings. Resolve remaining native
+   selected-feature and save-parameter-specific coverage through an authorized
+   fixture; do not claim the generic smoke supplies that evidence.
+2. Qualify native screens: new/disposable character
    firearm feat rows beside native/Katana/Nodachi controls, nested Rapid Reload,
    selected feat/character sheet, Wakizashi and Elven Branched Spear. A human
    navigates unsupported screens; the permitted PID-bound capture helper records
    images. No campaign save or write is needed for menu inspection.
-3. Complete the guarded live elemental/strategic census and exact donor/protected
-   assignment snapshots before final mappings. Resolve remaining native
-   selected-feature and save-parameter-specific coverage through an authorized
-   fixture; do not claim the generic smoke supplies that evidence.
-4. After pilot approval, produce coherent small families from the 93 catalog
-   identities, preserving exact native exceptions and distinct selectable
-   actions. Resolve the three firearm fallback identities through qualified
-   native routes or an explicitly approved isolated fallback.
-5. Integrate exact owned mappings, including independent scroll icons; qualify
+3. Resolve the three firearm fallback identities through qualified native routes
+   or an explicitly approved isolated fallback.
+4. Integrate exact owned mappings, including independent scroll icons; qualify
    final exports/package, live bindings and actual native UI; restore the
    installation; obtain separate final visual approval.
-6. Publish the checkpoint using only the mandated wrapper once the branch is
-   allowlisted. No merge or public release is authorized.
+5. Publish each qualified checkpoint using only the mandated wrapper.
+   No merge or public release is authorized.

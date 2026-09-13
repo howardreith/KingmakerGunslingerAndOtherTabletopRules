@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "sylph-energy-resistance-selection",
+  "behavior": "Sylph Energy Resistance selector and retain entry: protective air-lineage category, no new active effect.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/sylph-energy-resistance-selection.png",
+  "sourceSha256": "66c51a7c58c35b70247286806a289cc05f7d745ca1e3f3ed095cae49d6c67294",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted elemental/action family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square hand-painted fantasy CRPG TRAIT-CATEGORY icon, a restrained static symbol for a selection category and its retain choice, not a new spell or active buff. Use supplied approved project art for deliberate rich brushwork and material lighting, not its composition. One bold centered subject legible at 32/48/128px, about 80% of square, important edges at least 7% inside canvas. Deep full-bleed charcoal ground. No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark. TWO OVERLAPPING ROUNDED SILVER SHIELD PLATES, the back one offset up-right and the front one down-left. Their tall gently curved shapes have swept tapered lower ends. A simple flowing WIND SCROLL RELIEF is carved into the front dark-silver surface, softly lit ivory, with a restrained small angular silver ridge near center. Cool graphite-blue palette and dark blue-black ground. Whole plates within frame. No incoming arrow, lightning attack, fire, hand, person, ice, circular frame, numbers or on/off badge.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "TWO OVERLAPPING ROUNDED SILVER SHIELD PLATES, the back one offset up-right and the front one down-left. Their tall gently curved shapes have swept tapered lower ends. A simple flowing WIND SCROLL RELIEF is carved into the front dark-silver surface, softly lit ivory, with a restrained small angular silver ridge near center. Cool graphite-blue palette and dark blue-black ground. Whole plates within frame. No incoming arrow, lightning attack, fire, hand, person, ice, circular frame, numbers or on/off badge.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "selectors",
+  "confusedWith": [
+    "ifrit-elemental-affinity-selection",
+    "ifrit-energy-resistance-selection",
+    "ifrit-racial-spell-like-ability-selection",
+    "oread-elemental-affinity-selection",
+    "oread-energy-resistance-selection",
+    "oread-racial-spell-like-ability-selection",
+    "sylph-elemental-affinity-selection",
+    "sylph-racial-spell-like-ability-selection",
+    "undine-racial-spell-like-ability-selection"
+  ],
+  "uiSurfaces": [
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark.",
+    "No incoming arrow, lightning attack, fire, hand, person, ice, circular frame, numbers or on/off badge."
+  ]
+}

@@ -15,5 +15,29 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a clear asymmetric RIME-CRYSTAL form, one broad branching icy antler shape with four thick angular frost branches rising out of a low blue ice shard. The longest branch slants up-left, a shorter hooked branch reaches right; thick pale frost on outer faces and translucent blue inner ice. NOT a symmetric snowflake or a mineral prism cluster. Dark midnight teal background, sharp silvery-white highlights with restrained pale cyan, light frosty vapor behind base. No hands, touching victim, flames, words, etched runes or border.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a clear asymmetric RIME-CRYSTAL form, one broad branching icy antler shape with four thick angular frost branches rising out of a low blue ice shard. The longest branch slants up-left, a shorter hooked branch reaches right; thick pale frost on outer faces and translucent blue inner ice. NOT a symmetric snowflake or a mineral prism cluster. Dark midnight teal background, sharp silvery-white highlights with restrained pale cyan, light frosty vapor behind base. No hands, touching victim, flames, words, etched runes or border.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "heritages",
+  "confusedWith": [
+    "gemsoul",
+    "general-ifrit",
+    "general-oread",
+    "general-sylph",
+    "general-undine",
+    "ironsoul",
+    "lavasoul",
+    "mistsoul",
+    "smokesoul",
+    "stormsoul",
+    "sunsoul"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark.",
+    "No hands, touching victim, flames, words, etched runes or border."
+  ]
 }

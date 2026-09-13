@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "key": "airy-step",
+  "behavior": "Airy Step: saves against air/electricity effects; existing falling clause has no game effect. Footstep is the approved figurative motif.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/airy-step.png",
+  "sourceSha256": "eb2119341961c7f1d36f046b7400edb480698c25c2bb41316c53984fd7fb7071",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted feat/action style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Subject: A SINGLE LEATHER-SANDALED FOOT in side view, heel raised gently above a broad PALE WIND CUSHION, the relaxed toes pointing left. A smooth ivory-silver wind curve sweeps underneath the sole then curls upward on right like an airy support. Lower calf continues from upper right, warm neutral skin, muted brown sandal straps. Clear foot-and-air shape, gentle lightness rather than running or flying. Midnight desaturated blue ground, no feathers, wings, electricity attack, trails of footprints, earth shards or flame.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Subject: A SINGLE LEATHER-SANDALED FOOT in side view, heel raised gently above a broad PALE WIND CUSHION, the relaxed toes pointing left. A smooth ivory-silver wind curve sweeps underneath the sole then curls upward on right like an airy support. Lower calf continues from upper right, warm neutral skin, muted brown sandal straps. Clear foot-and-air shape, gentle lightness rather than running or flying. Midnight desaturated blue ground, no feathers, wings, electricity attack, trails of footprints, earth shards or flame.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "feats",
+  "confusedWith": [
+    "blazing-aura",
+    "cloud-gazer",
+    "elemental-strike",
+    "firesight",
+    "hydraulic-maneuver",
+    "inner-breath",
+    "inner-flame",
+    "like-the-wind",
+    "scorching-weapons",
+    "triton-portal",
+    "whispering-wind",
+    "wings-of-air"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "no feathers, wings, electricity attack, trails of footprints, earth shards or flame."
+  ]
+}

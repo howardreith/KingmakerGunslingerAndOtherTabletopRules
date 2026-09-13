@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "key": "hydraulic-blind",
+  "behavior": "Hydraulic Maneuver Dirty Trick (Blind) child uses a splash across the eyes; not damage, drowning, or cold.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/hydraulic-blind.png",
+  "sourceSha256": "3d5777198b660e4e7fefe59ba1616c92d91921abf959d04791694ff26cb2237a",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "role": "approved water maneuver/action family"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Use saturated clear blue water and white foam on deep navy ground. A LARGE ANONYMOUS HUMAN FACE in three-quarter view at center is momentarily covered ACROSS BOTH EYES by ONE BROAD LATERAL SPLASH OF CLEAN BLUE WATER. Water splashes across the brow from left to right with white droplets at both ends, the closed eyelids harmlessly behind it. Nose, mouth and chin remain clear below, no pain, injuries or grimace. Strong horizontal bright eye-band against a dark head silhouette. No blindfold cloth, ice, lightning, blood, drowning, hands attacking, text or fire.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A LARGE ANONYMOUS HUMAN FACE in three-quarter view at center is momentarily covered ACROSS BOTH EYES by ONE BROAD LATERAL SPLASH OF CLEAN BLUE WATER. Water splashes across the brow from left to right with white droplets at both ends, the closed eyelids harmlessly behind it. Nose, mouth and chin remain clear below, no pain, injuries or grimace. Strong horizontal bright eye-band against a dark head silhouette. No blindfold cloth, ice, lightning, blood, drowning, hands attacking, text or fire.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "hydraulic",
+  "confusedWith": [
+    "hydraulic-bull-rush",
+    "hydraulic-disarm",
+    "hydraulic-push",
+    "hydraulic-trip"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "no pain, injuries or grimace.",
+    "No blindfold cloth, ice, lightning, blood, drowning, hands attacking, text or fire."
+  ]
+}

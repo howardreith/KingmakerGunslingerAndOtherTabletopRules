@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "inner-breath",
+  "behavior": "Inner Breath: no need to breathe and immunity to respiration-dependent effects only; not a breath attack or general gas/poison immunity.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/inner-breath.png",
+  "sourceSha256": "4a50f83ebd7a4f8823bcbb04efeeebf517f5002da841ba688053846e680eebef",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted action/feat style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. A calm anonymous HUMAN UPPER TORSO front view, from shoulders to waist, head a small quiet silhouette bowed above. Within the chest a CLOSED OVAL LOOP OF PALE SILVER AIR curves around two subtle lung-shaped spaces, held entirely inside the body outline. The broad shoulders and luminous contained breath loop make one simple, still shape. Deep teal-black background, gentle ivory and cool silver light, understated painterly skin. No exhaled stream, open mouth, attack cone, bubbles floating outward, flame, armor, heart, medical diagram labels or halo.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A calm anonymous HUMAN UPPER TORSO front view, from shoulders to waist, head a small quiet silhouette bowed above. Within the chest a CLOSED OVAL LOOP OF PALE SILVER AIR curves around two subtle lung-shaped spaces, held entirely inside the body outline. The broad shoulders and luminous contained breath loop make one simple, still shape. Deep teal-black background, gentle ivory and cool silver light, understated painterly skin. No exhaled stream, open mouth, attack cone, bubbles floating outward, flame, armor, heart, medical diagram labels or halo.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "feats",
+  "confusedWith": [
+    "airy-step",
+    "blazing-aura",
+    "cloud-gazer",
+    "elemental-strike",
+    "firesight",
+    "hydraulic-maneuver",
+    "inner-flame",
+    "scorching-weapons",
+    "triton-portal",
+    "wings-of-air"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No exhaled stream, open mouth, attack cone, bubbles floating outward, flame, armor, heart, medical diagram labels or halo."
+  ]
+}

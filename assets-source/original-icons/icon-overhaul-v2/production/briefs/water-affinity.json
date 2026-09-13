@@ -15,5 +15,29 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A cupped blue-gray hand in side view, large thumb in foreground and rounded fingers to the right, holding a THICK RISING SCOOP OF TURQUOISE WATER. Water loops into a low open horseshoe above the palm, a large rounded droplet rises at the upper left, and the base remains pooled in the hand. Glossy dense liquid with smooth painted ivory reflections and a few broad foam notes. Deep teal ground, cool silver light clearly on hand; no ice, mist, fire or attack.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A cupped blue-gray hand in side view, large thumb in foreground and rounded fingers to the right, holding a THICK RISING SCOOP OF TURQUOISE WATER. Water loops into a low open horseshoe above the palm, a large rounded droplet rises at the upper left, and the base remains pooled in the hand. Glossy dense liquid with smooth painted ivory reflections and a few broad foam notes. Deep teal ground, cool silver light clearly on hand; no ice, mist, fire or attack.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "affinities",
+  "confusedWith": [
+    "acid-affinity",
+    "air-affinity",
+    "crystal-affinity",
+    "fire-affinity",
+    "ice-affinity",
+    "lightning-affinity",
+    "magma-affinity",
+    "metal-affinity",
+    "mist-affinity",
+    "smoke-affinity",
+    "solar-affinity"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark.",
+    "no ice, mist, fire or attack."
+  ]
 }

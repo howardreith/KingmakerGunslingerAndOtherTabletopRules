@@ -132,6 +132,10 @@ or removing approval. Keep candidate revisions and their original prompts; an ed
 must retain its input and update the exact source/export hashes before review.
 Use `New-IconFamilyReview.ps1 -Name <family> -Keys <comma-separated-keys>` to make
 labeled thumbnail/grayscale art-inspection sheets from manifest-verified exports.
+Run `python -B tools/icon-art/New-IconProductionReview.py` to rebuild the local
+searchable collection from those same canonical records. It verifies hashes and
+preserves the distinction between approved pilot art and production candidates.
+Neither review output is native game-screen evidence.
 
 ## Integration and catalog authority
 
@@ -156,6 +160,14 @@ one of them. The catalog owns review evidence and consumer dispositions. Validat
 checks registry identity, delegated hashes, protection and required coverage.
 Intentional sharing uses one concept key; different selectable actions cannot
 hide duplicate art under different filenames.
+
+Production briefs must record `behavior`, `subjectAndSilhouette`, `artFamily`,
+`reviewGroup`, `exportProfile`, `uiSurfaces`, `confusedWith` and
+`forbiddenInterpretations`, alongside the actual prompt and provenance. Surface
+names must match the catalog consumers and confusion keys must name real catalog
+concepts. Once `artProductionStatus` is `complete-main-scope-candidates`, every
+painted/emblem concept must retain its own declared asset authority. This is an
+art-coverage assertion, not approval or runtime qualification.
 
 Missing required final exports fail validation. During development, old working
 art may remain with an explicit incomplete status. Keep indirectly assigned,

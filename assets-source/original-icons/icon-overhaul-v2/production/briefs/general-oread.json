@@ -15,5 +15,31 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a weighty weathered STONE CREST formed by three broad interlocked natural mountain slabs, low broad shoulders with one blunt peaked center. Russet granite and pale sandstone worn edges, a tiny seam of moss at the base, angled fissures and layered planes. This is a compact natural earth-ancestry emblem, NOT a shield, fist, weapon or carved runic badge. Earthy olive-brown shadowed ground; warm cream side-light on the upper stone planes and cool deep cracks. Large pale angular mass, simple strong silhouette, no floating shards and no glowing orb.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a weighty weathered STONE CREST formed by three broad interlocked natural mountain slabs, low broad shoulders with one blunt peaked center. Russet granite and pale sandstone worn edges, a tiny seam of moss at the base, angled fissures and layered planes. This is a compact natural earth-ancestry emblem, NOT a shield, fist, weapon or carved runic badge. Earthy olive-brown shadowed ground; warm cream side-light on the upper stone planes and cool deep cracks. Large pale angular mass, simple strong silhouette, no floating shards and no glowing orb.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "heritages",
+  "confusedWith": [
+    "gemsoul",
+    "general-ifrit",
+    "general-sylph",
+    "general-undine",
+    "ironsoul",
+    "lavasoul",
+    "mistsoul",
+    "rimesoul",
+    "smokesoul",
+    "stormsoul",
+    "sunsoul"
+  ],
+  "uiSurfaces": [
+    "character-creation race panel / mercenary race panel",
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark.",
+    "no floating shards and no glowing orb."
+  ]
 }

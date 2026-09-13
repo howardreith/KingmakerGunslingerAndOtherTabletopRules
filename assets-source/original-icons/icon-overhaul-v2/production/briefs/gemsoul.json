@@ -15,5 +15,29 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: one large upright asymmetric hexagonal MINERAL PRISM in a short rough crystal base, sharply faceted emerald and smoky-violet quartz with a pale mint-white gleaming upper face. Only three broad primary facets, a single long sloping beveled point and one short side outgrowth. Luminous edges and deep inner mineral inclusions, dark moss-charcoal cavern background. Solid geological jewel silhouette, not a star, ice flake, light ray spell, jewelry setting, or array of tiny gems. Cool green with subtle purple reflections, no orange flame.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: one large upright asymmetric hexagonal MINERAL PRISM in a short rough crystal base, sharply faceted emerald and smoky-violet quartz with a pale mint-white gleaming upper face. Only three broad primary facets, a single long sloping beveled point and one short side outgrowth. Luminous edges and deep inner mineral inclusions, dark moss-charcoal cavern background. Solid geological jewel silhouette, not a star, ice flake, light ray spell, jewelry setting, or array of tiny gems. Cool green with subtle purple reflections, no orange flame.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "heritages",
+  "confusedWith": [
+    "general-ifrit",
+    "general-oread",
+    "general-sylph",
+    "general-undine",
+    "ironsoul",
+    "lavasoul",
+    "mistsoul",
+    "rimesoul",
+    "smokesoul",
+    "stormsoul",
+    "sunsoul"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark.",
+    "no orange flame."
+  ]
 }

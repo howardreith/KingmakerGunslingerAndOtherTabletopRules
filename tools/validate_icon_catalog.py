@@ -81,6 +81,28 @@ def png_info(path):
             raise ValueError("PNG scanline size mismatch")
     return {"size": [w, h], "depth": depth, "color": color, "interlace": interlace}
 
+def production_brief_errors(brief, concept, consumers, concepts):
+    """Check that the creative brief describes the catalog's real UI contract."""
+    key = concept["key"]
+    errors = []
+    for field in ["behavior", "prompt", "subjectAndSilhouette"]:
+        if not isinstance(brief.get(field), str) or not brief[field].strip():
+            errors.append("Missing production brief " + field + ": " + key)
+    if brief.get("artFamily") != concept["family"] or brief.get("reviewGroup") != concept.get("reviewGroup"):
+        errors.append("Production brief family mismatch: " + key)
+    if brief.get("exportProfile") != concept["exportProfile"]:
+        errors.append("Production brief export profile mismatch: " + key)
+    expected_surfaces = sorted({c["surface"] for c in consumers if c["concept"] == key})
+    if not expected_surfaces or brief.get("uiSurfaces") != expected_surfaces:
+        errors.append("Production brief UI surfaces mismatch: " + key)
+    confused = brief.get("confusedWith")
+    if not isinstance(confused, list) or not confused or any(c == key or c not in concepts for c in confused):
+        errors.append("Production brief lacks valid confusion comparisons: " + key)
+    forbidden = brief.get("forbiddenInterpretations")
+    if not isinstance(forbidden, list) or not forbidden or any(not isinstance(v, str) or not v.strip() for v in forbidden):
+        errors.append("Production brief lacks forbidden interpretations: " + key)
+    return errors
+
 def validate(root, catalog=None, pilot=None, references=None, registry=None, production=None):
     """Optional in-memory documents support corruption tests without mutating files."""
     root = Path(root).resolve()
@@ -185,7 +207,8 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None, pro
                 brief = read_json(root, record["brief"])
                 require(brief["key"] == key and brief["source"] == record["source"] and
                         brief["sourceSha256"] == record["sourceSha256"], "Production brief/source mismatch: " + key)
-                require(bool(brief["behavior"]) and bool(brief["prompt"]), "Missing production brief: " + key)
+                if key in concepts:
+                    errors.extend(production_brief_errors(brief, concepts[key], consumers, concepts))
                 for source in brief["implementationReferences"]:
                     file_check(source)
                 for reference in brief["referenceImages"]:
@@ -222,6 +245,8 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None, pro
     for key, concept in concepts.items():
         require(bool(concept["sharingReason"]), "Missing sharing reason: " + key)
         authority = concept.get("assetAuthority")
+        if catalog.get("artProductionStatus") == "complete-main-scope-candidates" and concept["family"] in {"painted-magical", "combat-emblem"}:
+            require(bool(authority), "Completed art scope has missing candidate: " + key)
         if authority:
             require(authority["key"] in records and authority["key"] == key and
                     authority["manifest"] == authorities.get(key),

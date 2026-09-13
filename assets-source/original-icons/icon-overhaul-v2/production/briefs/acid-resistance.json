@@ -15,5 +15,22 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: one square painted fantasy CRPG resistance icon. Supplied approved Fire Resistance image is the family reference: rich hand-painted materials, dark full-bleed textured ground, large durable shield DEFLECTING a specific energy, no harmed creature. Make a NEW silhouette and energy interaction, not a tinted copy. Broad readable shapes, subject about 80% of square, safe margin for shield edges; readable at 32/48/128 px. No text, UI border, insignia, equipment stats, state overlays, watermark or grid. Subject: a broad rounded iron shield seen three-quarter from the left, tilted to shed a vivid translucent green corrosive splash down its outer right edge. Shield is a solid battered dark gray convex disk with a broad heavy central plane and pale worn rim; acid hits from upper right and splits into two thick drips below, leaving the shield center intact. Clear round defensive silhouette and falling green liquid strands distinct from Fire Resistance's angular flame-deflecting kite shield. A little vapor on contact, no skull or poison symbol. Olive-black background.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: one square painted fantasy CRPG resistance icon. Supplied approved Fire Resistance image is the family reference: rich hand-painted materials, dark full-bleed textured ground, large durable shield DEFLECTING a specific energy, no harmed creature. Make a NEW silhouette and energy interaction, not a tinted copy. Broad readable shapes, subject about 80% of square, safe margin for shield edges; readable at 32/48/128 px. No text, UI border, insignia, equipment stats, state overlays, watermark or grid. Subject: a broad rounded iron shield seen three-quarter from the left, tilted to shed a vivid translucent green corrosive splash down its outer right edge. Shield is a solid battered dark gray convex disk with a broad heavy central plane and pale worn rim; acid hits from upper right and splits into two thick drips below, leaving the shield center intact. Clear round defensive silhouette and falling green liquid strands distinct from Fire Resistance's angular flame-deflecting kite shield. A little vapor on contact, no skull or poison symbol. Olive-black background.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "resistance",
+  "confusedWith": [
+    "cold-resistance",
+    "electricity-resistance",
+    "fire-resistance"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "no harmed creature.",
+    "No text, UI border, insignia, equipment stats, state overlays, watermark or grid.",
+    "no skull or poison symbol."
+  ]
 }

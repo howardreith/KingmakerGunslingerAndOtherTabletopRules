@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "undine-racial-spell-like-ability-selection",
+  "behavior": "Undine's existing spell-like-ability selector and retain entry only; no invented affinity or resistance selectors.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/undine-racial-spell-like-ability-selection.png",
+  "sourceSha256": "1276c537d4f7eb582ccfec9fb6e7d6852c16213c83355939c4a75f8b1bad67e6",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "role": "approved painted elemental/action family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square hand-painted fantasy CRPG TRAIT-CATEGORY icon, a restrained static symbol for a selection category and its retain choice, not a new spell or active buff. Use supplied approved project art for deliberate rich brushwork and material lighting, not its composition. One bold centered subject legible at 32/48/128px, about 80% of square, important edges at least 7% inside canvas. Deep full-bleed charcoal ground. No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark. ONE HUMAN HAND rises from lower center with TWO FINGERS EXTENDED in a narrow slightly open V, palm turned three-quarter toward viewer, other fingers curled naturally. ONE LARGE CLEAR WATER DROP floats BETWEEN AND JUST ABOVE the two fingertips, with a small curved wavelet supporting its lower point. Brilliant turquoise-white liquid highlights, deep blue-green shadows, skin neutral with cool reflected light, deep navy ground. Contained static casting identity. No attack jet, target figure, book, flame, snowflake, shield, creature, text or new UI badge.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "ONE HUMAN HAND rises from lower center with TWO FINGERS EXTENDED in a narrow slightly open V, palm turned three-quarter toward viewer, other fingers curled naturally. ONE LARGE CLEAR WATER DROP floats BETWEEN AND JUST ABOVE the two fingertips, with a small curved wavelet supporting its lower point. Brilliant turquoise-white liquid highlights, deep blue-green shadows, skin neutral with cool reflected light, deep navy ground. Contained static casting identity. No attack jet, target figure, book, flame, snowflake, shield, creature, text or new UI badge.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "selectors",
+  "confusedWith": [
+    "ifrit-elemental-affinity-selection",
+    "ifrit-energy-resistance-selection",
+    "ifrit-racial-spell-like-ability-selection",
+    "oread-elemental-affinity-selection",
+    "oread-energy-resistance-selection",
+    "oread-racial-spell-like-ability-selection",
+    "sylph-elemental-affinity-selection",
+    "sylph-energy-resistance-selection",
+    "sylph-racial-spell-like-ability-selection"
+  ],
+  "uiSurfaces": [
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark.",
+    "No attack jet, target figure, book, flame, snowflake, shield, creature, text or new UI badge."
+  ]
+}
