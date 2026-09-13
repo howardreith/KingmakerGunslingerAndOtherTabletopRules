@@ -1565,7 +1565,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "firearmHotfix128": {
-    "deterministicTestCount": 1627,
+    "deterministicTestCount": 1631,
     "publicReleaseAuthorized": false,
     "fieldRepairBrokenOnlyOutOfCombat": true,
     "completedRestRestoresCarriedDamage": true,

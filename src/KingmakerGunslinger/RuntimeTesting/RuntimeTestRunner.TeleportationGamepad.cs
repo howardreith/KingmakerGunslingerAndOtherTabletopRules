@@ -519,6 +519,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         cast.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && dice.D100Count == 0 && dice.D10Count == 0 &&
                         map.PartyLocation == required.Blueprint && movement.Starts == starts + 1 && map.TravelData == null && player.GameTime == time &&
                         ledger.Read().Serialize() == counts.Serialize());
+                    foreach (int tick in QualifyTeleportGamepadScrolls(origin, required, movement,
+                        established ? "capital" : "precapital")) yield return tick;
                 }
             }
             finally
@@ -533,6 +535,118 @@ namespace KingmakerGunslinger.RuntimeTesting
                     region.IsClaimed == claimed && ReferenceEquals(region.Settlement, settlement) && Equals(payload.GetValue(ledger), originalPayload) && !_workingSaveSmoke.WriteObserved);
             }
         }
+        private IEnumerable<int> QualifyTeleportGamepadScrolls(GlobalMapLocation origin, GlobalMapLocation target,
+            TeleportInteractionMovementObserver movement, string fixture)
+        {
+            var player = Game.Instance.Player; var party = player.Party.ToArray();
+            var rules = GlobalMapRules.Instance; var map = GlobalMapRules.State;
+            var scrolls = BlueprintBootstrap.TeleportationScrolls;
+            var owned = new[] { scrolls.Teleport, scrolls.GreaterTeleport, scrolls.WordOfRecall };
+            if (owned.Any(value => TeleportationScrollAdapter.Stock(player.Party, value) != 0))
+                throw new InvalidOperationException("Controller scroll fixture requires empty canonical scroll stock.");
+            var classes = new List<KeyValuePair<Kingmaker.EntitySystem.Entities.UnitEntityData, Kingmaker.UnitLogic.ClassData>>();
+            var first = party[0]; bool blocked = false;
+            var modalParent = TeleportGamepadDialog().transform.parent.gameObject;
+            bool modalActive = modalParent.activeSelf;
+            var panel = TeleportGamepadPanel();
+            string slots = string.Join("|", party.SelectMany(value => value.Descriptor.Spellbooks).Select(TeleportResourceFingerprint));
+            var time = player.GameTime;
+            try
+            {
+                foreach (var reader in party.Take(2))
+                    foreach (string classId in new[] { "ba34257984f4c41408ce1dc2004e342e", "67819271767a9dd4fbfd4ae700befea0" })
+                    {
+                        var type = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, classId, "controller scroll reader class");
+                        var data = new Kingmaker.UnitLogic.ClassData(type) { Spellbook = type.Spellbook };
+                        reader.Descriptor.Progression.Classes.Add(data);
+                        classes.Add(new KeyValuePair<Kingmaker.EntitySystem.Entities.UnitEntityData, Kingmaker.UnitLogic.ClassData>(reader, data));
+                    }
+                foreach (var blueprint in owned) first.Inventory.Add(blueprint, 3);
+                rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                SelectTeleportGamepadPoint(target); foreach (int tick in WaitTeleportGamepadPanel(panel)) yield return tick;
+                var rows = panel.GetComponentInChildren<TeleportConsoleDestinationRows>(true);
+                var nav = TeleportGamepadNavigation(panel);
+                var action = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.Spell == TeleportSpellKind.WordOfRecall);
+                var button = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == action.Key)];
+                nav.SetCurrentEntityManual(button);
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                var label = button.GetComponentInChildren<TextMeshProUGUI>(true);
+                TeleportInteractionAssert("scroll-" + fixture + "-compact-groups", "controller presents one compact reader-free row per spell group with stock counted once",
+                    "scrollRows=" + rows.Actions.Count(value => value.Source.Kind == TeleportCastSourceKind.Scroll) + ";label=" + label.text,
+                    rows.Actions.Count(value => value.Source.Kind == TeleportCastSourceKind.Scroll) == 3 && action.Source.Uses == 3 &&
+                    !party.Any(value => label.text.Contains(value.CharacterName)) && !label.isTextTruncated && !label.isTextOverflowing && TeleportGamepadTextOnScreen(label));
+                var rng = UnityEngine.Random.state; var context = Game.Instance.Rulebook.Context;
+                string resources = ScrollReaderResources(player);
+                var refresh = typeof(TeleportConsoleDestinationRows).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic);
+                for (int read = 0; read < 8; read++) refresh.Invoke(rows, null);
+                TeleportInteractionAssert("scroll-" + fixture + "-read-only", "controller refreshing/ranking triggers no rule, RNG or character/resource mutation",
+                    "same=" + (resources == ScrollReaderResources(player)), resources == ScrollReaderResources(player) && rng.Equals(UnityEngine.Random.state) &&
+                    ReferenceEquals(context, Game.Instance.Rulebook.Context));
+                first.Descriptor.State.MagicItemsForbidden.Retain(); blocked = true;
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                var changed = rows.Actions.Single(value => value.Key == action.Key);
+                TeleportInteractionAssert("scroll-" + fixture + "-stable-focus", "a different best reader retains the controller group widget and native focus",
+                    "reader=" + changed.Source.CasterId, changed.ReaderResolved && changed.Source.CasterId != first.UniqueId &&
+                    ReferenceEquals(nav.CurrentEntity, button) && ReferenceEquals(button, rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == action.Key)]));
+                first.Descriptor.State.MagicItemsForbidden.Release(); blocked = false;
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                InvokeTeleportGamepadInput(panel, "OnCancelPressed");
+                // A missing native confirmation host leaves both direct spells
+                // usable in the mixed list while ordinary Teleport stays disabled.
+                modalParent.SetActive(false);
+                SelectTeleportGamepadPoint(target); foreach (int tick in WaitTeleportGamepadPanel(panel)) yield return tick;
+                rows = panel.GetComponentInChildren<TeleportConsoleDestinationRows>(true);
+                TeleportInteractionAssert("scroll-" + fixture + "-mixed-without-presenter", "both direct scroll groups remain executable without a presenter and ordinary Teleport cannot bypass confirmation",
+                    "available=" + (TeleportationConfirmationSurface.Available() != null), TeleportationConfirmationSurface.Available() == null &&
+                    rows.Actions.Where(value => value.Source.Kind == TeleportCastSourceKind.Scroll).All(value =>
+                        TeleportContextConfirmationPresenter.CanExecute(value) == TeleportBeginPolicy.IsDirect(value.Source.Spell)));
+                foreach (var kind in new[] { TeleportSpellKind.WordOfRecall, TeleportSpellKind.GreaterTeleport })
+                {
+                    rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                    if (!panel.gameObject.activeInHierarchy)
+                    { SelectTeleportGamepadPoint(target); foreach (int tick in WaitTeleportGamepadPanel(panel)) yield return tick; }
+                    rows = panel.GetComponentInChildren<TeleportConsoleDestinationRows>(true);
+                    var selected = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.Spell == kind);
+                    var selectedButton = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == selected.Key)];
+                    var callback = (Action)typeof(ConsoleButton).GetField("m_OnConfirmAction", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(selectedButton);
+                    nav = TeleportGamepadNavigation(panel); nav.SetCurrentEntityManual(selectedButton);
+                    var dice = new TeleportationFixtureRolls(new int[0]); rows.QualificationRolls = dice;
+                    int starts = movement.Starts;
+                    TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                    using (var notifications = new TeleportNotificationObserver())
+                    {
+                        InvokeTeleportGamepadInput(panel, "OnConfirmPressed"); callback();
+                        var cast = TeleportContextConfirmationPresenter.LastDirectCast;
+                        yield return 0;
+                        callback();
+                        var resource = cast == null ? null : cast.Execution.Resource as TeleportationScrollCastResource;
+                        CaptureTeleportInteraction("console-automatic-scroll", new { fixture, spell = kind.ToString(), selected.Source.CasterId,
+                            evidence = resource == null ? null : resource.Evidence(), notifications = notifications.Text.ToArray() });
+                        TeleportInteractionAssert("scroll-" + fixture + "-" + kind + "-native-once", "the native controller action activates its automatically bound real reader once, directly and quietly, including same-frame and stale repeats",
+                            "state=" + (cast == null ? "missing" : cast.Transaction.State.ToString()), cast != null &&
+                            cast.Transaction.State == TeleportTransactionState.Completed && resource != null && resource.NativeEventCount == 1 &&
+                            resource.ActualReaderId == selected.Source.CasterId && resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
+                            notifications.Text.Count == 0 && !TeleportContextConfirmationPresenter.Pending &&
+                            map.PartyLocation == target.Blueprint && map.TravelData == null && movement.Starts == starts + 1 && player.GameTime == time &&
+                            slots == string.Join("|", party.SelectMany(value => value.Descriptor.Spellbooks).Select(TeleportResourceFingerprint)));
+                    }
+                }
+            }
+            finally
+            {
+                modalParent.SetActive(modalActive);
+                if (blocked) first.Descriptor.State.MagicItemsForbidden.Release();
+                foreach (var pair in classes) pair.Key.Descriptor.Progression.Classes.Remove(pair.Value);
+                foreach (var blueprint in owned)
+                {
+                    int count = TeleportationScrollAdapter.Stock(player.Party, blueprint);
+                    if (count > 0) first.Inventory.Remove((Kingmaker.Blueprints.Items.BlueprintItem)blueprint, count);
+                }
+                CloseTeleportGamepadPanels();
+                rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+            }
+        }
+
         private static void PrepareTeleportGamepadBook(Kingmaker.UnitLogic.Spellbook book)
         {
             book.AddKnown(5, BlueprintBootstrap.Teleportation.Teleport, true); book.AddKnown(7, BlueprintBootstrap.Teleportation.GreaterTeleport, true);

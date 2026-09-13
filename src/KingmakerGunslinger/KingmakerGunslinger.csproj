@@ -926,6 +926,7 @@
     <Compile Include="Spells\Teleportation\TeleportSpecialistSpellCachePatches.cs" />
     <Compile Include="Spells\Teleportation\TeleportSpecialistSpellCachePolicy.cs" />
     <Compile Include="Spells\Teleportation\TeleportScrollReaderPolicy.cs" />
+    <Compile Include="Spells\Teleportation\TeleportScrollReaderAdapter.cs" />
     <Compile Include="Spells\Teleportation\TeleportBeginPolicy.cs" />
     <Compile Include="Spells\Teleportation\TeleportationUiDivider.cs" />
     <Compile Include="Spells\Teleportation\TeleportationScrollVendorMigration.cs" />

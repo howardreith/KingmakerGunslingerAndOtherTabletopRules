@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using KingmakerGunslinger.Spells.Teleportation;
 
 namespace KingmakerGunslinger.DomainTests
@@ -59,4 +60,59 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(3, first.Uses, "Repeated ranking cannot mutate its immutable resource snapshot.");
         }
     }
+    internal static partial class TeleportationContextTests
+    {
+        private static TeleportCastSourceSnapshot GroupReader(string id, int order, string group, int modifier,
+            TeleportSpellKind spell = TeleportSpellKind.Teleport, int casterLevel = 9, int uses = 3)
+        { return new TeleportCastSourceSnapshot(id, order, id, "11111111111111111111111111111111", "Scroll", spell,
+            TeleportCastSourceKind.Scroll, 5, casterLevel, uses, TeleportCastSourceFacts.RequiredScroll,
+            TeleportScrollActivationChance.Native(modifier < 100, modifier, 25, 0, false, 0, "fixture native inputs"), group); }
+        internal static void EquivalentScrollReadersProduceOneStockRow()
+        {
+            var low = GroupReader("low", 0, "variant", 10); var best = GroupReader("best", 1, "variant", 100);
+            var result = Compose(Point(), new[] { low, best, low });
+            Assertions.Equal(1, result.SpellActions.Count, "Equivalent shared stock produces one action despite several eligible readers.");
+            var row = result.SpellActions.Single();
+            Assertions.True(ReferenceEquals(best, row.Source) && row.ReaderResolved, "The group binds a specific best native reader.");
+            Assertions.Equal(3, row.Source.Uses, "Shared inventory is counted once.");
+            Assertions.Equal("Use Scroll of Teleport\n3 available", TeleportContextPresentation.CompactRow(row, English), "No routine reader detail.");
+        }
+        internal static void ScrollReaderChangesPreserveActionIdentity()
+        {
+            var first = GroupReader("first", 0, "variant", 20); var later = GroupReader("later", 1, "variant", 15);
+            var before = Compose(Point(), new[] { first, later }).SpellActions.Single();
+            var after = Compose(Point(), new[] { later }).SpellActions.Single();
+            Assertions.Equal(before.Key, after.Key, "Reader availability changes keep the same UI action and controller focus key.");
+            Assertions.False(before.Source.Key == after.Source.Key, "The actual transaction keeps its real reader identity.");
+            NativeOnly(Compose(Point(), new[] { GroupReader("none", 0, "variant", 20, uses: 0) }));
+        }
+        internal static void BestReaderIsSelectedForEachSpellAndVariant()
+        {
+            var rows = Compose(Point(WordOfRecallDestinationPolicy.OlegId), new[] {
+                GroupReader("a", 0, "teleport-low", 10), GroupReader("b", 1, "teleport-low", 20),
+                GroupReader("a", 0, "teleport-high", 21, casterLevel: 11), GroupReader("b", 1, "teleport-high", 9, casterLevel: 11),
+                GroupReader("a", 0, "recall", 100, TeleportSpellKind.WordOfRecall), GroupReader("b", 1, "recall", 20, TeleportSpellKind.WordOfRecall)
+            }).SpellActions;
+            Assertions.Equal(3, rows.Count, "Each distinct spell/variant has one action.");
+            Assertions.Equal("b", rows.Single(value => value.Source.ScrollGroupId == "teleport-low").Source.CasterId, "First variant chooses its best native chance.");
+            Assertions.Equal("a", rows.Single(value => value.Source.ScrollGroupId == "teleport-high").Source.CasterId, "Another variant chooses independently.");
+            Assertions.Equal("a", rows.Single(value => value.Source.Spell == TeleportSpellKind.WordOfRecall).Source.CasterId, "Recall uses its own native reader eligibility and chance.");
+            Assertions.True(rows.Where(value => value.Source.Spell == TeleportSpellKind.Teleport).All(value => value.ScrollVariant > 0), "Only materially distinct choices need compact variant qualifiers.");
+            Assertions.Equal(0, rows.Single(value => value.Source.Spell == TeleportSpellKind.WordOfRecall).ScrollVariant, "The sole Recall variant has no redundant qualifier.");
+        }
+        internal static void UnsupportedReaderComparisonStaysExplicit()
+        {
+            var known = GroupReader("known", 0, "variant", 15);
+            var unknown = new TeleportCastSourceSnapshot("unknown", 1, "unknown", known.BookId, "Scroll", known.Spell,
+                known.Kind, known.SpellLevel, known.CasterLevel, known.Uses, known.Facts,
+                TeleportScrollActivationChance.Unsupported("unverified active effect"), "variant");
+            var row = Compose(Point(), new[] { known, unknown }).SpellActions.Single();
+            Assertions.False(row.ReaderResolved, "Unscored activation behavior cannot silently choose a heuristic reader.");
+            var guaranteed = GroupReader("guaranteed", 2, "variant", 100);
+            var resolved = Compose(Point(), new[] { known, unknown, guaranteed }).SpellActions.Single();
+            Assertions.True(resolved.ReaderResolved && ReferenceEquals(guaranteed, resolved.Source), "A proven no-check success has the maximum possible activation chance.");
+            Assertions.Equal(row.Key, resolved.Key, "Resolving current effects does not replace the UI identity.");
+        }
+    }
+
 }

@@ -423,7 +423,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 if (!_ready || !gameObject.activeInHierarchy || !_rows.Contains(row) || TeleportContextConfirmationPresenter.Pending) return;
                 var context = TeleportationWorldMapAdapter.Capture(false);
                 var current = TeleportationWorldMapAdapter.Compose(context, _location.Blueprint).SingleOrDefault(value => value.Key == row.Action.Key);
-                if (current == null) { WorldMapPointSpellActionRuntime.Clear(_panel); return; }
+                if (current == null) { _ready = false; TeleportContextConfirmationPresenter.Unavailable(row.Action, context); WorldMapPointSpellActionRuntime.Clear(_panel); return; }
                 // Hide the destination presenter before executing; its global
                 // Accept handler can no longer start normal travel. Greater
                 // Teleport and Recall settle directly; ordinary Teleport confirms first.

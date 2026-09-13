@@ -39,7 +39,7 @@ before synchronous settlement; unrelated modals still block both direct spells.
 Successful Recall and Greater Teleport are quiet at the native warning boundary.
 Scroll failures now format the actual reader and spell with independently
 observed expenditure (none / exactly one / uncertain), without `{0}` leakage.
-Scroll actions still multiply by reader; consolidation/ranking is next.
+Scroll actions now consolidate by material variant and bind the best supported native reader at activation.
 
 Owner clarified Sayan advanced 13→14 and obtained the spell through the favored
 class bonus; equivalent earlier natural availability is acceptable. Installed
@@ -51,13 +51,11 @@ metadata. The live installed table now confirms normal sixth-level known allowan
 13→14 grants zero. This demonstrates the normal-choice entitlement distinction;
 it does not claim to reproduce Sayan's unprovided archetype or FCB selection.
 
-Required acceptance remains pending: native Oracle candidate/selection,
-commit/cancel and spontaneous cast; direct Recall from all resource kinds;
-quiet direct successes and truthful named failures at production notification
-boundary; one stable scroll row per material variant with read-only native
-chance ranking and exactly one real activation. Preserve ordinary Teleport
-confirmation/outcomes, transaction safeguards, sanctuary restrictions,
-desktop/controller layout and native movement/travel behavior.
+Native Oracle learning, direct Recall, and automatic-reader checkpoints now
+pass as detailed below. Final combined-artifact regressions and resource-contract
+edge review remain in progress. Preserve ordinary Teleport confirmation/outcomes,
+transaction safeguards, sanctuary restrictions, desktop/controller layout and
+native movement/travel behavior.
 
 ## Qualification status
 
@@ -149,19 +147,104 @@ exhausted choice, unchanged ordinary allowance, and canonical learned identity.
 Native character seeding added two starter items; their synchronous positive
 deltas are captured and removed in the final passing cleanup.
 
-The new four reader-policy tests cover exact d20 thresholds, take-10,
-conditional success bonus, item failure probability, no-check preference and
-stable ties. This pure policy is not yet wired to action composition. Native
-adapter work traces RuleCastSpell, RuleSkillCheck and installed CotW handlers;
-active unsupported activation behavior must remain explicit, never receive a
-heuristic score. Automatic UI/native activation qualification is still pending.
+## Automatic-reader checkpoint
 
-NOT RUN: automatic-reader UI/ranking; named failure wording observed at production
-notification boundary (formatter tests alone pass); final combined candidate
-qualification; module boundary/optional profile repeats. The first fixture
-checkpoint does not claim any of those owner goals complete.
-Runtime work uses Steam App 640820 and guarded requests with authorized
-disposable fixtures / KMG_AUTOMATION_WORKING only. Owner campaign and
-KMG_AUTOMATION_BASELINE are protected; installed settings and other mods must
-be preserved. Raw artifacts remain ignored/local. Commit only after required
-checks pass; publish coherent checkpoints through the approved push script.
+One UI action now represents one spell/material scroll group; individual-reader
+enumeration remains available internally. The action/focus key excludes reader
+identity; activation resolves a real reader and physical item. Shared stock is
+counted once. CL, SL, charge/renewal/UMD contracts, unidentified state and unknown
+item components/enchantments prevent inappropriate aggregation. Only multiple
+variants add a compact qualifier. Both UI paths omit routine reader/book names.
+Ordinary Teleport binds the reader/item and cancels if that binding changes
+before confirmation; direct spells use the same shared guarded transaction.
+
+Supported ranking contract: installed native scroll IsUnitNeedUMDForUse (including
+CotW's active FamiliarFreeItemUse override), native suitability/availability,
+effective UMD plus applicable native/CotW deterministic skill modifiers, native
+DC 20 + item spell level + difficulty adjustment, applicable take-ten and conditional
+success bonus, then the maximum applicable native/CotW spell/item failure percent.
+An ordinary d20 succeeds on the exact native threshold; no automatic 1/20 rule.
+A proven no-check route wins against fallible routes and ties; otherwise highest
+probability wins, then party order/stable unit ID. Take-ten that meets the DC
+bypasses d20 subscribers exactly as native code does. No CL/ability-score check
+was present in this installed scroll activation path. Native prohibition and
+availability checks run afresh, without opening the activation gate.
+
+The adapter reads actual registered rule subscribers, never invokes them or
+constructs a rule event. Unknown applicable handlers, active UMD rerolls/replacements,
+random/resource skill bonuses, unsupported reason-dependent modifiers, or active
+skill/dice cheat settings are explicitly unscored. A sole eligible reader needs
+no comparison; a proven no-check maximum can still win; other unscored comparisons
+produce one honest unavailable action, never a heuristic claim. This is a contract
+for the inspected installed native/CotW implementation, not a general probability
+engine or a claim to support arbitrary future Harmony patches.
+
+Repository validation, complete 1,631/1,631 domain tests, clean exact-reference
+Release and strict standalone package PASS. Latest checkpoint package ZIP SHA-256
+`5f557c2d401b1a53f70e46414a846a656128a0a1ea31752336cee39d35cb9947`;
+DLL `c122cd274274300f2d42d8b19a284d1c009dd7b25c96e4c54a7e4d2ab8a8993f`;
+MVID `a63be23f-8df2-4cdf-b2a4-4edf22bea2b6`; source fingerprint
+`df42ee2ea352e1b8566a9e79c266d2a491c0d66db341ecdccc94957d3a9828c9`
+on base 399833909313b9f31d6bcb94f236149fbadd965b before this evidence update.
+
+Guarded Steam / KMG_AUTOMATION_WORKING evidence:
+- `20260913T1542539898131Z-disposable-teleportation-scrolls`: 57/57 PASS.
+  Native failure effects make a class-list reader worse than Linzi's UMD +7,
+  DC25 (15%); a second controlled UMD +11 reader wins at 35%; ties retain party
+  order. The second reader's exact ClassData references are temporarily isolated
+  only within the synchronous ranking control and restored before yielding.
+  Request-local native features own the real AddSpellFailureChance components;
+  no production buff/skill/character changes improve reader scores.
+  Repeated ranking/render/refresh preserves Unity RNG state, native rulebook
+  context/history, items/charges, features/buffs, unit parts, optional resources
+  and spell slots. One native widget persists across a reader change; changing
+  the confirmed reader cancels; no readers at click gives one honest notification.
+  Real native activation attributes the chosen reader and exactly one event.
+  Original callbacks invoked twice in the same frame and later cannot retry.
+  UMD failure names Linzi once and consumes nothing; non-UMD Recall failure names
+  Hedwirg once, consumes one scroll, and reports no arrival. Normal Teleport
+  scroll success, variants, teaching, market chain, arrows and unknown-Recall
+  zero-UMD Oracle control also pass. No save write.
+- `20260913T1538467324721Z-disposable-teleportation-gamepad`: 51/51 PASS.
+  One row per each of three spell groups; compact stock and no reader names;
+  read-only refresh; native focus/button identity stable when readers change.
+  Both direct scroll spells activate the actual assigned reader exactly once,
+  quietly, at both Oleg/pre-capital and established-capital configurations.
+  The native confirmation host is unavailable: both direct actions remain
+  usable in mixed lists while ordinary Teleport remains confirmed-only.
+  Same-frame original controller callback replay plus later stale replay spend
+  nothing else. All prior gamepad source/navigation/Travel/cancel/cleanup controls
+  pass; zero UI exceptions and no save writes. This run used ZIP
+  `b62873ed5c6483f502c03b0d20cf547ee4e992e5f4e9bbcc0f2bbf9b0798d6ce`,
+  DLL `58e23844eca982a6929fe1fa719abcb4facda427dbc770f35caa9991b29a88f9`;
+  production code matches the latest checkpoint, with earlier fixture helpers.
+
+Earlier automatic runs are diagnostic failures, not acceptance: 151026 failed
+an obsolete constructed variant label assertion (native activation passed);
+153001 lacked a second naturally UMD-dependent reader; 153120 hit the fixture's
+IDictionary enumeration cast; 153747 showed native world-map buff application
+is disabled. Final controls use actual composed rows, exact temporary ClassData
+restoration, native dictionary keys, and native feature-owned failure components.
+The initial 150623 failure control had wrongly assumed base UMD ranks imply its
+effective modifier and overlooked another guaranteed class-list reader.
+
+## Remaining work / precise limitations
+
+NOT RUN on one final combined artifact: Oracle learning repeat, desktop casting,
+interaction/movement and the broader required regressions; module-disabled and
+optional-CotW-absent repeats; supporting visual inspection (current presentation
+proof is actual UI text/navigation plus geometry assertions, not screenshots).
+
+Resource-contract review identified an inherited limitation to resolve narrowly:
+scroll expenditure currently observes inventory count only. Native charged or
+renewable variants and native preservation (HandOfMagusDan) may successfully
+activate without destroying a scroll. They already remain distinct groups, but
+charge/preservation behavior has not yet been qualified or repaired; do not claim
+that counting stock alone proves the native consumption contract. Preserve the
+existing transaction and compensation rules while addressing this boundary.
+
+Runtime uses guarded requests through Steam App 640820, automatic exit, and
+named disposable fixtures only. Owner settings retain their original hash;
+other mods, owner campaign and KMG_AUTOMATION_BASELINE remain protected. Raw
+artifacts are ignored/local. No merge or public release is authorized. Continue
+safe routine work to final qualification; this checkpoint is not mission completion.

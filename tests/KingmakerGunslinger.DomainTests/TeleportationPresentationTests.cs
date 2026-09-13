@@ -50,12 +50,14 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ScrollRowsUseSharedStockWording()
         {
             var scroll = ScrollRow(uses: 3);
-            Assertions.Equal("Use Teleport Scroll\ncaster-a \u00b7 3 shared scrolls \u00b7 CL 9", TeleportContextPresentation.CompactRow(scroll, English),
-                "Scroll compact row: use-scroll title over reader and shared stock.");
+            Assertions.Equal("Use Scroll of Teleport\n3 available", TeleportContextPresentation.CompactRow(scroll, English),
+                "One compact scroll title and shared stock, without the automatically chosen reader.");
             var single = ScrollRow(uses: 1);
-            Assertions.Equal("Use Teleport Scroll\ncaster-a \u00b7 1 shared scroll \u00b7 CL 9", TeleportContextPresentation.CompactRow(single, English),
-                "Singular shared-scroll wording.");
+            Assertions.Equal("Use Scroll of Teleport\n1 available", TeleportContextPresentation.CompactRow(single, English),
+                "A single scroll uses the same compact stock wording.");
             string confirmation = TeleportContextPresentation.Confirmation(scroll, TeleportFamiliarity.VeryFamiliar, English);
+            Assertions.False(confirmation.Contains("caster-a") || confirmation.Contains("Caster:"), "Routine confirmation omits the automatic reader.");
+            Assertions.Equal("Use Scroll of Teleport (3 available)", TeleportContextPresentation.Row(scroll, English), "Controller uses the same compact source label.");
             Assertions.True(confirmation.Contains("Scroll caster level: 9.") &&
                 confirmation.Contains("This consumes one Teleport scroll and no spell slot."),
                 "Scroll confirmation states the one-scroll cost and no slot.");

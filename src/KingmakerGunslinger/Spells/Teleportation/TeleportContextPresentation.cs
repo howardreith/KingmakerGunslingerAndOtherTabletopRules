@@ -28,31 +28,31 @@ namespace KingmakerGunslinger.Spells.Teleportation
         internal static string Uses(TeleportCastSourceSnapshot source, Translate text)
         {
             if (source.Kind == TeleportCastSourceKind.Scroll)
-                return Format(source.Uses == 1 ? text("ScrollCount.Single", "{0} shared scroll") :
-                    text("ScrollCount.Plural", "{0} shared scrolls"), source.Uses);
+                return Format(text("ScrollAvailable", "{0} available"), source.Uses);
             return Format(source.Kind == TeleportCastSourceKind.Prepared ? text("PreparedCount", "{0} prepared") :
                 source.Uses == 1 ? text("SlotCount.Single", "{0} {1} slot") : text("SlotCount.Plural", "{0} {1} slots"),
                 source.Uses, Level(source.SpellLevel, text));
         }
         internal static string Row(WorldMapPointSpellAction action, Translate text)
-        { return Format(text("ActionRow", "{0}  {1} ({2})"), SpellName(action.Source.Spell, text), Caster(action), Uses(action.Source, text)); }
+        { return action.Source.Kind == TeleportCastSourceKind.Scroll ? Title(action, text) + " (" + Detail(action, text) + ")" :
+            Format(text("ActionRow", "{0}  {1} ({2})"), SpellName(action.Source.Spell, text), Caster(action), Uses(action.Source, text)); }
         // Compact two-line desktop rows: the full spell name as the title and
         // caster/cost detail beneath it, so controls stay within the native
         // parchment's inner content width on compact geometries.
         internal static string Title(WorldMapPointSpellAction action, Translate text)
         {
             return action.Source.Kind == TeleportCastSourceKind.Scroll ?
-                Format(text("ActionTitle.Scroll", "Use {0} Scroll"), SpellName(action.Source.Spell, text)) :
+                Format(text("UseScroll", "Use Scroll of {0}"), SpellName(action.Source.Spell, text)) :
                 Format(text("ActionTitle", "Cast {0}"), SpellName(action.Source.Spell, text));
         }
         internal static string Detail(WorldMapPointSpellAction action, Translate text)
         {
-            // Material variant identity is part of the choice: scroll rows name
-            // the caster level so two same-count variants stay visibly distinct.
-            return Format(text("ActionDetail", "{0} · {1}"), Caster(action), Uses(action.Source, text)) +
-                (action.Source.Kind == TeleportCastSourceKind.Scroll ?
-                    " · " + Format(text("CasterLevel", "CL {0}"), action.Source.CasterLevel.ToString(CultureInfo.InvariantCulture)) : string.Empty);
+            if (action.Source.Kind == TeleportCastSourceKind.Scroll)
+                return Uses(action.Source, text) + (action.ScrollVariant > 0 ? " · " +
+                    Format(text("ScrollVariant", "Variant {0}: CL {1}, SL {2}"), action.ScrollVariant, action.Source.CasterLevel, action.Source.SpellLevel) : "");
+            return Format(text("ActionDetail", "{0} · {1}"), Caster(action), Uses(action.Source, text));
         }
+
         internal static string CompactRow(WorldMapPointSpellAction action, Translate text)
         { return Title(action, text) + "\n" + Detail(action, text); }
         internal static string SettlementTeleportLabel(Translate text)
@@ -109,8 +109,11 @@ namespace KingmakerGunslinger.Spells.Teleportation
         {
             string spell = SpellName(action.Source.Spell, text);
             var sections = new List<string> {
-                Format(text("Confirmation", "Cast {0}?\n\nCaster: {1}\nDestination: {2}\nAvailable: {3}"),
-                    spell, Caster(action), Destination(action.Destination, text), Uses(action.Source, text))
+                action.Source.Kind == TeleportCastSourceKind.Scroll ?
+                    Format(text("ScrollConfirmation", "Use Scroll of {0}?\n\nDestination: {1}\n{2}"), spell,
+                        Destination(action.Destination, text), Detail(action, text)) :
+                    Format(text("Confirmation", "Cast {0}?\n\nCaster: {1}\nDestination: {2}\nAvailable: {3}"),
+                        spell, Caster(action), Destination(action.Destination, text), Uses(action.Source, text))
             };
             if (action.Source.Spell == TeleportSpellKind.Teleport)
             {
