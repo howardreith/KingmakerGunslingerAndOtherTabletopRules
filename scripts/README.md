@@ -41,3 +41,25 @@ captures one explicit process-owned window with GDI and returns warning-only
 failure; it is never a correctness source.
 
 Do not bypass a failed report. Exact compilation and tests establish candidate quality; `SMOKE-TEST-GUIDE-0.0.29.md` establishes the complete action-bar maintenance loop, interruption safety, exact resource deltas, and persistence. Sprint 30 remains blocked until the 0.0.29 runtime gate passes.
+
+
+`Test-FirearmInputControlFlow.ps1 -ModDllPath <candidate DLL under artifacts>`
+runs ten isolated CLR/Harmony behavior checks against the compiled firearm input
+wrapper: desktop Boolean returns, controller void returns, ordinary exits,
+exceptions and nested native finally blocks. Run it with Windows PowerShell 5.1
+after `Build-Local.ps1`. It reads the installed private references, launches no
+game, and reports the exact tested DLL hash. These synthetic control-flow checks
+supplement guarded runtime input proof; they do not qualify firearm mechanics.
+
+## Firearm postrelease native qualification
+
+`Test-FirearmInputControlFlow.ps1 -ModDllPath <candidate DLL under artifacts>`
+runs ten synthetic managed return/exception/finally checks on the compiled native
+input wrapper. Use Windows PowerShell 5.1; this is separate from game proof.
+
+The guarded `disposable-firearm-break-interruption` scenario at version 0.0.128
+executes the real native desktop/controller order adapters, reload/action economy,
+weapon rules, recovery and stale-order negatives in request-owned save-free
+fixtures. Its 145 assertions and precise pause/rest boundaries are documented in
+`docs/FIREARM-POSTRELEASE-HOTFIX-QUALIFICATION.md`. It never uses authorization
+bridges, direct suppression resets, save selection or save mutation.

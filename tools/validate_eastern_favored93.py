@@ -141,8 +141,9 @@ def validate(root: Path) -> None:
         .read_text(encoding="utf-8"))
     contract = static.get(STATIC_KEY, {})
     historical_runtime_pending = RUNTIME_QUALIFICATION_PENDING
-    if VERSION in {"0.0.114", "0.0.115", "0.0.116", "0.0.117", "0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127"}:
-        release_key = ("firearmMaintenance127" if VERSION == "0.0.127"
+    if VERSION in {"0.0.114", "0.0.115", "0.0.116", "0.0.117", "0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127", "0.0.128"}:
+        release_key = ("firearmHotfix128" if VERSION == "0.0.128"
+            else "firearmMaintenance127" if VERSION == "0.0.127"
             else "wordOfRecallOracle126" if VERSION == "0.0.126"
             else "settlementButton125" if VERSION == "0.0.125"
             else "teleportPolish124" if VERSION == "0.0.124"

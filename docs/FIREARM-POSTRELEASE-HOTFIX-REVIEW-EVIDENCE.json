@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "version": "0.0.128",
+  "candidate": "0.0.128-firearm-postrelease-hotfix",
+  "branch": "codex/firearm-postrelease-hotfix",
+  "reviewAnchor": "f38848fbc4b60354e8e35c9d0b5ea043bf36e0a1",
+  "nativeReference": {
+    "assembly": "Assembly-CSharp.dll",
+    "sha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "mvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7"
+  },
+  "beforeRuns": [
+    {
+      "finding": "CR-01",
+      "runId": "20260913T0143498898044Z-64136962db4e438dbdab930bc5204f5f",
+      "directory": "20260913T0143498656565Z-disposable-firearm-break-interruption",
+      "status": "FAIL",
+      "dllSha256": "332dd93aa00798cb7131d680504e9bf3f4f3af5d9bc6dababfe0e7a1ccf998b1",
+      "mvid": "33062d52-b2eb-4b46-84bb-b3e06baa613a",
+      "resultSha256": "2788698cb886232a016e1ad67477b33ce94754bf5112db97a5433296a2429159",
+      "traceSha256": "149f89562c94a200f5f22b491fd67f42b12e4668ec61e4d6f9352979b99472a5",
+      "failedAssertions": [
+        {
+          "name": "cr01-normal-paused-focused-aim-valid-attack-retained",
+          "observed": "shots=0;state=schema=1; rounds=1; ammunition=kmg.debug.lead-ball; condition=Normal;powder=12;sameItemIdentity=True;suppressed=False;commands=UnitAttack:False/False/None;queue=0;orderRetained=False;submissionBefore=1;submissionAfter=2"
+        }
+      ],
+      "reviewedMechanismScope": "Reviewed CR-01 prefix/counter with added native coexistence observation."
+    },
+    {
+      "finding": "CR-02",
+      "runId": "20260913T0235093170219Z-140386e668df4adeb5a9afafe5dd9398",
+      "directory": "20260913T0235093015126Z-disposable-firearm-break-interruption",
+      "status": "FAIL",
+      "dllSha256": "03810ea4344f189ad205dd8d8ce12327a74c43b12f11621764f939ed505a2854",
+      "mvid": "eaf00c3e-2e70-4b27-a2cb-7a464b0ae7a2",
+      "resultSha256": "d641d55e4a42e72ef38a9e1c5dde142f2d3992cb25bca5a0a929f74bf4cb3dc3",
+      "traceSha256": "a56705fa4e6b60d4a7f21aa0414518f06ed1ff16bd5851afdb41ef4a00f92d1e",
+      "failedAssertions": [
+        {
+          "name": "cr02-normal-native-retarget-same-sequence-fires",
+          "observed": "shots=1;state=schema=1; rounds=0; ammunition=<none>; condition=Normal;powder=12;sameItemIdentity=True;suppressed=False;commands=UnitUseAbility:False/False/None;queue=0;same native command and order; one ordinary free cartridge reload"
+        },
+        {
+          "name": "fixture-restored",
+          "observed": "Exact original native world, inventory, clock and controller ownership restored."
+        }
+      ],
+      "reviewedMechanismScope": "CR-01 corrected; reviewed CR-02 target guard retained. Corpse-cleanup expectation also failed; external installation restoration passed."
+    },
+    {
+      "finding": "CR-03",
+      "runId": "20260913T0443020666761Z-ce80352d7629491a85d5cb9c15fb02d1",
+      "directory": "20260913T0443020510459Z-disposable-firearm-break-interruption",
+      "status": "FAIL",
+      "dllSha256": "381bb65de9cfe44a725fb87e26bf319e1c4c69f540cde08197c3d062c080ed1c",
+      "mvid": "57359716-98cb-4707-8999-bc6a0fccf173",
+      "resultSha256": "54dfb585151c55e9941ddf5334aa2d281ccc8f17b058b9fd4d2462d7a67d64f8",
+      "traceSha256": "34862b1bec87cd2700aa82f12cd393de2269d97f782ee5467be71f5018d93a6c",
+      "failedAssertions": [
+        {
+          "name": "cr03-hover-continuation-owned",
+          "observed": "Real hover prediction cannot cancel the pending accepted order; native costs still prohibit a shot."
+        }
+      ],
+      "reviewedMechanismScope": "CR-01/CR-02 corrected; reviewed CR-03 Standard.CanUse callback gate retained. Actual pointer/hover prediction ran."
+    },
+    {
+      "finding": "CR-02 reload merge",
+      "runId": "20260913T0510461609975Z-a08550c1e5ea428b8223b290739e3c55",
+      "directory": "20260913T0510461609975Z-disposable-firearm-break-interruption",
+      "status": "FAIL",
+      "dllSha256": "da7b6daf42f742b062da5deb3150fa59b26294dd875b722d7d3478d844b90fe8",
+      "mvid": "9ffa376d-9973-4399-8d6c-a646a39bbd3f",
+      "resultSha256": "88b4ee27b80751ed54870ebe643d8e53b6788053a6d8a53fe3e5c03b501ab9f7",
+      "traceSha256": "cb361a636093a2189797d75bfa0ce50decc6c9c0a90a0cbc4c95c3dad78ca5e2",
+      "failedAssertions": [
+        {
+          "name": "cr02-reload-running-merge-native-survivor-owned",
+          "observed": "shots=1;state=schema=1; rounds=0; ammunition=<none>; condition=Broken;powder=12;sameItemIdentity=True;suppressed=False;commands=UnitUseAbility:True/False/None;queue=0;nativeMerges=1;sameSurvivor=True;oldCancelled=False;currentIsOld=True;currentTargetsB=False;native reload merging/replacement must retain the newest explicit target without spending or resetting progress"
+        }
+      ],
+      "reviewedMechanismScope": "Other review corrections present; missing UnitUseAbility merge ownership retained. Actual native merge observed."
+    }
+  ],
+  "developmentQualifiedRun": {
+    "runId": "20260913T0530333854811Z-a4e1dec760e54283aef75edb8c34b789",
+    "evidenceDirectoryName": "20260913T0530333854811Z-disposable-firearm-break-interruption",
+    "status": "PASS",
+    "nativeAssertions": 413,
+    "retainedOriginalAssertions": 145,
+    "assertionComparison": "Multiset of names, normalizing only request-local GUIDs in repair-selected-character checks. No missing original checks.",
+    "domainTests": 1622,
+    "compiledInputControlFlowTests": 10,
+    "packageFiles": 135,
+    "sourceCommit": "f38848fbc4b60354e8e35c9d0b5ea043bf36e0a1",
+    "sourceStateSha256": "9c0a663ee1bc0b15bad7a025e8a953083c13d8f32372b6094d6ec01e76cade1e",
+    "sourceWasDirty": true,
+    "packageSha256": "2f54b66617962c195941d90f04ec52c217ddea6e12331ebaa8a493aecdf8e21f",
+    "dllSha256": "d4c08cacf59d20d4fbf0568f418938fbf279d0275b6c9373c686511fec93372b",
+    "mvid": "9f26718c-d30d-48fd-8f92-b3a46d4998bd",
+    "runtimeResultSha256": "2c8f96c61156f81ae1a2695c6c56b53d6442d4d6a8b4e7f66520d735a632066b",
+    "nativeTraceSha256": "91c4786a4a70997dd6a0c655a07a4c69c84017f4cf0833916b24aab9803431b5",
+    "buildLogSha256": "37285ff328237af1f66a91571fde2319a2da8794634a6eb8c0222cc40eb2def7",
+    "compiledTestLogSha256": "e9b538ceef99be2f7e5aeaab79def3e223d675abb220f108f3b2f30371172e75"
+  },
+  "notRun": [
+    {
+      "case": "Physical mouse/keyboard/controller and human visual acceptance",
+      "reason": "Guarded fixture invokes real native input/order adapters; it does not operate or assess physical devices or screen presentation."
+    },
+    {
+      "case": "Save-backed load/persistence and camp UI/autosave tail",
+      "reason": "Authorized save-free disposable host. Full rest reaches native completed sleep; subsequent UI/autosave is deferred to prevent save mutation."
+    },
+    {
+      "case": "Exhaustive optional-mod configurations",
+      "reason": "Only the documented installed-reference environment was qualified."
+    }
+  ],
+  "finalCandidate": {
+    "sourceCommit": "fc6c5cb220f7501fa20fc1709b085fd10b58b7a6",
+    "builtFromCleanTree": true,
+    "sourceStateSha256": "2721b45eedca565de6bad343ff2df38eced3cdb13fe6c13bd6d6d3a5c3b13f81",
+    "version": "0.0.128",
+    "packageName": "KingmakerGunslinger-0.0.128-firearm-postrelease-hotfix.zip",
+    "packageSha256": "c0c2c0c83db19f2b0bd71cd4393f5a0b09b1a8adadb29a9725d8541d257960e6",
+    "dllSha256": "ce65373e73f40573fc9f715d30ef181da0d5b07db4be38d9be8261b6ce59b8b8",
+    "mvid": "2a1e57fe-63ef-49ce-b69c-3cbf7de95372",
+    "runId": "20260913T0544024994395Z-62c3a21ad3864b25b953d8da52c67568",
+    "evidenceDirectoryName": "20260913T0544024918854Z-disposable-firearm-break-interruption",
+    "nativeStatus": "PASS",
+    "nativeAssertions": 413,
+    "originalAssertionsRetained": 145,
+    "addedNativeAssertions": 268,
+    "domainTests": 1622,
+    "focusedLedgerBehavioralTests": 10,
+    "compiledInputControlFlowTests": 10,
+    "packageFiles": 135,
+    "repositoryAndAssetValidators": "PASS",
+    "cleanExactReferenceReleaseBuild": "PASS",
+    "strictPackageValidation": "PASS",
+    "runtimeResultSha256": "90ffa6f65684af3a2e7b9770d03c3684b9776577ac66e1261d702bd0047abcb5",
+    "nativeTraceSha256": "6a0c9495fdee722708b99cd2c884e480066ac391b2357369b8b55069baafc78b",
+    "loadedIdentitySha256": "7980bbf1226351e88fc5741eaa45d061ab6a0f8eb534bd13a9aefc354b56240e",
+    "runtimeEvidenceManifestSha256": "d791f91f5d2d6e487df281bcbdea30831eff7ff655558a2653051e73c4d7c20a",
+    "buildLogSha256": "6e792bee7a796167435d8b9a01ceab6129ed2e1581849f169c2ab8153f45142d",
+    "compiledTestLogSha256": "48e79f40f42261ee5045664aeb0b8f665721bfd40fb3dcde9dabff64abd52a2d",
+    "originalInstallationRestored": true,
+    "restoredFileCount": 138,
+    "restoredVersion": "0.0.126",
+    "restoredDllSha256": "99a8ab3e454c5cb4b8b74fc13bee09e6f00893c79d0cc065da27ce3b857681fc",
+    "restoredFeatureModulesSha256": "a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749",
+    "restoreBackupName": "20260913T0543590921304Z",
+    "saveMutationAttempts": 0,
+    "documentationNote": "Any later evidence-only commit changes documentation, not the qualified source, DLL or package."
+  },
+  "exploratoryConfigurationLimit": {
+    "runId": "20260913T0415398638839Z-5c0acadc9c884542af4989c946443777",
+    "status": "FAIL before running-merge boundary",
+    "configuration": "Legacy revolver batch reload",
+    "observation": "Real manual reload did not load a round; powder remained unchanged. This probe is not counted as passing coverage.",
+    "dllSha256": "f00d5c71fda5baa0e5fc390eacfff3dbfd088331954d4f77043ede0013f420af",
+    "runtimeResultSha256": "d5de5566470334632440a589a1b0e2050bfc963910483eb02eaaf8378c5a4385",
+    "nativeTraceSha256": "e4ceda26d7564c06428a2f55e1f92436046c8d49175cb55c052bab6ebeb96187",
+    "qualificationBoundary": "The final already-spent running merge uses the production pistol plus real native paper reload. Legacy batch-reload behavior was not changed or qualified by this focused hotfix."
+  }
+}
