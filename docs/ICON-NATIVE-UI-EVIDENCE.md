@@ -94,10 +94,10 @@ Run `tools/validate_native_icon_screens.py --evidence <run>/native-ui-screens.js
 --build-manifest <exact-package>.build-local.json` to check the paired runtime
 result, loaded-build identity, capture MVID, completed frames, PNG hashes and
 dimensions, restored overlay state and explicit row viewport/restoration metadata.
-Its fourteen corruption fixtures run in
+Its sixteen corruption fixtures run in
 repository validation. This check reports provenance only; inspect the images.
 
-These hooks do not yet cover native inventory/merchant scroll views, strategic
+These hooks do not yet cover native merchant scroll views, strategic
 destination controls, racial action/variant menus or visible buffs. Track those
 consumers separately rather than treating creator/spellbook captures as complete
 mission coverage.
@@ -157,4 +157,25 @@ inspected clear at 1280x720. Generated names overlap the header and ordinary cre
 dolls are empty; neither is appearance qualification. Remote abilities are
 deactivated and do not qualify an active action bar. Higher dependent roots have
 native data coverage, not blanket rendered-sheet evidence. Full racial/action/buff,
-inventory/merchant and strategic-control coverage remains separate, as does owner approval.
+merchant and strategic-control coverage remains separate, as does owner approval.
+
+The qualified scroll extension adds inventory and item-description captures to the
+existing `disposable-teleportation-spellbook-ui` scenario. It requires initial
+absence of all three strategic scrolls, creates one exact identified entity per
+spell, opens the real native inventory and uses its measured virtual slots to
+scroll. Actual ItemSlot sprites and TooltipTrigger item references must match
+the canonical scroll/spell identity, with non-vacuous unchanged item controls.
+OpenDescriptionWindow initializes tooltip data from the actual slot; validate
+both the collected object and TooltipData.Item after this native call. The native
+item-description window must show the same scroll name/icon.
+No equip, use, copy, purchase or save operation is added. Normal native window
+closure precedes exact removal of the three additions and restoration of item
+references/order/counts/indices/identification/charges, gold, filter preferences
+and sheet/group context. The outer spellbook fixture still enforces its full
+world/resource/UI cleanup and zero-exception guards. The [scroll inventory qualification](../reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json)
+records two PASS runs, 49 assertions, 16 original screenshots and exact 136-file
+restoration. All six scroll targets were inspected clear at 1280x720. Each of
+the 15 item/UI cleanup predicates passed, with no save writes. The first tooltip
+lifecycle mistake remains a documented ERROR; partial inventory success was not
+qualification. Two focused corruption cases bring capture validation to sixteen.
+Native merchant views and final owner UI approval remain separate.

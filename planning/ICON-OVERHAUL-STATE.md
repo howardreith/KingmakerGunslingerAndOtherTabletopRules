@@ -1,8 +1,24 @@
 # Icon overhaul v2 state
 
-Status: **NATIVE_FACT_PRESENTATION_QUALIFIED; COMPLETE_UI_REVIEW_IN_PROGRESS**.
+Status: **NATIVE_SCROLL_INVENTORY_QUALIFIED; COMPLETE_UI_REVIEW_IN_PROGRESS**.
 Ten exact pilot images and family direction are approved. Eighty production
 paintings and final native UI approval remain pending. This is a technical checkpoint.
+
+Published selected-fact checkpoint: `197f9f6198e4f2d706cf0ac64cc491c7e6ef3bca`.
+The subsequent [scroll inventory checkpoint](../reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json)
+qualifies all three actual inventory slots and native item descriptions: two
+guarded Steam PASS runs, 49 assertions and 16 original captures. All six item
+targets were inspected clear at 1280x720; all 15 item/UI cleanup predicates passed.
+Current artifact: source `59d7067ec489cb775200903c1c7c638ac0fc7a618132c0376759af52f6564990`,
+package `0e1c87225e0bdf3d25a2729e86126a141596e6a6b34b051b32233169102e5256`,
+DLL `337140eba471f730d753307f785aedf07c95049b44829c04538bb8853a9b94c4`,
+MVID `4a268866-874b-425c-ba4c-40dfcf6a715b`. The full build passed 1,629 domain,
+23 catalog, 16 screenshot, six paired and eleven request cases, clean Release
+and the strict 224-file package check. Its installation was independently verified
+restored to all 136 original paths/hashes at `2026-09-13T18:17:26.642244+00:00`. No save writes.
+Immutable local copies: `native-scroll-inventory-qualified-128-*`; gallery:
+`artifacts/icon-overhaul-v2/NATIVE-SCROLL-INVENTORY-REVIEW.html`. Native merchant
+capture is the next bounded change. Earlier evidence below retains its own artifact.
 
 - Branch: `codex/icon-art-overhaul-v2`. Current master
   `9dc2b6301d97bc83540845240544d34b6fad4b48` (PR #18, version `0.0.128`)
@@ -67,14 +83,16 @@ paintings and final native UI approval remain pending. This is a technical check
   sheets do not qualify active action bars. Existing Weapon Focus labels repeat
   the feat name; this separate naming finding is recorded without changing names.
 - Remaining: full racial feat menus, racial actions/variants/visible buffs, applicable
-  higher dependent feat rendering, scroll inventory/tooltip/merchant views, and
+  higher dependent feat rendering, scroll merchant views, and
   confirmation of the strategic text-only controls. Then final owner UI review.
   The working archive has no supported P/M/B parameter GUID in its eight JSON members;
   mission section 8 requires separate authority for any new save/write fixture.
   No such write is authorized or performed. Continue independent UI work first.
 
-Next bounded work: use actual native scroll inventory/description consumers within
-the existing local spellbook fixture, with exact temporary item and UI restoration.
+Next bounded work: capture the actual native merchant scroll rows with one
+detached request-owned vendor and isolated stock. Use normal VendorUI open/close;
+never purchase, sell, or alter a campaign merchant/shared stock. Preserve original
+inventory, money, filters, group, vendor state and the fixture's zero-write guards.
 The strategic destination implementation uses native text buttons without assigning
 spell icons; confirm that surface without adding decoration. Full racial/action
 coverage still needs its own supported native fixture. See the

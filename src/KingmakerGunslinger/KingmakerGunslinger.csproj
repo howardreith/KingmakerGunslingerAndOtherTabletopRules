@@ -908,6 +908,7 @@
     <Compile Include="Spells\Teleportation\WorldMapPointConsoleSpellActionRuntime.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationGamepad.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationSpellbookUi.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationScrollIcons.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationLevelUp.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationDestinations.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationArrows.cs" />

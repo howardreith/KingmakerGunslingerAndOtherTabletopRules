@@ -165,6 +165,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "shown=" + controller.IsShow, controller.IsShow && controller.CurrentCharacter == owner && books.All(controller.SpellBookView.ClassToggle.Spellbooks.Contains));
                 ui.ServiceWindow.HandleOpenSpellbook();
                 for (int frame = 0; frame < 60; frame++) yield return 0;
+                foreach (int frame in CaptureNativeStrategicScrollItems()) yield return frame;
                 fixture.Restore(); fixtureRestored = true;
                 ui.SelectionManagerPC.MultiSelect(originalSelection.Select(value => value.View).ToArray(), false);
                 foreach (var snapshot in uiSnapshots) snapshot.Restore();
