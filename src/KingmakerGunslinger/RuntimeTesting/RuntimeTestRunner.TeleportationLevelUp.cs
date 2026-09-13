@@ -75,12 +75,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             var originalPositions = originalParty.Select(value => value.Position).ToArray();
             var originalTime = player.GameTime; bool originalPaused = game.IsPaused;
             var uiSnapshots = originalParty.Select(value => new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
-            var entries = new[] {
+            var entries = new List<TeleportLevelUpEntry> {
                 new TeleportLevelUpEntry(wizard, 8, TeleportSpellKind.Teleport, 5),
                 new TeleportLevelUpEntry(wizard, 12, TeleportSpellKind.GreaterTeleport, 7),
                 new TeleportLevelUpEntry(sorcerer, 9, TeleportSpellKind.Teleport, 5),
                 new TeleportLevelUpEntry(sorcerer, 13, TeleportSpellKind.GreaterTeleport, 7)
             };
+            var oracle = TeleportationFinalLiveReconciler.ResolveOracleClass(BlueprintBootstrap.Library);
+            if (oracle != null)
+            {
+                if (owner.Descriptor.GetSpellbook(oracle.Spellbook) != null)
+                    throw new InvalidOperationException("The disposable learning owner already has an Oracle book.");
+                entries.Insert(0, new TeleportLevelUpEntry(oracle, 11, TeleportSpellKind.WordOfRecall, 6));
+            }
             var savedState = new TeleportLevelUpSavedStateFixture(owner.Descriptor);
             Application.logMessageReceived += ObserveTeleportSpellbookUiException;
             try
@@ -168,6 +175,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         counts = value.LevelCount.Select(part => part == null ? 0 : part.SpellSelections.Length).ToArray() }).ToArray() });
                 if (!controller.Spells.IsUnlocked || !controller.Spells.IsAvailible)
                     throw new InvalidOperationException("Native prerequisites did not unlock the spell-selection phase.");
+                CaptureTeleportSpellbookUi("native-learning-list-" + caseId, new {
+                    classId = entry.Class.AssetGuid,
+                    classBook = entry.Class.Spellbook.AssetGuid,
+                    effectiveBook = backend.Preview.Progression.GetClassData(entry.Class).Spellbook.AssetGuid,
+                    archetypes = backend.Preview.Progression.GetClassData(entry.Class).Archetypes.Select(value => value.AssetGuid).ToArray(),
+                    knownBefore = book.IsKnown(spell),
+                    abilityId = spell.AssetGuid,
+                    metadata = spell.ComponentsArray.OfType<Kingmaker.Blueprints.Classes.Spells.SpellListComponent>()
+                        .Select(value => new { list = value.SpellList.AssetGuid, value.SpellLevel }).ToArray(),
+                    lists = backend.State.SpellSelections.Select(value => new {
+                        book = value.Spellbook.AssetGuid, list = value.SpellList.AssetGuid,
+                        level = entry.SpellLevel,
+                        normalChoices = value.LevelCount[entry.SpellLevel] == null ? 0 : value.LevelCount[entry.SpellLevel].SpellSelections.Length,
+                        raw = value.SpellList.SpellsByLevel[entry.SpellLevel].Spells.Count(ability => ReferenceEquals(ability, spell)),
+                        filtered = value.SpellList.GetSpells(entry.SpellLevel).Count(ability => ReferenceEquals(ability, spell))
+                    }).ToArray()
+                });
                 controller.SetPhase((int)CharBPhase.Type.Spells);
                 foreach (int tick in WaitTeleportLevelUpUi(() => controller.GetComponentsInChildren<CharBSelectionSwitchItem>(true).Any(value =>
                     value.gameObject.activeInHierarchy && value.SpellSelectionData != null && value.SpellSelectionData.Spellbook == entry.Class.Spellbook), "native spell collections")) yield return tick;
@@ -195,7 +219,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TeleportSpellbookUiAssert("available-row-" + caseId, "published strategic spell appears as an enabled native level-up choice at the exact spell level",
                     "spell=" + row.BlueprintAbility.AssetGuid + ";level=" + row.SpellLevel,
                     row.SpellLevel == entry.SpellLevel && row.Toggle.interactable && controller.CurrentPhase == CharBPhase.Type.Spells &&
-                    controller.Spells.CurrentSpellSelectionData.SpellList.AssetGuid == TeleportationSpellListPublication.WizardListId &&
+                    ReferenceEquals(controller.Spells.CurrentSpellSelectionData.SpellList, entry.Class.Spellbook.SpellList) &&
                     row.GetComponentsInChildren<TextMeshProUGUI>(true).Any(value => value.isActiveAndEnabled && !value.isTextTruncated &&
                         string.Equals(value.GetParsedText(), spell.Name, StringComparison.OrdinalIgnoreCase)));
                 row.Toggle.isOn = true;
