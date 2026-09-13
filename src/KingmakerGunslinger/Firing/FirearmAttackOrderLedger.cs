@@ -25,9 +25,12 @@ namespace KingmakerGunslinger.Firing
         }
         internal sealed class Order
         {
-            internal readonly object Actor, Weapon, Target;
+            internal readonly object Actor, Weapon;
+            internal object Target;
             internal readonly int Epoch;
             internal bool Accepted, Cancelled;
+            internal object Owner, CommandContainer;
+            internal bool OwnerSlotRemoved;
             internal Order(object actor, object weapon, object target, int epoch)
             {
                 Actor = actor; Weapon = weapon; Target = target; Epoch = epoch;
@@ -77,6 +80,23 @@ namespace KingmakerGunslinger.Firing
             return order != null && order.Accepted && !order.Cancelled &&
                 ReferenceEquals(For(order.Actor).Current, order) &&
                 order.Epoch == Epoch(order.Actor, order.Weapon);
+        }
+        // A retained native command owns continuation, independently of other
+        // coexisting command slots. Proposals and stale orders cannot take it.
+        internal bool Own(Order order, object command, object container = null)
+        {
+            if (command == null || !IsCurrent(order)) return false;
+            order.Owner = command;
+            order.CommandContainer = container;
+            order.OwnerSlotRemoved = false;
+            return true;
+        }
+        internal bool Retarget(Order order, object owner, object previousTarget, object target)
+        {
+            if (!IsCurrent(order) || owner == null || target == null ||
+                !ReferenceEquals(order.Owner, owner) || !ReferenceEquals(order.Target, previousTarget)) return false;
+            order.Target = target;
+            return true;
         }
         internal void Cancel(Order order)
         {

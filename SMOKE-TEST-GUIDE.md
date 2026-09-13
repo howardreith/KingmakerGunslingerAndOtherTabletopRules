@@ -15,11 +15,12 @@ least one firearm are required. The development console
 2. **Combat rejection.** Start a fight and try Repair Firearm, including
    with a character who is not personally engaged while the party is in
    combat. Availability and execution must be rejected with the combat
-   explanation, in both real-time-with-pause and turn-based.
+   message exactly `Cannot repair firearms during combat.`, in both
+   real-time-with-pause and turn-based.
 3. **Wrecked is rest-only.** Break the gun twice (Broken -> Wrecked). Field
-   repair must refuse with the completed-full-rest explanation, in and out
-   of combat; the hidden legacy Overhaul slot (if an old save has it) must
-   refuse identically. A Wrecked gun also cannot fire or reload.
+   repair outside combat must say `This firearm is Wrecked. A full rest is required.`
+   During combat, the combat rejection takes precedence. The hidden legacy
+   Overhaul slot (if an old save has it) must refuse identically. A Wrecked gun also cannot fire or reload.
 4. **Full-rest restoration.** With the gunsmith resting and the kit in the
    shared inventory, complete a genuine full rest (camp): carried Broken
    and Wrecked firearms - equipped, in alternate weapon sets, or anywhere
@@ -34,7 +35,10 @@ least one firearm are required. The development console
    Broken->Wrecked), but no further iterative shot is fired, no auto-reload
    continues the sequence, and real-time auto-attacking does not immediately
    resume. Clicking a deliberate new attack with the still-Broken gun still
-   works and fires under the normal Broken penalties/misfire rules.
+   works and fires under the normal Broken penalties/misfire rules. Include
+   an empty auto-reload order and paused RTWP/unpause. A TB Move reload can
+   attack in the same turn; Standard/FullRound reloads cannot spend another
+   Standard action or automatically carry an attack into the next turn.
 6. **Quick Clear unchanged.** In combat with grit, Quick Clear still
    restores a misfire-Broken gun (standard costs nothing but needs one
    grit; move version spends one), rejects Wrecked and non-misfire states,
@@ -44,9 +48,17 @@ least one firearm are required. The development console
    are unaffected; save and reload after each step and confirm every
    condition, loaded-round count, and item identity persists.
 
+8. **Review regressions.** In RTWP, use legal Focused Aim from the action bar
+   alongside a pending/running order; both retain normal costs. Where native
+   full attack permits it, kill A and allow native retarget to B. Changing the
+   explicit target during a running reload preserves real reload progress and
+   fires at the new target. Replacement/cancellation must still stop old work.
+   In TB, use the Swift before the attack and check actual action availability;
+   the native action bar can reject coexisting input.
+
 Report anything that deviates, with the step number, combat mode, and the
 combat log lines shown. Automated qualification status and evidence:
-`docs/FIREARM-MAINTENANCE-ACCEPTANCE.md`.
+`docs/FIREARM-POSTRELEASE-HOTFIX-QUALIFICATION.md`.
 
 ## Historical maintenance-loop guide
 

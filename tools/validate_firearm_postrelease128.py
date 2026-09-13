@@ -13,7 +13,7 @@ VERSION = "0.0.128"
 INFORMATIONAL_VERSION = "0.0.128-firearm-postrelease-hotfix"
 PACKAGE = "KingmakerGunslinger-0.0.128-local-runtime.zip"
 PACKAGE_SUFFIX = "firearm-postrelease-hotfix"
-DETERMINISTIC_TEST_COUNT = 1618
+DETERMINISTIC_TEST_COUNT = 1622
 MANIFEST_TOTAL = 1886
 MANIFEST_ACTIVE = 1884
 STATIC_KEY = "firearmHotfix128"
@@ -37,7 +37,7 @@ def validate(root: Path) -> None:
     baseline.MANIFEST_TOTAL = MANIFEST_TOTAL
     baseline.MANIFEST_ACTIVE = MANIFEST_ACTIVE
     # Retained static records are the exact 0.0.127 snapshots (1,612 cases).
-    # Current Program.cs checks still use DETERMINISTIC_TEST_COUNT (1,618).
+    # Current Program.cs checks still use DETERMINISTIC_TEST_COUNT (1,620).
     inherited = baseline
     while inherited is not None:
         inherited.ARCHIVED_TEST_COUNT = 1612

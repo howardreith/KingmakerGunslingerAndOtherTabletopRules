@@ -37,14 +37,28 @@ namespace KingmakerGunslinger.Firing
                 new[] { typeof(UnitEntityData) }, null), null, new HarmonyMethod(Own("Initialized")), null);
             harmony.Patch(typeof(UnitCommands).GetMethod("Run", All, null,
                 new[] { typeof(UnitCommand), typeof(bool), typeof(bool) }, null),
-                new HarmonyMethod(Own("Submitting")), null, null);
+                new HarmonyMethod(Own("Submitting")), new HarmonyMethod(Own("Submitted")), null);
             harmony.Patch(typeof(UnitCommands).GetMethod("AddToQueueInternal", All),
-                new HarmonyMethod(Own("Queued")), null, null);
+                new HarmonyMethod(Own("Queued")), new HarmonyMethod(Own("Submitted")), null);
+            harmony.Patch(typeof(UnitCommands).GetMethod("InterruptAndRemoveCommand", All, null,
+                new[] { typeof(UnitCommand.CommandType), typeof(bool) }, null),
+                null, new HarmonyMethod(Own("RemovedSlot")), null);
+            harmony.Patch(typeof(UnitCommands).GetMethod("InterruptAll", All, null,
+                new[] { typeof(bool) }, null), null, new HarmonyMethod(Own("InterruptedAll")), null);
+            harmony.Patch(typeof(UnitCommands).GetMethod("InterruptAll", All, null,
+                new[] { typeof(Func<UnitCommand, bool>) }, null),
+                null, new HarmonyMethod(Own("ReconcileOwnership")), null);
+            harmony.Patch(typeof(UnitAttack).GetMethod("UpdateTarget", All, null, Type.EmptyTypes, null),
+                new HarmonyMethod(Own("ResolvingTarget")), new HarmonyMethod(Own("ResolvedTarget")), null);
             var actionPrefix = new HarmonyMethod(Own("Acting"));
             actionPrefix.prioritiy = Priority.First;
             harmony.Patch(typeof(UnitAttack).GetMethod("OnAction", All), actionPrefix, null, null);
             harmony.Patch(typeof(UnitAttack).GetMethod("TryMergeInto", All),
                 new HarmonyMethod(Own("Merging")), new HarmonyMethod(Own("Merged")), null);
+            harmony.Patch(typeof(UnitUseAbility).GetMethod("TryMergeInto", All),
+                new HarmonyMethod(Own("MergingReload")), new HarmonyMethod(Own("MergedReload")), null);
+            harmony.Patch(typeof(UnitCommand).GetMethod("ForceFinishForTurnBased", All),
+                null, new HarmonyMethod(Own("ForceFinished")), null);
             harmony.Patch(typeof(UnitCommand).GetMethod("OnEnded", All),
                 null, new HarmonyMethod(Own("Ended")), null);
         }
@@ -59,6 +73,18 @@ namespace KingmakerGunslinger.Firing
         { return NativeFirearmAttackOrder.Submitting(___m_Owner, __0, __1); }
         private static bool Queued(UnitCommand __0, UnitEntityData ___m_Owner)
         { return NativeFirearmAttackOrder.Submitting(___m_Owner, __0, false); }
+        private static void Submitted(UnitCommands __instance, UnitCommand __0, UnitEntityData ___m_Owner)
+        { if (NativeFirearmAttackOrder.IsOrderContainer(__instance, ___m_Owner)) NativeFirearmAttackOrder.Submitted(___m_Owner, __0); }
+        private static void RemovedSlot(UnitCommands __instance, UnitCommand.CommandType __0, UnitEntityData ___m_Owner)
+        { if (NativeFirearmAttackOrder.IsOrderContainer(__instance, ___m_Owner)) NativeFirearmAttackOrder.RemovedSlot(___m_Owner, __0); }
+        private static void InterruptedAll(UnitCommands __instance, UnitEntityData ___m_Owner)
+        { if (NativeFirearmAttackOrder.IsOrderContainer(__instance, ___m_Owner)) NativeFirearmAttackOrder.InterruptedAll(___m_Owner); }
+        private static void ReconcileOwnership(UnitCommands __instance, UnitEntityData ___m_Owner)
+        { if (NativeFirearmAttackOrder.IsOrderContainer(__instance, ___m_Owner)) NativeFirearmAttackOrder.ReconcileOwnership(___m_Owner); }
+        private static void ResolvingTarget(UnitAttack __instance, out NativeFirearmAttackOrder.TargetResolution __state)
+        { __state = NativeFirearmAttackOrder.ResolvingTarget(__instance); }
+        private static void ResolvedTarget(UnitAttack __instance, NativeFirearmAttackOrder.TargetResolution __state, bool __result)
+        { NativeFirearmAttackOrder.ResolvedTarget(__instance, __state, __result); }
         private static bool Acting(UnitAttack __instance, ref UnitCommand.ResultType __result)
         {
             if (NativeFirearmAttackOrder.MayExecute(__instance)) return true;
@@ -73,6 +99,22 @@ namespace KingmakerGunslinger.Firing
         }
         private static void Merged(UnitAttack __instance, UnitCommand __0, bool __result)
         { NativeFirearmAttackOrder.Merged(__instance, __0, __result); }
+        private static bool MergingReload(UnitUseAbility __instance, UnitCommand __0, ref bool __result)
+        {
+            if (NativeFirearmAttackOrder.MayMergeReload(__instance, __0)) return true;
+            __result = false;
+            return false;
+        }
+        private static void MergedReload(UnitUseAbility __instance, UnitCommand __0, bool __result)
+        { NativeFirearmAttackOrder.Merged(__instance, __0, __result); }
+        private static void ForceFinished(UnitCommand __instance)
+        {
+            // Native TB action rejection uses Success/IsActed even without a
+            // discharge or cost. That terminal owner cannot retain authority.
+            var binding = NativeFirearmAttackOrder.Get(__instance);
+            if (binding != null && ReferenceEquals(binding.Order?.Owner, __instance))
+                NativeFirearmAttackOrder.Interrupted(__instance);
+        }
         private static void Ended(UnitCommand __instance)
         {
             // Native OnEnded(bool raiseEvent) also runs after successful shots.
