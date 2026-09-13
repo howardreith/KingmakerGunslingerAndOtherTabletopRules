@@ -117,5 +117,42 @@
       "case": "Exhaustive optional-mod configurations",
       "reason": "Only the documented installed-reference environment was qualified."
     }
-  ]
+  ],
+  "finalCandidate": {
+    "sourceCommit": "fc6c5cb220f7501fa20fc1709b085fd10b58b7a6",
+    "builtFromCleanTree": true,
+    "sourceStateSha256": "2721b45eedca565de6bad343ff2df38eced3cdb13fe6c13bd6d6d3a5c3b13f81",
+    "version": "0.0.128",
+    "packageName": "KingmakerGunslinger-0.0.128-firearm-postrelease-hotfix.zip",
+    "packageSha256": "c0c2c0c83db19f2b0bd71cd4393f5a0b09b1a8adadb29a9725d8541d257960e6",
+    "dllSha256": "ce65373e73f40573fc9f715d30ef181da0d5b07db4be38d9be8261b6ce59b8b8",
+    "mvid": "2a1e57fe-63ef-49ce-b69c-3cbf7de95372",
+    "runId": "20260913T0544024994395Z-62c3a21ad3864b25b953d8da52c67568",
+    "evidenceDirectoryName": "20260913T0544024918854Z-disposable-firearm-break-interruption",
+    "nativeStatus": "PASS",
+    "nativeAssertions": 413,
+    "originalAssertionsRetained": 145,
+    "addedNativeAssertions": 268,
+    "domainTests": 1622,
+    "focusedLedgerBehavioralTests": 10,
+    "compiledInputControlFlowTests": 10,
+    "packageFiles": 135,
+    "repositoryAndAssetValidators": "PASS",
+    "cleanExactReferenceReleaseBuild": "PASS",
+    "strictPackageValidation": "PASS",
+    "runtimeResultSha256": "90ffa6f65684af3a2e7b9770d03c3684b9776577ac66e1261d702bd0047abcb5",
+    "nativeTraceSha256": "6a0c9495fdee722708b99cd2c884e480066ac391b2357369b8b55069baafc78b",
+    "loadedIdentitySha256": "7980bbf1226351e88fc5741eaa45d061ab6a0f8eb534bd13a9aefc354b56240e",
+    "runtimeEvidenceManifestSha256": "d791f91f5d2d6e487df281bcbdea30831eff7ff655558a2653051e73c4d7c20a",
+    "buildLogSha256": "6e792bee7a796167435d8b9a01ceab6129ed2e1581849f169c2ab8153f45142d",
+    "compiledTestLogSha256": "48e79f40f42261ee5045664aeb0b8f665721bfd40fb3dcde9dabff64abd52a2d",
+    "originalInstallationRestored": true,
+    "restoredFileCount": 138,
+    "restoredVersion": "0.0.126",
+    "restoredDllSha256": "99a8ab3e454c5cb4b8b74fc13bee09e6f00893c79d0cc065da27ce3b857681fc",
+    "restoredFeatureModulesSha256": "a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749",
+    "restoreBackupName": "20260913T0543590921304Z",
+    "saveMutationAttempts": 0,
+    "documentationNote": "Any later evidence-only commit changes documentation, not the qualified source, DLL or package."
+  }
 }

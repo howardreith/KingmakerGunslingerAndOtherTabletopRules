@@ -38,3 +38,9 @@ The retained firearm SoundBank (`KMG_Firearms.bnk`) is unchanged, with SHA-256
 Retained historical suite checkpoints include 1,288 and 1,325 cases. The active
 candidate inventory is 1,622 cases; the complete suite passed with zero failures.
 `CraftMagicItems.dll` remains optional external software and is never bundled.
+
+Final review candidate: compiled source `fc6c5cb220f7501fa20fc1709b085fd10b58b7a6`; fresh guarded native run
+`20260913T0544024994395Z-62c3a21ad3864b25b953d8da52c67568` passed 413/413 assertions. ZIP SHA-256
+`c0c2c0c83db19f2b0bd71cd4393f5a0b09b1a8adadb29a9725d8541d257960e6`; DLL SHA-256
+`ce65373e73f40573fc9f715d30ef181da0d5b07db4be38d9be8261b6ce59b8b8`. DLL MVID `2a1e57fe-63ef-49ce-b69c-3cbf7de95372`.
+Later evidence-only documentation does not change this qualified artifact.
