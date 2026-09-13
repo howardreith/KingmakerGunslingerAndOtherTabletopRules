@@ -3,7 +3,9 @@
 Owner mission, 2026-09-13. The implementation and guarded mechanical acceptance
 are complete with the explicit limits below. The prior
 [Oracle scroll repair](Z-WORD-OF-RECALL-ORACLE-STATE.md) is preserved. No merge or
-public release is authorized or performed.
+public release was authorized during that qualification. The owner subsequently
+authorized merge, remote push and a new full release; release sealing is recorded
+below.
 
 ## Configuration and provenance
 
@@ -272,3 +274,39 @@ record's Git history. They are superseded by the final passes, not reclassified
 as acceptance. The capture-only overlay adjustment closes/restores UMM through
 its public API inside the guarded fixture and never saves settings. Raw evidence,
 images, packages, saves and proprietary assemblies remain local and uncommitted.
+
+## Full release 0.0.129
+
+After accepting the completed mission, the owner explicitly requested merge,
+remote push and a new full release (not a test release). This supersedes the
+previous publication boundary. The accepted implementation checkpoint is
+`ff5a1f093a2f318080d9d8f0a41fefb99f4184f4`; release preparation starts from the
+same clean branch with remote master still at `9dc2b630` and latest public tag
+`v0.0.128`.
+
+Release preparation changes version metadata, current player documentation and
+the existing version-aware build/validation routing only. No production gameplay
+source, guarded scenario implementation, assets or blueprint identities change.
+Historical candidate evidence and limitations above retain their original
+artifact attribution. The release remains `0.0.129` in UMM/GitHub; its descriptive
+informational version and ZIP suffix do not mark it as a prerelease.
+
+Sealing uses the established publisher from clean, pushed master after merge:
+two deterministic exact-reference builds, all 1,632 domain tests, strict output,
+SoundBank and 135-file UMM validation. Focused guarded Steam checks verify native
+Oracle learning, scroll activation/UI, direct casts, interaction, controller,
+publication and working-save load on the final binary before public publication.
+The public ZIP, checksum and manifest are then downloaded and independently
+verified. Exact results will be appended after observation; no release-artifact
+runtime pass is inferred from the earlier candidate.
+
+Preparation verification: all 1,632 domain cases PASS; repository, clean
+exact-reference Release, SoundBank and strict 135-file package validation PASS.
+The preparation build is evidence of version integration, not the final merged
+release artifact. Production diff against the accepted checkpoint contains only
+assembly version attributes and the development-panel version label.
+
+The guarded runtime preflight passes all 471 checks. Its positive cases were
+still pinned to 0.0.126 and its expected catalog omitted the already-existing
+firearm-break-interruption scenario; release preparation updates those test
+expectations only. Historical producer pins and all rejection guards remain.

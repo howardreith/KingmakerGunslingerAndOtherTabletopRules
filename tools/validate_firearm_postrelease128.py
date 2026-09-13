@@ -73,7 +73,8 @@ def validate(root: Path) -> None:
     for key, value in expected.items():
         if state.get(key) != value:
             raise AssertionError(f"firearmHotfix128 static mismatch: {key}")
-    require_tokens(root / "docs/RELEASE-NOTES-0.0.128.md", INFORMATIONAL_VERSION,
+    require_tokens(root / "docs/RELEASE-NOTES-0.0.128.md",
+        "0.0.128-firearm-postrelease-hotfix",
         "candidate", "native", "reload", "NOT RUN")
     require_tokens(root / "src/KingmakerGunslinger/Recovery/RepairAvailabilityReasonPatch.cs",
         "GetContextualReason", "IAbilityAvailabilityProvider", "AbilityData")

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.0.129-recall-and-smart-scrolls
+
+- Qualified Word of Recall through native Oracle 11-to-12 candidate selection,
+  cancel/commit and spontaneous casting using one ordinary level-6 choice.
+  The previous Oracle list repair is sufficient; 13-to-14 grants no normal
+  level-6 choice in the installed configuration.
+- Recall shares Greater Teleport's direct cast path and quiet success policy.
+  Ordinary Teleport retains confirmation and all outcome messages.
+- Consolidated equivalent scrolls into one counted action per group, with
+  deterministic read-only selection of the best supported native reader.
+  Preserved native checks, reader attribution, variants, costs and failures.
+- Added truthful named activation-failure messages, native preserved/reusable
+  scroll handling and a native blueprint fallback without Call of the Wild.
+- Accepted candidate: 1,632 domain tests, 520 installed-profile native assertions
+  and 22 optional-absent startup assertions PASS. Release sealing and precise
+  NOT RUN limits are recorded in Z-RECALL-AND-SMART-SCROLL-STATE.md.
+
 ## 0.0.128-firearm-postrelease-hotfix
 
 Unpublished hotfix candidate for contextual Repair Firearm rejection and explicit Broken-firearm reattack, including native reload continuation and paused orders. Review revisions preserve native coexisting commands, retargeted/merged survivors, and actual reload/turn lifetimes. Native mechanical qualification: 413/413 PASS (all original 145 retained); domain suite: 1,622/1,622 PASS. Completed-rest collection now skips empty equipment slots. See docs/FIREARM-POSTRELEASE-HOTFIX-QUALIFICATION.md for exact scope and evidence.
