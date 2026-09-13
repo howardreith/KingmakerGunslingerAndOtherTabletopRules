@@ -70,8 +70,9 @@ $manifest = [ordered]@{
     authority='Individual production sources/exports only; canonical catalog owns consumer bindings and owner review.'
     exporter='tools/icon-art/Export-IconProduction.ps1'
     engine='Windows System.Drawing GDI+; HighQualityBicubic; TileFlipXY; SourceCopy ARGB32. No generation, chroma removal, sharpening or timestamps.'
-    runtimeInstallation='none; isolated production candidates pending integration'
+    runtimeInstallation='Canonical icon-catalog.json runtimeExport fields own integration status; this manifest owns preserved source/export pixels and approval.'
     records=$records
 }
-[IO.File]::WriteAllText($manifestPath,(($manifest | ConvertTo-Json -Depth 8)+[char]10),[Text.UTF8Encoding]::new($false))
+$manifestJson = ($manifest | ConvertTo-Json -Depth 8).Replace("`r`n", "`n") + "`n"
+[IO.File]::WriteAllText($manifestPath,$manifestJson,[Text.UTF8Encoding]::new($false))
 Write-Output "Exported/verified $($records.Count) individual production candidates."

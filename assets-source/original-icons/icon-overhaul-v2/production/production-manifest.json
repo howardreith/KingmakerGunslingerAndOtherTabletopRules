@@ -3,7 +3,7 @@
     "authority":  "Individual production sources/exports only; canonical catalog owns consumer bindings and owner review.",
     "exporter":  "tools/icon-art/Export-IconProduction.ps1",
     "engine":  "Windows System.Drawing GDI+; HighQualityBicubic; TileFlipXY; SourceCopy ARGB32. No generation, chroma removal, sharpening or timestamps.",
-    "runtimeInstallation":  "none; isolated production candidates pending integration",
+    "runtimeInstallation":  "Canonical icon-catalog.json runtimeExport fields own integration status; this manifest owns preserved source/export pixels and approval.",
     "records":  [
                     {
                         "key":  "acid-affinity",

@@ -111,7 +111,7 @@ $manifest = [ordered]@{
     authority='Candidate source/export record only; not runtime registration or visual approval.'
     exporter='tools/icon-art/Export-IconPilot.ps1'
     engine='Windows System.Drawing GDI+; HighQualityBicubic; TileFlipXY edges; SourceCopy ARGB32; no chroma key, sharpen, generation, or timestamps during painted export.'
-    runtimeInstallation='none; isolated pilot exports are not packaged'
+    runtimeInstallation='Canonical icon-catalog.json runtimeExport fields own integration status; this manifest owns preserved source/export pixels and approval.'
     records=$records
 }
 $utf8 = [Text.UTF8Encoding]::new($false)

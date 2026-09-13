@@ -39,5 +39,8 @@ if ($LASTEXITCODE -ne 0) {
 if ($LASTEXITCODE -ne 0) { throw 'Icon authoring catalog validation failed.' }
 & $python.Source (Join-Path $repositoryRoot 'tools\test_icon_catalog.py')
 if ($LASTEXITCODE -ne 0) { throw 'Icon catalog corruption fixtures failed.' }
+& $python.Source (Join-Path $repositoryRoot 'tools\test_icon_runtime_evidence.py')
+if ($LASTEXITCODE -ne 0) { throw 'Icon runtime evidence corruption fixtures failed.' }
+& (Join-Path $PSScriptRoot 'Test-IconCensusControlRequest.ps1')
 
 Write-Host 'Version-aware repository validation passed.'

@@ -1589,6 +1589,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         [Parameter(Mandatory = $true)][string]$Scenario,
         [Parameter(Mandatory = $true)][string]$ExpectedVersion,
         [Parameter(Mandatory = $true)][int]$TimeoutSeconds,
+        [bool]$ExitAfterCompletion = $true,
         [int]$StartupTimeoutSeconds = 180,
         [int]$CatalogTimeoutSeconds = 0,
         [int]$SelectionTimeoutSeconds = 0,
@@ -1789,6 +1790,13 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw "$Scenario requires exactly one allowlisted assetConfiguration."
         }
     }
+    elseif ($Scenario -ceq 'icon-overhaul-visual-evidence' -and $Parameters.Count -gt 0) {
+        if (-not $ExitAfterCompletion -or $Parameters.Count -ne 1 -or
+            -not $Parameters.ContainsKey('iconCensusControl') -or
+            $Parameters.iconCensusControl -isnot [bool] -or -not $Parameters.iconCensusControl) {
+            throw 'Icon census control requires only iconCensusControl=true and automatic exit; no save parameters.'
+        }
+    }
     elseif ($Parameters.Count -ne 0 -and -not (Test-KmgElementalOffCreatorScope $Scenario $Parameters)) {
         throw "Scenario '$Scenario' does not accept parameters."
     }
@@ -1856,7 +1864,7 @@ function New-KmgRuntimeRequest {
         (Test-KmgElementalOffCreatorScope $Scenario $Parameters)) -and -not $ExitAfterCompletion) {
         throw 'Guarded Nereid player qualification requires automatic process exit.'
     }
-    $metadata = Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario `
+    $metadata = Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario -ExitAfterCompletion $ExitAfterCompletion `
         -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
         -StartupTimeoutSeconds $StartupTimeoutSeconds `
         -CatalogTimeoutSeconds $CatalogTimeoutSeconds `
@@ -1945,6 +1953,8 @@ function New-KmgRuntimeRequest {
             }
         } elseif (Test-KmgElementalOffCreatorScope $Scenario $Parameters) {
             [ordered]@{ creatorCase = 'module-off' }
+        } elseif ($Scenario -ceq 'icon-overhaul-visual-evidence' -and $Parameters.Count -eq 1) {
+            [ordered]@{ iconCensusControl = [bool]$Parameters.iconCensusControl }
         } else { [ordered]@{} }
     }
 }

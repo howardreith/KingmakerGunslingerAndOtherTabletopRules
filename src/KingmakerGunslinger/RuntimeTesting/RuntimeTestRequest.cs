@@ -544,7 +544,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return "scenario-timeouts-not-allowed";
                 bool elementalOffCreator = IsElementalOffCreatorScope(request);
                 if (elementalOffCreator && !request.ExitAfterCompletion) return "elemental-off-creator-exit-required";
-                if (!elementalOffCreator && (request.Parameters == null || request.Parameters.Count != 0))
+                bool iconControl = IconCensusControlPolicy.IsControl(request.Scenario, request.ExitAfterCompletion, request.Parameters);
+                if (!elementalOffCreator && !iconControl && (request.Parameters == null || request.Parameters.Count != 0))
                     return "parameters-not-allowed";
             }
 

@@ -147,7 +147,7 @@ $requestFingerprintTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
     $FingerprintTimeoutSeconds
 } else { 0 }
 
-[void](Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario `
+[void](Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario -ExitAfterCompletion $ExitAfterCompletion `
     -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
     -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
     -CatalogTimeoutSeconds $requestCatalogTimeout `
