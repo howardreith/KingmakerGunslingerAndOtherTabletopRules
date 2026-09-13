@@ -244,3 +244,17 @@ installation files/settings were restored. The shared renderer also supplies scr
 and Word of Recall text controls without an icon assignment; that is a source
 audit, not separate native screenshot evidence for those choices. Their painted
 spellbook/item/description/merchant surfaces remain separately qualified.
+
+
+The [v0.0.129 integration](../reports/icon-overhaul/NATIVE-129-INTEGRATION-QUALIFICATION.json)
+retains both upstream camera stabilization and native panel fade/layout readiness.
+Five guarded runs pass 208 assertions and yield 30 inspected native captures,
+including the newly available normal Oracle Recall learning row. The capture
+validator binds exact class/spell/level combinations and exact stage identities;
+wrong Oracle mappings, levels, previews and unavailable rows fail. Its twenty-first
+focused case covers this integration. A fresh full build reproduces the tested
+DLL/package exactly after that Python validation update. Original installation
+restoration is independently verified. Historical reports keep their stated
+artifact hashes. All target images are clear; incidental hover panels and the
+Wizard fixture's stale central level header are explicitly limited in the report.
+Owner approval remains separate from these checks.

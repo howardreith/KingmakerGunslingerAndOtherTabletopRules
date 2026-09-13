@@ -185,11 +185,12 @@ namespace KingmakerGunslinger.DomainTests
                 .Where(path =>
                 {
                     string source = File.ReadAllText(path);
-                    if (Path.GetFileName(path) == "RuntimeTestRunner.FirearmRepairWarnings.cs" &&
+                    if ((Path.GetFileName(path) == "RuntimeTestRunner.FirearmRepairWarnings.cs" ||
+                         Path.GetFileName(path) == "RuntimeTestRunner.TeleportationCasting.cs") &&
                         Path.GetFileName(Path.GetDirectoryName(path)) == "RuntimeTesting")
                     {
-                        Assertions.False(source.Contains("RaiseEvent"),
-                            "The exact repair warning observer must never publish a notification.");
+                        Assertions.False(source.Contains("RaiseEvent") || source.Contains("SendWarning"),
+                            "Runtime notification observers must never publish notifications.");
                         return false;
                     }
                     return source.Contains("IWarningNotificationUIHandler") ||

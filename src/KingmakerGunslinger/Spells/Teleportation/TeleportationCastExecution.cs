@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Globalmap.Blueprints;
@@ -29,7 +29,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
             if (!context.Usable || context.OriginId != action.OriginId) return null;
             BlueprintLocation destination = ResourcesLibrary.TryGetBlueprint<BlueprintLocation>(action.Destination.Id);
             var current = TeleportationWorldMapAdapter.Compose(context, destination).SingleOrDefault(value => value.Key == action.Key);
-            if (current == null || current.Source.Kind != action.Source.Kind || current.Source.SpellLevel != action.Source.SpellLevel ||
+            if (current == null || !current.ReaderResolved || current.Source.Key != action.Source.Key ||
+                current.Source.Kind != action.Source.Kind || current.Source.SpellLevel != action.Source.SpellLevel ||
                 current.Destination.OrdinaryArrivals != action.Destination.OrdinaryArrivals)
             { diagnostic = "The selected destination or spellbook source changed before confirmation."; return null; }
             if (current.Source.Kind == TeleportCastSourceKind.Scroll)
@@ -61,8 +62,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
         }
         public TeleportExecutionResult Execute(WorldMapPointSpellAction action, Action materialEffectStarting)
         {
-            if (_world == null || Resource == null || Resource.ObserveExpenditure() != TeleportExpenditure.ExactlyOne)
-                throw new InvalidOperationException("A proven single spellbook expenditure is required before any effect.");
+            if (_world == null || Resource == null || !TeleportCastTransaction.VerifiedUse(action, Resource, Resource.ObserveExpenditure()))
+                throw new InvalidOperationException("A verified single native resource use is required before any effect.");
             var result = TeleportOutcomeResolver.Resolve(action.Source.Spell, Familiarity,
                 action.Destination.Id, action.OriginId, _world, materialEffectStarting);
             if (result.Status != TeleportExecutionStatus.Arrived) _world.VerifyRulesFailure();
@@ -92,6 +93,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
             return new { sourcePointId = action.OriginId, selectedTargetId = action.Destination.Id,
                 casterId = action.Source.CasterId, spellbookId = action.Source.BookId, spell = action.Source.Spell.ToString(),
                 sourceKind = action.Source.Kind.ToString(), level = action.Source.SpellLevel,
+                scrollGroup = action.Source.ScrollGroupId,
+                activation = action.Source.ActivationChance == null ? null : new { action.Source.ActivationChance.Supported,
+                    action.Source.ActivationChance.NoCheck, action.Source.ActivationChance.Probability, action.Source.ActivationChance.Diagnostic },
                 availableUses = action.Source.Uses, ordinaryArrivals = action.Destination.OrdinaryArrivals };
         }
         private static void Record(string code, object value)

@@ -25,6 +25,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (spells == null) throw new InvalidOperationException("The three strategic spell identities failed bootstrap.");
             var abilities = new[] { spells.Teleport, spells.GreaterTeleport, spells.WordOfRecall };
             foreach (var ability in abilities) TeleportationSpellBlueprints.Validate(ability);
+            // Real bootstrap products in present/absent optional-mod profiles.
+            // Verify native template teaching was not mutated by the clone and
+            // the canonical scroll keeps its own isolated teaching component.
+            var scrolls = BlueprintBootstrap.TeleportationScrolls;
+            if (scrolls == null) throw new InvalidOperationException("Strategic scroll identities failed bootstrap.");
+            var templates = new[] {
+                new { primary = TeleportationScrollBlueprints.TeleportDonorId, fallback = TeleportationScrollBlueprints.TeleportDonorId, scroll = scrolls.Teleport, spell = spells.Teleport },
+                new { primary = TeleportationScrollBlueprints.GreaterTeleportDonorId, fallback = TeleportationScrollBlueprints.GreaterTeleportNativeDonorId, scroll = scrolls.GreaterTeleport, spell = spells.GreaterTeleport },
+                new { primary = TeleportationScrollBlueprints.WordOfRecallDonorId, fallback = TeleportationScrollBlueprints.WordOfRecallNativeDonorId, scroll = scrolls.WordOfRecall, spell = spells.WordOfRecall }
+            };
+            foreach (var template in templates)
+            {
+                bool primaryPresent = BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(template.primary);
+                var donor = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>(
+                    BlueprintBootstrap.Library, primaryPresent ? template.primary : template.fallback, "observed strategic scroll template");
+                var originalCopy = donor.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
+                var actualCopy = template.scroll.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
+                assertions.Add(Assertion("teleportation-scroll-template-" + template.scroll.AssetGuid,
+                    "real canonical scroll keeps native economics/consumption, isolated teaching and independent present or fallback template teaching",
+                    "template=" + donor.AssetGuid + ";primaryPresent=" + primaryPresent + ";scroll=" + template.scroll.AssetGuid + ";donorAbility=" + donor.Ability.AssetGuid +
+                        ";donorTeaching=" + (originalCopy.CustomSpell == null ? "<item ability>" : originalCopy.CustomSpell.AssetGuid),
+                    donor.Ability != template.spell && originalCopy.CustomSpell != template.spell &&
+                    !ReferenceEquals(actualCopy, originalCopy) && actualCopy.CustomSpell == template.spell && template.scroll.Ability == template.spell &&
+                    template.scroll.Cost == donor.Cost && template.scroll.CasterLevel == donor.CasterLevel && template.scroll.Weight == donor.Weight &&
+                    ReferenceEquals(template.scroll.Icon, donor.Icon) && template.scroll.SpendCharges && template.scroll.Charges == 1 &&
+                    !template.scroll.RestoreChargesOnRest && template.scroll.RequireUMDIfCasterHasNoSpellInSpellList,
+                    "Real startup publication, observed without creating a fixture scroll or injecting list membership."));
+            }
             bool enabled = _context.FeatureModules.Active.TeleportationSpells;
             MethodInfo[] familiarityTargets = { typeof(MapMovementController).GetMethod("MoveAlongEdge", BindingFlags.Static | BindingFlags.NonPublic),
                 typeof(Player).GetMethod("OnAreaLoaded", Type.EmptyTypes) };

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -241,9 +241,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // instance teaching the canonical spell.
                 var donors = new[]
                 {
-                    new { id = TeleportationScrollBlueprints.TeleportDonorId, ours = BlueprintBootstrap.TeleportationScrolls.Teleport },
-                    new { id = TeleportationScrollBlueprints.GreaterTeleportDonorId, ours = BlueprintBootstrap.TeleportationScrolls.GreaterTeleport },
-                    new { id = TeleportationScrollBlueprints.WordOfRecallDonorId, ours = BlueprintBootstrap.TeleportationScrolls.WordOfRecall }
+                    new { id = TeleportationScrollBlueprints.TeleportDonorId, fallback = TeleportationScrollBlueprints.TeleportDonorId, ours = BlueprintBootstrap.TeleportationScrolls.Teleport },
+                    new { id = TeleportationScrollBlueprints.GreaterTeleportDonorId, fallback = TeleportationScrollBlueprints.GreaterTeleportNativeDonorId, ours = BlueprintBootstrap.TeleportationScrolls.GreaterTeleport },
+                    new { id = TeleportationScrollBlueprints.WordOfRecallDonorId, fallback = TeleportationScrollBlueprints.WordOfRecallNativeDonorId, ours = BlueprintBootstrap.TeleportationScrolls.WordOfRecall }
                 };
                 var canonicalIds = new HashSet<string>(StringComparer.Ordinal)
                 {
@@ -254,7 +254,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var donor in donors)
                 {
                     var donorScroll = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>(
-                        BlueprintBootstrap.Library, donor.id, "native scroll donor");
+                        BlueprintBootstrap.Library, BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(donor.id) ? donor.id : donor.fallback, "native scroll donor");
                     var donorCopy = donorScroll.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
                     var ourCopy = donor.ours.ComponentsArray.OfType<Kingmaker.Blueprints.Items.Components.CopyScroll>().Single();
                     // Intactness: the donor's own teaching target must NOT have

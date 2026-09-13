@@ -1,44 +1,56 @@
 # Icon overhaul v2 implementation record
 
-The branch includes master `9dc2b630` (0.0.128), preserving published history.
-The latest [strategic control qualification](NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json)
-passed **two guarded Steam runs, 53 assertions and six inspected native captures**.
-Prepared/spontaneous Teleport and Greater Teleport use complete native two-line
-text buttons with original backgrounds/controls and unchanged resources. Eight
-reopens measured the same height; full cleanup and working-save smoke passed.
-Recall and scroll-specific text controls share the audited renderer; separate
-screenshots are not claimed for those choices. No new spell images were added
-to this text-only surface. The initial failed timing probe is preserved separately.
+The icon branch integrates owner-requested master `e5f1426a6347793e1e978237be4b0a88d4c9d662`
+(v0.0.129), preserving published history. The integration combines upstream
+camera stabilization with the native icon panel readiness wait. The exact
+[qualification](NATIVE-129-INTEGRATION-QUALIFICATION.json) records **five guarded
+Steam PASS runs, 208 assertions and 30 inspected native captures**: strategic
+controls (43), spellbook/item/merchant UI (42), native scroll behavior (65),
+working-save smoke (11), and native learning including Oracle Recall (47).
 
-Repository validation, 23 catalog, 20 capture, six paired, eleven request and all
-1,629 domain tests, clean Release and the strict 224-file package passed. All 136
-original installation files/settings were verified restored at `2026-09-13T19:58:53.537420+00:00`.
-No save writes occurred. Exact package: `d2038e25959549e2b904d9d390f1e9519e1996421749c1cfd2eb1154bafe8e35`;
-DLL `a3c3313b3b4e92e56b5343a072beb2010ce1cc1647849ea590ee4e7d64cacb49`; MVID `e191952f-d7e3-4526-8da0-e1d1f385799a`.
-Source `e7c6c8947475119f16147ab5ee1c18099842f1d619d967e2ca16a0cc110a2e00` based on `42fbd3e5`.
-Post-run documentation curation changes no compiled code or pixels.
+Repository validation, 23 catalog, 21 capture, six paired, eleven request and
+all 1,639 domain tests passed, with a clean Release and strict 224-file package.
+The post-capture validator update recognizes only the exact Oracle/class/Recall/
+level-six combination and preserves the four arcane learning combinations.
+Its fresh full build reproduced the tested package and DLL byte-for-byte.
+Runtime artifact source `28341346def10fa61f08533094a7448f9193c3165076572dba7ff0f493c0a3b3` was built from published
+parent `2969801d8fa17fa9d8ca09cc4fe2cc1c500fbbbc` with the pending merge; the report separately records
+that tested source state and the validator follow-up build.
+Package `ceb355c28891c71827a1116b5b39e49b5d65534b6e3ba788b4aaeaefb7ecf9a9`; DLL `5acabee74149901cc0476bf384631855f7936a36e04b6e3e98dffb09cd54473c`;
+MVID `3e431017-1e9b-41b2-9b7f-4264ccf2a2bc`. All 136 original installation files/settings were
+verified restored at `2026-09-13T22:18:56.409124+00:00`.
+No save writes were observed; all game processes exited normally.
 
-Earlier exact artifacts qualify racial feat menus (eleven identities), scroll
-inventory/descriptions/merchant, native Total/character-sheet P/M/B, eastern
-controls, creator/heritage/alternate choices and strategic spell learning/books.
-Their individual reports retain the tested hashes and evidence limits; they are
-not counted as new captures on the latest DLL. See the
-[mission state](../../planning/ICON-OVERHAUL-STATE.md) and the
-[native UI evidence guide](../../docs/ICON-NATIVE-UI-EVIDENCE.md).
+The six strategic text targets, ten spellbook/preparation/description captures,
+nine scroll inventory/description/merchant targets, and five learning rows were
+inspected at 1280x720. Two preparation frames contain an unrelated native hover
+panel away from the target. The Wizard seventh-level learning fixture retains
+a central header of 5 while its target badge/list show 7; target art/name/badge
+are clear. These observations qualify the stated targets, not unrelated headers.
+Native scroll behavior has structured evidence; separate pictures of every
+Recall/grouped-reader action are not claimed. Earlier UI families keep their
+separately labeled exact-artifact reports.
 
-All 89 paintings plus Rapid Reload have preserved sources/exports. Runtime has
-137 painted assignments, 90 exports and 284 cataloged consumer dispositions.
-Ten exact pilot images/family direction are approved; the remaining 80 images and
-final native UI await owner approval. Protected actions/items, native spell reuse
-and eastern artwork are preserved. Native firearm parameters retain their exact
-blueprint identities, labels, fallback sprites and native font/background.
+Ten exact pilots and family direction are approved. Eighty production images
+and final native UI acceptance remain pending. The permanent guide, references
+and catalog retain their approved-family contract; protected art and saved
+identities are preserved. Runtime uses 90 exports and 137 painted assignments;
+284 catalog identities retain their dispositions. The six strategic ability/item
+records now link this v0.0.129 evidence.
 
-Remaining work: racial action/variant/buff views and applicable higher dependent
-feat rendering. The working save lacks supported firearm parameters, and new
-save creation/writes require separate authorization. Remote mercenary's dormant
-abilities do not qualify active action bars. Empty creator dolls, overlapping
-fixture headers and repeated native Weapon Focus labels are recorded separately.
-This remains a review-pending checkpoint; no feature-to-master merge or release.
+The unfinished buff checkpoint is preserved in own-work stash
+`9bc2ebed135d638d11b7118a06da2dd756261a9a` and local archive
+`artifacts/icon-overhaul-v2/pre-129-native-buffs-worktree.zip` (SHA-256
+`e434a4d023e01871ed5170f9aa90ea680bdad7a270aebe11b58285b8a4bc5a89`).
+Build 6 Ifrit/Oread passed; Sylph failed a native TMP overflow flag although its
+full title appeared visible. Undine/smoke did not run on that buff artifact.
+Its original installation was restored, and it is not a qualified buff checkpoint.
+Next: reapply that exact WIP while retaining this integration; validate actual
+native glyph geometry and complete four racial buff cases, then supported
+racial actions/variants and higher dependent firearm rendered feats. Existing
+working-save P/M/B parameters remain absent; new saves/writes require separate
+authorization. This is a technical checkpoint; owner approvals and final mission
+acceptance remain open. No feature-to-master merge or icon release is authorized.
 
 ## Review packet
 

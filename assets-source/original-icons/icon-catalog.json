@@ -6950,7 +6950,7 @@
       "type": "BlueprintAbility",
       "name": "Teleport",
       "module": "Teleportation",
-      "publication": "published-source; runtime pending",
+      "publication": "published; listed native surfaces qualified on 0.0.129; owner visual approval pending",
       "surface": "learning / preparation / spellbook / strategic UI / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "teleport",
@@ -6965,6 +6965,17 @@
         "nativeEvidence": "qualified on 0.0.128: three exact prepared/spontaneous source buttons; complete labels, native decoration/controls and resources retained",
         "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json",
         "dllMvid": "e191952f-d7e3-4526-8da0-e1d1f385799a"
+      },
+      "native129Integration": {
+        "report": "reports/icon-overhaul/NATIVE-129-INTEGRATION-QUALIFICATION.json",
+        "dllMvid": "3e431017-1e9b-41b2-9b7f-4264ccf2a2bc",
+        "surfaces": [
+          "Wizard/Sorcerer learning",
+          "spellbook/preparation/description",
+          "three native strategic text source buttons"
+        ],
+        "disposition": "original spell painting; native UI frames/controls retained",
+        "ownerApproval": "pending"
       }
     },
     {
@@ -6973,7 +6984,7 @@
       "type": "BlueprintAbility",
       "name": "Greater Teleport",
       "module": "Teleportation",
-      "publication": "published-source; runtime pending",
+      "publication": "published; listed native surfaces qualified on 0.0.129; owner visual approval pending",
       "surface": "learning / preparation / spellbook / strategic UI / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "greater-teleport",
@@ -6988,6 +6999,17 @@
         "nativeEvidence": "qualified on 0.0.128: three exact prepared/spontaneous source buttons; complete labels, native decoration/controls and resources retained",
         "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json",
         "dllMvid": "e191952f-d7e3-4526-8da0-e1d1f385799a"
+      },
+      "native129Integration": {
+        "report": "reports/icon-overhaul/NATIVE-129-INTEGRATION-QUALIFICATION.json",
+        "dllMvid": "3e431017-1e9b-41b2-9b7f-4264ccf2a2bc",
+        "surfaces": [
+          "Wizard/Sorcerer learning",
+          "spellbook/preparation/description",
+          "three native strategic text source buttons"
+        ],
+        "disposition": "original spell painting; native UI frames/controls retained",
+        "ownerApproval": "pending"
       }
     },
     {
@@ -6996,7 +7018,7 @@
       "type": "BlueprintAbility",
       "name": "Word Of Recall",
       "module": "Teleportation",
-      "publication": "published-source; runtime pending",
+      "publication": "published; listed native surfaces qualified on 0.0.129; owner visual approval pending",
       "surface": "learning / preparation / spellbook / strategic UI / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "word-of-recall",
@@ -7010,6 +7032,17 @@
         "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
         "nativeEvidence": "source audit of shared renderer; no separate native screenshot claim",
         "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json"
+      },
+      "native129Integration": {
+        "report": "reports/icon-overhaul/NATIVE-129-INTEGRATION-QUALIFICATION.json",
+        "dllMvid": "3e431017-1e9b-41b2-9b7f-4264ccf2a2bc",
+        "surfaces": [
+          "Oracle normal learning",
+          "Cleric/Druid spellbook and preparation",
+          "spell description"
+        ],
+        "disposition": "original spell painting; native UI frames/controls retained",
+        "ownerApproval": "pending"
       }
     },
     {
@@ -7175,7 +7208,7 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Teleport",
       "module": "Teleportation",
-      "publication": "published; actual native inventory/item description/merchant qualified on 0.0.128",
+      "publication": "published; listed native surfaces qualified on 0.0.129; owner visual approval pending",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v2-painting",
       "concept": "teleport",
@@ -7201,6 +7234,17 @@
         "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
         "nativeEvidence": "source audit of shared renderer; no separate native screenshot claim",
         "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json"
+      },
+      "native129Integration": {
+        "report": "reports/icon-overhaul/NATIVE-129-INTEGRATION-QUALIFICATION.json",
+        "dllMvid": "3e431017-1e9b-41b2-9b7f-4264ccf2a2bc",
+        "surfaces": [
+          "inventory",
+          "item description",
+          "merchant"
+        ],
+        "disposition": "intentional canonical spell identity on actual native item consumers",
+        "ownerApproval": "pending"
       }
     },
     {
@@ -7209,7 +7253,7 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Greater Teleport",
       "module": "Teleportation",
-      "publication": "published; actual native inventory/item description/merchant qualified on 0.0.128",
+      "publication": "published; listed native surfaces qualified on 0.0.129; owner visual approval pending",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v2-painting",
       "concept": "greater-teleport",
@@ -7235,6 +7279,17 @@
         "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
         "nativeEvidence": "source audit of shared renderer; no separate native screenshot claim",
         "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json"
+      },
+      "native129Integration": {
+        "report": "reports/icon-overhaul/NATIVE-129-INTEGRATION-QUALIFICATION.json",
+        "dllMvid": "3e431017-1e9b-41b2-9b7f-4264ccf2a2bc",
+        "surfaces": [
+          "inventory",
+          "item description",
+          "merchant"
+        ],
+        "disposition": "intentional canonical spell identity on actual native item consumers",
+        "ownerApproval": "pending"
       }
     },
     {
@@ -7243,7 +7298,7 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Word Of Recall",
       "module": "Teleportation",
-      "publication": "published; actual native inventory/item description/merchant qualified on 0.0.128",
+      "publication": "published; listed native surfaces qualified on 0.0.129; owner visual approval pending",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v2-painting",
       "concept": "word-of-recall",
@@ -7269,6 +7324,17 @@
         "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
         "nativeEvidence": "source audit of shared renderer; no separate native screenshot claim",
         "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json"
+      },
+      "native129Integration": {
+        "report": "reports/icon-overhaul/NATIVE-129-INTEGRATION-QUALIFICATION.json",
+        "dllMvid": "3e431017-1e9b-41b2-9b7f-4264ccf2a2bc",
+        "surfaces": [
+          "inventory",
+          "item description",
+          "merchant"
+        ],
+        "disposition": "intentional canonical spell identity on actual native item consumers",
+        "ownerApproval": "pending"
       }
     },
     {

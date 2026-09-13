@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.128-firearm-postrelease-hotfix",
-  "version": "0.0.128",
+  "milestone": "0.0.129-recall-and-smart-scrolls",
+  "version": "0.0.129",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1565,7 +1565,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "firearmHotfix128": {
-    "deterministicTestCount": 1629,
+    "deterministicTestCount": 1639,
     "publicReleaseAuthorized": false,
     "fieldRepairBrokenOnlyOutOfCombat": true,
     "completedRestRestoresCarriedDamage": true,
@@ -1573,5 +1573,21 @@
     "quickClearCombatRouteUnchanged": true,
     "runtimeQualificationPending": false,
     "compatibilityRuntimeQualificationPending": true
+  },
+  "recallSmartScroll129": {
+    "deterministicTestCount": 1632,
+    "publicReleaseAuthorized": true,
+    "nativeOracleNormalChoiceQualified": true,
+    "oracleLearningExtraGrant": false,
+    "recallDirectCast": true,
+    "directSuccessAnnouncements": false,
+    "automaticScrollReaders": true,
+    "nativeScrollConsumptionPreserved": true,
+    "runtimeQualificationPending": false,
+    "compatibilityRuntimeQualificationPending": true,
+    "acceptedCandidateCommit": "ff5a1f093a2f318080d9d8f0a41fefb99f4184f4",
+    "acceptedCandidateNativeAssertions": 520,
+    "optionalAbsentStartupAssertions": 22,
+    "releaseArtifactEvidence": "Z-RECALL-AND-SMART-SCROLL-STATE.md"
   }
 }
