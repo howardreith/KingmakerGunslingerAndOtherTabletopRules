@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using KingmakerGunslinger.Spells.Teleportation;
 
 namespace KingmakerGunslinger.DomainTests
@@ -156,15 +156,21 @@ namespace KingmakerGunslinger.DomainTests
                 "Greater Teleport never needs the presenter");
             Assertions.False(TeleportBeginPolicy.CanExecuteAction(false, false, false, TeleportSpellKind.Teleport),
                 "ordinary Teleport cannot bypass its confirmation");
-            Assertions.False(TeleportBeginPolicy.CanExecuteAction(false, false, false, TeleportSpellKind.WordOfRecall),
-                "Word of Recall cannot bypass its confirmation");
+            Assertions.True(TeleportBeginPolicy.CanExecuteAction(false, false, false, TeleportSpellKind.WordOfRecall),
+                "Word of Recall uses the direct path without a presenter");
+            Assertions.False(TeleportBeginPolicy.CanExecuteAction(false, true, false, TeleportSpellKind.WordOfRecall),
+                "An unrelated modal blocks direct Recall");
+            Assertions.False(TeleportBeginPolicy.CanExecuteAction(true, false, true, TeleportSpellKind.WordOfRecall),
+                "Recall shares the single in-flight guard");
             // Case 3: a mixed list with no presenter still offers Greater Teleport.
             Assertions.True(TeleportBeginPolicy.OffersAnyAction(false, false, false,
                 new[] { TeleportSpellKind.Teleport, TeleportSpellKind.GreaterTeleport }),
                 "a mixed list keeps its Greater Teleport action when the presenter is unavailable");
-            Assertions.False(TeleportBeginPolicy.OffersAnyAction(false, false, false,
+            Assertions.True(TeleportBeginPolicy.OffersAnyAction(false, false, false,
                 new[] { TeleportSpellKind.Teleport, TeleportSpellKind.WordOfRecall }),
-                "a list of only confirmed spells composes nothing without the presenter");
+                "a mixed list retains direct Recall without a presenter");
+            Assertions.False(TeleportBeginPolicy.CanExecuteAction(false, false, true, (TeleportSpellKind)99),
+                "Unknown spell kinds fail closed even with a presenter");
             // Presenter available and idle: everything is offered.
             Assertions.True(TeleportBeginPolicy.OffersAnyAction(false, false, true,
                 new[] { TeleportSpellKind.Teleport, TeleportSpellKind.GreaterTeleport, TeleportSpellKind.WordOfRecall }),

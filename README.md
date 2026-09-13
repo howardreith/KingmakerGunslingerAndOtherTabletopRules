@@ -1,6 +1,18 @@
 ﻿# Kingmaker Gunslinger
 
-**0.0.128-firearm-postrelease-hotfix** is an unpublished hotfix candidate. Repair Firearm now uses brief contextual rejection messages. New accepted firearm attack orders retain their identity through native reload continuation; a committed degradation cancels the prior order. The guarded native scenario passed 145 assertions; see [candidate notes](docs/RELEASE-NOTES-0.0.128.md) and [evidence boundaries](docs/FIREARM-POSTRELEASE-HOTFIX-QUALIFICATION.md).
+**0.0.129-recall-and-smart-scrolls** is the owner-authorized full release for
+Word of Recall and automatic scroll readers. Recall is qualified through normal
+Oracle level-up, casts directly to its sanctuary, and arrives quietly. Strategic
+scroll actions show one row per equivalent group and automatically choose the
+best eligible reader under the supported native activation rules. Ordinary
+Teleport retains its risk confirmation and outcomes. See the
+[release notes](docs/RELEASE-NOTES-0.0.129.md) and
+[qualification evidence](Z-RECALL-AND-SMART-SCROLL-STATE.md).
+
+The previous **0.0.128-firearm-postrelease-hotfix** release retains contextual
+Repair Firearm rejection and native attack-order ownership through reload,
+paused orders and committed degradation; see its
+[qualification](docs/FIREARM-POSTRELEASE-HOTFIX-QUALIFICATION.md).
 
 The previous release **0.0.127-firearm-maintenance** (UMM 0.0.127) follows the owner-approved firearm maintenance redesign: Repair Firearm is an out-of-combat Broken-only full-round action, a genuine completed full rest restores carried Broken and Wrecked firearms to Normal, and a newly committed misfire break stops the remainder of its attack sequence. The previous **0.0.126-word-of-recall-oracle** release was one owner-reported
 eligibility repair: an optional Call of the Wild Oracle with zero Use Magic

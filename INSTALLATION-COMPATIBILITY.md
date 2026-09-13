@@ -1,7 +1,9 @@
 ﻿# Installation, updates, removal, and compatibility
 
-Candidate version: `0.0.128-firearm-postrelease-hotfix` (qualification in progress).
-The candidate archive is `KingmakerGunslinger-0.0.128-firearm-postrelease-hotfix.zip`.
+Full release: `0.0.129-recall-and-smart-scrolls` (UMM version `0.0.129`).
+The installable archive is `KingmakerGunslinger-0.0.129-recall-and-smart-scrolls.zip`.
+Recall and automatic-reader qualification, supported activation rules and exact
+NOT RUN limits are recorded in [the mission evidence](Z-RECALL-AND-SMART-SCROLL-STATE.md).
 The retained 0.0.121 archive is
 `KingmakerGunslinger-0.0.121-unified-firearm-maintenance.zip`.
 

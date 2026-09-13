@@ -1,4 +1,23 @@
-# Kingmaker Gunslinger 0.0.128 player smoke test
+# Kingmaker Gunslinger 0.0.129 player smoke test
+
+Use a disposable save for these checks. On an Oracle gaining a normal level-6
+spell choice (11 to 12 in the qualified Call of the Wild configuration), verify
+Word of Recall appears once, canceling leaves it unknown, and completing the
+choice permits casting with a normal spontaneous slot. Oracle 13 to 14 does
+not grant a new ordinary level-6 choice in that configuration.
+
+On the world map, select Recall from a spell slot or its single counted scroll
+row. It should cast directly to the capital (Oleg's before establishment), spend
+one appropriate resource and arrive quietly. Greater Teleport also arrives
+quietly; ordinary Teleport retains risk confirmation and outcome messages.
+Several eligible readers should still produce one row per equivalent scroll
+group on desktop and controller, with no routine reader names. Distinct variants
+remain separate. A failed native activation names its actual reader and reports
+the verified resource outcome without retrying another reader.
+
+The retained firearm checks below remain applicable.
+
+## Kingmaker Gunslinger 0.0.128 player smoke test
 
 Firearm maintenance, full-rest recovery, and misfire interruption. Keep a
 disposable save before testing. A Gunslinger with the Gunsmithing feature,
