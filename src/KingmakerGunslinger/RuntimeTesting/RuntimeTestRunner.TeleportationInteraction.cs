@@ -61,8 +61,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             _teleportationInteractionSteps = null;
             RestoreTeleportationController();
             WriteTeleportationInteraction(failure == null ? null : failure.ToString());
-            Complete(CreateResult(failure != null ? RuntimeTestStatuses.Error : _teleportationInteractionAssertions.All(value => value.Status == "PASS") ?
-                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, _teleportationInteractionAssertions, failure == null ? null : failure.ToString()));
+            var result = CreateResult(failure != null ? RuntimeTestStatuses.Error : _teleportationInteractionAssertions.All(value => value.Status == "PASS") ?
+                RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, _teleportationInteractionAssertions, failure == null ? null : failure.ToString());
+            _teleportationControlScreens?.AppendEvidence(result.EvidenceFiles);
+            Complete(result);
         }
 
         // Complete also calls this on an outer timeout/error before closing the
@@ -78,6 +80,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             RestoreTeleportationController();
             WriteTeleportationInteraction(error);
             result.Diagnostics.Add(error);
+            _teleportationControlScreens?.AppendEvidence(result.EvidenceFiles);
         }
         private void WriteTeleportationInteraction(string error)
         {
@@ -277,7 +280,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var reopenedHeights = new List<float>();
                 for (int repeat = 0; repeat < 8; repeat++)
                 {
-                    panel.OnLocationSelect(target.Blueprint, false); yield return 0;
+                    panel.OnLocationSelect(target.Blueprint, false);
+                    // Reopening restarts native fade/layout work. Measure only
+                    // after the same native readiness wait used for first open.
+                    foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                    Canvas.ForceUpdateCanvases();
                     reopenedHeights.Add(panel.GetComponentInChildren<TeleportDestinationRows>(true).GetComponent<ScrollRect>().viewport.rect.height);
                 }
                 CaptureTeleportInteraction("reopen-viewport-heights", new { firstViewportHeight, reopenedHeights });
@@ -292,6 +299,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "containers=" + panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length,
                     rows != null && panel.GetComponentsInChildren<TeleportDestinationRows>(true).Length == 1 && rows.Actions.Count == 6 &&
                     rows.Actions.Select(value => value.Key).Distinct().Count() == 6 && beforeSlots == slots() && beforeFamiliarity == ledger.Read().Serialize());
+                int startsBeforeCapture = movement.Starts, stopsBeforeCapture = movement.Stops;
+                foreach (int frame in CaptureNativeStrategicControls(panel, rows, () => beforeSlots == slots() &&
+                    beforeFamiliarity == ledger.Read().Serialize() && movement.Starts == startsBeforeCapture && movement.Stops == stopsBeforeCapture))
+                    yield return frame;
                 Game.Instance.UI.EscManager.OnEscPressed();
                 yield return 0;
                 TeleportInteractionAssert("augmented-escape", "native Escape removes spell rows without spending or starting travel",

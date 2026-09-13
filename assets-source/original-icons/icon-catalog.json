@@ -6957,7 +6957,15 @@
       "disposition": "original-required",
       "reason": "Original strategic spell identity.",
       "baselineArt": "teleport-donor",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeStrategicText": {
+        "disposition": "non-icon surface: shared native two-line text button",
+        "source": "src/KingmakerGunslinger/Spells/Teleportation/WorldMapPointSpellActionRuntime.cs",
+        "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
+        "nativeEvidence": "qualified on 0.0.128: three exact prepared/spontaneous source buttons; complete labels, native decoration/controls and resources retained",
+        "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json",
+        "dllMvid": "e191952f-d7e3-4526-8da0-e1d1f385799a"
+      }
     },
     {
       "symbol": "KMG.Spells.GreaterTeleport.Ability",
@@ -6972,7 +6980,15 @@
       "disposition": "original-required",
       "reason": "Original strategic spell identity.",
       "baselineArt": "teleport-donor",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeStrategicText": {
+        "disposition": "non-icon surface: shared native two-line text button",
+        "source": "src/KingmakerGunslinger/Spells/Teleportation/WorldMapPointSpellActionRuntime.cs",
+        "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
+        "nativeEvidence": "qualified on 0.0.128: three exact prepared/spontaneous source buttons; complete labels, native decoration/controls and resources retained",
+        "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json",
+        "dllMvid": "e191952f-d7e3-4526-8da0-e1d1f385799a"
+      }
     },
     {
       "symbol": "KMG.Spells.WordOfRecall.Ability",
@@ -6987,7 +7003,14 @@
       "disposition": "original-required",
       "reason": "Original strategic spell identity.",
       "baselineArt": "teleport-donor",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeStrategicText": {
+        "disposition": "non-icon surface: shared native two-line text button",
+        "source": "src/KingmakerGunslinger/Spells/Teleportation/WorldMapPointSpellActionRuntime.cs",
+        "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
+        "nativeEvidence": "source audit of shared renderer; no separate native screenshot claim",
+        "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.Resource",
@@ -7171,6 +7194,13 @@
         "status": "PASS actual native merchant rows; owner UI approval pending",
         "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
         "report": "reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json"
+      },
+      "nativeStrategicText": {
+        "disposition": "non-icon surface: shared native two-line text button",
+        "source": "src/KingmakerGunslinger/Spells/Teleportation/WorldMapPointSpellActionRuntime.cs",
+        "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
+        "nativeEvidence": "source audit of shared renderer; no separate native screenshot claim",
+        "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json"
       }
     },
     {
@@ -7198,6 +7228,13 @@
         "status": "PASS actual native merchant rows; owner UI approval pending",
         "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
         "report": "reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json"
+      },
+      "nativeStrategicText": {
+        "disposition": "non-icon surface: shared native two-line text button",
+        "source": "src/KingmakerGunslinger/Spells/Teleportation/WorldMapPointSpellActionRuntime.cs",
+        "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
+        "nativeEvidence": "source audit of shared renderer; no separate native screenshot claim",
+        "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json"
       }
     },
     {
@@ -7225,6 +7262,13 @@
         "status": "PASS actual native merchant rows; owner UI approval pending",
         "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
         "report": "reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json"
+      },
+      "nativeStrategicText": {
+        "disposition": "non-icon surface: shared native two-line text button",
+        "source": "src/KingmakerGunslinger/Spells/Teleportation/WorldMapPointSpellActionRuntime.cs",
+        "contract": "TeleportDestinationRows.Add assigns CompactRow text and retains native button decoration; no spell/scroll Sprite assignment",
+        "nativeEvidence": "source audit of shared renderer; no separate native screenshot claim",
+        "evidence": "reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json"
       }
     },
     {

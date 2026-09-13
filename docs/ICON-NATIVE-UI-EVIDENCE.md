@@ -224,3 +224,23 @@ states where prerequisites are unmet. Each creator's exact filter, native scroll
 selection and preview facts were restored, final review was reached and canceled,
 and the original installation was restored. These are actual UI objects and
 native images; action/variant/buff surfaces and owner approval remain separate.
+
+
+The qualified bounded extension captures the exact existing
+`disposable-teleportation-interaction` destination panel. Six native prepared and
+spontaneous Teleport/Greater Teleport buttons retain their real source keys,
+two-line CompactRow labels, native font/background, ordinary controls and
+resources/familiarity. Production refreshes action snapshots each frame, so
+ownership follows actual Buttons and stable source keys/text. Capture uses the
+existing native viewport helper and restores its scroll. No source is selected
+or cast by the capture; the original interaction scenario then resumes its
+existing behavior and complete rollback. New capture exceptions fail the run.
+The [strategic control qualification](../reports/icon-overhaul/NATIVE-STRATEGIC-CONTROL-QUALIFICATION.json)
+records two PASS runs, 53 assertions and six inspected 1280x720 captures. Every
+reopen measured exactly 454 layout units after native readiness; native source
+resources, original controls, full outer cleanup and same-artifact smoke passed.
+The failed initial timing probe remains separately recorded. All 136 original
+installation files/settings were restored. The shared renderer also supplies scroll
+and Word of Recall text controls without an icon assignment; that is a source
+audit, not separate native screenshot evidence for those choices. Their painted
+spellbook/item/description/merchant surfaces remain separately qualified.

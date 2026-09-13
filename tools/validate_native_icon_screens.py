@@ -40,7 +40,7 @@ def validate(evidence, result, build, identity, directory):
             continue
         require(record.get('status') == 'captured-native-screen-awaiting-visual-inspection', 'Incomplete capture: ' + name)
         require(bool(record.get('stage')) and isinstance(record.get('nativeState'), dict), 'Missing native UI identity: ' + name)
-        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:', 'native-scroll-row:', 'native-scroll-merchant-row:', 'native-racial-feat-row:')):
+        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:', 'native-scroll-row:', 'native-scroll-merchant-row:', 'native-racial-feat-row:', 'native-strategic-control:')):
             state = record.get('nativeState', {})
             state = state if isinstance(state, dict) else {}
             viewport = state.get('viewport', {})
@@ -105,6 +105,25 @@ def validate(evidence, result, build, identity, directory):
                         all(type(value) is bool for value in markers.values()) and
                         type(target.get('otherIconRows')) is int and target['otherIconRows'] > 0 and target.get('otherIconsExact') is True,
                         'Native racial feat rendered icon/title/eligibility/controls differ: ' + name)
+            elif record['stage'].startswith('native-strategic-control:'):
+                spells = {'Teleport':'82e3fb1dce1647b58d3b7169c8520af0', 'GreaterTeleport':'73d19adfe18743e0a2a3a21abf4af5f3'}
+                image_names = target.get('nativeImageNames', [])
+                require(state.get('surface') == 'native-strategic-text-control' and
+                        target.get('spellKind') in spells and target.get('spellGuid') == spells.get(target.get('spellKind')) and
+                        target.get('sourceKind') in ('Prepared','Spontaneous') and bool(target.get('sourceKey')) and
+                        bool(target.get('bookGuid')) and bool(target.get('casterId')) and
+                        type(target.get('uses')) is int and target['uses'] > 0,
+                        'Native strategic text source identity differs: ' + name)
+                require(isinstance(target.get('name'), str) and len(target['name'].splitlines()) == 2 and
+                        target.get('labelExact') is True and target.get('labelTruncated') is False and target.get('labelOverflowing') is False and
+                        bool(target.get('nativeFont')) and target.get('buttonActive') is True and target.get('buttonInteractable') is True and
+                        type(target.get('canonicalSpellImages')) is int and target['canonicalSpellImages'] == 0 and
+                        type(target.get('nativeImageCount')) is int and target['nativeImageCount'] > 0 and
+                        isinstance(image_names, list) and len(image_names) == target['nativeImageCount'] and
+                        target.get('nativeImagesRetained') is True and target.get('nativeControlsRetained') is True and
+                        type(target.get('nativeControlCount')) is int and target['nativeControlCount'] > 0 and
+                        target.get('contextAndResourcesRetained') is True,
+                        'Native strategic text label/background/controls/resources differ: ' + name)
             elif record['stage'].startswith('native-selected-fact:'):
                 roots = {'1e1f627d26ad36f43bbd26cc2bf8ac7e', '09c9e82965fb4334b984a1e9df3bd088',
                          '31470b17e8446ae4ea0dacd6c5817d86', '7cf5edc65e785a24f9cf93af987d66b3',

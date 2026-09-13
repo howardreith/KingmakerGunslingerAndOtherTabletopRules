@@ -1032,6 +1032,7 @@
     <Compile Include="RuntimeTesting\WeaponPresentationEvidenceScenario.cs" />
     <Compile Include="RuntimeTesting\IconOverhaulVisualEvidenceScenario.cs" />
     <Compile Include="RuntimeTesting\NativeIconScreenEvidence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationNativeControls.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeIcons.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeFeatIcons.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeSheet.cs" />

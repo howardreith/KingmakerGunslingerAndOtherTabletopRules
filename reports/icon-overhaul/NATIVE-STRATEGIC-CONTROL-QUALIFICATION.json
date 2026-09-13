@@ -1,0 +1,461 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Native strategic text-control qualification; owner art/UI approval remains pending",
+  "artifact": {
+    "generatedAtUtc": "2026-09-13T19:49:37.7536952Z",
+    "commit": "42fbd3e53a26d445c7f8cd2ce3d8b5c6367b6b34",
+    "branch": "codex/icon-art-overhaul-v2",
+    "version": "0.0.128",
+    "sourceStateSha256": "e7c6c8947475119f16147ab5ee1c18099842f1d619d967e2ca16a0cc110a2e00",
+    "packageSha256": "d2038e25959549e2b904d9d390f1e9519e1996421749c1cfd2eb1154bafe8e35",
+    "dllSha256": "a3c3313b3b4e92e56b5343a072beb2010ce1cc1647849ea590ee4e7d64cacb49",
+    "dllMvid": "e191952f-d7e3-4526-8da0-e1d1f385799a"
+  },
+  "qualification": {
+    "status": "PASS",
+    "runs": 2,
+    "assertions": 53,
+    "nativeCaptures": 6,
+    "targetCaptures": 6,
+    "distinctSpellIdentities": 2,
+    "frameBuffer": {
+      "width": 1280,
+      "height": 720
+    },
+    "tests": {
+      "catalog": 23,
+      "nativeCapture": 20,
+      "paired": 6,
+      "request": 11,
+      "domain": 1629
+    },
+    "cleanRelease": true,
+    "strictPackageFiles": 224
+  },
+  "runs": [
+    {
+      "directory": "20260913T1951218865405Z-disposable-teleportation-interaction",
+      "runId": "20260913T1951219021793Z-4580a7d409df41eda712c38784176226",
+      "scenario": "disposable-teleportation-interaction",
+      "status": "PASS",
+      "assertions": 42,
+      "startedUtc": "2026-09-13T19:51:29.5725052Z",
+      "endedUtc": "2026-09-13T19:54:06.1893436Z",
+      "resultSha256": "8d57de09c9fc34ea6eb944e1ef401657225131952c0016e51b4bdfdfd2e409c9",
+      "requestSha256": "3d5163e52ed643eeb122953e90e8060fae004c0a839cf25bfe9e33cc1177377b",
+      "identitySha256": "311ac83a1c5b1e14b7eadbfaae591e79cfb2a81e1ce50167af191b92314a24db",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      },
+      "screenCount": 6,
+      "screensSha256": "29f5a67c80a75195e0ecb541dde3c5cae17ea534a1b8ba6d10e060911669b7c5",
+      "fixtureSha256": "0a5d311676d73080df774198fed3de0771d6dadbe1dae97ea1b6d01f71d913d2",
+      "reopenGeometry": {
+        "firstViewportHeight": 219.4772,
+        "reopenedHeights": [
+          454.0,
+          454.0,
+          454.0,
+          454.0,
+          454.0,
+          454.0,
+          454.0,
+          454.0
+        ]
+      },
+      "nativeCleanup": {
+        "retained": true,
+        "exceptions": []
+      },
+      "outerCleanup": {
+        "restored": true,
+        "Starts": 3,
+        "Stops": 3,
+        "cameraTargetRestored": true
+      },
+      "targets": [
+        {
+          "file": "native-ui-000.png",
+          "sha256": "dfa1cec390eb047b19b62de56a5be9ab7dd034164a0afbb35c7e66d010ae8491",
+          "stage": "native-strategic-control:0",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "KMG_DestinationSpellActions",
+            "contentObject": "NativeSpellRows",
+            "viewportObject": "KMG_DestinationSpellActions",
+            "contentHeight": 454.000061,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": 156.000031,
+            "rowMaxY": 227.0,
+            "viewportMinY": -227.0,
+            "viewportMaxY": 227.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "name": "Cast Greater Teleport\nHedwirg, Wizard \u00b7 1 prepared",
+            "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/535ba77c-6fe4-4e1d-a12c-8bd6abb402ae/5a38c9ac8607890409fcb8f6342da6f4/1",
+            "spellKind": "GreaterTeleport",
+            "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+            "sourceKind": "Prepared",
+            "bookGuid": "5a38c9ac8607890409fcb8f6342da6f4",
+            "casterId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+            "uses": 1,
+            "labelExact": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "nativeFont": "NexusSerif-Regular SDF",
+            "buttonActive": true,
+            "buttonInteractable": true,
+            "nativeImageCount": 1,
+            "canonicalSpellImages": 0,
+            "nativeImageNames": [
+              "spellbook_button"
+            ],
+            "nativeImagesRetained": true,
+            "nativeControlCount": 2,
+            "nativeControlsRetained": true,
+            "contextAndResourcesRetained": true
+          },
+          "visualInspection": "Inspected actual 1280x720 capture: full two-line target label and original background visible without clipping; six source rows and native Travel/Cancel controls fit the panel."
+        },
+        {
+          "file": "native-ui-001.png",
+          "sha256": "7a7330080bc9476cb99b77c5f0c54f30add0bd36d3847ecf6fa2187acfb7b958",
+          "stage": "native-strategic-control:1",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "KMG_DestinationSpellActions",
+            "contentObject": "NativeSpellRows",
+            "viewportObject": "KMG_DestinationSpellActions",
+            "contentHeight": 454.000061,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": 78.00003,
+            "rowMaxY": 149.000031,
+            "viewportMinY": -227.0,
+            "viewportMaxY": 227.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "name": "Cast Greater Teleport\nHedwirg, Sorcerer \u00b7 7 seventh-level slots",
+            "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/535ba77c-6fe4-4e1d-a12c-8bd6abb402ae/b3db3766a4b605040b366265e2af0e50/1",
+            "spellKind": "GreaterTeleport",
+            "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+            "sourceKind": "Spontaneous",
+            "bookGuid": "b3db3766a4b605040b366265e2af0e50",
+            "casterId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+            "uses": 7,
+            "labelExact": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "nativeFont": "NexusSerif-Regular SDF",
+            "buttonActive": true,
+            "buttonInteractable": true,
+            "nativeImageCount": 1,
+            "canonicalSpellImages": 0,
+            "nativeImageNames": [
+              "spellbook_button"
+            ],
+            "nativeImagesRetained": true,
+            "nativeControlCount": 2,
+            "nativeControlsRetained": true,
+            "contextAndResourcesRetained": true
+          },
+          "visualInspection": "Inspected actual 1280x720 capture: full two-line target label and original background visible without clipping; six source rows and native Travel/Cancel controls fit the panel."
+        },
+        {
+          "file": "native-ui-002.png",
+          "sha256": "44a21e60dfa8021c4e443a5dcf05c88c8739878059d4d957715cb1b2aa41bbde",
+          "stage": "native-strategic-control:2",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "KMG_DestinationSpellActions",
+            "contentObject": "NativeSpellRows",
+            "viewportObject": "KMG_DestinationSpellActions",
+            "contentHeight": 454.000061,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": 0.0,
+            "rowMaxY": 71.0,
+            "viewportMinY": -227.0,
+            "viewportMaxY": 227.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "name": "Cast Greater Teleport\nLinzi \u00b7 1 prepared",
+            "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/1a6be110-384b-4ae3-bf19-629ca6be4cf5/5a38c9ac8607890409fcb8f6342da6f4/1",
+            "spellKind": "GreaterTeleport",
+            "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+            "sourceKind": "Prepared",
+            "bookGuid": "5a38c9ac8607890409fcb8f6342da6f4",
+            "casterId": "1a6be110-384b-4ae3-bf19-629ca6be4cf5",
+            "uses": 1,
+            "labelExact": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "nativeFont": "NexusSerif-Regular SDF",
+            "buttonActive": true,
+            "buttonInteractable": true,
+            "nativeImageCount": 1,
+            "canonicalSpellImages": 0,
+            "nativeImageNames": [
+              "spellbook_button"
+            ],
+            "nativeImagesRetained": true,
+            "nativeControlCount": 2,
+            "nativeControlsRetained": true,
+            "contextAndResourcesRetained": true
+          },
+          "visualInspection": "Inspected actual 1280x720 capture: full two-line target label and original background visible without clipping; six source rows and native Travel/Cancel controls fit the panel."
+        },
+        {
+          "file": "native-ui-003.png",
+          "sha256": "175ef803f3aa0a0877ec0dbdf67de998ed4f588cd318dc149d0f3da004b01115",
+          "stage": "native-strategic-control:3",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "KMG_DestinationSpellActions",
+            "contentObject": "NativeSpellRows",
+            "viewportObject": "KMG_DestinationSpellActions",
+            "contentHeight": 454.000061,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -71.0,
+            "rowMaxY": 0.0,
+            "viewportMinY": -227.0,
+            "viewportMaxY": 227.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "name": "Cast Teleport\nHedwirg, Wizard \u00b7 2 prepared",
+            "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/535ba77c-6fe4-4e1d-a12c-8bd6abb402ae/5a38c9ac8607890409fcb8f6342da6f4/2",
+            "spellKind": "Teleport",
+            "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+            "sourceKind": "Prepared",
+            "bookGuid": "5a38c9ac8607890409fcb8f6342da6f4",
+            "casterId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+            "uses": 2,
+            "labelExact": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "nativeFont": "NexusSerif-Regular SDF",
+            "buttonActive": true,
+            "buttonInteractable": true,
+            "nativeImageCount": 1,
+            "canonicalSpellImages": 0,
+            "nativeImageNames": [
+              "spellbook_button"
+            ],
+            "nativeImagesRetained": true,
+            "nativeControlCount": 2,
+            "nativeControlsRetained": true,
+            "contextAndResourcesRetained": true
+          },
+          "visualInspection": "Inspected actual 1280x720 capture: full two-line target label and original background visible without clipping; six source rows and native Travel/Cancel controls fit the panel."
+        },
+        {
+          "file": "native-ui-004.png",
+          "sha256": "10aa1b62f5affabe4958e5ecd91a1e18724b749a3aeb8c5b018404a7c23d11f8",
+          "stage": "native-strategic-control:4",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "KMG_DestinationSpellActions",
+            "contentObject": "NativeSpellRows",
+            "viewportObject": "KMG_DestinationSpellActions",
+            "contentHeight": 454.000061,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -149.000015,
+            "rowMaxY": -78.00003,
+            "viewportMinY": -227.0,
+            "viewportMaxY": 227.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "name": "Cast Teleport\nHedwirg, Sorcerer \u00b7 8 fifth-level slots",
+            "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/535ba77c-6fe4-4e1d-a12c-8bd6abb402ae/b3db3766a4b605040b366265e2af0e50/2",
+            "spellKind": "Teleport",
+            "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+            "sourceKind": "Spontaneous",
+            "bookGuid": "b3db3766a4b605040b366265e2af0e50",
+            "casterId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+            "uses": 8,
+            "labelExact": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "nativeFont": "NexusSerif-Regular SDF",
+            "buttonActive": true,
+            "buttonInteractable": true,
+            "nativeImageCount": 1,
+            "canonicalSpellImages": 0,
+            "nativeImageNames": [
+              "spellbook_button"
+            ],
+            "nativeImagesRetained": true,
+            "nativeControlCount": 2,
+            "nativeControlsRetained": true,
+            "contextAndResourcesRetained": true
+          },
+          "visualInspection": "Inspected actual 1280x720 capture: full two-line target label and original background visible without clipping; six source rows and native Travel/Cancel controls fit the panel."
+        },
+        {
+          "file": "native-ui-005.png",
+          "sha256": "0d226b0a9f50cdaee3ee555257936a50e9e7afc21f92bb10bd8412bd34388e5b",
+          "stage": "native-strategic-control:5",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "KMG_DestinationSpellActions",
+            "contentObject": "NativeSpellRows",
+            "viewportObject": "KMG_DestinationSpellActions",
+            "contentHeight": 454.000061,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -227.0,
+            "rowMaxY": -156.0,
+            "viewportMinY": -227.0,
+            "viewportMaxY": 227.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "name": "Cast Teleport\nLinzi \u00b7 2 prepared",
+            "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/1a6be110-384b-4ae3-bf19-629ca6be4cf5/5a38c9ac8607890409fcb8f6342da6f4/2",
+            "spellKind": "Teleport",
+            "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+            "sourceKind": "Prepared",
+            "bookGuid": "5a38c9ac8607890409fcb8f6342da6f4",
+            "casterId": "1a6be110-384b-4ae3-bf19-629ca6be4cf5",
+            "uses": 2,
+            "labelExact": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "nativeFont": "NexusSerif-Regular SDF",
+            "buttonActive": true,
+            "buttonInteractable": true,
+            "nativeImageCount": 1,
+            "canonicalSpellImages": 0,
+            "nativeImageNames": [
+              "spellbook_button"
+            ],
+            "nativeImagesRetained": true,
+            "nativeControlCount": 2,
+            "nativeControlsRetained": true,
+            "contextAndResourcesRetained": true
+          },
+          "visualInspection": "Inspected actual 1280x720 capture: full two-line target label and original background visible without clipping; six source rows and native Travel/Cancel controls fit the panel."
+        }
+      ]
+    },
+    {
+      "directory": "20260913T1954466168350Z-working-save-smoke",
+      "runId": "20260913T1954466480942Z-654d72c7268147fe8e97ca452a7f02e9",
+      "scenario": "working-save-smoke",
+      "status": "PASS",
+      "assertions": 11,
+      "startedUtc": "2026-09-13T19:54:53.8627122Z",
+      "endedUtc": "2026-09-13T19:56:54.2871722Z",
+      "resultSha256": "ee9db833fa139ecaca6c0baaddded8f7bab5b697dab61a97601f9ce5e6791cad",
+      "requestSha256": "038cfe47177984adfcc4e792cde14a13fbe086cc51b96cbbe18c4eef9803bbb4",
+      "identitySha256": "7ebf019f031b4271605ee647343a8c4b0b8f07c36a6e90c372c19b65fc123cae",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      }
+    }
+  ],
+  "installationRestoration": {
+    "restored": true,
+    "originalFileCount": 136,
+    "verifiedUtc": "2026-09-13T19:58:53.537420+00:00"
+  },
+  "diagnostics": [
+    {
+      "directory": "20260913T1936054333538Z-disposable-teleportation-interaction",
+      "status": "FAIL",
+      "failedAssertion": "teleportation-interaction-reopen-viewport-stable",
+      "passed": 41,
+      "total": 42,
+      "artifact": {
+        "sourceStateSha256": "3d02567427ad3f993def02e6882a34a6dea93be9ea9b988a36a6629dc9244430",
+        "packageSha256": "e9a44c59cb8f6626a5cb7e6d41829437be8ff78aff7e8a79f1b1eb43d72538c3",
+        "dllSha256": "df81db92599da5434408818d4cfb7344bd69b3ba4ece244a55f686531d0bc86a",
+        "dllMvid": "bf29786c-803b-4cfe-82a1-e6a8e7756fea"
+      },
+      "observed": "First reopen 449.22, remaining seven 454. All six capture checks and full cleanup passed; failed run is not qualification.",
+      "correction": "Wait for existing native panel readiness and canvas update on each reopen. Eight measurements and exact stability assertion retained.",
+      "originalInstallationRestored": true
+    }
+  ],
+  "evidenceLimits": [
+    "Six actual prepared/spontaneous Teleport/Greater Teleport text buttons; the entire six-row native panel is visible in each frame.",
+    "Native backgrounds are retained decorations. These controls have no spell image assignment.",
+    "Word of Recall and scroll-specific text controls share the source renderer; no separate screenshot claim is made for those choices.",
+    "The three spells and scroll painted surfaces have separate exact-artifact qualifications; this source change alters no art or gameplay.",
+    "Eighty production images and final native UI still await owner approval."
+  ],
+  "next": [
+    "Native racial actions, variants and visible buffs",
+    "Applicable higher dependent firearm rendered surfaces",
+    "Permitted saved-parameter prerequisite",
+    "Final artifact review and owner approvals"
+  ]
+}
