@@ -56,7 +56,7 @@
   "guide": "docs/ICON-ART-GUIDE.md",
   "referenceIndex": "docs/art/ICON-REFERENCE-INDEX.md",
   "sourceAuditStatus": "284 dispositions reconciled with source, guarded live census and protected native graphs; exact evidence in NATIVE-128-QUALIFICATION.json",
-  "runtimeIntegrationStatus": "complete painted census, native Weapon Focus/Rapid Reload Total/sheet P/M/B and three scroll inventory/item-description/merchant consumers qualified; remaining native surfaces and owner approval pending",
+  "runtimeIntegrationStatus": "complete painted census, native Weapon Focus/Rapid Reload Total/sheet P/M/B, three scroll inventory/description/merchant consumers and eleven native racial feat rows qualified; remaining native surfaces and owner approval pending",
   "delegatedManifests": [
     {
       "path": "assets-source/original-icons/icon-overhaul-assets.json",
@@ -5322,14 +5322,20 @@
       "type": "BlueprintFeature",
       "name": "Elemental Strike",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "elemental-strike",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.ScorchingWeapons",
@@ -5337,14 +5343,20 @@
       "type": "BlueprintFeature",
       "name": "Scorching Weapons",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "scorching-weapons",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.InnerFlame",
@@ -5352,14 +5364,20 @@
       "type": "BlueprintFeature",
       "name": "Inner Flame",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "inner-flame",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.BlazingAura",
@@ -5367,14 +5385,20 @@
       "type": "BlueprintFeature",
       "name": "Blazing Aura",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "blazing-aura",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.Firesight",
@@ -5382,14 +5406,20 @@
       "type": "BlueprintFeature",
       "name": "Firesight",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "firesight",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.AiryStep",
@@ -5397,14 +5427,20 @@
       "type": "BlueprintFeature",
       "name": "Airy Step",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "airy-step",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.WingsOfAir",
@@ -5412,14 +5448,20 @@
       "type": "BlueprintFeature",
       "name": "Wings Of Air",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "wings-of-air",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.CloudGazer",
@@ -5427,14 +5469,20 @@
       "type": "BlueprintFeature",
       "name": "Cloud Gazer",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "cloud-gazer",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.InnerBreath",
@@ -5442,14 +5490,20 @@
       "type": "BlueprintFeature",
       "name": "Inner Breath",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "inner-breath",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver",
@@ -5457,14 +5511,20 @@
       "type": "BlueprintFeature",
       "name": "Hydraulic Maneuver",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "hydraulic-maneuver",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.TritonPortal",
@@ -5472,14 +5532,20 @@
       "type": "BlueprintFeature",
       "name": "Triton Portal",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published; actual native general-feat row qualified on 0.0.128",
       "surface": "selection / character-sheet feature / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "triton-portal",
       "disposition": "original-required",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "reason": "Original racial-feat identity; actual native general-feat row qualified; other consumer surfaces and owner UI approval remain separate.",
       "baselineArt": "feat-root",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeRacialFeatEvidence": {
+        "status": "PASS actual native racial feat row; owner UI approval pending",
+        "source": "src/KingmakerGunslinger/RuntimeTesting/ElementalCharacterCreationNativeFeatIcons.cs",
+        "surface": "native general-feat selector; preserve eligibility, markers, selection, facts and filter/scroll",
+        "report": "reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.ElementalStrike.Ability",

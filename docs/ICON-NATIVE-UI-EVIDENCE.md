@@ -94,7 +94,7 @@ Run `tools/validate_native_icon_screens.py --evidence <run>/native-ui-screens.js
 --build-manifest <exact-package>.build-local.json` to check the paired runtime
 result, loaded-build identity, capture MVID, completed frames, PNG hashes and
 dimensions, restored overlay state and explicit row viewport/restoration metadata.
-Its seventeen corruption fixtures run in
+Its nineteen corruption fixtures run in
 repository validation. This check reports provenance only; inspect the images.
 
 These hooks do not yet cover strategic
@@ -198,3 +198,29 @@ cleanup predicates, fifteen inventory predicates and outer fixture restoration
 passed with zero save writes. All 136 original installation files/settings were
 independently verified restored. The seventeenth corruption case requires real
 merchant ownership and empty trade evidence. Owner approval remains separate.
+
+
+The racial feat extension is qualified. Within the exact disposable
+Gunslinger creator case, the existing general-feat selector's real ShowAll toggle
+reveals the native list without selecting feats or changing prerequisites. Each
+case captures its race-specific targets; native ShowAll may also display
+wrong-race entries as unavailable.
+Four race cases cover eleven identities. Each target records the actual native
+Image, complete TMP title, eligibility, Toggle and native availability markers,
+plus nonempty ordinary icon controls. Both native scroll component types are
+supported. The fixture restores the filter through its native toggle, waits for
+layout, then restores exact scroll position/velocity and checks original preview,
+facts and selection. A required result assertion rejects missing target coverage
+or restoration. Two corruption tests reject wrong art, missing or altered state,
+wrong race/filter and vacuous controls. Disabled rows remain valid native states;
+these observations do not qualify feat mechanics or owner visual approval.
+
+The [racial feat qualification](../reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json)
+records four creator PASS runs plus same-artifact working-save smoke: 59 assertions
+and fourteen target captures covering all eleven racial feats. Every target was
+inspected clear at 1280x720 with its complete title. Inner Flame, Blazing Aura,
+Wings of Air, Inner Breath and Triton Portal retain their observed unavailable
+states where prerequisites are unmet. Each creator's exact filter, native scroll,
+selection and preview facts were restored, final review was reached and canceled,
+and the original installation was restored. These are actual UI objects and
+native images; action/variant/buff surfaces and owner approval remain separate.

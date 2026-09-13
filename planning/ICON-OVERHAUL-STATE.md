@@ -1,6 +1,6 @@
 # Icon overhaul v2 state
 
-Status: **NATIVE_SCROLL_MERCHANT_QUALIFIED; COMPLETE_UI_REVIEW_IN_PROGRESS**.
+Status: **NATIVE_RACIAL_FEAT_MENU_QUALIFIED; COMPLETE_UI_REVIEW_IN_PROGRESS**.
 Ten exact pilot images and family direction are approved. Eighty later paintings
 and final native UI still await owner approval. This is a technical checkpoint.
 
@@ -8,29 +8,34 @@ and final native UI still await owner approval. This is a technical checkpoint.
   `9dc2b6301d97bc83540845240544d34b6fad4b48` (PR18, v0.0.128) was integrated at
   the owner's request by normal merge `75017b3e`. Remote master was verified on
   2026-09-13. Published history and `codex/icon-art-overhaul` remain intact.
-- Current merchant artifact is based on published scroll inventory commit
-  `6dd055c4d7cc12bae5b1894e9293a5394c755875` plus the exact recorded source state.
-  [Qualification](../reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json):
-  **two guarded Steam PASS runs, 53 assertions and 19 original native captures**.
-  All three merchant targets were inspected clear at 1280x720. Inventory slots,
-  item descriptions and final working-save smoke also passed on the same DLL.
-- Actual VendorUI uses a detached request-owned merchant, private stock with
-  three scrolls and one ordinary control, and native open/close. No campaign
-  merchant, shared stock, purchase or sale. Twelve merchant and fifteen inventory
-  cleanup predicates passed, followed by outer fixture restoration. No save writes.
-- Current artifact: source `60b5bbc160be4c621ccd377a943cbf7a4c4222e5027398359786970dc765ec17`;
-  package `5ec78c2c8752b303460ef4d6511d7c3fd6b11d9876a1c244d33538e6faaba800`;
-  DLL `6cf7380da1486cc3dd89e048baccb8e29e196143a59f410a2d78051a509463f2`;
-  MVID `7e578333-0a11-475e-86db-2bf685b5ae2d`. Local immutable copies:
-  `native-scroll-merchant-qualified-128-*`. Local native gallery:
-  `artifacts/icon-overhaul-v2/NATIVE-SCROLL-MERCHANT-REVIEW.html`.
-- Full gates passed: repository validation; **23 catalog, 17 capture, six paired,
+- Current racial feat artifact is based on published merchant commit
+  `3d46cad39ab74ab4f68dd228c02e57b1af40de5c` plus the exact recorded source state.
+  [Qualification](../reports/icon-overhaul/NATIVE-RACIAL-FEAT-QUALIFICATION.json):
+  **five guarded Steam PASS runs, 59 assertions and 138 original native captures**.
+  Four point-buy Gunslinger creator cases capture fourteen target rows covering
+  **all eleven racial feats**; every target was inspected clear at 1280x720.
+  Same-artifact working-save smoke passed. No new saves or committed actors.
+- Native ShowAll retains eligibility, markers, actual icon/title, nonempty
+  ordinary controls, original selection and preview facts. The helper supports
+  both native scroll types; these four menus used Unity ScrollRect. Every exact
+  target set and original filter/scroll restoration passed.
+  Native unavailable entries remain unavailable. ShowAll may display wrong-race
+  entries; each case deliberately targets its own race-specific set.
+- Current artifact: source `1be9713bfda492491794b14cff5df70519ecda191f0602df82b7c7e46acff5f7`;
+  package `c625fb133c823b18b184cb807c50f029953b9f10e4bfdefabda5d9ebb6241747`;
+  DLL `1d06760cc82b28a483f387d549725d8b1a10aeb072b6f7c5fb73ae4f0bc7e24a`;
+  MVID `954660fc-44bf-487e-9caa-8664d0ac8343`. Local immutable copies:
+  `native-racial-feats-qualified-128-*`. Local native gallery:
+  `artifacts/icon-overhaul-v2/NATIVE-RACIAL-FEAT-REVIEW.html`.
+- Full gates passed: repository validation; **23 catalog, 19 capture, six paired,
   eleven request and 1,629 domain tests**; clean Release; strict **224-file package**.
   Post-run documentation curation changes neither compiled code nor art.
 - Installation: game exited normally. Audit passed 224 package files, three known
   runtime additions and 136 backup files. All **136 original 0.0.117 paths/hashes**
-  and settings were independently verified restored at `2026-09-13T18:39:36.556148+00:00`.
+  and settings were independently verified restored at `2026-09-13T19:19:47.653542+00:00`.
 - Earlier exact artifacts remain separately labeled:
+  [merchant](../reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json)
+  (53 assertions, 19 captures; all three merchant targets inspected),
   [scroll inventory](../reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json)
   (49 assertions, 16 captures),
   [selected facts](../reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json)
@@ -39,12 +44,11 @@ and final native UI still await owner approval. This is a technical checkpoint.
   (86 assertions, 138 captures), and
   [integration](../reports/icon-overhaul/NATIVE-128-QUALIFICATION.json)
   (116 captures; 35,756 protected transitions; 255 owned graphs).
-- Weapon Focus/Rapid Reload actual Total/sheet P/M/B, native borders/backgrounds,
-  saved blueprint parameter identities and fallback sprites are preserved. All
-  six real mercenary sheets passed exact cleanup. The bounded native Total fitter
-  restores its original settings. NO/WK/KA/EB and four learning targets were
-  inspected; WK clipping was not reproduced at 1280x720. Higher dependent roots
-  have native data evidence; full rendered coverage is not inferred from Weapon Focus.
+- Weapon Focus/Rapid Reload actual Total/sheet P/M/B and native backgrounds,
+  blueprint parameter identities and fallback sprites are preserved. All six
+  real mercenary sheets passed cleanup. NO/WK/KA/EB and four learning targets
+  were inspected; WK clipping was not reproduced at 1280x720. Higher dependent
+  roots have native data evidence; full rendered coverage remains separate.
 - Art candidates are complete: 89 paintings and Rapid Reload, preserved individual
   sources, deterministic exports, briefs/prompts, twelve reviewed family sheets
   and three preserved revisions. Runtime uses 90 exports and 137 painted assignments.
@@ -65,16 +69,16 @@ and final native UI still await owner approval. This is a technical checkpoint.
   overlap headers; remote mercenary abilities are deactivated. Those captures
   do not qualify active action bars. Existing Weapon Focus labels repeat the
   feat name; the non-icon finding is recorded without changing names.
-- Remaining: full racial feat menus, actions/variants/visible buffs, applicable
-  higher dependent rendered feat surfaces, and strategic text-control confirmation.
-  The working archive lacks supported P/M/B parameters in all eight JSON members.
-  Mission section 8 requires separate authority for new saves/writes; none is
-  authorized or performed. Final owner native-UI approval remains a distinct gate.
 
-Next bounded work: use the actual creator's native ShowAll filter to inspect the
-eleven racial-feat rows, preserving native eligibility/disabled state and restoring
-the filter before normal creator choices resume. The actual strategic destination
-rows use native text buttons without spell sprites; capture that existing surface.
+- Remaining: racial actions/variants/visible buffs, applicable higher dependent
+  rendered feat surfaces, and strategic text-control confirmation. The working
+  archive lacks supported P/M/B parameters in all eight JSON members. Mission
+  section 8 requires separate authority for new saves/writes; none is authorized
+  or performed. Final owner native-UI approval remains a distinct gate.
+
+Next bounded work: capture the existing native strategic destination text buttons
+through the exact guarded interaction fixture. Preserve native controls, resources
+and familiarity; do not add decorative spell images to a text-only surface.
 Active racial action/variant/buff coverage needs its own safe native fixture.
 Detailed local native-contract research is in
 `artifacts/icon-overhaul-v2/native-ui-next-research.md`.
