@@ -7,6 +7,7 @@ import re
 import struct
 import sys
 import zlib
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 CATALOG = "assets-source/original-icons/icon-catalog.json"
@@ -103,13 +104,26 @@ def production_brief_errors(brief, concept, consumers, concepts):
         errors.append("Production brief lacks forbidden interpretations: " + key)
     return errors
 
+def compiled_authority_errors(root, catalog, project_text=None):
+    """An authoring source file on disk must also reach the actual mod DLL."""
+    project = root / "src/KingmakerGunslinger/KingmakerGunslinger.csproj"
+    tree = ET.fromstring(project.read_text(encoding="utf-8-sig") if project_text is None else project_text)
+    compiled = {(project.parent / node.attrib["Include"].replace("\\", "/")).resolve()
+                for node in tree.findall(".//{http://schemas.microsoft.com/developer/msbuild/2003}Compile")}
+    sources = {entry["source"] for entry in catalog["uiEntries"]}
+    sources.update(entry["factSlotPresentation"]["source"] for entry in catalog["uiEntries"] if entry.get("factSlotPresentation"))
+    if catalog.get("runtimeMapping"):
+        sources.add(catalog["runtimeMapping"]["source"])
+    return ["Icon authority is absent from compiled project: " + source for source in sorted(sources)
+            if (root / source).resolve() not in compiled]
+
 def runtime_mapping_errors(root, catalog, source_text=None):
     """Check compiled exact bindings and the source/installed destination contract."""
     mapping = catalog.get("runtimeMapping")
     concepts = {c["key"]: c for c in catalog["concepts"]}
     if not mapping:
         return ["Integrated exports lack compiled mapping authority"] if any(c.get("runtimeExport") for c in concepts.values()) else []
-    errors = []
+    errors = compiled_authority_errors(root, catalog)
     if source_text is None:
         source_text = inside(root, mapping["source"]).read_text(encoding="utf-8-sig")
     observed = re.findall(r'new Binding\("([^"]+)", "([^"]+)", typeof\((\w+)\)\)', source_text)

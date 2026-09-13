@@ -6,6 +6,9 @@ using Kingmaker;
 using Kingmaker.Assets.UI.LevelUp;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.UI.Common;
+using Kingmaker.UI.ServiceWindow.CharacterScreen;
+using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Blueprints;
@@ -53,6 +56,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> CaptureNativeIconSequence(string stage)
         {
             foreach (int frame in _nativeIconScreens.Capture(stage, DescribeNativeIconRows(), OwnsNativeIconBuild)) yield return frame;
+            if ((_request.Scenario == RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase || NativeSheetCase) &&
+                (string)_request.Parameters["class"] == "Gunslinger" &&
+                (stage.EndsWith(":Total", StringComparison.Ordinal) || stage.EndsWith(":TotalInChargen", StringComparison.Ordinal)))
+            {
+                var totalRows = (Kingmaker.UI.LevelUp.CharBNewAbilities)typeof(Kingmaker.UI.LevelUp.Phase.CharBPhaseTotal)
+                    .GetField("m_CharNewAbilities", Members).GetValue(_build.Total);
+                foreach (int frame in CaptureNativeFactSlots(totalRows.transform, _controller.Preview,
+                    "creator-total", OwnsNativeIconBuild)) yield return frame;
+            }
             const string focus = "1e1f627d26ad36f43bbd26cc2bf8ac7e";
             if (stage != "rendered-selection-ready:" + focus ||
                 _request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase) yield break;
@@ -105,6 +117,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "native icon fixture exotic proficiency");
         }
 
+        private IEnumerable<int> CaptureNativeFactSlots(Transform root, UnitDescriptor owner,
+            string surface, Func<bool> ownsUi)
+        {
+            var slots = root.GetComponentsInChildren<CharSComponentAbilitySlot>(true)
+                .Where(slot => slot.gameObject.activeInHierarchy && NativeSlotFact(slot) != null &&
+                    ReferenceEquals(NativeSlotFact(slot).Owner, owner)).ToArray();
+            var targets = slots.Where(slot => {
+                string ignored;
+                return FirearmNativeMonogramPresentation.TryGetLetter(new FeatureUIData(NativeSlotFact(slot)), out ignored);
+            }).ToArray();
+            if (targets.Length != 1)
+                throw new InvalidOperationException("Expected one actual selected firearm fact in " + surface + "; found " + targets.Length);
+            foreach (var slot in targets)
+            {
+                var fact = NativeSlotFact(slot);
+                var parameter = fact.Param;
+                var blueprintIcon = fact.Blueprint.Icon;
+                var factIcon = fact.Icon;
+                var data = new FeatureUIData(fact);
+                string letter;
+                if (!FirearmNativeMonogramPresentation.TryGetLetter(data, out letter))
+                    throw new InvalidOperationException("Selected firearm fact identity changed.");
+                var glyph = (TextMeshProUGUI)typeof(CharSComponentAbilitySlot).GetField("m_AcronimText", Members).GetValue(slot);
+                var background = NativeSlotBackground(slot);
+                bool controlsExact = slots.Length > targets.Length && slots.Except(targets).All(control =>
+                    ReferenceEquals(control.Icon.sprite, NativeSlotFact(control).Icon ?? NativeSlotBackground(control)));
+                Func<bool> retained = () => ownsUi() && slot != null && ReferenceEquals(NativeSlotFact(slot), fact) &&
+                    ReferenceEquals(fact.Param, parameter) && ReferenceEquals(fact.Blueprint.Icon, blueprintIcon) &&
+                    ReferenceEquals(fact.Icon, factIcon);
+                foreach (int frame in _nativeIconScreens.CaptureRow("native-selected-fact:" + fact.Name,
+                    (RectTransform)slot.transform, () => new JObject {
+                        ["surface"] = surface, ["ownerId"] = owner.Unit.UniqueId,
+                        ["targetRow"] = new JObject { ["name"] = fact.Name, ["featureGuid"] = fact.Blueprint.AssetGuid,
+                            ["parameterGuid"] = parameter?.Blueprint?.AssetGuid,
+                            ["expectedLetter"] = letter, ["nativeGlyph"] = glyph?.GetParsedText(),
+                            ["glyphActive"] = glyph != null && glyph.isActiveAndEnabled,
+                            ["glyphTruncated"] = glyph == null || glyph.isTextTruncated,
+                            ["glyphOverflowing"] = glyph == null || glyph.isTextOverflowing,
+                            ["font"] = glyph?.font?.name,
+                            ["nativeBackground"] = ReferenceEquals(slot.Icon.sprite, background),
+                            ["factAndParameterRetained"] = retained(), ["fallbackIconPresent"] = blueprintIcon != null,
+                            ["otherFactRows"] = slots.Length - targets.Length, ["otherFactIconsExact"] = controlsExact }
+                    }, retained)) yield return frame;
+                // Keep a diagnostic native image before rejecting an incorrect
+                // presentation. This checks actual rendered slots, not data alone.
+                if (glyph == null || !glyph.isActiveAndEnabled || glyph.GetParsedText() != letter ||
+                    glyph.isTextTruncated || glyph.isTextOverflowing || !ReferenceEquals(slot.Icon.sprite, background) ||
+                    blueprintIcon == null || !controlsExact || !retained())
+                    throw new InvalidOperationException("Actual native selected-fact presentation differs for " + data.Name);
+            }
+        }
+
+        private static Feature NativeSlotFact(CharSComponentAbilitySlot slot) => slot.Feature ?? slot.IUIDataProvider as Feature;
+        private static Sprite NativeSlotBackground(CharSComponentAbilitySlot slot) =>
+            UIUtility.GetIconByText(slot.Feature != null ? slot.Feature.Blueprint.name : slot.IUIDataProvider.Name);
+
         private JObject DescribeNativeIconRows()
         {
             var state = ElementalCharacterCreationRoutingObserver.DescribeActiveBuild();
@@ -145,7 +213,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // disposable creator case. No prerequisites are changed.
         private IFeatureSelectionItem PreferredNativeIconChoice(IFeatureSelectionItem[] legal)
         {
-            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase) return null;
+            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableElementalCharacterCreationCase && !NativeSheetCase) return null;
             const string focus = "1e1f627d26ad36f43bbd26cc2bf8ac7e";
             var proficiency = NativeIconExoticProficiency();
             if (proficiency != null)
@@ -166,9 +234,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var rapid = legal.SingleOrDefault(item => ReferenceEquals(item.Feature, BlueprintBootstrap.FirearmFeats.RapidReload));
                 if (rapid != null) return rapid;
-                return legal.SingleOrDefault(item => ReferenceEquals(item.Feature, BlueprintBootstrap.FirearmFeats.RapidReloadChoices[0]));
+                return legal.SingleOrDefault(item => ReferenceEquals(item.Feature,
+                    BlueprintBootstrap.FirearmFeats.RapidReloadChoices[NativeSheetCase ? _raceIndex : 0]));
             }
-            var parameter = BlueprintBootstrap.FirearmFeats.WeaponFocusChoices[race == "Ifrit" ? 0 : race == "Oread" ? 1 : 2];
+            var parameter = BlueprintBootstrap.FirearmFeats.WeaponFocusChoices[NativeSheetCase ? _raceIndex :
+                race == "Ifrit" ? 0 : race == "Oread" ? 1 : 2];
             var exact = legal.OfType<FeatureUIData>().SingleOrDefault(item => item.Feature.AssetGuid == focus &&
                 item.Param != null && ReferenceEquals(item.Param.Blueprint, parameter));
             return exact ?? legal.SingleOrDefault(item => item.Feature.AssetGuid == focus);

@@ -94,7 +94,7 @@ Run `tools/validate_native_icon_screens.py --evidence <run>/native-ui-screens.js
 --build-manifest <exact-package>.build-local.json` to check the paired runtime
 result, loaded-build identity, capture MVID, completed frames, PNG hashes and
 dimensions, restored overlay state and explicit row viewport/restoration metadata.
-Its ten corruption fixtures run in
+Its fourteen corruption fixtures run in
 repository validation. This check reports provenance only; inspect the images.
 
 These hooks do not yet cover native inventory/merchant scroll views, strategic
@@ -105,7 +105,7 @@ mission coverage.
 The [0.0.128 technical checkpoint](../reports/icon-overhaul/NATIVE-128-QUALIFICATION.json)
 records nine passing guarded runs, 116 native screenshots and exact restoration.
 Inspected Rapid Reload rows use native P/M/B; selected/sheet data construction is
-qualified separately from its remaining rendered-screen review. Mercenary heritage
+qualified separately from the later rendered fact-slot checkpoint below. Mercenary heritage
 targets are clear, but some right-hand progression content retains a hover panel.
 An empty creator doll in these fixtures is not appearance qualification. The three
 strategic descriptions were inspected without target occlusion. Owner approval and
@@ -119,9 +119,42 @@ correction was needed at that scale. All four learning rows are clear. Its first
 fixture assumption failed because untrained exotics are correctly filtered;
 the successful Fighter cases learned proficiency through normal feat choices.
 
-Actual selected facts still require direct inspection: the installed native
-`CharSComponentAbilitySlot.SetFeature(Feature)` reads `Fact.Icon`, independently
-of `FeatureUIData`/`UIFeature`. The initial Total screen shows only the top of its
-New Abilities list; below-fold feat icons are not qualified by that image. Any
-correction must use that exact consumer's native text route and preserve the
-fact, parameter, name, rank, fallback sprite and unrelated native/eastern rows.
+Actual selected facts are qualified separately from constructor data. The native
+Total list passes real Feature objects through `SetData(IUIDataProvider)`; the
+character sheet uses `SetFeature(Feature)`. The exact P/M/B adapter invokes native
+SetIcon/TMP while preserving facts, parameters, ranks, names, blueprint fallbacks,
+font, border/mask sequences and all unrelated rows.
+
+The actual Total list has a disabled PreferredSize fitter with content height
+862.03 and preferred height 1,461. Only a firearm-containing list in that exact
+state temporarily enables vertical fitting with horizontal fitting unconstrained.
+It restores original settings on hide/refill/disable. It never assigns a fixed
+height or moves individual rows. Metadata and negative tests require the actual
+native before/after modes, extent and viewport. Scroll restoration compares enabled
+axes and real content coordinates; an inactive horizontal normalized value can
+change from rounding despite unchanged geometry.
+
+The exact working Gunslinger regression with rolled allocation holds each of its
+three registered disposable mercenaries for the real Abilities sheet. Normal legal
+choices cover Weapon Focus P/M/B, or Rapid Reload P/M/B for Undine. Existing owned
+creator cleanup first restores the original global backend and presenter, because
+native hide clears only the visible backend. The sheet restores the previous
+character/section, group, selection, party, area, time and pause context before
+the existing item/money/membership rollback. The remote actor is never enrolled
+in the active party and no save is written. Use `-TimeoutSeconds 900` for these
+three-character captures; the creator deadline uses this field, not CompletionTimeout.
+
+The [selected-fact qualification](../reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json)
+records nine PASS runs, 185 assertions, 255 original PNGs and exact 136-file
+installation restoration. Six actual sheets and their Total rows preserve native
+P/M/B and all controls, with ten sheet restoration checks per actor. Both module-OFF
+boundaries, dependent-feat data, ordinary creator paths, learning and working-save
+smoke pass on the same DLL. Earlier offscreen, backend and timeout attempts remain
+FAIL in the journal; partial correct glyphs never qualify a failed run.
+
+All six current sheets, current Total P/WK controls and four learning targets were
+inspected clear at 1280x720. Generated names overlap the header and ordinary creator
+dolls are empty; neither is appearance qualification. Remote abilities are
+deactivated and do not qualify an active action bar. Higher dependent roots have
+native data coverage, not blanket rendered-sheet evidence. Full racial/action/buff,
+inventory/merchant and strategic-control coverage remains separate, as does owner approval.

@@ -849,6 +849,7 @@
     <Compile Include="Feats\NativeFirearmFeatIntegration.cs" />
     <Compile Include="Feats\FirearmNativeMonogramPolicy.cs" />
     <Compile Include="Feats\FirearmNativeMonogramPresentation.cs" />
+    <Compile Include="Feats\FirearmNativeFactSlotMonogram.cs" />
     <Compile Include="Feats\PrerequisiteFirearmProficiency.cs" />
     <Compile Include="Feats\FirearmWeaponFeatPolicy.cs" />
     <Compile Include="Blueprints\FirearmFeatBlueprints.cs" />
@@ -1030,6 +1031,7 @@
     <Compile Include="RuntimeTesting\IconOverhaulVisualEvidenceScenario.cs" />
     <Compile Include="RuntimeTesting\NativeIconScreenEvidence.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeIcons.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeSheet.cs" />
     <Compile Include="RuntimeTesting\IconConsumerCensus.cs" />
     <Compile Include="RuntimeTesting\IconGraphSnapshot.cs" />
     <Compile Include="RuntimeTesting\IconCensusControlPolicy.cs" />

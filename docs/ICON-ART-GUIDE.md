@@ -93,7 +93,7 @@ final-artifact UI measurements. They are not a universal-size rule.
 | project-painted-128 | Quick Clear, Reload Firearm, Repair Firearm, Focused Aim and Shield Other exports are 128x128 RGBA PNG. Pilot originals are preserved 1254x1254 RGB PNG. | Decoded indexed files. Native final layout is a separate gate. Full-bleed painted backgrounds are allowed. |
 | combat-emblem-64 | Existing Rapid Reload/parameter exports are 64x64 RGBA PNG with 512x512 sources. Transparent emblem backgrounds reveal UI. | Decoded pixels and manifests. The approved Rapid Reload pilot anchors this family; the old thick partial arc is a negative reference. Its ring geometry is not a universal requirement. |
 | native-selector-text | FeatureUIData retains null Icon. Desktop CharBuildSelectorItem.SetIcon shows m_AcronimText; character-sheet CharSComponentChupaChups uses AbilityAbbreviation. Both use UIUtility.GetAbilityAcronym with native decoration. | Inspect the actual entry type: parametrized/selected data uses the firearm constructor adapter, while Rapid Reload's static Items list needs an exact owned-selection adapter. Preserve fallback sprites, filtering, count and order. Native rendering remains a separate check. No PNG/font export is required by these routes. |
-| native-fact-slot-text | CharSComponentAbilitySlot.SetFeature(Feature) reads Fact.Icon directly. Its SetIcon(null) owns native TMP, background and border, with text derived independently from the feature name. | Constructor-only FeatureUIData/UIFeature evidence does not cover this path. Inspect real Total/character-sheet rows separately; limit any text adaptation to exact owned facts/parameters and preserve blueprint sprites and native controls. |
+| native-fact-slot-text | CharSComponentAbilitySlot.SetFeature(Feature) reads Fact.Icon directly; Total supplies real Feature objects through SetData(IUIDataProvider). SetIcon(null) owns native TMP, background and border, with text derived independently from the feature name. | Constructor-only FeatureUIData/UIFeature evidence does not cover these paths. Inspect real Total/character-sheet rows separately; limit text adaptation to exact owned facts/parameters and preserve each native border/mask sequence, blueprint sprites and other controls. |
 | summon-painted-128 | Existing manifest defines 77 individually sourced 128x128 RGBA exports with exact child placements. | Delegate export authority to that manifest. Historical publication does not approve new creatures. |
 
 The supplied 1920x1200 desktop references show approximately 48px racial icon
@@ -177,7 +177,9 @@ one of them. The catalog owns review evidence and consumer dispositions. Validat
 checks registry identity, delegated hashes, protection and required coverage.
 Each integrated concept's `runtimeExport` declares its source path, installed
 path and cache key. The catalog validator compares the compiled binding table
-with the exact intended consumers. Build and package validation use
+with the exact intended consumers. It also requires cataloged mapping and UI
+adapter sources to appear in the actual mod project's Compile items; a source
+file on disk alone is not an integrated icon rule. Build and package validation use
 `scripts/IconCatalog.Common.ps1` to require the same final export hashes at
 their installed destinations.
 Intentional sharing uses one concept key; different selectable actions cannot
@@ -244,3 +246,5 @@ validators when the contract changes; do not silently redefine an approved famil
 For the guarded live assignment audit, follow
 [Icon consumer census](ICON-CONSUMER-CENSUS.md). It records real before/after
 Sprite references and graph links without navigating UI or modifying saves.
+
+The firearm Total-list adapter is limited to `CharBNewAbilities.FillData` containing an exact owned firearm fact. If its existing disabled `ContentSizeFitterExtended` uses `PreferredSize`, it temporarily enables that fitter with horizontal fitting unconstrained, so nested feat rows remain scrollable without driving their width. It restores the original enabled state and horizontal mode on creator hide, component disable/destruction or list refill. It never assigns a fixed height, relocates an individual row, or changes another list. Native mode, content extent and cleanup require runtime evidence.

@@ -40,18 +40,29 @@ def validate(evidence, result, build, identity, directory):
             continue
         require(record.get('status') == 'captured-native-screen-awaiting-visual-inspection', 'Incomplete capture: ' + name)
         require(bool(record.get('stage')) and isinstance(record.get('nativeState'), dict), 'Missing native UI identity: ' + name)
-        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:')):
+        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:')):
             state = record.get('nativeState', {})
             state = state if isinstance(state, dict) else {}
             viewport = state.get('viewport', {})
             viewport = viewport if isinstance(viewport, dict) else {}
-            require(viewport.get('nativeApi') == 'UnityEngine.UI.ScrollRect.normalizedPosition' and
+            api = viewport.get('nativeApi')
+            known_scroll = api == 'UnityEngine.UI.ScrollRect.normalizedPosition' or (
+                api == 'Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter' and
+                viewport.get('scrollType') == 'Kingmaker.UI.Common.ScrollRectExtended' and
+                bool(viewport.get('contentObject')) and bool(viewport.get('viewportObject')))
+            require(known_scroll and
                     viewport.get('rowActive') is True and viewport.get('rowVerticallyVisible') is True and
                     viewport.get('restored') is True, 'Native row viewport/restoration is incomplete: ' + name)
             values = [viewport.get(key) for key in ('rowMinY', 'rowMaxY', 'viewportMinY', 'viewportMaxY')]
             finite = all(isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) for value in values)
             require(finite and values[2] - 1 <= values[0] < values[1] <= values[3] + 1,
                     'Native row is outside its recorded vertical viewport: ' + name)
+            if 'originalContentX' in viewport:
+                positions = [viewport.get(key) for key in ('originalContentX', 'originalContentY', 'restoredContentX', 'restoredContentY')]
+                finite_positions = all(isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+                                       for value in positions)
+                require(finite_positions and math.hypot(positions[2]-positions[0], positions[3]-positions[1]) < 0.01,
+                        'Actual native content position was not restored: ' + name)
             target = state.get('targetRow', {})
             target = target if isinstance(target, dict) else {}
             require(bool(target.get('name')), 'Native row target identity is missing: ' + name)
@@ -69,10 +80,41 @@ def validate(evidence, result, build, identity, directory):
                     require(target.get('learnedProficiencyGuid') == proficiency and
                             target.get('proficiencyPresent') is True,
                             'Native exotic weapon row lacks its learned proficiency: ' + name)
-            else:
+            elif record['stage'].startswith('native-learning-row:'):
                 require(bool(target.get('spellGuid')) and bool(target.get('classGuid')) and
                         target.get('previewOnly') is True and target.get('enabled') is True and
                         target.get('spellLevel') in (5, 7), 'Native learning row identity/preview differs: ' + name)
+            else:
+                roots = {'1e1f627d26ad36f43bbd26cc2bf8ac7e', '09c9e82965fb4334b984a1e9df3bd088',
+                         '31470b17e8446ae4ea0dacd6c5817d86', '7cf5edc65e785a24f9cf93af987d66b3',
+                         'f4201c85a991369408740c6888362e20'}
+                parameters = {'8b39bd79d27048dda58e0a513e529f2c':'P',
+                              '939f52fce6ec4c5d8df2bb1cf793416a':'M',
+                              '79579fdb7d494f4fb0e618f6e4c33990':'B'}
+                rapid = {'070f4f07b5164d8a82d647a93539746d':'P',
+                         '128963c18e0d48268d8696f9f14513d2':'M',
+                         '40c69ab4ea844bd8a087cb8e84235bd9':'B'}
+                letter = parameters.get(target.get('parameterGuid')) if target.get('featureGuid') in roots else (
+                    rapid.get(target.get('featureGuid')) if target.get('parameterGuid') is None else None)
+                require(bool(letter) and target.get('expectedLetter') == letter and target.get('nativeGlyph') == letter and
+                        target.get('glyphActive') is True and target.get('glyphTruncated') is False and
+                        target.get('glyphOverflowing') is False and bool(target.get('font')) and
+                        target.get('nativeBackground') is True and target.get('factAndParameterRetained') is True and
+                        target.get('fallbackIconPresent') is True and target.get('otherFactIconsExact') is True and
+                        isinstance(target.get('otherFactRows'), int) and target['otherFactRows'] > 0,
+                        'Actual native selected-fact identity/glyph/controls differ: ' + name)
+                for ancestor in state.get('nativeLayout', {}).get('targetAncestors', []):
+                    if ancestor.get('firearmFitApplied') is True:
+                        height, preferred = ancestor.get('height'), ancestor.get('preferredHeight')
+                        finite_heights = all(isinstance(value, (int, float)) and not isinstance(value, bool)
+                                             and math.isfinite(value) for value in (height, preferred))
+                        require(ancestor.get('fitterEnabled') is True and ancestor.get('originalFitterEnabled') is False
+                                and ancestor.get('originalVerticalFit') == 'PreferredSize'
+                                and ancestor.get('verticalFit') == 'PreferredSize' and ancestor.get('horizontalFit') == 'Unconstrained'
+                                and ancestor.get('originalHorizontalFit') in ('Unconstrained', 'MinSize', 'PreferredSize', 'Clamp')
+                                and finite_heights
+                                and height >= preferred - 1,
+                                'Native Total preferred layout did not cover its own content: ' + name)
         require(record.get('completedFrame', -1) > record.get('requestedFrame', 0), 'No completed render frame: ' + name)
         path = directory / name
         if not path.is_file():

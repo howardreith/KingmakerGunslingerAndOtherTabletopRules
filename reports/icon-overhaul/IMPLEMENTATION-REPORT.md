@@ -1,66 +1,57 @@
 # Icon overhaul v2 implementation record
 
-The icon branch now incorporates master `9dc2b630` (0.0.128) at the owner's request,
-with published history preserved. The latest native viewport extension passed six
-guarded runs and adds 138 original captures. **The overhaul remains in progress:**
-complete native UI coverage and final owner visual approval are pending.
+The branch includes master `9dc2b630` (0.0.128), preserving published history.
+The latest [selected-fact qualification](NATIVE-FACT-SLOT-QUALIFICATION.json) passed
+**nine guarded runs, 185 assertions and 255 original native captures**.
+The overhaul remains in progress: complete native UI coverage and final approval
+are pending. No release or feature-to-master merge has been performed.
 
-The [current viewport qualification](NATIVE-VIEWPORT-QUALIFICATION.json) records four
-native creator cases (11 checks each), Wizard/Sorcerer learning (31) and final
-working-save smoke (11): **86 assertions**. Native P/M/B, NO, WK, KA and EB are
-visible and clear. WK clipping was not reproduced at 1280x720; its existing native
-text reports no overflow/truncation, so no lettering edit was made. All four
-learning targets are centered and unobscured. The [local viewport review](../../artifacts/icon-overhaul-v2/NATIVE-VIEWPORT-REVIEW.html)
-links all 138 originals, initially filtered to the fourteen targeted rows.
+Actual Total and character-sheet Weapon Focus/Rapid Reload now use native P/M/B.
+The adapter preserves exact saved-parameter identities, names, fallback sprites,
+native font/background and other fact icons. A narrowly scoped native Total fitter
+correction makes below-fold firearm facts reachable and restores the original
+layout afterward. All six disposable mercenary sheets passed exact UI/controller,
+party, selection, time and cleanup checks. Every sheet was inspected clear.
 
-Repository validation, 22 catalog cases, six paired-evidence cases, ten screenshot
-corruption cases, eleven request cases, all 1,629 domain tests, clean Release and
-the strict 224-file package passed. At 2026-09-13 14:59:42 UTC, all 136 original
-installation paths/hashes and settings were independently verified after restoration.
-No save write was observed. The early untrained-exotic fixture failure and transient
-process-exit preflight stop are retained in the qualification record and journal.
+The same DLL passed ordinary Gunslinger/Fighter creation, dependent feats, both
+affected module-OFF profiles, Wizard/Sorcerer learning and final working-save smoke.
+Current WK is unclipped at 1280x720; no eastern lettering was changed. All four
+learning targets are clear. The [local native fact review](../../artifacts/icon-overhaul-v2/NATIVE-FACT-SLOT-REVIEW.html)
+links unmodified originals and labels earlier failed runs separately.
 
-The preceding [nine-run integration qualification](NATIVE-128-QUALIFICATION.json)
-records all 1,629 domain tests, clean Release, the 224-file package and focused validators.
-Candidate/control passed 27 checks each, dependent feats 12, Gunslinger OFF 42,
-Eastern OFF 43, Undine creator 11, real Ifrit mercenary regression 12, spellbook 31
-and final working smoke 11. The paired census preserves 35,756 protected transitions
-and 255 owned graphs. Every temporary settings transaction was restored, and all
-136 original installation paths/hashes were independently restored afterward.
+Repository validation, 23 catalog cases, 14 screenshot corruption cases, six paired
+evidence cases, eleven request cases, all 1,629 domain tests, clean Release and the
+strict 224-file package passed. All 136 original installation paths/hashes were
+independently verified restored at `2026-09-13T17:40:52.842003+00:00`. No save write was observed.
+Diagnostic failures, source-fingerprint preflight stop and exact restoration records
+are preserved in the qualification record and journal.
 
-Rapid Reload now uses the approved parent emblem and real native P/M/B child rows.
-The selected/sheet data constructor preserves exact saved blueprint parameters and
-fallback sprites; a separate exact `Items` adapter handles the native static menu.
-The first integrated candidate exposed that previously missed raw-menu path, which
-was corrected and then checked against both actual entries and rendered TMP glyphs.
-Full selection/level-up data, 426 all-ON/Gunslinger-OFF control rows and 411 Eastern-OFF
-rows pass. Complete chosen-feat/sheet rendering and saved-parameter checks remain.
+Current package: `1d2700bb0fcf069a05857071579456366aa43a3129643e4dbed0d115a163061b`.
+DLL: `1fe901a2d2fae111ba68116db319c0e625a399f29d5dd933536a4f8643c602d5`.
+Source based on `32be894c`, fingerprint
+`601a789472926949042b429a5c0b5d48c34d141e01ceebd94dcfaf9ddaf60c3d`.
+Documentation curation changes neither the compiled code nor the pixels.
 
-That preceding artifact has 116 native screenshots with verified provenance. Inspected Rapid
-Reload, heritage and strategic descriptions show the intended art at native size.
-The [local native review](../../artifacts/icon-overhaul-v2/NATIVE-REVIEW.html) links
-unmodified screenshots; it is separate from the [90-image art review](PRODUCTION-REVIEW.html).
-Some creator frames still have a hover panel over unrelated content, and their empty
-central doll is not character-visibility proof. No screenshot implies owner approval.
+Inherited [integration evidence](NATIVE-128-QUALIFICATION.json) preserves 35,756
+protected transitions and 255 owned graphs. Earlier [viewport evidence](NATIVE-VIEWPORT-QUALIFICATION.json)
+records 86 assertions and 138 captures. These historical artifacts are retained
+with their own hashes and are not counted as fresh runs on the current DLL.
 
-Current package: `f10fbb0db787bbf23d3ef23f825e5d98ca661db95155ff3fcb646413fcd500e6`.
-DLL: `b5ebd760f91f8e8657705b3403fbdf107ab5e3ad539f65ce1c106c9ba39b8df7`.
-The build record identifies working source based on `75017b3`, source hash
-`600da30a7d2636ffd427e3f7df6efab527383bf0da1ecc4532c653b4fd6a5696`.
-Only guarded capture/fixture code changed since the preceding integration record;
-production pixels, mappings, firearm adapter and upstream mechanics are unchanged.
+All 89 paintings plus Rapid Reload have preserved originals/exports. Only ten
+pilot images and family direction are approved; the other 80 images await owner
+review. Runtime has 137 explicit painted assignments, 90 exports and 284 cataloged
+consumer dispositions. Protected actions, items, native spells and eastern art remain.
 
-All 89 paintings plus Rapid Reload have preserved originals/exports. Only the ten
-pilot images and family direction are approved; eighty production paintings await
-owner review. Remaining native scope includes chosen feats/character sheets,
-full racial feat menus, racial actions/variants/buffs, strategic
-controls and scroll inventory/merchant views. The authorized working archive has
-no supported firearm parameter fixture. New save creation/writes need separate
-mission authority; none occurred. Continue independent work before that gate.
+Remaining native scope: full racial feat menus/actions/variants/buffs, applicable
+higher dependent feat rendering, strategic text-only control confirmation, and
+scroll inventory/tooltip/merchant views. The remote mercenary's inactive abilities
+do not qualify active action bars. An empty creator doll and overlapping fixture
+names are not appearance qualification. Repeated native Weapon Focus labels are
+recorded as a separate naming issue; this icon change preserves them.
 
-The previous painted-only 0.0.127 checkpoint remains in
-[its exact qualification record](PAINTED-INTEGRATION-QUALIFICATION.json), with earlier
-failures and corrections preserved in the journal. This is no release or feature-to-master merge.
+The existing working save lacks a supported firearm parameter fixture. New save
+creation/writes require separate mission authority; none occurred. Final native UI
+and production-image approvals remain explicit gates while independent work continues.
 
 ## Review packet
 
