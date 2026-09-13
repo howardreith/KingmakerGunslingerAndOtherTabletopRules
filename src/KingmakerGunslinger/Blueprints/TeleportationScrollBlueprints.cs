@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -21,8 +21,8 @@ namespace KingmakerGunslinger.Blueprints
     }
 
     // Real native scroll items pointing at the canonical strategic spell
-    // abilities (never duplicate scroll-only spells). The donors are verified
-    // native scrolls whose cost/caster-level pairs already match the approved
+    // abilities (never duplicate scroll-only spells). Verified base-game fallbacks
+    // keep optional-mod templates optional; cost/caster-level pairs match the approved
     // design values, so native merchant pricing stays consistent.
     internal static class TeleportationScrollBlueprints
     {
@@ -30,11 +30,14 @@ namespace KingmakerGunslinger.Blueprints
         internal const string TeleportSymbol = "KMG.Spells.Teleport.Scroll";
         internal const string GreaterTeleportSymbol = "KMG.Spells.GreaterTeleport.Scroll";
         internal const string WordOfRecallSymbol = "KMG.Spells.WordOfRecall.Scroll";
-        // Verified native scroll donors (observe-teleportation-native-contracts):
-        // 1125 gp / CL 9, 2275 gp / CL 13 and 1650 gp / CL 11 respectively.
+        // Observed installed-profile templates: 1125/CL9, 2275/CL13, 1650/CL11.
+        // The latter two are CotW scrolls, so retain their existing presentation
+        // when present and use verified base-game equivalents only when absent.
         internal const string TeleportDonorId = "02086fbbda266ed4b8e9124abe5abd75";
         internal const string GreaterTeleportDonorId = "0033529da3b90bd226232e1962ca34ba";
         internal const string WordOfRecallDonorId = "00843bddf42908953a0d77e7155c20f0";
+        internal const string GreaterTeleportNativeDonorId = "013c0f5972c1b794b869b284ba426542"; // Summon Greater Earth Elemental
+        internal const string WordOfRecallNativeDonorId = "0437d7a2ea4b01542907c4d5fb12c4da"; // Elemental Body III (Fire)
 
         internal static TeleportationScrollBlueprintSet Register(LibraryScriptableObject library,
             BlueprintRegistry registry, TeleportationSpellBlueprintSet spells)
@@ -45,10 +48,10 @@ namespace KingmakerGunslinger.Blueprints
                 "This scroll holds a single use of the strategic world-map Teleport. Use it by selecting a previously visited destination on the world map and choosing its scroll action."));
             var greater = registry.Register<BlueprintItemEquipmentUsable>(GreaterTeleportSymbol, () => Create(library,
                 GreaterTeleportDonorId, "GreaterTeleport", spells.GreaterTeleport, cost: 2275, casterLevel: 13, spellLevel: 7,
-                "This scroll holds a single use of the strategic world-map Greater Teleport. Use it by selecting a previously visited destination on the world map and choosing its scroll action."));
+                "This scroll holds a single use of the strategic world-map Greater Teleport. Use it by selecting a previously visited destination on the world map and choosing its scroll action.", fallbackDonorId: GreaterTeleportNativeDonorId));
             var recall = registry.Register<BlueprintItemEquipmentUsable>(WordOfRecallSymbol, () => Create(library,
                 WordOfRecallDonorId, "WordOfRecall", spells.WordOfRecall, cost: 1650, casterLevel: 11, spellLevel: 6,
-                "This scroll holds a single use of the strategic world-map Word of Recall. Use it by selecting your sanctuary destination on the world map and choosing its scroll action."));
+                "This scroll holds a single use of the strategic world-map Word of Recall. Use it by selecting your sanctuary destination on the world map and choosing its scroll action.", fallbackDonorId: WordOfRecallNativeDonorId));
             Validate(teleport, spells.Teleport);
             Validate(greater, spells.GreaterTeleport);
             Validate(recall, spells.WordOfRecall);
@@ -59,12 +62,18 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintItemEquipmentUsable Create(LibraryScriptableObject library, string donorId,
-            string key, BlueprintAbility spell, int cost, int casterLevel, int spellLevel, string description)
+            string key, BlueprintAbility spell, int cost, int casterLevel, int spellLevel, string description, string fallbackDonorId = null)
         {
+            // Absence alone permits fallback. A present but incompatible template
+            // still fails exact type/economics/component validation below.
+            if (fallbackDonorId != null && library != null && library.BlueprintsByAssetId != null &&
+                !library.BlueprintsByAssetId.ContainsKey(donorId)) donorId = fallbackDonorId;
             var donor = BlueprintLibraryLookup.RequireExact<BlueprintItemEquipmentUsable>(library, donorId,
                 "native scroll donor " + key);
             if (donor.Cost != cost || donor.CasterLevel != casterLevel)
                 throw new InvalidOperationException("Native scroll donor cost/caster-level contract differs: " + key);
+            if (ModContext.TryGet(out var context)) context.Logger.Info("teleportation-spells", "scroll.template",
+                "spell=" + key + ";source=" + donor.AssetGuid + ";fallback=" + (donorId == fallbackDonorId));
             var scroll = BlueprintCloneService.Clone(donor, "KMG_ScrollOf" + key);
             // Stackable native scroll presentation; the donor's icon, weight and
             // unidentified labels are already the correct native scroll texts.

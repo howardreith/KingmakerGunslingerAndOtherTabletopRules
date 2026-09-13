@@ -13,7 +13,7 @@ VERSION = "0.0.128"
 INFORMATIONAL_VERSION = "0.0.128-firearm-postrelease-hotfix"
 PACKAGE = "KingmakerGunslinger-0.0.128-local-runtime.zip"
 PACKAGE_SUFFIX = "firearm-postrelease-hotfix"
-DETERMINISTIC_TEST_COUNT = 1622
+DETERMINISTIC_TEST_COUNT = 1632
 MANIFEST_TOTAL = 1886
 MANIFEST_ACTIVE = 1884
 STATIC_KEY = "firearmHotfix128"
@@ -73,7 +73,8 @@ def validate(root: Path) -> None:
     for key, value in expected.items():
         if state.get(key) != value:
             raise AssertionError(f"firearmHotfix128 static mismatch: {key}")
-    require_tokens(root / "docs/RELEASE-NOTES-0.0.128.md", INFORMATIONAL_VERSION,
+    require_tokens(root / "docs/RELEASE-NOTES-0.0.128.md",
+        "0.0.128-firearm-postrelease-hotfix",
         "candidate", "native", "reload", "NOT RUN")
     require_tokens(root / "src/KingmakerGunslinger/Recovery/RepairAvailabilityReasonPatch.cs",
         "GetContextualReason", "IAbilityAvailabilityProvider", "AbilityData")

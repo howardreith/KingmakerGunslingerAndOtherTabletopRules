@@ -75,12 +75,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             var originalPositions = originalParty.Select(value => value.Position).ToArray();
             var originalTime = player.GameTime; bool originalPaused = game.IsPaused;
             var uiSnapshots = originalParty.Select(value => new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
-            var entries = new[] {
+            var entries = new List<TeleportLevelUpEntry> {
                 new TeleportLevelUpEntry(wizard, 8, TeleportSpellKind.Teleport, 5),
                 new TeleportLevelUpEntry(wizard, 12, TeleportSpellKind.GreaterTeleport, 7),
                 new TeleportLevelUpEntry(sorcerer, 9, TeleportSpellKind.Teleport, 5),
                 new TeleportLevelUpEntry(sorcerer, 13, TeleportSpellKind.GreaterTeleport, 7)
             };
+            var oracle = TeleportationFinalLiveReconciler.ResolveOracleClass(BlueprintBootstrap.Library);
+            if (oracle != null)
+            {
+                if (owner.Descriptor.GetSpellbook(oracle.Spellbook) != null)
+                    throw new InvalidOperationException("The disposable learning owner already has an Oracle book.");
+                entries.Insert(0, new TeleportLevelUpEntry(oracle, 11, TeleportSpellKind.WordOfRecall, 6));
+            }
             var savedState = new TeleportLevelUpSavedStateFixture(owner.Descriptor);
             Application.logMessageReceived += ObserveTeleportSpellbookUiException;
             try
@@ -120,6 +127,331 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TeleportSpellbookUiAssert("saved-owner-cleanup", "original familiarity part presence, fields, owner and native serialization source restored", "restored=" + savedState.IsRestored(), savedState.IsRestored());
                 TeleportSpellbookUiAssert("cleanup", "no character level, feature, spell, XP, resource, UI, party, time or save-write effect survives cancellation", "unchanged=" + unchanged, unchanged);
                 TeleportSpellbookUiAssert("exceptions", "zero native or mod exceptions from level-up fixture setup through cleanup", "count=" + _teleportationSpellbookUiExceptions.Count, _teleportationSpellbookUiExceptions.Count == 0);
+            }
+            foreach (int frame in QualifyOracleCommittedLearning()) yield return frame;
+        }
+        // A fresh request-local Oracle uses native progression, native level-up
+        // selectors and the real completion button. No Recall AddKnown call,
+        // extra spell choice or candidate-list mutation is used by this fixture.
+        private IEnumerable<int> QualifyOracleCommittedLearning()
+        {
+            var oracle = TeleportationFinalLiveReconciler.ResolveOracleClass(BlueprintBootstrap.Library);
+            if (oracle == null) yield break;
+            if (!IsTeleportationLevelUpFixture || !_request.ExitAfterCompletion || _workingSaveSmoke.WriteObserved)
+                throw new InvalidOperationException("Oracle learning requires the guarded disposable level-up request.");
+            var game = Game.Instance; var player = game.Player; var ui = game.UI;
+            var presenter = ui.CharacterBuildController;
+            var priorBackend = ui.LevelUpController; var priorPresenter = presenter.Unit;
+            var originalParty = player.Party.ToArray(); var originalPartyRefs = player.PartyCharacters.ToArray();
+            var originalCross = player.CrossSceneState.AllEntityData.ToArray();
+            var originalItems = player.Inventory.Items.ToArray();
+            var originalCounts = originalItems.Select(value => value.Count).ToArray();
+            var starterDeltas = new Dictionary<Kingmaker.Items.ItemEntity, int>();
+            Action<string> captureStarterItems = stage => {
+                foreach (var item in player.Inventory.Items)
+                {
+                    int index = Array.IndexOf(originalItems, item);
+                    int delta = item.Count - (index < 0 ? 0 : originalCounts[index]);
+                    if (delta > 0) starterDeltas[item] = delta;
+                }
+                CaptureTeleportSpellbookUi(stage, starterDeltas.Select(value => new {
+                    item = value.Key.Blueprint.AssetGuid, instance = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value.Key), count = value.Value }).ToArray());
+            };
+            long originalMoney = player.Money;
+            bool originalPause = game.IsPaused;
+            UnitEntityData unit = null; LevelUpController backend = null;
+            bool committed = false;
+            Application.logMessageReceived += ObserveTeleportSpellbookUiException;
+            try
+            {
+                game.IsPaused = true;
+                var anchor = originalParty.First(value => value.View != null && value.Descriptor.Progression.Race != null);
+                var dollState = new DollState();
+                dollState.SetGender(anchor.Descriptor.Gender); dollState.SetRace(anchor.Descriptor.Progression.Race); dollState.SetClass(oracle);
+                var doll = dollState.CreateData();
+                var view = doll.CreateUnitView(false);
+                if (view == null) throw new InvalidOperationException("Native Oracle fixture has no real character view.");
+                view.Blueprint = game.BlueprintRoot.DefaultPlayerCharacter; view.UniqueId = Guid.NewGuid().ToString();
+                view.transform.position = anchor.Position;
+                var pending = (System.Collections.IList)game.EntityCreator.GetType().GetField("m_ToCreate", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(game.EntityCreator);
+                if (pending.Count != 0) throw new InvalidOperationException("Unrelated native entity creation is pending.");
+                unit = game.EntityCreator.SpawnEntityWithView(view, player.CrossSceneState) as UnitEntityData;
+                if (unit == null) throw new InvalidOperationException("Native Oracle entity ownership transfer failed.");
+                game.EntityCreator.Tick();
+                if (!ReferenceEquals(unit.HoldingState, player.CrossSceneState) || pending.Count != 0)
+                    throw new InvalidOperationException("Native Oracle entity registration differs.");
+                unit.Descriptor.Doll = doll; unit.Descriptor.CustomGender = anchor.Descriptor.Gender;
+                unit.Descriptor.CustomName = "KMG Oracle Learning";
+                unit.Stats.Charisma.BaseValue = 18;
+                unit.Stats.Intelligence.BaseValue = 10;
+                unit.Stats.Wisdom.BaseValue = 12;
+                unit.Descriptor.TurnOn();
+                for (int level = 0; level < 11; level++)
+                {
+                    backend = LevelUpController.StartWithoutAssigningStaticInstance(unit.Descriptor, false, null, null,
+                        level == 0 ? LevelUpState.CharBuildMode.CharGen : LevelUpState.CharBuildMode.LevelUp);
+                    if (level == 0)
+                    {
+                        backend.SelectRace(anchor.Descriptor.Progression.Race);
+                        backend.SelectGender(anchor.Descriptor.Gender);
+                        backend.SelectAlignment(anchor.Descriptor.Alignment.Value);
+                    }
+                    if (!backend.SelectClass(oracle)) throw new InvalidOperationException("Native Oracle seed class selection failed.");
+                    FillOracleNativeChoices(backend);
+                    typeof(LevelUpController).GetMethod("ApplyLevelup", BindingFlags.Instance | BindingFlags.NonPublic)
+                        .Invoke(backend, new object[] { unit.Descriptor });
+                    backend.Cancel(); backend = null;
+                    if (unit.Descriptor.Progression.GetClassLevel(oracle) != level + 1)
+                        throw new InvalidOperationException("Native Oracle seed progression did not advance exactly once.");
+                }
+                captureStarterItems("oracle-seed-starter-items");
+                var recall = BlueprintBootstrap.Teleportation.WordOfRecall;
+                var book = unit.Descriptor.GetSpellbook(oracle.Spellbook);
+                var table = oracle.Spellbook.SpellsKnown;
+                CaptureTeleportSpellbookUi("oracle-native-progression", new {
+                    unitId = unit.UniqueId, classId = oracle.AssetGuid,
+                    race = new { id = unit.Descriptor.Progression.Race.AssetGuid, name = unit.Descriptor.Progression.Race.name },
+                    gender = unit.Descriptor.Gender.ToString(), alignment = unit.Descriptor.Alignment.Value.ToString(),
+                    charisma = new { baseValue = unit.Stats.Charisma.BaseValue, effective = unit.Stats.Charisma.ModifiedValue },
+                    nativeFeatures = unit.Descriptor.Progression.Features.Enumerable.Select(value => new { id = value.Blueprint.AssetGuid, name = value.Blueprint.name }).ToArray(),
+                    classLevel = unit.Descriptor.Progression.GetClassLevel(oracle),
+                    characterLevel = unit.Descriptor.Progression.CharacterLevel, book = book.Blueprint.AssetGuid,
+                    book.CasterLevel, archetypes = unit.Descriptor.Progression.GetClassData(oracle).Archetypes.Select(value => value.AssetGuid).ToArray(),
+                    sixthKnownByLevel = Enumerable.Range(11, 4).Select(level => new { level, count = table.GetCount(level, 6) ?? 0 }).ToArray(),
+                    choices11to12 = (table.GetCount(12, 6) ?? 0) - (table.GetCount(11, 6) ?? 0),
+                    choices13to14 = (table.GetCount(14, 6) ?? 0) - (table.GetCount(13, 6) ?? 0),
+                    knownBefore = book.IsKnown(recall), known = book.GetAllKnownSpells().Select(value => new { id = value.Blueprint.AssetGuid, value.SpellLevel }).ToArray()
+                });
+                if (book.CasterLevel != 11 || book.IsKnown(recall) || unit.Descriptor.Progression.CharacterLevel != 11)
+                    throw new InvalidOperationException("The native Oracle 11 learning precondition differs.");
+                typeof(UnitProgressionData).GetProperty("Experience").SetValue(unit.Descriptor.Progression,
+                    game.BlueprintRoot.Progression.XPTable.GetBonus(12), null);
+                for (int attempt = 0; attempt < 2; attempt++)
+                {
+                    committed = false;
+                    string before = TeleportResourceFingerprint(book);
+                    int successes = 0;
+                    presenter.HandleLevelUpStart(unit.Descriptor, null, () => successes++);
+                    backend = presenter.LevelUpController;
+                    if (backend == null || backend.AutoCommit || ReferenceEquals(backend.Preview, unit.Descriptor))
+                        throw new InvalidOperationException("Native Oracle level-up did not create an independent preview.");
+                    for (int frame = 0; frame < 15; frame++) yield return 0;
+                    presenter.SetClass(oracle); CompleteTeleportLevelUpPrerequisites(presenter);
+                    var selection = backend.State.SpellSelections.Single(value => value.Spellbook == oracle.Spellbook && value.SpellList == oracle.Spellbook.SpellList);
+                    if (selection.LevelCount[6].SpellSelections.Length != 1 || selection.ExtraSelected != null && selection.ExtraSelected.Length != 0)
+                        throw new InvalidOperationException("Oracle learning must use exactly one normal sixth-level choice.");
+                    presenter.SetPhase((int)CharBPhase.Type.Spells);
+                    foreach (int tick in WaitTeleportLevelUpUi(() => presenter.GetComponentsInChildren<CharBSelectionSwitchItem>(true).Any(value =>
+                        value.gameObject.activeInHierarchy && value.SpellLevel == 6 && value.SpellSelectionData != null && value.SpellSelectionData.Spellbook == oracle.Spellbook), "Oracle sixth-level slot")) yield return tick;
+                    presenter.GetComponentsInChildren<CharBSelectionSwitchItem>(true).Single(value => value.gameObject.activeInHierarchy &&
+                        value.SpellLevel == 6 && value.SpellIndex == 0 && value.SpellSelectionData != null && value.SpellSelectionData.Spellbook == oracle.Spellbook).Toggle.isOn = true;
+                    Func<CharBuildSelectorItem[]> rows = () => presenter.GetComponentsInChildren<CharBuildSelectorItem>(true).Where(value =>
+                        value.gameObject.activeInHierarchy && value.BlueprintAbility == recall && value.Toggle.interactable).ToArray();
+                    foreach (int tick in WaitTeleportLevelUpUi(() => rows().Length == 1, "one enabled native Oracle Recall candidate", 8)) yield return tick;
+                    var row = rows().Single();
+                    bool label = row.GetComponentsInChildren<TextMeshProUGUI>(true).Any(value => value.isActiveAndEnabled && !value.isTextTruncated &&
+                        string.Equals(value.GetParsedText(), recall.Name, StringComparison.OrdinalIgnoreCase));
+                    TeleportSpellbookUiAssert("oracle-real-candidate-" + attempt,
+                        "Oracle 11→12 displays one enabled canonical Recall candidate at level 6 in the native selector",
+                        "rows=" + rows().Length + ";level=" + row.SpellLevel + ";label=" + label,
+                        label && row.SpellLevel == 6 && !book.IsKnown(recall));
+                    row.Toggle.isOn = true;
+                    foreach (int tick in WaitTeleportLevelUpUi(() => backend.Preview.GetSpellbook(oracle.Spellbook).IsKnown(recall), "native Oracle preview learns Recall")) yield return tick;
+                    FillOracleNativeChoices(backend);
+                    foreach (int tick in WaitTeleportLevelUpUi(() => backend.State.IsComplete(), "all normal Oracle level-up choices complete")) yield return tick;
+                    if (attempt == 0)
+                    {
+                        presenter.OnHotKeyEscPressed();
+                        foreach (int tick in WaitTeleportLevelUpUi(() => DialogMessageBox.Instance.IsShown, "Oracle cancel confirmation")) yield return tick;
+                        var cancelCallback = (Action<DialogMessageBoxBase.BoxButton>)WorldMapPointSpellActionPatches.ConfirmationCallbackField.GetValue(DialogMessageBox.Instance);
+                        if (cancelCallback == null || !ReferenceEquals(cancelCallback.Target, presenter))
+                            throw new InvalidOperationException("The Oracle cancel dialog has an unrelated owner.");
+                        TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                        foreach (int tick in WaitTeleportLevelUpUi(() => !presenter.IsShow && !DialogMessageBox.Instance.IsShown, "Oracle cancelled preview")) yield return tick;
+                        backend.Cancel(); backend = null; ui.LevelUpController = priorBackend;
+                        TeleportSpellbookUiAssert("oracle-real-cancel", "cancel learns nothing, spends nothing and leaves Oracle 11",
+                            "known=" + book.IsKnown(recall), !book.IsKnown(recall) && before == TeleportResourceFingerprint(book) &&
+                            unit.Descriptor.Progression.GetClassLevel(oracle) == 11 && successes == 0);
+                    }
+                    else
+                    {
+                        presenter.Next();
+                        foreach (int tick in WaitTeleportLevelUpUi(() => presenter.CurrentPhase == CharBPhase.Type.Total, "Oracle native summary")) yield return tick;
+                        var finish = (UnityEngine.UI.Button)typeof(CharacterBuildController).GetField("m_CompleteButton", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(presenter);
+                        if (finish == null || !finish.interactable || !backend.State.IsComplete())
+                            throw new InvalidOperationException("Native Oracle completion button is unavailable.");
+                        var finalSelection = backend.State.SpellSelections.Single(value => value.Spellbook == oracle.Spellbook);
+                        bool oneNormalRecall = finalSelection.LevelCount[6].SpellSelections.Length == 1 &&
+                            ReferenceEquals(finalSelection.LevelCount[6].SpellSelections[0], recall) && !finalSelection.CanSpendSlot(6, 0) &&
+                            (finalSelection.ExtraSelected == null || finalSelection.ExtraSelected.Length == 0);
+                        finish.onClick.Invoke(); committed = true; backend = null;
+                        captureStarterItems("oracle-commit-starter-items");
+                        foreach (int tick in WaitTeleportLevelUpUi(() => !presenter.IsShow, "Oracle native committed level-up")) yield return tick;
+                        ui.LevelUpController = priorBackend;
+                        book = unit.Descriptor.GetSpellbook(oracle.Spellbook);
+                        CaptureTeleportSpellbookUi("oracle-real-commit", new { oneNormalRecall, normalAllowance = book.Blueprint.SpellsKnown.GetCount(book.CasterLevel, 6),
+                            learned = book.GetKnownSpells(6).Select(value => new { id = value.Blueprint.AssetGuid, value.Blueprint.name }).ToArray(), successes });
+                        TeleportSpellbookUiAssert("oracle-real-commit", "native completion learns the canonical spell in Oracle 12 using one normal sixth-level choice",
+                            "level=" + unit.Descriptor.Progression.GetClassLevel(oracle) + ";known=" + book.GetKnownSpells(6).Count() + ";callbacks=" + successes,
+                            unit.Descriptor.Progression.GetClassLevel(oracle) == 12 && book.CasterLevel == 12 && successes == 1 &&
+                            oneNormalRecall && book.GetKnownSpells(6).Count(value => ReferenceEquals(value.Blueprint, recall)) == 1 &&
+                            book.Blueprint.SpellsKnown.GetCount(book.CasterLevel, 6) == 1);
+                    }
+                }
+                // Native scene and party registration only for this owned unit.
+                player.PartyCharacters.Add(unit);
+                player.InvalidateCharacterLists(); player.UpdateCharacterLists();
+                if (!player.Party.Contains(unit)) throw new InvalidOperationException("The learned Oracle did not enter the traveling party.");
+                captureStarterItems("oracle-party-starter-items");
+                game.LoadArea(game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint, Kingmaker.EntitySystem.Persistence.AutoSaveMode.None);
+                var watch = Stopwatch.StartNew();
+                while (Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance.IsLoadingInProcess ||
+                    Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance.IsLoadingScreenActive ||
+                    Kingmaker.Globalmap.GlobalMapRules.Instance == null || game.CurrentMode != GameModeType.GlobalMap)
+                { if (watch.Elapsed.TotalSeconds > 60) throw new InvalidOperationException("Learned Oracle world-map load timed out."); yield return 0; }
+                foreach (int tick in CastNewlyLearnedOracleRecall(unit, book)) yield return tick;
+            }
+            finally
+            {
+                if (backend != null)
+                {
+                    if (presenter.IsShow && ReferenceEquals(presenter.LevelUpController, backend)) presenter.Show(false);
+                    if (!committed) backend.Cancel();
+                }
+                ui.LevelUpController = priorBackend; presenter.Unit = priorPresenter;
+                if (unit != null)
+                {
+                    player.PartyCharacters.RemoveAll(value => value.UniqueId == unit.UniqueId);
+                    if (unit.HoldingState != null && unit.HoldingState.AllEntityData.Contains(unit)) unit.HoldingState.RemoveEntityData(unit);
+                    unit.Dispose();
+                }
+                player.InvalidateCharacterLists(); player.UpdateCharacterLists();
+                // Only positive item deltas captured synchronously after this
+                // owned character's native seed/commit/registration are removed.
+                foreach (var entry in starterDeltas)
+                    if (ReferenceEquals(entry.Key.Collection, player.Inventory) && entry.Key.Count >= entry.Value)
+                        player.Inventory.Remove(entry.Key, entry.Value);
+                game.IsPaused = originalPause;
+                Application.logMessageReceived -= ObserveTeleportSpellbookUiException;
+                bool restored = originalParty.SequenceEqual(player.Party) && originalPartyRefs.SequenceEqual(player.PartyCharacters) &&
+                    originalCross.SequenceEqual(player.CrossSceneState.AllEntityData) && originalItems.SequenceEqual(player.Inventory.Items) &&
+                    originalCounts.SequenceEqual(originalItems.Select(value => value.Count)) && player.Money == originalMoney && !_workingSaveSmoke.WriteObserved;
+                CaptureTeleportSpellbookUi("oracle-real-cleanup", new { restored, originalMoney, money = player.Money,
+                    partyRestored = originalParty.SequenceEqual(player.Party), crossRestored = originalCross.SequenceEqual(player.CrossSceneState.AllEntityData),
+                    inventoryRestored = originalItems.SequenceEqual(player.Inventory.Items),
+                    originalInventory = originalItems.Select((value, index) => new { instance = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value), id = value.Blueprint.AssetGuid, before = originalCounts[index], after = value.Count }).ToArray(),
+                    currentInventory = player.Inventory.Items.Select(value => new { instance = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value), id = value.Blueprint.AssetGuid, value.Count }).ToArray(), exceptions = _teleportationSpellbookUiExceptions.ToArray() });
+                TeleportSpellbookUiAssert("oracle-real-cleanup", "owned Oracle removed; exact original party, inventory, money and settings; no save write", "restored=" + restored, restored);
+                TeleportSpellbookUiAssert("oracle-real-exceptions", "no native or mod exception from Oracle seed through learned casting and cleanup", "count=" + _teleportationSpellbookUiExceptions.Count, _teleportationSpellbookUiExceptions.Count == 0);
+            }
+        }
+        private static void FillOracleNativeChoices(LevelUpController backend)
+        {
+            for (int step = 0; step < 256; step++)
+            {
+                if (backend.State.AttributePoints > 0 && backend.SpendAttributePoint(StatType.Charisma)) continue;
+                var feature = backend.State.Selections.FirstOrDefault(value => !value.Selected && value.CanSelectAnything(backend.State, backend.Preview));
+                if (feature != null)
+                {
+                    var item = feature.Selection.ExtractSelectionItems(backend.Unit, backend.Preview)
+                        .Where(value => feature.Selection.CanSelect(backend.Preview, backend.State, feature, value))
+                        .OrderBy(value => value.Feature.name.Contains("BattleMystery") ? 0 : 1)
+                        .ThenBy(value => value.Feature.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+                    if (item != null && backend.SelectFeature(feature, item)) continue;
+                }
+                bool selected = false;
+                foreach (var selection in backend.State.SpellSelections.ToArray())
+                {
+                    var book = backend.Preview.GetSpellbook(selection.Spellbook);
+                    for (int level = 0; level < selection.LevelCount.Length && !selected; level++)
+                    {
+                        var slots = selection.LevelCount[level];
+                        if (slots == null) continue;
+                        int slot = Array.FindIndex(slots.SpellSelections, value => value == null);
+                        if (slot < 0) continue;
+                        var spell = selection.SpellList.GetSpells(level).Where(value => !book.IsKnown(value))
+                            .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+                        if (spell != null) selected = backend.SelectSpell(selection.Spellbook, selection.SpellList, level, spell, slot);
+                    }
+                    if (selected) break;
+                }
+                if (selected) continue;
+                foreach (StatType skill in Enum.GetValues(typeof(StatType)))
+                    if (skill.ToString().StartsWith("Skill", StringComparison.Ordinal) && backend.State.SkillPointsRemaining > 0 && backend.SpendSkillPoint(skill))
+                    { selected = true; break; }
+                if (!selected) return;
+            }
+            throw new InvalidOperationException("The bounded native Oracle choice helper did not converge.");
+        }
+        private IEnumerable<int> CastNewlyLearnedOracleRecall(UnitEntityData unit, Spellbook book)
+        {
+            var player = Game.Instance.Player;
+            var rules = Kingmaker.Globalmap.GlobalMapRules.Instance; var map = Kingmaker.Globalmap.GlobalMapRules.State;
+            var recall = TeleportationWorldMapAdapter.ReadRecall(player);
+            if (!recall.Known || recall.Established || recall.DestinationId != WordOfRecallDestinationPolicy.OlegId)
+                throw new InvalidOperationException("The named working save must have the pre-capital Recall sanctuary.");
+            var target = rules.AllLocations.Single(value => value.Blueprint.AssetGuid == recall.DestinationId);
+            var origin = FindTeleportInteractionChain(rules)[0];
+            if (origin == target) throw new InvalidOperationException("Learned Recall needs a distinct origin.");
+            var snapshot = new TeleportNativeFieldSnapshot(map);
+            var points = map.Locations.Values.Select(value => new TeleportNativeFieldSnapshot(value)).ToArray();
+            var ledger = player.MainCharacter.Value.Descriptor.Get<UnitPartTeleportFamiliarity>();
+            var ledgerSnapshot = new TeleportNativeFieldSnapshot(ledger);
+            var position = map.PartyPosition; var time = player.GameTime;
+            var history = map.HistoryTravels.ToArray(); var perception = map.PerceptionRolledLocations.ToArray();
+            var originalBooks = player.Party.Where(value => value != unit).SelectMany(value => value.Descriptor.Spellbooks).ToArray();
+            string originalResources = string.Join("|", originalBooks.Select(TeleportResourceFingerprint));
+            var panel = TeleportationFixturePanel();
+            var movement = new TeleportInteractionMovementObserver();
+            Kingmaker.PubSubSystem.EventBus.Subscribe(movement);
+            try
+            {
+                typeof(Kingmaker.Globalmap.State.LocationData).GetProperty("IsRevealed").GetSetMethod(true).Invoke(target.Data, new object[] { true });
+                target.Data.EdgesOpened = true; target.Data.IsClosed = false;
+                rules.SetCurrentPosition(new Kingmaker.Globalmap.State.MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                unit.IsInGame = true;
+                book.Rest();
+                int slots = book.GetSpontaneousSlots(6);
+                SelectTeleportationCastingPoint(panel, target);
+                foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                if (rows == null) throw new InvalidOperationException("Learned Oracle has no native contextual action rows.");
+                var action = rows.Actions.Single(value => value.Source.CasterId == unit.UniqueId && value.Source.BookId == book.Blueprint.AssetGuid &&
+                    value.Source.Kind == TeleportCastSourceKind.Spontaneous && value.Source.Spell == TeleportSpellKind.WordOfRecall);
+                var click = rows.Buttons[rows.Actions.ToList().IndexOf(action)].onClick;
+                TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                TeleportDirectCastOutcome cast;
+                using (var observer = new TeleportNotificationObserver())
+                {
+                    click.Invoke(); click.Invoke();
+                    cast = TeleportContextConfirmationPresenter.LastDirectCast;
+                    TeleportSpellbookUiAssert("oracle-learned-quiet", "newly learned spontaneous Recall succeeds without a confirmation or success warning",
+                        "warnings=" + observer.Text.Count, cast != null && observer.Text.Count == 0 && !DialogMessageBox.Instance.IsShown);
+                }
+                for (int frame = 0; frame < 8; frame++) yield return 0;
+                click.Invoke();
+                bool exact = cast != null && cast.Transaction.State == TeleportTransactionState.Completed &&
+                    cast.Execution.Resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne &&
+                    book.GetSpontaneousSlots(6) == slots - 1 && map.PartyLocation == target.Blueprint &&
+                    map.TravelData == null && movement.Starts == 1 && player.GameTime == time &&
+                    originalResources == string.Join("|", originalBooks.Select(TeleportResourceFingerprint));
+                CaptureTeleportSpellbookUi("oracle-newly-learned-cast", new { exact, unitId = unit.UniqueId, book = book.Blueprint.AssetGuid,
+                    before = slots, after = book.GetSpontaneousSlots(6), sanctuary = target.Blueprint.AssetGuid,
+                    transaction = cast == null ? null : cast.Transaction.State.ToString(), movement.Starts,
+                    castEvidence = cast == null ? null : cast.Execution.LastEvidence });
+                TeleportSpellbookUiAssert("oracle-newly-learned-cast", "one native spontaneous slot casts learned canonical Recall directly to Oleg; repeat callbacks spend nothing more",
+                    "exact=" + exact, exact);
+            }
+            finally
+            {
+                panel.Hide(); Kingmaker.PubSubSystem.EventBus.Unsubscribe(movement);
+                foreach (var point in points) point.Restore(); ledgerSnapshot.Restore(); snapshot.Restore();
+                map.HistoryTravels.Clear(); foreach (var value in history) map.HistoryTravels.Add(value);
+                map.PerceptionRolledLocations.Clear(); foreach (var value in perception) map.PerceptionRolledLocations.Add(value);
+                rules.SetCurrentPosition(position); rules.UpdatePawnPosition();
+                TeleportSpellbookUiAssert("oracle-cast-map-cleanup", "exact pre-cast map fields, ledger and other party spell resources restored",
+                    "map=" + snapshot.Matches(), snapshot.Matches() && points.All(value => value.Matches()) && ledgerSnapshot.Matches() &&
+                    originalResources == string.Join("|", originalBooks.Select(TeleportResourceFingerprint)) && player.GameTime == time && !_workingSaveSmoke.WriteObserved);
             }
         }
         private sealed class TeleportLevelUpEntry
@@ -168,6 +500,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         counts = value.LevelCount.Select(part => part == null ? 0 : part.SpellSelections.Length).ToArray() }).ToArray() });
                 if (!controller.Spells.IsUnlocked || !controller.Spells.IsAvailible)
                     throw new InvalidOperationException("Native prerequisites did not unlock the spell-selection phase.");
+                CaptureTeleportSpellbookUi("native-learning-list-" + caseId, new {
+                    classId = entry.Class.AssetGuid,
+                    classBook = entry.Class.Spellbook.AssetGuid,
+                    effectiveBook = backend.Preview.Progression.GetClassData(entry.Class).Spellbook.AssetGuid,
+                    archetypes = backend.Preview.Progression.GetClassData(entry.Class).Archetypes.Select(value => value.AssetGuid).ToArray(),
+                    knownBefore = book.IsKnown(spell),
+                    abilityId = spell.AssetGuid,
+                    metadata = spell.ComponentsArray.OfType<Kingmaker.Blueprints.Classes.Spells.SpellListComponent>()
+                        .Select(value => new { list = value.SpellList.AssetGuid, value.SpellLevel }).ToArray(),
+                    lists = backend.State.SpellSelections.Select(value => new {
+                        book = value.Spellbook.AssetGuid, list = value.SpellList.AssetGuid,
+                        level = entry.SpellLevel,
+                        normalChoices = value.LevelCount[entry.SpellLevel] == null ? 0 : value.LevelCount[entry.SpellLevel].SpellSelections.Length,
+                        raw = value.SpellList.SpellsByLevel[entry.SpellLevel].Spells.Count(ability => ReferenceEquals(ability, spell)),
+                        filtered = value.SpellList.GetSpells(entry.SpellLevel).Count(ability => ReferenceEquals(ability, spell))
+                    }).ToArray()
+                });
                 controller.SetPhase((int)CharBPhase.Type.Spells);
                 foreach (int tick in WaitTeleportLevelUpUi(() => controller.GetComponentsInChildren<CharBSelectionSwitchItem>(true).Any(value =>
                     value.gameObject.activeInHierarchy && value.SpellSelectionData != null && value.SpellSelectionData.Spellbook == entry.Class.Spellbook), "native spell collections")) yield return tick;
@@ -195,7 +544,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TeleportSpellbookUiAssert("available-row-" + caseId, "published strategic spell appears as an enabled native level-up choice at the exact spell level",
                     "spell=" + row.BlueprintAbility.AssetGuid + ";level=" + row.SpellLevel,
                     row.SpellLevel == entry.SpellLevel && row.Toggle.interactable && controller.CurrentPhase == CharBPhase.Type.Spells &&
-                    controller.Spells.CurrentSpellSelectionData.SpellList.AssetGuid == TeleportationSpellListPublication.WizardListId &&
+                    ReferenceEquals(controller.Spells.CurrentSpellSelectionData.SpellList, entry.Class.Spellbook.SpellList) &&
                     row.GetComponentsInChildren<TextMeshProUGUI>(true).Any(value => value.isActiveAndEnabled && !value.isTextTruncated &&
                         string.Equals(value.GetParsedText(), spell.Name, StringComparison.OrdinalIgnoreCase)));
                 row.Toggle.isOn = true;

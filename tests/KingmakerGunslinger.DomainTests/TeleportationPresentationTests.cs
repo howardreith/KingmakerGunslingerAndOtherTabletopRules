@@ -1,4 +1,4 @@
-﻿using KingmakerGunslinger.Spells.Teleportation;
+using KingmakerGunslinger.Spells.Teleportation;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -50,12 +50,14 @@ namespace KingmakerGunslinger.DomainTests
         internal static void ScrollRowsUseSharedStockWording()
         {
             var scroll = ScrollRow(uses: 3);
-            Assertions.Equal("Use Teleport Scroll\ncaster-a \u00b7 3 shared scrolls \u00b7 CL 9", TeleportContextPresentation.CompactRow(scroll, English),
-                "Scroll compact row: use-scroll title over reader and shared stock.");
+            Assertions.Equal("Use Scroll of Teleport\n3 available", TeleportContextPresentation.CompactRow(scroll, English),
+                "One compact scroll title and shared stock, without the automatically chosen reader.");
             var single = ScrollRow(uses: 1);
-            Assertions.Equal("Use Teleport Scroll\ncaster-a \u00b7 1 shared scroll \u00b7 CL 9", TeleportContextPresentation.CompactRow(single, English),
-                "Singular shared-scroll wording.");
+            Assertions.Equal("Use Scroll of Teleport\n1 available", TeleportContextPresentation.CompactRow(single, English),
+                "A single scroll uses the same compact stock wording.");
             string confirmation = TeleportContextPresentation.Confirmation(scroll, TeleportFamiliarity.VeryFamiliar, English);
+            Assertions.False(confirmation.Contains("caster-a") || confirmation.Contains("Caster:"), "Routine confirmation omits the automatic reader.");
+            Assertions.Equal("Use Scroll of Teleport (3 available)", TeleportContextPresentation.Row(scroll, English), "Controller uses the same compact source label.");
             Assertions.True(confirmation.Contains("Scroll caster level: 9.") &&
                 confirmation.Contains("This consumes one Teleport scroll and no spell slot."),
                 "Scroll confirmation states the one-scroll cost and no slot.");
@@ -112,8 +114,23 @@ namespace KingmakerGunslinger.DomainTests
                 "Mishap-limit failures still announce.");
             Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.Teleport, TeleportExecutionStatus.Arrived),
                 "Ordinary Teleport still reports its outcome.");
-            Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.WordOfRecall, TeleportExecutionStatus.Arrived),
-                "Word of Recall still reports its outcome.");
+            Assertions.True(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.WordOfRecall, TeleportExecutionStatus.Arrived),
+                "Verified Recall arrival is quiet");
+            Assertions.False(TeleportContextPresentation.SuppressSuccessAnnouncement(TeleportSpellKind.WordOfRecall, TeleportExecutionStatus.NoLegalAlternate),
+                "Recall failures remain actionable");
+        }
+        internal static void ScrollFailureNamesTheActualReaderAndVerifiedExpenditure()
+        {
+            foreach (TeleportExpenditure spent in System.Enum.GetValues(typeof(TeleportExpenditure)))
+            {
+                string message = TeleportContextPresentation.ScrollActivationFailure("Reader A",
+                    TeleportSpellKind.WordOfRecall, spent, English);
+                Assertions.True(message.StartsWith("Reader A failed to activate the Scroll of Word of Recall."), "Actual reader and spell are named.");
+                Assertions.False(message.Contains("{0}") || message.Contains("arrived"), "No unresolved template or false arrival.");
+                Assertions.Equal(spent == TeleportExpenditure.None, message.Contains("No scroll was consumed."), "No-consumption claim requires exact evidence.");
+                Assertions.Equal(spent == TeleportExpenditure.ExactlyOne, message.Contains("One scroll was consumed."), "Consumption claim requires exact evidence.");
+                Assertions.Equal(spent == TeleportExpenditure.Ambiguous, message.Contains("could not be verified"), "Uncertainty is explicit.");
+            }
         }
         internal static void ConfirmationShowsExactOddsAndOrdinaryCount()
         {

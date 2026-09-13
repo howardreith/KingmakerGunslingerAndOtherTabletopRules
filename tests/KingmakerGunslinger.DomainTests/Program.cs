@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.oracle.ReconcilerSourceContract", TeleportationOracleRecallTests.ReconcilerSourceContract),
             Case("teleportation.oracle.BasePublicationPreservedContract", TeleportationOracleRecallTests.BasePublicationPreservedContract),
             Case("teleportation.oracle.ScrollIdentityPreservedContract", TeleportationOracleRecallTests.ScrollIdentityPreservedContract),
+            Case("teleportation.presentation.ScrollFailureNamesTheActualReaderAndVerifiedExpenditure", TeleportationContextTests.ScrollFailureNamesTheActualReaderAndVerifiedExpenditure),
             Case("teleportation.presentation.PreparedRowIncludesCurrentCount", TeleportationContextTests.PreparedRowIncludesCurrentCount),
             Case("teleportation.presentation.CompactRowUsesTitleAndDetailLines", TeleportationContextTests.CompactRowUsesTitleAndDetailLines),
             Case("teleportation.presentation.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous", TeleportationContextTests.CompactSpontaneousRowNamesLevelAndBookWhenAmbiguous),
@@ -106,6 +107,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.OnlyRealUsableSpellSources", TeleportationContextTests.OnlyRealUsableSpellSources),
             Case("teleportation.CancellationAndStalenessSpendNothing", TeleportationContextTests.CancellationAndStalenessSpendNothing),
             Case("teleportation.PreparedAndSpontaneousSpendOnce", TeleportationContextTests.PreparedAndSpontaneousSpendOnce),
+            Case("teleportation.OnlyVerifiedNativePreservationAllowsUnspentScrollUse", TeleportationContextTests.OnlyVerifiedNativePreservationAllowsUnspentScrollUse),
             Case("teleportation.ProvenPreEffectFailureCompensates", TeleportationContextTests.ProvenPreEffectFailureCompensates),
             Case("teleportation.AmbiguousOrPostEffectFailureNeverRefunds", TeleportationContextTests.AmbiguousOrPostEffectFailureNeverRefunds),
             Case("teleportation.AlternateDistancePreferenceAndExclusions", TeleportationContextTests.AlternateDistancePreferenceAndExclusions),
@@ -131,6 +133,14 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.exploration.LegacyCampaignHasNoBoundary", TeleportationExplorationTests.LegacyCampaignHasNoBoundary),
             Case("teleportation.exploration.OrdinaryWalkingReleasesMalformedSavedData", TeleportationExplorationTests.OrdinaryWalkingReleasesMalformedSavedData),
             Case("teleportation.exploration.InvalidBoundariesFailClosed", TeleportationExplorationTests.InvalidBoundariesFailClosed),
+            Case("teleportation.readers.NativeChecksDetermineSuccess", TeleportationReaderTests.NativeChecksDetermineSuccess),
+            Case("teleportation.readers.GuaranteedReaderBeatsFallibleAndWinsTies", TeleportationReaderTests.GuaranteedReaderBeatsFallibleAndWinsTies),
+            Case("teleportation.readers.BestActualChanceBeatsHighestDisplayedSkill", TeleportationReaderTests.BestActualChanceBeatsHighestDisplayedSkill),
+            Case("teleportation.readers.TiesRemainStableAndUnsupportedChancesAreNotInvented", TeleportationReaderTests.TiesRemainStableAndUnsupportedChancesAreNotInvented),
+            Case("teleportation.reader.grouped-stock", TeleportationContextTests.EquivalentScrollReadersProduceOneStockRow),
+            Case("teleportation.reader.stable-group-identity", TeleportationContextTests.ScrollReaderChangesPreserveActionIdentity),
+            Case("teleportation.reader.per-variant-selection", TeleportationContextTests.BestReaderIsSelectedForEachSpellAndVariant),
+            Case("teleportation.reader.unsupported-comparison", TeleportationContextTests.UnsupportedReaderComparisonStaysExplicit),
             Case("teleportation.ExactD100Tables", TeleportationPolicyTests.ExactD100Tables),
             Case("teleportation.InvalidRollsFailClosed", TeleportationPolicyTests.InvalidRollsFailClosed),
             Case("teleportation.SeverityIsMonotonic", TeleportationPolicyTests.SeverityIsMonotonic),

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -63,6 +63,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Concat(new[] { new TeleportNativeFieldSnapshot(ledger) }).ToArray();
             var originalUmdbase = new Dictionary<string, int>();
             BlueprintItemEquipmentUsable variant = null;
+            var blockedReaders = new List<Kingmaker.EntitySystem.Entities.UnitEntityData>();
+            ModifiableValue.Modifier failurePenalty = null;
             try
             {
                 var chain = FindTeleportInteractionChain(rules);
@@ -172,6 +174,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // UMD-only reader: trained ranks alone qualify an uncertain attempt.
                 umdReader.Descriptor.Stats.GetStat(Kingmaker.EntitySystem.Stats.StatType.SkillUseMagicDevice).BaseValue = 1;
                 var umdSources = TeleportationScrollAdapter.Enumerate(player).ToArray();
+                CaptureTeleportScrolls("native-reader-forecasts", umdSources.Select(value => new {
+                    value.CasterId, value.Spell, value.ScrollGroupId, value.Uses,
+                    chance = value.ActivationChance == null ? null : new { value.ActivationChance.Supported,
+                        value.ActivationChance.NoCheck, value.ActivationChance.Probability, value.ActivationChance.Diagnostic }
+                }).ToArray());
                 var umdTeleport = umdSources.FirstOrDefault(value => value.CasterId == umdReader.UniqueId && value.Spell == TeleportSpellKind.Teleport);
                 ScrollsAssert("reader-umd-only", "a UMD-only reader with no relevant class list offers the scroll for an uncertain attempt",
                     "uses=" + (umdTeleport == null ? "absent" : umdTeleport.Uses.ToString()), umdTeleport != null && umdTeleport.Uses == 3);
@@ -208,10 +215,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (rows == null) throw new InvalidOperationException("No destination rows were composed for the scroll cast.");
                 var scrollRow = rows.Actions.FirstOrDefault(value => value.Source.Kind == TeleportCastSourceKind.Scroll &&
-                    value.Source.Spell == TeleportSpellKind.Teleport && value.Source.CasterId == umdReader.UniqueId);
-                ScrollsAssert("scroll-row-composed", "the world map composes the compact Use Teleport Scroll row for the UMD reader",
+                    value.Source.Spell == TeleportSpellKind.Teleport);
+                ScrollsAssert("scroll-row-composed", "one compact scroll group automatically binds the guaranteed class-list reader",
                     "uses=" + (scrollRow == null ? "absent" : scrollRow.Source.Uses.ToString()),
-                    scrollRow != null && scrollRow.Source.Uses == 3);
+                    scrollRow != null && scrollRow.Source.Uses == 3 && scrollRow.ReaderResolved &&
+                    scrollRow.Source.CasterId == bookReader.UniqueId && scrollRow.Source.ActivationChance.Supported &&
+                    scrollRow.Source.ActivationChance.NoCheck && rows.Actions.Count(value => value.Source.Kind == TeleportCastSourceKind.Scroll &&
+                        value.Source.Spell == TeleportSpellKind.Teleport) == 1);
                 var bookRowsBefore = rows.Actions.Count(value => value.Source.Kind != TeleportCastSourceKind.Scroll);
                 // Cancellation first: the native No control consumes nothing.
                 rows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
@@ -227,8 +237,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";pending=" + TeleportContextConfirmationPresenter.Pending,
                     TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport) == 3 &&
                     bookFingerprint == TeleportResourceFingerprint(book) && !TeleportContextConfirmationPresenter.Pending);
+                foreach (int tick in QualifyAutomaticScrollReaders(panel, target, bookReader, umdReader)) yield return tick;
+                // Remove the guaranteed reader from native item eligibility for
+                // this controlled failure only; no selection row names a reader.
+                foreach (var reader in party.Where(value => !ReferenceEquals(value, umdReader)))
+                { reader.Descriptor.State.MagicItemsForbidden.Retain(); blockedReaders.Add(reader); }
+                var failureStat = umdReader.Stats.GetStat(StatType.SkillUseMagicDevice);
+                failurePenalty = failureStat.AddModifier(1 - failureStat.ModifiedValue, (Kingmaker.Blueprints.GameLogicComponent)null,
+                    Kingmaker.Enums.ModifierDescriptor.UntypedStackable);
                 // Deterministic native activation FAILURE: the rank-1 UMD reader
-                // cannot pass the genuine UMD check, so the native activation is
+                // has a request-local penalty making even twenty insufficient;
+                // it cannot pass the genuine UMD check, so native activation is
                 // refused — nothing consumed, no teleport, no compensation needed.
                 for (int attempt = 0; attempt < 3; attempt++)
                 {
@@ -240,13 +259,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var failureRow = rows.Actions.Single(value => value.Key == scrollRow.Key);
                 rows.QualificationRolls = new TeleportationFixtureRolls(new int[0]);
-                rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == failureRow.Key)].onClick.Invoke();
+                if (!failureRow.ReaderResolved || failureRow.Source.CasterId != umdReader.UniqueId ||
+                    failureRow.Source.ActivationChance == null || !failureRow.Source.ActivationChance.Supported || failureRow.Source.ActivationChance.Probability != 0m)
+                    throw new InvalidOperationException("The controlled native UMD failure must bind the sole eligible zero-chance reader.");
+                var failureEvent = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == failureRow.Key)].onClick;
+                failureEvent.Invoke(); failureEvent.Invoke(); // Original event twice in the SAME FRAME.
                 var failureRequest = TeleportContextConfirmationPresenter.Current;
                 if (failureRequest == null || !DialogMessageBox.Instance.IsShown)
                     throw new InvalidOperationException("The UMD-failure confirmation did not open.");
                 for (int frame = 0; frame < 8; frame++) yield return 0;
-                TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
-                for (int frame = 0; frame < 12; frame++) yield return 0;
+                using (var notifications = new TeleportNotificationObserver())
+                {
+                    TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                    for (int frame = 0; frame < 12; frame++) yield return 0;
+                    failureEvent.Invoke(); // Later stale callback must not try another reader.
+                    string expected = TeleportContextPresentation.ScrollActivationFailure(umdReader.CharacterName,
+                        TeleportSpellKind.Teleport, TeleportExpenditure.None, TeleportationText.Get);
+                    CaptureTeleportScrolls("named-failure-notifications", new { expected, actual = notifications.Text.ToArray() });
+                    ScrollsAssert("scroll-failure-native-notification", "production warning boundary emits one actual-reader failure with verified no consumption",
+                        "messages=" + string.Join("|", notifications.Text), notifications.Text.Count == 1 && notifications.Text[0] == expected &&
+                        !expected.Contains("{0}") && bookFingerprint == TeleportResourceFingerprint(book));
+                }
                 bool refused = failureRequest.Transaction.State == TeleportTransactionState.ActivationRefused;
                 ScrollsAssert("scroll-activation-umd-failure", "a genuine failed UMD check refuses the activation: nothing consumed, no teleport, no refund attempted",
                     "state=" + failureRequest.Transaction.State + ";stock=" + TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport) +
@@ -254,6 +287,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     refused && TeleportationScrollAdapter.Stock(player.Party, scrolls.Teleport) == 3 &&
                         map.PartyLocation.AssetGuid == origin.Blueprint.AssetGuid &&
                         !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown);
+                var failedNative = (TeleportationScrollCastResource)failureRequest.Execution.Resource;
+                ScrollsAssert("automatic-failure-one-native-attempt", "same-frame and later original callbacks make exactly one native attempt by the automatically selected reader",
+                    "reader=" + failedNative.ActualReaderId + ";events=" + failedNative.NativeEventCount,
+                    failedNative.ActualReaderId == umdReader.UniqueId && failedNative.NativeEventCount == 1 &&
+                    failedNative.ObserveExpenditure() == TeleportExpenditure.None);
+                CaptureTeleportScrolls("automatic-native-failure", failedNative.Evidence());
+                foreach (var reader in blockedReaders) reader.Descriptor.State.MagicItemsForbidden.Release();
+                blockedReaders.Clear();
+                umdReader.Stats.GetStat(StatType.SkillUseMagicDevice).RemoveModifier(failurePenalty); failurePenalty = null;
                 // Commit the scroll cast through the class-list reader with ZERO
                 // UMD ranks: the native activation succeeds without any die roll.
                 for (int attempt = 0; attempt < 3; attempt++)
@@ -268,13 +310,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var committedRow = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll &&
                     value.Source.CasterId == bookReader.UniqueId && value.Source.Spell == TeleportSpellKind.Teleport);
                 rows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
-                rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == committedRow.Key)].onClick.Invoke();
+                var successEvent = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == committedRow.Key)].onClick;
+                successEvent.Invoke(); successEvent.Invoke();
                 var request = TeleportContextConfirmationPresenter.Current;
                 if (request == null || !DialogMessageBox.Instance.IsShown)
                     throw new InvalidOperationException("The committed scroll confirmation did not open.");
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
                 for (int frame = 0; frame < 12; frame++) yield return 0;
+                successEvent.Invoke();
+                var successfulNative = (TeleportationScrollCastResource)request.Execution.Resource;
+                ScrollsAssert("automatic-success-native-reader", "the selected guaranteed reader performs exactly one real native activation with no UMD roll",
+                    "reader=" + successfulNative.ActualReaderId + ";events=" + successfulNative.NativeEventCount,
+                    successfulNative.ActualReaderId == bookReader.UniqueId && successfulNative.NativeEventCount == 1 && !successfulNative.RequiredUmd);
                 bool committed = request.Transaction.State == TeleportTransactionState.Completed &&
                     request.Transaction.Result != null && request.Transaction.Result.Status == TeleportExecutionStatus.Arrived &&
                     request.Transaction.Result.DestinationId == target.Blueprint.AssetGuid;
@@ -421,20 +469,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                         map.PartyLocation.AssetGuid == ordinaryPoint &&
                         !TeleportationScrollActivationGate.Authorized(bookReader));
 
-                // R2: the two same-count variants are VISIBLY distinct choices:
-                // rows and confirmation name the caster level.
+                // Variant qualifiers come from real group composition, not
+                // fixture-created per-reader actions. Replenish only the owned
+                // variant so both choices are live during native rendering.
+                party[1].Inventory.Add(variant, 1);
+                rules.SetCurrentPosition(new MapPosition(origin.Blueprint)); rules.UpdatePawnPosition();
+                SelectTeleportationCastingPoint(panel, target);
+                foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
                 var cl9Row = variantSources.First(value => value.BookId == scrolls.Teleport.AssetGuid);
                 var cl13Row = variantSources.First(value => value.BookId == variant.AssetGuid);
-                var presentation = TeleportationWorldMapAdapter.Capture(false);
-                var presentationPoint = TeleportationWorldMapAdapter.ReadDestination(presentation, target.Blueprint);
-                var cl9Action = new WorldMapPointSpellAction(presentationPoint, origin.Blueprint.AssetGuid, cl9Row, false);
-                var cl13Action = new WorldMapPointSpellAction(presentationPoint, origin.Blueprint.AssetGuid, cl13Row, false);
-                var cl9Text = TeleportContextPresentation.CompactRow(cl9Action, TeleportationText.Get);
-                var cl13Text = TeleportContextPresentation.CompactRow(cl13Action, TeleportationText.Get);
+                var cl9Action = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.BookId == cl9Row.BookId);
+                var cl13Action = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.BookId == cl13Row.BookId);
+                var cl9Text = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == cl9Action.Key)].GetComponentInChildren<TMPro.TextMeshProUGUI>(true).text;
+                var cl13Text = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == cl13Action.Key)].GetComponentInChildren<TMPro.TextMeshProUGUI>(true).text;
                 ScrollsAssert("variant-rows-visibly-distinct",
-                    "same-count CL9 and CL13 variants carry visibly different rows naming the caster level",
+                    "live native CL9 and CL13 variant rows carry distinct compact caster-level qualifiers",
                     "cl9=" + cl9Text.Replace("\n", " | ") + ";cl13=" + cl13Text.Replace("\n", " | "),
-                    cl9Text.Contains("CL 9") && cl13Text.Contains("CL 13") && cl9Text != cl13Text);
+                    cl9Text.Contains("CL 9") && cl13Text.Contains("CL 13") && cl9Text != cl13Text &&
+                        !party.Any(value => cl9Text.Contains(value.CharacterName) || cl13Text.Contains(value.CharacterName)));
+                foreach (int tick in CaptureTeleportationSupportingScreenshot("desktop-scroll-variants")) yield return tick;
+                party[1].Inventory.Remove((BlueprintItem)variant, 1);
+                panel.Hide();
                 // R2: same caster level but a materially different item spell
                 // level is a separate group, never a silent substitution.
                 var spellLevelVariant = UnityEngine.Object.Instantiate(scrolls.Teleport);
@@ -765,7 +821,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var recallRow = oracleRows == null ? null : oracleRows.Actions.SingleOrDefault(value =>
                             value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.Spell == TeleportSpellKind.WordOfRecall &&
                             value.Source.CasterId == oracleReader.UniqueId);
-                        ScrollsAssert("oracle-sanctuary-row-composed", "the sanctuary destination composes the Word of Recall scroll row for the Oracle reader",
+                        ScrollsAssert("oracle-sanctuary-row-composed", "one sanctuary scroll action automatically binds the guaranteed Oracle reader",
                             "row=" + (recallRow == null ? "absent" : recallRow.Source.Uses.ToString(CultureInfo.InvariantCulture)),
                             recallRow != null && recallRow.Source.Uses == 2);
                         if (recallRow == null) throw new InvalidOperationException("The Oracle Word of Recall row was not composed at the sanctuary.");
@@ -773,12 +829,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         string oracleBooksBefore = string.Join("|", oracleReader.Descriptor.Spellbooks
                             .Select(value => TeleportResourceFingerprint(value)).ToArray());
                         oracleRows.QualificationRolls = new TeleportationFixtureRolls(new[] { 1 });
-                        oracleRows.Buttons[oracleRows.Actions.ToList().FindIndex(value => value.Key == recallRow.Key)].onClick.Invoke();
-                        var recallRequest = TeleportContextConfirmationPresenter.Current;
-                        if (recallRequest == null || !DialogMessageBox.Instance.IsShown)
-                            throw new InvalidOperationException("The Oracle Word of Recall confirmation did not open.");
+                        TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                        var recallEvent = oracleRows.Buttons[oracleRows.Actions.ToList().FindIndex(value => value.Key == recallRow.Key)].onClick;
+                        using (var notices = new TeleportNotificationObserver())
+                        {
+                            recallEvent.Invoke();
+                            recallEvent.Invoke();
+                            ScrollsAssert("recall-direct-success-quiet", "native warning boundary publishes no successful Recall announcement",
+                                "count=" + notices.Text.Count, notices.Text.Count == 0);
+                        }
+                        var recallRequest = TeleportContextConfirmationPresenter.LastDirectCast;
+                        if (recallRequest == null || DialogMessageBox.Instance.IsShown)
+                            throw new InvalidOperationException("The Oracle Word of Recall did not cast directly.");
                         for (int frame = 0; frame < 8; frame++) yield return 0;
-                        TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                        recallEvent.Invoke(); // Later stale callback cannot authorize another attempt.
                         for (int frame = 0; frame < 12; frame++) yield return 0;
                         bool recallCommitted = recallRequest.Transaction.State == TeleportTransactionState.Completed &&
                             recallRequest.Transaction.Result != null &&
@@ -800,6 +864,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         CaptureTeleportScrolls("oracle-sanctuary-cast", new {
                             committed = recallCommitted, destination = oleg.Blueprint.AssetGuid,
                             stockBefore = recallStockBefore, stockAfter = recallStockAfter });
+                        foreach (int tick in QualifyConsumedRecallFailure(panel, origin, oleg, oracleReader)) yield return tick;
+                        foreach (int tick in QualifyScrollConsumptionVariants(panel, origin, oleg, oracleReader)) yield return tick;
                     }
                 }
             }
@@ -807,6 +873,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 // Exact fixture restoration in reverse order.
+                foreach (var reader in blockedReaders) reader.Descriptor.State.MagicItemsForbidden.Release();
+                blockedReaders.Clear();
+                if (failurePenalty != null) party[1].Stats.GetStat(StatType.SkillUseMagicDevice).RemoveModifier(failurePenalty);
                 if (TeleportContextConfirmationPresenter.Pending && DialogMessageBox.Instance != null && DialogMessageBox.Instance.IsShown)
                 { try { TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke(); } catch { } }
                 foreach (var unit in party)
@@ -840,6 +909,390 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+
+        // Every mutation below belongs to this guarded, disposable request and
+        // is reversed before returning. The production forecast itself is read-only.
+        private IEnumerable<int> QualifyAutomaticScrollReaders(Kingmaker.UI.GlobalMap.GlobalMapMessageBox panel,
+            GlobalMapLocation target, Kingmaker.EntitySystem.Entities.UnitEntityData first,
+            Kingmaker.EntitySystem.Entities.UnitEntityData trained)
+        {
+            var player = Game.Instance.Player;
+            var party = player.Party.ToArray();
+            var scroll = BlueprintBootstrap.TeleportationScrolls.Teleport;
+            var second = party.FirstOrDefault(value => !ReferenceEquals(value, trained) &&
+                scroll.IsUnitNeedUMDForUse(value.Descriptor));
+            if (second == null) second = party.FirstOrDefault(value => !ReferenceEquals(value, first) && !ReferenceEquals(value, trained));
+            if (second == null) throw new InvalidOperationException("A second disposable reader is required.");
+            var originalClasses = second.Descriptor.Progression.Classes.ToArray();
+            bool isolatedClasses = false;
+            var secondStat = second.Stats.GetStat(StatType.SkillUseMagicDevice);
+            int secondBase = secondStat.BaseValue;
+            var modifiers = new List<ModifiableValue.Modifier>();
+            var blocked = new List<Kingmaker.EntitySystem.Entities.UnitEntityData>();
+            var affected = new List<Kingmaker.EntitySystem.Entities.UnitEntityData>();
+            var failure = ScriptableObject.CreateInstance<BlueprintFeature>();
+            failure.name = "KMG_Disposable_ScrollActivationFailure"; failure.Ranks = 1;
+            var failureComponent = ScriptableObject.CreateInstance<Kingmaker.UnitLogic.FactLogic.AddSpellFailureChance>(); failureComponent.Chance = 100;
+            failure.ComponentsArray = new Kingmaker.Blueprints.BlueprintComponent[] { failureComponent };
+            Func<WorldMapPointSpellAction> current = () => TeleportationWorldMapAdapter.Compose(
+                TeleportationWorldMapAdapter.Capture(false), target.Blueprint).Single(value =>
+                    value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.Spell == TeleportSpellKind.Teleport);
+            try
+            {
+                // The working party has only one naturally check-dependent
+                // member. Temporarily isolate the other's class-list eligibility
+                // within this synchronous control, restoring the exact native
+                // ClassData references before yielding or exercising the UI.
+                if (!scroll.IsUnitNeedUMDForUse(second.Descriptor))
+                { second.Descriptor.Progression.Classes.Clear(); isolatedClasses = true; }
+                if (!scroll.IsUnitNeedUMDForUse(second.Descriptor))
+                    throw new InvalidOperationException("The isolated native reader still bypasses UMD.");
+                foreach (var reader in party.Where(value => !scroll.IsUnitNeedUMDForUse(value.Descriptor)))
+                {
+                    // Native buff application is disabled on the strategic
+                    // map. A request-local native feature owns the same exact
+                    // AddSpellFailureChance subscriber without changing that gate.
+                    if (reader.Descriptor.AddFact(failure) == null) throw new InvalidOperationException("The native owned failure fact was rejected.");
+                    affected.Add(reader);
+                }
+                var winner = current();
+                ScrollsAssert("native-item-failure-changes-best-reader", "a trained UMD reader beats class-list readers subject to native 100% spell failure",
+                    "winner=" + winner.Source.CasterId + ";chance=" + winner.Source.ActivationChance.Probability,
+                    winner.ReaderResolved && winner.Source.CasterId == trained.UniqueId && winner.Source.ActivationChance.Probability > 0m &&
+                    TeleportationScrollAdapter.Enumerate(player).Where(value => value.Spell == TeleportSpellKind.Teleport &&
+                        !scroll.IsUnitNeedUMDForUse(party.Single(unit => unit.UniqueId == value.CasterId).Descriptor))
+                        .All(value => value.ActivationChance.Supported && value.ActivationChance.Probability == 0m));
+                secondStat.BaseValue = 1;
+                modifiers.Add(secondStat.AddModifier(trained.Stats.GetStat(StatType.SkillUseMagicDevice).ModifiedValue + 4 - secondStat.ModifiedValue,
+                    (Kingmaker.Blueprints.GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.UntypedStackable));
+                winner = current();
+                var supported = TeleportationScrollAdapter.Enumerate(player).Where(value => value.Spell == TeleportSpellKind.Teleport).ToArray();
+                ScrollsAssert("native-best-fallible-reader", "among fallible readers native effective UMD/DC/failure chance selects the highest probability",
+                    "winner=" + winner.Source.CasterId + ";chance=" + winner.Source.ActivationChance.Probability,
+                    winner.ReaderResolved && winner.Source.CasterId == second.UniqueId && winner.Source.ActivationChance.Probability < 1m &&
+                    supported.All(value => value.ActivationChance.Supported && value.ActivationChance.Probability <= winner.Source.ActivationChance.Probability));
+                CaptureTeleportScrolls("native-fallible-forecasts", supported.Select(value => new { value.CasterId, value.ActivationChance.Supported, value.ActivationChance.NoCheck,
+                    value.ActivationChance.Probability, value.ActivationChance.Diagnostic }).ToArray());
+                secondStat.RemoveModifier(modifiers[0]); modifiers.Clear();
+                modifiers.Add(secondStat.AddModifier(trained.Stats.GetStat(StatType.SkillUseMagicDevice).ModifiedValue - secondStat.ModifiedValue,
+                    (Kingmaker.Blueprints.GameLogicComponent)null, Kingmaker.Enums.ModifierDescriptor.UntypedStackable));
+                var expectedTie = Array.IndexOf(party, trained) < Array.IndexOf(party, second) ? trained : second;
+                ScrollsAssert("native-reader-ties-stable", "equal native activation probabilities choose stable traveling-party order on every refresh",
+                    "winner=" + current().Source.CasterId, Enumerable.Range(0, 12).All(index => current().Source.CasterId == expectedTie.UniqueId));
+                foreach (var reader in affected) reader.Descriptor.RemoveFact(failure); affected.Clear();
+                foreach (var modifier in modifiers) secondStat.RemoveModifier(modifier); modifiers.Clear();
+                secondStat.BaseValue = secondBase;
+                if (isolatedClasses)
+                { foreach (var data in originalClasses) second.Descriptor.Progression.Classes.Add(data); isolatedClasses = false; }
+                SelectTeleportationCastingPoint(panel, target);
+                foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                var action = current();
+                int indexOf = rows.Actions.ToList().FindIndex(value => value.Key == action.Key);
+                var originalButton = rows.Buttons[indexOf];
+                var labels = originalButton.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true);
+                string routineText = string.Join("|", labels.Select(value => value.text));
+                ScrollsAssert("group-row-native-presentation", "one reader-free native row stays inside the parchment with compact shared stock",
+                    routineText, rows.Actions.Count(value => value.Key == action.Key) == 1 && routineText.Contains("3 available") &&
+                    !party.Any(value => routineText.Contains(value.CharacterName)) &&
+                    labels.All(value => !value.isTextTruncated && !value.isTextOverflowing && Kingmaker.UI.Common.UIUtility.IsTransformInScreen(value.transform)));
+                var rng = UnityEngine.Random.state;
+                var rules = Game.Instance.Rulebook.Context;
+                var events = rules.AllEvents.ToArray();
+                string before = ScrollReaderResources(player);
+                var refresh = typeof(TeleportDestinationRows).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic);
+                for (int read = 0; read < 12; read++)
+                { current(); TeleportContextPresentation.CompactRow(action, TeleportationText.Get); refresh.Invoke(rows, null); }
+                ScrollsAssert("ranking-render-refresh-read-only", "ranking, composition and native row refresh change no RNG, rule history, item charges, buffs, parts, optional resources or spell slots",
+                    "rng=" + rng.Equals(UnityEngine.Random.state) + ";ruleContext=" + ReferenceEquals(rules, Game.Instance.Rulebook.Context) +
+                        ";resources=" + (before == ScrollReaderResources(player)), rng.Equals(UnityEngine.Random.state) &&
+                    ReferenceEquals(rules, Game.Instance.Rulebook.Context) && events.SequenceEqual(rules.AllEvents) && before == ScrollReaderResources(player));
+                // A changed eligible reader keeps the existing group widget.
+                first.Descriptor.State.MagicItemsForbidden.Retain(); blocked.Add(first);
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                var changed = rows.Actions.Single(value => value.Key == action.Key);
+                ScrollsAssert("reader-change-preserves-native-row", "reader availability changes replace the internal binding without replacing the group button",
+                    "reader=" + changed.Source.CasterId, changed.ReaderResolved && changed.Source.CasterId != first.UniqueId &&
+                    ReferenceEquals(originalButton, rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == action.Key)]));
+                first.Descriptor.State.MagicItemsForbidden.Release(); blocked.Clear();
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                var sourceEvent = originalButton.onClick;
+                sourceEvent.Invoke();
+                var confirmation = TeleportContextConfirmationPresenter.Current;
+                if (confirmation == null) throw new InvalidOperationException("The changed-reader confirmation did not open.");
+                for (int frame = 0; frame < 8; frame++) yield return 0;
+                var confirmEvent = TeleportationFixtureDialogButton("m_ButtonYes").onClick;
+                first.Descriptor.State.MagicItemsForbidden.Retain(); blocked.Add(first);
+                confirmEvent.Invoke(); // Revalidation must also work before the next Update.
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                ScrollsAssert("changed-reader-cancels-confirmation", "a different best reader cancels ordinary Teleport before spending or changing the displayed risk consent",
+                    "state=" + confirmation.Transaction.State, confirmation.Transaction.State == TeleportTransactionState.Cancelled &&
+                    confirmation.Execution.Resource == null && !TeleportContextConfirmationPresenter.Pending &&
+                    TeleportationScrollAdapter.Stock(player.Party, scroll) == 3);
+                first.Descriptor.State.MagicItemsForbidden.Release(); blocked.Clear();
+                SelectTeleportationCastingPoint(panel, target);
+                foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                sourceEvent = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == action.Key)].onClick;
+                foreach (var reader in party) { reader.Descriptor.State.MagicItemsForbidden.Retain(); blocked.Add(reader); }
+                using (var notifications = new TeleportNotificationObserver())
+                {
+                    var contextBefore = Game.Instance.Rulebook.Context;
+                    sourceEvent.Invoke(); sourceEvent.Invoke();
+                    ScrollsAssert("no-reader-at-click-unspent", "losing all eligible readers emits one honest no-reader notification and performs no native attempt",
+                        "messages=" + string.Join("|", notifications.Text), notifications.Text.Count == 1 &&
+                        notifications.Text[0].Contains("No eligible traveling-party member") &&
+                        !party.Any(value => notifications.Text[0].Contains(value.CharacterName)) &&
+                        TeleportationScrollAdapter.Stock(player.Party, scroll) == 3 && !TeleportContextConfirmationPresenter.Pending &&
+                        ReferenceEquals(contextBefore, Game.Instance.Rulebook.Context));
+                }
+            }
+            finally
+            {
+                foreach (var reader in blocked) reader.Descriptor.State.MagicItemsForbidden.Release();
+                foreach (var reader in affected) reader.Descriptor.RemoveFact(failure);
+                foreach (var modifier in modifiers) secondStat.RemoveModifier(modifier);
+                secondStat.BaseValue = secondBase;
+                if (isolatedClasses) foreach (var data in originalClasses) second.Descriptor.Progression.Classes.Add(data);
+                UnityEngine.Object.Destroy(failure); UnityEngine.Object.Destroy(failureComponent);
+                if (TeleportContextConfirmationPresenter.Pending && DialogMessageBox.Instance.IsShown)
+                    TeleportationFixtureDialogButton("m_ButtonNo").onClick.Invoke();
+                panel.Hide();
+            }
+        }
+        private IEnumerable<int> QualifyConsumedRecallFailure(Kingmaker.UI.GlobalMap.GlobalMapMessageBox panel,
+            GlobalMapLocation origin, GlobalMapLocation sanctuary, Kingmaker.EntitySystem.Entities.UnitEntityData reader,
+            BlueprintItemEquipmentUsable selectedScroll = null)
+        {
+            var player = Game.Instance.Player; var party = player.Party.ToArray();
+            var scroll = selectedScroll ?? BlueprintBootstrap.TeleportationScrolls.WordOfRecall;
+            var blocked = new List<Kingmaker.EntitySystem.Entities.UnitEntityData>();
+            var blueprint = ScriptableObject.CreateInstance<BlueprintFeature>();
+            blueprint.name = "KMG_Disposable_ConsumedRecallFailure"; blueprint.Ranks = 1;
+            var component = ScriptableObject.CreateInstance<Kingmaker.UnitLogic.FactLogic.AddSpellFailureChance>(); component.Chance = 100;
+            blueprint.ComponentsArray = new Kingmaker.Blueprints.BlueprintComponent[] { component };
+            bool factAdded = false;
+            try
+            {
+                foreach (var unit in party.Where(value => !ReferenceEquals(value, reader)))
+                { unit.Descriptor.State.MagicItemsForbidden.Retain(); blocked.Add(unit); }
+                factAdded = reader.Descriptor.AddFact(blueprint) != null;
+                if (!factAdded) throw new InvalidOperationException("Native Recall failure fact was rejected.");
+                GlobalMapRules.Instance.SetCurrentPosition(new MapPosition(origin.Blueprint)); GlobalMapRules.Instance.UpdatePawnPosition();
+                SelectTeleportationCastingPoint(panel, sanctuary); foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                var action = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.BookId == scroll.AssetGuid);
+                var bound = TeleportationScrollAdapter.Resolve(action.Source);
+                bool chargeOnly = action.Source.ScrollCost == TeleportScrollCostKind.Charge;
+                int beforeCharges = bound.Item.Charges;
+                int beforeStock = TeleportationScrollAdapter.Stock(player.Party, scroll);
+                string beforeBooks = string.Join("|", party.SelectMany(value => value.Descriptor.Spellbooks).Select(TeleportResourceFingerprint));
+                var callback = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == action.Key)].onClick;
+                TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                using (var notifications = new TeleportNotificationObserver())
+                {
+                    callback.Invoke(); callback.Invoke();
+                    var cast = TeleportContextConfirmationPresenter.LastDirectCast;
+                    yield return 0; callback.Invoke();
+                    var resource = cast == null ? null : cast.Execution.Resource as TeleportationScrollCastResource;
+                    string expected = TeleportContextPresentation.ScrollActivationFailure(reader.CharacterName, TeleportSpellKind.WordOfRecall,
+                        TeleportExpenditure.ExactlyOne, TeleportationText.Get, chargeOnly);
+                    ScrollsAssert(chargeOnly ? "recall-failed-activation-charge-notification" : "recall-failed-activation-consumed-notification", "a native non-UMD activation failure consumes one scroll, names the actual reader once, and never reports an arrival or retries",
+                        "messages=" + string.Join("|", notifications.Text), cast != null && cast.Transaction.State == TeleportTransactionState.ActivationFailedSpent &&
+                        resource != null && resource.ActualReaderId == reader.UniqueId && resource.NativeEventCount == 1 && !resource.RequiredUmd &&
+                        resource.ObserveExpenditure() == TeleportExpenditure.ExactlyOne && resource.ChargeOnlySpent == chargeOnly &&
+                        bound.Item.Charges == beforeCharges - 1 && TeleportationScrollAdapter.Stock(player.Party, scroll) == beforeStock - (chargeOnly ? 0 : 1) &&
+                        beforeBooks == string.Join("|", party.SelectMany(value => value.Descriptor.Spellbooks).Select(TeleportResourceFingerprint)) &&
+                        notifications.Text.Count == 1 && notifications.Text[0] == expected && GlobalMapRules.State.PartyLocation == origin.Blueprint &&
+                        GlobalMapRules.State.TravelData == null && !TeleportContextConfirmationPresenter.Pending && !DialogMessageBox.Instance.IsShown);
+                    CaptureTeleportScrolls("native-consumed-recall-failure", new { evidence = resource == null ? null : resource.Evidence(), notifications = notifications.Text.ToArray() });
+                }
+            }
+            finally
+            {
+                if (factAdded) reader.Descriptor.RemoveFact(blueprint);
+                foreach (var unit in blocked) unit.Descriptor.State.MagicItemsForbidden.Release();
+                UnityEngine.Object.Destroy(blueprint); UnityEngine.Object.Destroy(component);
+                panel.Hide();
+            }
+        }
+
+        private IEnumerable<int> QualifyScrollConsumptionVariants(Kingmaker.UI.GlobalMap.GlobalMapMessageBox panel,
+            GlobalMapLocation origin, GlobalMapLocation sanctuary, Kingmaker.EntitySystem.Entities.UnitEntityData reader)
+        {
+            var player = Game.Instance.Player; var canonical = BlueprintBootstrap.TeleportationScrolls.WordOfRecall;
+            var variants = new List<BlueprintItemEquipmentUsable>();
+            var blocked = new List<Kingmaker.EntitySystem.Entities.UnitEntityData>();
+            bool preservationFlag = false;
+            string slots = string.Join("|", player.Party.SelectMany(value => value.Descriptor.Spellbooks).Select(TeleportResourceFingerprint));
+            try
+            {
+                foreach (var unit in player.Party.Where(value => !ReferenceEquals(value, reader)))
+                { unit.Descriptor.State.MagicItemsForbidden.Retain(); blocked.Add(unit); }
+                for (int kind = 0; kind < 3; kind++)
+                {
+                    var variant = UnityEngine.Object.Instantiate(canonical);
+                    variant.name = "KMG_Disposable_RecallConsumption_" + kind;
+                    typeof(Kingmaker.Blueprints.BlueprintScriptableObject).GetField("m_AssetGuid", BindingFlags.Instance | BindingFlags.NonPublic)
+                        .SetValue(variant, "d8a4c60907534807b4ef51c609cb420" + kind);
+                    variant.Charges = kind == 0 ? 2 : kind == 1 ? 1 : 0;
+                    variant.SpendCharges = kind != 2; variant.RestoreChargesOnRest = kind == 1;
+                    variants.Add(variant); reader.Inventory.Add(variant, 1);
+                }
+                GlobalMapRules.Instance.SetCurrentPosition(new MapPosition(origin.Blueprint)); GlobalMapRules.Instance.UpdatePawnPosition();
+                SelectTeleportationCastingPoint(panel, sanctuary); foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                var rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                var contracts = rows.Actions.Where(value => value.Source.Kind == TeleportCastSourceKind.Scroll &&
+                    variants.Any(variant => value.Source.BookId == variant.AssetGuid)).ToArray();
+                ScrollsAssert("consumption-contracts-remain-distinct", "different charges, renewal and reusable scroll contracts form three separate choices",
+                    "rows=" + contracts.Length, contracts.Length == 3 && contracts.Select(value => value.Key).Distinct().Count() == 3 &&
+                    contracts.Count(value => value.Source.ScrollCost == TeleportScrollCostKind.Charge) == 2 &&
+                    contracts.Count(value => value.Source.ScrollCost == TeleportScrollCostKind.Reusable) == 1);
+                panel.Hide();
+                foreach (var variant in variants)
+                {
+                    GlobalMapRules.Instance.SetCurrentPosition(new MapPosition(origin.Blueprint)); GlobalMapRules.Instance.UpdatePawnPosition();
+                    SelectTeleportationCastingPoint(panel, sanctuary); foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                    rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                    var action = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.BookId == variant.AssetGuid);
+                    var source = TeleportationScrollAdapter.Resolve(action.Source); int before = source.Item.Charges;
+                    var callback = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == action.Key)].onClick;
+                    TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                    using (var notifications = new TeleportNotificationObserver())
+                    {
+                        callback.Invoke(); callback.Invoke(); var cast = TeleportContextConfirmationPresenter.LastDirectCast;
+                        yield return 0; callback.Invoke();
+                        var resource = cast == null ? null : cast.Execution.Resource as TeleportationScrollCastResource;
+                        ScrollsAssert("native-consumption-" + variant.name, "one actual native activation respects the chosen charge/renewal/reusable contract, arrives quietly and never spends a slot",
+                            "charges=" + before + "->" + source.Item.Charges + ";state=" + (cast == null ? "missing" : cast.Transaction.State.ToString()),
+                            cast != null && cast.Transaction.State == TeleportTransactionState.Completed && resource != null && resource.NativeEventCount == 1 &&
+                            resource.ActualReaderId == reader.UniqueId && source.Item.Charges == before - (variant.SpendCharges ? 1 : 0) &&
+                            TeleportationScrollAdapter.Stock(player.Party, variant) == 1 && resource.ObserveExpenditure() ==
+                                (variant.SpendCharges ? TeleportExpenditure.ExactlyOne : TeleportExpenditure.None) &&
+                            slots == string.Join("|", player.Party.SelectMany(value => value.Descriptor.Spellbooks).Select(TeleportResourceFingerprint)) &&
+                            notifications.Text.Count == 0 && GlobalMapRules.State.PartyLocation == sanctuary.Blueprint && GlobalMapRules.State.TravelData == null);
+                        CaptureTeleportScrolls("native-consumption-variant", new { variant = variant.name, evidence = resource == null ? null : resource.Evidence() });
+                    }
+                    if (variant.RestoreChargesOnRest)
+                        ScrollsAssert("depleted-renewable-not-offered", "zero-charge renewable stock remains owned but offers no unusable action",
+                            "charges=" + source.Item.Charges, TeleportationScrollAdapter.Enumerate(player).All(value => value.BookId != variant.AssetGuid));
+                }
+                var chargedItem = reader.Inventory.First(value => ReferenceEquals(value.Blueprint, variants[0]));
+                chargedItem.Charges = variants[0].Charges; // Reset only the owned two-charge fixture for the failure branch.
+                foreach (int tick in QualifyConsumedRecallFailure(panel, origin, sanctuary, reader, variants[0])) yield return tick;
+                // The native Hand of Magus Dan branch rolls once after successful
+                // activation. Control only that actual preservation roll, never
+                // activation eligibility, activation dice or Teleport destination.
+                reader.Descriptor.State.Features.HandOfMagusDan.Retain(); preservationFlag = true;
+                reader.Inventory.Add(canonical, 1);
+                foreach (int result in new[] { 1, 100 })
+                {
+                    GlobalMapRules.Instance.SetCurrentPosition(new MapPosition(origin.Blueprint)); GlobalMapRules.Instance.UpdatePawnPosition();
+                    SelectTeleportationCastingPoint(panel, sanctuary); foreach (int tick in WaitTeleportInteractionPanel(panel)) yield return tick;
+                    rows = panel.GetComponentInChildren<TeleportDestinationRows>(true);
+                    var action = rows.Actions.Single(value => value.Source.Kind == TeleportCastSourceKind.Scroll && value.Source.BookId == canonical.AssetGuid);
+                    var source = TeleportationScrollAdapter.Resolve(action.Source);
+                    var callback = rows.Buttons[rows.Actions.ToList().FindIndex(value => value.Key == action.Key)].onClick;
+                    TeleportContextConfirmationPresenter.ResetDirectCastDiagnostics();
+                    using (var dice = new ScrollPreservationFixtureRoll(reader, source.Item, result))
+                    using (var notifications = new TeleportNotificationObserver())
+                    {
+                        callback.Invoke(); callback.Invoke(); var cast = TeleportContextConfirmationPresenter.LastDirectCast;
+                        yield return 0; callback.Invoke();
+                        var resource = cast == null ? null : cast.Execution.Resource as TeleportationScrollCastResource;
+                        ScrollsAssert("native-preservation-" + result, "one real native scroll attempt respects the observed preservation roll without a retry or synthetic refund",
+                            "rolls=" + dice.Count + ";state=" + (cast == null ? "missing" : cast.Transaction.State.ToString()), cast != null &&
+                            cast.Transaction.State == TeleportTransactionState.Completed && resource != null && resource.NativeEventCount == 1 && dice.Count == 1 &&
+                            resource.ActualReaderId == reader.UniqueId && resource.ActivationOutcome ==
+                                (result == 1 ? TeleportActivationOutcome.SucceededPreserved : TeleportActivationOutcome.Succeeded) &&
+                            resource.ObserveExpenditure() == (result == 1 ? TeleportExpenditure.None : TeleportExpenditure.ExactlyOne) &&
+                            TeleportationScrollAdapter.Stock(player.Party, canonical) == (result == 1 ? 1 : 0) && notifications.Text.Count == 0 &&
+                            slots == string.Join("|", player.Party.SelectMany(value => value.Descriptor.Spellbooks).Select(TeleportResourceFingerprint)) &&
+                            GlobalMapRules.State.PartyLocation == sanctuary.Blueprint && GlobalMapRules.State.TravelData == null);
+                        CaptureTeleportScrolls("native-preservation", new { controlledPreservationRoll = result, dice.Count, evidence = resource == null ? null : resource.Evidence() });
+                    }
+                }
+            }
+            finally
+            {
+                if (preservationFlag) reader.Descriptor.State.Features.HandOfMagusDan.Release();
+                foreach (var unit in blocked) unit.Descriptor.State.MagicItemsForbidden.Release();
+                foreach (var variant in variants)
+                {
+                    int count = TeleportationScrollAdapter.Stock(player.Party, variant);
+                    if (count > 0) reader.Inventory.Remove((BlueprintItem)variant, count);
+                    UnityEngine.Object.Destroy(variant);
+                }
+                panel.Hide(); GlobalMapRules.Instance.SetCurrentPosition(new MapPosition(origin.Blueprint)); GlobalMapRules.Instance.UpdatePawnPosition();
+            }
+        }
+        private sealed class ScrollPreservationFixtureRoll : IDisposable,
+            Kingmaker.PubSubSystem.IGlobalRulebookHandler<Kingmaker.RuleSystem.Rules.RuleRollDice>
+        {
+            private readonly Kingmaker.EntitySystem.Entities.UnitEntityData _reader; private readonly ItemEntity _item; private readonly int _result;
+            internal int Count;
+            internal ScrollPreservationFixtureRoll(Kingmaker.EntitySystem.Entities.UnitEntityData reader, ItemEntity item, int result)
+            { _reader = reader; _item = item; _result = result; Kingmaker.PubSubSystem.EventBus.Subscribe(this); }
+            public void OnEventAboutToTrigger(Kingmaker.RuleSystem.Rules.RuleRollDice evt)
+            {
+                if (!ReferenceEquals(evt.Initiator, _reader) || !TeleportationScrollActivationGate.Matches(_reader, _item) ||
+                    evt.DiceFormula.Rolls != 1 || evt.DiceFormula.Dice != Kingmaker.RuleSystem.DiceType.D100 || Game.Instance.Rulebook.Context.EventStack.Count() != 1) return;
+                Count++; evt.Override(_result);
+            }
+            public void OnEventDidTrigger(Kingmaker.RuleSystem.Rules.RuleRollDice evt) { }
+            public void Dispose() { Kingmaker.PubSubSystem.EventBus.Unsubscribe(this); }
+        }
+
+        private IEnumerable<int> CaptureTeleportationSupportingScreenshot(string name)
+        {
+            if ((!IsTeleportationScrollsFixture && !IsTeleportationGamepadFixture) || !_request.ExitAfterCompletion ||
+                _workingSaveSmoke == null || !_workingSaveSmoke.Complete || _workingSaveSmoke.WriteObserved)
+                throw new InvalidOperationException("Supporting screenshot requires the guarded disposable scroll/controller fixture.");
+            // UMM's startup overlay is a separate input-blocking canvas. Use
+            // its native Close behavior solely for this supporting capture and
+            // restore the exact open state; never save settings or send input.
+            var overlay = UnityModManagerNet.UnityModManager.UI.Instance;
+            bool opened = overlay != null && overlay.Opened;
+            try
+            {
+                if (opened) overlay.ToggleWindow(false);
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                try
+                {
+                    var type = Type.GetType("UnityEngine.ScreenCapture, UnityEngine.ScreenCaptureModule", true);
+                    var method = type.GetMethod("CaptureScreenshot", new[] { typeof(string), typeof(int) });
+                    if (method == null) throw new MissingMethodException("Native screenshot API differs.");
+                    method.Invoke(null, new object[] { Path.Combine(_request.EvidenceDirectory, name + ".png"), 1 });
+                }
+                catch (Exception exception)
+                { _context.Logger.Info("teleportation", "fixture.supporting-image-unavailable", exception.GetType().Name + ": " + exception.Message); }
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+            }
+            finally { if (opened && overlay != null) overlay.ToggleWindow(true); }
+        }
+
+        private static string ScrollReaderResources(Player player)
+        {
+            return TeleportationDiagnosticJson.Serialize(new {
+                stock = player.Party.Select(value => value.Inventory).Distinct().SelectMany(value => value).Select(value => new {
+                    id = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value), value.Count, value.Charges, value.IsIdentified }).ToArray(),
+                units = player.Party.Select(value => new { value.UniqueId,
+                    umdBase = value.Stats.GetStat(StatType.SkillUseMagicDevice).BaseValue,
+                    umd = value.Stats.GetStat(StatType.SkillUseMagicDevice).ModifiedValue,
+                    books = value.Descriptor.Spellbooks.Select(TeleportResourceFingerprint).ToArray(),
+                    features = value.Descriptor.Progression.Features.Enumerable.Select(fact => new { id = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(fact), fact.Active }).ToArray(),
+                    buffs = value.Descriptor.Buffs.RawFacts.Select(fact => new { id = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(fact), fact.Active }).ToArray(),
+                    resources = ((System.Collections.IDictionary)typeof(UnitAbilityResourceCollection).GetField("m_Resources", BindingFlags.Instance | BindingFlags.NonPublic)
+                        .GetValue(value.Descriptor.Resources)).Values.Cast<UnitAbilityResource>().Select(resource => new { id = resource.Blueprint.AssetGuid, resource.Amount }).ToArray(),
+                    parts = ScrollReaderPartIds(value.Descriptor) }).ToArray() });
+        }
+        private static string[] ScrollReaderPartIds(UnitDescriptor unit)
+        {
+            var manager = typeof(UnitDescriptor).GetField("m_Parts", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(unit);
+            var parts = (System.Collections.IDictionary)manager.GetType().GetField("m_Parts", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(manager);
+            return parts.Keys.Cast<object>().Select(key => key.ToString() + ":" +
+                System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(parts[key])).OrderBy(value => value, StringComparer.Ordinal).ToArray();
+        }
 
         private readonly List<Kingmaker.UnitLogic.ClassData> _scrollsFixtureClasses = new List<Kingmaker.UnitLogic.ClassData>();
         private readonly List<Kingmaker.EntitySystem.Entities.UnitEntityData> _scrollsFixtureClassOwners = new List<Kingmaker.EntitySystem.Entities.UnitEntityData>();
