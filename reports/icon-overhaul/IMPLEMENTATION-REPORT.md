@@ -309,14 +309,14 @@ earlier full-tree build fingerprint.
 
 The 0.0.128 integration, viewport, selected-fact and scroll inventory reports
 record separate exact artifacts and their successful guarded checks. Current
-native scroll qualification adds 38 spellbook/item assertions and eleven final
-working-save assertions, with 16 original screenshots and exact installation
-restoration. The six inventory/description targets were inspected clear. See
-[scroll qualification](NATIVE-SCROLL-INVENTORY-QUALIFICATION.json) and the durable
+native scroll qualification adds 42 spellbook/item/merchant assertions and eleven
+final working-save assertions, with 19 original screenshots and exact installation
+restoration. The three merchant targets were inspected clear. See
+[merchant qualification](NATIVE-SCROLL-MERCHANT-QUALIFICATION.json) and the durable
 [mission state](../../planning/ICON-OVERHAUL-STATE.md) for exact hashes and earlier
 qualified firearm/creator/learning/protected evidence.
 
-Remaining work is native merchant scroll views, complete racial feat/action/
+Remaining work is complete racial feat/action/
 variant/buff views, applicable higher dependent feat rendering, and confirmation
 of strategic text-only controls. The existing working save lacks saved firearm
 parameters; any new save/write fixture requires separate authorization. All 80

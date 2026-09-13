@@ -56,7 +56,7 @@
   "guide": "docs/ICON-ART-GUIDE.md",
   "referenceIndex": "docs/art/ICON-REFERENCE-INDEX.md",
   "sourceAuditStatus": "284 dispositions reconciled with source, guarded live census and protected native graphs; exact evidence in NATIVE-128-QUALIFICATION.json",
-  "runtimeIntegrationStatus": "complete painted census and actual Weapon Focus/Rapid Reload Total/sheet P/M/B qualified; three native scroll inventory/item descriptions qualified on 0.0.128; remaining native surfaces and owner approval pending",
+  "runtimeIntegrationStatus": "complete painted census, native Weapon Focus/Rapid Reload Total/sheet P/M/B and three scroll inventory/item-description/merchant consumers qualified; remaining native surfaces and owner approval pending",
   "delegatedManifests": [
     {
       "path": "assets-source/original-icons/icon-overhaul-assets.json",
@@ -7086,7 +7086,7 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Teleport",
       "module": "Teleportation",
-      "publication": "published; actual runtime inventory and item description qualified on 0.0.128",
+      "publication": "published; actual native inventory/item description/merchant qualified on 0.0.128",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v2-painting",
       "concept": "teleport",
@@ -7096,9 +7096,15 @@
       "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
       "nativeScreenEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
-        "status": "PASS actual inventory and item description; native merchant/strategic controls and owner UI approval pending",
+        "status": "PASS actual inventory, item description and merchant rows; strategic controls and owner UI approval pending",
         "disposition": "matching canonical spell identity; native item frames and overlays preserved",
         "report": "reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json"
+      },
+      "nativeMerchantEvidence": {
+        "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollMerchantIcons.cs",
+        "status": "PASS actual native merchant rows; owner UI approval pending",
+        "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
+        "report": "reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json"
       }
     },
     {
@@ -7107,7 +7113,7 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Greater Teleport",
       "module": "Teleportation",
-      "publication": "published; actual runtime inventory and item description qualified on 0.0.128",
+      "publication": "published; actual native inventory/item description/merchant qualified on 0.0.128",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v2-painting",
       "concept": "greater-teleport",
@@ -7117,9 +7123,15 @@
       "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
       "nativeScreenEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
-        "status": "PASS actual inventory and item description; native merchant/strategic controls and owner UI approval pending",
+        "status": "PASS actual inventory, item description and merchant rows; strategic controls and owner UI approval pending",
         "disposition": "matching canonical spell identity; native item frames and overlays preserved",
         "report": "reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json"
+      },
+      "nativeMerchantEvidence": {
+        "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollMerchantIcons.cs",
+        "status": "PASS actual native merchant rows; owner UI approval pending",
+        "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
+        "report": "reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json"
       }
     },
     {
@@ -7128,7 +7140,7 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Word Of Recall",
       "module": "Teleportation",
-      "publication": "published; actual runtime inventory and item description qualified on 0.0.128",
+      "publication": "published; actual native inventory/item description/merchant qualified on 0.0.128",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v2-painting",
       "concept": "word-of-recall",
@@ -7138,9 +7150,15 @@
       "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
       "nativeScreenEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
-        "status": "PASS actual inventory and item description; native merchant/strategic controls and owner UI approval pending",
+        "status": "PASS actual inventory, item description and merchant rows; strategic controls and owner UI approval pending",
         "disposition": "matching canonical spell identity; native item frames and overlays preserved",
         "report": "reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json"
+      },
+      "nativeMerchantEvidence": {
+        "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollMerchantIcons.cs",
+        "status": "PASS actual native merchant rows; owner UI approval pending",
+        "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
+        "report": "reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json"
       }
     },
     {

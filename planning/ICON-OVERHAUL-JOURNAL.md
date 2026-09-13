@@ -734,3 +734,60 @@ No production pixels or mappings changed. Merchant/native racial/action/buff
 coverage remains; native ShowAll filter and isolated VendorUI APIs were inspected
 as narrower reversible routes. Production80 and final native UI owner approvals
 remain pending. No new save/write, feature-to-master merge or release is inferred.
+
+
+## 2026-09-13 ? native merchant capture started
+
+Scroll inventory checkpoint `6dd055c4d7cc12bae5b1894e9293a5394c755875` passed
+post-curation repository validation, was committed and published through the
+mandated wrapper. All 136 original files/settings were restored.
+The next bounded extension uses the same spellbook/inventory fixture and actual
+VendorUI. Native contracts and the existing MidgameWorkingSave shop route were
+inspected; no purchase/persistence scenario is invoked. A detached unregistered
+ChargenUnit clone owns a private UnitPartVendor with three scrolls and one ordinary
+item control. No shared stock/table or party identification is used. It opens and
+closes through native trade APIs, never selects an item for sale/purchase, and
+checks real Game.Vendor/Store identity, exact player inventory, empty baskets,
+unchanged money, filters, group, registry and canonical icon references. Only the
+private stock and detached actor/blueprint are disposed. The outer inventory and
+spellbook guards still enforce complete original context and zero writes.
+Seventeen capture corruption cases now include false merchant ownership, stock,
+trade activity and mislabeled inventory surfaces. Build/runtime remain pending.
+
+Merchant build1 passed repository/domain gates but stopped in private-reference
+compilation: GroupController.SelectCharacterAction is not publicly accessible.
+No deployment occurred. The revised ownership check reads its exact private
+backing field, already confirmed in the native contract inspection.
+
+Build2 passed all gates, but pre-launch IL review found that native SlotsGroup
+Cleanup clears its virtual rows while retaining Collection. Before deployment,
+the fixture now restores the four exact original collection references through
+the native property's private scalar setter, only after normal trade closure,
+empty virtual lists and exact owned collection checks. It releases the temporary
+stock reference before disposing owned items. The superseded build2 was never
+deployed; its manifest is archived locally. Build3 will qualify this final cleanup.
+
+
+## 2026-09-13 — native merchant scroll rows qualified
+
+Build3 passed repository, 23 catalog, 17 native-capture, six paired, eleven
+request and 1,629 domain cases, clean Release and strict 224-file package gates.
+Exact artifact/source hashes are in
+`reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json`.
+The guarded spellbook/inventory/merchant run passed all 42 assertions, including
+three actual merchant item rows and twelve merchant cleanup predicates; the
+fifteen inventory cleanup predicates and outer world/resource/UI restoration
+also passed. Nineteen original captures passed provenance validation. All three
+merchant targets were inspected clear at 1280x720 with native frames and an
+unchanged ordinary item control. No purchase, sale or save operation occurred.
+Final same-artifact working-save smoke passed eleven assertions. Both processes
+exited normally. Audit and guarded restore succeeded; all 136 original paths/
+hashes and settings were independently verified at `2026-09-13T18:39:36.556148+00:00`.
+Immutable archive prefix: `native-scroll-merchant-qualified-128-*`; local gallery:
+`artifacts/icon-overhaul-v2/NATIVE-SCROLL-MERCHANT-REVIEW.html`.
+
+Next use the normal native ShowAll feat filter for remaining racial menus. The
+source uses fresh visible feat blueprints without HideNotAvailibleInUI. Preserve
+eligibility and native disabled states; do not manufacture legal selections.
+Strategic text-only controls and active action/variant/buff views remain separate.
+All 80 later paintings and final native UI still await owner approval.

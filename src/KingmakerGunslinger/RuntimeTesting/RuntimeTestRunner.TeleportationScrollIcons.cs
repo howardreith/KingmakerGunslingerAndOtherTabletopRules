@@ -156,6 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (window.IsShow || ui.ServiceWindow.WindowTabs.IsShow)
                     throw new InvalidOperationException("Native inventory did not finish its normal close.");
                 opened = false;
+                foreach (int frame in CaptureNativeStrategicScrollMerchant(blueprints, before, inventoryExact)) yield return frame;
             }
             finally
             {
