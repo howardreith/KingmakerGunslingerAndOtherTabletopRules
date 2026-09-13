@@ -94,10 +94,10 @@ Run `tools/validate_native_icon_screens.py --evidence <run>/native-ui-screens.js
 --build-manifest <exact-package>.build-local.json` to check the paired runtime
 result, loaded-build identity, capture MVID, completed frames, PNG hashes and
 dimensions, restored overlay state and explicit row viewport/restoration metadata.
-Its sixteen corruption fixtures run in
+Its seventeen corruption fixtures run in
 repository validation. This check reports provenance only; inspect the images.
 
-These hooks do not yet cover native merchant scroll views, strategic
+These hooks do not yet cover strategic
 destination controls, racial action/variant menus or visible buffs. Track those
 consumers separately rather than treating creator/spellbook captures as complete
 mission coverage.
@@ -157,7 +157,7 @@ inspected clear at 1280x720. Generated names overlap the header and ordinary cre
 dolls are empty; neither is appearance qualification. Remote abilities are
 deactivated and do not qualify an active action bar. Higher dependent roots have
 native data coverage, not blanket rendered-sheet evidence. Full racial/action/buff,
-merchant and strategic-control coverage remains separate, as does owner approval.
+strategic-control coverage remains separate, as does owner approval.
 
 The qualified scroll extension adds inventory and item-description captures to the
 existing `disposable-teleportation-spellbook-ui` scenario. It requires initial
@@ -179,3 +179,22 @@ the 15 item/UI cleanup predicates passed, with no save writes. The first tooltip
 lifecycle mistake remains a documented ERROR; partial inventory success was not
 qualification. Two focused corruption cases bring capture validation to sixteen.
 Native merchant views and final owner UI approval remain separate.
+
+
+The qualified merchant extension adds native merchant rows within that same
+fixture. A detached, unregistered merchant owns a private stock collection with
+three canonical scrolls and one ordinary item control. It has no shared vendor
+table and cannot identify the player's existing inventory. Native VendorUI
+HandleTradeStarted/HandleTradeExit must bind and close the actual Game.Vendor and
+Store; purchase/sale baskets stay empty, and no Deal, use or save is invoked.
+The fixture restores original vendor references, filters, group and UI collections
+after native close clears the virtual rows. Native Collection retains its last
+reference, so the fixture restores that scalar only when its exact owned binding
+and empty rows are verified, before disposing its own stock/actor. Outer inventory rollback also restores
+native display indices. The [merchant qualification](../reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json)
+records two PASS runs, 53 assertions and 19 original captures on the same DLL.
+All three merchant targets were inspected clear at 1280x720. Twelve merchant
+cleanup predicates, fifteen inventory predicates and outer fixture restoration
+passed with zero save writes. All 136 original installation files/settings were
+independently verified restored. The seventeenth corruption case requires real
+merchant ownership and empty trade evidence. Owner approval remains separate.

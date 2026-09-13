@@ -156,6 +156,22 @@ class NativeScreenEvidenceTests(unittest.TestCase):
             self.assertTrue(self.errors())
             state['description'][key] = original
 
+    def test_scroll_merchant_requires_real_private_stock_and_empty_trade(self):
+        state = self.prepare_scroll_row()
+        self.evidence['records'][0]['stage'] = 'native-scroll-merchant-row:teleport'
+        state['surface'] = 'native-scroll-merchant'
+        state['merchant'] = dict.fromkeys(('nativeVendorBound', 'nativeStoreBound', 'privateStock',
+            'transferCollectionsEmpty', 'playerInventoryUnchanged', 'unregisteredVendor', 'controlBlueprintRetained'), True)
+        state['merchant']['stockCount'] = 4
+        self.assertEqual([], self.errors())
+        for key in state['merchant']:
+            original = state['merchant'][key]
+            state['merchant'][key] = 3 if key == 'stockCount' else False
+            self.assertTrue(self.errors())
+            state['merchant'][key] = original
+        state['surface'] = 'native-scroll-inventory'
+        self.assertTrue(self.errors())
+
     def test_native_extended_scroll_requires_exact_component_and_visible_row(self):
         viewport = self.prepare_native_row()['viewport']
         viewport.update(nativeApi='Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter',

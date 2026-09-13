@@ -40,7 +40,7 @@ def validate(evidence, result, build, identity, directory):
             continue
         require(record.get('status') == 'captured-native-screen-awaiting-visual-inspection', 'Incomplete capture: ' + name)
         require(bool(record.get('stage')) and isinstance(record.get('nativeState'), dict), 'Missing native UI identity: ' + name)
-        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:', 'native-scroll-row:')):
+        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:', 'native-scroll-row:', 'native-scroll-merchant-row:')):
             state = record.get('nativeState', {})
             state = state if isinstance(state, dict) else {}
             viewport = state.get('viewport', {})
@@ -115,7 +115,7 @@ def validate(evidence, result, build, identity, directory):
                                 and finite_heights
                                 and height >= preferred - 1,
                                 'Native Total preferred layout did not cover its own content: ' + name)
-        if record.get('stage', '').startswith(('native-scroll-row:', 'native-scroll-description:')):
+        if record.get('stage', '').startswith(('native-scroll-row:', 'native-scroll-description:', 'native-scroll-merchant-row:')):
             state = record.get('nativeState', {})
             target = state.get('targetRow', {})
             strategic_items = {
@@ -133,6 +133,14 @@ def validate(evidence, result, build, identity, directory):
                     type(target.get('otherItemRows')) is int and target['otherItemRows'] > 0 and
                     target.get('otherItemIconsExact') is True,
                     'Native scroll slot/reference/control evidence differs: ' + name)
+            if record['stage'].startswith('native-scroll-merchant-row:'):
+                merchant = state.get('merchant', {})
+                require(state.get('surface') == 'native-scroll-merchant' and
+                        all(merchant.get(key) is True for key in ('nativeVendorBound', 'nativeStoreBound',
+                            'privateStock', 'transferCollectionsEmpty', 'playerInventoryUnchanged',
+                            'unregisteredVendor', 'controlBlueprintRetained')) and
+                        type(merchant.get('stockCount')) is int and merchant['stockCount'] == 4,
+                        'Native scroll merchant ownership/stock/control evidence differs: ' + name)
             if record['stage'].startswith('native-scroll-description:'):
                 description = state.get('description', {})
                 require(state.get('surface') == 'native-scroll-description' and description.get('shown') is True and
