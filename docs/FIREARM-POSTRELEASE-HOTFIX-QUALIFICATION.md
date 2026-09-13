@@ -307,3 +307,40 @@ borrow another action or promise a next-turn automatic shot. Cause a later
 applicable misfire to naturally reach Wrecked with one burst; further fire/reload
 must fail. Complete a full rest to restore the same item. Combat Repair must say
 exactly `Cannot repair firearms during combat.`
+
+
+## Final committed review candidate
+
+The clean build from `fc6c5cb220f7501fa20fc1709b085fd10b58b7a6` passed the complete guarded native scenario
+again: **413/413 PASS, zero failures**, all 145 original checks retained. Complete
+domain suite **1,622/1,622**, focused ledger behavioral tests **10/10**, and compiled
+input-wrapper cases **10/10** PASS. Repository/assets, clean exact-reference
+Release and strict 135-file package validation PASS. No production change follows
+this qualified source commit; the later PR-tip commit records evidence only.
+This artifact supersedes the development candidate for delivery.
+
+| Identity | Value |
+| --- | --- |
+| Version | `0.0.128-firearm-postrelease-hotfix` |
+| Branch | `codex/firearm-postrelease-hotfix` |
+| Compiled source commit | `fc6c5cb220f7501fa20fc1709b085fd10b58b7a6` |
+| Clean source fingerprint | `2721b45eedca565de6bad343ff2df38eced3cdb13fe6c13bd6d6d3a5c3b13f81` |
+| Package SHA-256 | `c0c2c0c83db19f2b0bd71cd4393f5a0b09b1a8adadb29a9725d8541d257960e6` |
+| DLL SHA-256 | `ce65373e73f40573fc9f715d30ef181da0d5b07db4be38d9be8261b6ce59b8b8` |
+| DLL MVID | `2a1e57fe-63ef-49ce-b69c-3cbf7de95372` |
+| Native run ID | `20260913T0544024994395Z-62c3a21ad3864b25b953d8da52c67568` |
+| Runtime result SHA-256 | `90ffa6f65684af3a2e7b9770d03c3684b9776577ac66e1261d702bd0047abcb5` |
+| Native trace SHA-256 | `6a0c9495fdee722708b99cd2c884e480066ac391b2357369b8b55069baafc78b` |
+
+Installable package: `artifacts/packages/KingmakerGunslinger-0.0.128-firearm-postrelease-hotfix.zip`. The local-runtime copy
+has the identical ZIP/DLL identity. The guarded runner verified the installed
+mod version, source fingerprint, package hash and loaded DLL/MVID before the
+mechanical conclusions above. Native and synthetic evidence remain distinct.
+
+Final restoration independently compared every file against the actual pre-test
+backup `20260913T0543590921304Z`: **138/138 identical**, including the original
+0.0.126 DLL and FeatureModules settings. No Kingmaker process remained. The
+[JSON evidence](FIREARM-POSTRELEASE-HOTFIX-REVIEW-EVIDENCE.json) includes additional
+manifest/build/control-flow hashes and restoration identities. The earlier NOT
+RUN boundaries remain explicit. PR #18 is updated for review; it is not merged,
+and no public release or tag is created.
