@@ -85,6 +85,51 @@ namespace KingmakerGunslinger.DomainTests
             f.Ledger.Cancel(fresh);
             Assertions.True(f.Ledger.IsCurrent(repeat), "Late fault cleanup cannot revoke a newer accepted order.");
         }
+        internal static void OwnershipRequiresAcceptedCurrentOrder()
+        {
+            var f = new Fixture();
+            var proposal = f.Ledger.Propose(f.Actor, f.Weapon, f.Target);
+            Assertions.False(f.Ledger.Own(proposal, new object()), "Construction cannot take ownership.");
+            var order = f.Accept(); var command = new object();
+            Assertions.True(f.Ledger.Own(order, command), "Accepted native command owns its order.");
+            Assertions.True(ReferenceEquals(command, order.Owner), "Ownership uses exact command identity.");
+            var next = f.Accept();
+            Assertions.False(f.Ledger.Own(order, new object()), "A superseded order cannot take ownership back.");
+            Assertions.True(f.Ledger.IsCurrent(next), "Stale ownership cannot affect the newer order.");
+        }
+        internal static void OwnershipDoesNotAdvanceSubmission()
+        {
+            var f = new Fixture(); f.Ledger.Break(f.Actor, f.Weapon);
+            var order = f.Accept(); long submission = f.Ledger.Submission(f.Actor);
+            Assertions.True(f.Ledger.Own(order, new object()), "Record the retained native reload.");
+            Assertions.True(f.Ledger.MayResume(f.Actor, f.Weapon, 1, submission, order),
+                "Recording ownership does not expire its pending continuation.");
+            f.Ledger.Break(f.Actor, f.Weapon);
+            Assertions.False(f.Ledger.Own(order, new object()), "Later degradation still revokes ownership.");
+            Assertions.False(f.Ledger.MayResume(f.Actor, f.Weapon, 1, submission, order),
+                "No owner record can restore a degraded sequence.");
+        }
+        internal static void RetargetRequiresCurrentCommandOwnership()
+        {
+            var f = new Fixture(); var order = f.Accept(); var owner = new object(); var target = new object();
+            Assertions.False(f.Ledger.Retarget(order, owner, f.Target, target), "No owner was retained.");
+            f.Ledger.Own(order, owner);
+            Assertions.False(f.Ledger.Retarget(order, new object(), f.Target, target), "A foreign command cannot retarget.");
+            Assertions.False(f.Ledger.Retarget(order, owner, new object(), target), "The old target must be the current target.");
+            long submission = f.Ledger.Submission(f.Actor);
+            Assertions.True(f.Ledger.Retarget(order, owner, f.Target, target), "The retained native sequence can resolve its next target.");
+            Assertions.True(ReferenceEquals(order.Target, target) && ReferenceEquals(order.Owner, owner), "The same owner survives.");
+            Assertions.Equal(submission, f.Ledger.Submission(f.Actor), "Retargeting is not a new submitted command.");
+        }
+        internal static void RetargetCannotReviveDegradedOrSupersededOrders()
+        {
+            var f = new Fixture(); var order = f.Accept(); var owner = new object();
+            f.Ledger.Own(order, owner); f.Ledger.Break(f.Actor, f.Weapon);
+            Assertions.False(f.Ledger.Retarget(order, owner, f.Target, new object()), "Native target search cannot undo a committed break.");
+            var next = f.Accept(); f.Ledger.Own(next, new object());
+            Assertions.False(f.Ledger.Retarget(order, owner, f.Target, new object()), "Stale target search cannot borrow a fresh order.");
+            Assertions.True(f.Ledger.IsCurrent(next), "Fresh explicit order is unaffected by stale work.");
+        }
         internal static void DelayedAcceptanceFailsClosed()
         {
             var f = new Fixture();

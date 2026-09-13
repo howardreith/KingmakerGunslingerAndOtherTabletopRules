@@ -69,6 +69,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             try
             {
+                // Dispose request-local observation scopes if a timeout stops
+                // the iterator between yields, before disposing its actors.
+                if (_firearmInputSteps != null) { _firearmInputSteps.Dispose(); _firearmInputSteps = null; }
                 if (_firearmInputFixture != null)
                 {
                     _firearmInputFixture.Dispose();
@@ -111,6 +114,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private IEnumerable<object> FirearmNativeInputCases()
         {
+            foreach (object step in FirearmReviewMergeCases()) yield return step;
+            foreach (object step in FirearmReviewHoverCases()) yield return step;
+            foreach (object step in FirearmReviewReloadTurnCases()) yield return step;
+            foreach (object step in FirearmReviewRetargetCases()) yield return step;
+            foreach (object step in FirearmReviewCoexistenceCases()) yield return step;
+            foreach (object step in FirearmReviewOwnershipCases()) yield return step;
             _firearmInputStage = "native-repair-warning-matrix";
             _firearmInputFixture = new FirearmInputFixture(false, _firearmInputRows, false);
             CheckFirearmRepairWarnings(_firearmInputFixture);
@@ -263,7 +272,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool Restored;
             internal FirearmState State { get { return FirearmRuntimeState.Service.GetOrCreate(Weapon).Repository.State; } }
             internal int Powder { get { return Game.Instance.Player.Inventory.Count(BlueprintBootstrap.BasicAmmunition.BlackPowder); } }
-            internal FirearmInputFixture(bool turnBased, JArray evidence, bool combat = true)
+            internal FirearmInputFixture(bool turnBased, JArray evidence, bool combat = true,
+                FirearmKind kind = FirearmKind.Pistol, bool rapidReload = true, bool initiallyLoaded = true)
             {
                 rows = evidence;
                 if (Game.Instance.State.Units.All.Any() || Game.Instance.Player.Party.Any() ||
@@ -307,12 +317,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Actor.Stats.HitPoints.BaseValue = Enemy.Stats.HitPoints.BaseValue = 10000;
                     Actor.Stats.BaseAttackBonus.BaseValue = 11;
                     Actor.Descriptor.AddFact(BlueprintBootstrap.FirearmProficiency);
-                    Actor.Descriptor.AddFact(BlueprintBootstrap.FirearmFeats.RapidReloadChoices[0]);
+                    if (rapidReload) Actor.Descriptor.AddFact(BlueprintBootstrap.FirearmFeats.RapidReloadChoices[
+                        kind == FirearmKind.Pistol ? 0 : kind == FirearmKind.Musket ? 1 : 2]);
                     Actor.Descriptor.AddFact(BlueprintBootstrap.GunslingerClass.Gunsmithing);
-                    Weapon = new ItemEntityWeapon(BlueprintBootstrap.ProductionFirearms.Pistol.Item);
+                    Weapon = new ItemEntityWeapon(BlueprintBootstrap.ProductionFirearms.Entries.Single(entry =>
+                        entry.Spec.Definition.Kind == kind).Item);
                     Actor.Body.PrimaryHand.InsertItem(Weapon);
                     FirearmRuntimeState.Service.Set(Weapon, new FirearmState(FirearmState.CurrentSchemaVersion,
-                        1, FirearmStateTokenCatalog.DiagnosticLeadBall, FirearmCondition.Normal));
+                        initiallyLoaded ? 1 : 0, initiallyLoaded ? FirearmStateTokenCatalog.DiagnosticLeadBall : null, FirearmCondition.Normal));
                     originalIdentity = FirearmRuntimeState.Service.GetOrCreate(Weapon).Repository;
                     Game.Instance.Player.Inventory.Add(BlueprintBootstrap.BasicAmmunition.BlackPowder, 12);
                     Game.Instance.Player.Inventory.Add(BlueprintBootstrap.BasicAmmunition.LeadBall, 12);
@@ -401,6 +413,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Turns.PumpCommands();
                 foreach (var command in actionCosts.Keys.ToArray())
                 {
+                    // Swift/Free commands can end before their detached native
+                    // ability process delivers. The save-free host has no
+                    // default AbilityExecutionController; advance this exact
+                    // watched process after it leaves the active command slots.
+                    if (!Actor.Commands.Raw.Contains(command) && command.ExecutionProcess != null &&
+                        !command.ExecutionProcess.IsEnded)
+                        Turns.Execute(command.ExecutionProcess.Tick);
                     if (!command.IsActed) continue;
                     var cooldown = Actor.CombatState.Cooldown;
                     float charged = command.Type == UnitCommand.CommandType.Move ? cooldown.MoveAction :
@@ -408,16 +427,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     actionCosts[command] = Math.Max(actionCosts[command], charged);
                 }
             }
-            internal UnitUseAbility ClickAbility(Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility blueprint)
+            internal UnitUseAbility ClickAbility(Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility blueprint, bool requireAccepted = true)
             {
                 var fact = Actor.Descriptor.Abilities.GetAbility(blueprint);
                 if (fact == null) throw new InvalidOperationException("The native action-bar ability is not granted.");
                 using (var prediction = new FirearmSelfPredictionScope())
                     Turns.Execute(() => new Kingmaker.UI.UnitSettings.MechanicActionBarSlotAbility {
                         Unit = Actor, Ability = fact.Data }.OnClick());
-                var command = Actor.Commands.Raw.OfType<UnitUseAbility>().SingleOrDefault(value =>
+                var command = Actor.Commands.Raw.Concat(Actor.Commands.Queue).OfType<UnitUseAbility>().SingleOrDefault(value =>
                     ReferenceEquals(value.Spell.Blueprint, blueprint));
-                if (command == null) throw new InvalidOperationException("The native action bar did not submit its exact ability.");
+                if (command == null)
+                {
+                    if (requireAccepted) throw new InvalidOperationException("The native action bar did not submit its exact ability.");
+                    return null;
+                }
                 WatchActionCost(command);
                 return command;
             }
@@ -468,6 +491,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (!ReferenceEquals(command.Executor, Actor)) return;
                 var binding = NativeFirearmAttackOrder.Get(command);
+                // Track detached native delivery for auto-use Free reloads too,
+                // not only abilities clicked through the action bar. Preview
+                // commands never execute and do not enter this delivery list.
+                var cast = command as UnitUseAbility;
+                if (cast != null && (binding == null || !binding.Preview)) WatchActionCost(cast);
                 rows.Add(new JObject { ["nativeRun"] = command.GetType().Name,
                     ["ai"] = command.AiAction == null ? null : command.AiAction.GetType().Name,
                     ["bindingEpoch"] = binding == null ? -1 : binding.Epoch,

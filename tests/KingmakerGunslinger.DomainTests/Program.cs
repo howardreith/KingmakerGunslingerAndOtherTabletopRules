@@ -753,6 +753,10 @@ namespace KingmakerGunslinger.DomainTests
             Case("firearm-orders.isolation", FirearmAttackOrderLedgerTests.ActorAndItemIsolation),
             Case("firearm-orders.supersession", FirearmAttackOrderLedgerTests.SupersededOrdersCannotResume),
             Case("firearm-orders.stale-acceptance", FirearmAttackOrderLedgerTests.DelayedAcceptanceFailsClosed),
+            Case("firearm-orders.native-owner", FirearmAttackOrderLedgerTests.OwnershipRequiresAcceptedCurrentOrder),
+            Case("firearm-orders.owner-lifetime", FirearmAttackOrderLedgerTests.OwnershipDoesNotAdvanceSubmission),
+            Case("firearm-orders.native-retarget-owner", FirearmAttackOrderLedgerTests.RetargetRequiresCurrentCommandOwnership),
+            Case("firearm-orders.stale-retarget", FirearmAttackOrderLedgerTests.RetargetCannotReviveDegradedOrSupersededOrders),
             Case("broken-sequence.construction-unsuppressed-allows", BrokenSequenceInterruptionTests.ConstructionUnsuppressedAlwaysAllows),
             Case("broken-sequence.construction-automatic-rejected", BrokenSequenceInterruptionTests.ConstructionAutomaticAfterBreakRejected),
             Case("broken-sequence.construction-player-order-consumes", BrokenSequenceInterruptionTests.ConstructionPlayerIssuedOrderConsumesSuppression),
@@ -1923,8 +1927,9 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("result = null") && source.Contains("return false") &&
                 source.Contains("typeof(UnitUseAbility).GetMethod(\"OnEnded\"") &&
                 source.Contains("ReferenceEquals(resolved.Weapon, pending.FirearmWeapon)") &&
-                source.Contains("turn.ActionsStates.Standard.CanUse") &&
-                source.Contains("return !isTurnBased || (hasCurrentTurn && standardActionAvailable)") &&
+                !source.Contains("turn.ActionsStates.Standard.CanUse") &&
+                source.Contains("ReferenceEquals(turn.Unit, executor)") &&
+                source.Contains("return !isTurnBased || isActorTurn") &&
                 source.Contains("executor.Commands.AddToQueue(attack)"),
                 "Empty firearm rejection or exact-item native reload continuation is incomplete.");
         }

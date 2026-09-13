@@ -8227,14 +8227,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EmptyFirearmAttackCommandPatch.AutoReloadReplacements ==
                         replacementsBeforeWrecked;
                 turnBasedPolicy =
-                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
-                        false, false, false) &&
-                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
-                        true, true, true) &&
-                    !EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
-                        true, true, false) &&
-                    !EmptyFirearmAttackCommandPatch.TurnBasedAllowsStandardAttack(
-                        true, false, true);
+                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsAttackQueue(false, false) &&
+                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsAttackQueue(false, true) &&
+                    EmptyFirearmAttackCommandPatch.TurnBasedAllowsAttackQueue(true, true) &&
+                    !EmptyFirearmAttackCommandPatch.TurnBasedAllowsAttackQueue(true, false);
 
                 FirearmRuntimeState.Service.Set(weapon, new FirearmState(
                     FirearmState.CurrentSchemaVersion, 0, null,
@@ -8312,9 +8308,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         wreckedRejected,
                     "exact weapon reference re-resolution, completion result, and Wrecked policy"),
                 Assertion("automatic-reload-turn-based-action-policy",
-                    "RTwP resumes; turn-based resumes only with a current turn and unused standard action",
+                    "RTwP queues; turn-based queues only on the exact actor turn; native cooldowns govern execution",
                     observed, turnBasedPolicy,
-                    "fail-closed turn-based standard-action continuation gate"),
+                    "synthetic actor-turn queue gate; actual action costs and hover prediction are covered by the native firearm input scenario"),
                 Assertion("automatic-reload-no-ammunition-loop",
                     "two consecutive native polls reject without mutation",
                     observed, noAmmoLoop,

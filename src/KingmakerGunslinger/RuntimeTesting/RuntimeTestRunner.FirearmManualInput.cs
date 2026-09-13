@@ -34,6 +34,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var line = prototype.AddComponent<LineRenderer>();
                     var visualizer = root.AddComponent<PathVisualizer>();
                     visualizer.enabled = false;
+                    foreach (string field in new[] { "m_BreakMoveDecal", "m_BreakStandardDecal" })
+                    {
+                        var decal = new GameObject(field);
+                        decal.transform.SetParent(root.transform, false);
+                        typeof(PathVisualizer).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)
+                            .SetValue(visualizer, decal.AddComponent<MeshRenderer>());
+                    }
                     typeof(PathVisualizer).GetField("m_MoveLineP", BindingFlags.Instance | BindingFlags.NonPublic)
                         .SetValue(visualizer, line);
                     root.SetActive(true); // Native Awake establishes the service.

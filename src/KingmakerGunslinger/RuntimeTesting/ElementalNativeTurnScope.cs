@@ -294,7 +294,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Full native command/controller ticks for exactly the two owned actors.
         // Animation act cues are supplied by the save-free fixture, never attack
         // rules, cooldown resets, command authorization, or reload completion.
-        internal void PumpCommands()
+        internal void PumpCommands(bool processAi = true)
         {
             if (_firearmPaused || Game.Instance.IsPaused)
                 throw new InvalidOperationException("Native command processing cannot be driven while paused.");
@@ -329,7 +329,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     typeof(UnitActionController).GetMethod("TickOnUnit", Members)
                         .Invoke(_actions, new object[] { unit });
                 }
-                new Kingmaker.Controllers.Brain.AiBrainController().Tick();
+                if (processAi) new Kingmaker.Controllers.Brain.AiBrainController().Tick();
                 Game.Instance.ProjectileController.Tick();
             });
         }
@@ -416,11 +416,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(SelectionManager.Instance, _selectionBefore) &&
                     SettingsRoot.Instance.CameraScrollToCurrentUnit.CurrentValue == _scrollBefore &&
                     !Game.Instance.Player.IsInCombat && !_caster.IsInCombat && !_enemy.IsInCombat &&
-                    _caster.View.AgentASP.AvoidanceDisabled == _avoidanceBefore[0] &&
-                    _enemy.View.AgentASP.AvoidanceDisabled == _avoidanceBefore[1];
+                    // Native getter also includes !IsConscious; the owned corpse
+                    // is about to be removed, not resurrected for cleanup.
+                    _caster.View.AgentASP.AvoidanceDisabled == (_avoidanceBefore[0] || !_caster.Descriptor.State.IsConscious) &&
+                    _enemy.View.AgentASP.AvoidanceDisabled == (_avoidanceBefore[1] || !_enemy.Descriptor.State.IsConscious);
                 if (!Restored) throw new InvalidOperationException("Native turn scope did not restore its exact prior controller/settings state.");
             }
             finally { if (ReferenceEquals(Active, this)) Active = null; }
+        }
+
+        // The save-free host has no pointer controller or terrain hover.
+        // Native cursor presentation may ask this after a personal action;
+        // provide only that absent hover context. Explicit unit input still
+        // resolves its real clicked view, and all cost/order methods run.
+        [HarmonyPatch]
+        private static class OwnedAbsentTerrainHoverPatch
+        {
+            private static MethodBase TargetMethod() => typeof(TurnController)
+                .GetProperty("m_IsOverNavmesh", Members).GetGetMethod(true);
+            private static bool Prefix(TurnController __instance, ref bool __result)
+            {
+                var scope = Active;
+                if (scope == null || Game.Instance.ClickEventsController != null) return true;
+                if (!ReferenceEquals(__instance.Unit, scope._caster) && !ReferenceEquals(__instance.Unit, scope._enemy))
+                    throw new InvalidOperationException("Absent terrain hover escaped the owned native turn.");
+                __result = false;
+                return false;
+            }
         }
 
         // The save-free scene has no Astar graph. This native method only

@@ -1006,6 +1006,12 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmInputNegatives.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmManualInput.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmAdditionalInput.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewCoexistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewCosts.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewRetarget.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewReloadTurns.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewOwnership.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmReviewMerge.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmRestCompatibility.cs" />
     <Compile Include="RuntimeTesting\SummonSameTurnActivationScenario.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningVariantMenuObservation.cs" />

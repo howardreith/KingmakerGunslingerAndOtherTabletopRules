@@ -162,6 +162,22 @@ namespace KingmakerGunslinger.Firing
             }
         }
 
+        internal static void TransferPendingReload(UnitUseAbility proposed, UnitUseAbility survivor)
+        {
+            if (proposed == null || survivor == null || ReferenceEquals(proposed, survivor)) return;
+            // Called only after native merging retained this command and the
+            // new explicit order was accepted. Move its immutable target/item
+            // capture; never rewrite an already-scheduled old callback.
+            lock (PendingGate)
+            {
+                PendingAttack pending;
+                if (!Pending.TryGetValue(proposed, out pending)) return;
+                Pending.Remove(proposed);
+                Pending.Remove(survivor);
+                Pending.Add(survivor, pending);
+            }
+        }
+
         private static Kingmaker.Items.ItemEntityWeapon ResolveExactWeapon(
             UnitEntityData executor)
         {
@@ -243,7 +259,7 @@ namespace KingmakerGunslinger.Firing
                     pending.DegradationEpoch,
                     BrokenSequenceSuppressionRuntime.GetDegradationEpoch(
                         executor, resolved.Weapon)) ||
-                !TurnBasedAllowsStandardAttack(executor))
+                !TurnBasedAllowsAttackQueue(executor))
             {
                 NativeFirearmAttackOrder.Invalidate(pending == null ? null : pending.Binding);
                 Interlocked.Increment(ref _autoReloadCanceledAttacks);
@@ -260,24 +276,25 @@ namespace KingmakerGunslinger.Firing
             return attack;
         }
 
-        private static bool TurnBasedAllowsStandardAttack(UnitEntityData executor)
+        private static bool TurnBasedAllowsAttackQueue(UnitEntityData executor)
         {
             TurnBased.Controllers.CombatController controller = Kingmaker.Game.Instance == null
                 ? null : Kingmaker.Game.Instance.TurnBasedCombatController;
-            if (controller == null ||
-                !TurnBased.Controllers.CombatController.IsInTurnBasedCombat()) return true;
-            TurnBased.Controllers.TurnController turn = controller.CurrentTurn;
-            return turn != null && ReferenceEquals(turn.Unit, executor) &&
-                TurnBasedAllowsStandardAttack(true, true,
-                turn != null && turn.ActionsStates != null &&
-                turn.ActionsStates.Standard != null &&
-                turn.ActionsStates.Standard.CanUse);
+            bool turnBased = controller != null &&
+                TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
+            var turn = controller == null ? null : controller.CurrentTurn;
+            // CanUse includes UI hover predictions, not just spent actions.
+            // Submit this continuation once to the native queue. Its actual
+            // cooldown gate controls execution; native turn-end interruption
+            // revokes ownership instead of creating a cross-turn retry.
+            return TurnBasedAllowsAttackQueue(turnBased,
+                turn != null && ReferenceEquals(turn.Unit, executor));
         }
 
-        internal static bool TurnBasedAllowsStandardAttack(bool isTurnBased,
-            bool hasCurrentTurn, bool standardActionAvailable)
+        internal static bool TurnBasedAllowsAttackQueue(bool isTurnBased,
+            bool isActorTurn)
         {
-            return !isTurnBased || (hasCurrentTurn && standardActionAvailable);
+            return !isTurnBased || isActorTurn;
         }
 
         private sealed class PendingAttack

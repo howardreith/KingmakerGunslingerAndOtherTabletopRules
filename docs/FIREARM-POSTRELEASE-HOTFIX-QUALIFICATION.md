@@ -162,3 +162,148 @@ callback-timing contracts; final assertions require their actual native effects.
    occurs once, and further firing/reloading is rejected.
 7. Complete a full rest with a participating gunsmith and reusable kit; the same
    firearm returns to Normal. Outside combat, Broken-only field repair also works.
+
+
+## PR #18 review revision — 2026-09-13
+
+**CR-01 FIXED; CR-02 FIXED; CR-03 FIXED with the native limits below.**
+This continues the reviewed `f38848fbc4b60354e8e35c9d0b5ea043bf36e0a1`
+on the existing branch. Master and the published 0.0.127 tag were preserved;
+0.0.128 remains unpublished. Earlier qualification records above remain
+historical. Revised before/after DLL, MVID, source and trace identities are in
+[the curated review evidence](FIREARM-POSTRELEASE-HOTFIX-REVIEW-EVIDENCE.json).
+
+### CR-01 — actual native ownership and coexistence
+
+The reviewed prefix cancelled an order and advanced its actor-wide submission
+number before native `Run` decided whether a command was rejected, merged,
+queued or coexisted. Native Focused Aim legally occupied the Swift slot alongside
+a paused Standard attack and spent one grit; both native commands survived,
+but the ledger rejected the attack and its reload callback.
+
+Submission now advances only for an actually retained bound command, after the
+native outcome. The order records its native owner and real command container.
+Native slot removal, queue replacement and interruption reconcile ownership;
+unrelated surviving slots do not supersede it. `UnitCommands.Temporary`
+prediction cannot cancel the real container or a completed reload's callback.
+A legitimate native AI continuation can arrive before the scheduled callback;
+the stale callback then yields to its accepted successor without revoking it.
+
+Twelve native lanes cover Normal, newly accepted loaded Broken, and newly
+accepted empty Broken orders, pending/running, RTWP/TB. RTWP Focused Aim uses the
+ordinary action bar and exactly one grit and the native Swift cost while the
+attack/reload continues. The TB action bar requires an empty command container:
+Focused Aim executes first on the actual turn, then the attack; an otherwise
+ready Clipping Shot attempt while pending/running is rejected without cost or
+mutation. This preserves native coexistence rules. Additional tests cover
+completed/pending reloads, wrong-executor rejection, prediction, replacement,
+cancellation, Quick Clear and stale callbacks with exact costs/resources.
+
+### CR-02 — native retarget and merged survivors
+
+The reviewed target equality check rejected a surviving native command after
+`UnitAttack.UpdateTarget` selected another legal remembered enemy. Only an
+observation around that exact native method may now update the current owned
+order's target. Actor/item/epoch/target checks remain on foreign construction;
+no new automatic-retarget policy is introduced.
+
+Normal and legitimately reaccepted Broken pistol sequences kill A through native
+projectile damage/life processing, select B natively, and fire the remaining
+allowed shot with an ordinary free cartridge reload. Wrong-target AI stays
+rejected. Misfires remain mandatory misses: the degradation/dead-target negative
+uses a separate genuinely selected ally's ordinary sword attack to kill A after
+the firearm breaks. Advancing native command/AI processing cannot restart it.
+
+An additional running-reload regression observed actual
+`UnitUseAbility.TryMergeInto=true`, but the reviewed adapter kept the old attack
+intent. The correction owns that actual survivor and transfers the newly
+accepted immutable pending reload intent onto it. It preserves elapsed progress
+and costs and never rewrites an already scheduled old callback. Paused unstarted
+replacement, running reload merge, stale native AI reloads, and same/different
+enemy orders pass. A running attack merge after a real coexisting paper reload
+preserves its already-spent Standard cost, attack index, last rule and elapsed
+progress. Native costs, including the existing RTWP Free-slot cooldown behavior,
+are observed rather than changed.
+
+### CR-03 — action prediction and native terminal boundaries
+
+`ActionsStates.Standard.CanUse` includes UI hover prediction. Actual native
+pointer handler selection, hover notification, path calculation and prediction
+reproduced premature cancellation of an accepted reload order. The callback now
+submits one continuation to the native queue on the exact actor's turn; actual
+native cooldowns determine execution. There is no retry loop or cross-turn feature.
+
+| Legitimate powder/ball configuration | Native TB charge | Qualified continuation |
+| --- | --- | --- |
+| Pistol with Rapid Reload | Move +3 | Same-turn reload then Standard +6 attack, one click |
+| Pistol without Rapid Reload | Standard +6 | Reload once; no remaining Standard means no shot |
+| Musket without Rapid Reload | Standard +6 and Move +3 | Full-round reload once; no premature shot; native turn can auto-end |
+
+Installed `TickCommandTurnBased` can reject an unstarted action using
+`ForceFinishForTurnBased(Success)`, setting `IsActed` despite no discharge or
+cost. The adapter observes that actual terminal owner event and revokes its
+authority. The fixture records the call and zero attack cost; `IsActed` alone
+is not evidence of firing. Ordinary native turn end also interrupts the queue
+and has no firearm exception. Standard/FullRound reloads therefore do **not**
+promise an automatic attack next turn. A new explicit attack uses the retained
+round and the next turn's real action.
+
+Ten cost/boundary cases and three real-hover cases cover Move, Standard,
+FullRound, callback completion after native turn end, no premature shot/cost,
+and cancellation/replacement while truly pending before native termination.
+The save-free host supplies request-owned native Recast/Grid navigation; no
+path result, action availability, ledger acceptance or target is assigned.
+
+### Revised evidence and retained acceptance
+
+The evidence JSON records the before run for each reviewed mechanism and
+precisely identifies which other fixes were already present. These are native
+mechanical reproductions, not claims that the reviewer independently ran them.
+The before CR-02 run also failed a corpse-cleanup expectation; external restore
+passed. Corrected fixtures restore exactly. Earlier failed instrumentation is
+retained locally and is not counted as PASS.
+
+Development run `20260913T0530333854811Z-a4e1dec760e54283aef75edb8c34b789`
+passed **413/413 native assertions**, including all **145 original checks** and
+268 added checks. The comparison preserves multiplicity and normalizes only
+request-owned character GUIDs in assertion names. Complete domain suite:
+**1,622/1,622 PASS**, including four added behavioral ledger tests. Compiled
+input-wrapper control flow: **10/10 PASS**, explicitly synthetic. Repository and
+asset validation, clean exact-reference Release and strict 135-file installable
+package validation PASS. Exact dirty-source/DLL identity is in the evidence JSON;
+the committed candidate receives its own subsequent qualification record.
+
+Original native desktop/controller orders, paused RTWP, real Broken interruption,
+empty reload-first and loaded/manual reattacks, natural Wrecked/burst-once,
+contextual repair/legacy alias/character isolation, Quick Clear and completed
+rest remain covered. No Bridge, test authorization helper, direct suppression
+reset, manual ledger acceptance, direct Broken/Wrecked assignment or direct
+retarget supplies positive proof. Ammo/item/save IDs, modifiers, probabilities,
+penalties and production Dead Shot/scatter code are unchanged; their domain
+coverage is retained.
+
+NOT RUN: physical devices/human visual acceptance, save-backed persistence,
+camp UI/autosave tail and exhaustive optional-mod configurations. Exact limits
+are in the evidence JSON. No required review mechanical lane uses a historical
+waiver. Generic runtime game version remains UNKNOWN; exact installed native
+Assembly-CSharp SHA/MVID and loaded mod identity are recorded instead.
+
+Every completed or recovered run restored actual pre-test installation/settings.
+The original installed mod was 0.0.126, DLL
+`99a8ab3e454c5cb4b8b74fc13bee09e6f00893c79d0cc065da27ce3b857681fc`.
+Hung disposable navigation probes were recovered under explicit owner permission
+after PID/request/Steam-parent verification. No owner gameplay session was
+terminated; save mutation attempts in qualified fixtures were zero.
+
+### Revised owner smoke
+
+Misfire to Broken and wait: the old sequence must stop before another shot/reload.
+Explicitly attack the same or another enemy, including manual-loaded and empty
+auto-reload cases and paused RTWP/unpause. In RTWP, use legal Focused Aim alongside
+a pending/running order and check its normal cost. Where native full attack
+permits it, kill A and let the surviving command select B. In TB, observe the
+cost table: Move reload can attack in the same turn; Standard/FullRound cannot
+borrow another action or promise a next-turn automatic shot. Cause a later
+applicable misfire to naturally reach Wrecked with one burst; further fire/reload
+must fail. Complete a full rest to restore the same item. Combat Repair must say
+exactly `Cannot repair firearms during combat.`

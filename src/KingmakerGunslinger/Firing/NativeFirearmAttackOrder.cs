@@ -192,10 +192,13 @@ namespace KingmakerGunslinger.Firing
                 if (owned && !accepted.IsFinished && Ledger.Accept(binding.Order, binding.Submission))
                 {
                     binding.Proposal = false;
+                    Ledger.Own(binding.Order, accepted, commands);
                     if (!ReferenceEquals(accepted, command))
                     {
                         Commands.Remove(accepted);
                         Commands.Add(accepted, binding);
+                        EmptyFirearmAttackCommandPatch.TransferPendingReload(
+                            command as UnitUseAbility, accepted as UnitUseAbility);
                     }
                     return;
                 }
@@ -276,14 +279,92 @@ namespace KingmakerGunslinger.Firing
                     !ReferenceEquals(binding.Target, binding.Order.Target) ||
                     (command is UnitAttack && !ReferenceEquals(((UnitAttack)command).Target, binding.Order.Target)))))) return false;
             if (binding != null && binding.Proposal && binding.Order.Cancelled) return false;
-            if (!fromQueue)
-            {
-                long submission = Ledger.Submit(actor);
-                if (binding != null) binding.Submission = submission;
-                if (current != null && (binding == null || (!binding.Proposal &&
-                    !ReferenceEquals(binding.Order, current)))) Ledger.Cancel(current);
-            }
             return true;
+        }
+        private static bool IsOwned(UnitEntityData actor, UnitCommand command)
+        {
+            return command != null && ReferenceEquals(command.Executor, actor) &&
+                (actor.Commands.Raw.Contains(command) || actor.Commands.Queue.Contains(command) ||
+                 ReferenceEquals(actor.Commands.PreviousCommand, command));
+        }
+        internal static bool IsOrderContainer(UnitCommands commands, UnitEntityData actor)
+        {
+            var order = Ledger.Current(actor);
+            // Native Temporary replaces actor.Commands while predicting input.
+            // Retain the container of the accepted order, not that temporary
+            // property value, including the finished-reload callback gap.
+            return actor != null && ReferenceEquals(commands, actor.Commands) &&
+                (order == null || ReferenceEquals(order.CommandContainer, commands));
+        }
+        internal static void Submitted(UnitEntityData actor, UnitCommand command)
+        {
+            Binding binding = Get(command);
+            if (binding != null && binding.Preview) return;
+            UnitCommand retained = binding == null ? command : binding.MergedInto ?? command;
+            if (binding != null && !retained.IsFinished && IsOwned(actor, retained))
+            {
+                // Native Run may return without accepting, or may enqueue by
+                // calling AddToQueueInternal. Count the retained command once,
+                // after that outcome, never an unrelated observed submission.
+                if (binding.Submission == 0) binding.Submission = Ledger.Submit(actor);
+                if (!binding.Proposal) Ledger.Own(binding.Order, retained, actor.Commands);
+            }
+            ReconcileOwnership(actor);
+        }
+        internal static void ReconcileOwnership(UnitEntityData actor)
+        {
+            var current = Ledger.Current(actor);
+            var owner = current == null ? null : current.Owner as UnitCommand;
+            // Native queue clearing does not call OnEnded on removed commands.
+            // Successful completed reloads keep their one scheduled continuation.
+            if (owner != null && (current.OwnerSlotRemoved || !owner.IsFinished) && !IsOwned(actor, owner))
+                Ledger.Cancel(current);
+        }
+        internal static void RemovedSlot(UnitEntityData actor, UnitCommand.CommandType type)
+        {
+            var current = Ledger.Current(actor);
+            var owner = current == null ? null : current.Owner as UnitCommand;
+            // Observe the native slot-removal operation (including its native
+            // Standard/Move pairing), not a guess about an incoming ability.
+            // This also revokes a just-completed reload's pending callback when
+            // a real replacement clears the slot before the callback runs.
+            if (owner != null && owner.Type == type && !IsOwned(actor, owner))
+                current.OwnerSlotRemoved = true;
+            // Run is the only native caller (apart from this method's paired
+            // recursion). Decide after it retains the incoming command: a
+            // legitimate reload-to-attack transfer clears this marker in Own.
+
+        }
+        internal static void InterruptedAll(UnitEntityData actor)
+        {
+            var current = Ledger.Current(actor);
+            var owner = current == null ? null : current.Owner as UnitCommand;
+            // InterruptAll can retain a genuinely uninterruptible live command.
+            if (owner != null && (owner.IsFinished || !IsOwned(actor, owner)))
+                Ledger.Cancel(current);
+        }
+        internal sealed class TargetResolution
+        {
+            internal Binding Binding;
+            internal UnitEntityData PreviousTarget;
+        }
+        internal static TargetResolution ResolvingTarget(UnitAttack command)
+        {
+            Binding binding = Get(command);
+            return binding != null && !command.IsFinished && binding.Order != null &&
+                ReferenceEquals(binding.Order.Owner, command) && IsOwned(binding.Actor, command) && MayExecute(command)
+                ? new TargetResolution { Binding = binding, PreviousTarget = command.Target } : null;
+        }
+        internal static void ResolvedTarget(UnitAttack command, TargetResolution resolution, bool resolved)
+        {
+            // Only the actual surviving command's native UpdateTarget may move
+            // its order target. Construction, AI target equality and callbacks
+            // cannot supply this provenance or acquire a different owner.
+            if (!resolved || resolution == null || !ReferenceEquals(Get(command), resolution.Binding) ||
+                ReferenceEquals(command.Target, resolution.PreviousTarget)) return;
+            Binding binding = resolution.Binding;
+            if (IsOwned(binding.Actor, command) && Ledger.Retarget(binding.Order, command,
+                resolution.PreviousTarget, command.Target)) binding.Target = command.Target;
         }
         internal static bool MayExecute(UnitAttack command)
         {
@@ -321,7 +402,19 @@ namespace KingmakerGunslinger.Firing
                 ReferenceEquals(binding.Weapon, survivor.Weapon) &&
                 binding.Epoch == survivor.Epoch && MayExecute(attack);
         }
-        internal static void Merged(UnitAttack proposed, UnitCommand previous, bool merged)
+        internal static bool MayMergeReload(UnitUseAbility proposed, UnitCommand previous)
+        {
+            Binding binding = Get(proposed), survivor = Get(previous);
+            if (binding == null) return true;
+            if (binding.Preview || (survivor != null && survivor.Preview)) return false;
+            // A manual reload has no attack authority to inherit. Let native
+            // spell/range rules decide its merge. A bound reload must still
+            // belong to the same live firearm generation and accepted order.
+            return survivor == null || (ReferenceEquals(binding.Actor, survivor.Actor) &&
+                ReferenceEquals(binding.Weapon, survivor.Weapon) &&
+                binding.Epoch == survivor.Epoch && MayResume(survivor));
+        }
+        internal static void Merged(UnitCommand proposed, UnitCommand previous, bool merged)
         {
             Binding binding = Get(proposed);
             if (merged && binding != null && binding.Proposal)
