@@ -128,8 +128,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 restoreOrigin();
                 setClaimed.Invoke(capitalRegion, new object[] { spec.Target == capital });
                 var dice = new TeleportationFixtureRolls(spec.Roll == 0 ? new int[0] : new[] { spec.Roll });
-                // Greater Teleport settles directly from its row with no second
-                // confirmation; every other spell goes through the native dialog.
+                // Both exact spells settle directly from their rows; ordinary
+                // Teleport retains the native risk confirmation.
                 bool direct = TeleportBeginPolicy.IsDirect(spec.Spell);
                 TeleportCastTransaction transaction;
                 TeleportationCastExecution execution;
@@ -243,7 +243,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     var request = OpenTeleportationFixtureConfirmation(panel, target, TeleportSpellKind.Teleport, TeleportCastSourceKind.Prepared, dice);
-                    TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                    string[] mishapNotifications;
+                    using (var observed = new TeleportNotificationObserver())
+                    {
+                        TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
+                        mishapNotifications = observed.Text.ToArray();
+                    }
+                    assertions.Add(Assertion("teleportation-ui-" + (repeated ? "repeated-mishap" : "mishap") + "-native-notification",
+                        "ordinary Teleport retains one outcome warning after actual native mishap damage; it is not a scroll activation failure",
+                        string.Join(" | ", mishapNotifications), mishapNotifications.Length == 1 &&
+                        mishapNotifications[0].Contains("Teleport:") && !mishapNotifications[0].Contains("failed to activate"), path));
                     captures.Add(new { step = repeated ? "repeated-mishap" : "mishap", transaction = request.Transaction.State.ToString(),
                         diagnostic = request.Transaction.Diagnostic, result = request.Execution.LastEvidence,
                         damageBefore = originalDamage, damageAfter = travelers.Select(value => value.Damage).ToArray() });

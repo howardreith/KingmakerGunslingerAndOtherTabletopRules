@@ -107,6 +107,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.OnlyRealUsableSpellSources", TeleportationContextTests.OnlyRealUsableSpellSources),
             Case("teleportation.CancellationAndStalenessSpendNothing", TeleportationContextTests.CancellationAndStalenessSpendNothing),
             Case("teleportation.PreparedAndSpontaneousSpendOnce", TeleportationContextTests.PreparedAndSpontaneousSpendOnce),
+            Case("teleportation.OnlyVerifiedNativePreservationAllowsUnspentScrollUse", TeleportationContextTests.OnlyVerifiedNativePreservationAllowsUnspentScrollUse),
             Case("teleportation.ProvenPreEffectFailureCompensates", TeleportationContextTests.ProvenPreEffectFailureCompensates),
             Case("teleportation.AmbiguousOrPostEffectFailureNeverRefunds", TeleportationContextTests.AmbiguousOrPostEffectFailureNeverRefunds),
             Case("teleportation.AlternateDistancePreferenceAndExclusions", TeleportationContextTests.AlternateDistancePreferenceAndExclusions),

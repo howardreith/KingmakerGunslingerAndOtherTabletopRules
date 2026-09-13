@@ -210,6 +210,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var table = oracle.Spellbook.SpellsKnown;
                 CaptureTeleportSpellbookUi("oracle-native-progression", new {
                     unitId = unit.UniqueId, classId = oracle.AssetGuid,
+                    race = new { id = unit.Descriptor.Progression.Race.AssetGuid, name = unit.Descriptor.Progression.Race.name },
+                    gender = unit.Descriptor.Gender.ToString(), alignment = unit.Descriptor.Alignment.Value.ToString(),
+                    charisma = new { baseValue = unit.Stats.Charisma.BaseValue, effective = unit.Stats.Charisma.ModifiedValue },
+                    nativeFeatures = unit.Descriptor.Progression.Features.Enumerable.Select(value => new { id = value.Blueprint.AssetGuid, name = value.Blueprint.name }).ToArray(),
                     classLevel = unit.Descriptor.Progression.GetClassLevel(oracle),
                     characterLevel = unit.Descriptor.Progression.CharacterLevel, book = book.Blueprint.AssetGuid,
                     book.CasterLevel, archetypes = unit.Descriptor.Progression.GetClassData(oracle).Archetypes.Select(value => value.AssetGuid).ToArray(),

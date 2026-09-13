@@ -203,6 +203,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     ReferenceEquals(scroll.Item, _openedScrollItem) &&
                     fresh.Source.Uses == _action.Source.Uses && fresh.Source.Kind == _action.Source.Kind &&
                     fresh.Source.SpellLevel == _action.Source.SpellLevel &&
+                    fresh.Source.ScrollCost == _action.Source.ScrollCost && fresh.Source.ScrollPreservationPossible == _action.Source.ScrollPreservationPossible &&
                     fresh.Destination.OrdinaryArrivals == _action.Destination.OrdinaryArrivals &&
                     TeleportationCastExecution.FamiliarityFor(context, point.AssetGuid) == _familiarity;
             }
@@ -364,11 +365,16 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 (Transaction.State == TeleportTransactionState.ActivationRefused ||
                  Transaction.State == TeleportTransactionState.ActivationFailedSpent))
             {
-                TeleportExpenditure spent = TeleportExpenditure.Ambiguous;
-                try { if (Execution.Resource != null) spent = Execution.Resource.ObserveExpenditure(); }
-                catch { /* Missing expenditure evidence must never claim a refund. */ }
+                TeleportExpenditure spent = TeleportExpenditure.Ambiguous; bool chargeOnly = false;
+                try
+                {
+                    if (Execution.Resource != null) spent = Execution.Resource.ObserveExpenditure();
+                    if (spent == TeleportExpenditure.ExactlyOne && Execution.Resource is TeleportationScrollCastResource)
+                        chargeOnly = ((TeleportationScrollCastResource)Execution.Resource).ChargeOnlySpent;
+                }
+                catch { spent = TeleportExpenditure.Ambiguous; /* Never guess or lose the failure notification. */ }
                 message = TeleportContextPresentation.ScrollActivationFailure(_action.Source.CasterName,
-                    _action.Source.Spell, spent, TeleportationText.Get);
+                    _action.Source.Spell, spent, TeleportationText.Get, chargeOnly);
             }
             else message = Transaction.State == TeleportTransactionState.TechnicalFailureCompensated ?
                 TeleportationText.Get("Result.Compensated", "The cast could not complete. Its exact spell use was restored.") :

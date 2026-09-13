@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using KingmakerGunslinger.Spells.Teleportation;
 
@@ -9,7 +9,9 @@ namespace KingmakerGunslinger.DomainTests
         private sealed class Resource : ITeleportCastResource
         {
             public object Evidence() { return new { kind = "fake" }; }
-            public TeleportActivationOutcome ActivationOutcome { get { return TeleportActivationOutcome.NotAttempted; } }
+            internal TeleportActivationOutcome Activation = TeleportActivationOutcome.NotAttempted;
+            internal bool Preserved;
+            public TeleportActivationOutcome ActivationOutcome { get { return Activation; } }
             internal bool[] Prepared = { true, true };
             internal int Slots = 2;
             internal int SpendCalls, RefundCalls;
@@ -18,6 +20,7 @@ namespace KingmakerGunslinger.DomainTests
             public void Spend()
             {
                 SpendCalls++;
+                if (Preserved) return;
                 if (Spontaneous) Slots--; else Prepared[1] = false;
                 if (ExtraSpend) { if (Spontaneous) Slots--; else Prepared[0] = false; }
                 if (ThrowAfterSpend) throw new InvalidOperationException("native spender threw after exact expenditure");
@@ -78,6 +81,25 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.Equal(1, execution.Executions, "Duplicate callback cannot duplicate relocation.");
                 Assertions.Equal(0, execution.Resource.RefundCalls, "Legitimate cast remains spent.");
             }
+        }
+        internal static void OnlyVerifiedNativePreservationAllowsUnspentScrollUse()
+        {
+            foreach (var activation in new[] { TeleportActivationOutcome.Succeeded, TeleportActivationOutcome.SucceededPreserved,
+                TeleportActivationOutcome.RefusedUnspent, TeleportActivationOutcome.FailedSpent })
+            {
+                var execution = new Execution(); execution.Resource.Preserved = true; execution.Resource.Activation = activation;
+                var transaction = new TeleportCastTransaction(ActionRow(kind: TeleportCastSourceKind.Scroll));
+                transaction.Confirm(execution); transaction.Confirm(execution);
+                Assertions.Equal(activation == TeleportActivationOutcome.SucceededPreserved ? 1 : 0, execution.Executions,
+                    "Only an explicit attributed native waiver authorizes effect execution with no debit.");
+                Assertions.Equal(1, execution.Resource.SpendCalls, "One deliberate use never retries a preserved or failed scroll.");
+                Assertions.Equal(0, execution.Resource.RefundCalls, "Preservation never manufactures a refund.");
+            }
+            var book = new Execution(); book.Resource.Preserved = true; book.Resource.Activation = TeleportActivationOutcome.SucceededPreserved;
+            var denied = new TeleportCastTransaction(ActionRow()); denied.Confirm(book);
+            Assertions.Equal(0, book.Executions, "Native scroll preservation cannot authorize a free spellbook cast.");
+            Assertions.True(TeleportContextPresentation.ScrollActivationFailure("Reader", TeleportSpellKind.WordOfRecall,
+                TeleportExpenditure.ExactlyOne, English, true).Contains("One scroll charge was consumed"), "Charge-only failures describe the actual resource outcome.");
         }
         internal static void ProvenPreEffectFailureCompensates()
         {

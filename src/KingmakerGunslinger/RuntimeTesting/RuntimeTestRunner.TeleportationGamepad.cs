@@ -575,6 +575,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "scrollRows=" + rows.Actions.Count(value => value.Source.Kind == TeleportCastSourceKind.Scroll) + ";label=" + label.text,
                     rows.Actions.Count(value => value.Source.Kind == TeleportCastSourceKind.Scroll) == 3 && action.Source.Uses == 3 &&
                     !party.Any(value => label.text.Contains(value.CharacterName)) && !label.isTextTruncated && !label.isTextOverflowing && TeleportGamepadTextOnScreen(label));
+                foreach (int tick in CaptureTeleportationSupportingScreenshot("controller-scroll-" + fixture)) yield return tick;
                 var rng = UnityEngine.Random.state; var context = Game.Instance.Rulebook.Context;
                 string resources = ScrollReaderResources(player);
                 var refresh = typeof(TeleportConsoleDestinationRows).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic);

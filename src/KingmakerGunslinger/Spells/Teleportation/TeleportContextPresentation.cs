@@ -48,7 +48,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
         internal static string Detail(WorldMapPointSpellAction action, Translate text)
         {
             if (action.Source.Kind == TeleportCastSourceKind.Scroll)
-                return Uses(action.Source, text) + (action.ScrollVariant > 0 ? " · " +
+                return Uses(action.Source, text) + (action.Source.ScrollCost == TeleportScrollCostKind.Reusable ? " · " + text("ScrollReusable", "Reusable") :
+                    action.Source.ScrollCost == TeleportScrollCostKind.Charge ? " · " + Format(text("ScrollCharges", "{0} charges each"), action.Source.ScrollCharges) : "") + (action.ScrollVariant > 0 ? " · " +
                     Format(text("ScrollVariant", "Variant {0}: CL {1}, SL {2}"), action.ScrollVariant, action.Source.CasterLevel, action.Source.SpellLevel) : "");
             return Format(text("ActionDetail", "{0} · {1}"), Caster(action), Uses(action.Source, text));
         }
@@ -63,12 +64,13 @@ namespace KingmakerGunslinger.Spells.Teleportation
         internal static bool SuppressSuccessAnnouncement(TeleportSpellKind spell, TeleportExecutionStatus status)
         { return TeleportBeginPolicy.IsDirect(spell) && status == TeleportExecutionStatus.Arrived; }
         internal static string ScrollActivationFailure(string reader, TeleportSpellKind spell,
-            TeleportExpenditure spent, Translate text)
+            TeleportExpenditure spent, Translate text, bool chargeOnly = false)
         {
             string outcome = spent == TeleportExpenditure.None ?
                 text("Result.ScrollUnconsumed", "No scroll was consumed.") :
                 spent == TeleportExpenditure.ExactlyOne ?
-                text("Result.ScrollConsumed", "One scroll was consumed. No teleport occurred.") :
+                (chargeOnly ? text("Result.ScrollChargeConsumed", "One scroll charge was consumed. No teleport occurred.") :
+                    text("Result.ScrollConsumed", "One scroll was consumed. No teleport occurred.")) :
                 text("Result.ScrollConsumptionUnknown", "Scroll consumption could not be verified. Check your inventory before trying again.");
             return Format(text("Result.ScrollActivationFailed", "{0} failed to activate the Scroll of {1}."),
                 reader, SpellName(spell, text)) + "\n" + outcome;
@@ -134,7 +136,10 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 text("RecallExact", "Word of Recall returns the party exactly to this world-map point."));
             if (action.Source.Kind == TeleportCastSourceKind.Scroll)
                 sections.Add(Format(text("ScrollCasterLevel", "Scroll caster level: {0}."), action.Source.CasterLevel.ToString(CultureInfo.InvariantCulture)) + "\n" +
-                    Format(text("ConsumesScroll", "This consumes one {0} scroll and no spell slot."), spell));
+                    (action.Source.ScrollCost == TeleportScrollCostKind.Reusable ? text("UsesReusableScroll", "This reusable scroll spends no charge or spell slot.") :
+                     action.Source.ScrollPreservationPossible ? text("UsesPreservableScroll", "Uses one scroll charge and no spell slot. Preservation effects may prevent consumption.") :
+                     action.Source.ScrollCost == TeleportScrollCostKind.Charge ? text("ConsumesScrollCharge", "This consumes one scroll charge and no spell slot.") :
+                     Format(text("ConsumesScroll", "This consumes one {0} scroll and no spell slot."), spell)));
             else sections.Add(action.Source.Kind == TeleportCastSourceKind.Prepared ?
                 Format(text("ConsumesPrepared", "This consumes one prepared {0}."), spell) :
                 Format(text("ConsumesSlot", "This consumes one {0} spell slot."), Level(action.Source.SpellLevel, text)));
