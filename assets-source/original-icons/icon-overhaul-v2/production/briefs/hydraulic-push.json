@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "hydraulic-push",
+  "behavior": "Hydraulic Push is the once-per-day ranged Bull Rush SLA using total level plus current best mental modifier.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalRaceAbilityFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/hydraulic-push.png",
+  "sourceSha256": "16a90d51cb0cad1ca8c7140a1a22aa86ead5931d60ed8135f643d2a349f12c4e",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "role": "approved water maneuver/action family"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Use saturated clear blue water and white foam on deep navy ground. A LARGE OPEN HUMAN PALM faces right from lower left, releasing ONE STRAIGHT COMPACT JET OF WATER horizontally to the right. Jet begins tight just beyond palm and ends in a broad blunt forward surge with a bright foamy leading edge. The human hand is warm neutral skin, fingers aligned behind water, no extra fingers. Strong horizontal palm-and-water silhouette. No target, summoned creature, waterfall, shield, doorway, travel portal, water weapon or fire.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A LARGE OPEN HUMAN PALM faces right from lower left, releasing ONE STRAIGHT COMPACT JET OF WATER horizontally to the right. Jet begins tight just beyond palm and ends in a broad blunt forward surge with a bright foamy leading edge. The human hand is warm neutral skin, fingers aligned behind water, no extra fingers. Strong horizontal palm-and-water silhouette. No target, summoned creature, waterfall, shield, doorway, travel portal, water weapon or fire.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "hydraulic",
+  "confusedWith": [
+    "hydraulic-blind",
+    "hydraulic-bull-rush",
+    "hydraulic-disarm",
+    "hydraulic-trip"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "no extra fingers.",
+    "No target, summoned creature, waterfall, shield, doorway, travel portal, water weapon or fire."
+  ]
+}

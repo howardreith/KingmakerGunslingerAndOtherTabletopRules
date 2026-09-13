@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "key": "inner-flame",
+  "behavior": "Inner Flame: improves Scorching Weapons' saves and fire weapon damage, no new grapple mechanic.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/inner-flame.png",
+  "sourceSha256": "2554f535a000df999f639e00aa3fce376900221cb17e5d4d7c6942a2fd4396a7",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted feat/action style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Subject: The same family of manufactured steel sword, held VERTICALLY with blade tip up and complete plain crossguard low in frame. A compact bright EMBER CORE glows from the broad blade's center near the guard, feeding two molten-orange channels inside the steel. Most light concentrated into the central core and lower blade, dark upper blade with warm rim. Strong vertical spearhead-and-crossguard silhouette, no external huge flames, no free-floating orb, no heart, no person, no four-element knot. Dark brown-black ground.",
+  "visualStatus": "production-awaiting-owner-review"
+}

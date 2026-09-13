@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "breeze-gust",
+  "behavior": "Breeze-Kissed Gust parent offers Bull Rush or Trip with ordinary CMB, exhausting ready winds for the day.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/breeze-gust.png",
+  "sourceSha256": "9efdde840b9e93936f4b1f32d734c29d3dfce10d3b3d1983ffdad914187aec38",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painterly action/feat style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. This is the WIND action family: broad luminous ivory-silver air ribbons, soft blue shadows, deep midnight blue ground. No orange fire, electric bolts, turquoise liquid, droplets or icy particles. ONE OPEN HUMAN HAND faces outward from lower left, releasing THREE BROAD WIND STREAMS fanning toward upper right. Each pale air stream has a broad clean S-curve tapering smoothly at its far end, airy negative spaces between them. Natural neutral skin, hand complete and readable; main silhouette is an open three-pronged gust fan. No figure target, attack damage, feathers, water foam, wind shield ring or travel vortex.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "ONE OPEN HUMAN HAND faces outward from lower left, releasing THREE BROAD WIND STREAMS fanning toward upper right. Each pale air stream has a broad clean S-curve tapering smoothly at its far end, airy negative spaces between them. Natural neutral skin, hand complete and readable; main silhouette is an open three-pronged gust fan. No figure target, attack damage, feathers, water foam, wind shield ring or travel vortex.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "wind-actions",
+  "confusedWith": [
+    "breeze-bull-rush",
+    "breeze-trip",
+    "calm-winds",
+    "renew-winds"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No orange fire, electric bolts, turquoise liquid, droplets or icy particles.",
+    "No figure target, attack damage, feathers, water foam, wind shield ring or travel vortex."
+  ]
+}

@@ -25,6 +25,25 @@
                         "approvedHash":  null
                     },
                     {
+                        "key":  "acid-breath",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/acid-breath.png",
+                        "sourceSha256":  "7629e4d6ca75ad96203f6d7b13e7712c1a8f88ae1bd2d87003c6ed6827705c5e",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/acid-breath.png",
+                        "exportSha256":  "916f5b72b691f27357061f0838609e8710e250fd749e3d3d0985b5c99a8f6cba",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-breath.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
                         "key":  "acid-resistance",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/acid-resistance.png",
                         "sourceSha256":  "32de83c25d3bb807a0fdfceaf347d23a8a418ed2130937d1b56c388a79ce283b",
@@ -58,6 +77,215 @@
                                            128
                                        ],
                         "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/air-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "air-insight",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/air-insight.png",
+                        "sourceSha256":  "30286ea4c5414c1e993a3088e2ac94ae835af5196413eacc02d921b5f5d40044",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/air-insight.png",
+                        "exportSha256":  "2c5d6520998be370f5158cecc47f3e3e50cc6f07f6a6dd05805207351ece4e41",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/air-insight.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "airy-step",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/airy-step.png",
+                        "sourceSha256":  "eb2119341961c7f1d36f046b7400edb480698c25c2bb41316c53984fd7fb7071",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/airy-step.png",
+                        "exportSha256":  "4dab2f75300b537f016351bd8ff9da19014fb651282d02f76eb9d90974530d3b",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/airy-step.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "blazing-aura",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/blazing-aura.png",
+                        "sourceSha256":  "f2dee4ea0a21ae956c7eb70166c70e3b5ca9302eda4a3ebbf1ff302baf4dd369",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/blazing-aura.png",
+                        "exportSha256":  "d4306527418e66878248061c1303c861deb746bfdd91ce28d742f745c6c0b2f4",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/blazing-aura.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "brazen-flame",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/brazen-flame.png",
+                        "sourceSha256":  "06481d20eef6f5d2cb56c8b1822b8e96a8f0965cde43643f8eeb1fa370e90639",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/brazen-flame.png",
+                        "exportSha256":  "003f1a8bc963618a4f4783693bf6cf9910686d0f0e1e52727c8da3e91db481ca",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/brazen-flame.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "breeze-bull-rush",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/breeze-bull-rush.png",
+                        "sourceSha256":  "1d49388273614c8704fff215868593aa086f1f5c1449be6289ae0e9bf30f0448",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/breeze-bull-rush.png",
+                        "exportSha256":  "568c86d86b5487ac9bd600d9c7187f50d973e7f7b51d4cf60f705af7de1270f1",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-bull-rush.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "breeze-gust",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/breeze-gust.png",
+                        "sourceSha256":  "9efdde840b9e93936f4b1f32d734c29d3dfce10d3b3d1983ffdad914187aec38",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/breeze-gust.png",
+                        "exportSha256":  "903283e7bebfebfc2e55bb876c9a0f3c27559f6e65a203f8cd19d4901044578f",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-gust.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "breeze-kissed",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/breeze-kissed.png",
+                        "sourceSha256":  "efe41b838b8932494e8b6f0bcf52bd26e1d18e3cfac9939124e431c4e9d728df",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/breeze-kissed.png",
+                        "exportSha256":  "dc113d994bd34fe3043cb786cdfcba2022195d7499f1c782570b3a359061f1c3",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-kissed.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "breeze-trip",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/breeze-trip.png",
+                        "sourceSha256":  "08c0a62b2a004410dc64ae2f06035717cab83b11f6965fc88e6b344bf15a3617",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/breeze-trip.png",
+                        "exportSha256":  "4913cdfaed47a290222ab4c6dad303d18a3126116e2ebaf2838511721eb0111b",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-trip.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "calm-winds",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/calm-winds.png",
+                        "sourceSha256":  "8486b6abaec2c7a76d41d725849c0dbfccc014cc94460df82c04b0fb8749b969",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/calm-winds.png",
+                        "exportSha256":  "28b4f9a4b1b50e820e62df8426e13d814f2f7cf6a6a508f94a0479105cee4657",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/calm-winds.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "chill-touch",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/chill-touch.png",
+                        "sourceSha256":  "4379b5259090901507278e18db611de99dcbab7a752a45fe942b3fa1bb656ac0",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/chill-touch.png",
+                        "exportSha256":  "e04154000a8b04545db9465b3a27949112fa35ae19d7c81932791074389db6cf",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/chill-touch.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "cloud-gazer",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/cloud-gazer.png",
+                        "sourceSha256":  "e3ab7c79eeb5d111fcdb04a623f5a9c511eecba69e05be2dc8d3baf18446e221",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/cloud-gazer.png",
+                        "exportSha256":  "acb6c7afd71d5522718d6c21f19e7ae7976b0faa166f2e2fadba4dc3f52a26ce",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/cloud-gazer.json",
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "awaiting-owner-production-review",
                         "approvedHash":  null
@@ -101,6 +329,82 @@
                         "approvedHash":  null
                     },
                     {
+                        "key":  "crystalline-form",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/crystalline-form.png",
+                        "sourceSha256":  "1a5f41c3cf32309ab7610c443825d97039ec53996502ba222cd3714b15ee368d",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/crystalline-form.png",
+                        "exportSha256":  "28cf1364ebfb87b17a02b1841c27f41c5a68917075cc5ac626032bc4e26b971b",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/crystalline-form.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "deflect-next-ray",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/deflect-next-ray.png",
+                        "sourceSha256":  "b9d36b29cecf5765fbefe1d6346e04595154b7a256c546b741a8b9ca630260fb",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/deflect-next-ray.png",
+                        "exportSha256":  "1d9eed7bebc482b47ef1f3f325db8aa6242c43dcc2036c34d268ee2d4fbd4691",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/deflect-next-ray.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "earth-insight",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/earth-insight.png",
+                        "sourceSha256":  "78b921468c8301f7eadc5371d061063787039e1927ced9096123ec0b72f5c980",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/earth-insight.png",
+                        "exportSha256":  "27b338ad027967eaeadf8e72f6763664ff84eaca27f6fbcbaf65c6f2fbde5997",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/earth-insight.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "efreeti-magic",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/efreeti-magic.png",
+                        "sourceSha256":  "e386255d02cb1e6cf672513602f037b529d537694a67d786e92508adffe79a15",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/efreeti-magic.png",
+                        "exportSha256":  "abaa34b135db6c68b174075e6a45e6aa261f4727cd5bc686ee46db39e62134eb",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/efreeti-magic.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
                         "key":  "electricity-resistance",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/electricity-resistance.png",
                         "sourceSha256":  "eb88eb31eec328211bf18beb4b33bc8062b541f0e361190ad001ef75435b4d24",
@@ -115,6 +419,82 @@
                                            128
                                        ],
                         "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/electricity-resistance.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "fire-insight",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/fire-insight.png",
+                        "sourceSha256":  "0ec3056912edf6a6b334b7000645a63b5eb36dc25c09e440213a538659811020",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/fire-insight.png",
+                        "exportSha256":  "573f9958eaa4453c766c66b5480faceddbc91a3d29ea624b9ed43d0b8e3f7c0d",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/fire-insight.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "fire-in-the-blood",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/fire-in-the-blood.png",
+                        "sourceSha256":  "155c8dcd97f63456b47dcf3b2979675c41df825a990f45a6aa638d9daedfba93",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/fire-in-the-blood.png",
+                        "exportSha256":  "8f260a07dbc9e9b4f585d694531f4731d259b797773b7aae0bdf4b7f7a42f2dc",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/fire-in-the-blood.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "firesight",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/firesight.png",
+                        "sourceSha256":  "6bc73e279bdd8ea6fe03024bbe330b53c871f3fdeda93680c84edacbb13bfac6",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/firesight.png",
+                        "exportSha256":  "3f5b3774a76ecb22c5ebc8e8bf0279296f1151afaef4035e28105a82b57813de",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/firesight.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "forge-hardened",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/forge-hardened.png",
+                        "sourceSha256":  "49eba2c2dac825140f974c849b762b71e2ddf80547d3c5824c1585cebadfa4f4",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/forge-hardened.png",
+                        "exportSha256":  "6bafff5307797835939b38cc0c9abb82a43ff9b40de72a2e4cc20de7c2dd2972",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/forge-hardened.json",
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "awaiting-owner-production-review",
                         "approvedHash":  null
@@ -196,6 +576,101 @@
                         "approvedHash":  null
                     },
                     {
+                        "key":  "granite-skin",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/granite-skin.png",
+                        "sourceSha256":  "a60c74d3be335dd0929b99b9e8dd9ab6b0a4fec66394e1cda410993e65244ce3",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/granite-skin.png",
+                        "exportSha256":  "bc317b417fa3e9ec6e8599189780839f9df01df0d51a1d145750c484d143a4fd",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/granite-skin.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "hydraulic-blind",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/hydraulic-blind.png",
+                        "sourceSha256":  "3d5777198b660e4e7fefe59ba1616c92d91921abf959d04791694ff26cb2237a",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/hydraulic-blind.png",
+                        "exportSha256":  "b2c2b97de8b0738d0fa59914ba63a91d96ae673631f45ef718091206ade134ac",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-blind.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "hydraulic-bull-rush",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/hydraulic-bull-rush.png",
+                        "sourceSha256":  "6aaa501148e07b8055fc864ac36e9146215c137fbfd471b31b448c9b9b8c7a09",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/hydraulic-bull-rush.png",
+                        "exportSha256":  "514d199b2b3e0a57d40e695b196553f7925c8551b4843634e0b937de736fbc30",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-bull-rush.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "hydraulic-disarm",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/hydraulic-disarm.png",
+                        "sourceSha256":  "e9fb7423e4ae5bc24e91e0c94f1fdd5f0a7fb75d53baa3f8931952c4e4a15cb6",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/hydraulic-disarm.png",
+                        "exportSha256":  "64e053499556fb9f4c18f4e8a4af3dacac23116c6716c29dea8a2d95fe1640f2",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-disarm.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "hydraulic-push",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/hydraulic-push.png",
+                        "sourceSha256":  "16a90d51cb0cad1ca8c7140a1a22aa86ead5931d60ed8135f643d2a349f12c4e",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/hydraulic-push.png",
+                        "exportSha256":  "012c3884189406a49fb1cee19dd6df435c4869d420742fb95e9176bf0be15e10",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-push.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
                         "key":  "ice-affinity",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/ice-affinity.png",
                         "sourceSha256":  "82312a4f5d46805dcb4e8043feba0c503301bb9207e3b864a30e87c4d6a84c70",
@@ -210,6 +685,101 @@
                                            128
                                        ],
                         "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/ice-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "ifrit-elemental-affinity-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/ifrit-elemental-affinity-selection.png",
+                        "sourceSha256":  "8e2b4123d0a6ff72cc0de3d92da68927969bfa453e5a6c4623836aa611748b88",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/ifrit-elemental-affinity-selection.png",
+                        "exportSha256":  "f3ad8190b4268a3ec4d9da5d6d78e357d3835a49e5d87ff94e6296f5ff263d19",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/ifrit-elemental-affinity-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "ifrit-energy-resistance-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/ifrit-energy-resistance-selection.png",
+                        "sourceSha256":  "2d6592154f85fc18c9d2fc1297511641f241921fdf391d89d206e69f2650fc76",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/ifrit-energy-resistance-selection.png",
+                        "exportSha256":  "643fc7aea5298a42adf5faf06ab301a9a0173d0d7d02c97d897f1bb15b795caf",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/ifrit-energy-resistance-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "ifrit-racial-spell-like-ability-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/ifrit-racial-spell-like-ability-selection.png",
+                        "sourceSha256":  "7aff76f9a46f8f60a81af670bab8f9a6890568a633cf9c88a34ded37691ee159",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/ifrit-racial-spell-like-ability-selection.png",
+                        "exportSha256":  "7420bed5fb53c697b492adb3fb845f71607dd46899cc5de02c072b546121bfe6",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/ifrit-racial-spell-like-ability-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "inner-breath",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/inner-breath.png",
+                        "sourceSha256":  "4a50f83ebd7a4f8823bcbb04efeeebf517f5002da841ba688053846e680eebef",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/inner-breath.png",
+                        "exportSha256":  "62d5bd7fa64669fbf8a29947754a55d40383802c258761180e2b1b0a24dc97e9",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/inner-breath.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "inner-flame",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/inner-flame.png",
+                        "sourceSha256":  "28f569b92f7d9aa4d1131540fdf17d68f87e6bb82f5b283c3782b181fd6d6f59",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/inner-flame.png",
+                        "exportSha256":  "56089b0ed0391ee352b43d0013ad1a5ea7763b58d87dfa7ce8516089bece3684",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/inner-flame.json",
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "awaiting-owner-production-review",
                         "approvedHash":  null
@@ -267,6 +837,25 @@
                                            128
                                        ],
                         "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/lightning-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "like-the-wind",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/like-the-wind.png",
+                        "sourceSha256":  "cb2242213898af53b25bb961e23486765c0efb2ea8eafc40365b2467ec22b534",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/like-the-wind.png",
+                        "exportSha256":  "bdfcf3147cbbf53d76912d696d3f3497c6002125428c302316c301a155348826",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/like-the-wind.json",
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "awaiting-owner-production-review",
                         "approvedHash":  null
@@ -348,6 +937,120 @@
                         "approvedHash":  null
                     },
                     {
+                        "key":  "nereid-fascination",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/nereid-fascination.png",
+                        "sourceSha256":  "4b831ece0908301a8c30a0cc561df81c8e9e2cd2a17ed3e2e05f55546f088453",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/nereid-fascination.png",
+                        "exportSha256":  "f7d243ef43b59633e47d5f4008a3bc70de93e78c2e7cfd01f539943d98838e80",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/nereid-fascination.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "ooze-breath",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/ooze-breath.png",
+                        "sourceSha256":  "a2c6fded75b376931b987c50c4699bf32f76ffde3b1d2641ef521a3408325f2f",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/ooze-breath.png",
+                        "exportSha256":  "2ca3535917cfea6fdf31eed70cc2a30ae09d63af5810d8b87851b818be33e56d",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/ooze-breath.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "oread-elemental-affinity-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/oread-elemental-affinity-selection.png",
+                        "sourceSha256":  "2490b5a8984a19f60c9eaa38f867490d5182329b7eebcd1e8c46afa85fa3f031",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/oread-elemental-affinity-selection.png",
+                        "exportSha256":  "e4c7b86115239e3d887b844bbc2778e17a9cfcefa571ff2a0ddddd0dcef8660c",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/oread-elemental-affinity-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "oread-energy-resistance-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/oread-energy-resistance-selection.png",
+                        "sourceSha256":  "9a313cd1417c141f848bf6b874c53458b58360ada3842aa9ee1dfeefbc2bc724",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/oread-energy-resistance-selection.png",
+                        "exportSha256":  "54e565c98471c382361532cd639098773541bfde7bbc8667e50fd9afcf088adc",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/oread-energy-resistance-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "oread-racial-spell-like-ability-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/oread-racial-spell-like-ability-selection.png",
+                        "sourceSha256":  "854fa230ba17e7ceecaa5d53f3eab1eb45cf32d5bb5c17a70d01ea93509a6e53",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/oread-racial-spell-like-ability-selection.png",
+                        "exportSha256":  "ad9e3c206c9289472468d9aeb45f6c778918cd19fa877b38b6e21c8baa189ae5",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/oread-racial-spell-like-ability-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "renew-winds",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/renew-winds.png",
+                        "sourceSha256":  "1195c7f914f5c6e07eb1acb3d6da690533ea0008f6d5a5a9fbae52e004146df8",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/renew-winds.png",
+                        "exportSha256":  "907b56a82bd565c546aa8a299e70c118639a26399034d179c08c109435a22fcc",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/renew-winds.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
                         "key":  "rimesoul",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/rimesoul.png",
                         "sourceSha256":  "09fc24f89f806d55d30ba8e2eb57cbdcbaec9773dcff5cd97bbde2134c00399b",
@@ -362,6 +1065,63 @@
                                            128
                                        ],
                         "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/rimesoul.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "scorching-weapons",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scorching-weapons.png",
+                        "sourceSha256":  "1ce77c7f0793eb3a507c038fda5fb9437c1bd27c198bb72b513be30f764cb806",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scorching-weapons.png",
+                        "exportSha256":  "46d1eb3300b3c4b0dcaa1871c5d0517f0a8361df0071813926f716d7de112ea4",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scorching-weapons.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "secretive",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/secretive.png",
+                        "sourceSha256":  "2652ca8bd19df3fe032e2b8e15d45d8ef3044bdfe7e1cd07367928f872694afc",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/secretive.png",
+                        "exportSha256":  "81ea5039d908ab4cbbe8e996170c07f13edf2c284d8340020fa4481f10fa2c46",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/secretive.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "shake-free",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/shake-free.png",
+                        "sourceSha256":  "988736f8b67f228bea76cc7a3b82135cba391bff065b71fd11153efcad0722c8",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/shake-free.png",
+                        "exportSha256":  "7215d7518fe52286b1e211d25c43dac177272269bbfbea16fcd31b795258bf7f",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/shake-free.json",
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "awaiting-owner-production-review",
                         "approvedHash":  null
@@ -424,6 +1184,44 @@
                         "approvedHash":  null
                     },
                     {
+                        "key":  "stone-in-the-blood",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/stone-in-the-blood.png",
+                        "sourceSha256":  "f5f1b7ea7f58b8563c356006a2049e969aab1a774ed967421cb0e41b2fb3fe01",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/stone-in-the-blood.png",
+                        "exportSha256":  "e9e29194b7cad438edb4063cd212913a41515d116cf551eccf9bfd6f0369f15c",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/stone-in-the-blood.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "storm-in-the-blood",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/storm-in-the-blood.png",
+                        "sourceSha256":  "93b1dc20ebf1db7f396c3ad987c8e90b181d794973fd3b9f542304aefb3a6c83",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/storm-in-the-blood.png",
+                        "exportSha256":  "f7e0329e80f998ab0d1685a93efab75a0e81b1d651c8095810784e66e47fc474",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/storm-in-the-blood.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
                         "key":  "stormsoul",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/stormsoul.png",
                         "sourceSha256":  "4cbf92e39931ea7defe03a861b9755ffd9653e8f5ad5308bbd3b1e2a78ff6bd8",
@@ -462,6 +1260,196 @@
                         "approvedHash":  null
                     },
                     {
+                        "key":  "sylph-elemental-affinity-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/sylph-elemental-affinity-selection.png",
+                        "sourceSha256":  "3476123dd6a6afee6fac97abe3328073ecbffe29177f201550caa2ff2fd502d3",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/sylph-elemental-affinity-selection.png",
+                        "exportSha256":  "676296709cfa43480e059e5ac20dcfb8974c5d7efaabbe2175b044f9ca7c9a71",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/sylph-elemental-affinity-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "sylph-energy-resistance-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/sylph-energy-resistance-selection.png",
+                        "sourceSha256":  "66c51a7c58c35b70247286806a289cc05f7d745ca1e3f3ed095cae49d6c67294",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/sylph-energy-resistance-selection.png",
+                        "exportSha256":  "32cbea8062c0d653738269836e5ec154914d03066e94d19dd9f7794d0561ce3c",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/sylph-energy-resistance-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "sylph-racial-spell-like-ability-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/sylph-racial-spell-like-ability-selection.png",
+                        "sourceSha256":  "9561750abbadf4a51fa75895cde62ba9159baad58290e5f44933d1c3bc4810af",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/sylph-racial-spell-like-ability-selection.png",
+                        "exportSha256":  "ea4549319fe6b8b3cfded0f124521518bcfd4c53795e71e557b10ff6497c789c",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/sylph-racial-spell-like-ability-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "thunderous-resilience",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/thunderous-resilience.png",
+                        "sourceSha256":  "f98d634ba4488466f6e34564117dd6387f0c347b2e6c571090d340b11fce6fdb",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/thunderous-resilience.png",
+                        "exportSha256":  "919d80cca252719591aa1a38e781834ed0ee45edd01184fdd93148207358c7ee",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/thunderous-resilience.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "treacherous-earth",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/treacherous-earth.png",
+                        "sourceSha256":  "f7d9ac7325167f06d4b9622e0908ff19f6f2e9f948da2a4c595f84167ea6baff",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/treacherous-earth.png",
+                        "exportSha256":  "a176477d2eb63ca08cf63dd7adc8402a3c2e795e550f0ba25d9943a370c0131e",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/treacherous-earth.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "triton-portal",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/triton-portal.png",
+                        "sourceSha256":  "456440c9394b1fbbc85d1c3fc8a4d8dfccc6349b9c545e2b23973442651609de",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/triton-portal.png",
+                        "exportSha256":  "06c2d14a488e915fed5cd0058d5de3d6917d3113c7ac7ce10efa60c0e994f88d",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/triton-portal.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "undine-racial-spell-like-ability-selection",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/undine-racial-spell-like-ability-selection.png",
+                        "sourceSha256":  "1276c537d4f7eb582ccfec9fb6e7d6852c16213c83355939c4a75f8b1bad67e6",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/undine-racial-spell-like-ability-selection.png",
+                        "exportSha256":  "2fbb25375275d0023232958b64ce45a674c5f921d54ef9a22c8534008b31a529",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/undine-racial-spell-like-ability-selection.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "unerring-weapon",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/unerring-weapon.png",
+                        "sourceSha256":  "6b2782141f2c6f4b8c127d0cc4acd1fbee42abd51c4c38ddb883560538207418",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/unerring-weapon.png",
+                        "exportSha256":  "3b576a308a0f025fd14594b5faff232efd11297570a2be5c5d0b63cd99b467db",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/unerring-weapon.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "unerring-weapon-primary",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/unerring-weapon-primary.png",
+                        "sourceSha256":  "9dee4a3ebf064b51b27bd62bdf8579da986c1ee27a4d0e10ab3936d749b3dfff",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/unerring-weapon-primary.png",
+                        "exportSha256":  "42498f5e0e7caef88589000f482ce0c8028e7f88b6e4f15a1c2482c84d1a9662",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/unerring-weapon-primary.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "unerring-weapon-secondary",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/unerring-weapon-secondary.png",
+                        "sourceSha256":  "73ddc63bf0f8e5fc34575acfd24fc23f19445c62e8ab4d68f9200509ce7ffec0",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/unerring-weapon-secondary.png",
+                        "exportSha256":  "2330239826e42c2b5d46e1c61297173847ae6242882d0543329af60320d26f92",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/unerring-weapon-secondary.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
                         "key":  "water-affinity",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/water-affinity.png",
                         "sourceSha256":  "7b4f85be14178186b5584f1773acff693239d92ecc74fe2d4abcef41d3a1a701",
@@ -476,6 +1464,63 @@
                                            128
                                        ],
                         "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/water-affinity.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "whispering-wind",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/whispering-wind.png",
+                        "sourceSha256":  "12f95574bd7cc98c33c87e94a02a8a251bdb724afc9f77befe8b24fe618c3c38",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/whispering-wind.png",
+                        "exportSha256":  "b56e923bd1bd777d18f084d89fff8777f1a1dcab9fccc1839f085f71ed3d3492",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/whispering-wind.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "wildfire-heart",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/wildfire-heart.png",
+                        "sourceSha256":  "0c7d94b4e48a95c31c882fe8ed0662dd35021447303f7b0897d7e5a27a82437f",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/wildfire-heart.png",
+                        "exportSha256":  "a7a62b2edac9630e7a4f27c859872c2bd85bb2d0849bcd474fc2ec8a5ea167b7",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/wildfire-heart.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "wings-of-air",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/wings-of-air.png",
+                        "sourceSha256":  "260461d33f8ef1b8ad6fb9ba47273b875edd81bb9aab36adeb92d0ee4a99f5ac",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/wings-of-air.png",
+                        "exportSha256":  "bd351a85618aa50e00348587610184ce0d4db4d65ca95672728d651f24caa1e6",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/wings-of-air.json",
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "awaiting-owner-production-review",
                         "approvedHash":  null

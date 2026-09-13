@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "key": "air-insight",
+  "behavior": "Air Insight adds two rounds to air-subtype creatures summoned by Summon Monster or Summon Nature's Ally.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/air-insight.png",
+  "sourceSha256": "30286ea4c5414c1e993a3088e2ac94ae835af5196413eacc02d921b5f5d40044",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted style reference"
+    },
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/sources/fire-insight.png",
+      "role": "unapproved sibling composition; no inferred visual approval"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized cool ivory-silver light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.  Use a cool desaturated blue-black ground; do not carry over orange flames from the style reference. A SMALL AIR ELEMENTAL, a graceful upright body made of pale swirling AIR RIBBONS. Its head and two long thin curved arms are recognizable, while its lower body becomes one tapering spiral supported above a LOW HORIZONTAL SUMMONING ELLIPSE. The arms spread in a loose asymmetrical S, much slimmer and more open than a fire or earth elemental. Cool silver-white highlights and soft blue shadows; negative spaces through body emphasize air. No feathered wings, bird, lightning, fire, eye, clock, text, travel gate or circular UI border.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A SMALL AIR ELEMENTAL, a graceful upright body made of pale swirling AIR RIBBONS. Its head and two long thin curved arms are recognizable, while its lower body becomes one tapering spiral supported above a LOW HORIZONTAL SUMMONING ELLIPSE. The arms spread in a loose asymmetrical S, much slimmer and more open than a fire or earth elemental. Cool silver-white highlights and soft blue shadows; negative spaces through body emphasize air. No feathered wings, bird, lightning, fire, eye, clock, text, travel gate or circular UI border.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "sylph-traits",
+  "confusedWith": [
+    "breeze-kissed",
+    "earth-insight",
+    "fire-insight",
+    "like-the-wind",
+    "secretive",
+    "storm-in-the-blood",
+    "thunderous-resilience",
+    "triton-portal",
+    "whispering-wind"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No feathered wings, bird, lightning, fire, eye, clock, text, travel gate or circular UI border."
+  ]
+}

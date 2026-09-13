@@ -1,5 +1,34 @@
 # Icon overhaul v2 journal
 
+## 2026-09-13 complete art candidates (UTC)
+
+Completed the remaining 55 paintings and exports, bringing the collection to 89
+painted identities plus the approved Rapid Reload emblem. All 80 production
+briefs include implemented behavior, actual UI surfaces, subject/silhouette,
+confusion comparisons, forbidden interpretations and exact tool provenance.
+Revised Inner Flame to retain its complete weapon and Breeze-Kissed to preserve a
+straight arrow redirected by air; retained both earlier originals and prompts.
+The Acid Breath brief records an initial rejected tool request with no output
+and the successful benign symbolic retry. All approved pilot pixels are unchanged.
+
+Inspected twelve family sheets at 32/48/64px and in grayscale. Built one searchable
+90-image review with original/export/brief links and separate approval states.
+Repeat export preserved 187 PNG/manifest files exactly; production manifest SHA-256
+is dfe4e008edb1770cc21ad2f14769202a3b5f99620ea95f39394dfb0370d349e6.
+Gallery links, unique records, approval count and JavaScript syntax passed.
+
+Build-Local exited 0 after repository validation, 16 focused catalog tests, all
+1,612 domain tests, clean Release and strict output/package checks. Exact artifact
+identity is in reports/icon-overhaul/PRODUCTION-QUALIFICATION.json. Package SHA-256:
+f452387b66753e6d04dd31b6ab5e9f3ac9a120bea523f858242c753a550560b4.
+No installed files, runtime icons or game sources changed in this art checkpoint;
+no new runtime/native-UI claim. Existing installation remains outside this work.
+
+Next: publish through the required wrapper, integrate the 137 exact painted
+consumers with live before/after donor/protection evidence, then finish native
+firearm presentation and final game-screen qualification. Final owner approval
+of production art is still required; the mission is not complete.
+
 ## 2026-09-12 pilot approved; first production families
 
 The owner's response, "All looks beautiful, please continue", approved the ten

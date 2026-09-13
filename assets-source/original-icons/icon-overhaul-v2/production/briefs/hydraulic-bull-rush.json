@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "key": "hydraulic-bull-rush",
+  "behavior": "Hydraulic Maneuver Bull Rush child drives the body backward with water; same resource and exact native maneuver.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/hydraulic-bull-rush.png",
+  "sourceSha256": "6aaa501148e07b8055fc864ac36e9146215c137fbfd471b31b448c9b9b8c7a09",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "role": "approved water maneuver/action family"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Use saturated clear blue water and white foam on deep navy ground. ONE small dark FULL HUMAN FIGURE at right is PUSHED BACKWARD AT THE WAIST by a broad horizontal WALL OF WATER entering from left. Body leans back, arms forward, both legs intact and visible with feet sliding to right, clear gap between legs. Water is a low broad rectangular surge with foamy blunt front contacting the torso, not a tall curled wave. Strong horizontal shove composition; keep head/feet inside frame. No wound, weapon, water lasso around feet, eye splash, text or flames.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "ONE small dark FULL HUMAN FIGURE at right is PUSHED BACKWARD AT THE WAIST by a broad horizontal WALL OF WATER entering from left. Body leans back, arms forward, both legs intact and visible with feet sliding to right, clear gap between legs. Water is a low broad rectangular surge with foamy blunt front contacting the torso, not a tall curled wave. Strong horizontal shove composition; keep head/feet inside frame. No wound, weapon, water lasso around feet, eye splash, text or flames.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "hydraulic",
+  "confusedWith": [
+    "hydraulic-blind",
+    "hydraulic-disarm",
+    "hydraulic-push",
+    "hydraulic-trip"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No wound, weapon, water lasso around feet, eye splash, text or flames."
+  ]
+}

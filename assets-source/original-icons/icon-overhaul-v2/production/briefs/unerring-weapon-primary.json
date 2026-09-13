@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "key": "unerring-weapon-primary",
+  "behavior": "Unerring Weapon primary-hand action targets the exact primary held item; wearer-view right main hand is emphasized, left off hand remains a subdued cue.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritageAbilityFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/unerring-weapon-primary.png",
+  "sourceSha256": "9dee4a3ebf064b51b27bd62bdf8579da986c1ee27a4d0e10ab3936d749b3dfff",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted steel/action family reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Neutral steel and ivory highlights on deep graphite ground, unless the subject specifies another palette. FIRST-PERSON VIEW looking down at TWO HANDS holding weapons. The wearer's RIGHT HAND enters clearly from BOTTOM RIGHT and holds a LARGE LONG STRAIGHT SWORD raised diagonally toward upper left, its steel edge and central line traced with precise PALE GOLD MAGIC. The LEFT HAND is a small subdued shape at bottom left holding a plain shorter blade low and nearly horizontal, without glow. Right hand and long sword dominate 80 percent of composition; both hands visibly connected to the correct wrists. Entire important weapon tips inside frame. No text, letters, numbers, arrows, shields, fiery blade or mirrored twin swords.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "FIRST-PERSON VIEW looking down at TWO HANDS holding weapons. The wearer's RIGHT HAND enters clearly from BOTTOM RIGHT and holds a LARGE LONG STRAIGHT SWORD raised diagonally toward upper left, its steel edge and central line traced with precise PALE GOLD MAGIC. The LEFT HAND is a small subdued shape at bottom left holding a plain shorter blade low and nearly horizontal, without glow. Right hand and long sword dominate 80 percent of composition; both hands visibly connected to the correct wrists. Entire important weapon tips inside frame. No text, letters, numbers, arrows, shields, fiery blade or mirrored twin swords.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "hand-actions",
+  "confusedWith": [
+    "chill-touch",
+    "deflect-next-ray",
+    "unerring-weapon",
+    "unerring-weapon-secondary"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No text, letters, numbers, arrows, shields, fiery blade or mirrored twin swords."
+  ]
+}

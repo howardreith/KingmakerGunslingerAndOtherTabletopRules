@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "oread-racial-spell-like-ability-selection",
+  "behavior": "Oread spell-like-ability selector and retain entry: innate earth casting category, no new spell.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/oread-racial-spell-like-ability-selection.png",
+  "sourceSha256": "854fa230ba17e7ceecaa5d53f3eab1eb45cf32d5bb5c17a70d01ea93509a6e53",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted elemental/action family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square hand-painted fantasy CRPG TRAIT-CATEGORY icon, a restrained static symbol for a selection category and its retain choice, not a new spell or active buff. Use supplied approved project art for deliberate rich brushwork and material lighting, not its composition. One bold centered subject legible at 32/48/128px, about 80% of square, important edges at least 7% inside canvas. Deep full-bleed charcoal ground. No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark. ONE HUMAN HAND rises from lower left with TWO FINGERS EXTENDED diagonally toward upper right in a deliberate casting gesture, remaining fingers naturally curled. Just above the fingertips THREE SMALL BLOCKY STONES float in a compact ascending stair, one rough dark stone, one pale crystal, one steel-gray mineral. They form one clear angular magic cluster, quiet silver-jade rim light. Warm dusty skin, charcoal-olive ground. No open palm attack, book, flame, lava, ice, weapon, earth elemental creature, written rune or status marker.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "ONE HUMAN HAND rises from lower left with TWO FINGERS EXTENDED diagonally toward upper right in a deliberate casting gesture, remaining fingers naturally curled. Just above the fingertips THREE SMALL BLOCKY STONES float in a compact ascending stair, one rough dark stone, one pale crystal, one steel-gray mineral. They form one clear angular magic cluster, quiet silver-jade rim light. Warm dusty skin, charcoal-olive ground. No open palm attack, book, flame, lava, ice, weapon, earth elemental creature, written rune or status marker.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "selectors",
+  "confusedWith": [
+    "ifrit-elemental-affinity-selection",
+    "ifrit-energy-resistance-selection",
+    "ifrit-racial-spell-like-ability-selection",
+    "oread-elemental-affinity-selection",
+    "oread-energy-resistance-selection",
+    "sylph-elemental-affinity-selection",
+    "sylph-energy-resistance-selection",
+    "sylph-racial-spell-like-ability-selection",
+    "undine-racial-spell-like-ability-selection"
+  ],
+  "uiSurfaces": [
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark.",
+    "No open palm attack, book, flame, lava, ice, weapon, earth elemental creature, written rune or status marker."
+  ]
+}

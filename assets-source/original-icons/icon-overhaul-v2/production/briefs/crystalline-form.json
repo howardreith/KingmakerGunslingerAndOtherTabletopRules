@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "crystalline-form",
+  "behavior": "Crystalline Form: +2 racial AC against rays and an optional daily single-ray deflection; reflective faceted skin.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalCrystallineFormPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/crystalline-form.png",
+  "sourceSha256": "1a5f41c3cf32309ab7610c443825d97039ec53996502ba222cd3714b15ee368d",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted action/trait style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized mineral light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A broad HUMAN SHOULDER AND UPPER ARM in three-quarter view, its skin transformed into clean large PALE QUARTZ FACETS. One THIN GOLDEN RAY approaches from upper left, touches the outer shoulder facet, and bends sharply away upward to the right. Shoulder remains relaxed, no fist or punching pose. Ivory, pale sage and silver crystal surfaces, strong diagonal shoulder silhouette, deep charcoal ground. No flame, ice snowflake, shield object, scattered projectiles, laser weapon, blood or weapon.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A broad HUMAN SHOULDER AND UPPER ARM in three-quarter view, its skin transformed into clean large PALE QUARTZ FACETS. One THIN GOLDEN RAY approaches from upper left, touches the outer shoulder facet, and bends sharply away upward to the right. Shoulder remains relaxed, no fist or punching pose. Ivory, pale sage and silver crystal surfaces, strong diagonal shoulder silhouette, deep charcoal ground. No flame, ice snowflake, shield object, scattered projectiles, laser weapon, blood or weapon.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "oread-traits",
+  "confusedWith": [
+    "deflect-next-ray",
+    "earth-insight",
+    "granite-skin",
+    "stone-in-the-blood",
+    "treacherous-earth"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "no fist or punching pose.",
+    "No flame, ice snowflake, shield object, scattered projectiles, laser weapon, blood or weapon."
+  ]
+}

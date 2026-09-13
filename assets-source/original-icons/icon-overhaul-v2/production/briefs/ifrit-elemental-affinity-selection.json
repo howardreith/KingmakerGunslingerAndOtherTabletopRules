@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "ifrit-elemental-affinity-selection",
+  "behavior": "Ifrit Elemental Affinity selector and retain entry: channeling category with three Ifrit lineage cues; no new power or affinity selection mechanics.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/ifrit-elemental-affinity-selection.png",
+  "sourceSha256": "8e2b4123d0a6ff72cc0de3d92da68927969bfa453e5a6c4623836aa611748b88",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painted elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square hand-painted fantasy CRPG TRAIT-CATEGORY icon, a restrained static symbol for a selection category and its retain choice, not a new spell or active buff. Use supplied approved project art for deliberate rich brushwork and material lighting, not its composition. One bold centered subject legible at 32/48/128px, about 80% of square, important edges at least 7% inside canvas. Deep full-bleed charcoal ground. No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark. TWO HUMAN HANDS cupped together form a broad U at lower center. Between them rests a compact THREE-LOBED FIRE CORE: a flowing orange flame at left, a dark molten-stone lobe at center, and a round pale-gold sun-like lobe at right, joined into ONE simple luminous cluster. Copper-brown natural hands, complete fingertips, quiet warm light and deep umber ground. Strong paired-hands silhouette, no attack stream, shield, book, explosion, floating letters or face.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "TWO HUMAN HANDS cupped together form a broad U at lower center. Between them rests a compact THREE-LOBED FIRE CORE: a flowing orange flame at left, a dark molten-stone lobe at center, and a round pale-gold sun-like lobe at right, joined into ONE simple luminous cluster. Copper-brown natural hands, complete fingertips, quiet warm light and deep umber ground. Strong paired-hands silhouette, no attack stream, shield, book, explosion, floating letters or face.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "selectors",
+  "confusedWith": [
+    "ifrit-energy-resistance-selection",
+    "ifrit-racial-spell-like-ability-selection",
+    "oread-elemental-affinity-selection",
+    "oread-energy-resistance-selection",
+    "oread-racial-spell-like-ability-selection",
+    "sylph-elemental-affinity-selection",
+    "sylph-energy-resistance-selection",
+    "sylph-racial-spell-like-ability-selection",
+    "undine-racial-spell-like-ability-selection"
+  ],
+  "uiSurfaces": [
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark.",
+    "no attack stream, shield, book, explosion, floating letters or face."
+  ]
+}

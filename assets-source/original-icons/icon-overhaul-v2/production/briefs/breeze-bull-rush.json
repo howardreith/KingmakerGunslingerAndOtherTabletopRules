@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "breeze-bull-rush",
+  "behavior": "Breeze-Kissed Bull Rush child pushes one creature with wind using ordinary native CMB; not Hydraulic Push's scaling.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/breeze-bull-rush.png",
+  "sourceSha256": "1d49388273614c8704fff215868593aa086f1f5c1449be6289ae0e9bf30f0448",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painterly action/feat style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. This is the WIND action family: broad luminous ivory-silver air ribbons, soft blue shadows, deep midnight blue ground. No orange fire, electric bolts, turquoise liquid, droplets or icy particles. One dark full HUMAN FIGURE near center leans backward as a LARGE PALE AIR RIBBON pushes their CHEST from lower left toward upper right. The ribbon is a broad diagonal sweep that curls overhead after contact, open and smooth. Body silhouette has arms spread and feet sliding right, both legs distinct, head and feet within square. Emphasize the chest-high diagonal shove. No weapons, injury, storm cloud, ground hook at feet or eye splash.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "One dark full HUMAN FIGURE near center leans backward as a LARGE PALE AIR RIBBON pushes their CHEST from lower left toward upper right. The ribbon is a broad diagonal sweep that curls overhead after contact, open and smooth. Body silhouette has arms spread and feet sliding right, both legs distinct, head and feet within square. Emphasize the chest-high diagonal shove. No weapons, injury, storm cloud, ground hook at feet or eye splash.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "wind-actions",
+  "confusedWith": [
+    "breeze-gust",
+    "breeze-trip",
+    "calm-winds",
+    "hydraulic-bull-rush",
+    "renew-winds"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No orange fire, electric bolts, turquoise liquid, droplets or icy particles.",
+    "No weapons, injury, storm cloud, ground hook at feet or eye splash."
+  ]
+}

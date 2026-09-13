@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "key": "hydraulic-disarm",
+  "behavior": "Hydraulic Maneuver Disarm child strips a held weapon with water; distinct weapon separation silhouette.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/hydraulic-disarm.png",
+  "sourceSha256": "e9fb7423e4ae5bc24e91e0c94f1fdd5f0a7fb75d53baa3f8931952c4e4a15cb6",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "role": "approved water maneuver/action family"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Use saturated clear blue water and white foam on deep navy ground. A STEEL SWORD flies upward left out of an OPEN EMPTY HUMAN HAND at lower right. A bright BLUE WATER COIL wraps only around the sword's crossguard and twists upward, visibly pulling the weapon clear of the separated fingers. Entire plain blade, point and hilt visible with padding; hand has natural anatomy. The diagonal sword and curved water hook are the dominant silhouette; hand dark and smaller. No severing, blood, wound, weapon striking body, tripping legs, face splash, fire or text.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A STEEL SWORD flies upward left out of an OPEN EMPTY HUMAN HAND at lower right. A bright BLUE WATER COIL wraps only around the sword's crossguard and twists upward, visibly pulling the weapon clear of the separated fingers. Entire plain blade, point and hilt visible with padding; hand has natural anatomy. The diagonal sword and curved water hook are the dominant silhouette; hand dark and smaller. No severing, blood, wound, weapon striking body, tripping legs, face splash, fire or text.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "hydraulic",
+  "confusedWith": [
+    "hydraulic-blind",
+    "hydraulic-bull-rush",
+    "hydraulic-push",
+    "hydraulic-trip"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No severing, blood, wound, weapon striking body, tripping legs, face splash, fire or text."
+  ]
+}

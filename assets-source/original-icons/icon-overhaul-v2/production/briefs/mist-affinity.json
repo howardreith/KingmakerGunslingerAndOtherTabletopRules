@@ -15,5 +15,29 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A broad relaxed hand shown PALM DOWN reaching diagonally from lower left toward upper right, gently parting TWO SOFT HORIZONTAL BANKS OF SILVERY MIST under its extended fingers. Pale sage-teal fog pools around the fingertips like low cloud; fingers and thumb catch cool white light with substantial readable anatomy. Airy soft layered shape, no coiling S-smoke, no water drop, no sharp ice, no orange light. Calm deep blue-green background and gently luminous fog.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A broad relaxed hand shown PALM DOWN reaching diagonally from lower left toward upper right, gently parting TWO SOFT HORIZONTAL BANKS OF SILVERY MIST under its extended fingers. Pale sage-teal fog pools around the fingertips like low cloud; fingers and thumb catch cool white light with substantial readable anatomy. Airy soft layered shape, no coiling S-smoke, no water drop, no sharp ice, no orange light. Calm deep blue-green background and gently luminous fog.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "affinities",
+  "confusedWith": [
+    "acid-affinity",
+    "air-affinity",
+    "crystal-affinity",
+    "fire-affinity",
+    "ice-affinity",
+    "lightning-affinity",
+    "magma-affinity",
+    "metal-affinity",
+    "smoke-affinity",
+    "solar-affinity",
+    "water-affinity"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark.",
+    "no coiling S-smoke, no water drop, no sharp ice, no orange light."
+  ]
 }

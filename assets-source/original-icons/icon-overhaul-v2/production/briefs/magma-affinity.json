@@ -15,5 +15,29 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A broad stone-brown hand held sideways, palm tilted up under a LOW MOLTEN BASALT SLAB. One thick orange stream of magma curls from the slab's crack into the palm, with a few incandescent stones suspended above. The fingers curve around the left underside and glow bronze from molten light. Heavy horizontal black rock mass above an open palm, no tall flame, dark umber background.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A broad stone-brown hand held sideways, palm tilted up under a LOW MOLTEN BASALT SLAB. One thick orange stream of magma curls from the slab's crack into the palm, with a few incandescent stones suspended above. The fingers curve around the left underside and glow bronze from molten light. Heavy horizontal black rock mass above an open palm, no tall flame, dark umber background.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "affinities",
+  "confusedWith": [
+    "acid-affinity",
+    "air-affinity",
+    "crystal-affinity",
+    "fire-affinity",
+    "ice-affinity",
+    "lightning-affinity",
+    "metal-affinity",
+    "mist-affinity",
+    "smoke-affinity",
+    "solar-affinity",
+    "water-affinity"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark.",
+    "no tall flame, dark umber background."
+  ]
 }

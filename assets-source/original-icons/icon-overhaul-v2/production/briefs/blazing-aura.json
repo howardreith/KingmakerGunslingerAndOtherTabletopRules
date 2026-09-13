@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "key": "blazing-aura",
+  "behavior": "Blazing Aura: adjacent creatures take fire damage while the one-round aura is active; outward fire around wearer.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/blazing-aura.png",
+  "sourceSha256": "f2dee4ea0a21ae956c7eb70166c70e3b5ca9302eda4a3ebbf1ff302baf4dd369",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painted feat/action style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Subject: One small anonymous upright HUMAN SILHOUETTE, full body in the center, standing grounded with arms slightly spread, enclosed by a LARGE OUTWARD-RADIATING FIRE CORONA. Bright flame tongues flare away from shoulders and feet into a broad oval with uneven spiky outer edge. Dark clear body silhouette remains safe and intact inside hot orange-gold outward fire, not burning injured skin. Dark charcoal ground. No sword, halo behind only head, shield, circular UI frame or extra figures.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Subject: One small anonymous upright HUMAN SILHOUETTE, full body in the center, standing grounded with arms slightly spread, enclosed by a LARGE OUTWARD-RADIATING FIRE CORONA. Bright flame tongues flare away from shoulders and feet into a broad oval with uneven spiky outer edge. Dark clear body silhouette remains safe and intact inside hot orange-gold outward fire, not burning injured skin. Dark charcoal ground. No sword, halo behind only head, shield, circular UI frame or extra figures.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "feats",
+  "confusedWith": [
+    "airy-step",
+    "cloud-gazer",
+    "elemental-strike",
+    "firesight",
+    "hydraulic-maneuver",
+    "inner-breath",
+    "inner-flame",
+    "scorching-weapons",
+    "triton-portal",
+    "wings-of-air"
+  ],
+  "uiSurfaces": [
+    "effects and conditions / tooltip",
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No sword, halo behind only head, shield, circular UI frame or extra figures."
+  ]
+}

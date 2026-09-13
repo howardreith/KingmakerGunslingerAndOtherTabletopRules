@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "thunderous-resilience",
+  "behavior": "Thunderous Resilience grants sonic resistance 5; sound-wave defense, not electricity.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/thunderous-resilience.png",
+  "sourceSha256": "f98d634ba4488466f6e34564117dd6387f0c347b2e6c571090d340b11fce6fdb",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized cool ivory-silver light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.  Use a cool desaturated blue-black ground; do not carry over orange flames from the style reference. THREE BOLD CURVED SOUND-WAVE ARCS approach from left and BREAK INTO SHORT QUIET FRAGMENTS against a broad curved upright PROTECTIVE STONE SURFACE on the right. Sound arcs are silver-white nested parentheses, increasingly wide, with clear gaps; protective surface is a dark rounded vertical slab with a pale ivory rim. Strong left-to-right rhythm makes sound visible. Cool graphite and muted silver palette. No lightning zigzag, electricity sparks, flame, musical notes, letters, ear injury, weapon or circular border.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "THREE BOLD CURVED SOUND-WAVE ARCS approach from left and BREAK INTO SHORT QUIET FRAGMENTS against a broad curved upright PROTECTIVE STONE SURFACE on the right. Sound arcs are silver-white nested parentheses, increasingly wide, with clear gaps; protective surface is a dark rounded vertical slab with a pale ivory rim. Strong left-to-right rhythm makes sound visible. Cool graphite and muted silver palette. No lightning zigzag, electricity sparks, flame, musical notes, letters, ear injury, weapon or circular border.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "sylph-traits",
+  "confusedWith": [
+    "air-insight",
+    "breeze-kissed",
+    "electricity-resistance",
+    "like-the-wind",
+    "secretive",
+    "storm-in-the-blood",
+    "whispering-wind"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No lightning zigzag, electricity sparks, flame, musical notes, letters, ear injury, weapon or circular border."
+  ]
+}

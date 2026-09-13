@@ -15,5 +15,29 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a single curling ribbon of dense ASH-GRAY SMOKE in a broad sideways S shape, rising from a small dark emberless wisp at lower right and rolling left then right. Two large rounded smoke folds catch pearl-white sidelight; outer edges dissolve in soft soot curls. Dark charcoal-plum ground with very subtle warm gray, no fire or orange glow, no wind spiral, no hand or face. The smoke has soft dense billowing mass and an asymmetric serpentine silhouette distinct from the open circular Sylph wind crest. Strong value contrast at 48px.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a single curling ribbon of dense ASH-GRAY SMOKE in a broad sideways S shape, rising from a small dark emberless wisp at lower right and rolling left then right. Two large rounded smoke folds catch pearl-white sidelight; outer edges dissolve in soft soot curls. Dark charcoal-plum ground with very subtle warm gray, no fire or orange glow, no wind spiral, no hand or face. The smoke has soft dense billowing mass and an asymmetric serpentine silhouette distinct from the open circular Sylph wind crest. Strong value contrast at 48px.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "heritages",
+  "confusedWith": [
+    "gemsoul",
+    "general-ifrit",
+    "general-oread",
+    "general-sylph",
+    "general-undine",
+    "ironsoul",
+    "lavasoul",
+    "mistsoul",
+    "rimesoul",
+    "stormsoul",
+    "sunsoul"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark.",
+    "no fire or orange glow, no wind spiral, no hand or face."
+  ]
 }

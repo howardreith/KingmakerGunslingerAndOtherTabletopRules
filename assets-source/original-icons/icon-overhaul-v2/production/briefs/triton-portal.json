@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "key": "triton-portal",
+  "behavior": "Triton Portal: full-round use of Hydraulic Push's daily resource summons 1d3 Small Water Elementals for one round per level; no travel portal.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/triton-portal.png",
+  "sourceSha256": "456440c9394b1fbbc85d1c3fc8a4d8dfccc6349b9c545e2b23973442651609de",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "role": "approved painted action/feat style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. ONE SMALL WATER ELEMENTAL rises upright from a SHALLOW HORIZONTAL SUMMONING POOL. Its compact muscular torso, head and two bent arms are entirely sculpted from translucent blue-green water, its lower body merging into the pool. One arm curls high and one low, forming an asymmetric living-wave silhouette. Pool is a low foamy oval at the bottom, NOT an upright doorway or tunnel. Bright cyan-white foam highlights against deep blue-black ground. No humanoid traveler, destination landscape, arch, teleport ring, trident, runes or flames. All major tips comfortably within square.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "ONE SMALL WATER ELEMENTAL rises upright from a SHALLOW HORIZONTAL SUMMONING POOL. Its compact muscular torso, head and two bent arms are entirely sculpted from translucent blue-green water, its lower body merging into the pool. One arm curls high and one low, forming an asymmetric living-wave silhouette. Pool is a low foamy oval at the bottom, NOT an upright doorway or tunnel. Bright cyan-white foam highlights against deep blue-black ground. No humanoid traveler, destination landscape, arch, teleport ring, trident, runes or flames. All major tips comfortably within square.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "feats",
+  "confusedWith": [
+    "air-insight",
+    "airy-step",
+    "blazing-aura",
+    "cloud-gazer",
+    "earth-insight",
+    "elemental-strike",
+    "fire-insight",
+    "firesight",
+    "greater-teleport",
+    "hydraulic-maneuver",
+    "inner-breath",
+    "inner-flame",
+    "scorching-weapons",
+    "teleport",
+    "wings-of-air"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No humanoid traveler, destination landscape, arch, teleport ring, trident, runes or flames."
+  ]
+}

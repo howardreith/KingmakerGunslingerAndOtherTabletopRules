@@ -4,7 +4,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.dont_write_bytecode = True
-from validate_icon_catalog import CATALOG, PILOT, PRODUCTION, REFERENCES, read_json, validate, presentation_delta_matches
+from validate_icon_catalog import CATALOG, PILOT, PRODUCTION, REFERENCES, read_json, validate, presentation_delta_matches, production_brief_errors
 ROOT = Path(__file__).resolve().parents[1]
 
 class IconCatalogTests(unittest.TestCase):
@@ -76,6 +76,29 @@ class IconCatalogTests(unittest.TestCase):
         production = copy.deepcopy(self.production)
         production["records"].pop()
         self.rejects("Unresolved asset authority:", production=production)
+
+    def test_completed_scope_cannot_drop_both_record_and_authority(self):
+        catalog = copy.deepcopy(self.catalog)
+        production = copy.deepcopy(self.production)
+        removed = production["records"].pop()
+        next(c for c in catalog["concepts"] if c["key"] == removed["key"])["assetAuthority"] = None
+        self.rejects("Completed art scope has missing candidate:", catalog=catalog, production=production)
+
+    def test_creative_brief_cannot_omit_a_real_ui_surface(self):
+        record = next(r for r in self.production["records"] if r["key"] == "unerring-weapon-primary")
+        brief = read_json(ROOT, record["brief"])
+        brief["uiSurfaces"] = []
+        concepts = {c["key"]: c for c in self.catalog["concepts"]}
+        errors = production_brief_errors(brief, concepts[record["key"]], self.catalog["consumers"], concepts)
+        self.assertTrue(any("UI surfaces mismatch" in e for e in errors), errors)
+
+    def test_creative_brief_requires_real_confusable_siblings(self):
+        record = next(r for r in self.production["records"] if r["key"] == "cloud-gazer")
+        brief = read_json(ROOT, record["brief"])
+        brief["confusedWith"] = ["invented-content"]
+        concepts = {c["key"]: c for c in self.catalog["concepts"]}
+        errors = production_brief_errors(brief, concepts[record["key"]], self.catalog["consumers"], concepts)
+        self.assertTrue(any("confusion comparisons" in e for e in errors), errors)
 
     def test_pilot_exporter_cannot_erase_catalog_approval(self):
         pilot = copy.deepcopy(self.pilot)

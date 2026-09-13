@@ -1,6 +1,6 @@
 # Icon overhaul v2 state
 
-Status: PRODUCTION_IN_PROGRESS. Ten pilot images and family direction approved.
+Status: ART_CANDIDATES_COMPLETE_INTEGRATION_PENDING. Ten pilot images and family direction approved; 80 production images await final review.
 
 - Branch: `codex/icon-art-overhaul-v2`; starting commit `db1fccf648b25baa53667dd00ac566e2a0d7f6b9`, version `0.0.127`.
 - The original requested branch remains at `7e77a970` (historical 0.0.107); no branch was overwritten or merged. Relevant icon source is unchanged from the pack's audit commit `258decb8fc2dad58d7a096772b34ec4202d71bd5`.
@@ -18,9 +18,11 @@ Status: PRODUCTION_IN_PROGRESS. Ten pilot images and family direction approved.
 - Review: [interactive pilot](../reports/icon-overhaul/PILOT-REVIEW.html), [contact sheet](../reports/icon-overhaul/pilot-contact-sheet.png), [implementation report](../reports/icon-overhaul/IMPLEMENTATION-REPORT.md). All new pixels remain outside the installable package.
 - Publication: use the unchanged required wrapper after each coherent commit; no policy bypass, merge or release.
 - Owner approved the actual ten-image pilot: "All looks beautiful, please continue". Exact unchanged export hashes and scope are recorded in [pilot approval](../reports/icon-overhaul/PILOT-APPROVAL.md).
-- Production checkpoint: 25 additional individually generated originals and 128px RGBA exports cover all remaining heritage, resistance and affinity concepts. [Heritages](../reports/icon-overhaul/production-heritages.png), [resistances](../reports/icon-overhaul/production-resistance.png), [affinities](../reports/icon-overhaul/production-affinities.png). These new images await final owner review and integration.
+- Production checkpoint: all 80 additional individually generated originals and 128px RGBA exports are preserved. Together with the pilot they cover 89 painted identities and the Rapid Reload emblem. The [searchable full collection](../reports/icon-overhaul/PRODUCTION-REVIEW.html) includes exact hashes, briefs, UI surfaces, source links and small-size/grayscale controls. These new images await final owner review and integration.
 - Metal Affinity's first draft had misleading fire effects; its source/prompt were retained and a cool steel-lit revision replaced only that candidate. Approved pilot originals remain unchanged. Both exporters now preserve approved bytes/decisions. Canonical validation covers production sources, briefs, revisions and approvals separately.
 - Production foundations qualified: 13 focused catalog tests, repository validation, all 1,612 domain tests, clean Release and strict package validation PASS. No new art is packaged yet, and no game launch/deployment was performed for this isolated artwork checkpoint.
-- Next: extend the approved families across remaining concepts, complete live elemental/strategic consumer/assignment census, integrate exact owned consumers, and arrange bounded supervised native menu captures. Separate final visual approval remains required.
+- All production briefs now name actual behavior, subjects, UI surfaces, likely confusions, forbidden interpretations and implementation references. Inner Flame's cropped blade and Breeze-Kissed's bent arrow were revised; both earlier sources/prompts are retained. All ten approved pilot exports remain unchanged.
+- Complete art checkpoint qualified: 16 focused tests, repository validation, all 1,612 domain tests, clean Release and strict package checks PASS. Repeat export preserved 187 PNG/manifest files exactly. [Artifact evidence](../reports/icon-overhaul/PRODUCTION-QUALIFICATION.json). No deployment or new runtime claim.
+- Next: publish this checkpoint through the wrapper; complete the live elemental/strategic consumer/assignment census; integrate the 137 exact painted consumers; qualify native selector, selected-feature and game-screen presentation. Use existing guarded instrumentation where authorized, and bounded supervised captures where needed. Separate final visual approval remains required.
 
 Focused prototype runtime: PASS. Native UI/typography/clipping, saved-parameter-specific round trip, complete live census, final raster integration and final visual acceptance: pending. This is not a completed overhaul or release.

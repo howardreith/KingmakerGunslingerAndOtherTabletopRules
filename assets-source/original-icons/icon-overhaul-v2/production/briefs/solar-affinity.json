@@ -15,5 +15,29 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A warm brown hand rising from bottom center, open fingers in a gentle wide arc around a luminous SMALL SUN just above the palm. A solid honey-gold disk with four long broad horizontal/diagonal rays, two fingers clearly silhouetted to its side. Hand is brightly lit gold, celestial warm light radiates upward in one fan, dark burnt sienna ground. No deity mark, flame tongue, eye or religious symbol. Sun's round disk distinguishes this from Fire Affinity's flowing flame.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: one square original fantasy CRPG AFFINITY icon. Approved Fire Affinity input is the style/family reference: a large readable hand CHANNELING an element, rich hand-painted planes and material, clear fingers and palm, strong localized illumination on skin, full-bleed dark ground. New composition, new gesture and elemental form. Keep element and hand each substantial enough for 32/48/128px. Important fingers and subject within 7 percent padding, wrist may continue into bottom. No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark. Affinity means spell affinity, not immunity or an attack. Subject: A warm brown hand rising from bottom center, open fingers in a gentle wide arc around a luminous SMALL SUN just above the palm. A solid honey-gold disk with four long broad horizontal/diagonal rays, two fingers clearly silhouetted to its side. Hand is brightly lit gold, celestial warm light radiates upward in one fan, dark burnt sienna ground. No deity mark, flame tongue, eye or religious symbol. Sun's round disk distinguishes this from Fire Affinity's flowing flame.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "affinities",
+  "confusedWith": [
+    "acid-affinity",
+    "air-affinity",
+    "crystal-affinity",
+    "fire-affinity",
+    "ice-affinity",
+    "lightning-affinity",
+    "magma-affinity",
+    "metal-affinity",
+    "mist-affinity",
+    "smoke-affinity",
+    "water-affinity"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No enemy, projectile, injury, shield, text, border, runes, UI overlay, grid or watermark.",
+    "No deity mark, flame tongue, eye or religious symbol."
+  ]
 }

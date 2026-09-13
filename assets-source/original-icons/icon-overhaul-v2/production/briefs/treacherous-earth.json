@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "key": "treacherous-earth",
+  "behavior": "Treacherous Earth creates difficult terrain on walkable ground and built floors; no damage or saving throw.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalTreacherousPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/treacherous-earth.png",
+  "sourceSha256": "f7d9ac7325167f06d4b9622e0908ff19f6f2e9f948da2a4c595f84167ea6baff",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted action/trait style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized mineral light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A SINGLE LEATHER BOOT carefully steps onto UNEVEN BUCKLED STONE FLOOR SLABS. Three broad low rectangular slabs have tilted against each other, making a jagged broken zigzag ground line beneath the planted sole. The boot tilts awkwardly, toes to right, calf enters from upper left. Emphasize unstable footing and difficult terrain, no injury. Earthy tan, gray and muted jade reflected light on stone, deep dark background. No spikes impaling foot, giant earthquake, rock projectile, hammer, fire, vines, pit, explosion or attack fist.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A SINGLE LEATHER BOOT carefully steps onto UNEVEN BUCKLED STONE FLOOR SLABS. Three broad low rectangular slabs have tilted against each other, making a jagged broken zigzag ground line beneath the planted sole. The boot tilts awkwardly, toes to right, calf enters from upper left. Emphasize unstable footing and difficult terrain, no injury. Earthy tan, gray and muted jade reflected light on stone, deep dark background. No spikes impaling foot, giant earthquake, rock projectile, hammer, fire, vines, pit, explosion or attack fist.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "oread-traits",
+  "confusedWith": [
+    "crystalline-form",
+    "earth-insight",
+    "granite-skin",
+    "stone-in-the-blood"
+  ],
+  "uiSurfaces": [
+    "effects and conditions / tooltip",
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "no injury.",
+    "No spikes impaling foot, giant earthquake, rock projectile, hammer, fire, vines, pit, explosion or attack fist."
+  ]
+}

@@ -15,5 +15,29 @@
     }
   ],
   "prompt": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a compact interlocking form made of three thick weathered forged iron bands locked together in an angular upright knot. One squared band stands vertically, one crosses its lower half diagonally, a short broad bridge secures the upper join; large readable central negative spaces. Real hammered gunmetal surfaces, muted copper-brown seams and bright silver-gray edge planes, dark brown-black forge ground. Strong blocky metal form, no weapon, hand, anvil, heraldic shield, gear teeth, magic rune, or flame. It suggests enduring metal heritage rather than crafting.",
-  "visualStatus": "production-awaiting-owner-review"
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: individual square fantasy CRPG racial heritage icon. The supplied approved General Ifrit image is a STYLE reference only: match its rich hand-painted faceted brushwork, dramatic readable silhouette, restrained full-bleed dark textured ground, and localized strong light. Create a completely new composition with different silhouette, never a recolor of the flame. One subject fills about 78-84 percent of the square with important tips clear of the edges. It must remain legible at 32, 48 and 128 pixels. No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark. Subject: a compact interlocking form made of three thick weathered forged iron bands locked together in an angular upright knot. One squared band stands vertically, one crosses its lower half diagonally, a short broad bridge secures the upper join; large readable central negative spaces. Real hammered gunmetal surfaces, muted copper-brown seams and bright silver-gray edge planes, dark brown-black forge ground. Strong blocky metal form, no weapon, hand, anvil, heraldic shield, gear teeth, magic rune, or flame. It suggests enduring metal heritage rather than crafting.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "heritages",
+  "confusedWith": [
+    "gemsoul",
+    "general-ifrit",
+    "general-oread",
+    "general-sylph",
+    "general-undine",
+    "lavasoul",
+    "mistsoul",
+    "rimesoul",
+    "smokesoul",
+    "stormsoul",
+    "sunsoul"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, UI frame, decorative border, selection marker, icon grid, collage, logo or watermark.",
+    "no weapon, hand, anvil, heraldic shield, gear teeth, magic rune, or flame."
+  ]
 }
