@@ -903,6 +903,72 @@ Eighty production images and final UI approval remain pending. Continue native
 racial action/variant/buff review and higher dependent rendered feats; no new
 saves or writes are authorized for the missing saved-parameter prerequisite.
 
+### 2026-09-13 — Native dormant buff-sheet extension (not yet qualified)
+
+Continued from published strategic checkpoint `2969801d8fa17fa9d8ca09cc4fe2cc1c500fbbbc`.
+Native source inspection confirms the real buffs-and-conditions sheet includes
+visible inactive buffs, using native dimming and inactive descriptions. Native
+FactCollection.AddFact skips activation when its existing ActiveByDefault flag
+is false. The bounded extension requires that state on the existing dormant
+remote mercenary, adds only thirteen painted buff identities across four race
+cases and a native Bless control, and changes no lifecycle flag. It captures
+actual Buff objects in their native rows and verifies original actor facts,
+other units, area effects and world time. Cleanup removes exact owned facts;
+native Clear does not clear a pooled row's Buff reference, so that public field
+is cleared only when it holds an exact removed fixture fact.
+
+One new corruption test covers wrong sources/art, clipped titles, unexpected
+activation, missing native control and altered context. All 21 capture tests
+pass. Full source gates and native runtime are next. This checks dormant buff
+presentation; no active ability/effect or final owner approval is inferred.
+The original installation is restored and no game is running.
+
+Buff build 1 passed repository validation, 21 capture tests and all 1,629 domain
+tests, then exact Release compilation failed on CS1061 because the new partial
+file lacked the existing Kingmaker.UnitLogic extension-method namespace. Added
+that import; full build 2 is next. No buff candidate was deployed or launched.
+
+Build 2 passed all gates. First Ifrit run
+`20260913T2018595100359Z-working-save-elemental-character-creation-regression`
+failed before any buff capture: 9/13 assertions passed, 32 native frames.
+The native sheet's error-path immediate-close assertion masked the original
+setup exception. Original creator membership, inventory, money and pause flags
+all restored; the sheet had not finished its native close at that immediate
+sample, so no UI restoration PASS is claimed for the run. The game exited
+normally. All 136 original installed paths/hashes were independently restored
+at `2026-09-13T20:25:01.520453+00:00`; failed package/evidence are preserved.
+
+The next correction records exact native prerequisites and each blueprint/control
+resolution stage before mutation. Sheet cleanup still fails the overall request
+when incomplete, but records its failure without replacing the original exception.
+No lifecycle condition or assertion is relaxed. Full build 3 and a fresh bounded
+Ifrit run are next; other races and smoke wait for this fixture to qualify.
+
+### Native buff diagnostic 3 and lifecycle correction
+
+Build 3 passed all source/package gates. Guarded Ifrit run `20260913T2034161943142Z-working-save-elemental-character-creation-regression` failed before buff insertion: the exact registered remote owner was outside the world with an empty inactive buff collection, but its descriptor remained turned on. All other setup checks passed. The prior descriptor-off assumption was incorrect. Native `FactCollection.AddFact` gates activation on `ActiveByDefault`; `BuffCollection.OnFactCreated/OnFactAdded` do not independently activate the buff. The correction preserves the original descriptor state and retains the native inactive-collection gate; it changes neither lifecycle flag. Capture validation now independently requires world exclusion, unchanged descriptor state and inactive collection. Original creator membership/items/money/pause restored, normal process exit completed, and all 136 original installation paths/hashes were independently restored at `2026-09-13T20:39:26.586868+00:00`. Failed candidate/evidence archived locally under `native-racial-buffs-diagnostic-3-*`. Build 4 and a fresh Ifrit run remain pending.
+
+### Native buff build 4: section-cache boundary
+
+Build 4 passed all gates. Guarded Ifrit `20260913T2044196339364Z-working-save-elemental-character-creation-regression` passed lifecycle/binding prerequisites and added five exact inactive buffs without activating effects. Capture failed at the native control lookup; all owned buffs and retained row references were removed, with original facts/world unchanged and no instrumentation exceptions inside the buff scope. The native sheet `Refresh` invalidates only scores/attack/defense; `UISection.UpdateData` skips `FillData` for its cached same-owner reference. The correction calls the normal buff-section `SetDirty` before refresh, both after addition and after removal, chooses an actual section-group membership and checks native `IsShowed`. Diagnostic row bindings are recorded before capture. Labels must preserve exact native source text while allowing the font's own casing. All 136 original installation files were independently restored at `2026-09-13T20:50:19.776973+00:00`; failed artifact archive prefix `native-racial-buffs-cached-4-*`. Build 5 and a fresh Ifrit run remain pending.
+
+### Native buff build 5: Ifrit PASS and Oread viewport failure
+
+Build 5 passed all source/package gates. Ifrit run `20260913T2056263867119Z-working-save-elemental-character-creation-regression` passed all 13 assertions with 102 native captures and three complete mercenary round trips. Four target records were visually inspected in one independently verified byte-identical frame. Oread run `20260913T2106286755913Z-working-save-elemental-character-creation-regression` failed on restoration after its third target capture: all three target icons/labels and the native control were clear, but the normalized scroll restoration check failed. Its 150-unit content already fit the 426.22-unit viewport; recorded content Y changed only from -0.0000610351563 to -0.0000305175781. All owned buffs, original facts/world and creator membership/items/money/pause restored; no effect activation or save writes. Remaining races and smoke did not launch. All 136 original installation files were independently restored at `2026-09-13T21:17:03.274627+00:00`; archive prefix `native-racial-buffs-scroll-5-*`.
+
+The next correction adds an explicit read-only mode for already visible buff rows. It calls no scrolling/restoration setters, keeps the existing real content-position/velocity/axis checks and visible bounds checks, and records normalized values for diagnosis without treating a fitting-content ratio as meaningful scroll state. Existing reveal-and-restore callers retain their behavior. Focused validation requires the read-only API and rejects requested scroll mutation. Build 6, Oread first, all remaining races and same-artifact smoke are required before qualification. Earlier Ifrit PASS remains a separately labeled artifact.
+
+Build 6 Oread and Ifrit passed all 13 assertions each. Sylph stopped on the native
+TMP overflow flag for Breeze-Kissed: Winds Calmed (all glyphs appeared visible
+in its captured native frame); exact sprite, inactive buffs, world state and
+owned buff cleanup passed. The incomplete creator case is FAIL, not qualified.
+Undine/smoke did not run. All 136 original installation files/settings restored
+at `2026-09-13T21:52:42.598471+00:00`. Immutable local archive:
+`native-racial-buffs-label-6-*`. Investigate native TMP metrics before changing
+labels/layout. Master advanced to `e5f1426a6347793e1e978237be4b0a88d4c9d662`
+(v0.0.129); preserve this unfinished buff change, integrate and qualify that
+requested upstream baseline, then resume the remaining buff/action/feat work.
+
 ## 2026-09-13 ? v0.0.129 upstream integration started
 
 
@@ -989,3 +1055,43 @@ Original intake: sixteen members / ten references staged in the lab; ZIP SHA-256
 `78a44c77861969fee778a574bdee9c3761cef323553a20951c5e9fbbb7765a8f`.
 Local native gallery: `artifacts/icon-overhaul-v2/NATIVE-129-INTEGRATION-REVIEW.html`.
 Raw native frames, packages, proprietary references and machine state remain local.
+
+### Native buff work resumed on qualified v0.0.129
+
+
+Current buff build 7 adds observational TMP final-mesh geometry to the native
+inactive buff fixture. A raw Overflow flag is retained as diagnostic; every
+expected nonspace glyph must exist in the actual mesh, fit its real row/clipping
+masks and stay clear of the native icon/timer. No title, font, UI geometry,
+scroll or lifecycle change is used to make it fit. Missing/clipped/overlapping
+meshes fail. Original native controls/facts/world and complete cleanup remain
+required. Run Sylph first on 0.0.129, then all other race cases and smoke on the
+same artifact. Current source is unqualified; original installation remains
+restored. Preserved earlier stash/archive remain intact.
+
+### Native buff build 7 diagnostics and build 8 qualification
+
+Build 7 on `a20b0d236a1259f4c92521ab3a7780956095631e` passed Sylph,
+Oread and Ifrit (13 assertions each). Undine run
+`20260913T2318326669713Z-working-save-elemental-character-creation-regression`
+failed on the Nereid Fascination Aura mesh extending to X=120.214111 beyond
+the unmasked row's nominal X=120. Every glyph was generated inside the real
+mask (X maximum 150.270081), clear of its icon/timer. Native inspection shows
+the complete title. This is a measurement-contract error, not permission to
+resize text or relax actual clipping. Build 8 retains nominal row containment
+as diagnostic and independently checks actual masks and every neighboring
+visible row. Focused tests reject missing masks/rows, overlapping neighbors,
+nonfinite bounds and false containment evidence. All 25 capture tests pass.
+
+The failed Undine case removed all added buffs and restored original world/facts
+and all seven outer creator collections. Its early exception left service-window
+animation cleanup incomplete at observation time; the run remains FAIL. The
+game exited normally and no save write occurred. The exact 136 original files
+were restored and independently hashed before source changes. Build 7 package,
+manifest, audit, restoration and partial PASS results remain local under
+`native-racial-buffs-row-7-*`. Smoke did not run on that artifact. Build 8 must
+complete all four racial cases and smoke before this extension is qualified.
+
+### Native inactive buff-sheet checkpoint qualified
+
+Five exact-artifact Steam runs passed 63 assertions with 393 native captures and thirteen inspected buff identities. All twelve disposable mercenaries completed their original regressions; owned buffs, original facts/world, native UI and creator state restored. Same-artifact smoke passed. Source `7e15cd13cbcf0917c9eaefab78a90d52e89467708c1b6fa93c3eac1572a0eb62`, package `30030682eda80a3a41f65dc0a0c42993e0eb3f5dfd45ec034088eeaeebcdd994`, DLL `804f0b30ab8e2dd417e1c6fd267c9bb23c8efa675889e87b3bff198eff2906f3`, MVID `ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693`. Full 23/25/6/11/1639 test gates, clean Release and strict 224-file package passed. All 136 original installation files/settings restored at `2026-09-14T00:17:14.376986+00:00`. See the curated buff report for exact runs and evidence limits. Thirteen catalog consumers updated; post-run curation changes no compiled code or art. Owner approval of eighty production images and final native UI remains pending. Continue supported action/variant and higher dependent firearm surfaces.

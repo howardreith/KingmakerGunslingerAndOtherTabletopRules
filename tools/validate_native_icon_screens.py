@@ -8,6 +8,52 @@ import re
 import struct
 
 
+def valid_buff_label_geometry(target):
+    """Validate final native glyph geometry, including Overflow-mode labels."""
+    geometry = target.get('labelGeometry')
+    if not isinstance(geometry, dict):
+        return False
+    generated = geometry.get('generatedText')
+    if (geometry.get('api') != 'native TMP_TextInfo final mesh vertices; read-only' or
+            not isinstance(generated, str) or generated != geometry.get('parsedText') or
+            not isinstance(target.get('name'), str) or generated.casefold() != target['name'].casefold() or
+            any(geometry.get(key) is not True for key in ('complete', 'allGlyphsGenerated', 'finiteGeometry',
+                'glyphsWithinClippingMasks', 'glyphsClearOfIconAndTimer', 'glyphsClearOfOtherRows')) or
+            geometry.get('canvasRendererCulled') is not False or geometry.get('overflowMode') != 'Overflow' or
+            type(target.get('labelOverflowing')) is not bool or
+            geometry.get('overflowReported') is not target['labelOverflowing'] or
+            type(geometry.get('characterCount')) is not int or geometry['characterCount'] != len(generated) or
+            type(geometry.get('requiredGlyphCount')) is not int or
+            geometry['requiredGlyphCount'] != sum(not c.isspace() for c in generated) or geometry['requiredGlyphCount'] <= 0):
+        return False
+
+    def bounds(value):
+        return (isinstance(value, dict) and all(type(value.get(key)) in (int, float) and math.isfinite(value[key])
+                for key in ('minX', 'maxX', 'minY', 'maxY')) and
+                value['minX'] <= value['maxX'] and value['minY'] <= value['maxY'])
+    def contains(outer, inner):
+        return (outer['minX'] - .01 <= inner['minX'] and inner['maxX'] <= outer['maxX'] + .01 and
+                outer['minY'] - .01 <= inner['minY'] and inner['maxY'] <= outer['maxY'] + .01)
+    def overlaps(left, right):
+        return (left['minX'] < right['maxX'] - .01 and left['maxX'] > right['minX'] + .01 and
+                left['minY'] < right['maxY'] - .01 and left['maxY'] > right['minY'] + .01)
+    keys = ('glyphBounds', 'rowBounds', 'nameBounds', 'iconBounds', 'timerBounds', 'timerIconBounds')
+    masks = geometry.get('clippingMaskBounds')
+    neighbors = geometry.get('otherRowBounds')
+    if (not all(bounds(geometry.get(key)) for key in keys) or not isinstance(masks, list) or
+            type(geometry.get('clipMaskCount')) is not int or not masks or geometry['clipMaskCount'] != len(masks) or
+            not all(bounds(mask) for mask in masks) or not isinstance(neighbors, list) or
+            type(geometry.get('otherRowCount')) is not int or geometry['otherRowCount'] != len(neighbors) or
+            len(neighbors) != target.get('fixtureBuffCount', 0) - 1 or not all(bounds(row) for row in neighbors)):
+        return False
+    glyph = geometry['glyphBounds']
+    return (glyph['minX'] < glyph['maxX'] and glyph['minY'] < glyph['maxY'] and
+            all(contains(mask, glyph) for mask in masks) and not any(overlaps(glyph, row) for row in neighbors) and
+            geometry.get('glyphsWithinRow') is contains(geometry['rowBounds'], glyph) and
+            geometry.get('glyphsWithinNameRect') is contains(geometry['nameBounds'], glyph) and
+            not any(overlaps(glyph, geometry[key]) for key in ('iconBounds', 'timerBounds', 'timerIconBounds')))
+
+
 def validate(evidence, result, build, identity, directory):
     errors = []
     def require(condition, message):
@@ -40,7 +86,7 @@ def validate(evidence, result, build, identity, directory):
             continue
         require(record.get('status') == 'captured-native-screen-awaiting-visual-inspection', 'Incomplete capture: ' + name)
         require(bool(record.get('stage')) and isinstance(record.get('nativeState'), dict), 'Missing native UI identity: ' + name)
-        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:', 'native-scroll-row:', 'native-scroll-merchant-row:', 'native-racial-feat-row:', 'native-strategic-control:')):
+        if record.get('stage', '').startswith(('native-weapon-row:', 'native-learning-row:', 'native-selected-fact:', 'native-scroll-row:', 'native-scroll-merchant-row:', 'native-racial-feat-row:', 'native-strategic-control:', 'native-racial-buff-row:')):
             state = record.get('nativeState', {})
             state = state if isinstance(state, dict) else {}
             viewport = state.get('viewport', {})
@@ -50,6 +96,12 @@ def validate(evidence, result, build, identity, directory):
                 api == 'Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter' and
                 viewport.get('scrollType') == 'Kingmaker.UI.Common.ScrollRectExtended' and
                 bool(viewport.get('contentObject')) and bool(viewport.get('viewportObject')))
+            if record['stage'].startswith('native-racial-buff-row:'):
+                known_scroll = api == 'native viewport observation' and viewport.get('scrollMutationRequested') is False and (
+                    (viewport.get('positionApi'), viewport.get('scrollType')) in {
+                        ('UnityEngine.UI.ScrollRect.normalizedPosition', 'UnityEngine.UI.ScrollRect'),
+                        ('Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter', 'Kingmaker.UI.Common.ScrollRectExtended')}) and (
+                    bool(viewport.get('contentObject')) and bool(viewport.get('viewportObject')))
             require(known_scroll and
                     viewport.get('rowActive') is True and viewport.get('rowVerticallyVisible') is True and
                     viewport.get('restored') is True, 'Native row viewport/restoration is incomplete: ' + name)
@@ -114,6 +166,30 @@ def validate(evidence, result, build, identity, directory):
                         all(type(value) is bool for value in markers.values()) and
                         type(target.get('otherIconRows')) is int and target['otherIconRows'] > 0 and target.get('otherIconsExact') is True,
                         'Native racial feat rendered icon/title/eligibility/controls differ: ' + name)
+            elif record['stage'].startswith('native-racial-buff-row:'):
+                expected = {
+                    'Ifrit': {'e116e1e0a17a4aceb001000000000013','e116e1e0a17a4aceb001000000000015',
+                              'e116e1e0a17a4aceb001000000000018','e117e1e0a17a4acec001000000000063'},
+                    'Oread': {'e117e1e0a17a4acec001000000000064','e117e1e0a17a4acec001000000000071','e118e1e0a17a4acec001000000000010'},
+                    'Sylph': {'e116e1e0a17a4aceb001000000000019','e117e1e0a17a4acec001000000000065','e117e1e0a17a4acec001000000000081'},
+                    'Undine': {'e118e1e0a17a4acec001000000000003','e118e1e0a17a4acec001000000000005','e118e1e0a17a4acec001000000000006'}}
+                targets = expected.get(state.get('race'), set())
+                alpha = target.get('nativeAlpha')
+                require(state.get('surface') == 'native-racial-buff-sheet' and target.get('buffGuid') in targets and
+                        record['stage'] == 'native-racial-buff-row:' + str(target.get('buffGuid')) and bool(target.get('ownerId')) and
+                        bool(target.get('name')) and bool(target.get('expectedSprite')) and
+                        target.get('expectedSprite') == target.get('renderedSprite') and target.get('spriteExact') is True and
+                        target.get('labelExact') is True and target.get('labelTruncated') is False,
+                        'Native racial buff source/icon/title differs: ' + name)
+                require(valid_buff_label_geometry(target), 'Native racial buff glyph mesh is missing, clipped or overlapping: ' + name)
+                require(target.get('buffActive') is False and target.get('buffTurnedOn') is False and target.get('ownerOutsideWorld') is True and
+                        target.get('ownerTurnedOnRetained') is True and target.get('buffCollectionInactive') is True and
+                        target.get('nativeSectionShown') is True and
+                        type(alpha) in (int,float) and math.isfinite(alpha) and 0 < alpha <= 1 and target.get('nativeStateRetained') is True and
+                        bool(target.get('nativeControlGuid')) and target.get('nativeControlGuid') not in set().union(*expected.values()) and
+                        target.get('nativeControlExact') is True and type(target.get('fixtureBuffCount')) is int and
+                        target['fixtureBuffCount'] == len(targets) + 1 and target.get('worldAndOriginalFactsRetained') is True,
+                        'Native racial buff lifecycle/control/original context differs: ' + name)
             elif record['stage'].startswith('native-strategic-control:'):
                 spells = {'Teleport':'82e3fb1dce1647b58d3b7169c8520af0', 'GreaterTeleport':'73d19adfe18743e0a2a3a21abf4af5f3'}
                 image_names = target.get('nativeImageNames', [])
