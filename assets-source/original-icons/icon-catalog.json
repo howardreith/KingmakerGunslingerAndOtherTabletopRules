@@ -56,7 +56,7 @@
   "guide": "docs/ICON-ART-GUIDE.md",
   "referenceIndex": "docs/art/ICON-REFERENCE-INDEX.md",
   "sourceAuditStatus": "284 dispositions reconciled with source, guarded live census and protected native graphs; exact evidence in NATIVE-128-QUALIFICATION.json",
-  "runtimeIntegrationStatus": "complete painted census, native Weapon Focus/Rapid Reload Total/sheet P/M/B, three scroll inventory/description/merchant consumers and eleven native racial feat rows qualified; remaining native surfaces and owner approval pending",
+  "runtimeIntegrationStatus": "Painted census and most native surfaces qualified; 90 exact images owner-approved; racial action menus, higher firearm feat UI, saved parameters and final native UI acceptance remain pending.",
   "delegatedManifests": [
     {
       "path": "assets-source/original-icons/icon-overhaul-assets.json",
@@ -1225,7 +1225,7 @@
       "key": "general-oread",
       "name": "General Oread",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1233,9 +1233,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "6e7038b66235f8a7e22e5ff293f23954ca68088551b48daa9bdb40fd7545112b",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-oread.json",
       "reviewGroup": "heritages",
@@ -1250,7 +1251,7 @@
       "key": "acid-resistance",
       "name": "Acid Resistance",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1258,9 +1259,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "e19624675dcb80c212aad7ba36eb90a8dd26c0718bee8c585ad0fffff9fd63bb",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-resistance.json",
       "reviewGroup": "resistance",
@@ -1275,7 +1277,7 @@
       "key": "acid-affinity",
       "name": "Earth Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1283,9 +1285,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "3497f155bb2a84063d307aaea81e8ddab4043da8437e4bdcdb7261a71be9a668",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-affinity.json",
       "reviewGroup": "affinities",
@@ -1314,7 +1317,7 @@
       "key": "general-sylph",
       "name": "General Sylph",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1322,9 +1325,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "1c0bac3cc876890baf97d3771a188dc5f99c93afac402798d66b8537700a8cc5",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-sylph.json",
       "reviewGroup": "heritages",
@@ -1339,7 +1343,7 @@
       "key": "electricity-resistance",
       "name": "Electricity Resistance",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1347,9 +1351,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "874338c2b734e966b6de731e11f71c6edab49b07e21e3dd5310f3e0533063c1f",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/electricity-resistance.json",
       "reviewGroup": "resistance",
@@ -1364,7 +1369,7 @@
       "key": "air-affinity",
       "name": "Air Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1372,9 +1377,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "2c854f2a1861be4e4c48e3a96da0c2d5640dc303e166160c63ecef3e7af548b8",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/air-affinity.json",
       "reviewGroup": "affinities",
@@ -1403,7 +1409,7 @@
       "key": "general-undine",
       "name": "General Undine",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1411,9 +1417,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "83248b89438432027afc34d8c5986a32df7c83b66a46eacb7dc67d4a19dab1ff",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/general-undine.json",
       "reviewGroup": "heritages",
@@ -1428,7 +1435,7 @@
       "key": "cold-resistance",
       "name": "Cold Resistance",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1436,9 +1443,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "a7d5d81c98583fe604c4232806829dc3561af2fa88a2e801331674a0b95cebd2",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/cold-resistance.json",
       "reviewGroup": "resistance",
@@ -1453,7 +1461,7 @@
       "key": "water-affinity",
       "name": "Water Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1461,9 +1469,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "a8c68a30694f6e4cb73a341bf4b8e6e75179254eec02e57bbceff3f0a8a5a985",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/water-affinity.json",
       "reviewGroup": "affinities",
@@ -1478,7 +1487,7 @@
       "key": "hydraulic-push",
       "name": "Hydraulic Push",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1486,9 +1495,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "012c3884189406a49fb1cee19dd6df435c4869d420742fb95e9176bf0be15e10",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-push.json",
       "reviewGroup": "hydraulic",
@@ -1517,7 +1527,7 @@
       "key": "lavasoul",
       "name": "Lavasoul",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1525,9 +1535,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "efaa4f807a2fda8b40530055a993f8c56f1c9d564445f93e489b1405ce73d310",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/lavasoul.json",
       "reviewGroup": "heritages",
@@ -1542,7 +1553,7 @@
       "key": "sunsoul",
       "name": "Sunsoul",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1550,9 +1561,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "78891535f589bb396b4f94d4676c3d3115dcda68ebb93d0985ac84b6ceb25541",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/sunsoul.json",
       "reviewGroup": "heritages",
@@ -1567,7 +1579,7 @@
       "key": "gemsoul",
       "name": "Gemsoul",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1575,9 +1587,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "ae299940c0c2ad7679c11497cad2f27ece810891b84fed4b19470ed074b39cdc",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/gemsoul.json",
       "reviewGroup": "heritages",
@@ -1592,7 +1605,7 @@
       "key": "ironsoul",
       "name": "Ironsoul",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1600,9 +1613,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "57fc93739bfa19afd71eea45bad58a3b328a92e1e56b464ce77381dcd3166f02",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ironsoul.json",
       "reviewGroup": "heritages",
@@ -1617,7 +1631,7 @@
       "key": "smokesoul",
       "name": "Smokesoul",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1625,9 +1639,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "9d4b50f8156209f8e6fcaf57cba0524d893ec71aef7d217d21ae524a6517a179",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/smokesoul.json",
       "reviewGroup": "heritages",
@@ -1642,7 +1657,7 @@
       "key": "stormsoul",
       "name": "Stormsoul",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1650,9 +1665,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "17dcaf00bd536228b757205416760b8f1bc77500ba2ddf5dd315ca6a8175470a",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/stormsoul.json",
       "reviewGroup": "heritages",
@@ -1667,7 +1683,7 @@
       "key": "mistsoul",
       "name": "Mistsoul",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1675,9 +1691,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "1d40bead315dcceed10152d8349b7e29ec378f05f3947f3290729ebc4844c9c5",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/mistsoul.json",
       "reviewGroup": "heritages",
@@ -1692,7 +1709,7 @@
       "key": "rimesoul",
       "name": "Rimesoul",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1700,9 +1717,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "610b0c32bbe57aba1354f370da80222533c0e8625d00c1596cdcda64ba72013a",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/rimesoul.json",
       "reviewGroup": "heritages",
@@ -1717,7 +1735,7 @@
       "key": "magma-affinity",
       "name": "Magma Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1725,9 +1743,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "7b81b87fa8c869d87d234fd3005831f2979ee6bb85de30b7f77276a34c34165b",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magma-affinity.json",
       "reviewGroup": "affinities",
@@ -1742,7 +1761,7 @@
       "key": "solar-affinity",
       "name": "Solar Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1750,9 +1769,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "7e73b7926547e58e23401bc86bf5a374265679a5d453448603436025d6544114",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/solar-affinity.json",
       "reviewGroup": "affinities",
@@ -1767,7 +1787,7 @@
       "key": "crystal-affinity",
       "name": "Crystal Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1775,9 +1795,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "580c53b4b579bc02fb50cf860a92e25fc83cec85baa2197cf50049d960e64b27",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/crystal-affinity.json",
       "reviewGroup": "affinities",
@@ -1792,7 +1813,7 @@
       "key": "metal-affinity",
       "name": "Metal Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1800,9 +1821,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "185520fdc6bc771a3fbaec65182f0475942d156af883229119c1a0ae08bf7895",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/metal-affinity.json",
       "reviewGroup": "affinities",
@@ -1817,7 +1839,7 @@
       "key": "smoke-affinity",
       "name": "Smoke Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1825,9 +1847,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "ba87d30aafc55e276a7f58a6f7e3423887d9d1632ea8c1346cddd0263c2b75a9",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/smoke-affinity.json",
       "reviewGroup": "affinities",
@@ -1842,7 +1865,7 @@
       "key": "lightning-affinity",
       "name": "Lightning Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1850,9 +1873,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "52939c9eb36b7b8bedc7c9172697aa6996957183075ff9585294d1c6c72a4c21",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/lightning-affinity.json",
       "reviewGroup": "affinities",
@@ -1867,7 +1891,7 @@
       "key": "mist-affinity",
       "name": "Mist Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1875,9 +1899,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "04964be0db78d661539b501af4f78cd3aa8727c27c28686fcf3d6201809862a0",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/mist-affinity.json",
       "reviewGroup": "affinities",
@@ -1892,7 +1917,7 @@
       "key": "ice-affinity",
       "name": "Ice Affinity",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1900,9 +1925,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "2ecd3bdb92973a49b5a42c703f315c46fb46c14aa56d6956394285ccb2b48c3a",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ice-affinity.json",
       "reviewGroup": "affinities",
@@ -1959,7 +1985,7 @@
       "key": "unerring-weapon",
       "name": "Unerring Weapon",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -1967,9 +1993,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "3b576a308a0f025fd14594b5faff232efd11297570a2be5c5d0b63cd99b467db",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/unerring-weapon.json",
       "reviewGroup": "hand-actions",
@@ -2026,7 +2053,7 @@
       "key": "chill-touch",
       "name": "Chill Touch",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2034,9 +2061,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "e04154000a8b04545db9465b3a27949112fa35ae19d7c81932791074389db6cf",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/chill-touch.json",
       "reviewGroup": "hand-actions",
@@ -2051,7 +2079,7 @@
       "key": "unerring-weapon-primary",
       "name": "Unerring Weapon Primary",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2059,9 +2087,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "42498f5e0e7caef88589000f482ce0c8028e7f88b6e4f15a1c2482c84d1a9662",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/unerring-weapon-primary.json",
       "reviewGroup": "hand-actions",
@@ -2076,7 +2105,7 @@
       "key": "unerring-weapon-secondary",
       "name": "Unerring Weapon Secondary",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2084,9 +2113,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "2330239826e42c2b5d46e1c61297173847ae6242882d0543329af60320d26f92",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/unerring-weapon-secondary.json",
       "reviewGroup": "hand-actions",
@@ -2126,7 +2156,7 @@
       "key": "scorching-weapons",
       "name": "Scorching Weapons",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2134,9 +2164,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "46d1eb3300b3c4b0dcaa1871c5d0517f0a8361df0071813926f716d7de112ea4",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/scorching-weapons.json",
       "reviewGroup": "feats",
@@ -2151,7 +2182,7 @@
       "key": "inner-flame",
       "name": "Inner Flame",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2159,9 +2190,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "56089b0ed0391ee352b43d0013ad1a5ea7763b58d87dfa7ce8516089bece3684",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/inner-flame.json",
       "reviewGroup": "feats",
@@ -2176,7 +2208,7 @@
       "key": "blazing-aura",
       "name": "Blazing Aura",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2184,9 +2216,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "d4306527418e66878248061c1303c861deb746bfdd91ce28d742f745c6c0b2f4",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/blazing-aura.json",
       "reviewGroup": "feats",
@@ -2201,7 +2234,7 @@
       "key": "firesight",
       "name": "Firesight",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2209,9 +2242,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "3f5b3774a76ecb22c5ebc8e8bf0279296f1151afaef4035e28105a82b57813de",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/firesight.json",
       "reviewGroup": "feats",
@@ -2226,7 +2260,7 @@
       "key": "airy-step",
       "name": "Airy Step",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2234,9 +2268,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "4dab2f75300b537f016351bd8ff9da19014fb651282d02f76eb9d90974530d3b",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/airy-step.json",
       "reviewGroup": "feats",
@@ -2251,7 +2286,7 @@
       "key": "wings-of-air",
       "name": "Wings Of Air",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2259,9 +2294,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "bd351a85618aa50e00348587610184ce0d4db4d65ca95672728d651f24caa1e6",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/wings-of-air.json",
       "reviewGroup": "feats",
@@ -2276,7 +2312,7 @@
       "key": "cloud-gazer",
       "name": "Cloud Gazer",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2284,9 +2320,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "acb6c7afd71d5522718d6c21f19e7ae7976b0faa166f2e2fadba4dc3f52a26ce",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/cloud-gazer.json",
       "reviewGroup": "feats",
@@ -2301,7 +2338,7 @@
       "key": "inner-breath",
       "name": "Inner Breath",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2309,9 +2346,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "62d5bd7fa64669fbf8a29947754a55d40383802c258761180e2b1b0a24dc97e9",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/inner-breath.json",
       "reviewGroup": "feats",
@@ -2351,7 +2389,7 @@
       "key": "triton-portal",
       "name": "Triton Portal",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2359,9 +2397,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "06c2d14a488e915fed5cd0058d5de3d6917d3113c7ac7ce10efa60c0e994f88d",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/triton-portal.json",
       "reviewGroup": "feats",
@@ -2376,7 +2415,7 @@
       "key": "hydraulic-bull-rush",
       "name": "Bull Rush",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2384,9 +2423,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "514d199b2b3e0a57d40e695b196553f7925c8551b4843634e0b937de736fbc30",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-bull-rush.json",
       "reviewGroup": "hydraulic",
@@ -2401,7 +2441,7 @@
       "key": "hydraulic-disarm",
       "name": "Disarm",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2409,9 +2449,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "64e053499556fb9f4c18f4e8a4af3dacac23116c6716c29dea8a2d95fe1640f2",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-disarm.json",
       "reviewGroup": "hydraulic",
@@ -2451,7 +2492,7 @@
       "key": "hydraulic-blind",
       "name": "Dirty Trick Blind",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2459,9 +2500,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "b2c2b97de8b0738d0fa59914ba63a91d96ae673631f45ef718091206ade134ac",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/hydraulic-blind.json",
       "reviewGroup": "hydraulic",
@@ -2484,9 +2526,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "643fc7aea5298a42adf5faf06ab301a9a0173d0d7d02c97d897f1bb15b795caf",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ifrit-energy-resistance-selection.json",
       "reviewGroup": "selectors",
@@ -2509,9 +2552,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "f3ad8190b4268a3ec4d9da5d6d78e357d3835a49e5d87ff94e6296f5ff263d19",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ifrit-elemental-affinity-selection.json",
       "reviewGroup": "selectors",
@@ -2534,9 +2578,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "7420bed5fb53c697b492adb3fb845f71607dd46899cc5de02c072b546121bfe6",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ifrit-racial-spell-like-ability-selection.json",
       "reviewGroup": "selectors",
@@ -2559,9 +2604,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "54e565c98471c382361532cd639098773541bfde7bbc8667e50fd9afcf088adc",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/oread-energy-resistance-selection.json",
       "reviewGroup": "selectors",
@@ -2584,9 +2630,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "e4c7b86115239e3d887b844bbc2778e17a9cfcefa571ff2a0ddddd0dcef8660c",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/oread-elemental-affinity-selection.json",
       "reviewGroup": "selectors",
@@ -2609,9 +2656,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "ad9e3c206c9289472468d9aeb45f6c778918cd19fa877b38b6e21c8baa189ae5",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/oread-racial-spell-like-ability-selection.json",
       "reviewGroup": "selectors",
@@ -2634,9 +2682,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "32cbea8062c0d653738269836e5ec154914d03066e94d19dd9f7794d0561ce3c",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/sylph-energy-resistance-selection.json",
       "reviewGroup": "selectors",
@@ -2659,9 +2708,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "676296709cfa43480e059e5ac20dcfb8974c5d7efaabbe2175b044f9ca7c9a71",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/sylph-elemental-affinity-selection.json",
       "reviewGroup": "selectors",
@@ -2684,9 +2734,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "ea4549319fe6b8b3cfded0f124521518bcfd4c53795e71e557b10ff6497c789c",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/sylph-racial-spell-like-ability-selection.json",
       "reviewGroup": "selectors",
@@ -2709,9 +2760,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "2fbb25375275d0023232958b64ce45a674c5f921d54ef9a22c8534008b31a529",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/undine-racial-spell-like-ability-selection.json",
       "reviewGroup": "selectors",
@@ -2726,7 +2778,7 @@
       "key": "wildfire-heart",
       "name": "Wildfire Heart",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2734,9 +2786,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "a7a62b2edac9630e7a4f27c859872c2bd85bb2d0849bcd474fc2ec8a5ea167b7",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/wildfire-heart.json",
       "reviewGroup": "ifrit-traits",
@@ -2751,7 +2804,7 @@
       "key": "brazen-flame",
       "name": "Brazen Flame",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2759,9 +2812,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "003f1a8bc963618a4f4783693bf6cf9910686d0f0e1e52727c8da3e91db481ca",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/brazen-flame.json",
       "reviewGroup": "ifrit-traits",
@@ -2776,7 +2830,7 @@
       "key": "fire-in-the-blood",
       "name": "Fire In The Blood",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2784,9 +2838,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "8f260a07dbc9e9b4f585d694531f4731d259b797773b7aae0bdf4b7f7a42f2dc",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/fire-in-the-blood.json",
       "reviewGroup": "ifrit-traits",
@@ -2801,7 +2856,7 @@
       "key": "efreeti-magic",
       "name": "Efreeti Magic",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2809,9 +2864,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "abaa34b135db6c68b174075e6a45e6aa261f4727cd5bc686ee46db39e62134eb",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/efreeti-magic.json",
       "reviewGroup": "ifrit-traits",
@@ -2826,7 +2882,7 @@
       "key": "forge-hardened",
       "name": "Forge-Hardened",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2834,9 +2890,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "6bafff5307797835939b38cc0c9abb82a43ff9b40de72a2e4cc20de7c2dd2972",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/forge-hardened.json",
       "reviewGroup": "ifrit-traits",
@@ -2851,7 +2908,7 @@
       "key": "fire-insight",
       "name": "Fire Insight",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2859,9 +2916,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "573f9958eaa4453c766c66b5480faceddbc91a3d29ea624b9ed43d0b8e3f7c0d",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/fire-insight.json",
       "reviewGroup": "ifrit-traits",
@@ -2876,7 +2934,7 @@
       "key": "crystalline-form",
       "name": "Crystalline Form",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2884,9 +2942,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "28cf1364ebfb87b17a02b1841c27f41c5a68917075cc5ac626032bc4e26b971b",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/crystalline-form.json",
       "reviewGroup": "oread-traits",
@@ -2901,7 +2960,7 @@
       "key": "earth-insight",
       "name": "Earth Insight",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2909,9 +2968,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "27b338ad027967eaeadf8e72f6763664ff84eaca27f6fbcbaf65c6f2fbde5997",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/earth-insight.json",
       "reviewGroup": "oread-traits",
@@ -2926,7 +2986,7 @@
       "key": "granite-skin",
       "name": "Granite Skin",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2934,9 +2994,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "bc317b417fa3e9ec6e8599189780839f9df01df0d51a1d145750c484d143a4fd",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/granite-skin.json",
       "reviewGroup": "oread-traits",
@@ -2951,7 +3012,7 @@
       "key": "stone-in-the-blood",
       "name": "Stone In The Blood",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2959,9 +3020,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "e9e29194b7cad438edb4063cd212913a41515d116cf551eccf9bfd6f0369f15c",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/stone-in-the-blood.json",
       "reviewGroup": "oread-traits",
@@ -2976,7 +3038,7 @@
       "key": "treacherous-earth",
       "name": "Treacherous Earth",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -2984,9 +3046,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "a176477d2eb63ca08cf63dd7adc8402a3c2e795e550f0ba25d9943a370c0131e",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/treacherous-earth.json",
       "reviewGroup": "oread-traits",
@@ -3001,7 +3064,7 @@
       "key": "air-insight",
       "name": "Air Insight",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3009,9 +3072,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "2c5d6520998be370f5158cecc47f3e3e50cc6f07f6a6dd05805207351ece4e41",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/air-insight.json",
       "reviewGroup": "sylph-traits",
@@ -3026,7 +3090,7 @@
       "key": "breeze-kissed",
       "name": "Breeze-Kissed",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3034,9 +3098,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "dc113d994bd34fe3043cb786cdfcba2022195d7499f1c782570b3a359061f1c3",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-kissed.json",
       "reviewGroup": "sylph-traits",
@@ -3051,7 +3116,7 @@
       "key": "like-the-wind",
       "name": "Like The Wind",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3059,9 +3124,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "bdfcf3147cbbf53d76912d696d3f3497c6002125428c302316c301a155348826",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/like-the-wind.json",
       "reviewGroup": "sylph-traits",
@@ -3076,7 +3142,7 @@
       "key": "secretive",
       "name": "Secretive",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3084,9 +3150,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "81ea5039d908ab4cbbe8e996170c07f13edf2c284d8340020fa4481f10fa2c46",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/secretive.json",
       "reviewGroup": "sylph-traits",
@@ -3101,7 +3168,7 @@
       "key": "storm-in-the-blood",
       "name": "Storm In The Blood",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3109,9 +3176,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "f7e0329e80f998ab0d1685a93efab75a0e81b1d651c8095810784e66e47fc474",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/storm-in-the-blood.json",
       "reviewGroup": "sylph-traits",
@@ -3126,7 +3194,7 @@
       "key": "thunderous-resilience",
       "name": "Thunderous Resilience",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3134,9 +3202,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "919d80cca252719591aa1a38e781834ed0ee45edd01184fdd93148207358c7ee",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/thunderous-resilience.json",
       "reviewGroup": "sylph-traits",
@@ -3151,7 +3220,7 @@
       "key": "whispering-wind",
       "name": "Whispering Wind",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3159,9 +3228,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "b56e923bd1bd777d18f084d89fff8777f1a1dcab9fccc1839f085f71ed3d3492",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/whispering-wind.json",
       "reviewGroup": "sylph-traits",
@@ -3176,7 +3246,7 @@
       "key": "acid-breath",
       "name": "Acid Breath",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3184,9 +3254,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "916f5b72b691f27357061f0838609e8710e250fd749e3d3d0985b5c99a8f6cba",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/acid-breath.json",
       "reviewGroup": "undine-traits",
@@ -3201,7 +3272,7 @@
       "key": "nereid-fascination",
       "name": "Nereid Fascination",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3209,9 +3280,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "f7d243ef43b59633e47d5f4008a3bc70de93e78c2e7cfd01f539943d98838e80",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/nereid-fascination.json",
       "reviewGroup": "undine-traits",
@@ -3226,7 +3298,7 @@
       "key": "ooze-breath",
       "name": "Ooze Breath",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3234,9 +3306,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "2ca3535917cfea6fdf31eed70cc2a30ae09d63af5810d8b87851b818be33e56d",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/ooze-breath.json",
       "reviewGroup": "undine-traits",
@@ -3279,7 +3352,7 @@
       "key": "deflect-next-ray",
       "name": "Deflect Next Ray",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3287,9 +3360,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "1d9eed7bebc482b47ef1f3f325db8aa6242c43dcc2036c34d268ee2d4fbd4691",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/deflect-next-ray.json",
       "reviewGroup": "hand-actions",
@@ -3304,7 +3378,7 @@
       "key": "breeze-gust",
       "name": "Breeze Gust",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3312,9 +3386,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "903283e7bebfebfc2e55bb876c9a0f3c27559f6e65a203f8cd19d4901044578f",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-gust.json",
       "reviewGroup": "wind-actions",
@@ -3329,7 +3404,7 @@
       "key": "breeze-bull-rush",
       "name": "Breeze Bull Rush",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3337,9 +3412,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "568c86d86b5487ac9bd600d9c7187f50d973e7f7b51d4cf60f705af7de1270f1",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-bull-rush.json",
       "reviewGroup": "wind-actions",
@@ -3354,7 +3430,7 @@
       "key": "breeze-trip",
       "name": "Breeze Trip",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3362,9 +3438,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "4913cdfaed47a290222ab4c6dad303d18a3126116e2ebaf2838511721eb0111b",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/breeze-trip.json",
       "reviewGroup": "wind-actions",
@@ -3379,7 +3456,7 @@
       "key": "calm-winds",
       "name": "Calm Winds",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3387,9 +3464,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "28b4f9a4b1b50e820e62df8426e13d814f2f7cf6a6a508f94a0479105cee4657",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/calm-winds.json",
       "reviewGroup": "wind-actions",
@@ -3404,7 +3482,7 @@
       "key": "renew-winds",
       "name": "Renew Winds",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3412,9 +3490,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "907b56a82bd565c546aa8a299e70c118639a26399034d179c08c109435a22fcc",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/renew-winds.json",
       "reviewGroup": "wind-actions",
@@ -3504,7 +3583,7 @@
       "key": "shake-free",
       "name": "Shake Free",
       "family": "painted-magical",
-      "sharingReason": "New visible identity; no final art approved.",
+      "sharingReason": "Owner-approved production identity; equivalent feature/action/effect consumers may intentionally share this concept. Native UI qualification remains separately recorded.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3512,9 +3591,10 @@
       },
       "technicalStatus": "runtime-qualified-paired-census",
       "visualReview": {
-        "status": "awaiting-owner-production-review",
-        "reviewedExportSha256": null,
-        "evidence": null
+        "status": "approved",
+        "reviewedExportSha256": "7215d7518fe52286b1e211d25c43dac177272269bbfbea16fcd31b795258bf7f",
+        "evidence": "reports/icon-overhaul/PRODUCTION-APPROVAL.md",
+        "scope": "production-image; final native UI acceptance separate"
       },
       "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/shake-free.json",
       "reviewGroup": "undine-traits",
@@ -3707,7 +3787,13 @@
       "currentArt": "native-BurningHands",
       "concept": "native-burning-hands",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Oread.Race",
@@ -3791,7 +3877,13 @@
       "currentArt": "native-StoneFist",
       "concept": "native-stone-fist",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Sylph.Race",
@@ -3875,7 +3967,13 @@
       "currentArt": "native-FeatherStep",
       "concept": "native-feather-step",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Undine.Race",
@@ -3963,7 +4061,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "race-aasimar",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Ifrit.Visual.Body",
@@ -4962,7 +5066,13 @@
       "currentArt": "native-Firebelly",
       "concept": "native-firebelly",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Ifrit.Sunsoul.FlareBurstFeature",
@@ -5001,7 +5111,13 @@
       "currentArt": "native-FlareBurst",
       "concept": "native-flare-burst",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Oread.Gemsoul.ColorSprayFeature",
@@ -5040,7 +5156,13 @@
       "currentArt": "native-ColorSpray",
       "concept": "native-color-spray",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponFeature",
@@ -5083,7 +5205,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "unerring-fallback",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Sylph.Smokesoul.ExpeditiousRetreatFeature",
@@ -5122,7 +5250,13 @@
       "currentArt": "native-ExpeditiousRetreat",
       "concept": "native-expeditious-retreat",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspFeature",
@@ -5161,7 +5295,13 @@
       "currentArt": "native-ShockingGrasp",
       "concept": "native-shocking-grasp",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Undine.Mistsoul.BlurFeature",
@@ -5200,7 +5340,13 @@
       "currentArt": "native-Blur",
       "concept": "native-blur",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Undine.Rimesoul.ChillTouchFeature",
@@ -5243,7 +5389,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "chill-touch",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponPrimaryAbility",
@@ -5258,7 +5410,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "unerring-fallback",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponSecondaryAbility",
@@ -5273,7 +5431,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "unerring-fallback",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Oread.Ironsoul.UnerringWeaponEnchantment",
@@ -5301,7 +5465,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "chill-touch",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspDeliveryAbility",
@@ -5314,7 +5484,13 @@
       "currentArt": "native-ShockingGraspDelivery",
       "concept": "native-shocking-grasp",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.ElementalStrike",
@@ -5560,7 +5736,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.ElementalStrike.Buff",
@@ -5602,7 +5784,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.ScorchingWeapons.Buff",
@@ -5657,7 +5845,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.BlazingAura.Buff",
@@ -5726,7 +5920,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.BullRushAbility",
@@ -5741,7 +5941,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.DisarmAbility",
@@ -5756,7 +5962,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.TripAbility",
@@ -5771,7 +5983,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.DirtyTrickBlindAbility",
@@ -5786,7 +6004,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.TritonPortal.Ability",
@@ -5801,7 +6025,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Ifrit.EnergyResistanceSelection",
@@ -6798,7 +7028,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "traits-Ifrit",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.EnlargePerson",
@@ -6811,7 +7047,13 @@
       "currentArt": "native-EnlargePerson",
       "concept": "native-enlarge-person",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson",
@@ -6824,7 +7066,13 @@
       "currentArt": "native-ReducePerson",
       "concept": "native-reduce-person",
       "disposition": "native-semantic-reuse",
-      "reason": "Source-audited disposition; live binding/visual acceptance pending."
+      "reason": "Source-audited disposition; live binding/visual acceptance pending.",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Resource",
@@ -6879,7 +7127,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "traits-Oread",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.AcidBreath.Resource",
@@ -6907,7 +7161,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "breath-acid-cone",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.OozeBreath.Resource",
@@ -6935,7 +7195,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "breath-acid-cone",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Resource",
@@ -6963,7 +7229,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "breeze-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.BullRush",
@@ -6978,7 +7250,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "breeze-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.Trip",
@@ -6993,7 +7271,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "breeze-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmedBuff",
@@ -7035,7 +7319,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "breeze-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.RenewWinds",
@@ -7050,7 +7340,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "breeze-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.Spells.Teleport.Ability",
@@ -7179,7 +7475,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "traits-Undine",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.FascinatedBuff",
@@ -7221,7 +7523,13 @@
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "traits-Undine",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.AssistanceBuff",
@@ -7316,7 +7624,13 @@
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "traits-Oread",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeActionMenu": {
+        "status": "pending guarded native action/variant/held-touch qualification",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "contract": "Exact native group/variant slots bound to the request-owned remote mercenary, original facts/resources/world/UI and native overlays preserved; held state uses native UnitPartTouch initialization without casting",
+        "evidenceLimit": "No combat/cast/resource expenditure or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth.TerrainBuff",
@@ -8475,7 +8789,7 @@
       "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline."
     }
   ],
-  "artProductionStatus": "complete-main-scope-candidates",
+  "artProductionStatus": "complete-main-scope-owner-approved-images",
   "runtimeMapping": {
     "source": "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs",
     "stage": "after existing registration/publication, immediately before BlueprintInitializationResult in InitializeCore",

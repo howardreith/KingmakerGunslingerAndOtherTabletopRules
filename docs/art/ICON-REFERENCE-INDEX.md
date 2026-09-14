@@ -20,14 +20,16 @@ Read [the guide](../ICON-ART-GUIDE.md) and [catalog](../../assets-source/origina
 
 ## Approved pilot anchors
 
-[Historical contact sheet](../../reports/icon-overhaul/pilot-contact-sheet.png), [review page](../../reports/icon-overhaul/PILOT-REVIEW.html), [source/export hashes](../../assets-source/original-icons/icon-overhaul-v2/pilot/pilot-manifest.json). Nine individual painted subjects plus one original flat emblem. The owner approved all ten exact images and family direction in [PILOT-APPROVAL.md](../../reports/icon-overhaul/PILOT-APPROVAL.md). Its hash table is the approved anchor list; the review packet's pending caption predates that decision. General Ifrit demonstrates ancestry; Fire Affinity channeling; Fire Resistance defense; Elemental Strike an imbued attack; Hydraulic Maneuver/Trip distinct action silhouettes; the three strategic spells distinct travel/return identities; Rapid Reload the mundane emblem family. These are approved style anchors, with native UI and final production acceptance still separate. Fire Affinity and Greater Teleport were revised before review; superseded originals remain in the revisions directory and are not approved anchors.
+[Historical contact sheet](../../reports/icon-overhaul/pilot-contact-sheet.png), [review page](../../reports/icon-overhaul/PILOT-REVIEW.html), [source/export hashes](../../assets-source/original-icons/icon-overhaul-v2/pilot/pilot-manifest.json). Nine individual painted subjects plus one original flat emblem. The owner approved all ten exact images and family direction in [PILOT-APPROVAL.md](../../reports/icon-overhaul/PILOT-APPROVAL.md). Its hash table is the approved anchor list; the review packet's pending caption predates that decision. General Ifrit demonstrates ancestry; Fire Affinity channeling; Fire Resistance defense; Elemental Strike an imbued attack; Hydraulic Maneuver/Trip distinct action silhouettes; the three strategic spells distinct travel/return identities; Rapid Reload the mundane emblem family. These are approved style anchors, with native UI acceptance still separate. All later production images now have their own recorded approval. Fire Affinity and Greater Teleport were revised before review; superseded originals remain in the revisions directory and are not approved anchors.
 
 ## Native references: local only
 
 The [full production review](../../reports/icon-overhaul/PRODUCTION-REVIEW.html)
-contains all 80 later paintings beside these ten approved anchors. Later images
-remain candidates; their brief references and preserved revision inputs do not
-grant them anchor approval. Inspect final native placement separately.
+contains all 80 later paintings beside these ten approved anchors. The owner
+approved every exact production image in [PRODUCTION-APPROVAL.md](../../reports/icon-overhaul/PRODUCTION-APPROVAL.md).
+Its hash table and machine-readable source/export record identify the additional
+approved references. Superseded revision inputs remain unapproved. Inspect final
+native placement separately.
 
 The supplied intake remains at `incoming-assets/icon-overhaul` in the lab. Relative paths below resolve there, not inside the repository. Do not publish these images or extracted game fonts/textures. Screenshots informed style; their pixels were not incorporated into production icons.
 

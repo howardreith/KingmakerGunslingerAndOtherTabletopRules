@@ -304,7 +304,7 @@ def validate(root, catalog=None, pilot=None, references=None, registry=None, pro
     for key, concept in concepts.items():
         require(bool(concept["sharingReason"]), "Missing sharing reason: " + key)
         authority = concept.get("assetAuthority")
-        if catalog.get("artProductionStatus") == "complete-main-scope-candidates" and concept["family"] in {"painted-magical", "combat-emblem"}:
+        if catalog.get("artProductionStatus") in {"complete-main-scope-candidates", "complete-main-scope-owner-approved-images"} and concept["family"] in {"painted-magical", "combat-emblem"}:
             require(bool(authority), "Completed art scope has missing candidate: " + key)
         if authority:
             require(authority["key"] in records and authority["key"] == key and

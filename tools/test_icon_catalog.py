@@ -88,7 +88,11 @@ class IconCatalogTests(unittest.TestCase):
         production = copy.deepcopy(self.production)
         production["records"][0]["visualStatus"] = "approved"
         production["records"][0]["approvedHash"] = production["records"][0]["exportSha256"]
-        self.rejects("Pilot approval not recorded in catalog:", production=production)
+        catalog = copy.deepcopy(self.catalog)
+        concept = next(c for c in catalog["concepts"] if c["key"] == production["records"][0]["key"])
+        concept["visualReview"] = {"status": "awaiting-owner-production-review",
+            "reviewedExportSha256": None, "evidence": None}
+        self.rejects("Pilot approval not recorded in catalog:", production=production, catalog=catalog)
 
     def test_missing_production_record_leaves_unresolved_authority(self):
         production = copy.deepcopy(self.production)

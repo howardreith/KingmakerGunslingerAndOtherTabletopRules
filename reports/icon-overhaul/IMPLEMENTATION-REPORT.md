@@ -1,5 +1,9 @@
 # Icon overhaul v2 implementation record
 
+Current stopping point: [pause report](PAUSE-REPORT.md). The owner requested an
+allocation pause and approved all 80 production images; all 90 art exports are
+now approved. Remaining native UI qualification and final acceptance are pending.
+
 The branch includes master `e5f1426a` (0.0.129), preserving published history.
 The latest [native buff qualification](NATIVE-RACIAL-BUFF-QUALIFICATION.json)
 passed **five guarded Steam runs, 63 assertions and 393 native captures**.
@@ -26,9 +30,8 @@ this DLL. See [mission state](../../planning/ICON-OVERHAUL-STATE.md) and the
 [native UI guide](../../docs/ICON-NATIVE-UI-EVIDENCE.md).
 
 All 89 paintings plus Rapid Reload have preserved sources/exports: 90 runtime
-exports, 137 painted assignments and 284 consumer dispositions. Ten pilot images
-and family direction are approved. Eighty production images and final native UI
-await owner approval. Protected artwork and blueprint-based firearm parameters
+exports, 137 painted assignments and 284 consumer dispositions. All 90 exact images are owner-approved: ten pilot images and eighty production
+paintings. Final native UI acceptance remains pending. Protected artwork and blueprint-based firearm parameters
 remain preserved.
 
 Remaining: supported racial actions/variants and applicable higher dependent
@@ -41,7 +44,7 @@ technical checkpoint; no feature-to-master merge or release is claimed.
 ## Review packet
 
 - [Full production review](PRODUCTION-REVIEW.html): all 90 art identities, including
-  the ten approved pilot images and 80 production candidates.
+  the ten approved pilot images and 80 approved production paintings.
 - [Production manifest](../../assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json):
   individual sources/exports, exact hashes, and complete implementation-informed
   briefs. Three revised production drafts remain preserved with their prompts.
@@ -58,15 +61,15 @@ technical checkpoint; no feature-to-master merge or release is claimed.
 
 The recorded pilot decision establishes the heritage/affinity/resistance,
 elemental/hydraulic, strategic travel and mundane emblem family direction. It does
-not approve the additional 80 images or unresolved native UI surfaces.
+not itself approve the additional 80 images or unresolved native UI surfaces.
+The later [production approval](PRODUCTION-APPROVAL.md) now approves those exact
+80 images; native UI acceptance remains separate.
 
-P/M/B uses the real native text route in production UI-entry objects. Rapid Reload
-rendering passed; the remaining native parameter/chosen/sheet comparison is pending. The review page
-does not substitute a PC font or the retained blueprint PNGs for that evidence.
-Weapon Focus P/M/B viewport inspection has since passed. The actual native
-`CharSComponentAbilitySlot.SetFeature(Feature)` reads Fact.Icon independently of
-the data constructor; its below-fold selected facts and character-sheet rendering
-are the next bounded qualification target.
+P/M/B uses the real native text route in production UI-entry objects. Weapon
+Focus and Rapid Reload parameter/selected/sheet presentation passed native
+qualification. The four higher dependent firearm feat roots remain pending.
+The review page does not substitute a PC font or retained blueprint PNGs for
+that evidence.
 
 ## Intake and protected baseline
 
