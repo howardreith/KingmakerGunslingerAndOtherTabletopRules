@@ -290,3 +290,44 @@ containment results and the raw overflow flag are diagnostics. Complete glyph
 emission, containment in every real clipping mask, separation from every other
 visible buff row, and icon/timer separation are required independently. Missing
 mask or neighboring-row evidence fails closed. No text, font or layout is changed.
+
+## Pending native racial action extension
+
+The locally preserved, unqualified action draft extends the guarded
+Gunslinger/roll elemental creator case. It binds its first
+request-owned remote mercenary to the native ability-group element after the
+character sheet restores. It covers 26 parents, ten native variants, one
+activatable and two held-touch deliveries (39 consumers). It preserves the
+original party selection and action-bar manager owner. When the creator leaves
+an empty or multiple selection and hidden unbound bar, the fixture uses the normal native
+MultiSelect callback on the existing party leader, then restores the original
+selection and waits for the native hide animation. It never forces manager
+ownership or visibility. Native inactive slot caches may warm through selection;
+no request-owned fact or owner remains in pooled UI. Existing native facts
+are retained; only absent facts are added to already-inactive collections.
+Native group and variant buttons must already be available. No ability is cast,
+activatable switched on, resource granted or native disabled state overridden.
+
+Held-touch presentation uses the native UnitPartTouch.Init with the exact
+source, delivery and execution parameters; it never calls the sticky-touch
+casting action. Chill Touch also requires its real request-owned retention
+part. Existing charges cannot be replaced. Captures retain the native border,
+counts, availability and dimming, with an ordinary Fighting Defensively control.
+Actual icon screen corners, canvas camera and clipping masks establish visible
+placement; no layout change is made. The validator independently checks exact
+consumer/parent identities and geometry.
+
+Every request preserves original actor facts, activation, resources, part
+references, commands, damage, positions, party, selection, inventory, money,
+time and area. Native pooled slots release only request-owned references;
+original group contents and UnitUISettings restore, including deferred updates.
+This extension is not yet runtime qualified. Inactive native presentation does
+not establish combat behavior or owner visual approval. Save writes remain
+forbidden by the existing guarded request.
+
+The racial action fixture owns an initially absent, empty native
+`UnitPartAbilityModifiers` cache because the native action-type getter ensures
+it while rendering. It never adds a modifier entry, and removes only its exact
+empty cache after releasing native UI references. Existing cache identity and
+all original part membership must survive cleanup. This rule is part of the
+pending action qualification; it does not change gameplay action costs.

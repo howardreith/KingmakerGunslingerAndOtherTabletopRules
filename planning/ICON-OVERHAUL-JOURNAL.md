@@ -1095,3 +1095,115 @@ complete all four racial cases and smoke before this extension is qualified.
 ### Native inactive buff-sheet checkpoint qualified
 
 Five exact-artifact Steam runs passed 63 assertions with 393 native captures and thirteen inspected buff identities. All twelve disposable mercenaries completed their original regressions; owned buffs, original facts/world, native UI and creator state restored. Same-artifact smoke passed. Source `7e15cd13cbcf0917c9eaefab78a90d52e89467708c1b6fa93c3eac1572a0eb62`, package `30030682eda80a3a41f65dc0a0c42993e0eb3f5dfd45ec034088eeaeebcdd994`, DLL `804f0b30ab8e2dd417e1c6fd267c9bb23c8efa675889e87b3bff198eff2906f3`, MVID `ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693`. Full 23/25/6/11/1639 test gates, clean Release and strict 224-file package passed. All 136 original installation files/settings restored at `2026-09-14T00:17:14.376986+00:00`. See the curated buff report for exact runs and evidence limits. Thirteen catalog consumers updated; post-run curation changes no compiled code or art. Owner approval of eighty production images and final native UI remains pending. Continue supported action/variant and higher dependent firearm surfaces.
+
+### Native racial action fixture begins on the qualified buff checkpoint
+
+Buff checkpoint `a42ba694cc4cb5910390341566f691a76352e435` passed the required
+wrapper push. Integrated the independently researched native group/variant/
+held-touch fixture for 39 exact consumers. Added seven focused corruption tests
+and one complete capture-dispatch test. Original native availability and
+collection activation are preserved; no cast or save write is requested.
+Exact ordinary-control names and all native runtime assumptions must still be
+verified by the guarded run. No runtime success or visual approval is claimed.
+
+### Action build 1: native group has no original selected owner
+
+All 23/33/6/11/1639 checks, clean Release and package validation passed.
+Ifrit run `20260914T0023073077401Z-working-save-elemental-character-creation-regression`
+failed before action fact insertion: all native manager/group/element owners
+were null and the group was inactive after creator completion. Its buff sheet
+and seven creator cleanup checks passed; overall FAIL with no save writes and
+normal exit. Archived source/package/DLL identity and verified all 136 original
+installation files restored. Remaining races and smoke did not launch.
+
+Build 2 uses the native MultiSelect callback for the existing party leader only
+when the original selection is empty and every owner is null. Installed-assembly
+IL confirms native selection removal calls Setup(null), Group.Set(null) and the
+normal hide animation. No owner field, availability flag or visible state is
+forced. Original character facts/resources, inventory/time, selection and UI
+settings are checked across the whole scope; native hiding must finish after
+restoration. The wrapper retains a capture failure while cleanup animations
+settle. Original inactive caches can warm through normal native selection;
+request-owned pooled references must still be released.
+
+### Action build 2: nonempty selection is not a bound native action owner
+
+Ifrit run `20260914T0037265979380Z-working-save-elemental-character-creation-regression`
+failed the same original-owner guard because the selection wrapper treated any
+nonempty selection as already bound. Evidence confirms all three action owner
+fields null and the group hidden; no action facts were inserted. Buff and seven
+creator cleanup checks passed, no save writes, normal exit. Full build gates
+passed before deployment; the exact original 136-file installation is restored.
+
+Build 3 keys the wrapper on the actual native manager owner, records the exact
+original selected list and native IsSingleSelected value, and uses the ordinary
+single-leader selection for a fully unbound hidden group. Installed native Set
+requires IsSingleSelected; an ordinary multiple selection also leaves it null.
+Original ordered selection is restored. An existing bound manager still uses
+the original no-selection-change path. No eligibility or owner flag is forced.
+
+### Action build 3: native selection succeeds; exact control identity observed
+
+Ifrit run `20260914T0049131933649Z-working-save-elemental-character-creation-regression`
+proved the normal-selection scope and every cleanup check. The original native
+selection contains three party members and IsSingleSelected=false. Single-leader
+selection binds all expected owners and displays the group; the ordered original
+selection, null owners, hidden group, UI settings and world restore after exit.
+Both native ability collections are already inactive. The next guard failed on
+the draft control name before any action additions. The existing native fact is
+`FightDefensivelyToggleAbility`, GUID `09d742e8b50b0214fb71acfc99cc00b3`, inactive
+and off. Build 4 pins that observed GUID/name and validates the same exact
+control in capture evidence; a coordinated wrong control GUID is rejected by
+the focused test. Full 23/33/6/11/1639 gates passed for build 3; its overall run
+remains FAIL, with buff/creator cleanup, no save writes and normal exit. Original
+136-file installation is independently restored. Remaining races did not launch.
+
+### Action build 4: native action-type cache ownership
+
+Ifrit run `20260914T0101496601247Z-working-save-elemental-character-creation-regression`
+reached native menu setup and failed its strict world/part guard before any
+qualified action capture. Native `AbilityData.ActionType` calls
+`Ensure<UnitPartAbilityModifiers>`; the remote fixture acquired that empty part
+during menu rendering. Native IL confirms the empty FreeActionList query. All
+original abilities, buffs, features, activation, toggles, resources, commands,
+positions, damage, party, selection, time and inventory were retained; the extra
+part caused restoration FAIL. UI/group/pool/settings cleanup passed, no native
+exceptions or save writes, and normal exit. The full build gates passed before
+launch (23/33/6/11/1639). Artifact source
+`13096744ad61d1f79f447d92717bc9903ed84bd1195598707e6388456b195354`, package
+`80d1b4026634ccfcf6d20ef1b1f03923f00e983f931f958112b68480deb19512`, DLL
+`a17d19946ca5e64223d23c9bdebd463383b97f4d56515c32061649e1212685d1`, MVID
+`14e22f8e-7da6-4f6a-ae5a-fad638615194`. The original 136 paths/hashes/settings
+were independently restored; archive prefix `native-racial-actions-build-4-*`.
+
+Build 5 explicitly owns the initially absent empty native modifier cache on the
+remote fixture before rendering and removes only that exact empty part after
+releasing native UI references. An existing empty part is preserved. No entry or
+free-action modifier is added. Original part equality remains required after
+cleanup; capture validation rejects absent, foreign or populated caches. The
+remaining race runs did not launch on build 4. This failure is not qualification.
+
+### Owner allocation pause and production approval
+
+The owner requested a stopping point and push with 3% weekly allocation remaining,
+then explicitly wrote ?Approve all 80 images? in response to the production review.
+All 80 source/export/runtime hashes matched; exact approval is recorded in
+PRODUCTION-APPROVAL.md/.json and the canonical manifest/catalog. All 90 art exports
+now have owner approval; native UI acceptance remains separate.
+
+Build 5 finished with repository validation, 23 catalog / 34 capture / six paired /
+eleven request / 1,639 domain tests, clean Release and strict package PASS. It was
+never deployed or runtime-tested. Archive prefix:
+`native-racial-actions-build-5-UNDEPLOYED-*`. The eleven unfinished action
+source/project/test files are preserved in exact local stash
+`2bf5ec3ded6b81f29c2058ec872cf5088d521bf7`; older stashes are untouched. Seven
+higher-feat drafts compile in isolation but remain unintegrated. No unqualified
+runtime source is committed at this pause. All 136 original installation files
+and settings are restored; no game, test process or save write remains active.
+See reports/icon-overhaul/PAUSE-REPORT.md for exact hashes and resume commands.
+
+Approval/pause repository validation passed (23 catalog, 25 native capture, six
+paired, eleven request cases and source/export/protected checks). The completed
+coverage guard now accepts the owner-approved state while still rejecting a
+missing required image. The negative approval fixture explicitly removes catalog
+approval so it remains meaningful after actual production acceptance.
