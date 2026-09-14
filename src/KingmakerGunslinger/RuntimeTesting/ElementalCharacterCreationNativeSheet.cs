@@ -52,6 +52,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var originalTime = game.Player.GameTime;
             bool originalPause = game.IsPaused;
             bool opened = false;
+            int expectedSection = 1;
             var evidence = new JObject { ["ownerId"] = owner.UniqueId, ["status"] = "pending",
                 ["originalCharacter"] = originalCharacter?.Unit.UniqueId, ["originalSection"] = originalSection };
             _character["nativeCharacterSheet"] = evidence;
@@ -59,7 +60,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(owner.HoldingState, game.Player.CrossSceneState) &&
                 ui.ServiceWindow.WindowTabs.IsShow && sheet.IsShow && sheet.gameObject.activeInHierarchy &&
                 ReferenceEquals(characterField.GetValue(sheet), owner.Descriptor) &&
-                (int)sectionField.GetValue(sheet) == 1 && game.IsPaused &&
+                (int)sectionField.GetValue(sheet) == expectedSection && game.IsPaused &&
                 ReferenceEquals(ui.LevelUpController, _globalControllerBefore) && _build.LevelUpController == null;
             try
             {
@@ -89,6 +90,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!ownsSheet()) throw new InvalidOperationException("Native character sheet lost the exact disposable owner.");
                 foreach (int frame in CaptureNativeFactSlots(sheet.Abilities.transform, owner.Descriptor,
                     "character-sheet", ownsSheet)) yield return frame;
+                if (NativeRacialBuffCase && _raceIndex == 0)
+                {
+                    var buffSections = sheet.BuffsAndConditions.SectionGroupIndex;
+                    if (buffSections.Count == 0 || sheet.BuffsAndConditions.AlwaysHidden)
+                        throw new InvalidOperationException("The native buff section has no visible menu membership.");
+                    expectedSection = buffSections.Contains(originalSection) ? originalSection : buffSections[0];
+                    evidence["buffSectionIndex"] = expectedSection;
+                    evidence["buffSectionGroups"] = new JArray(buffSections);
+                    sheet.ShowSection(expectedSection);
+                    for (int frame = 0; frame < 60; frame++) yield return 0;
+                    foreach (int frame in CaptureNativeRacialBuffSheet(sheet, owner, ownsSheet)) yield return frame;
+                }
                 evidence["status"] = "native-selected-fact-captured";
                 sheet.SetCharacter(restoreCharacter);
                 sheet.ShowSection(originalSection);
@@ -117,7 +130,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence["pauseRestored"] = game.IsPaused == originalPause;
                 Write();
                 if (evidence.Properties().Where(value => value.Value.Type == JTokenType.Boolean).Any(value => !(bool)value.Value))
-                    throw new InvalidOperationException("Native character sheet did not restore its exact UI/world context: " + evidence);
+                    // Preserve any original setup/capture exception while still
+                    // making incomplete native cleanup fail the overall request.
+                    _failures.Add("Native character sheet did not restore its exact UI/world context: " + evidence);
             }
         }
     }

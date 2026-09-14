@@ -1037,6 +1037,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.TeleportationNativeControls.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeIcons.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeFeatIcons.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeBuffIcons.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeSheet.cs" />
     <Compile Include="RuntimeTesting\IconConsumerCensus.cs" />
     <Compile Include="RuntimeTesting\IconGraphSnapshot.cs" />

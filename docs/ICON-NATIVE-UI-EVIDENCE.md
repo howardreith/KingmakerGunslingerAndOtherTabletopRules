@@ -258,3 +258,35 @@ restoration is independently verified. Historical reports keep their stated
 artifact hashes. All target images are clear; incidental hover panels and the
 Wizard fixture's stale central level header are explicitly limited in the report.
 Owner approval remains separate from these checks.
+
+The next extension holds the first existing remote mercenary in each exact
+`working-save-elemental-character-creation-regression` Gunslinger/roll race
+case. Thirteen painted buff identities are divided across the four races.
+Native `FactCollection.ActiveByDefault` must already be false and the mercenary
+must remain outside the active world before any addition. Its descriptor keeps
+its exact original enabled state; native remote registration leaves that true.
+Its native BuffCollection receives owned inactive facts and one ordinary Bless
+control; neither lifecycle flag nor effect activation is changed. The real character sheet supplies icons, titles,
+native dimming and timers. Capture proves exact real Buff references, sprites,
+unclipped labels, native control and unchanged original facts/units/area effects.
+The fixture uses the actual buff section-group membership and native IsShowed,
+and calls SetDirty before Refresh so same-owner cached rows are rebound.
+Buff rows must already be visible: their explicit observation mode calls no
+scroll setters and checks native bounds, actual content position, velocity and
+axes. Fitting-content normalized ratios are recorded only for diagnosis.
+Cleanup removes only owned additions and clears their retained pooled-row
+references. Native sheet/viewport and outer creator restoration remain required.
+The [native buff qualification](../reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json)
+records five PASS runs, 63 assertions and thirteen inspected target identities
+on one artifact, with exact creator/installation restoration and no save writes.
+This qualifies the native inactive buff presentation only; active effects, action
+bars and variant menus remain distinct. Native Show finishes at alpha 1 here;
+the fixture retains the observed native presentation and imposes no dimming.
+
+The qualified glyph extension reads final native TMP mesh vertices and exact
+character sequences. In native Overflow mode a label can exceed its nominal
+text or unmasked layout-row rectangle while remaining fully visible. Those
+containment results and the raw overflow flag are diagnostics. Complete glyph
+emission, containment in every real clipping mask, separation from every other
+visible buff row, and icon/timer separation are required independently. Missing
+mask or neighboring-row evidence fails closed. No text, font or layout is changed.

@@ -202,6 +202,116 @@ class NativeScreenEvidenceTests(unittest.TestCase):
                 self.assertTrue(self.errors())
                 state['targetRow'][key] = original
 
+    def prepare_native_buff(self):
+        state = self.prepare_native_row()
+        guid = 'e116e1e0a17a4aceb001000000000013'
+        self.evidence['records'][0]['stage'] = 'native-racial-buff-row:' + guid
+        state.update(surface='native-racial-buff-sheet', race='Ifrit')
+        state['viewport'].update(nativeApi='native viewport observation', scrollMutationRequested=False,
+            positionApi='UnityEngine.UI.ScrollRect.normalizedPosition', scrollType='UnityEngine.UI.ScrollRect',
+            contentObject='Content', viewportObject='Viewport')
+        target = state['targetRow'] = dict(name='Elemental Strike', buffGuid=guid, ownerId='owned-mercenary',
+            expectedSprite='elemental-strike', renderedSprite='elemental-strike', spriteExact=True, labelExact=True,
+            labelTruncated=False, labelOverflowing=False, buffActive=False, buffTurnedOn=False, ownerOutsideWorld=True,
+            ownerTurnedOnRetained=True, buffCollectionInactive=True, nativeSectionShown=True,
+            nativeAlpha=0.5, nativeStateRetained=True, nativeControlGuid='native-bless', nativeControlExact=True,
+            fixtureBuffCount=5, worldAndOriginalFactsRetained=True)
+        def rectangle(x1, x2, y1, y2):
+            return dict(minX=x1, maxX=x2, minY=y1, maxY=y2)
+        target['labelGeometry'] = dict(api='native TMP_TextInfo final mesh vertices; read-only',
+            complete=True, generatedText=target['name'], parsedText=target['name'], characterCount=16, requiredGlyphCount=15,
+            allGlyphsGenerated=True, finiteGeometry=True, glyphsWithinRow=True, glyphsWithinNameRect=True,
+            glyphsWithinClippingMasks=True, clipMaskCount=1, glyphsClearOfIconAndTimer=True,
+            glyphsClearOfOtherRows=True, otherRowCount=4,
+            otherRowBounds=[rectangle(0,300,70,130), rectangle(0,300,140,200),
+                            rectangle(305,605,0,60), rectangle(305,605,70,130)],
+            canvasRendererCulled=False, overflowMode='Overflow', overflowReported=False,
+            glyphBounds=rectangle(70,200,30,55), rowBounds=rectangle(0,300,0,60), nameBounds=rectangle(60,300,30,60),
+            iconBounds=rectangle(0,50,5,55), timerBounds=rectangle(80,120,0,20), timerIconBounds=rectangle(60,75,0,20),
+            clippingMaskBounds=[rectangle(0,300,0,500)])
+        return state
+
+    def test_racial_buff_sheet_requires_exact_native_dormant_facts_and_control(self):
+        state = self.prepare_native_buff()
+        target = state['targetRow']
+        guid = target['buffGuid']
+        self.assertEqual([], self.errors())
+        for key,value in [('buffGuid','other-buff'), ('renderedSprite','wrong'), ('spriteExact',False), ('labelExact',False),
+                          ('labelTruncated',True), ('labelOverflowing',True), ('buffActive',True), ('buffTurnedOn',True),
+                          ('ownerOutsideWorld',False), ('ownerTurnedOnRetained',False), ('buffCollectionInactive',False), ('nativeSectionShown',False),
+                          ('nativeAlpha',0), ('nativeAlpha',True), ('nativeStateRetained',False),
+                          ('nativeControlGuid',guid), ('nativeControlExact',False), ('fixtureBuffCount',4),
+                          ('worldAndOriginalFactsRetained',False)]:
+            with self.subTest(key=key):
+                original=target[key]
+                target[key]=value
+                self.assertTrue(self.errors())
+                target[key]=original
+        for key,value in [('scrollMutationRequested',True), ('nativeApi','UnityEngine.UI.ScrollRect.normalizedPosition'),
+                          ('positionApi','fabricated'), ('viewportObject','')]:
+            original=state['viewport'][key]
+            state['viewport'][key]=value
+            self.assertTrue(self.errors())
+            state['viewport'][key]=original
+        state['race']='Oread'
+        self.assertTrue(self.errors())
+
+    def test_buff_overflow_flag_can_coexist_with_complete_unclipped_native_mesh(self):
+        target = self.prepare_native_buff()['targetRow']
+        geometry = target['labelGeometry']
+        target['labelOverflowing'] = geometry['overflowReported'] = True
+        geometry['nameBounds']['minY'] = 40
+        geometry['glyphsWithinNameRect'] = False
+        self.assertEqual([], self.errors())
+
+    def test_buff_mesh_rejects_missing_glyphs_clipping_overlap_and_false_bounds(self):
+        target = self.prepare_native_buff()['targetRow']
+        original = copy.deepcopy(target['labelGeometry'])
+        for key,value in [('complete',False), ('generatedText','Elemental Strik'), ('parsedText','different'),
+                          ('characterCount',15), ('requiredGlyphCount',14), ('allGlyphsGenerated',False),
+                          ('finiteGeometry',False), ('glyphsWithinRow',False), ('glyphsWithinClippingMasks',False),
+                          ('glyphsClearOfIconAndTimer',False), ('canvasRendererCulled',True), ('overflowMode','Truncate'),
+                          ('clipMaskCount',0), ('glyphsWithinNameRect',False), ('clippingMaskBounds',None)]:
+            with self.subTest(key=key):
+                target['labelGeometry'] = copy.deepcopy(original)
+                target['labelGeometry'][key] = value
+                self.assertTrue(self.errors())
+        for key,edge,value in [('glyphBounds','maxX',float('nan')), ('rowBounds','maxY',54),
+                               ('iconBounds','maxX',80), ('timerBounds','maxY',40), ('timerIconBounds','maxY',40),
+                               ('glyphBounds','minX',250)]:
+            with self.subTest(key=key,edge=edge):
+                target['labelGeometry'] = copy.deepcopy(original)
+                target['labelGeometry'][key][edge] = value
+                self.assertTrue(self.errors())
+        target['labelGeometry'] = copy.deepcopy(original)
+        target['labelGeometry']['clippingMaskBounds'][0]['minY'] = 40
+        self.assertTrue(self.errors())
+        del target['labelGeometry']
+        self.assertTrue(self.errors())
+
+    def test_buff_unmasked_row_is_diagnostic_but_real_clips_and_neighbor_rows_are_required(self):
+        target = self.prepare_native_buff()['targetRow']
+        geometry = target['labelGeometry']
+        geometry['rowBounds']['maxX'] = 199.8
+        geometry['glyphsWithinRow'] = False
+        self.assertEqual([], self.errors())
+        original = copy.deepcopy(geometry)
+        for key, value in [('glyphsClearOfOtherRows', False), ('otherRowCount', 3), ('otherRowBounds', []),
+                           ('clippingMaskBounds', []), ('glyphsWithinRow', True)]:
+            with self.subTest(key=key):
+                target['labelGeometry'] = copy.deepcopy(original)
+                target['labelGeometry'][key] = value
+                self.assertTrue(self.errors())
+        target['labelGeometry'] = copy.deepcopy(original)
+        target['labelGeometry']['otherRowBounds'][0]['minY'] = 40
+        self.assertTrue(self.errors())
+        target['labelGeometry'] = copy.deepcopy(original)
+        target['labelGeometry']['otherRowBounds'][0]['maxY'] = float('nan')
+        self.assertTrue(self.errors())
+        target['labelGeometry'] = copy.deepcopy(original)
+        target['labelGeometry']['clippingMaskBounds'][0]['maxX'] = 199.8
+        self.assertTrue(self.errors())
+
     def test_strategic_text_control_requires_real_source_and_unmodified_native_presentation(self):
         state = self.prepare_native_row()
         self.evidence['records'][0]['stage'] = 'native-strategic-control:0'

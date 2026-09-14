@@ -126,7 +126,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // availability. The caller retains the controller/row identity, and the
         // exact scroll state is restored before its state machine may continue.
         internal IEnumerable<int> CaptureRow(string stage, RectTransform target,
-            Func<JObject> describe, Func<bool> ownsStableUi)
+            Func<JObject> describe, Func<bool> ownsStableUi, bool observeOnly = false)
         {
             if (!Supports(_request) || target == null || describe == null || ownsStableUi == null || !ownsStableUi())
                 throw new InvalidOperationException("Native row capture requires an existing request-owned row.");
@@ -149,10 +149,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float contentHeightBeforeLayout = RowBounds(scroll.Viewport, scroll.Content).size.y;
                 // Finish the native layout calculation for pooled nested rows.
                 // Never assign a fabricated content height or move a row itself.
-                bool rebuildFactLayout = stage.StartsWith("native-selected-fact:", StringComparison.Ordinal);
+                bool rebuildFactLayout = !observeOnly && stage.StartsWith("native-selected-fact:", StringComparison.Ordinal);
                 if (rebuildFactLayout) LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.Content);
                 Canvas.ForceUpdateCanvases();
-                scroll.Reveal(target);
+                if (!observeOnly) scroll.Reveal(target);
                 for (int frame = 0; frame < 4; frame++)
                 {
                     yield return 0;
@@ -165,7 +165,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bounds.center.x >= view.xMin && bounds.center.x <= view.xMax;
                 var state = describe();
                 state["viewport"] = new JObject {
-                    ["nativeApi"] = scroll.Api, ["scrollType"] = scroll.Component.GetType().FullName,
+                    ["nativeApi"] = observeOnly ? "native viewport observation" : scroll.Api,
+                    ["positionApi"] = scroll.Api, ["scrollMutationRequested"] = !observeOnly,
+                    ["scrollType"] = scroll.Component.GetType().FullName,
                     ["scrollObject"] = scroll.Component.name, ["contentObject"] = scroll.Content.name,
                     ["viewportObject"] = scroll.Viewport.name, ["contentHeight"] = RowBounds(scroll.Viewport, scroll.Content).size.y,
                     ["rowActive"] = target.gameObject.activeInHierarchy,
@@ -195,14 +197,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool restored = false;
                 if (scroll.Component != null)
                 {
-                    scroll.RestorePosition(originalPosition);
-                    scroll.Velocity = originalVelocity;
+                    if (!observeOnly)
+                    {
+                        scroll.RestorePosition(originalPosition);
+                        scroll.Velocity = originalVelocity;
+                    }
                     // A fitting, disabled horizontal axis has no meaningful
                     // normalized coordinate; Unity can report either zero or
                     // one after tiny layout rounding. Check its real position.
-                    restored = scroll.Horizontal == originalHorizontal &&
-                        Mathf.Abs(scroll.Position.y - originalPosition.y) < 0.001f &&
-                        (!originalHorizontal || Mathf.Abs(scroll.Position.x - originalPosition.x) < 0.001f) &&
+                    // Already-visible rows need no scroll writes. For content
+                    // that fits, normalized getters can flip between 0 and 1
+                    // on subpixel rounding; retain the real content position,
+                    // axes and velocity instead of assigning that derived ratio.
+                    restored = scroll.Horizontal == originalHorizontal && scroll.Vertical &&
+                        (observeOnly || (Mathf.Abs(scroll.Position.y - originalPosition.y) < 0.001f &&
+                        (!originalHorizontal || Mathf.Abs(scroll.Position.x - originalPosition.x) < 0.001f))) &&
                         (scroll.Content.anchoredPosition - originalContentPosition).sqrMagnitude < 0.0001f &&
                         scroll.Velocity == originalVelocity;
                 }
@@ -213,6 +222,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         _records[recordIndex]["nativeState"]["viewport"]["restoredContentX"] = scroll.Content.anchoredPosition.x;
                         _records[recordIndex]["nativeState"]["viewport"]["restoredContentY"] = scroll.Content.anchoredPosition.y;
+                        _records[recordIndex]["nativeState"]["viewport"]["restoredX"] = scroll.Position.x;
+                        _records[recordIndex]["nativeState"]["viewport"]["restoredY"] = scroll.Position.y;
                     }
                     Write();
                 }

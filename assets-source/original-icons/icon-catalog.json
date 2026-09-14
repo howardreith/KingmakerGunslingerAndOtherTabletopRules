@@ -5568,14 +5568,26 @@
       "type": "BlueprintBuff",
       "name": "Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "elemental-strike",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2359225631851Z-d8e05ba56bb949c6a6af15a2199ce829",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Elemental Strike",
+        "file": "native-ui-032.png",
+        "sha256": "dace137b70bb9b4ae5128a251c90a8c2b1e6d8619df29528b15abcdd4e5eaab3",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.ScorchingWeapons.Ability",
@@ -5598,14 +5610,26 @@
       "type": "BlueprintBuff",
       "name": "Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "scorching-weapons",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2359225631851Z-d8e05ba56bb949c6a6af15a2199ce829",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Scorching Weapons",
+        "file": "native-ui-033.png",
+        "sha256": "dace137b70bb9b4ae5128a251c90a8c2b1e6d8619df29528b15abcdd4e5eaab3",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.ScorchingWeapons.Enchantment",
@@ -5641,14 +5665,26 @@
       "type": "BlueprintBuff",
       "name": "Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "blazing-aura",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2359225631851Z-d8e05ba56bb949c6a6af15a2199ce829",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Blazing Aura",
+        "file": "native-ui-034.png",
+        "sha256": "dace137b70bb9b4ae5128a251c90a8c2b1e6d8619df29528b15abcdd4e5eaab3",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.WingsOfAir.Buff",
@@ -5656,14 +5692,26 @@
       "type": "BlueprintBuff",
       "name": "Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "wings-of-air",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "feat-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2337424902799Z-3aa9fe438fba4d29adb643260bc19524",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Wings of Air",
+        "file": "native-ui-032.png",
+        "sha256": "355afb0a4d9fd077b2e431263c0b42703dfea5fe3c0ebdd98c602c029280472a",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Feats.HydraulicManeuver.Ability",
@@ -6649,14 +6697,26 @@
       "type": "BlueprintBuff",
       "name": "Fast Healing Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "fire-in-the-blood",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "traits-Ifrit",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2359225631851Z-d8e05ba56bb949c6a6af15a2199ce829",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Fire in the Blood",
+        "file": "native-ui-035.png",
+        "sha256": "dace137b70bb9b4ae5128a251c90a8c2b1e6d8619df29528b15abcdd4e5eaab3",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Oread.StoneInTheBlood.FastHealingBuff",
@@ -6664,14 +6724,26 @@
       "type": "BlueprintBuff",
       "name": "Fast Healing Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "stone-in-the-blood",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "traits-Oread",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2349321697498Z-ede1e28dd63943d6936f6cd66c5d9965",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Stone in the Blood",
+        "file": "native-ui-032.png",
+        "sha256": "462a4c7d8e1c3b6f16f43da14ade83adea20f73ebf2636cd976c86f4bf926237",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.StormInTheBlood.FastHealingBuff",
@@ -6679,14 +6751,26 @@
       "type": "BlueprintBuff",
       "name": "Fast Healing Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "storm-in-the-blood",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "traits-Sylph",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2337424902799Z-3aa9fe438fba4d29adb643260bc19524",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Storm in the Blood",
+        "file": "native-ui-033.png",
+        "sha256": "1fef2689e9e035ac502878f5fd600748b645cb846e226d6eaab6bd9da9962cc8",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.Resource",
@@ -6761,14 +6845,26 @@
       "type": "BlueprintBuff",
       "name": "Armed Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "deflect-next-ray",
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "traits-Oread",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2349321697498Z-ede1e28dd63943d6936f6cd66c5d9965",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Crystalline Deflection Ready",
+        "file": "native-ui-033.png",
+        "sha256": "462a4c7d8e1c3b6f16f43da14ade83adea20f73ebf2636cd976c86f4bf926237",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Oread.CrystallineForm.Mode",
@@ -6905,14 +7001,26 @@
       "type": "BlueprintBuff",
       "name": "Calmed Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "calm-winds",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "breeze-effects",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2337424902799Z-3aa9fe438fba4d29adb643260bc19524",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Breeze-Kissed: Winds Calmed",
+        "file": "native-ui-034.png",
+        "sha256": "355afb0a4d9fd077b2e431263c0b42703dfea5fe3c0ebdd98c602c029280472a",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmWinds",
@@ -7079,14 +7187,26 @@
       "type": "BlueprintBuff",
       "name": "Fascinated Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "nereid-fascination",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "traits-Undine",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2329421797435Z-a30d443376f449849d7fc93fb9cc013a",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Nereid Fascination",
+        "file": "native-ui-028.png",
+        "sha256": "12f76febe7f688f6579040a01da49758fd8dcfb72b9dbdd8926c679e22afbb2d",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.ShakeFreeAbility",
@@ -7109,14 +7229,26 @@
       "type": "BlueprintBuff",
       "name": "Assistance Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "shake-free",
       "disposition": "original-required",
       "reason": "Source-audited disposition; live binding/visual acceptance pending.",
       "baselineArt": "traits-Undine",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2329421797435Z-a30d443376f449849d7fc93fb9cc013a",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Shake Free",
+        "file": "native-ui-029.png",
+        "sha256": "60a812faaa3272f67638acdd5e4d5a57f65398d6cb0d50e249f1d15a37602082",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.AuraBuff",
@@ -7124,14 +7256,26 @@
       "type": "BlueprintBuff",
       "name": "Aura Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "nereid-fascination",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "traits-Undine",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2329421797435Z-a30d443376f449849d7fc93fb9cc013a",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Nereid Fascination Aura",
+        "file": "native-ui-030.png",
+        "sha256": "12f76febe7f688f6579040a01da49758fd8dcfb72b9dbdd8926c679e22afbb2d",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Undine.NereidFascination.Area",
@@ -7180,14 +7324,26 @@
       "type": "BlueprintBuff",
       "name": "Terrain Buff",
       "module": "ElementalRaces",
-      "publication": "published-source; runtime pending",
+      "publication": "published-runtime; native inactive buff sheet qualified on 0.0.129",
       "surface": "effects and conditions / tooltip",
       "currentArt": "owned-v2-painting",
       "concept": "treacherous-earth",
       "disposition": "intentional-family-share",
       "reason": "Same concept across its feature/action/effect; each consumer remains explicit.",
       "baselineArt": "traits-Oread",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json"
+      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "nativeBuffSheet": {
+        "status": "native inactive buff sheet qualified; owner approval pending",
+        "evidence": "reports/icon-overhaul/NATIVE-RACIAL-BUFF-QUALIFICATION.json",
+        "scenario": "working-save-elemental-character-creation-regression",
+        "runId": "20260913T2349321697498Z-ede1e28dd63943d6936f6cd66c5d9965",
+        "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693",
+        "displayedName": "Treacherous Earth",
+        "file": "native-ui-034.png",
+        "sha256": "462a4c7d8e1c3b6f16f43da14ade83adea20f73ebf2636cd976c86f4bf926237",
+        "contract": "Actual inactive native BuffCollection fact, exact icon/full title/timer and ordinary Bless control; already-visible viewport observed without scroll writes; complete final TMP glyph geometry with exact character sequence, actual mask containment and separation from neighboring rows and icons/timers; original facts/world and creator context restored",
+        "evidenceLimit": "Native remote descriptor state retained. No active effect, action-bar, variant-menu or owner visual approval claim"
+      }
     },
     {
       "symbol": "KMG.ElementalRaces.Traits.Oread.TreacherousEarth.Area",
