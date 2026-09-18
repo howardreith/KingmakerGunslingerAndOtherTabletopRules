@@ -80,14 +80,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] unitsBefore = SnapshotReferences(allUnits);
             Kingmaker.EntitySystem.Entities.UnitEntityData entity = null;
             int completedLevels = 0;
-            bool cancellationProved = false, ineligibleProved = false;
+            bool cancellationProved = false, ineligibleProved = false, cancellationAttempted = false;
             string ineligibleObserved = "", cancellationObserved = "";
+            // Every controller visit that did not close itself is closed in a
+            // per-visit finally; any failure there fails the run's cleanup
+            // assertion without masking a body exception.
+            var controllerCleanupFailures = new List<string>();
             var selectionLog = new JArray();
             var fillersUsed = new JArray();
             bool cleaned = false;
             string observed = "";
-            int verifiedCount = 0, pendingRemaining = 0, unintendedCount = -1, committedRootsAfterGws = -1;
-            bool reviewExact = false;
+            int verifiedCount = 0, pendingRemaining = 0, unintendedCount = -1;
+            bool reviewExact = false, cleanupExact = false;
             try
             {
                 entity = new Kingmaker.UI.LevelUp.ChargenUnit(
@@ -115,96 +119,148 @@ namespace KingmakerGunslinger.RuntimeTesting
                         plan.Add(new KeyValuePair<int, int>(family, kind));
                 var pending = new Queue<KeyValuePair<int, int>>(plan);
                 const int maxLevel = 20;
+                // Every controller visit has an explicit native cleanup
+                // boundary: a visit either completes (ApplyLevelup + Cancel) or
+                // is closed in this loop's finally. A live controller is never
+                // overwritten and a failing visit never leaks one.
                 for (int level = 1; level <= maxLevel && pending.Count > 0; level++)
                 {
                     object mode = Enum.Parse(start.GetParameters()[4].ParameterType, "LevelUp", false);
-                    var controller = (LevelUpController)start.Invoke(null,
-                        new object[] { descriptor, false, null, null, mode });
-                    if (!controller.SelectClass(fighter, false))
-                        throw new InvalidOperationException("Native Fighter selection rejected level " + level + ".");
-                    controller.ApplyClassMechanics();
-                    var selections = controller.State.Selections;
-                    var levelLog = new JObject { ["level"] = level,
-                        ["slots"] = new JArray(selections.Select(value => ((BlueprintFeatureSelection)value.Selection)?.name)),
-                        ["picks"] = new JArray() };
-                    selectionLog.Add(levelLog);
-                    // One genuine cancellation visit: before the first Greater
-                    // Weapon Specialization commit, select it and cancel the
-                    // controller without applying anything.
-                    if (!cancellationProved && descriptor.Progression.GetClassLevel(fighter) >= 8 &&
-                        pending.Any(value => value.Key == 2))
+                    LevelUpController controller = null;
+                    try
                     {
-                        var gwsSlot = selections.FirstOrDefault(value => !value.Selected &&
-                            value.Selection is BlueprintFeatureSelection);
-                        string gwsOffered, gwsRoute;
-                        bool gwsSelected = gwsSlot != null && TryCommitRoot(controller, descriptor,
-                            gwsSlot, roots[2], weaponFocusChoices[0], out gwsOffered, out gwsRoute);
-                        if (gwsSelected)
+                        controller = OpenLevelVisit(start, descriptor, fighter, mode);
+                        var selections = controller.State.Selections;
+                        var levelLog = new JObject { ["level"] = level,
+                            ["slots"] = new JArray(selections.Select(value => ((BlueprintFeatureSelection)value.Selection)?.name)),
+                            ["picks"] = new JArray() };
+                        selectionLog.Add(levelLog);
+                        // Cancellation proof rides on the ladder's own
+                        // successful GWS(Pistol) selection below: the visit
+                        // start snapshot is taken here, and when that exact
+                        // legal choice is first held the whole visit is
+                        // cancelled without apply and compared.
+                        Newtonsoft.Json.Linq.JObject visitStartSnapshot = cancellationProved ? null :
+                            SnapshotProgressionState(descriptor, roots, rootNames, fighter);
+                        var dequeuedThisVisit = new List<KeyValuePair<int, int>>();
+
+                        // One ineligible control: Greater Weapon Specialization
+                        // for Pistol must be refused before its native fighter
+                        // prerequisites are met. A refused probe selects
+                        // nothing; a successful one would close and reopen the
+                        // visit rather than pollute it.
+                        if (!ineligibleProved && descriptor.Progression.GetClassLevel(fighter) < 8 &&
+                            selections.FirstOrDefault(value => !value.Selected &&
+                                value.Selection is BlueprintFeatureSelection) is FeatureSelectionState earlySlot)
                         {
-                            controller.Cancel();
-                            controller = null;
-                            cancellationProved = true;
-                            cancellationObserved = "GWS(Pistol) selected then controller cancelled at fighter " +
-                                descriptor.Progression.GetClassLevel(fighter) + "; fact count=" +
-                                CountCommittedRoots(descriptor, roots[2]);
+                            string earlyOffered, earlyRoute;
+                            bool earlySelected = TryCommitRoot(controller, descriptor, earlySlot,
+                                roots[2], weaponFocusChoices[0], out earlyOffered, out earlyRoute);
+                            ineligibleObserved = "offered=" + earlyOffered + ";selected=" + earlySelected +
+                                ";committed=" + CountCommittedRoots(descriptor, roots[2]);
+                            ineligibleProved = !earlySelected && CountCommittedRoots(descriptor, roots[2]) == 0;
+                            if (earlySelected)
+                            {
+                                controller.Cancel();
+                                controller = null;
+                                controller = OpenLevelVisit(start, descriptor, fighter, mode);
+                                selections = controller.State.Selections;
+                            }
                         }
-                        else cancellationObserved = "GWS item not yet legal at this level (deferred)";
-                        // Re-open the controller for the actual level visit.
-                        controller = (LevelUpController)start.Invoke(null,
-                            new object[] { descriptor, false, null, null, mode });
-                        controller.SelectClass(fighter, false);
-                        controller.ApplyClassMechanics();
-                        selections = controller.State.Selections;
+                        int committedThisLevel = 0;
+                        foreach (var slot in selections.Where(value => !value.Selected &&
+                                value.Selection is BlueprintFeatureSelection).ToArray())
+                        {
+                            if (pending.Count == 0) break;
+                            var next = pending.Peek();
+                            bool isCancellationTarget = !cancellationProved &&
+                                next.Key == 2 && next.Value == 0;
+                            var targetRoot = next.Key < 0 ? weaponFocusRoot : roots[next.Key];
+                            // Every appended firearm entry of all five integrated
+                            // roots uses the registered Weapon Focus choice of
+                            // the kind as its FeatureParam (shared published
+                            // parameter set), so that is the param item to match
+                            // and commit.
+                            var targetChoice = weaponFocusChoices[next.Value];
+                            string offered, route;
+                            bool selected = TryCommitRoot(controller, descriptor, slot,
+                                targetRoot, targetChoice, out offered, out route);
+                            ((JArray)levelLog["picks"]).Add(new JObject {
+                                ["root"] = next.Key < 0 ? "Weapon Focus" : rootNames[next.Key],
+                                ["kind"] = kindNames[next.Value],
+                                ["offered"] = offered, ["selected"] = selected, ["route"] = route });
+                            if (!selected) continue;
+                            pending.Dequeue();
+                            dequeuedThisVisit.Add(next);
+                            committedThisLevel++;
+                            if (isCancellationTarget && selected)
+                            {
+                                // The exact legal GWS(Pistol) choice is now
+                                // held in this visit. Cancel the entire visit
+                                // without applying and prove the underlying
+                                // unit is unchanged; then redo the visit.
+                                bool previewHeld = controller.State.Selections.Any(value =>
+                                    value.SelectedItem != null && value.SelectedItem.Feature != null &&
+                                    ReferenceEquals(value.SelectedItem.Feature, roots[2]) &&
+                                    value.SelectedItem.Param != null &&
+                                    ReferenceEquals(value.SelectedItem.Param.Blueprint, weaponFocusChoices[0]));
+                                controller.Cancel();
+                                controller = null;
+                                cancellationAttempted = true;
+                                var afterSnapshot = SnapshotProgressionState(descriptor, roots, rootNames, fighter);
+                                var cancelFailures = new List<string>();
+                                cancellationProved = FirearmHigherFeatRootsRules.EvaluateCancellationEvidence(
+                                    visitStartSnapshot, afterSnapshot, previewHeld,
+                                    roots[2].AssetGuid, weaponFocusChoices[0].AssetGuid, cancelFailures);
+                                cancellationObserved = "previewHeld=" + previewHeld +
+                                    ";before=" + visitStartSnapshot.ToString(Newtonsoft.Json.Formatting.None) +
+                                    ";after=" + afterSnapshot.ToString(Newtonsoft.Json.Formatting.None) +
+                                    (cancelFailures.Count == 0 ? "" : ";failures=" + string.Join("|", cancelFailures));
+                                // Reopen the visit and redo the picks that had
+                                // been selected before the cancellation.
+                                controller = OpenLevelVisit(start, descriptor, fighter, mode);
+                                selections = controller.State.Selections;
+                                foreach (var redo in dequeuedThisVisit)
+                                {
+                                    var redoRoot = redo.Key < 0 ? weaponFocusRoot : roots[redo.Key];
+                                    var redoChoice = weaponFocusChoices[redo.Value];
+                                    foreach (var redoSlot in controller.State.Selections.Where(value => !value.Selected &&
+                                            value.Selection is BlueprintFeatureSelection).ToArray())
+                                    {
+                                        string redoOffered, redoRoute;
+                                        if (TryCommitRoot(controller, descriptor, redoSlot, redoRoot, redoChoice,
+                                            out redoOffered, out redoRoute)) break;
+                                    }
+                                }
+                            }
+                        }
+                        apply.Invoke(controller, new object[] { descriptor });
+                        controller.Cancel();
+                        controller = null;
+                        int applied = descriptor.Progression.GetClassLevel(fighter);
+                        if (applied != level)
+                        {
+                            levelLog["applyObserved"] = applied;
+                            completedLevels = level - 1;
+                            break;
+                        }
+                        completedLevels = level;
                     }
-                    // One ineligible control: Greater Weapon Specialization for
-                    // Pistol must be refused at low fighter levels.
-                    if (!ineligibleProved && descriptor.Progression.GetClassLevel(fighter) < 8 &&
-                        selections.FirstOrDefault(value => !value.Selected &&
-                            value.Selection is BlueprintFeatureSelection) is FeatureSelectionState earlySlot)
+                    finally
                     {
-                        string earlyOffered, earlyRoute;
-                        bool earlySelected = TryCommitRoot(controller, descriptor, earlySlot,
-                            roots[2], weaponFocusChoices[0], out earlyOffered, out earlyRoute);
-                        ineligibleObserved = "offered=" + earlyOffered + ";selected=" + earlySelected +
-                            ";committed=" + CountCommittedRoots(descriptor, roots[2]);
-                        ineligibleProved = !earlySelected && CountCommittedRoots(descriptor, roots[2]) == 0;
+                        // Preserve an original body failure: a cleanup failure
+                        // here is recorded for the cleanup assertion but never
+                        // masks the body exception.
+                        if (controller != null)
+                        {
+                            try { controller.Cancel(); }
+                            catch (Exception cleanupError)
+                            {
+                                controllerCleanupFailures.Add("level " + level + ": " + cleanupError);
+                            }
+                            controller = null;
+                        }
                     }
-                    int committedThisLevel = 0;
-                    foreach (var slot in selections.Where(value => !value.Selected &&
-                            value.Selection is BlueprintFeatureSelection).ToArray())
-                    {
-                        if (pending.Count == 0) break;
-                        var next = pending.Peek();
-                        var targetRoot = next.Key < 0 ? weaponFocusRoot : roots[next.Key];
-                        // Every appended firearm entry of all five integrated
-                        // roots uses the registered Weapon Focus choice of the
-                        // kind as its FeatureParam (shared published parameter
-                        // set), so that is the param item to match and commit.
-                        var targetChoice = weaponFocusChoices[next.Value];
-                        string offered, route;
-                        bool selected = TryCommitRoot(controller, descriptor, slot,
-                            targetRoot, targetChoice, out offered, out route);
-                        ((JArray)levelLog["picks"]).Add(new JObject {
-                            ["root"] = next.Key < 0 ? "Weapon Focus" : rootNames[next.Key],
-                            ["kind"] = kindNames[next.Value],
-                            ["offered"] = offered, ["selected"] = selected, ["route"] = route });
-                        if (!selected) continue;
-                        pending.Dequeue();
-                        committedThisLevel++;
-                    }
-                    // If the level still has unselected mandatory slots the
-                    // native apply may refuse; record that honestly instead of
-                    // forcing fillers on the first qualification pass.
-                    apply.Invoke(controller, new object[] { descriptor });
-                    controller.Cancel();
-                    controller = null;
-                    int applied = descriptor.Progression.GetClassLevel(fighter);
-                    if (applied != level)
-                    {
-                        levelLog["applyObserved"] = applied;
-                        break;
-                    }
-                    completedLevels = level;
                 }
                 // Final review of every one of the 12 root/weapon combos.
                 var review = new JArray();
@@ -225,14 +281,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bool iconNull = presentation != null && presentation.Icon == null;
                         bool rankExact = matching.Length == 1 && descriptor.Progression.Features.GetRank(roots[family]) == 1;
                         bool letterExact = letter == kindNames[kind].Substring(0, 1);
+                        // The observed row records what the fact actually
+                        // carries; the expected pair is emitted independently
+                        // and compared, never copied into the observed fields.
+                        // The per-root wrapper (choices[family][kind]) is NOT
+                        // the committed parameter and must never fill one.
+                        var observedFact = matching.Length == 1 ? matching[0] : null;
+                        var rowFailures = new List<string>();
+                        bool paramExact = matching.Length == 1 && observedFact.Param != null &&
+                            FirearmHigherFeatRootsRules.EvaluateCommittedParameter(
+                                observedFact.Blueprint.AssetGuid, observedFact.Param.Blueprint.AssetGuid,
+                                roots[family].AssetGuid, weaponFocusChoices[kind].AssetGuid,
+                                choices[family][kind].AssetGuid,
+                                descriptor.Progression.Features.GetRank(roots[family]), rowFailures);
                         review.Add(new JObject {
                             ["root"] = rootNames[family], ["kind"] = kindNames[kind],
                             ["committedCount"] = matching.Length,
-                            ["paramBlueprint"] = choices[family][kind].name,
+                            ["observedRootGuid"] = observedFact == null ? null : observedFact.Blueprint.AssetGuid,
+                            ["observedParamGuid"] = observedFact == null || observedFact.Param == null ||
+                                observedFact.Param.Blueprint == null ? null : observedFact.Param.Blueprint.AssetGuid,
+                            ["observedParamName"] = observedFact == null || observedFact.Param == null ||
+                                observedFact.Param.Blueprint == null ? null : observedFact.Param.Blueprint.name,
+                            ["expectedRootGuid"] = roots[family].AssetGuid,
+                            ["expectedParamGuid"] = weaponFocusChoices[kind].AssetGuid,
+                            ["expectedParamName"] = weaponFocusChoices[kind].name,
+                            ["notTheWrapperGuid"] = choices[family][kind].AssetGuid,
                             ["ranks"] = matching.Length == 1 ? descriptor.Progression.Features.GetRank(roots[family]) : -1,
                             ["featureUidataIconNull"] = iconNull,
                             ["monogramLetter"] = letter,
-                            ["exact"] = matching.Length == 1 && rankExact && iconNull && letterExact });
+                            ["paramFailures"] = new JArray(rowFailures),
+                            ["exact"] = matching.Length == 1 && paramExact && rankExact && iconNull && letterExact });
                         if (matching.Length == 1 && rankExact && iconNull && letterExact) verified++;
                         if (verified == 12) break;
                     }
@@ -247,15 +325,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 pendingRemaining = pending.Count;
                 unintendedCount = unintended;
                 reviewExact = review.All(value => (bool)value["exact"]);
+                cleanupExact = controllerCleanupFailures.Count == 0;
                 observed = "levels=" + completedLevels + ";verified=" + verified + "/12" +
                     ";pending=" + pending.Count + ";cancellation=" + cancellationProved +
+                    ";cancellationAttempted=" + cancellationAttempted +
+                    ";controllerCleanupFailures=" + controllerCleanupFailures.Count +
                     ";ineligible=" + ineligibleProved + ";unintended=" + unintended +
                     ";review=" + review.ToString(Newtonsoft.Json.Formatting.None) +
                     ";prerequisites=" + prerequisiteNotes.ToString(Newtonsoft.Json.Formatting.None) +
                     ";selectionLog=" + selectionLog.ToString(Newtonsoft.Json.Formatting.None) +
                     ";fillers=" + fillersUsed.ToString(Newtonsoft.Json.Formatting.None) +
                     ";ineligibleObserved=" + ineligibleObserved + ";cancellationObserved=" + cancellationObserved;
-                committedRootsAfterGws = CountCommittedRoots(descriptor, roots[2]);
             }
             finally
             {
@@ -274,9 +354,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "FeatureUIData for every committed fact has null Icon and the exact P/M/B monogram",
                     observed, reviewExact,
                     "patched FeatureUIData(BlueprintFeature, FeatureParam) constructor"),
-                Assertion("higher-feat-cancellation",
-                    "a selected-then-cancelled controller visit commits nothing", cancellationObserved,
-                    cancellationProved, "controller Cancel without ApplyLevelup"),
+                Assertion("higher-feat-cancellation-and-cleanup",
+                    "the held GWS(Pistol) preview choice is cancelled without apply; before/after progression snapshots are identical (no new root fact, no rank gain, no level change); every controller visit closed cleanly",
+                    cancellationObserved + ";controllerCleanupFailures=" + string.Join("|", controllerCleanupFailures),
+                    cancellationProved && cancellationAttempted && controllerCleanupFailures.Count == 0,
+                    "snapshot comparison via FirearmHigherFeatRootsRules.EvaluateCancellationEvidence + per-visit Cancel boundary"),
                 Assertion("higher-feat-ineligible-control",
                     "Greater Weapon Specialization is refused before its native prerequisites are met", ineligibleObserved,
                     ineligibleProved, "native selection Check through SelectFeature"),
@@ -294,6 +376,46 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions.TrueForAll(value => value.Status == "PASS")
                     ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 assertions, null);
+        }
+
+        // Opens one real level-up visit: controller + class selection +
+        // mechanics applied to the plan. Callers own closing it (Cancel).
+        private static LevelUpController OpenLevelVisit(
+            System.Reflection.MethodInfo start, UnitDescriptor descriptor,
+            BlueprintCharacterClass fighter, object mode)
+        {
+            var controller = (LevelUpController)start.Invoke(null,
+                new object[] { descriptor, false, null, null, mode });
+            if (!controller.SelectClass(fighter, false))
+                throw new InvalidOperationException(
+                    "Native Fighter selection rejected the level-up visit.");
+            controller.ApplyClassMechanics();
+            return controller;
+        }
+
+        // Snapshot of the disposable unit's progression state that a
+        // cancelled, never-applied visit could legitimately alter: class and
+        // character levels plus every tracked root/parameter fact with rank.
+        private static Newtonsoft.Json.Linq.JObject SnapshotProgressionState(
+            UnitDescriptor descriptor, BlueprintParametrizedFeature[] roots, string[] rootNames,
+            BlueprintCharacterClass fighter)
+        {
+            var facts = new Newtonsoft.Json.Linq.JArray();
+            foreach (var fact in descriptor.Progression.Features.Enumerable)
+            {
+                int index = Array.IndexOf(roots, fact.Blueprint);
+                if (index < 0) continue;
+                facts.Add(new Newtonsoft.Json.Linq.JObject {
+                    ["root"] = rootNames[index],
+                    ["rootGuid"] = fact.Blueprint.AssetGuid,
+                    ["paramGuid"] = fact.Param == null || fact.Param.Blueprint == null ?
+                        null : fact.Param.Blueprint.AssetGuid,
+                    ["rank"] = fact.Rank });
+            }
+            return new Newtonsoft.Json.Linq.JObject {
+                ["classLevel"] = descriptor.Progression.GetClassLevel(fighter),
+                ["characterLevel"] = descriptor.Progression.CharacterLevel,
+                ["facts"] = facts };
         }
 
         // Commits one root/weapon combination through the real controller:
@@ -351,10 +473,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (paramItem == null)
                 {
                     route += ";child-param-absent";
+                    // Undo the dangling bare selection so the visit is not
+                    // polluted with a parameter-less root commit.
+                    try { controller.UnselectFeature(slot); route += ";unselected-bare"; }
+                    catch (Exception unselectError) { route += ";unselect-failed:" + unselectError.Message; }
                     return false;
                 }
                 route += ";child-param";
-                return controller.SelectFeature(child, paramItem);
+                if (controller.SelectFeature(child, paramItem)) return true;
+                route += ";child-param-refused";
+                // The native check refused the parameter selection; undo the
+                // bare selection so the slot is reusable.
+                try { controller.UnselectFeature(slot); route += ";unselected-bare"; }
+                catch (Exception unselectError) { route += ";unselect-failed:" + unselectError.Message; }
+                return false;
             }
             if (child == null) route += ";child-null";
             else if (child.Selected) route += ";child-already-selected";

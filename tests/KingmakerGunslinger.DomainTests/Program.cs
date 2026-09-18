@@ -944,6 +944,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("higher-feat-roots.twelve-combination-plan", FirearmHigherFeatRootsTests.ExactTwelveCombinationPlanIsFixed),
             Case("higher-feat-roots.exact-root-identities", FirearmHigherFeatRootsTests.RootIdentitiesAreExact),
             Case("higher-feat-roots.scenario-wiring", FirearmHigherFeatRootsTests.ScenarioWiringIsComplete),
+            Case("higher-feat-roots.cancellation-evidence-evaluation", FirearmHigherFeatRootsTests.CancellationEvidenceEvaluationIsExact),
+            Case("higher-feat-roots.committed-parameter-evaluation", FirearmHigherFeatRootsTests.CommittedParameterEvaluationRejectsWrapperSubstitution),
             Case("third-playtest.native-parent-only", ThirdPlaytestNativeParentOnly),
             Case("third-playtest.native-icon-guard", ThirdPlaytestNativeIconGuard),
             Case("third-playtest.firearm-parameter-menu", ThirdPlaytestFirearmParameterMenu),

@@ -3396,6 +3396,29 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   history, push `master`, then use the guarded deterministic publisher with
   `-Publish -ConfirmReleaseReady`.
 
+## 2026-09-18 icon overhaul: finalization fixes (latest)
+
+Branch `codex/icon-art-overhaul-v2` beyond `1e433da1` (see git log for the
+finalization commit). Finalization findings fixed and re-qualified: every
+controller visit has an explicit cleanup boundary counted in the PASS
+predicate; the cancellation proof rides on the ladder's own successful
+GWS(Pistol) selection (previewHeld + before/after progression snapshots via
+`FirearmHigherFeatRootsRules.EvaluateCancellationEvidence`); parameter rows
+emit observed vs expected GUIDs with the per-root wrapper recorded separately
+(wrapper-substitution cannot pass); save request rev. 3 carries the
+consistent five-fact table; supervised checklist rev. 2 is catalog-verified
+(Burning Hands / Shocking Grasp are native-reuse controls; casting marked
+state-changing; higher-feat screens and the Wakizashi weapon-selector item
+added); the owner gallery is at
+`C:/Dev/KingmakerGunslingerLab/icon-recovery/native-review-gallery-20260918/`
+(12 verified captures + manifest). Corrected artifact package
+`ebd4921f46aed7710c3f6ec52df9a3c67686a27b0f3ceef71487412e06552ba9`
+(deployment `20260918T2158074984660Z`): two consecutive higher-feat PASS runs
+`20260918T2206391210670Z` + `20260918T2212086644523Z`. Action/race results on
+`2fca98bc…` carry over (fixture sources byte-identical, diff recorded).
+Installation restored + verified after the runs; all 90 images no-write clean.
+Deterministic pin 1653.
+
 ## 2026-09-18 icon overhaul: review-driven continuation (later same day)
 
 Branch `codex/icon-art-overhaul-v2` beyond `c7a41559` (commits pushed; see
