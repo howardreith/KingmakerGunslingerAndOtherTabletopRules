@@ -1006,6 +1006,24 @@ try {
         & $orchestratorPath -Scenario 'unsupported-regression-fixture' `
             -ExpectedVersion '0.0.129' -WhatIf -Confirm:$false
     } 'original-defect-fixture-rejected'
+    Assert-Throws {
+        & $orchestratorPath -Scenario 'working-save-elemental-character-creation-regression' `
+            -ExpectedVersion '0.0.129' -SaveName 'KMG_AUTOMATION_WORKING' `
+            -Parameters @{race='Ifrit';class='Gunslinger';allocation='point-buy';nativeActionCase='racial-actions'} `
+            -ExitAfterCompletion:$true -WhatIf -Confirm:$false
+    } 'native-action-case-wrong-class-rejected'
+    Assert-Throws {
+        & $orchestratorPath -Scenario 'working-save-elemental-character-creation-regression' `
+            -ExpectedVersion '0.0.129' -SaveName 'KMG_AUTOMATION_WORKING' `
+            -Parameters @{race='Ifrit';class='Fighter';allocation='point-buy';nativeActionCase='other'} `
+            -ExitAfterCompletion:$true -WhatIf -Confirm:$false
+    } 'native-action-case-wrong-value-rejected'
+    Assert-Throws {
+        & $orchestratorPath -Scenario 'working-save-elemental-character-creation-regression' `
+            -ExpectedVersion '0.0.129' -SaveName 'KMG_AUTOMATION_WORKING' `
+            -Parameters @{race='Ifrit';class='Fighter';allocation='point-buy';nativeActionCase='racial-actions'} `
+            -ExitAfterCompletion:$false -WhatIf -Confirm:$false
+    } 'native-action-case-exit-required-rejected'
 }
 finally {
     Remove-Item Function:\global:Get-CimInstance

@@ -1039,6 +1039,8 @@
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeFeatIcons.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeBuffIcons.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeSheet.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeActionIcons.cs" />
+    <Compile Include="RuntimeTesting\NativeRacialActionIconRules.cs" />
     <Compile Include="RuntimeTesting\IconConsumerCensus.cs" />
     <Compile Include="RuntimeTesting\IconGraphSnapshot.cs" />
     <Compile Include="RuntimeTesting\IconCensusControlPolicy.cs" />
