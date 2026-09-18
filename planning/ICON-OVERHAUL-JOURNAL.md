@@ -1366,3 +1366,101 @@ Machine-derived classification note: the pause report's 26 parents / 10
 variants bookkeeping is superseded by the runtime-derived 25 parents /
 11 variants (Gust is the parent of BullRush+Trip; ShakeFree is a parent-owned
 variant), with the two held-touch deliveries and one activatable unchanged.
+
+## 2026-09-18 — review-driven continuation: A-fixes, Task B, Task C revision
+
+Continuation mission `Z-ICON-OVERHAUL-CONTINUATION-REVIEW-FIXES.md`. Takeover
+verified at `c7a41559` (= remote, clean); local-only helpers backed up to
+`C:\Dev\KingmakerGunslingerLab\icon-recovery\20260918T…-icon-worktree-local`
+(18 files, SHA256SUMS + restore README). No new search for the missing Codex
+stash was performed.
+
+### Review findings A1–A4 fixed and re-qualified
+
+- **A1** The pinned Fight Defensively control now has a dedicated capture and
+  its own `controlRow` evidence (identity, rendered sprite, active row,
+  preserved initial on/off state, capture record), evaluated by the shared
+  `EvaluateNativeRacialActionEvidence`; it can neither inflate nor replace the
+  39-consumer coverage. Negative tests prove missing/wrong control identity,
+  missing capture, wrong sprite, changed state and control-substitution each
+  fail the evaluation.
+- **A2** `Reject` now throws before any fixture-owned mutation; an accepted
+  existing cache must retain its exact instance and ordered entry identities
+  (ability GUID + source fact reference), not just its reference; the owned
+  (initially absent) cache may be removed only when it is the exact instance
+  first observed under exclusive paused observation and still empty; populated
+  or replaced parts fail without destructive cleanup
+  (`DecideOwnedModifierCacheCleanup` + dispatch tests).
+- **A3** Final `restored` is computed after every cleanup step including pause
+  release (`pauseRestored` equality); pause-restoration failures are recorded
+  before serialization and fold into the result; every owned widget is tracked
+  at acquisition (`ownedWidgets`) and checked released
+  (`ownedWidgetsDisposed`); the meaningless placeholder `slotsAfterHide` was
+  removed; the bar-not-borrowed claim is now an actual before/after comparison
+  of the bar owner and the chosen group's active/slot state.
+- **A4** `NATIVE-RACIAL-ACTION-CORRECTION.md` records the superseded scope with
+  separated statuses (exact bindings/widget rendering; rendered control +
+  restoration; ordinary native action flow — pending, with the machine-traced
+  popup constraint documented as evidence about the attempted route only; owner
+  final UI acceptance — pending). Evidence `presentation`/`evidenceClass` and
+  the assertion text state exactly what is and is not claimed. A supervised
+  owner checklist (`SUPERVISED-NATIVE-FLOW-CHECKLIST.md`) covers parent menu,
+  parent→variant navigation, activatable surface and held-touch delivery.
+
+Deterministic pin 1645 → 1651 (six new native-racial-action negative/policy
+groups + three higher-feat groups), validated by real evidence-evaluation
+logic rather than source-text only.
+
+### Task B qualified
+
+New scenario `disposable-firearm-higher-feat-roots` (save-free, wired through
+catalog/parser/runner/PS metadata/preflight). Run
+`20260918T1350433937364Z` **PASS 7/7** on package
+`2fca98bc2b1abecc69985f605b11d4e8d63c707869bd55cef3a6277e9edc77cd`, DLL
+`de1e755e3d14e6f9…` (MVID `b84ee48b-d052-41d8-b688-ce5b7acd4149`): 12/12
+root/weapon combinations committed through real Fighter 1–19 controller
+ladders (Weapon Focus chain first; GWF refused at fighter 2–7 = ineligible
+control; committed at 8+; WS at 4+; GWS at 12+; IC at BAB 8+), native
+child-parameter selection flow, one cancellation visit committing nothing,
+FeatureUIData null-Icon + exact P/M/B monogram for every committed fact, and
+zero unintended KMG facts. Key native fact discovered: the appended entries of
+all five integrated roots carry the registered Weapon Focus choice of the kind
+as FeatureParam (shared published parameter set).
+Record: [FIREARM-HIGHER-FEAT-ROOTS-QUALIFICATION.json](../reports/icon-overhaul/FIREARM-HIGHER-FEAT-ROOTS-QUALIFICATION.json).
+
+### Task C revised
+
+`SAVED-PARAMETER-AUTHORIZATION-REQUEST.md` rev. 2 fixes the six-vs-five count
+inconsistency (now: three Weapon Focus parameters + one Greater Weapon Focus
+parameter + one static Rapid Reload child = five, internally consistent),
+distinguishes parametrized native-root facts from static children, bases the
+character on the Task B legal progression, commits to read-only verification
+of the real save path/format before any write, and keeps
+SAVED_PARAMETER_ROUND_TRIP = NOT RUN — AUTHORIZATION/INPUT REQUIRED.
+
+### Final-artifact matrix and restoration (2026-09-18 UTC)
+
+The documentation-stabilized rebuild reproduced the candidate byte-identically
+(package `2fca98bc2b1abecc69985f605b11d4e8d63c707869bd55cef3a6277e9edc77cd`,
+DLL `de1e755e3d14e6f9e18c98282683fd332dc877f6e728278ca365c25ba48d7aaf`,
+MVID `b84ee48b-d052-41d8-b688-ce5b7acd4149`; deployment manifest
+`20260918T1413202579998Z`). Complete guarded matrix on that single artifact:
+
+- `disposable-firearm-higher-feat-roots` `20260918T1422395155233Z` PASS 7/7.
+- Racial action races (corrected fixture with control-row capture and
+  post-cleanup evaluation): Ifrit `20260918T1423403537703Z`, Oread
+  `20260918T1429428647441Z`, Sylph `20260918T1435258083180Z`, Undine
+  `20260918T1634214906135Z` — all PASS. The first Undine attempt
+  `20260918T1441274674433Z` timed out with no result written (transient;
+  superseded by the clean PASS, not counted as evidence).
+- Same-artifact `working-save-smoke` `20260918T1638315844558Z` PASS (an
+  earlier smoke attempt raced the timed-out process and produced no result).
+
+No save writes in any run. After the matrix the owner installation was
+restored from the session's pre-test backup
+(`runtime-backups/live-mod/20260918T1154036412512Z`): 138/138 file inventory
+identical, original DLL bytes (`7e62290c…`) back, no game process left
+running. All 90 approved images re-verified no-write on the final tree; the
+Rapid Reload runtime copy matches its approval hash exactly. Records updated:
+action qualification JSON (corrected-matrix section), higher-feat JSON
+(confirmation run), evidence ledger (final run IDs + artifact identity).

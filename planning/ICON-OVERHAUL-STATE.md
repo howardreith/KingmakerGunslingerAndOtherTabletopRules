@@ -39,9 +39,22 @@ approval status; the new approval record supersedes old production-pending capti
 
 ## Z continuation (2026-09-17/18)
 
-Status: **RACIAL_ACTION_CONSUMERS_QUALIFIED (39/39, four guarded Steam PASS
-runs + same-artifact smoke); HIGHER_FIREARM_FEATS PENDING; SAVED_PARAMETER
-AUTHORIZATION REQUEST PREPARED; FINAL ACCEPTANCE PENDING**.
+Status: **REVIEW_FIXES_APPLIED_AND_REQUALIFIED; HIGHER_FIREARM_FEATS_QUALIFIED
+(12/12); SAVED_PARAMETER_AUTHORIZATION_REQUEST_REV2_PREPARED (GATE PENDING);
+ORDINARY_NATIVE_ACTION_FLOW_PENDING_SUPERVISED_CHECKLIST; OWNER_FINAL_UI_
+ACCEPTANCE_PENDING**.
+
+2026-09-18 continuation: review findings A1-A4 fixed and re-qualified
+([correction record](../reports/icon-overhaul/NATIVE-RACIAL-ACTION-CORRECTION.md));
+Task B qualified 12/12 through real level-up ladders
+([record](../reports/icon-overhaul/FIREARM-HIGHER-FEAT-ROOTS-QUALIFICATION.json));
+Task C request revised to a consistent five-fact parametrized/static set;
+evidence ledger and compact review packet assembled
+([ledger](../reports/icon-overhaul/ICON-EVIDENCE-LEDGER.json),
+[packet](../reports/icon-overhaul/NATIVE-UI-REVIEW-PACKET.md)); ordinary
+native action flow prepared as a supervised owner checklist
+([checklist](../reports/icon-overhaul/SUPERVISED-NATIVE-FLOW-CHECKLIST.md)).
+Local-only helpers backed up under the lab's icon-recovery directory.
 
 Executor Z took over on the owner's explicit resumption instruction. Worktree:
 `C:\Dev\KingmakerGunslingerLab\worktrees\icon-art-overhaul-v2` on

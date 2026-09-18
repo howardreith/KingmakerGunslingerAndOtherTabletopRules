@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using KingmakerGunslinger.RuntimeTesting;
@@ -119,7 +120,14 @@ namespace KingmakerGunslinger.DomainTests
                 "var anchorSlotParent = group.transform;",
                 "Kingmaker.UI.WidgetFactory.GetWidget(groupPrefab)",
                 "slot.Set(owner, data)",
-                "Kingmaker.UI.WidgetFactory.DisposeWidget(slot)",
+                "ownedWidgets.Add",
+                "Kingmaker.UI.WidgetFactory.DisposeWidget(widget)",
+                "NativeRacialActionIconRules.DecideOwnedModifierCacheCleanup",
+                "ModifierCachePlan.Reject",
+                "evidence[\"controlRow\"]",
+                "evidence[\"pauseRestored\"]",
+                "evidence[\"barStateNotBorrowed\"]",
+                "evidence[\"ownedWidgetsDisposed\"]",
                 "owner.Descriptor.Remove<UnitPartAbilityModifiers>()",
                 "selectionUntouched",
                 "SaveWritingApiObserved",
@@ -128,9 +136,144 @@ namespace KingmakerGunslinger.DomainTests
             })
                 Assertions.True(fixture.Contains(token),
                     "The action fixture lost its required native guard or restoration step: " + token);
+            Assertions.True(fixture.IndexOf("ownedWidgets.Add(controlWidget)") <
+                    fixture.IndexOf("controlWidget.Initialize()"),
+                "The control widget must be tracked at acquisition, before initialization.");
             Assertions.True(fixture.Contains("_raceIndex != 0") &&
                 fixture.Contains("_nativeIconStages.Add"),
                 "The action fixture must run exactly once for the first committed mercenary.");
+        }
+
+        private static Newtonsoft.Json.Linq.JObject CompleteActionEvidence()
+        {
+            var race = "Ifrit";
+            string[] symbols = NativeRacialActionIconRules.SymbolsForRace(race);
+            return new Newtonsoft.Json.Linq.JObject {
+                ["race"] = race,
+                ["expectedGuids"] = new Newtonsoft.Json.Linq.JArray(symbols),
+                ["capturedGuids"] = new Newtonsoft.Json.Linq.JArray(symbols),
+                ["restored"] = true,
+                ["controlRow"] = new Newtonsoft.Json.Linq.JObject {
+                    ["guid"] = NativeRacialActionIconRules.ControlGuid,
+                    ["name"] = NativeRacialActionIconRules.ControlName,
+                    ["captured"] = true, ["spriteExact"] = true,
+                    ["rowActive"] = true, ["statePreserved"] = true } };
+        }
+
+        internal static void ActionEvidenceEvaluationRequiresRenderedControl()
+        {
+            var failures = new List<string>();
+            Assertions.True(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                CompleteActionEvidence(), "Ifrit", failures),
+                "Complete evidence must pass. failures=" + string.Join("|", failures));
+
+            var missingControl = CompleteActionEvidence();
+            missingControl.Remove("controlRow");
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                missingControl, "Ifrit", failures), "A missing control observation must fail.");
+            Assertions.True(failures.Contains("control-observation-missing"),
+                "A missing control observation must be named.");
+
+            var wrongIdentity = CompleteActionEvidence();
+            wrongIdentity["controlRow"]["guid"] = "00000000000000000000000000000000";
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                wrongIdentity, "Ifrit", failures), "A wrong control identity must fail.");
+            Assertions.True(failures.Contains("control-identity"), "A wrong control identity must be named.");
+
+            var wrongName = CompleteActionEvidence();
+            wrongName["controlRow"]["name"] = "OtherToggle";
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                wrongName, "Ifrit", failures), "A wrong control name must fail.");
+
+            var notCaptured = CompleteActionEvidence();
+            notCaptured["controlRow"]["captured"] = false;
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                notCaptured, "Ifrit", failures), "A control without a capture record must fail.");
+            Assertions.True(failures.Contains("control-capture-record"), "A missing capture record must be named.");
+
+            var wrongSprite = CompleteActionEvidence();
+            wrongSprite["controlRow"]["spriteExact"] = false;
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                wrongSprite, "Ifrit", failures), "A wrong rendered control sprite must fail.");
+            Assertions.True(failures.Contains("control-rendered-sprite"), "A wrong control sprite must be named.");
+
+            var inactiveRow = CompleteActionEvidence();
+            inactiveRow["controlRow"]["rowActive"] = false;
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                inactiveRow, "Ifrit", failures), "An inactive control row must fail.");
+
+            var stateChanged = CompleteActionEvidence();
+            stateChanged["controlRow"]["statePreserved"] = false;
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                stateChanged, "Ifrit", failures), "A changed initial control state must fail.");
+
+            var substitute = CompleteActionEvidence();
+            var captured = (Newtonsoft.Json.Linq.JArray)substitute["capturedGuids"];
+            captured[0] = NativeRacialActionIconRules.ControlGuid;
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                substitute, "Ifrit", failures), "A control GUID must not replace a consumer capture.");
+            Assertions.True(failures.Contains("captured-sequence"), "A substituted sequence must be named.");
+
+            var notRestored = CompleteActionEvidence();
+            notRestored["restored"] = false;
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                notRestored, "Ifrit", failures), "Unrestored evidence must fail.");
+            Assertions.True(failures.Contains("restoration"), "A restoration failure must be named.");
+
+            var countMismatch = CompleteActionEvidence();
+            ((Newtonsoft.Json.Linq.JArray)countMismatch["expectedGuids"]).RemoveAt(0);
+            failures.Clear();
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                countMismatch, "Ifrit", failures), "A wrong expected consumer count must fail.");
+
+            Assertions.False(NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                null, "Ifrit", failures), "Missing evidence must fail closed.");
+        }
+
+        internal static void ModifierCacheCleanupDispatchIsExact()
+        {
+            Assertions.Equal(NativeRacialActionIconRules.ModifierCacheCleanupDecision.NoRemovalNeeded,
+                NativeRacialActionIconRules.DecideOwnedModifierCacheCleanup(false, false, 0),
+                "An absent cache that never materialized needs no removal.");
+            Assertions.Equal(NativeRacialActionIconRules.ModifierCacheCleanupDecision.RemoveOwnedEmptyPart,
+                NativeRacialActionIconRules.DecideOwnedModifierCacheCleanup(true, true, 0),
+                "The exact observed empty instance may be removed.");
+            Assertions.Equal(NativeRacialActionIconRules.ModifierCacheCleanupDecision.FailReplacedPart,
+                NativeRacialActionIconRules.DecideOwnedModifierCacheCleanup(true, false, 0),
+                "An unexpectedly replaced part must fail without removal.");
+            Assertions.Equal(NativeRacialActionIconRules.ModifierCacheCleanupDecision.FailPopulated,
+                NativeRacialActionIconRules.DecideOwnedModifierCacheCleanup(true, true, 2),
+                "A populated cache must fail without removal, even as the observed instance.");
+            Assertions.Equal(NativeRacialActionIconRules.ModifierCachePlan.Reject,
+                NativeRacialActionIconRules.PlanModifierCache(true, 1),
+                "A populated pre-existing cache must be rejected before any mutation.");
+        }
+
+        internal static void ExistingCachePreservationIsExact()
+        {
+            string[] empty = new string[0];
+            string[] a = { "guid1:1", "guid2:2" };
+            Assertions.True(NativeRacialActionIconRules.ExistingCachePreserved(true, a, a),
+                "Same instance and identical ordered entries are preserved.");
+            Assertions.False(NativeRacialActionIconRules.ExistingCachePreserved(true, a, a.Reverse().ToArray()),
+                "Reordered entries are not preserved.");
+            Assertions.False(NativeRacialActionIconRules.ExistingCachePreserved(true, a, new[] { "guid1:1" }),
+                "A dropped entry is not preserved.");
+            Assertions.False(NativeRacialActionIconRules.ExistingCachePreserved(true, a, new[] { "guid1:1", "guid2:3" }),
+                "A changed source fact is not preserved.");
+            Assertions.False(NativeRacialActionIconRules.ExistingCachePreserved(false, a, a),
+                "A replaced instance is not preserved even with equal entries.");
+            Assertions.True(NativeRacialActionIconRules.ExistingCachePreserved(true, empty, empty),
+                "An existing empty cache is preserved exactly.");
         }
     }
 }
