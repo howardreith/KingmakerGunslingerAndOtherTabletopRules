@@ -101,5 +101,66 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static ModifierCachePlan PlanModifierCache(bool partExisted, int entryCount) =>
             entryCount > 0 ? ModifierCachePlan.Reject :
             partExisted ? ModifierCachePlan.PreserveExisting : ModifierCachePlan.OwnAndRemoveIfStillEmpty;
+
+        internal enum ModifierCacheCleanupDecision { RemoveOwnedEmptyPart, NoRemovalNeeded, FailPopulated, FailReplacedPart }
+
+        /// <summary>Cleanup decision for a cache that was absent before the
+        /// fixture ran (the owned plan). A part that never materialized needs
+        /// no removal; a materialized empty part may be removed only when it
+        /// is the exact instance first observed under this request's exclusive
+        /// paused observation. A populated or unexpectedly replaced part fails
+        /// without any destructive cleanup.</summary>
+        internal static ModifierCacheCleanupDecision DecideOwnedModifierCacheCleanup(
+            bool partPresentAfter, bool partAfterIsFirstObservedInstance, int entriesAfter)
+        {
+            if (!partPresentAfter) return ModifierCacheCleanupDecision.NoRemovalNeeded;
+            if (entriesAfter > 0) return ModifierCacheCleanupDecision.FailPopulated;
+            return partAfterIsFirstObservedInstance ?
+                ModifierCacheCleanupDecision.RemoveOwnedEmptyPart :
+                ModifierCacheCleanupDecision.FailReplacedPart;
+        }
+
+        /// <summary>An existing accepted (preserved) cache must retain the
+        /// same instance and the same ordered entry identities, not merely a
+        /// reference. Entry keys pair each free-action ability GUID with its
+        /// source fact reference so both are compared.</summary>
+        internal static bool ExistingCachePreserved(bool sameReference,
+            IEnumerable<string> entriesBefore, IEnumerable<string> entriesAfter) =>
+            sameReference && entriesBefore.SequenceEqual(entriesAfter);
+
+        /// <summary>Evaluates the final action-fixture evidence with the same
+        /// logic the runtime assertion uses. The pinned control observation is
+        /// required independently of the 39 consumers so it can neither
+        /// inflate nor replace their coverage.</summary>
+        internal static bool EvaluateNativeRacialActionEvidence(Newtonsoft.Json.Linq.JObject evidence,
+            string race, IList<string> failures)
+        {
+            if (failures == null) throw new ArgumentNullException("failures");
+            if (evidence == null) { failures.Add("evidence-missing"); return false; }
+            bool pass = true;
+            var expected = evidence["expectedGuids"] as Newtonsoft.Json.Linq.JArray;
+            var captured = evidence["capturedGuids"] as Newtonsoft.Json.Linq.JArray;
+            string[] symbols = SymbolsForRace(race);
+            if (expected == null || expected.Count != symbols.Length)
+            { failures.Add("expected-consumer-count"); pass = false; }
+            if (expected == null || captured == null ||
+                !Newtonsoft.Json.Linq.JToken.DeepEquals(expected, captured))
+            { failures.Add("captured-sequence"); pass = false; }
+            if ((bool?)evidence["restored"] != true)
+            { failures.Add("restoration"); pass = false; }
+            var control = evidence["controlRow"] as Newtonsoft.Json.Linq.JObject;
+            if (control == null)
+            { failures.Add("control-observation-missing"); pass = false; }
+            else
+            {
+                if ((string)control["guid"] != ControlGuid || (string)control["name"] != ControlName)
+                { failures.Add("control-identity"); pass = false; }
+                if ((bool?)control["captured"] != true) { failures.Add("control-capture-record"); pass = false; }
+                if ((bool?)control["spriteExact"] != true) { failures.Add("control-rendered-sprite"); pass = false; }
+                if ((bool?)control["rowActive"] != true) { failures.Add("control-row-inactive"); pass = false; }
+                if ((bool?)control["statePreserved"] != true) { failures.Add("control-initial-state"); pass = false; }
+            }
+            return pass;
+        }
     }
 }

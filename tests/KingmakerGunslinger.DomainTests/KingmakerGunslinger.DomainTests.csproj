@@ -335,6 +335,7 @@
     <Compile Include="FirearmFeatIconTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Feats\FirearmNativeMonogramPolicy.cs"><Link>Feats\FirearmNativeMonogramPolicy.cs</Link></Compile>
     <Compile Include="NativeRacialActionIconFixtureTests.cs" />
+    <Compile Include="FirearmHigherFeatRootsTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\NativeRacialActionIconRules.cs"><Link>RuntimeTesting\NativeRacialActionIconRules.cs</Link></Compile>
     <Compile Include="IconGraphSnapshotTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\IconCensusControlPolicy.cs"><Link>RuntimeTesting\IconCensusControlPolicy.cs</Link></Compile>

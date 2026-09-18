@@ -3396,6 +3396,23 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   history, push `master`, then use the guarded deterministic publisher with
   `-Publish -ConfirmReleaseReady`.
 
+## 2026-09-18 icon overhaul: review-driven continuation (later same day)
+
+Branch `codex/icon-art-overhaul-v2` beyond `c7a41559` (commits pushed; see
+git log for exact tips). Review findings A1-A4 fixed and re-qualified; Task B
+`disposable-firearm-higher-feat-roots` QUALIFIED 12/12 (run
+`20260918T1350433937364Z`, real Fighter 1-19 ladders, native child-parameter
+flow, cancellation + ineligible controls); Task C request rev.2 prepared (gate
+still pending); evidence ledger + compact review packet + supervised native
+flow checklist written under `reports/icon-overhaul/`. Deterministic pin now
+1651. Local-only helpers recovery copy:
+C:/Dev/KingmakerGunslingerLab/icon-recovery/20260918T*-icon-worktree-local`.
+
+Remaining gates: ordinary native action flow (supervised checklist), saved
+parameter round trip (owner authorization), owner final native UI acceptance
+(review packet; includes Wakizashi/P-M-B at 1920x1200). Dice Roller remains
+0.1.6 and untouched; the roll-dependent fixtures were avoided, not the mod.
+
 ## 2026-09-18 icon overhaul: Z continuation checkpoint
 
 Branch `codex/icon-art-overhaul-v2` at `b2b8a15a861178dd0955056fd9d66c761b907fa7`

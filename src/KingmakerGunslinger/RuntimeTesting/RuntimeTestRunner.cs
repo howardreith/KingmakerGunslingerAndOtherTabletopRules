@@ -1262,6 +1262,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableFirearmHigherFeatRoots)
+                {
+                    Complete(RunFirearmHigherFeatRoots());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableEmptyFirearmCommand)
                 {
                     Complete(RunDisposableEmptyFirearmCommand());

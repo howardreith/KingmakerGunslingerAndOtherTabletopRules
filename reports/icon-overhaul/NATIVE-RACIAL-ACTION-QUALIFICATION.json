@@ -13,11 +13,44 @@
     "version": "0.0.129"
   },
   "runs": [
-    { "race": "Ifrit", "runId": "20260918T0817462342287Z-working-save-elemental-character-creation-regression", "result": "PASS", "consumers": 15, "nativeCaptures": 103, "saveWritingApiObserved": false },
-    { "race": "Oread", "runId": "20260918T0719294558189Z-working-save-elemental-character-creation-regression", "result": "PASS", "consumers": 7, "nativeCaptures": 95, "saveWritingApiObserved": false },
-    { "race": "Sylph", "runId": "20260918T0756109207621Z-working-save-elemental-character-creation-regression", "result": "PASS", "consumers": 9, "nativeCaptures": 97, "saveWritingApiObserved": false },
-    { "race": "Undine", "runId": "20260918T0806485537845Z-working-save-elemental-character-creation-regression", "result": "PASS", "consumers": 8, "nativeCaptures": 84, "saveWritingApiObserved": false },
-    { "race": "same-artifact working-save smoke", "runId": "20260918T0836413995623Z-working-save-smoke", "result": "PASS", "assertions": 11 }
+    {
+      "race": "Ifrit",
+      "runId": "20260918T0817462342287Z-working-save-elemental-character-creation-regression",
+      "result": "PASS",
+      "consumers": 15,
+      "nativeCaptures": 103,
+      "saveWritingApiObserved": false
+    },
+    {
+      "race": "Oread",
+      "runId": "20260918T0719294558189Z-working-save-elemental-character-creation-regression",
+      "result": "PASS",
+      "consumers": 7,
+      "nativeCaptures": 95,
+      "saveWritingApiObserved": false
+    },
+    {
+      "race": "Sylph",
+      "runId": "20260918T0756109207621Z-working-save-elemental-character-creation-regression",
+      "result": "PASS",
+      "consumers": 9,
+      "nativeCaptures": 97,
+      "saveWritingApiObserved": false
+    },
+    {
+      "race": "Undine",
+      "runId": "20260918T0806485537845Z-working-save-elemental-character-creation-regression",
+      "result": "PASS",
+      "consumers": 8,
+      "nativeCaptures": 84,
+      "saveWritingApiObserved": false
+    },
+    {
+      "race": "same-artifact working-save smoke",
+      "runId": "20260918T0836413995623Z-working-save-smoke",
+      "result": "PASS",
+      "assertions": 11
+    }
   ],
   "coverage": {
     "consumersQualified": 39,
@@ -42,5 +75,38 @@
     "The popup-menu lifecycle (ActionBarSpellsGroup opened through the bar's own conversion flow) is not exercised for these consumers; the native bar closes foreign popups by design and no eligible spontaneous-conversion anchor exists for arbitrary racial actions.",
     "Screenshots are real native framebuffer captures of native widgets; human visual review and owner native UI acceptance remain separate gates.",
     "The four higher firearm feat roots and saved-parameter round trip remain open items of the overall mission."
-  ]
+  ],
+  "correctedMatrix": {
+    "note": "Re-qualified after review fixes A1-A4 on the byte-stable final artifact",
+    "packageSha256": "2fca98bc2b1abecc69985f605b11d4e8d63c707869bd55cef3a6277e9edc77cd",
+    "dllSha256": "de1e755e3d14e6f9e18c98282683fd332dc877f6e728278ca365c25ba48d7aaf",
+    "runs": [
+      {
+        "race": "Ifrit",
+        "runId": "20260918T1423403537703Z-working-save-elemental-character-creation-regression",
+        "result": "PASS"
+      },
+      {
+        "race": "Oread",
+        "runId": "20260918T1429428647441Z-working-save-elemental-character-creation-regression",
+        "result": "PASS"
+      },
+      {
+        "race": "Sylph",
+        "runId": "20260918T1435258083180Z-working-save-elemental-character-creation-regression",
+        "result": "PASS"
+      },
+      {
+        "race": "Undine",
+        "runId": "20260918T1634214906135Z-working-save-elemental-character-creation-regression",
+        "result": "PASS",
+        "note": "first attempt 20260918T1441274674433Z timed out with no result; superseded by this clean PASS"
+      },
+      {
+        "race": "same-artifact working-save smoke",
+        "runId": "20260918T1638315844558Z-working-save-smoke",
+        "result": "PASS"
+      }
+    ]
+  }
 }

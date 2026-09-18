@@ -57,6 +57,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var liveGroups = spellsGroups.Where(value => value != null).ToArray();
             var subActiveField = typeof(ActionBarSpellsGroup).GetField("m_IsActive", Members);
             ActionBarSpellsGroup subGroup = null;
+            bool originalSubGroupActive = false;
+            int originalSubGroupSlotsCount = -1;
             var originalBarSelected = bar == null ? null : (UnitEntityData)barSelectedField.GetValue(bar);
             var selection = ui == null ? null : ui.SelectionManagerPC;
             var originalSelection = selection == null ? new List<UnitEntityData>() : selection.SelectedUnits.ToList();
@@ -162,6 +164,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             var partBefore = owner.Descriptor.Get<UnitPartAbilityModifiers>();
             int entriesBefore = partBefore == null || partBefore.FreeActionList == null ? 0 : partBefore.FreeActionList.Count;
             var cachePlan = NativeRacialActionIconRules.PlanModifierCache(partBefore != null, entriesBefore);
+            // The documented rejection is enforced before any fixture-owned
+            // mutation: a populated pre-existing cache fails the run rather
+            // than being cleared or bypassed.
+            if (cachePlan == NativeRacialActionIconRules.ModifierCachePlan.Reject)
+                throw new InvalidOperationException("The fixture unit already carries a populated native modifier cache; refusing to present actions: " + setup);
+            // A preserved existing cache must retain its exact instance and
+            // ordered entry identities (ability GUID + source fact reference).
+            string[] cacheEntriesBefore = partBefore == null || partBefore.FreeActionList == null
+                ? new string[0]
+                : partBefore.FreeActionList.Select(value =>
+                    value.Ability == null ? "<null>" : value.Ability.AssetGuid + ":" +
+                    (value.Source == null ? "<null>" : value.Source.GetHashCode().ToString(
+                        System.Globalization.CultureInfo.InvariantCulture))).ToArray();
+            // The control's initial on/off state must be preserved by the
+            // observation; snapshot it before any rendering.
+            bool controlInitiallyOn = controlIsActivatable && controlActivatable.IsOn;
 
 
 
@@ -179,11 +197,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             var addedAbilities = new List<Kingmaker.UnitLogic.Abilities.Ability>();
             var addedActivatables = new List<ActivatableAbility>();
             var detachedRows = new List<AbilityData>();
-            var fixtureWidgets = new List<ActionBarSlot>();
+            // Every widget this fixture acquires is registered here at
+            // acquisition, before Initialize/binding, so a later exception can
+            // never leave an untracked widget behind.
+            var ownedWidgets = new List<ActionBarSlot>();
             var exceptions = new List<string>();
-            var rowWidgets = new List<ActionBarSpontaneousConvertedSlot>();
+            // First modifier-cache instance observed under this request's
+            // exclusive paused observation; only this exact instance may be
+            // removed under the owned plan.
+            UnitPartAbilityModifiers firstObservedCache = null;
             var evidence = new JObject { ["race"] = (string)_request.Parameters["race"], ["ownerId"] = owner.UniqueId,
-                ["presentation"] = "native action-bar group rows on the dormant remote mercenary; no activation",
+                ["presentation"] = "native converted-slot/activatable row widgets bound through the popup FillSlots path on the live portrait strip; binding/rendering evidence only, not ordinary action-menu lifecycle",
+                ["evidenceClass"] = new JObject {
+                    ["exactBindingsAndWidgetRendering"] = "asserted for every catalog consumer",
+                    ["renderedControlObservation"] = "asserted (pinned Fight Defensively)",
+                    ["fixtureRestoration"] = "asserted",
+                    ["ordinaryActionMenuFlow"] = "not-exercised; foreign conversion popups are closed by native ActionBarManager.Update by design (see correction record)",
+                    ["ownerFinalUiAcceptance"] = "pending" },
                 ["expectedGuids"] = new JArray(resolved.Select(value => value.Blueprint.AssetGuid)),
                 ["capturedGuids"] = new JArray(), ["restored"] = false };
             _character["nativeRacialActionGroup"] = evidence;
@@ -218,11 +248,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (anchorSlotParent == null || !anchorSlotParent.gameObject.activeInHierarchy)
                     throw new InvalidOperationException("No live native portrait strip for the action rows: " + setup);
                 subGroup = liveGroups.FirstOrDefault();
+                var subSlotsField = typeof(ActionBarSpellsGroup).GetField("m_Slots", Members);
+                originalSubGroupActive = subGroup != null && (bool)subActiveField.GetValue(subGroup);
+                originalSubGroupSlotsCount = subGroup == null ? -1 :
+                    ((List<ActionBarSpontaneousConvertedSlot>)subSlotsField.GetValue(subGroup)).Count;
                 setup["spellsGroupCount"] = liveGroups.Length;
-                setup["subGroupActive"] = subGroup != null && (bool)subActiveField.GetValue(subGroup);
+                setup["subGroupActive"] = originalSubGroupActive;
+                setup["subGroupSlotsCount"] = originalSubGroupSlotsCount;
                 Write();
                 if (subGroup == null || (bool)subActiveField.GetValue(subGroup))
                     throw new InvalidOperationException("No closed native spells group is available for its row prefab: " + setup);
+
+                if (firstObservedCache == null)
+                    firstObservedCache = owner.Descriptor.Get<UnitPartAbilityModifiers>();
 
                 foreach (var entry in resolved)
                 {
@@ -270,6 +308,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         var fact = activatableByGuid[entry.Blueprint.AssetGuid];
                         var widget = Kingmaker.UI.WidgetFactory.GetWidget(groupPrefab);
+                        ownedWidgets.Add(widget);
                         widget.transform.SetParent(anchorSlotParent, false);
                         widget.Initialize();
                         var mechanic = new MechanicActionBarSlotActivableAbility();
@@ -277,7 +316,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         typeof(MechanicActionBarSlot).GetField("Unit", Members).SetValue(mechanic, owner);
                         widget.MechanicSlot = mechanic;
                         mechanic.SetSlot(widget);
-                        fixtureWidgets.Add(widget);
                         orderedRows.Add(new KeyValuePair<BlueprintUnitFact, ActionBarSlot>(
                             (BlueprintUnitFact)entry.Blueprint, widget));
                         orderedActivatables[widget] = fact;
@@ -288,10 +326,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var data = factByGuid.ContainsKey(ability.AssetGuid) ?
                             factByGuid[ability.AssetGuid].Data : detachedByGuid[ability.AssetGuid];
                         var slot = Kingmaker.UI.WidgetFactory.GetWidget(groupPrefab);
+                        ownedWidgets.Add(slot);
                         slot.transform.SetParent(anchorSlotParent, false);
                         slot.Initialize();
                         slot.Set(owner, data);
-                        rowWidgets.Add(slot);
                         orderedRows.Add(new KeyValuePair<BlueprintUnitFact, ActionBarSlot>(ability, slot));
                     }
                 }
@@ -300,6 +338,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (controlIsActivatable)
                 {
                     controlWidget = Kingmaker.UI.WidgetFactory.GetWidget(groupPrefab);
+                    ownedWidgets.Add(controlWidget);
                     controlWidget.transform.SetParent(anchorSlotParent, false);
                     controlWidget.Initialize();
                     var controlMechanic = new MechanicActionBarSlotActivableAbility();
@@ -307,8 +346,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     typeof(MechanicActionBarSlot).GetField("Unit", Members).SetValue(controlMechanic, owner);
                     controlWidget.MechanicSlot = controlMechanic;
                     controlMechanic.SetSlot(controlWidget);
-                    fixtureWidgets.Add(controlWidget);
                     orderedActivatables[controlWidget] = controlActivatable;
+                }
+                else
+                {
+                    // The control fact may exist as an ordinary ability; bind
+                    // it through the native converted-slot path instead.
+                    controlWidget = Kingmaker.UI.WidgetFactory.GetWidget(groupPrefab);
+                    ownedWidgets.Add(controlWidget);
+                    controlWidget.transform.SetParent(anchorSlotParent, false);
+                    controlWidget.Initialize();
+                    ((ActionBarSpontaneousConvertedSlot)controlWidget).Set(owner, controlAbility.Data);
                 }
                 for (int frame = 0; frame < 10; frame++) yield return 0;
                 setup["stage"] = "rows-bound";
@@ -383,18 +431,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!isControl) ((JArray)evidence["capturedGuids"]).Add(blueprint.AssetGuid);
                     }
                 }
+
+                // A1: the pinned Fight Defensively control is observed with
+                // its own dedicated capture, kept strictly outside the 39
+                // consumers so it can neither inflate nor replace coverage.
+                // Proving the control fact exists is not proof of rendering:
+                // the widget must show the exact native sprite, be active,
+                // preserve its initial on/off state and hold a capture record.
+                {
+                    var controlBlueprintFact = (BlueprintUnitFact)(controlIsActivatable ?
+                        (BlueprintUnitFact)controlActivatable.Blueprint : (BlueprintUnitFact)controlAbility.Blueprint);
+                    var controlMechanic = controlWidget.MechanicSlot as MechanicActionBarSlotActivableAbility;
+                    Func<bool> controlContext = () => worldRetained() && controlWidget != null &&
+                        controlWidget.gameObject.activeInHierarchy && controlWidget.Icon != null &&
+                        (controlMechanic == null || ReferenceEquals(controlWidget.MechanicSlot, controlMechanic));
+                    Func<JObject> controlDescribe = () => new JObject { ["surface"] = "native-action-control-row",
+                        ["race"] = (string)_request.Parameters["race"], ["targetRow"] = new JObject {
+                            ["name"] = controlBlueprintFact.name, ["guid"] = controlBlueprintFact.AssetGuid,
+                            ["ownerId"] = owner.UniqueId,
+                            ["expectedSprite"] = controlBlueprintFact.Icon.name,
+                            ["renderedSprite"] = controlWidget.Icon.sprite?.name,
+                            ["spriteExact"] = controlWidget.Icon.isActiveAndEnabled &&
+                                ReferenceEquals(controlWidget.Icon.sprite, controlBlueprintFact.Icon),
+                            ["rowActive"] = controlWidget.gameObject.activeInHierarchy,
+                            ["initiallyOn"] = controlInitiallyOn,
+                            ["turnedOn"] = controlIsActivatable ? controlActivatable.IsOn : false,
+                            ["statePreserved"] = !controlIsActivatable || controlActivatable.IsOn == controlInitiallyOn,
+                            ["worldRetained"] = worldRetained() } };
+                    bool controlCaptured = false;
+                    foreach (int frame in CaptureNativeActionRow("native-action-control:" + controlBlueprintFact.AssetGuid,
+                        controlWidget, controlDescribe, controlContext, evidence)) yield return frame;
+                    controlCaptured = true;
+                    var controlTarget = controlDescribe()["targetRow"];
+                    var controlRow = (JObject)controlTarget.DeepClone();
+                    controlRow["captured"] = controlCaptured;
+                    evidence["controlRow"] = controlRow;
+                    Write();
+                    if (!(bool)controlRow["spriteExact"] || !(bool)controlRow["rowActive"] ||
+                        !(bool)controlRow["statePreserved"] || !controlContext())
+                        throw new InvalidOperationException("The pinned native control row differs: " + controlRow);
+                }
+
+                // Sample the modifier cache under exclusive paused observation
+                // after rendering; only this exact instance may be removed.
+                if (firstObservedCache == null)
+                    firstObservedCache = owner.Descriptor.Get<UnitPartAbilityModifiers>();
             }
             finally
             {
-                foreach (var slot in rowWidgets.AsEnumerable().Reverse())
-                    try { Kingmaker.UI.WidgetFactory.DisposeWidget(slot); }
-                    catch (Exception error) { exceptions.Add("Native row widget cleanup: " + error); }
-                // No anchor-slot or popup state was borrowed by the row-binding
-                // presentation; nothing of the bar's own bookkeeping needs undoing.
-                evidence["anchorSlotRestored"] = true;
-                foreach (var widget in fixtureWidgets)
+                // Every widget acquired by this fixture (converted rows,
+                // activatable rows and the control row) is disposed in reverse
+                // acquisition order; any failure is recorded and fails the run.
+                foreach (var widget in ownedWidgets.AsEnumerable().Reverse())
                     try { Kingmaker.UI.WidgetFactory.DisposeWidget(widget); }
-                    catch (Exception error) { exceptions.Add("Fixture widget cleanup: " + error); }
+                    catch (Exception error) { exceptions.Add("Owned widget cleanup: " + error); }
                 foreach (var fact in addedActivatables.AsEnumerable().Reverse())
                     try { if (owner.ActivatableAbilities.Enumerable.Contains(fact)) owner.ActivatableAbilities.RemoveFact(fact); }
                     catch (Exception error) { exceptions.Add("Owned activatable cleanup: " + error); }
@@ -402,42 +492,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try { if (owner.Abilities.Enumerable.Contains(fact)) owner.Abilities.RemoveFact(fact); }
                     catch (Exception error) { exceptions.Add("Owned ability cleanup: " + error); }
                 detachedRows.Clear();
-                // The request owns only a native modifier part that did not exist
-                // before rendering and is still empty now. Anything else stays.
+                // Modifier cache under the inspected native contract. An owned
+                // (initially absent) cache may be removed only when it is the
+                // exact instance first observed under this request's exclusive
+                // paused observation and is still empty; a populated or
+                // replaced part fails without destructive cleanup. A preserved
+                // existing cache must retain its instance and entry identities.
                 try
                 {
                     var partAfter = owner.Descriptor.Get<UnitPartAbilityModifiers>();
+                    if (firstObservedCache == null) firstObservedCache = partAfter;
                     int entriesAfter = partAfter == null || partAfter.FreeActionList == null ? 0 : partAfter.FreeActionList.Count;
                     evidence["modifierCacheEntriesAfter"] = entriesAfter;
                     bool cleanupExact;
                     if (cachePlan == NativeRacialActionIconRules.ModifierCachePlan.OwnAndRemoveIfStillEmpty)
                     {
-                        bool removed = false;
-                        if (partAfter != null && entriesAfter == 0)
+                        var decision = NativeRacialActionIconRules.DecideOwnedModifierCacheCleanup(
+                            partAfter != null,
+                            partAfter != null && ReferenceEquals(partAfter, firstObservedCache),
+                            entriesAfter);
+                        evidence["modifierCacheDecision"] = decision.ToString();
+                        if (decision == NativeRacialActionIconRules.ModifierCacheCleanupDecision.RemoveOwnedEmptyPart)
                         {
                             owner.Descriptor.Remove<UnitPartAbilityModifiers>();
-                            removed = owner.Descriptor.Get<UnitPartAbilityModifiers>() == null;
+                            cleanupExact = owner.Descriptor.Get<UnitPartAbilityModifiers>() == null;
                         }
-                        // A part that never materialized during rendering needs
-                        // no removal; that is equally exact.
-                        cleanupExact = removed || partAfter == null;
+                        else cleanupExact = decision == NativeRacialActionIconRules.ModifierCacheCleanupDecision.NoRemovalNeeded;
                     }
-                    else cleanupExact = partAfter == partBefore;
+                    else
+                    {
+                        string[] entriesAfterKeys = partAfter == null || partAfter.FreeActionList == null
+                            ? new string[0]
+                            : partAfter.FreeActionList.Select(value =>
+                                value.Ability == null ? "<null>" : value.Ability.AssetGuid + ":" +
+                                (value.Source == null ? "<null>" : value.Source.GetHashCode().ToString(
+                                    System.Globalization.CultureInfo.InvariantCulture))).ToArray();
+                        cleanupExact = NativeRacialActionIconRules.ExistingCachePreserved(
+                            ReferenceEquals(partAfter, partBefore), cacheEntriesBefore, entriesAfterKeys);
+                    }
                     evidence["modifierCacheCleanupExact"] = cleanupExact;
                 }
                 catch (Exception error) { exceptions.Add("Owned modifier cache cleanup: " + error); }
-                // The fixture never displaces the party selection; verify it
-                // stayed untouched rather than restoring anything.
-                evidence["selectionUntouched"] = selection.SelectedUnits.SequenceEqual(originalSelection) &&
-                    selection.IsSingleSelected == originalIsSingle;
-                Application.logMessageReceived -= observe;
-                var slotsAfterHide = new List<ActionBarSpontaneousConvertedSlot>();
-                // Per-dimension restoration evidence so a failure names the
-                // exact diverging state instead of one aggregate flag.
-                evidence["worldDimensions"] = new JObject {
+                // World dimensions are observed while the owned pause still
+                // holds game time frozen; they are only evaluated into the
+                // final result after every cleanup step, including pause
+                // release, has completed.
+                var dimensions = new JObject {
                     ["gameTimeExact"] = game.Player.GameTime == originalTime,
-                    ["pauseHeld"] = game.IsPaused,
-                    ["originalPause"] = originalPause,
                     ["areaEffectsExact"] = game.State.AreaEffects.All.SequenceEqual(originalAreas),
                     ["unitsExact"] = game.State.Units.All.SequenceEqual(originalUnits),
                     ["partyExact"] = game.Player.Party.SequenceEqual(originalParty),
@@ -445,46 +546,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["buffsExact"] = owner.Buffs.Enumerable.SequenceEqual(originalBuffs),
                     ["othersDamageAndPositionExact"] = originalOthers.All(value =>
                         value.Unit.Damage == value.Damage && value.Unit.Position == value.Position) };
-                // The fixture never opens the popup itself; the chosen
-                // group's own closed state is re-derived, not restored.
-                evidence["groupHiddenAfterCleanup"] = subGroup == null ||
-                    (!(bool)subActiveField.GetValue(subGroup) && slotsAfterHide.Count == 0);
-                evidence["barOwnerAfterCleanup"] = ((UnitEntityData)barSelectedField.GetValue(bar))?.UniqueId;
-
+                evidence["worldDimensions"] = dimensions;
+                // The fixture writes neither the bar's owner nor the popup's
+                // state; that claim is verified by an actual before/after
+                // comparison instead of being asserted unconditionally.
+                var subSlotsAfter = subGroup == null ? null :
+                    (List<ActionBarSpontaneousConvertedSlot>)typeof(ActionBarSpellsGroup)
+                        .GetField("m_Slots", Members).GetValue(subGroup);
+                evidence["barStateNotBorrowed"] =
+                    ReferenceEquals((UnitEntityData)barSelectedField.GetValue(bar), originalBarSelected) &&
+                    (subGroup == null || ((bool)subActiveField.GetValue(subGroup) == originalSubGroupActive &&
+                        subSlotsAfter != null && subSlotsAfter.Count == originalSubGroupSlotsCount));
+                // The fixture never displaces the party selection; verify it
+                // stayed untouched rather than restoring anything.
+                evidence["selectionUntouched"] = selection.SelectedUnits.SequenceEqual(originalSelection) &&
+                    selection.IsSingleSelected == originalIsSingle;
                 evidence["originalAbilitiesRestored"] = owner.Abilities.Enumerable.SequenceEqual(originalAbilities);
                 evidence["originalActivatablesRestored"] = owner.ActivatableAbilities.Enumerable.SequenceEqual(originalActivatables);
-                // Post-cleanup exactness: every recorded world dimension, plus
-                // the owner's collections already compared against their exact
-                // originals above (the in-flight lambda expected the fixture
-                // facts to still be present).
-                var dimensions = (JObject)evidence["worldDimensions"];
+                Application.logMessageReceived -= observe;
+                // Release the owned pause; a failure here is recorded before
+                // the evidence is serialized so it can still fail the run.
+                try { if (!originalPause) game.IsPaused = false; }
+                catch (Exception error) { exceptions.Add("Owned pause restoration: " + error); }
+                evidence["pauseRestored"] = game.IsPaused == originalPause;
+                // Final evaluation happens after all cleanup: exact frozen-time
+                // dimensions, pause equality, untouched selection/bar state and
+                // exact original fact collections.
                 evidence["worldAndOriginalFactsRetained"] =
-                    new[] { "gameTimeExact", "pauseHeld", "areaEffectsExact", "unitsExact",
+                    new[] { "gameTimeExact", "areaEffectsExact", "unitsExact",
                         "partyExact", "featuresExact", "buffsExact", "othersDamageAndPositionExact" }
                     .All(key => (bool)dimensions[key]) &&
                     (bool)evidence["originalAbilitiesRestored"] && (bool)evidence["originalActivatablesRestored"];
                 evidence["exceptions"] = new JArray(exceptions);
-                // The selection dimension is re-derived after the deferred
-                // settling below, where one retry is permitted; every other
-                // dimension is final here.
                 evidence["restored"] = (bool)evidence["originalAbilitiesRestored"] && (bool)evidence["originalActivatablesRestored"] &&
                     (bool)evidence["worldAndOriginalFactsRetained"] && (bool)evidence["selectionUntouched"] &&
-                    (bool)evidence["groupHiddenAfterCleanup"] && (bool)evidence["anchorSlotRestored"] &&
+                    (bool)evidence["pauseRestored"] && (bool)evidence["barStateNotBorrowed"] &&
                     (bool)evidence["modifierCacheCleanupExact"] && exceptions.Count == 0;
                 Write();
                 restorationIncomplete = !(bool)evidence["restored"];
-                // All exact comparisons above were made while the owned pause
-                // held game time frozen; release it only after they are done.
-                try { if (!originalPause) game.IsPaused = false; }
-                catch (Exception error) { exceptions.Add("Owned pause restoration: " + error); }
             }
             for (int frame = 0; frame < 20; frame++) yield return 0;
-                evidence["rowWidgetsDisposed"] = rowWidgets.All(value =>
-                    value == null || !value.gameObject.activeInHierarchy);
+            // Deferred deactivation check over every owned widget, not only the
+            // converted rows.
+            evidence["ownedWidgetsDisposed"] = ownedWidgets.All(value =>
+                value == null || !value.gameObject.activeInHierarchy);
             evidence["selectionUntouched"] = selection.SelectedUnits.SequenceEqual(originalSelection) &&
                 selection.IsSingleSelected == originalIsSingle;
             evidence["restored"] = (bool?)evidence["restored"] == true && (bool)evidence["selectionUntouched"] &&
-                (bool)evidence["rowWidgetsDisposed"];
+                (bool)evidence["ownedWidgetsDisposed"];
             Write();
             // Thrown only on the success path so a fixture-body failure keeps
             // its own reason visible; the finally block recorded both cases.
@@ -538,12 +647,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!NativeRacialActionCase) return;
             var entries = _characters.OfType<JObject>().Select(value => value["nativeRacialActionGroup"] as JObject)
                 .Where(value => value != null).ToArray();
-            bool passed = entries.Length == 1 && (bool?)entries[0]["restored"] == true &&
-                ((JArray)entries[0]["expectedGuids"]).Count == NativeRacialActionIconRules.SymbolsForRace((string)_request.Parameters["race"]).Length &&
-                JToken.DeepEquals(entries[0]["expectedGuids"], entries[0]["capturedGuids"]);
+            var failures = new List<string>();
+            if (entries.Length != 1) failures.Add("evidence-entries=" + entries.Length);
+            bool passed = entries.Length == 1 &&
+                NativeRacialActionIconRules.EvaluateNativeRacialActionEvidence(
+                    entries[0], (string)_request.Parameters["race"], failures);
             Result.Assertions.Add(new RuntimeTestAssertion { Name = "actual-native-racial-action-group",
-                Expected = "exact native action rows for every catalog consumer of the race, pinned control and full original fact/selection/world restoration",
-                Observed = new JArray(entries).ToString(Newtonsoft.Json.Formatting.None),
+                Expected = "exact native-widget row bindings for every catalog consumer of the race in catalog order, a separately captured pinned Fight Defensively control observation (identity, rendered sprite, active row, preserved initial state, capture record) and full post-cleanup restoration including pause equality and every owned widget's release; ordinary action-menu lifecycle is NOT claimed by this assertion",
+                Observed = new JArray(entries).ToString(Newtonsoft.Json.Formatting.None) +
+                    (failures.Count == 0 ? "" : "; failures=" + string.Join("|", failures)),
                 Status = passed ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, Evidence = EvidenceFileName });
         }
     }
