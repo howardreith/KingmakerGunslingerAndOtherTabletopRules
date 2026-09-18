@@ -35,5 +35,36 @@
   "knownLimits": [
     "Screen-level rendering of the higher-root entries in the actual level-up/Total UI at the moment of selection is not captured here; controller/selector checks and screen checks are deliberately separate (mission section 4). The previously qualified native Total/sheet monogram machinery covers the shared presentation path.",
     "Committed-fact parameters use the Weapon Focus choice blueprint of the kind for all five integrated roots, which is the design's shared published parameter set; the KMG per-root wrapper features (KMG_GreaterWeaponFocus_* etc.) remain the menu/identity wrappers, not the committed param."
-  ]
+  ],
+  "revision": "rev. 2 (2026-09-18 finalization): corrected the parameter diagnostics \u2014 every review row now emits the actually observed committed root/parameter GUIDs and names independently from the expected pair, and the per-root wrapper (KMG_GreaterWeaponFocus_* etc.) is recorded separately so it can never fill an observed field; cancellation is now proven by before/after progression snapshots with a preview-held check (not by calling Cancel); every controller visit has an explicit cleanup boundary counted in the PASS predicate. Historical run payloads below predate these corrections and are retained unchanged as their own evidence.",
+  "statuses": {
+    "HIGHER_FEAT_SELECTION_AND_DATA": "PASS (corrected artifact 20260918T2206391210670Z)",
+    "HIGHER_FEAT_CANCELLATION_AND_CLEANUP": "PASS (corrected artifact; snapshot-proven, preview-held)",
+    "HIGHER_FEAT_NATIVE_SCREEN_RENDERING": "PENDING \u2014 supervised checklist item 5",
+    "RACIAL_WIDGET_BINDING": "PASS (racial-action fixture)",
+    "ORDINARY_NATIVE_ACTION_FLOW": "PENDING \u2014 supervised checklist items 1-4",
+    "SAVED_PARAMETER_ROUND_TRIP": "NOT RUN \u2014 AUTHORIZATION/INPUT REQUIRED",
+    "OWNER_FINAL_NATIVE_UI_ACCEPTANCE": "PENDING"
+  },
+  "correctedArtifact": {
+    "packageSha256": "ebd4921f46aed7710c3f6ec52df9a3c67686a27b0f3ceef71487412e06552ba9",
+    "dllSha256": "bfbefd442f00d7dd87b63f9ba1d7d787978773f42a31400129663c54cab99483",
+    "dllMvid": "d9804808-7a53-49a3-9a4a-afd0eafeddcb",
+    "deploymentManifest": "runtime-evidence/deployments/20260918T2158074984660Z/deployment.json",
+    "runs": [
+      {
+        "runId": "20260918T2206391210670Z-disposable-firearm-higher-feat-roots",
+        "result": "PASS",
+        "assertions": 7,
+        "cancellation": "ladder-integrated: the exact legal GWS(Pistol) selection held in the visit (previewHeld=true) was cancelled without apply; before/after progression snapshots identical; zero controller-cleanup failures"
+      },
+      {
+        "runId": "20260918T2212086644523Z-disposable-firearm-higher-feat-roots",
+        "result": "PASS",
+        "assertions": 7,
+        "note": "second consecutive PASS on the corrected artifact"
+      }
+    ],
+    "notes": "The earlier runs on package 2fca98bc... predate the controller-lifecycle/cancellation corrections and are retained as their own evidence. The action/race matrix on 2fca98bc remains valid for its scope: the racial-action fixture source files are byte-identical between 2fca98bc and this artifact (this pass changed only the higher-feat fixture, its rules/tests, documentation and the deterministic pin)."
+  }
 }

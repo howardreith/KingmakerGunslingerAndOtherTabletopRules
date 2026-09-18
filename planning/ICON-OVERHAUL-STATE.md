@@ -39,10 +39,13 @@ approval status; the new approval record supersedes old production-pending capti
 
 ## Z continuation (2026-09-17/18)
 
-Status: **REVIEW_FIXES_APPLIED_AND_REQUALIFIED; HIGHER_FIREARM_FEATS_QUALIFIED
-(12/12); SAVED_PARAMETER_AUTHORIZATION_REQUEST_REV2_PREPARED (GATE PENDING);
-ORDINARY_NATIVE_ACTION_FLOW_PENDING_SUPERVISED_CHECKLIST; OWNER_FINAL_UI_
-ACCEPTANCE_PENDING**.
+Status: **FINALIZATION_FIXES_APPLIED_AND_REQUALIFIED (controller lifecycle,
+snapshot-proven cancellation, observed/expected parameter records); HIGHER_
+FEAT_SELECTION_AND_DATA PASS; HIGHER_FEAT_CANCELLATION_AND_CLEANUP PASS
+(two consecutive runs on the corrected artifact); SAVED_PARAMETER_REQUEST_
+REV3 (GATE PENDING); HIGHER_FEAT_NATIVE_SCREEN_RENDERING + ORDINARY_NATIVE_
+ACTION_FLOW PENDING SUPERVISED CHECKLIST REV.2; OWNER_FINAL_UI_ACCEPTANCE
+PENDING (gallery packet ready).**
 
 2026-09-18 continuation: review findings A1-A4 fixed and re-qualified
 ([correction record](../reports/icon-overhaul/NATIVE-RACIAL-ACTION-CORRECTION.md));

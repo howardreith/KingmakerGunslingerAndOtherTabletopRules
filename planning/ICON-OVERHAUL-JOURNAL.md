@@ -1464,3 +1464,114 @@ running. All 90 approved images re-verified no-write on the final tree; the
 Rapid Reload runtime copy matches its approval hash exactly. Records updated:
 action qualification JSON (corrected-matrix section), higher-feat JSON
 (confirmation run), evidence ledger (final run IDs + artifact identity).
+
+## 2026-09-18 (later) — finalization fixes after the 1e433da1 review
+
+Continuation mission `Z-ICON-OVERHAUL-FINALIZATION-FIXES.md`. Takeover
+verified at `1e433da1` (= remote, clean, game idle; no newer local work).
+
+### F1 Controller lifecycle and cancellation proof
+
+`RunFirearmHigherFeatRoots` now gives every controller visit an explicit
+native cleanup boundary: each level visit is a try/finally that closes its
+own controller; a live reference is never overwritten; an unsuccessful
+cancellation probe or ineligible probe closes its visit before a fresh one
+opens; cleanup failures are recorded (never masking a body exception) and
+counted in the PASS predicate (`higher-feat-cancellation-and-cleanup`
+requires cancellationProved && cancellationAttempted && zero cleanup
+failures). A failed child-parameter step now unselects the dangling bare
+root selection (`UnselectFeature`) instead of leaving a parameter-less
+commit in the visit. The cancellation proof is a real before/after
+comparison: `SnapshotProgressionState` captures class/character levels plus
+every tracked root/parameter fact with rank; the visit must actually hold
+the exact GWS(Pistol) root/parameter pair in the preview
+(`previewHeld` from the slot's SelectedItem); Cancel without apply; then
+`FirearmHigherFeatRootsRules.EvaluateCancellationEvidence` compares the
+snapshots (appeared/vanished/rank-changed facts named exactly, cancelled
+target must be absent, levels unchanged). New focused negative tests drive
+the same evaluator: target-appears, preview-not-held, level-change,
+rank-gain and missing-snapshot all fail with named reasons.
+
+### F2 Parameter diagnostics and save request rev. 3
+
+The final review rows no longer write the per-root wrapper name into a
+`paramBlueprint` field. Each row emits the actually observed
+root/parameter GUIDs and names (from the committed fact), the independently
+expected pair (root GUID + the shared Weapon Focus choice of the kind), the
+wrapper GUID recorded separately as `notTheWrapperGuid`, rank, and explicit
+`paramFailures` from `FirearmHigherFeatRootsRules.EvaluateCommittedParameter`,
+which rejects wrapper-substitution, root mismatch, parameter mismatch and
+non-unit rank. The saved-parameter request rev. 3 carries the consistent
+five-fact table (three WF parameters + GWF(Pistol) **with the shared Weapon
+Focus Pistol parameter, not the GWF wrapper** + the static Rapid Reload
+child), read-only save-format verification before any write, and the exact
+legal progression from the qualified scenario. Gate unchanged: NOT RUN —
+authorization/input required.
+
+### F3 Checklist rev. 2 (catalog-verified)
+
+Burning Hands and Shocking Grasp (+delivery) are now correctly presented as
+deliberate native-reuse controls (native spell identities), Chill Touch
+(+delivery) as the original-art case; casting/toggling are explicitly marked
+STATE-CHANGING; a higher-feat screen section (selection/preview per root
+with justified 4-menu representative sampling across the identical weapon
+machinery, cancellation/back-navigation with the layout-adapter cleanup
+observation, Total/sheet after one real selection) was added; Wakizashi is
+checked inside the actual parametrized weapon selector beside Katana/Nodachi
+at the owner's verified settings. Separate statuses
+(HIGHER_FEAT_SELECTION_AND_DATA / _CANCELLATION_AND_CLEANUP /
+_NATIVE_SCREEN_RENDERING, RACIAL_WIDGET_BINDING, ORDINARY_NATIVE_ACTION_FLOW,
+SAVED_PARAMETER_ROUND_TRIP, OWNER_FINAL_NATIVE_UI_ACCEPTANCE) are maintained
+in the checklist and the higher-feat record.
+
+### F4/F5 Packet and timeout record
+
+A local curated gallery
+(`icon-recovery/native-review-gallery-20260918/NATIVE-REVIEW-GALLERY.html`,
+12 images, every link verified and SHA-256-matched to its source run via
+`manifest.json`) replaces the directory-search packet; the packet names the
+exact local package path, hashes, both deployment manifests of the
+byte-identical package (reconciled in the ledger) and the restoration
+procedure. The two result-less attempts of the previous matrix are recorded
+from their actual files: the Undine timeout (orchestration ERROR, PID 17192
+left running per the no-force-kill policy, **no in-game stage file ever
+written** — nothing can be claimed about its internal behavior or save-write
+state either way) and the failed smoke (orchestration ERROR with
+`preLaunchKingmakerProcesses = []` — proving no overlapping game existed at
+its launch; its own process exited before committing a result). Guards held;
+no overlap ever occurred; the later clean PASSes are separate runs and are
+not used to infer anything about these attempts.
+
+Deterministic pin 1651 → 1653 (two real evaluation-test cases).
+
+### Finalization re-qualification and restoration (2026-09-18 late UTC)
+
+The corrected higher-feat fixture was qualified through three guarded
+iterations on this machine, each with full Build-Local gates before
+deployment (a transient BOM introduced into static-validation.json by an edit
+was caught by repository validation and stripped before any build proceeded):
+first run exposed a retry-condition regression (the probe stopped after its
+first legally-too-early attempt at fighter 8, while GWS becomes legal only at
+fighter 12); the second exposed that the standalone probe's child-parameter
+`SelectFeature` is natively refused even when the ladder's identical call
+succeeds in the same visit. Rather than fight that opaque native check, the
+cancellation proof was restructured to ride on the ladder's own successful
+GWS(Pistol) selection: the visit-start snapshot is taken before any pick;
+when the exact legal choice is first held (previewHeld verified through the
+controller's selected items) the entire visit is cancelled without apply,
+the before/after progression snapshots are compared by the shared evaluator,
+and the visit is then reopened and the picks redone for real.
+
+Final artifact package `ebd4921f46aed7710c3f6ec52df9a3c67686a27b0f3ceef71487412e06552ba9`
+(DLL `dd45f577c83b84297b520fec1f09f4876c1eb34c66a45490dd6c98469f8ed993` per
+deployment manifest `20260918T2158074984660Z`): runs
+`20260918T2206391210670Z` and `20260918T2212086644523Z` — **two consecutive
+PASS runs, 7/7 assertions each**, including `higher-feat-cancellation-and-
+cleanup` with previewHeld=true, identical before/after snapshots and zero
+controller-cleanup failures. The action/race matrix on package `2fca98bc…`
+remains valid for its scope: `git diff 1e433da1` over the racial-action
+fixture sources is empty (byte-identical between the two packages), recorded
+in the ledger. After the runs the owner installation was restored from the
+session's pre-test snapshot and verified (138/138 inventory identical,
+original DLL bytes, no game process). All 90 approved images re-verified
+no-write on the final tree; the Rapid Reload runtime copy matches exactly.

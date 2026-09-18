@@ -1,63 +1,45 @@
-# Native UI review packet — icon overhaul candidate (2026-09-18)
+# Native UI review packet — icon overhaul candidate (rev. 2, owner-usable)
 
-One compact review page for the owner's final native-UI acceptance. It concerns
-**final UI integration on the candidate below**, not a second vote on the
-approved paintings (those remain closed). Read with
-[ICON-EVIDENCE-LEDGER.json](ICON-EVIDENCE-LEDGER.json).
+One compact review for the owner's final native-UI acceptance. It concerns
+**final UI integration on the candidate below**, not a renewed vote on the
+approved paintings (those remain closed; hashes re-verified no-write on
+2026-09-18). Read with [ICON-EVIDENCE-LEDGER.json](ICON-EVIDENCE-LEDGER.json).
 
-## Candidate
+## Open the picture review directly
 
-See [ICON-EVIDENCE-LEDGER.json](ICON-EVIDENCE-LEDGER.json) `finalCandidate`
-for the exact package/DLL/MVID of this review round. All captures referenced
-below were taken by guarded runs on that artifact unless explicitly marked
-historical.
+**`C:\Dev\KingmakerGunslingerLab\icon-recovery\native-review-gallery-20260918\NATIVE-REVIEW-GALLERY.html`**
+— a local gallery of 12 curated captures (per race: one wide creator-Total
+context, the first racial action row, the pinned Fight Defensively control
+row). Every image link is verified present and its SHA-256 matches the source
+run's recorded capture hash (`manifest.json` beside it lists file, stage, run
+ID and both hashes). Transitional/duplicate captures are excluded by design.
+The gallery and images are machine-local review evidence, deliberately not in
+Git. Class label on every image: **portrait-strip native-widget binding
+(fixture-reparented rows) — not ordinary menu flow**.
 
-## What to review (highest-value contexts)
+## Exact candidate
 
-1. **Racial action rows (39 consumers).** Curated captures per race from the
-   corrected action runs (Ifrit/Oread/Sylph/Undine directories under
-   `runtime-evidence/`, `native-racial-action-row:*` / `native-action-control:*`
-   stages): wide portrait-strip shots plus per-row captures showing the exact
-   painted sprite in the native converted-slot widget. The pinned native Fight
-   Defensively control row appears alongside (`native-action-control`).
-   *What this proves:* native widget binding/rendering. *What it does not:*
-   ordinary menu flow — see item 4.
-2. **Higher firearm feat roots (12 combinations).** FeatureUIData monogram
-   identities (P/M/B, null icon) for every committed root/weapon fact, and the
-   legal Fighter 1–19 ladder with refused-below-prerequisite controls:
-   run `20260918T1350433937364Z-disposable-firearm-higher-feat-roots`
-   (`selectionLog` in the assertion payload shows each level's slot, offered
-   route and refusal). In-game screen: open a character sheet / level-up Total
-   for a firearm-fact character (the supervised checklist covers this in one
-   step).
-3. **Wakizashi clipping + P/M/B beside native/eastern controls.** This session
-   produced no new 1920×1200 captures of these specific contexts; per the
-   continuation instruction the earlier lower-resolution evidence is **not**
-   presented as final. Owner step: at your normal 1920×1200 settings, view an
-   equipped Wakizashi and the P/M/B monogram entries next to native Weapon
-   Focus and Katana/Nodachi entries; the captures you take are the acceptance
-   evidence (two or three screenshots suffice).
-4. **Ordinary racial action flow.** Perform the four short steps in
-   [SUPERVISED-NATIVE-FLOW-CHECKLIST.md](SUPERVISED-NATIVE-FLOW-CHECKLIST.md)
-   (parent menu, parent→variant navigation, Crystalline Form activatable,
-   held-touch delivery). Passing these closes `ORDINARY_NATIVE_ACTION_FLOW`.
-
-## Statuses (kept separate)
-
-| Milestone | Status |
+| Item | Value |
 |---|---|
-| Approved art (90) | CLOSED (owner; hashes re-verified no-write 2026-09-18) |
-| Exact loaded bindings | CLOSED (census, painted-integration artifact) |
-| Native-widget rendering (39 + control) | PASS on the corrected candidate |
-| Higher firearm roots (12) | PASS (real selection ladder; screen step in checklist) |
-| Ordinary native action flow | PENDING — supervised checklist |
-| Saved-parameter disk round trip | NOT RUN — authorization/input required |
-| Owner final native UI acceptance | PENDING — this packet |
+| Package (local path) | `C:\Dev\KingmakerGunslingerLab\worktrees\icon-art-overhaul-v2\artifacts\local-runtime\0.0.129\KingmakerGunslinger-0.0.129-local-runtime.zip` |
+| Package SHA-256 | `2fca98bc2b1abecc69985f605b11d4e8d63c707869bd55cef3a6277e9edc77cd` |
+| DLL SHA-256 / MVID | see `runtime-evidence/deployments/20260918T1413202579998Z/deployment.json` (reconciled below) |
+| Deployments of this exact package | `20260918T1337006300882Z` (qualification matrix) and `20260918T1413202579998Z` (documentation-stabilized rebuild; byte-identical package, manifest matching the final tree). Same artifact, two deployment records. |
+| Restoration procedure | `scripts\Restore-Live-Mod.ps1 -BackupDirectory <session pre-test snapshot>` from the icon worktree; verified 138/138 inventory identical after the matrix |
 
-## Historical captures
+## What is already proven vs what needs you
 
-The 379 captures from the September 17/18 action runs and earlier qualified
-runs remain evidence for their recorded artifacts and scopes only; none are
-re-labeled as belonging to the current candidate. Where this packet reuses a
-context (e.g. the v0.0.129 scroll/Oracle records), the ledger entry names the
-original artifact.
+| Surface | Status | Evidence |
+|---|---|---|
+| 39 racial consumers: native-widget binding + rendered control + restoration | PASS | corrected fixture, four race runs + smoke on this package (see ledger run IDs) |
+| Higher firearm roots: selection/data/cancellation/cleanup | PASS (cancellation snapshot-proven on the re-qualified artifact) | `disposable-firearm-higher-feat-roots` runs (ledger) |
+| Higher-feat **screen** rendering; ordinary racial action flow; activatable; held-touch | **PENDING — you** | [SUPERVISED-NATIVE-FLOW-CHECKLIST.md](SUPERVISED-NATIVE-FLOW-CHECKLIST.md) rev. 2 (catalog-verified expected identities; state-changing steps marked) |
+| Wakizashi + P/M/B monogram in the actual weapon selector at your verified settings | **PENDING — you** | checklist item 6 |
+| Saved-parameter disk round trip | NOT RUN — authorization/input required | [SAVED-PARAMETER-AUTHORIZATION-REQUEST.md](SAVED-PARAMETER-AUTHORIZATION-REQUEST.md) rev. 3 |
+
+## Notes for the review
+
+- Prior Weapon Focus/Rapid Reload and earlier run captures remain evidence for
+  their recorded artifacts only; none are relabeled as this candidate's.
+- Rows needing you are marked pending with exact steps; no renewed approval of
+  unchanged paintings is requested. Final review concerns UI integration only.

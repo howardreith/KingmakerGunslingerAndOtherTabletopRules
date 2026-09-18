@@ -1042,6 +1042,7 @@
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeActionIcons.cs" />
     <Compile Include="RuntimeTesting\NativeRacialActionIconRules.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmHigherFeatRoots.cs" />
+    <Compile Include="RuntimeTesting\FirearmHigherFeatRootsRules.cs" />
     <Compile Include="RuntimeTesting\IconConsumerCensus.cs" />
     <Compile Include="RuntimeTesting\IconGraphSnapshot.cs" />
     <Compile Include="RuntimeTesting\IconCensusControlPolicy.cs" />

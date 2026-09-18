@@ -1,69 +1,82 @@
-# Saved firearm parameter verification — authorization request (rev. 2)
+# Saved firearm parameter verification — authorization request (rev. 3)
 
 Status: **SAVED_PARAMETER_ROUND_TRIP = NOT RUN — AUTHORIZATION/INPUT REQUIRED.**
 
-Revision 2 (2026-09-18). Revision 1 described the feat set inconsistently
-(three Weapon Focus choices and three Rapid Reload children — six feats — while
-repeatedly saying five) and proposed a fresh level-1 Gunslinger without a legal
-progression route for that set. This revision states the exact parametrized-vs-
-static distinction and bases the proposed character on the legal level-up route
-established by the Task B fixture (`disposable-firearm-higher-feat-roots`).
-Nothing below may run before an explicit owner decision; this document is a
-request, not consent.
+Revision 3 (2026-09-18). Revision 2 still stated that Greater Weapon Focus
+(Pistol) would carry a `KMG_GreaterWeaponFocus_Pistol` parameter. The
+higher-feat qualification established the opposite: all five integrated native
+roots (Weapon Focus and the four higher roots) commit the **same registered
+Weapon Focus choice of the weapon kind** as their `FeatureParam`
+(`FIREARM-HIGHER-FEAT-ROOTS-QUALIFICATION.json`, selection logs; observed rows
+now emit the actual committed parameter explicitly). This revision makes the
+fact table consistent with the inspected contract. Nothing below may run
+before an explicit owner decision; this document is a request, not consent.
 
-## What parameter persistence is and is not already proven
+## Exact expected identities (resolved from the reviewed catalog and the
+qualified native selection results — not inferred from a post-load result)
 
-- Catalog identity tests, in-memory controller selections and the
-  same-artifact `working-save-smoke` do **not** prove a fresh-process disk
-  round trip of firearm `FeatureParam` values.
-- The permitted `KMG_AUTOMATION_WORKING` archive contains no supported firearm
-  parameter GUIDs (Codex read-only inspection, 2026-09-13/14).
-- An owner-approved dedicated parameter-bearing save (owner-created or
-  owner-authorized creation) is an acceptable alternative to automated
-  creation; either route still needs a separate decision recorded below.
+| # | Committed fact (root) | Root GUID | FeatureParam (the actual saved parameter) | Kind of fact |
+|---|---|---|---|---|
+| 1 | Weapon Focus (Pistol) | `1e1f627d26ad36f43bbd26cc2bf8ac7e` (native parametrized root) | shared Weapon Focus **Pistol** parameter choice (`KMG_WeaponFocus_Pistol` feature blueprint) | parametrized native-root fact |
+| 2 | Weapon Focus (Musket) | same root | shared Weapon Focus **Musket** parameter choice | parametrized native-root fact |
+| 3 | Weapon Focus (Blunderbuss) | same root | shared Weapon Focus **Blunderbuss** parameter choice | parametrized native-root fact |
+| 4 | Greater Weapon Focus (Pistol) | `09c9e82965fb4334b984a1e9df3bd088` | **the same shared Weapon Focus Pistol parameter — NOT the `KMG_GreaterWeaponFocus_Pistol` wrapper** (that wrapper is a menu/identity feature, never the committed parameter) | parametrized native-root fact |
+| 5 | Rapid Reload (Pistol) | owned selection parent | the static owned child fact `KMG_RapidReload_Pistol` itself — **no parameter is involved or invented** | static owned fact |
 
-## Proposed fixture (one dedicated test save, one character)
+Five facts, internally consistent. Rows 1–4 exercise the parametrized-root
+serialization path (four entries that share one serialization route but are
+four distinct gameplay feats — sharing the route does not make their mechanics
+identical); row 5 exercises the static-fact path and distinguishes it. This is
+a representative same-version persistence proposal: it does not establish disk
+persistence for the other untested root/weapon combinations (equivalent
+serialization paths), nor any historical migration claim.
 
-| Item | Value |
-|---|---|
-| Save name | `KMG_AUTOMATION_FIREARM_PARAMS` — to be confirmed unused at execution time (name-existence check immediately before any write; a pre-existing same-name save is never overwritten and stops the request) |
-| Character | One disposable mercenary built through the same legal level-up route the Task B fixture qualifies: real class levels, real firearm proficiency, real prerequisite chains; **no** inserted target facts and **no** bypassed eligibility checks |
-| Committed facts (5 total, internally consistent) | • **3 parametrized native-root facts**: native Weapon Focus root committed once per firearm parameter — Pistol, Musket, Blunderbuss (each committed fact carries `FeatureParam` → the corresponding `KMG_WeaponFocus_*` feature blueprint).<br>• **1 higher parametrized root fact**: native Greater Weapon Focus with the Pistol parameter (parameter → the `KMG_GreaterWeaponFocus_Pistol` feature), proving a higher root's parameter persists, not only Weapon Focus.<br>• **1 static owned fact**: Rapid Reload (Pistol) — a plain static child feature with **no** parameter, included to distinguish static-fact persistence from parametrized-parameter persistence. |
-| Not included | Weapon Specialization / Greater Weapon Specialization / Improved Critical parameters and the other two Rapid Reload children: their persistence paths are equivalent to the ones above (same root mechanics, same serialization path); including them would grow the fixture without a distinct claim. Sharing this coverage rationale is deliberate and final. |
+## Proposed character and legal progression
 
-Parametrized roots and static children are different claims and are reported
-separately: a PASS for static facts alone would not be reported as parameter
-persistence.
+One disposable character built by the exact progression the qualified Task B
+scenario performs: real class levels via real `LevelUpController` visits with
+native prerequisite enforcement — Weapon Focus per kind first (BAB 1 +
+firearm proficiency), then Greater Weapon Focus (Pistol) at fighter level 8+
+(fighter-8 class prerequisite + Weapon Focus parameter prerequisite), and
+Rapid Reload (Pistol) from the published owned selection. No target fact is
+inserted directly and no eligibility check is bypassed; the character ends as
+a real, committed level-up product, not a detached test object.
 
-## Exact identities to verify before and after the round trip
+## Native save-persisted container (to be verified read-only before any write)
 
-The five committed facts' root GUIDs and parameter blueprints (resolved from
-the live blueprint graph at execution time, not pasted from documentation):
-native Weapon Focus root, native Greater Weapon Focus root, and the
-`KMG_WeaponFocus_{Pistol,Musket,Blunderbuss}` /
-`KMG_GreaterWeaponFocus_Pistol` parameter blueprints, plus the static
-`KMG_RapidReload_Pistol` child. The fixture asserts the exact root/parameter
-pairs on the in-memory unit before saving and on the loaded unit after the
-fresh-process reload.
+The unit must be present in a native save-persisted container (e.g. a
+completed mercenary/party member) rather than a detached fixture. The exact
+native save format, file set and location for this installation will be
+inspected **read-only** and recorded before any write is requested; this
+document does not assume a single file, a sidecar layout, or an existing
+scenario's ability to save. The expected identities above are fixed before
+the load and compared against the loaded result; expected values are never
+derived from what the load returns.
 
-## Operations, limits and protections
+## Operations, limits and protections (unchanged in substance)
 
-| Aspect | Commitment |
-|---|---|
-| Exact save path/format | The actual native save location, file set and sidecars are verified and recorded **read-only** before any write phase; this request does not assume a single file or an existing scenario's ability to save |
-| Write operations | Exactly one creation of the dedicated save through the ordinary native save path from a narrowly allowlisted guarded scenario (Steam App ID 640820, `-kmgRuntimeTestRequest` only); no campaign access, no other save is selected, loaded, written, renamed or deleted |
-| Protected inputs | `KMG_AUTOMATION_BASELINE` — never selected/loaded/written/renamed/deleted; `KMG_AUTOMATION_WORKING` — not overwritten (read-only use only, if used at all); all campaign saves untouched (names may be inventoried; payloads are not read or hashed) |
-| Fresh-process reload | One guarded launch loading exactly `KMG_AUTOMATION_FIREARM_PARAMS`; verify the five facts, their root/parameter identities, native P/M/B monogram presentation on the loaded sheet/Total path, and absence of unintended facts |
-| Before/after verification | Inventory + SHA-256 of the protected saves captured before the write and re-verified after every phase; both must be byte-identical |
-| Cleanup/retention | Deletion of the dedicated save only through the ordinary native delete path and only if the owner's decision explicitly includes deletion; owner creation of the file is not permission to delete it. If deletion is not authorized, the save is retained and reported. Runtime JSON evidence retained under `runtime-evidence/<unique-run>/` |
-| Claim scope | Same-version persistence only. Historical migration of older saves is a distinct claim requiring its own fixture and is not made here |
+- One demonstrably unused dedicated test-save name (existence-checked
+  immediately before any write; a pre-existing same-name save stops the
+  request and is never overwritten).
+- Exactly one creation through the ordinary native save path from a narrowly
+  allowlisted guarded scenario (Steam App ID 640820, `-kmgRuntimeTestRequest`
+  only); one fresh-process guarded load of exactly that save; no campaign
+  access; no other save selected/loaded/written/renamed/deleted.
+- Protected: `KMG_AUTOMATION_BASELINE` (never selected/loaded/written/
+  renamed/deleted), `KMG_AUTOMATION_WORKING` (not overwritten; read-only use
+  only if used at all), all campaign saves (names may be inventoried;
+  payloads never read, copied or hashed).
+- Before/after: inventory + SHA-256 of the protected saves captured before
+  the write and re-verified after every phase; both byte-identical.
+- Retention: the dedicated save is retained unless deletion is separately
+  authorized; owner creation of a file is not permission to delete it.
+- Claim scope: same-version persistence only.
 
 ## Explicit decision requested
 
 Authorize exactly one of (a) automated creation of the single dedicated save
 as above, including or excluding the deletion step — state which; or (b) an
-owner-created dedicated parameter-bearing save (exact name and the five facts
-listed above) with an authorized read-only fresh-process load. Any other
-expansion (more saves, campaign access, baseline/working-save writes) requires
-a new decision. Until a decision is recorded here by the owner, the status at
-the top remains in force.
+owner-created dedicated save containing exactly the five facts above (exact
+name to be agreed) with an authorized read-only fresh-process load. Any other
+expansion requires a new decision. Until a decision is recorded here by the
+owner, the status at the top remains in force.
