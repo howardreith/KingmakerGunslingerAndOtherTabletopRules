@@ -1671,12 +1671,19 @@ function Assert-KmgRuntimeScenarioPreflight {
             }
             if ($Parameters.saveName -cne $allowedName) { throw 'Persistence input is not owned by this phase transaction.' }
         }
-        $requiredParameterCount = if ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
+            $Parameters.ContainsKey('nativeActionCase')
+        $requiredParameterCount = if ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
             (-not $persistence -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
             throw "$Scenario requires its exact working save and allowlisted parameters."
+        }
+        if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
+            [string]$Parameters['class'] -cne 'Fighter' -or
+            [string]$Parameters['allocation'] -cne 'point-buy')) {
+            throw 'The native action review case permits only nativeActionCase=racial-actions with Fighter and point-buy.'
         }
         if ($Scenario -ceq 'working-save-elemental-deferred-markers' -and
             (-not $Parameters.ContainsKey('fixtureCase') -or $Parameters.fixtureCase -isnot [string] -or
@@ -1905,8 +1912,14 @@ function New-KmgRuntimeRequest {
             [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
                 class = [string]$Parameters.class; allocation = [string]$Parameters.allocation; sex = [string]$Parameters.sex }
         } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec', 'working-save-creator-visual-lifecycle')) {
-            [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
-                class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
+            if ($Scenario -ceq 'working-save-elemental-character-creation-regression' -and $Parameters.ContainsKey('nativeActionCase')) {
+                [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
+                    class = [string]$Parameters.class; allocation = [string]$Parameters.allocation
+                    nativeActionCase = [string]$Parameters.nativeActionCase }
+            } else {
+                [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
+                    class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
+            }
         } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
             [ordered]@{ saveName = [string]$Parameters.saveName; fixtureCase = [string]$Parameters.fixtureCase }
         } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {

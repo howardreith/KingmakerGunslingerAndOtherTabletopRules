@@ -1207,3 +1207,162 @@ paired, eleven request cases and source/export/protected checks). The completed
 coverage guard now accepts the owner-approved state while still rejecting a
 missing required image. The negative approval fixture explicitly removes catalog
 approval so it remains meaningful after actual production acceptance.
+
+## 2026-09-17 — Z executor takeover (owner-authorized resumption)
+
+The owner resumed the paused icon-overhaul qualification and handed it from Codex
+to Z. Base: published pause checkpoint `7c50e0911c3d15e3e65ea4a296aa07f820cb5d3c`
+(remote `origin/codex/icon-art-overhaul-v2` matched exactly; no local worktree
+owned the branch). Z created `worktrees/icon-art-overhaul-v2` on that branch and
+confirmed no locks, no other executor processes, and a clean tree. Main checkout
+remains untouched on master.
+
+### Local recovery material is absent
+
+The pause report's local-only material could not be found on this machine:
+
+- Exact stash `2bf5ec3ded6b81f29c2058ec872cf5088d521bf7` (eleven action
+  source/project/test files): absent. `git stash list` is empty in the shared
+  object store; `git cat-file` on the exact ID fails locally and the blobless
+  promisor remote answers "not our ref". Twelve unreachable commits exist in the
+  object store, but all are older stashes from Sep 4–5 based on `a9491b25` /
+  `dc3367b5`, none on the reported `a42ba694` base. They were left untouched.
+- `artifacts/icon-overhaul-v2/` (seven `NativeHigherFeat*.pending.cs` drafts,
+  `Deploy-NativeRacialActions.ps1`, `Run-NativeRacialActionMatrix.ps1`,
+  failed-run evidence, native API research, compiler helper, build-5 archive,
+  local buff gallery): absent from every permitted lab path, worktree and
+  backup; no bundle exists. The original worktree was evidently removed.
+
+Per the handoff instruction this is reported rather than fabricated: nothing
+was "recovered" and no GitHub claim is made. Because the action fixture is the
+assigned remaining engineering, Z reimplemented it from the published evidence:
+the qualified buff-fixture pattern (`ElementalCharacterCreationNativeBuffIcons`),
+the build 1–5 diagnoses recorded above in this journal (owner-null binding,
+single-leader selection, pinned `FightDefensivelyToggleAbility` control
+`09d42e8b50b0214fb71acfc99cc00b3`, and the build-5 ownership rule for the
+initially absent empty `UnitPartAbilityModifiers`), the committed native
+action-bar APIs, and the canonical catalog's exact 39 action consumers.
+
+### Reimplementation (source only at this point)
+
+- `src/KingmakerGunslinger/RuntimeTesting/NativeRacialActionIconRules.cs`: pure
+  fixed 39-symbol plan (per-race partition: Ifrit 15 incl. the cross-race
+  elemental feats, Oread 7 incl. the activatable, Sylph 9 incl. a held-touch
+  delivery, Undine 8 incl. the other delivery), row classification
+  (parent/variant/activatable) and the modifier-cache ownership rule.
+- `ElementalCharacterCreationNativeActionIcons.cs`: guarded fixture extending the
+  qualified creator regression. New exact request parameter
+  `nativeActionCase=racial-actions` (parser count 5, Fighter + point-buy +
+  automatic exit only, exact scenario only; PS orchestrator preflight equally
+  narrowed). It runs once for the first committed dormant mercenary, binds the
+  native action bar through ordinary single-leader selection, renders every
+  catalog consumer of the race through the real `ActionBarSpellsGroup` toggle
+  (parents as inserted facts, variants/deliveries as detached native
+  `AbilityData`, the activatable and the pinned Fight Defensively control through
+  the native widget + `MechanicActionBarSlotActivableAbility` + native
+  `InitSlot` icon path), captures native rows, and removes every request-owned
+  fact/widget/selection/cache under exact before/after comparison. Variants are
+  derived from the live blueprint graph (`Parent != null`), not hand-listed; the
+  machine-derived parent/variant counts are recorded as evidence rather than
+  copying the pause report's 26/10 bookkeeping.
+- Six focused domain tests (exact set, corruption, cache ownership,
+  classification, request gating, dispatch/restoration wiring) replace the lost
+  seven; deterministic suite pin moved 1639 → 1645 with the matching
+  static-validation record update (same pattern as `a20b0d23`).
+- Three new orchestrator preflight rejection cases cover the wrong class, wrong
+  case value and missing automatic exit for the new parameter.
+
+### Runtime pause (shared installation)
+
+While first attempting the preflight test, Kingmaker PID 9796 (plain owner
+launch, no guarded request in its command line, started 2026-09-17 16:31 local)
+was found running. Per the exclusive-ownership rule, deployment and all guarded
+runtime launches are paused until the owner's game exits; local build gates
+only. Build 6 numbering is retained for the first rebuilt candidate.
+
+### Build 6 runtime qualification (2026-09-17/18 UTC)
+
+The reimplemented fixture was qualified through the guarded Steam route with
+iterative, evidence-driven corrections on this machine only. Artifact lineage
+(all packages passed full Build-Local gates before deployment; deployment used
+the backup-first Deploy-Local guard each time):
+
+1. `21eca39a…`/`07c5ead4…` — request parameter was dropped by the PS request
+   builder (ordinary regression PASS, fixture inert). Fixed by extending the
+   creator parameter serialization.
+2. `b74a9b00…`/`54374d3e…`-line — unit-creation mismatch: the dormant-mercenary
+   path requires the roll-allocation CustomCompanion creator, but the installed
+   Dice Roller is now 0.1.6 (the fixture contract pins 0.1.2 and the mission
+   forbids touching another mod). Resolved by accepting the Fighter/point-buy
+   committed request-owned unit instead; the action rendering path is
+   independent of the unit's holding state.
+3. `c8ff74fe…`-line — native-semantic-reuse consumers (no painted binding)
+   resolved through the registered manifest directly.
+4. Pause ownership: the working session loads unpaused, so game time advances
+   during real-time captures; the fixture now owns and restores the pause for
+   the observation window and compares every world dimension individually.
+5. Popup-lifecycle finding (machine-traced with a request-armed Harmony prefix
+   on `ActionBarSpellsGroup.Hide`, removed again after diagnosis):
+   `ActionBarManager.Update → ActionBarSlots.Set → ActionBarIndexSlot.Set →
+   ActionBarGroupSlot.SetSpontaneousControls → Hide` reconciles every group
+   slot's conversion popup each frame and closes any popup whose list is not
+   the slot's own spellbook conversion — a bare `Toggle` or a native
+   `OnToggleGroupClick` with a borrowed conversion list is closed on the very
+   next Update. The popup menu therefore cannot persistently present an
+   arbitrary racial action list; this is a native design constraint, not a
+   fixture bug.
+6. Final design: rows render through the popup's own FillSlots binding — the
+   exact native `ActionBarSpontaneousConvertedSlot` widget from the group's own
+   prefab, native `MechanicActionBarSlotSpontaneusConvertedSpell` /
+   `MechanicActionBarSlotActivableAbility` mechanic slots, native
+   `Initialize`/`Set`/`InitSlot` icon binding (Icon.sprite = native GetIcon()) —
+   parented to the always-live native portrait strip (GroupController). The
+   party selection and the action bar's own binding are never displaced; the
+   party stays untouched (verified), the pause is owned and restored, and the
+   initially-absent empty `UnitPartAbilityModifiers` caches are owned and
+   removed. Evidence labels the presentation as "native action-bar group rows
+   through the FillSlots widget/mechanic/icon path; popup-menu lifecycle not
+   exercised (closed by design for foreign lists, machine-traced)".
+
+Ifrit PASS on package `426e94a6440562fbe5fe87fc740322f228d844a63e22c871816ed530d7cc2c19`,
+DLL `5f7f5d5a88889e4371dfc4a184566bcfe0a1281fdaaeaace8b29675d984b6f85`
+(run `20260918T0634424748160Z…`): 13/13 assertions including
+`actual-native-racial-action-group` with all 15 Ifrit consumers
+(9 parents + 6 variants; painted and native-reuse) captured in catalog order,
+pinned `FightDefensivelyToggleAbility` control exact, selection untouched,
+every world dimension exact and full request-owned cleanup. Oread/Sylph/Undine
+runs follow on the same immutable artifact; their results are recorded below.
+
+### Build 6 final matrix result
+
+All four race runs and the same-artifact smoke PASS on the single immutable
+artifact package `f0c234df044367dfc174336487687e3e29198b3599f7a0b1d9baddd18ed8c669`,
+DLL `7d5191df338915e6ac08b2cacacdddff53a7c9fdc265f6b4d31be54211a7ffe7`,
+MVID `abb01c54-1543-4616-ba2a-34d6d5769fd7`, source state
+`e45612b732d6023993a3608e4b045bedb42322116b4824469b76c233803cad02` (uncommitted
+working tree over `7c50e091`; committed below byte-identically):
+
+- Ifrit `20260918T0817462342287Z` PASS — 15/15 consumers, 103 captures.
+- Oread `20260918T0719294558189Z` PASS — 7/7 (incl. the CrystallineForm.Mode
+  activatable), 95 captures.
+- Sylph `20260918T0756109207621Z` PASS — 9/9 (incl. ShockingGraspDelivery),
+  97 captures.
+- Undine `20260918T0806485537845Z` PASS — 8/8 (incl. ChillTouchDelivery and
+  the ShakeFree variant), 84 captures.
+- Same-artifact `working-save-smoke` `20260918T0836413995623Z` PASS (11
+  assertions).
+
+39/39 catalog action consumers qualified through native widgets with exact
+sprite references, catalog-order capture sequences, the pinned
+FightDefensively control exact in every run, the party selection untouched,
+every world dimension exact, owned pause and empty modifier caches removed,
+and no save-writing API observed anywhere. 379 native captures total.
+Post-run restoration: the owner installation was restored from the pre-test
+snapshot `runtime-backups/live-mod/20260917T2038524766460Z`; the post-restore
+inventory is identical (138 files) and the original DLL bytes are back.
+Curated record: [NATIVE-RACIAL-ACTION-QUALIFICATION.json](../reports/icon-overhaul/NATIVE-RACIAL-ACTION-QUALIFICATION.json).
+
+Machine-derived classification note: the pause report's 26 parents / 10
+variants bookkeeping is superseded by the runtime-derived 25 parents /
+11 variants (Gust is the parent of BullRush+Trip; ShakeFree is a parent-owned
+variant), with the two held-touch deliveries and one activatable unchanged.

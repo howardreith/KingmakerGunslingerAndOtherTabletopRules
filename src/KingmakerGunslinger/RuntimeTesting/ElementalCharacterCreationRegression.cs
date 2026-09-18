@@ -97,6 +97,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _settle = 2; return;
             }
             if (PauseForNativeIconSheet()) return;
+            if (PauseForNativeRacialActionGroup()) return;
             _commitCleanupPending = false;
             EndCharacter();
         }

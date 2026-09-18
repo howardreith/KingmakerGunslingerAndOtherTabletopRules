@@ -36,3 +36,36 @@ All local helpers, archives and higher-feat drafts are under
 No feature-to-master merge, history rewrite, force push, policy change, tag or
 release is authorized. Historical evidence keeps its original artifact and
 approval status; the new approval record supersedes old production-pending captions.
+
+## Z continuation (2026-09-17/18)
+
+Status: **RACIAL_ACTION_CONSUMERS_QUALIFIED (39/39, four guarded Steam PASS
+runs + same-artifact smoke); HIGHER_FIREARM_FEATS PENDING; SAVED_PARAMETER
+AUTHORIZATION REQUEST PREPARED; FINAL ACCEPTANCE PENDING**.
+
+Executor Z took over on the owner's explicit resumption instruction. Worktree:
+`C:\Dev\KingmakerGunslingerLab\worktrees\icon-art-overhaul-v2` on
+`codex/icon-art-overhaul-v2` at `7c50e091` (matched the published pause
+checkpoint exactly). The Codex-local stash `2bf5ec3` and the whole
+`artifacts/icon-overhaul-v2` directory are **absent from the machine** (verified
+against every permitted lab path, worktree and backup; the stash object is in
+neither the local store nor the promisor remote, and the only unreachable
+commits are unrelated older stashes). Nothing was fabricated as "recovered".
+
+The action fixture was therefore reimplemented from the published evidence as
+`NativeRacialActionIconRules.cs` + `ElementalCharacterCreationNativeActionIcons.cs`
+with a narrowly allowlisted `nativeActionCase=racial-actions` request parameter
+(class Fighter, allocation point-buy, automatic exit; parser, orchestrator and
+shared preflight all enforce the same constraint), six focused domain tests
+(deterministic pin 1645) and three orchestrator preflight rejections. See the
+journal's Z sections for the full qualification narrative, including the
+machine-traced native constraint that the action-bar popup reconciles
+conversion lists every frame, and the resulting FillSlots row-binding
+presentation. Qualified artifact and run identities are in
+[NATIVE-RACIAL-ACTION-QUALIFICATION.json](../reports/icon-overhaul/NATIVE-RACIAL-ACTION-QUALIFICATION.json);
+the owner installation was restored and verified after the runs. Remaining:
+the four higher firearm feat roots across P/M/B (task B), the saved-parameter
+authorization gate ([SAVED-PARAMETER-AUTHORIZATION-REQUEST.md](../reports/icon-overhaul/SAVED-PARAMETER-AUTHORIZATION-REQUEST.md)),
+and final artifact reconciliation with the owner native UI acceptance packet.
+All 90 art approvals and protected assets remain unchanged (verified no-write).
+

@@ -938,6 +938,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Result = ElementalCharacterCreationRoutingObserver.Run(_context, _request);
             AppendNativeRacialFeatAssertion();
             AppendNativeRacialBuffAssertion();
+            AppendNativeRacialActionAssertion();
             Result.Assertions.Add(new RuntimeTestAssertion { Name = "actual-first-level-creators-observed",
                 Expected = _races.Length.ToString(), Observed = _characters.Count.ToString(), Status = _characters.Count == _races.Length &&
                     _characters.OfType<JObject>().All(row => (bool?)row["nativeCreatorOpened"] == true)
