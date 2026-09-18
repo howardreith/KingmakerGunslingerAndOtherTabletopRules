@@ -3395,3 +3395,82 @@ The Feature Modules, Acadamae Graduate, and Cord of Stubborn Resolve work order 
   push the feature branch through the approved helper, merge without rewriting
   history, push `master`, then use the guarded deterministic publisher with
   `-Publish -ConfirmReleaseReady`.
+
+## 2026-09-18 icon overhaul: Z continuation checkpoint
+
+Branch `codex/icon-art-overhaul-v2` at `b2b8a15a861178dd0955056fd9d66c761b907fa7`
+(guard-pushed). Worktree `C:\Dev\KingmakerGunslingerLab\worktrees\icon-art-overhaul-v2`
+(the main checkout stays on master; the OTHER worktrees belong to other
+missions). The owner's installation was restored and verified after all runs;
+no game is left running; no save writes occurred in any run.
+
+### Completed this session
+
+1. Takeover verified against the published pause checkpoint `7c50e091`. The
+   Codex-local stash `2bf5ec3` and `artifacts/icon-overhaul-v2` are ABSENT
+   from the machine (exhaustive permitted search; nothing fabricated).
+2. The 39 racial action consumers are QUALIFIED (4/4 guarded Steam PASS runs
+   + same-artifact smoke) through the reimplemented
+   `ElementalCharacterCreationNativeActionIcons` fixture with the narrowly
+   allowlisted `nativeActionCase=racial-actions` parameter. Artifact: package
+   `f0c234df044367dfc174336487687e3e29198b3599f7a0b1d9baddd18ed8c669`, DLL
+   `7d5191df338915e6ac08b2cacacdddff53a7c9fdc265f6b4d31be54211a7ffe7`, MVID
+   `abb01c54-1543-4616-ba2a-34d6d5769fd7`, source state `e45612b7…` (then
+   uncommitted; committed byte-identically in `b2b8a15a`). See
+   `reports/icon-overhaul/NATIVE-RACIAL-ACTION-QUALIFICATION.json`.
+   KEY NATIVE FINDING (machine-traced): `ActionBarManager.Update →
+   ActionBarSlots.Set → ActionBarIndexSlot.Set →
+   ActionBarGroupSlot.SetSpontaneousControls → Hide` closes any conversion
+   popup whose list is not the anchor slot's own spellbook conversion; use the
+   FillSlots row-binding route instead of popup lifecycle.
+3. The saved-parameter authorization request is prepared at
+   `reports/icon-overhaul/SAVED-PARAMETER-AUTHORIZATION-REQUEST.md`
+   (SAVED_PARAMETER_ROUND_TRIP stays NOT RUN — authorization required).
+4. All 90 approved images verified no-write (80 production + 10 pilot
+   source/export members + Rapid Reload runtime copy all match approval
+   hashes).
+
+### Next precise steps (in order)
+
+1. TASK B — higher firearm feat roots (Greater Weapon Focus, Weapon
+   Specialization, Greater Weapon Specialization, Improved Critical) across
+   Pistol/Musket/Blunderbuss. Design: NEW guarded scenario
+   `disposable-firearm-higher-feat-roots` (do not modify the qualified
+   `disposable-firearm-dependent-feats`), modeled on
+   `RunDisposableGunslingerLevelTwentyProgression` (RuntimeTestRunner.cs:23060,
+   real LevelUpController: StartWithoutAssigningStaticInstance → SelectClass →
+   ApplyClassMechanics → ApplyLevelup → Cancel) plus the qualified dependent
+   menu/monogram assertions (RuntimeTestRunner.cs:7685). Reuse the four native
+   root GUIDs (09c9e829…, 31470b17…, 7cf5edc6…, f4201c85…) and the KMG
+   choice/selection GUIDs from that scenario. Cover: real leveled eligibility
+   (give the disposable unit real firearm proficiency via
+   `BlueprintBootstrap.FirearmProficiency` exactly as the qualified scenario
+   does; NEVER change prerequisites), per-root×weapon preview with native
+   P/M/B monogram identity, real FeatureSelectionState selection + ApplyLevelup
+   commit with exact FeatureParam blueprint identity, one cancellation visit
+   (Cancel without apply → nothing committed), and the
+   FirearmNativeFactSlotMonogram sheet/Total-list presentation checks already
+   proven in `ElementalCharacterCreationNativeIcons`. Register in
+   RuntimeTestScenarioCatalog + parser + PS preflight with exact parameters
+   (save-free; no ordinary-launch activation), add focused domain tests,
+   bump the deterministic pin, full Build-Local, backup-first deploy, guarded
+   runs, restore, curate, commit and wrapper-push.
+2. TASK D — final reconciliation: re-run the no-write hash verification,
+   assemble the compact native review packet (include the 379 captures'
+   curated subset at the owner's normal 1920x1200 — the Wakizashi/lettering
+   review items), keep spell/scroll Teleport coverage evidence referenced,
+   and record the evidence ledger by surface.
+3. Standing gates: saved-parameter authorization (request prepared); owner
+   native UI acceptance; Dice Roller is now 0.1.6 on this machine (the
+   Gunslinger/roll fixtures that require 0.1.2 cannot run until the owner
+   resolves the version — action fixture was redesigned to avoid it).
+
+### Machine-local notes
+
+- Build/deploy cycle commands used: `scripts/Build-Local.ps1` then
+  `Deploy-Local.ps1 -PackagePath … -Confirm:$false -PassThru`; runner helpers
+  under the worktree's `artifacts/icon-overhaul-v2/` (gitignored).
+- Deployments/manifests: latest `runtime-evidence/deployments/
+  20260918T0710538246246Z/deployment.json` (qualified artifact).
+- The push wrapper MUST be invoked from the icon worktree directory, not the
+  main checkout (it pushes the current directory's branch).
