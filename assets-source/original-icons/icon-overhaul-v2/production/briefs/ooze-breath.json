@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "key": "ooze-breath",
+  "behavior": "Ooze Breath deals a short acid d4 cone and failed-save sickened effect; viscous texture distinct from Acid Breath.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreathPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/ooze-breath.png",
+  "sourceSha256": "a2c6fded75b376931b987c50c4699bf32f76ffde3b1d2641ef521a3408325f2f",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "role": "approved painted water/action style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized cool light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.  Do not copy the reference composition, use only its painted texture and strong magical-material highlights. A dark HUMAN HEAD in side profile at UPPER RIGHT exhales a THICK VISCOUS OLIVE-GREEN BREATH toward LOWER LEFT. Mouth clearly visible at the narrow origin, broad gooey mass opens into THREE HEAVY LOBES with long rounded dripping edges and large sagging droplets. The slime is opaque dark jade with glossy pale green highlights. Strong downward diagonal and heavy drooping silhouette, deep green-black ground. No fine sharp spray, fire, dragon, smoke cloud, skull, poison bottle, lightning, labels or medical symbols.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A dark HUMAN HEAD in side profile at UPPER RIGHT exhales a THICK VISCOUS OLIVE-GREEN BREATH toward LOWER LEFT. Mouth clearly visible at the narrow origin, broad gooey mass opens into THREE HEAVY LOBES with long rounded dripping edges and large sagging droplets. The slime is opaque dark jade with glossy pale green highlights. Strong downward diagonal and heavy drooping silhouette, deep green-black ground. No fine sharp spray, fire, dragon, smoke cloud, skull, poison bottle, lightning, labels or medical symbols.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "undine-traits",
+  "confusedWith": [
+    "acid-breath",
+    "nereid-fascination",
+    "shake-free"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No fine sharp spray, fire, dragon, smoke cloud, skull, poison bottle, lightning, labels or medical symbols."
+  ]
+}

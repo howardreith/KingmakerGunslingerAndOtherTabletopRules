@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "key": "scorching-weapons",
+  "behavior": "Scorching Weapons: +2 fire/light saves and a brief fire-damage effect on currently held metallic manufactured weapons.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/scorching-weapons.png",
+  "sourceSha256": "1ce77c7f0793eb3a507c038fda5fb9437c1bd27c198bb72b513be30f764cb806",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted feat/action style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Subject: A single manufactured STEEL SWORD angled from lower right to upper left, broad blade face dark gunmetal with a thin brilliant ORANGE HOT EDGE and a small licking flame only along its left cutting edge. Entire simple cruciform hilt visible at lower right, tip inside frame. The heated edge dominates a sharp clean diagonal, steel remains clearly visible. Warm dark umber ground, no water, wind, stone chunks, target, explosion or separate fireball. A deliberate weapon-empowerment symbol.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Subject: A single manufactured STEEL SWORD angled from lower right to upper left, broad blade face dark gunmetal with a thin brilliant ORANGE HOT EDGE and a small licking flame only along its left cutting edge. Entire simple cruciform hilt visible at lower right, tip inside frame. The heated edge dominates a sharp clean diagonal, steel remains clearly visible. Warm dark umber ground, no water, wind, stone chunks, target, explosion or separate fireball. A deliberate weapon-empowerment symbol.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "feats",
+  "confusedWith": [
+    "airy-step",
+    "blazing-aura",
+    "cloud-gazer",
+    "elemental-strike",
+    "firesight",
+    "hydraulic-maneuver",
+    "inner-breath",
+    "inner-flame",
+    "triton-portal",
+    "wings-of-air"
+  ],
+  "uiSurfaces": [
+    "effects and conditions / tooltip",
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "no water, wind, stone chunks, target, explosion or separate fireball."
+  ]
+}

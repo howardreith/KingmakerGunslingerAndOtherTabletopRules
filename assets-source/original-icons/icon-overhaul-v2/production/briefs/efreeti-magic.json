@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "efreeti-magic",
+  "behavior": "Efreeti Magic parent chooses native Enlarge Person or Reduce Person; original parent only; shared daily use.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/efreeti-magic.png",
+  "sourceSha256": "e386255d02cb1e6cf672513602f037b529d537694a67d786e92508adffe79a15",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painterly elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized warm light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A LARGE OPEN ELEMENTAL HAND, palm upward across bottom half, with TWO SIMPLE STANDING HUMAN FIGURES above the palm: one TALL figure at left and one clearly SMALL figure at right, similar neutral pose and same warm ivory-gold material. A gentle amber arc of magic bridges the figures' feet across the palm. The hand is copper-toned, fingertips intact inside frame. Bold size contrast is the main meaning. No ruler, labels, arrows, digits, separate flames, horns, genie lamp, third figure or portal.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A LARGE OPEN ELEMENTAL HAND, palm upward across bottom half, with TWO SIMPLE STANDING HUMAN FIGURES above the palm: one TALL figure at left and one clearly SMALL figure at right, similar neutral pose and same warm ivory-gold material. A gentle amber arc of magic bridges the figures' feet across the palm. The hand is copper-toned, fingertips intact inside frame. Bold size contrast is the main meaning. No ruler, labels, arrows, digits, separate flames, horns, genie lamp, third figure or portal.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "ifrit-traits",
+  "confusedWith": [
+    "brazen-flame",
+    "fire-in-the-blood",
+    "fire-insight",
+    "forge-hardened",
+    "wildfire-heart"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No ruler, labels, arrows, digits, separate flames, horns, genie lamp, third figure or portal."
+  ]
+}

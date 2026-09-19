@@ -104,7 +104,7 @@ function Assert-Sha256([string]$RelativePath, [string]$Expected) {
 }
 
 $protected = [ordered]@{
-    'assets/game/icons/rapid-reload.png' = 'efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321'
+    'assets-source/original-icons/icon-overhaul-v2/references/rapid-reload-rejected.png' = 'efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321'
     'assets/game/icons/early-pistol.png' = '1cd06b9aeea63b4842951568812791e50e8fd9472884078449dd84c1c9bf0719'
     'assets/game/icons/musket.png' = '638077254f298a626f3fa8a8c098bb1e9f2c4f3678df90a1e28920f4a9ffd086'
     'assets/game/icons/blunderbuss.png' = 'e5923f9b5820eef3ca3d41e5af559b09ef8ea21b0052dc04909fd72f73ac929f'
@@ -130,7 +130,9 @@ $protected = [ordered]@{
     'assets-source/original-models/elven-branched-spear/elven-branched-spear-icon.png' = 'ece96570240e97ec009914f42a569415b622282689276b8beeee258e95846960'
     'src/KingmakerGunslinger/Firearms/FirearmKind.cs' = 'e3a94f162f9b62cdbb4b1b5274d1a6d4aa43d4477d1099a1d5f709c45aaee911'
     'src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs' = 'f08609beb8f8ffca8eefb0f02035c347298773753268009619ef1f24f52919b1'
-    'src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs' = 'bc22787d2838a418dd22b656b87554a5e3be8d25c9f9b420c3d2a07e3410bc75'
+    # NativeFirearmFeatIntegration's explicitly authorized presentation delta is
+    # checked against the original whole-file hash by validate_icon_catalog.py.
+    # The canonical gate rejects every change outside that exact constructor site.
     'src/KingmakerGunslinger/Blueprints/GunTrainingBlueprints.cs' = '8603c87a4fc9fecd86ed0aa2da52bdcd9c5969d898639a6688139faeb93c0564'
     'src/KingmakerGunslinger/Firearms/ProductionFirearmCatalog.cs' = '75a8352c85c2e4fe5369ea02c414df9adc8a04f33c075f9176bd2f1138ad18dd'
     'src/KingmakerGunslinger/CraftMagicItemsCompatibility/CraftMagicItemsCompatibilityPolicy.cs' = '6236d4392435b397bf7312d58c1633bc9ab84a368ededc47abf30fd9e3b57ea3'

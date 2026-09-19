@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "acid-breath",
+  "behavior": "Acid Breath is a short supernatural corrosive cone, acid d8s per two levels; Reflex halves; no sickened rider.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreathPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/acid-breath.png",
+  "sourceSha256": "7629e4d6ca75ad96203f6d7b13e7712c1a8f88ae1bd2d87003c6ed6827705c5e",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/hydraulic-maneuver.png",
+      "role": "approved painted water/action style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Create one square hand-painted fantasy game SPELL ICON, symbolic and non-graphic. A simple shadowed human profile at lower left gently blows a fan-shaped spray of TRANSLUCENT EMERALD MAGIC toward upper right. The face is healthy and uninjured, reduced to a calm clean nose-and-lips silhouette. Make the magical fan wide, sharp-edged and light, with tiny gleaming green droplets at its far edge. No recipient, no injury, no distress, no fire, no text, no border or UI indicator. Deep green-black background, broad deliberate painterly strokes and bright pale-green liquid edges, strong simple shape legible at 32/48/128px. Use the supplied icon for painted brushwork and luminous liquid material only, not its action or palette.",
+  "visualStatus": "production-awaiting-owner-review",
+  "attempts": [
+    {
+      "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized cool light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.  Do not copy the reference composition, use only its painted texture and strong magical-material highlights. A dark HUMAN HEAD in side profile at LEFT exhales a SHARP TRANSLUCENT GREEN CONE toward the UPPER RIGHT. The mouth is clear at the cone's narrow source. The cone is made of a broad thin sheet of acidic emerald spray, with bright sharp liquid edges and several small crisp droplets at the widening end. Head occupies lower-left third, cone dominates diagonal. Deep green-black ground, lime and ivory liquid highlights. No fire, dragon head, thick slime globs, poison skull, smoke cloud, yellow electricity, glass bottle, labels or medical symbols.",
+      "outcome": "Image service rejected generated output; no image retained",
+      "requestId": "f43ce9ff-e94b-4395-b03f-e926cb0c63f6",
+      "followup": "Simplified non-graphic symbolic profile and magical fan; same requested spell identity"
+    }
+  ],
+  "subjectAndSilhouette": "A dark HUMAN HEAD in side profile at LEFT exhales a SHARP TRANSLUCENT GREEN CONE toward the UPPER RIGHT. The mouth is clear at the cone's narrow source. The cone is made of a broad thin sheet of acidic emerald spray, with bright sharp liquid edges and several small crisp droplets at the widening end. Head occupies lower-left third, cone dominates diagonal. Deep green-black ground, lime and ivory liquid highlights. No fire, dragon head, thick slime globs, poison skull, smoke cloud, yellow electricity, glass bottle, labels or medical symbols.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "undine-traits",
+  "confusedWith": [
+    "nereid-fascination",
+    "ooze-breath",
+    "shake-free"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No recipient, no injury, no distress, no fire, no text, no border or UI indicator."
+  ]
+}

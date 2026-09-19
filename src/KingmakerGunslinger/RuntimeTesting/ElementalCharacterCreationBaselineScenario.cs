@@ -154,6 +154,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_elapsed.Elapsed.TotalSeconds > _request.TimeoutSeconds - 10)
                     throw new TimeoutException("Creator baseline timed out at " + _stage);
                 if (_settle-- > 0) return;
+                if (PollNativeIconCapture()) return;
                 if (_started) VerifyVisualIntegrity();
                 if (!_started) { Start(); return; }
                 if (_commitCleanupPending) { PollCommittedCreatorCleanup(); return; }
@@ -183,7 +184,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _stage = _races[_raceIndex].name + ":" + phase.Value;
                 string captureKey = _stage + "|" + string.Join(",", _controller.State.Selections
                     .Select(value => value.SelectedItem?.Feature?.AssetGuid ?? "-"));
-                if (captureKey != _lastCaptureKey) { Capture(_stage); _lastCaptureKey = captureKey; }
+                if (captureKey != _lastCaptureKey)
+                {
+                    Capture(_stage); _lastCaptureKey = captureKey;
+                    if ((phase.Value == CharBPhase.Type.Race || phase.Value == CharBPhase.Type.Determinator ||
+                        phase.Value == CharBPhase.Type.Abilities || phase.Value == CharBPhase.Type.Total ||
+                        phase.Value == CharBPhase.Type.TotalInChargen) && PauseForNativeIconScreen(captureKey, _stage)) return;
+                }
                 switch (phase.Value)
                 {
                     case CharBPhase.Type.Portrait:
@@ -524,7 +531,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _settle = 5; return;
             }
             var blueprint = selection.Selection as BlueprintFeatureSelection;
-            string guid = blueprint == null ? string.Empty : blueprint.AssetGuid;
+            string guid = (selection.Selection as BlueprintFeature)?.AssetGuid ?? string.Empty;
             if (guid == FirstTrait || guid == SecondTrait)
             {
                 _character[guid == FirstTrait ? "firstGlobalTraitObserved" : "secondGlobalTraitObserved"] = true;
@@ -550,12 +557,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             _viewWait = 0;
             Capture("rendered-selection-ready:" + guid);
+            if (CaptureNativeIconSelection(selection, guid)) return;
             BlueprintFeature preferred = PreferredRegressionChoice(blueprint);
             if (_nativeRespec && preferred == null)
                 preferred = legal.Select(item => item.Feature).FirstOrDefault(feature => ReferenceEquals(feature,
                     BlueprintBootstrap.ElementalFeats.RequireFeature(ElementalRaces.ElementalFeatId.ElementalStrike)));
-            IFeatureSelectionItem chosen = preferred == null ? legal.OrderBy(item => ChoicePriority(item.Feature)).ThenBy(item => item.Feature.AssetGuid,
-                StringComparer.Ordinal).First() : legal.SingleOrDefault(item => ReferenceEquals(item.Feature, preferred));
+            IFeatureSelectionItem chosen = PreferredNativeIconChoice(legal) ?? (preferred == null
+                ? legal.OrderBy(item => ChoicePriority(item.Feature)).ThenBy(item => item.Feature.AssetGuid,
+                    StringComparer.Ordinal).First() : legal.SingleOrDefault(item => ReferenceEquals(item.Feature, preferred)));
             if (chosen == null) throw new InvalidOperationException("Planned racial choice is not legal and visibly rendered: " + preferred.AssetGuid);
             ((JArray)_character["steps"]).Add(new JObject { ["action"] = "select-feature", ["selectionGuid"] = guid,
                 ["choiceGuid"] = chosen.Feature.AssetGuid, ["extractedCount"] = items.Length, ["legalCount"] = legal.Length,
@@ -892,6 +901,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private void Finish()
         {
+            try { DisposeNativeIconCapture(); }
+            catch (Exception error) { _failures.Add("native capture cleanup: " + error); }
+            try { _nativeIconScreens?.Dispose(); }
+            catch (Exception error) { _failures.Add("native overlay restoration: " + error); }
             try { CleanupCharacter(); }
             catch (Exception error) { _failures.Add("cleanup: " + error); }
             bool membershipRestored = CreatorMembershipRestored();
@@ -923,6 +936,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             try { DisarmUnloadObserver(); }
             catch (Exception error) { _failures.Add("unload observer cleanup: " + error); }
             Result = ElementalCharacterCreationRoutingObserver.Run(_context, _request);
+            AppendNativeRacialFeatAssertion();
+            AppendNativeRacialBuffAssertion();
+            AppendNativeRacialActionAssertion();
             Result.Assertions.Add(new RuntimeTestAssertion { Name = "actual-first-level-creators-observed",
                 Expected = _races.Length.ToString(), Observed = _characters.Count.ToString(), Status = _characters.Count == _races.Length &&
                     _characters.OfType<JObject>().All(row => (bool?)row["nativeCreatorOpened"] == true)
@@ -970,6 +986,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Result.Diagnostics.Add(_regression ? "Actual native creator acceptance is asserted separately from human UI acceptance, which remains NOT-RUN." :
                 "Per-character acceptance is recorded independently; baseline observation PASS does not qualify the broken candidate.");
             Result.EvidenceFiles.Add(Path.Combine(_request.EvidenceDirectory, EvidenceFileName));
+            _nativeIconScreens?.AppendEvidence(Result.EvidenceFiles);
             Result.WorkingSaveSmoke = _loaded;
             Result.GameVersion = Kingmaker.GameVersion.GetVersion();
             Write(); Complete = true;

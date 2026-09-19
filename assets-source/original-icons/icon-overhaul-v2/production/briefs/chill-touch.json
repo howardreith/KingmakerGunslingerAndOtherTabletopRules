@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "key": "chill-touch",
+  "behavior": "Chill Touch deals negative-energy touch damage to living creatures and applies its implemented creature/save rules; no cold damage.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritageRuleComponents.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/chill-touch.png",
+  "sourceSha256": "4379b5259090901507278e18db611de99dcbab7a752a45fe942b3fa1bb656ac0",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted steel/action family reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Neutral steel and ivory highlights on deep graphite ground, unless the subject specifies another palette. ONE PALE SPECTRAL HUMAN HAND reaches toward the viewer, palm forward and fingers loosely curved, all five fingers distinct and anatomically natural. A dark VIOLET-BLACK NEGATIVE-ENERGY WISP gathers between the fingers, with thin lavender edge light fading INTO deep shadow at the palm's center. The luminous bony hand silhouette is the main meaning, subtly ominous but no injury. Background black with muted purple vapor. No ice, icicle, snowflake, frost, blue water, flame, positive healing sun, medical cross, blood, severed limb, extra fingers or text.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "ONE PALE SPECTRAL HUMAN HAND reaches toward the viewer, palm forward and fingers loosely curved, all five fingers distinct and anatomically natural. A dark VIOLET-BLACK NEGATIVE-ENERGY WISP gathers between the fingers, with thin lavender edge light fading INTO deep shadow at the palm's center. The luminous bony hand silhouette is the main meaning, subtly ominous but no injury. Background black with muted purple vapor. No ice, icicle, snowflake, frost, blue water, flame, positive healing sun, medical cross, blood, severed limb, extra fingers or text.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "hand-actions",
+  "confusedWith": [
+    "cold-resistance",
+    "deflect-next-ray",
+    "ice-affinity",
+    "unerring-weapon",
+    "unerring-weapon-primary",
+    "unerring-weapon-secondary"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "no injury.",
+    "No ice, icicle, snowflake, frost, blue water, flame, positive healing sun, medical cross, blood, severed limb, extra fingers or text."
+  ]
+}

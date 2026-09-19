@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "stone-in-the-blood",
+  "behavior": "Stone in the Blood: acid damage triggers limited fast healing; mineral and acid-linked vitality, not fire regeneration.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/stone-in-the-blood.png",
+  "sourceSha256": "f5f1b7ea7f58b8563c356006a2049e969aab1a774ed967421cb0e41b2fb3fe01",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted action/trait style"
+    },
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/sources/fire-in-the-blood.png",
+      "role": "unapproved production sibling motif; not an approval authority"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized mineral light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A large ANGULAR BLOOD-DROP CORE, dark translucent ruby, nested inside TWO OPEN ROUGH STONE SHELLS like a split mineral geode. Broad PALE JADE VEINS fork upward through the ruby core and connect to the stone, showing internal renewed vitality. The two jagged stone wings make a wide V-shaped outer silhouette, while the central drop tip is clearly visible above them. Gentle acidic green highlights, neutral gray rock, quiet black-olive ground. No fire, flame, red-hot lava, heart symbol, skull, poison bottle, medical cross, projectile or wound.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A large ANGULAR BLOOD-DROP CORE, dark translucent ruby, nested inside TWO OPEN ROUGH STONE SHELLS like a split mineral geode. Broad PALE JADE VEINS fork upward through the ruby core and connect to the stone, showing internal renewed vitality. The two jagged stone wings make a wide V-shaped outer silhouette, while the central drop tip is clearly visible above them. Gentle acidic green highlights, neutral gray rock, quiet black-olive ground. No fire, flame, red-hot lava, heart symbol, skull, poison bottle, medical cross, projectile or wound.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "oread-traits",
+  "confusedWith": [
+    "crystalline-form",
+    "earth-insight",
+    "fire-in-the-blood",
+    "granite-skin",
+    "storm-in-the-blood",
+    "treacherous-earth"
+  ],
+  "uiSurfaces": [
+    "effects and conditions / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No fire, flame, red-hot lava, heart symbol, skull, poison bottle, medical cross, projectile or wound."
+  ]
+}

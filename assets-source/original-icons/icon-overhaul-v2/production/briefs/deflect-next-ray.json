@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "deflect-next-ray",
+  "behavior": "Deflect Next Ray is Crystalline Form's voluntary single-ray defense, needing one free hand; no baked ready-state marker.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalCrystallineFormPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/deflect-next-ray.png",
+  "sourceSha256": "b9d36b29cecf5765fbefe1d6346e04595154b7a256c546b741a8b9ca630260fb",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted steel/action family reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Neutral steel and ivory highlights on deep graphite ground, unless the subject specifies another palette. ONE OPEN HUMAN HAND MADE OF CLEAR PALE QUARTZ FACETS is raised palm-outward in a deliberate deflecting gesture, wrist at lower center, all five fingers whole and comfortably within frame. One THIN GOLDEN RAY comes diagonally from left, touches a facet in the center of the palm, then ANGLES SHARPLY UPWARD RIGHT in one clean bent line. Palm remains intact and unhurt, cool silver-jade crystal planes against near-black olive ground. Strong hand silhouette and clear ray turn. No arrow, shield object, ice, lightning bolts, circles, on/off indicator, star badge, text or fire.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "ONE OPEN HUMAN HAND MADE OF CLEAR PALE QUARTZ FACETS is raised palm-outward in a deliberate deflecting gesture, wrist at lower center, all five fingers whole and comfortably within frame. One THIN GOLDEN RAY comes diagonally from left, touches a facet in the center of the palm, then ANGLES SHARPLY UPWARD RIGHT in one clean bent line. Palm remains intact and unhurt, cool silver-jade crystal planes against near-black olive ground. Strong hand silhouette and clear ray turn. No arrow, shield object, ice, lightning bolts, circles, on/off indicator, star badge, text or fire.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "hand-actions",
+  "confusedWith": [
+    "chill-touch",
+    "crystalline-form",
+    "granite-skin",
+    "unerring-weapon",
+    "unerring-weapon-primary",
+    "unerring-weapon-secondary"
+  ],
+  "uiSurfaces": [
+    "action toggle / tooltip",
+    "effects and conditions / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No arrow, shield object, ice, lightning bolts, circles, on/off indicator, star badge, text or fire."
+  ]
+}

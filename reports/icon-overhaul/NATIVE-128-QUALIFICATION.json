@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-checkpoint; complete-native-UI-and-final-approval-pending",
+  "scope": "Owner-requested 0.0.128 master integration; exact native firearm data/menu presentation; creator and spellbook capture infrastructure",
+  "branch": "codex/icon-art-overhaul-v2",
+  "publishedParentAtBuild": "84c2ed9ed25e244e9cdb3e9e689ae72db3619a9f",
+  "integratedMaster": "9dc2b6301d97bc83540845240544d34b6fad4b48",
+  "integrationAuthority": "Owner requested current merged mod update; ordinary feature-branch merge preserves published history. No feature-to-master merge or release.",
+  "buildHadUncommittedChanges": true,
+  "builtAtUtc": "2026-09-13T13:26:32.6496272Z",
+  "version": "0.0.128",
+  "sourceStateSha256": "06070cfcaafa950c427cc04aeea5f2d4fb1a643053c7ef25421d5a8964017ccc",
+  "packageSha256": "5c0bcf9aade76d2cb51b453dca83e25d46c8ad8c542a518fc64f6cd96ea85cd5",
+  "dllSha256": "037ffbd4314ad2f07f0acb916c73476ecbd62b6c8f8bdf238b7b6020b388998c",
+  "dllMvid": "16ab23f5-129d-415f-9e57-e597fe7a46ae",
+  "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+  "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+  "checks": {
+    "repositoryValidation": "PASS",
+    "catalogCorruptionTests": 22,
+    "pairedEvidenceCorruptionTests": 6,
+    "nativeScreenshotCorruptionTests": 7,
+    "requestPreflightAndJsonCases": 11,
+    "domainTestsPassed": 1629,
+    "domainTestsFailed": 0,
+    "cleanReleaseBuild": "PASS",
+    "strictPackageFiles": 224,
+    "compiledInputWrapperCases": 10,
+    "compiledInputWrapperLimit": "Synthetic control-flow cases; no new native input qualification claim"
+  },
+  "buildLogSha256": "540bce671183fcd31f2e4bdee2f63ff8a0365b46a4ba06c43c73a57dde2f18a6",
+  "runtimeRuns": [
+    {
+      "runId": "20260913T1327304716016Z-3b075b7f9415469ba1080fa7fda53193",
+      "directory": "20260913T1327304414463Z-disposable-elemental-character-creation-case",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "ab4c711b95bc12198794116745b96ab99691912a264f16cbe69bc85624dce6cd",
+      "parameters": {
+        "race": "Undine",
+        "class": "Gunslinger",
+        "allocation": "point-buy"
+      },
+      "native-ui-screens.json": {
+        "sha256": "f62539ed27ef31201599435dcf568b536e971317c9a5b524371d15ef1891090c",
+        "records": 24
+      },
+      "steamAppId": 640820,
+      "evidenceClass": "structured runtime; native framebuffer captures separately recorded"
+    },
+    {
+      "runId": "20260913T1331017308858Z-3d3108d0cbe14f6d9555a2df63db8b00",
+      "directory": "20260913T1331017152425Z-working-save-elemental-character-creation-regression",
+      "scenario": "working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "assertions": 12,
+      "resultSha256": "46499eae325b190d35aa243667fd99df162ad10860c96eb21d0a445577c81162",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING",
+        "race": "Ifrit",
+        "class": "Gunslinger",
+        "allocation": "roll"
+      },
+      "native-ui-screens.json": {
+        "sha256": "4c6283f5393559f512f7b95afbfb0fe40b1a1227cefdbef789f06762cf5710d3",
+        "records": 82
+      },
+      "steamAppId": 640820,
+      "evidenceClass": "structured runtime; native framebuffer captures separately recorded"
+    },
+    {
+      "runId": "20260913T1341360414403Z-4bb2058a4b1745609fc4493fbb6827ae",
+      "directory": "20260913T1341360152834Z-icon-overhaul-visual-evidence",
+      "scenario": "icon-overhaul-visual-evidence",
+      "status": "PASS",
+      "assertions": 27,
+      "resultSha256": "580f92ef1beb71163915cdc1265af629bec178e99a38936bc57e1aac3facffde",
+      "parameters": {},
+      "firearm-native-monogram-data.json": {
+        "sha256": "a13b90d3185977942a690e33ea0972efd393f53ad0a8b18c5aa801d0929053b3",
+        "records": 426
+      },
+      "icon-consumer-census.json": {
+        "sha256": "10a7d79476f1afdf854813adbe8a51c9d40d7cad3ae5586317fcefedd6ca9cf3",
+        "records": 284
+      },
+      "steamAppId": 640820,
+      "evidenceClass": "structured runtime; facsimiles are not native UI"
+    },
+    {
+      "runId": "20260913T1344239341061Z-1595aee292b146e0b643bd11ee63c307",
+      "directory": "20260913T1344239027856Z-icon-overhaul-visual-evidence",
+      "scenario": "icon-overhaul-visual-evidence",
+      "status": "PASS",
+      "assertions": 27,
+      "resultSha256": "75d847e1317ea8436997a2e48aaca1aa94b2ca293636d5925358f8578fa7dd19",
+      "parameters": {
+        "iconCensusControl": true
+      },
+      "firearm-native-monogram-data.json": {
+        "sha256": "0fc4dbc8aece80d72402333f5121e9bb1b39771ec7de853054ca74ebbbe152cf",
+        "records": 426
+      },
+      "icon-consumer-census.json": {
+        "sha256": "77340914ba0e8de8ff7fee2c66a3b347f6d505c08dd995c418aab5f51be04931",
+        "records": 284
+      },
+      "steamAppId": 640820,
+      "evidenceClass": "structured runtime; facsimiles are not native UI"
+    },
+    {
+      "runId": "20260913T1347295451482Z-cc21a4bd81a54660a6673a201f553228",
+      "directory": "20260913T1347295138802Z-disposable-firearm-dependent-feats",
+      "scenario": "disposable-firearm-dependent-feats",
+      "status": "PASS",
+      "assertions": 12,
+      "resultSha256": "d6883925d9ccd69653b590ceefde7edc33c3937e6b3ee181deb75a8015a28281",
+      "parameters": {},
+      "steamAppId": 640820,
+      "evidenceClass": "structured runtime; facsimiles are not native UI"
+    },
+    {
+      "runId": "20260913T1350245175781Z-ba07e195edd94d0b88acffb54755d74e",
+      "directory": "20260913T1350245019508Z-observe-feature-module-settings",
+      "scenario": "observe-feature-module-settings",
+      "status": "PASS",
+      "assertions": 42,
+      "resultSha256": "ac2db9a37b0bcc26dba973763f394e34479e62bff468ec5e2f1635a8c7f0a75d",
+      "parameters": {
+        "gunslinger": false,
+        "acadamaeGraduate": true,
+        "shieldOther": true,
+        "expandedSummoning": true,
+        "elvenBranchedSpears": true,
+        "easternWeapons": true,
+        "brownFurTransmuter": true,
+        "urbanBarbarian": true,
+        "bodyguardFeats": true,
+        "protectionFromAlignmentControlImmunity": true,
+        "elementalRaces": true,
+        "teleportationSpells": true
+      },
+      "firearm-native-monogram-data.json": {
+        "sha256": "44d3b35c2244ee868190ed7d0f200d614f072c1f5a6a9b7c057eb4c7d64254de",
+        "records": 426
+      },
+      "steamAppId": 640820,
+      "evidenceClass": "structured runtime; facsimiles are not native UI"
+    },
+    {
+      "runId": "20260913T1352161324362Z-db1901fac2d64836b60c0184d4cad8b8",
+      "directory": "20260913T1352161324362Z-observe-feature-module-settings",
+      "scenario": "observe-feature-module-settings",
+      "status": "PASS",
+      "assertions": 43,
+      "resultSha256": "a58ba7acbd171a6e5b7975ee2b46d418e1f79f44d22a68a7287866df9af16d72",
+      "parameters": {
+        "gunslinger": true,
+        "acadamaeGraduate": true,
+        "shieldOther": true,
+        "expandedSummoning": true,
+        "elvenBranchedSpears": true,
+        "easternWeapons": false,
+        "brownFurTransmuter": true,
+        "urbanBarbarian": true,
+        "bodyguardFeats": true,
+        "protectionFromAlignmentControlImmunity": true,
+        "elementalRaces": true,
+        "teleportationSpells": true
+      },
+      "firearm-native-monogram-data.json": {
+        "sha256": "6c1d536879cab9e77f39241fb61e19deb51000857df40a7aa6bd6c125954ae1a",
+        "records": 411
+      },
+      "steamAppId": 640820,
+      "evidenceClass": "structured runtime; facsimiles are not native UI"
+    },
+    {
+      "runId": "20260913T1354040605080Z-9f97523213c2422a8023bad1b0e33100",
+      "directory": "20260913T1354040605080Z-disposable-teleportation-spellbook-ui",
+      "scenario": "disposable-teleportation-spellbook-ui",
+      "status": "PASS",
+      "assertions": 31,
+      "resultSha256": "7f7cfa642b700984314717755bcffa3150be48928bf0b1bf98611ddef8bba34e",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      },
+      "native-ui-screens.json": {
+        "sha256": "71ea8f59a4c8be82dfd230aa09da1a08cc25a7278f294d49e5d1584eb34f58c4",
+        "records": 10
+      },
+      "steamAppId": 640820,
+      "evidenceClass": "structured runtime; native framebuffer captures separately recorded"
+    },
+    {
+      "runId": "20260913T1356473976475Z-6d4623dd03c741b4956b656b8cc0378a",
+      "directory": "20260913T1356473976475Z-working-save-smoke",
+      "scenario": "working-save-smoke",
+      "status": "PASS",
+      "assertions": 11,
+      "resultSha256": "7b6f535ab00d04891bb9fcab88cad2cb2771f0f7c61530873dfba8155174a3b1",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      },
+      "steamAppId": 640820,
+      "evidenceClass": "structured runtime; facsimiles are not native UI"
+    }
+  ],
+  "pairedCensus": {
+    "status": "PASS",
+    "catalogIdentities": 284,
+    "ownedBlueprintGraphs": 255,
+    "paintedMappings": 137,
+    "paintedExports": 89,
+    "totalRuntimeExports": 90,
+    "nativeReuseConsumers": 21,
+    "appearanceResources": 28,
+    "reservedAbsences": 1,
+    "protectedAssignmentTransitions": 35756,
+    "comparisonLogSha256": "8208ecfa8ae36020da7037a54f3ca12d00e5e86f79c2b63cb5765cb8fc65332d"
+  },
+  "nativeScreens": {
+    "provenanceValidation": "PASS for all three exact capture runs",
+    "count": 116,
+    "visualInspections": [
+      {
+        "evidenceDirectoryName": "20260913T1327304414463Z-disposable-elemental-character-creation-case",
+        "file": "native-ui-021.png",
+        "sha256": "d80084f208b30071d09d5080de27c24a04b2451ebc82288ae629c170258e238c",
+        "observation": "All three Rapid Reload P/M/B rows use clear native ornate glyphs and the correct parent emblem. No clipping observed in these rows.",
+        "ownerApproval": "pending"
+      },
+      {
+        "evidenceDirectoryName": "20260913T1331017152425Z-working-save-elemental-character-creation-regression",
+        "file": "native-ui-002.png",
+        "sha256": "3e80cde8fe93d203507438f026a8f7e7fcb4ea5a5bcfd24d73a59e161687f384",
+        "observation": "Real NEW MERCENARY route displays distinct Ifrit heritage paintings. An unrelated Gunslinger hover panel still covers part of the right progression area; only the clear left targets are inspected.",
+        "ownerApproval": "pending"
+      },
+      {
+        "evidenceDirectoryName": "20260913T1331017152425Z-working-save-elemental-character-creation-regression",
+        "file": "native-ui-026.png",
+        "sha256": "6273f9dac5df3b257e99bc7f548fbccf328ddd8268b135d71e587d0d4892ebe9",
+        "observation": "Protected Reload Firearm and Repair Firearm actions are visible in native final review. The central doll is empty in this fixture; this is not character-visibility qualification.",
+        "ownerApproval": "pending"
+      },
+      {
+        "evidenceDirectoryName": "20260913T1354040605080Z-disposable-teleportation-spellbook-ui",
+        "file": "native-ui-000.png",
+        "sha256": "e4a6edfd7ee218717f5d19cc2ca7f7dcd596f59199c5ebb2f44fd25104211995",
+        "observation": "Teleport appears correctly framed in its native spell description; no incidental hover panel obscures the target.",
+        "ownerApproval": "pending"
+      },
+      {
+        "evidenceDirectoryName": "20260913T1354040605080Z-disposable-teleportation-spellbook-ui",
+        "file": "native-ui-002.png",
+        "sha256": "2a81730764987c5667a1066c259dcce9f3ac6807751859975b301981da6e75ae",
+        "observation": "Greater Teleport has its distinct gateway identity in the native spell description, at the exact seventh-level book pairing.",
+        "ownerApproval": "pending"
+      },
+      {
+        "evidenceDirectoryName": "20260913T1354040605080Z-disposable-teleportation-spellbook-ui",
+        "file": "native-ui-006.png",
+        "sha256": "e821e039d317a4dfa6c93bacf397b9498c7ad2c1ad1eae0e4871716941952fba",
+        "observation": "Word of Recall has the gold sanctuary identity in both the native book row and description, beside unchanged native spells.",
+        "ownerApproval": "pending"
+      }
+    ],
+    "localReview": "artifacts/icon-overhaul-v2/NATIVE-REVIEW.html",
+    "rawFilesCommitted": false,
+    "limits": "Not every captured frame or native UI consumer is visually qualified. Active-in-hierarchy rows can be outside the viewport. No owner visual approval inferred."
+  },
+  "regressionsFoundAndCorrected": [
+    "First 0.0.128 Undine capture exposed raw Rapid Reload selection items bypassing the FeatureUIData constructor. Exact owned Items adapter preserves existing entries and uses native P/M/B; current actual menu and rendered glyph checks pass.",
+    "Historical module observer expected retired vendor rows. Observer now checks published stock and explicit retired-kit absence; production vendor behavior is unchanged.",
+    "UMM startup overlay obscured earlier screenshots. Guarded normal-window close/restoration passes; incidental native hover suppression does not prove every frame is globally unobscured."
+  ],
+  "installationRestoration": {
+    "status": "PASS",
+    "verifiedAtUtc": "2026-09-13T14:00:03.047624+00:00",
+    "exactFiles": 136,
+    "originalSnapshotSha256": "a960f2b503a3575841e1a97ea11ff44d7b401c200434056bf220172a80891c17",
+    "settingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "preRestoreAuditSha256": "ad483d5e93b69afe0b98b1d7797edceab07833da8cb07c203eec17e1ddedb202"
+  },
+  "approvals": {
+    "pilotImages": 10,
+    "pilotEvidence": "reports/icon-overhaul/PILOT-APPROVAL.md",
+    "additionalProductionImages": 80,
+    "additionalProductionApproval": "pending",
+    "finalNativeUiApproval": "pending"
+  },
+  "remaining": [
+    "Native Weapon Focus P/M/B and protected eastern/spear viewport inspection",
+    "Complete chosen-feat and character-sheet screens",
+    "Native spell-learning menus",
+    "Supported racial action/variant menus and visible buffs",
+    "Strategic destination controls",
+    "Scroll inventory/tooltip/merchant views",
+    "Saved firearm-parameter prerequisite: exact working save has no supported parameter GUID; new save writes require separate authority",
+    "Final owner visual acceptance"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "key": "unerring-weapon",
+  "behavior": "Unerring Weapon empowers one held manufactured weapon with a critical-confirmation bonus; parent identity, not a damage or fire spell.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalHeritageAbilityFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/unerring-weapon.png",
+  "sourceSha256": "6b2782141f2c6f4b8c127d0cc4acd1fbee42abd51c4c38ddb883560538207418",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted steel/action family reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Neutral steel and ivory highlights on deep graphite ground, unless the subject specifies another palette. A SINGLE STRAIGHT STEEL SWORD angled from lower left to upper right, a precise narrow blade with a clean GOLDEN HIGHLIGHT running down its center line to a tiny bright four-point glint near its TIP. A thin controlled arc of pale gold passes behind the blade near the tip like focused aim, incomplete and not a UI frame. Complete hilt and blade tip comfortably inside frame. Main subject is precision of a manufactured weapon. No hand choice markers, digits, bullseye target, flame, water, lightning, blood or explosion.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A SINGLE STRAIGHT STEEL SWORD angled from lower left to upper right, a precise narrow blade with a clean GOLDEN HIGHLIGHT running down its center line to a tiny bright four-point glint near its TIP. A thin controlled arc of pale gold passes behind the blade near the tip like focused aim, incomplete and not a UI frame. Complete hilt and blade tip comfortably inside frame. Main subject is precision of a manufactured weapon. No hand choice markers, digits, bullseye target, flame, water, lightning, blood or explosion.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "hand-actions",
+  "confusedWith": [
+    "chill-touch",
+    "deflect-next-ray",
+    "unerring-weapon-primary",
+    "unerring-weapon-secondary"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No hand choice markers, digits, bullseye target, flame, water, lightning, blood or explosion."
+  ]
+}

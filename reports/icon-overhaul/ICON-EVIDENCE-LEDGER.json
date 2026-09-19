@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-09-18T14:30:00Z",
+  "scope": "Evidence ledger by consumer family and actual surface for the icon overhaul. Statuses are deliberately separate: approved art (owner), exact loaded bindings (census), native-widget rendering (fixture), ordinary native action flow (supervised/pending), disk persistence (Task C gate), owner final UI acceptance (pending).",
+  "finalCandidate": {
+    "packageSha256": "ebd4921f46aed7710c3f6ec52df9a3c67686a27b0f3ceef71487412e06552ba9",
+    "dllSha256": "bfbefd442f00d7dd87b63f9ba1d7d787978773f42a31400129663c54cab99483",
+    "dllMvid": "d9804808-7a53-49a3-9a4a-afd0eafeddcb",
+    "version": "0.0.129",
+    "deploymentManifest": "runtime-evidence/deployments/20260918T2158074984660Z/deployment.json"
+  },
+  "ledger": [
+    {
+      "family": "Racial action consumers (39: 25 parents, 11 parent-owned variants, 2 held-touch deliveries, 1 activatable)",
+      "surfaces": [
+        {
+          "surface": "native-widget row binding/rendering (FillSlots path on portrait strip)",
+          "evidenceClass": "guarded runtime fixture + native framebuffer captures",
+          "runs": [
+            "20260918T1423403537703Z (Ifrit)",
+            "20260918T1429428647441Z (Oread)",
+            "20260918T1435258083180Z (Sylph)",
+            "20260918T1634214906135Z (Undine)",
+            "20260918T1638315844558Z (same-artifact smoke)"
+          ],
+          "result": "PASS per corrected fixture (39/39 catalog-order, exact sprite references, pinned control row captured, full post-cleanup restoration)",
+          "limits": "widget binding/rendering only; ordinary menu lifecycle not claimed (NATIVE-RACIAL-ACTION-CORRECTION.md)"
+        },
+        {
+          "surface": "ordinary native action flow (parent menu, parent->variant navigation, activatable toggle, held-touch delivery)",
+          "evidenceClass": "pending supervised owner checklist",
+          "runs": [],
+          "result": "PENDING - SUPERVISED-NATIVE-FLOW-CHECKLIST.md",
+          "limits": "foreign conversion popup route machine-traced as closed by native design; no UI override used"
+        }
+      ]
+    },
+    {
+      "family": "Higher firearm feat roots (4 roots x 3 kinds = 12)",
+      "surfaces": [
+        {
+          "surface": "real level-up selection, prerequisite enforcement, cancellation, commit, FeatureUIData monogram",
+          "evidenceClass": "guarded runtime scenario (real LevelUpController ladder)",
+          "runs": [
+            "20260918T1350433937364Z-disposable-firearm-higher-feat-roots",
+            "20260918T1422395155233Z-disposable-firearm-higher-feat-roots (final-artifact confirmation)",
+            "20260918T2206391210670Z-disposable-firearm-higher-feat-roots (corrected fixture, snapshot-proven cancellation)"
+          ],
+          "result": "PASS 7/7 assertions, 12/12 combinations",
+          "limits": "screen-level capture at selection moment not taken; shared presentation path covered by qualified Total/sheet machinery"
+        }
+      ]
+    },
+    {
+      "family": "Racial buffs (13), racial feats (11), creator/heritage/trait selectors, strategic controls, scroll inventory/merchant",
+      "surfaces": [
+        {
+          "surface": "native screens (sheets, menus, vendors)",
+          "evidenceClass": "historical qualified guarded runs on earlier artifacts",
+          "runs": [
+            "see NATIVE-RACIAL-BUFF-QUALIFICATION.json and the implementation report's earlier qualified records"
+          ],
+          "result": "PASS for their recorded artifacts",
+          "limits": "historical; not re-run on the final candidate DLL; unchanged code paths carry over per the correction record"
+        }
+      ]
+    },
+    {
+      "family": "Approved artwork (90 images: 89 paintings + Rapid Reload)",
+      "surfaces": [
+        {
+          "surface": "sources, exports, runtime copies, protected legacy assignments",
+          "evidenceClass": "no-write hash verification",
+          "runs": [
+            "2026-09-18 twice (pre-run and committed tree)"
+          ],
+          "result": "CLEAN - all 90 exact identities unchanged",
+          "limits": "approval closed; final UI integration approval separate"
+        }
+      ]
+    },
+    {
+      "family": "Teleport / Greater Teleport / Word of Recall spell and scroll mappings",
+      "surfaces": [
+        {
+          "surface": "native spell reuse, owned scroll items, parchment conventions",
+          "evidenceClass": "historical qualified runs (v0.0.129 integration)",
+          "runs": [
+            "NATIVE-129-INTEGRATION-QUALIFICATION.json"
+          ],
+          "result": "PASS for the recorded artifact; mappings untouched by this continuation (diff-verified - no economy/charge/casting changes in this session's commits)",
+          "limits": "unchanged paths; no re-run required by this continuation"
+        }
+      ]
+    },
+    {
+      "family": "Saved firearm parameters (Task C)",
+      "surfaces": [
+        {
+          "surface": "fresh-process disk round trip",
+          "evidenceClass": "not run",
+          "runs": [],
+          "result": "SAVED_PARAMETER_ROUND_TRIP = NOT RUN - AUTHORIZATION/INPUT REQUIRED",
+          "limits": "request rev.2 prepared; no save creation/write/delete performed"
+        }
+      ]
+    },
+    {
+      "family": "Owner final native UI acceptance",
+      "surfaces": [
+        {
+          "surface": "owner review at intended display settings incl. Wakizashi clipping and P/M/B beside native/eastern controls",
+          "evidenceClass": "pending owner review packet",
+          "runs": [],
+          "result": "PENDING - review page + supervised checklist prepared; 1920x1200 captures from this session's runs available where marked",
+          "limits": "no upscaled captures presented as native resolution; owner decision not inferred"
+        }
+      ]
+    }
+  ],
+  "deploymentReconciliation": "Package 2fca98bc... is one byte-identical artifact with two deployment records: 20260918T1337006300882Z (matrix qualification) and 20260918T1413202579998Z (documentation-stabilized rebuild; same package/DLL hashes, manifest source-state matching the final tree). All run IDs attributed to this package in this ledger used one of these two deployments of the same bytes. A third artifact ebd4921f/20260918T2158074984660Z-deployment carries the corrected higher-feat fixture; the racial-action fixture files are byte-identical between 2fca98bc and this package, so the action/race results on 2fca98bc carry over with that explicit scope, and the higher-feat results are re-qualified on the corrected package (run 20260918T2206391210670Z)."
+}

@@ -498,6 +498,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             ElementalCharacterCreationRoutingObserver.Arm(decision.Request);
+            IconConsumerCensus.Arm(decision.Request);
             var runner = new RuntimeTestRunner(decision.Request, context);
             context.ModEntry.OnUpdate += runner.OnUpdate;
             context.Logger.Info(
@@ -1258,6 +1259,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposableFirearmDependentFeats)
                 {
                     Complete(RunDisposableFirearmDependentFeats());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableFirearmHigherFeatRoots)
+                {
+                    Complete(RunFirearmHigherFeatRoots());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -7749,9 +7756,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] expectedFirearmNames = { "Blunderbuss", "Musket",
                 "Pistol" };
             string[] expectedFirearmIconNames = {
-                "KMG_Icon_firearm-monogram-blunderbuss",
-                "KMG_Icon_firearm-monogram-musket",
-                "KMG_Icon_firearm-monogram-pistol" };
+                "native-monogram:B",
+                "native-monogram:M",
+                "native-monogram:P" };
             string[] nativeTopLevelIcons = native.Select(feature =>
                 feature.Icon == null ? "<null>" : feature.Icon.name).ToArray();
             bool nativeTopLevelIconsPreserved = nativeTopLevelIcons.All(name =>
@@ -7802,7 +7809,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string[] firearmIcons = menu.Where(item => item != null &&
                             item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
                                 "KMG_WeaponFocus_", StringComparison.Ordinal))
-                        .Select(item => item.Icon == null ? "<null>" : item.Icon.name)
+                        .Select(item => item.Icon == null ? "native-monogram:" +
+                            Kingmaker.UI.Common.UIUtility.GetAbilityAcronym(
+                                item.NameForAcronim) : item.Icon.name)
                         .ToArray();
                     return firearmNames.SequenceEqual(expectedFirearmNames) &&
                         firearmIcons.SequenceEqual(expectedFirearmIconNames);
@@ -7832,7 +7841,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string[] firearmIcons = menu.Where(item => item != null &&
                         item.Param.Blueprint != null && item.Param.Blueprint.name.StartsWith(
                             "KMG_WeaponFocus_", StringComparison.Ordinal))
-                    .Select(item => item.Icon == null ? "<null>" : item.Icon.name)
+                    .Select(item => item.Icon == null ? "native-monogram:" +
+                        Kingmaker.UI.Common.UIUtility.GetAbilityAcronym(
+                            item.NameForAcronim) : item.Icon.name)
                     .ToArray();
                 return names.SequenceEqual(names.OrderBy(name => name,
                            StringComparer.CurrentCultureIgnoreCase)) &&
@@ -13632,7 +13643,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsFirearmParameter(item.Param)));
             BlueprintItem[] gunslingerStock = ModuleGunslingerStockItems();
             int capitalGunslingerRows = CountFixedRows(smith, gunslingerStock);
-            int installedBtslTables = 0, btslGunslingerRows = 0;
+            var retiredMaintenanceStock = new BlueprintItem[] { BlueprintBootstrap.FirearmRepairKit,
+                BlueprintBootstrap.GunsmithingSupplies.OverhaulKit };
+            int retiredMaintenanceRows = CountFixedRows(smith, retiredMaintenanceStock);
+            int installedBtslTables = 0, btslGunslingerRows = 0, expectedBtslGunslingerRows = 0;
             for (int index = 0; index < BeneathStolenLandsVendorBlueprints.TableGuids.Length;
                 index++)
             {
@@ -13644,6 +13658,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (table == null) continue;
                 installedBtslTables++;
                 btslGunslingerRows += CountFixedRows(table, gunslingerStock);
+                // Existing publication splits six weapons and four current
+                // supplies across the two native vendor kinds. Retired kits
+                // remain in the owned target set solely for absence checks.
+                expectedBtslGunslingerRows += BeneathStolenLandsVendorBlueprints.IsHonestGuyTable(table.AssetGuid) ? 6 : 4;
+                retiredMaintenanceRows += CountFixedRows(table, retiredMaintenanceStock);
             }
             int rareLootRows = 0;
             foreach (RareFirearmCampaignLootBlueprints.TargetSpec spec in
@@ -13940,6 +13959,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";nativeParameters=" + firearmParameterCount +
                 ";capitalGunslinger=" + capitalGunslingerRows +
                 ";btslGunslinger=" + btslGunslingerRows + "/" + installedBtslTables +
+                ";expectedBtslGunslinger=" + expectedBtslGunslingerRows + ";retiredMaintenanceRows=" + retiredMaintenanceRows +
                 ";rareLoot=" + rareLootRows + ";shieldLists=" +
                 shieldObservation.PublishedLists + "/" +
                 shieldObservation.ExpectedPublishedLists +
@@ -14016,9 +14036,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fighterFirearmFeatures == (expectedGunslinger ? 1 : 0) &&
                         fighterFirearmAll == (expectedGunslinger ? 1 : 0) &&
                         firearmParameterCount == (expectedGunslinger ? 15 : 0) &&
-                        capitalGunslingerRows == (expectedGunslinger ? 12 : 0) &&
+                        capitalGunslingerRows == (expectedGunslinger ? 10 : 0) && retiredMaintenanceRows == 0 &&
                         btslGunslingerRows == (expectedGunslinger ?
-                            installedBtslTables * 6 : 0) &&
+                            expectedBtslGunslingerRows : 0) &&
                         rareLootRows == (expectedGunslinger ? 5 : 0),
                     "class, feat catalogs, native parameter menus, vendors, and fixed loot"),
                 Assertion("feature-module-legacy-firearm-proficiency",
@@ -14220,8 +14240,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             MidgamePublicationContracts(assertions, expectedGunslinger);
             ObserveTeleportationSpellPublication(assertions);
-            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+            var iconEvidenceFiles = new List<string>();
+            FirearmMonogramEvidence.Exercise(_request, assertions, iconEvidenceFiles);
+            var result = CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
+            result.EvidenceFiles = iconEvidenceFiles;
+            return result;
         }
 
         private RuntimeTestResult RunShieldOtherInventoryObservation()

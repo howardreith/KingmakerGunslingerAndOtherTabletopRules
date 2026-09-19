@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "ifrit-racial-spell-like-ability-selection",
+  "behavior": "Ifrit spell-like-ability selector and retain entry: innate casting role, no spell book or new spell.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/ifrit-racial-spell-like-ability-selection.png",
+  "sourceSha256": "7aff76f9a46f8f60a81af670bab8f9a6890568a633cf9c88a34ded37691ee159",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painted elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square hand-painted fantasy CRPG TRAIT-CATEGORY icon, a restrained static symbol for a selection category and its retain choice, not a new spell or active buff. Use supplied approved project art for deliberate rich brushwork and material lighting, not its composition. One bold centered subject legible at 32/48/128px, about 80% of square, important edges at least 7% inside canvas. Deep full-bleed charcoal ground. No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark. ONE HUMAN HAND rises from lower right with TWO FINGERS EXTENDED TOGETHER in a deliberate upright casting gesture; remaining fingers naturally curled. A small clear FLAME CRESCENT floats just above the two fingertips, contained and still, with a bright amber outer curve and dark center. Natural copper-toned skin, warm reflected light, deep brown-black ground. The tall two-finger-and-flame silhouette is the main symbol. No open palm attack, book, spell scroll, sword, flames covering skin or UI indicator.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "ONE HUMAN HAND rises from lower right with TWO FINGERS EXTENDED TOGETHER in a deliberate upright casting gesture; remaining fingers naturally curled. A small clear FLAME CRESCENT floats just above the two fingertips, contained and still, with a bright amber outer curve and dark center. Natural copper-toned skin, warm reflected light, deep brown-black ground. The tall two-finger-and-flame silhouette is the main symbol. No open palm attack, book, spell scroll, sword, flames covering skin or UI indicator.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "selectors",
+  "confusedWith": [
+    "ifrit-elemental-affinity-selection",
+    "ifrit-energy-resistance-selection",
+    "oread-elemental-affinity-selection",
+    "oread-energy-resistance-selection",
+    "oread-racial-spell-like-ability-selection",
+    "sylph-elemental-affinity-selection",
+    "sylph-energy-resistance-selection",
+    "sylph-racial-spell-like-ability-selection",
+    "undine-racial-spell-like-ability-selection"
+  ],
+  "uiSurfaces": [
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark.",
+    "No open palm attack, book, spell scroll, sword, flames covering skin or UI indicator."
+  ]
+}

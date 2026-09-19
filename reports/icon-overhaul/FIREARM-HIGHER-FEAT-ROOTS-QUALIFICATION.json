@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-09-18T13:55:00Z",
+  "executor": "Z (review-driven continuation)",
+  "scope": "Task B: the four higher firearm feat roots (Greater Weapon Focus, Weapon Specialization, Greater Weapon Specialization, Improved Critical) across Pistol/Musket/Blunderbuss \u2014 12 root/weapon combinations \u2014 committed through real LevelUpController levels, real feat slots, the native parent-to-parameter child-selection flow and native prerequisite checks on a disposable unit. No production prerequisite was changed; no target fact was inserted directly; the disposable unit's real firearm proficiency uses the same real feature grant as the qualified dependent-feats scenario.",
+  "presentation": "data-level FeatureUIData monogram verification via the patched FeatureUIData(BlueprintFeature, FeatureParam) constructor (null Icon + exact P/M/B acronym) for every committed fact; native in-game level-up SCREEN navigation is separately evidenced by the previously qualified creator/level-up captures for Weapon Focus/Rapid Reload and remains a supervised-checklist item for the higher roots' Total/sheet screens (see the review packet)",
+  "artifact": {
+    "packageSha256": "2fca98bc2b1abecc69985f605b11d4e8d63c707869bd55cef3a6277e9edc77cd",
+    "dllSha256": "de1e755e3d14e6f9e18c98282683fd332dc877f6e728278ca365c25ba48d7aaf",
+    "dllMvid": "b84ee48b-d052-41d8-b688-ce5b7acd4149",
+    "version": "0.0.129"
+  },
+  "runs": [
+    {
+      "runId": "20260918T1350433937364Z-disposable-firearm-higher-feat-roots",
+      "result": "PASS",
+      "assertions": 7,
+      "coverage": {
+        "ladder": "Fighter 1-19 through real StartWithoutAssigningStaticInstance/SelectClass/ApplyClassMechanics/SelectFeature/ApplyLevelup/Cancel cycles; real proficiency fact; per-level feat-slot states",
+        "weaponFocusPrerequisiteChain": "Weapon Focus committed per kind (Pistol/Musket/Blunderbuss) first via the same slots; GWF correctly refused at fighter 2-7 (ineligible control), committed at 8+",
+        "committedCombinations": 12,
+        "selectionRoute": "bare-root item then native child parameter state; every appended entry's FeatureParam is the registered Weapon Focus choice of the kind (shared published parameter set)",
+        "cancellation": "a Greater Weapon Specialization selection followed by controller Cancel without ApplyLevelup committed nothing",
+        "monogram": "FeatureUIData for all 12 committed facts: null Icon + exact P/M/B letter",
+        "unintendedFacts": 0
+      }
+    },
+    {
+      "runId": "20260918T1422395155233Z-disposable-firearm-higher-feat-roots",
+      "result": "PASS",
+      "assertions": 7,
+      "note": "final-artifact confirmation run on the byte-identical package after all documentation stabilized"
+    }
+  ],
+  "knownLimits": [
+    "Screen-level rendering of the higher-root entries in the actual level-up/Total UI at the moment of selection is not captured here; controller/selector checks and screen checks are deliberately separate (mission section 4). The previously qualified native Total/sheet monogram machinery covers the shared presentation path.",
+    "Committed-fact parameters use the Weapon Focus choice blueprint of the kind for all five integrated roots, which is the design's shared published parameter set; the KMG per-root wrapper features (KMG_GreaterWeaponFocus_* etc.) remain the menu/identity wrappers, not the committed param."
+  ],
+  "revision": "rev. 2 (2026-09-18 finalization): corrected the parameter diagnostics \u2014 every review row now emits the actually observed committed root/parameter GUIDs and names independently from the expected pair, and the per-root wrapper (KMG_GreaterWeaponFocus_* etc.) is recorded separately so it can never fill an observed field; cancellation is now proven by before/after progression snapshots with a preview-held check (not by calling Cancel); every controller visit has an explicit cleanup boundary counted in the PASS predicate. Historical run payloads below predate these corrections and are retained unchanged as their own evidence.",
+  "statuses": {
+    "HIGHER_FEAT_SELECTION_AND_DATA": "PASS (corrected artifact 20260918T2206391210670Z)",
+    "HIGHER_FEAT_CANCELLATION_AND_CLEANUP": "PASS (corrected artifact; snapshot-proven, preview-held)",
+    "HIGHER_FEAT_NATIVE_SCREEN_RENDERING": "PENDING \u2014 supervised checklist item 5",
+    "RACIAL_WIDGET_BINDING": "PASS (racial-action fixture)",
+    "ORDINARY_NATIVE_ACTION_FLOW": "PENDING \u2014 supervised checklist items 1-4",
+    "SAVED_PARAMETER_ROUND_TRIP": "NOT RUN \u2014 AUTHORIZATION/INPUT REQUIRED",
+    "OWNER_FINAL_NATIVE_UI_ACCEPTANCE": "PENDING"
+  },
+  "correctedArtifact": {
+    "packageSha256": "ebd4921f46aed7710c3f6ec52df9a3c67686a27b0f3ceef71487412e06552ba9",
+    "dllSha256": "bfbefd442f00d7dd87b63f9ba1d7d787978773f42a31400129663c54cab99483",
+    "dllMvid": "d9804808-7a53-49a3-9a4a-afd0eafeddcb",
+    "deploymentManifest": "runtime-evidence/deployments/20260918T2158074984660Z/deployment.json",
+    "runs": [
+      {
+        "runId": "20260918T2206391210670Z-disposable-firearm-higher-feat-roots",
+        "result": "PASS",
+        "assertions": 7,
+        "cancellation": "ladder-integrated: the exact legal GWS(Pistol) selection held in the visit (previewHeld=true) was cancelled without apply; before/after progression snapshots identical; zero controller-cleanup failures"
+      },
+      {
+        "runId": "20260918T2212086644523Z-disposable-firearm-higher-feat-roots",
+        "result": "PASS",
+        "assertions": 7,
+        "note": "second consecutive PASS on the corrected artifact"
+      }
+    ],
+    "notes": "The earlier runs on package 2fca98bc... predate the controller-lifecycle/cancellation corrections and are retained as their own evidence. The action/race matrix on 2fca98bc remains valid for its scope: the racial-action fixture source files are byte-identical between 2fca98bc and this artifact (this pass changed only the higher-feat fixture, its rules/tests, documentation and the deterministic pin)."
+  }
+}

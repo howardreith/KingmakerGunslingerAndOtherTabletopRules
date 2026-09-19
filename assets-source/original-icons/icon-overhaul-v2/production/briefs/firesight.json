@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "firesight",
+  "behavior": "Firesight: dazzled immunity and specific fire/smoke visibility; not generic divination or see invisibility.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/firesight.png",
+  "sourceSha256": "6bc73e279bdd8ea6fe03024bbe330b53c871f3fdeda93680c84edacbb13bfac6",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painted feat/action style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Subject: A single LARGE HUMAN EYE in close horizontal crop, amber iris clear and focused, natural dark eyelids and eyebrow. A bold flame arch rises above the eyebrow while TWO DARK SMOKE CURTAINS part to either side of the eye, leaving a clean visible sightline. Warm orange edge light, deep brown-black background. Eye fills center half of square, bright iris, flame arch as strong upper crescent. No floating eyeball, arcane runes, tear, skull, multiple eyes, blue clouds, religious or occult symbol.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. Subject: A single LARGE HUMAN EYE in close horizontal crop, amber iris clear and focused, natural dark eyelids and eyebrow. A bold flame arch rises above the eyebrow while TWO DARK SMOKE CURTAINS part to either side of the eye, leaving a clean visible sightline. Warm orange edge light, deep brown-black background. Eye fills center half of square, bright iris, flame arch as strong upper crescent. No floating eyeball, arcane runes, tear, skull, multiple eyes, blue clouds, religious or occult symbol.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "feats",
+  "confusedWith": [
+    "airy-step",
+    "blazing-aura",
+    "cloud-gazer",
+    "elemental-strike",
+    "hydraulic-maneuver",
+    "inner-breath",
+    "inner-flame",
+    "scorching-weapons",
+    "triton-portal",
+    "wings-of-air"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No floating eyeball, arcane runes, tear, skull, multiple eyes, blue clouds, religious or occult symbol."
+  ]
+}

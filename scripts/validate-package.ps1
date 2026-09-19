@@ -11,6 +11,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot 'common.ps1')
+. (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $repositoryRoot
 
@@ -56,6 +57,9 @@ try {
         'cord-of-stubborn-resolve','shield-other','elven-branched-spear',
         'wakizashi','katana','nodachi','night-without-moon',
         'heavens-measure','world-tree-severer')
+    $integratedIcons = @(Get-KmgIntegratedIconRecords -RepositoryRoot $repositoryRoot)
+    $iconNames = @($iconNames + @($integratedIcons | ForEach-Object { $_.Key }) | Select-Object -Unique)
+    Assert-KmgIntegratedIconFiles -ModDirectory $modDirectory -Records $integratedIcons
     $expected += @($iconNames | ForEach-Object { "assets\icons\$_.png" })
     foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
         $retiredPath = Join-Path $modDirectory "assets\icons\$name.png"

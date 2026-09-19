@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "cloud-gazer",
+  "behavior": "Cloud Gazer: visibility through specific fog/mist/cloud concealment; distinct from Firesight and generic divination.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/cloud-gazer.png",
+  "sourceSha256": "e3ab7c79eeb5d111fcdb04a623f5a9c511eecba69e05be2dc8d3baf18446e221",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted action/feat style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. A LARGE HUMAN EYE with cool gray-blue iris peers through TWO SOFT ROUNDED BANKS OF SILVERY WHITE CLOUD, parting above and below it like a horizontal opening. Eye framed by natural pale skin and dark upper eyelid; cloud curls are bright and solidly readable, not black smoke. Compose the clear iris at right of center, heavy white cloud bank lower left, upper cloud ledge. Deep desaturated blue ground, soft moonlit illumination. No flame, fire, orange light, rays, occult symbols, multiple eyes, floating detached eyeball or tear.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A LARGE HUMAN EYE with cool gray-blue iris peers through TWO SOFT ROUNDED BANKS OF SILVERY WHITE CLOUD, parting above and below it like a horizontal opening. Eye framed by natural pale skin and dark upper eyelid; cloud curls are bright and solidly readable, not black smoke. Compose the clear iris at right of center, heavy white cloud bank lower left, upper cloud ledge. Deep desaturated blue ground, soft moonlit illumination. No flame, fire, orange light, rays, occult symbols, multiple eyes, floating detached eyeball or tear.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "feats",
+  "confusedWith": [
+    "airy-step",
+    "blazing-aura",
+    "elemental-strike",
+    "firesight",
+    "hydraulic-maneuver",
+    "inner-breath",
+    "inner-flame",
+    "scorching-weapons",
+    "triton-portal",
+    "wings-of-air"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No flame, fire, orange light, rays, occult symbols, multiple eyes, floating detached eyeball or tear."
+  ]
+}

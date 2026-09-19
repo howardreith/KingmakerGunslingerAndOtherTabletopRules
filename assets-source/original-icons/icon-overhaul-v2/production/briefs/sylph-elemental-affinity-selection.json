@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "sylph-elemental-affinity-selection",
+  "behavior": "Sylph Elemental Affinity selector and retain entry: paired channeling role combining air/smoke/lightning lineages.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/sylph-elemental-affinity-selection.png",
+  "sourceSha256": "3476123dd6a6afee6fac97abe3328073ecbffe29177f201550caa2ff2fd502d3",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted elemental/action family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square hand-painted fantasy CRPG TRAIT-CATEGORY icon, a restrained static symbol for a selection category and its retain choice, not a new spell or active buff. Use supplied approved project art for deliberate rich brushwork and material lighting, not its composition. One bold centered subject legible at 32/48/128px, about 80% of square, important edges at least 7% inside canvas. Deep full-bleed charcoal ground. No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark. TWO OPEN HUMAN HANDS face upward from lower left and lower right, a wide relaxed supporting gesture. Between them rises ONE BRAIDED AIR CORE: a broad silver-white curl interwoven with a softer smoke-gray ribbon and one thin pale violet lightning thread, held in a compact open diamond shape. Clear empty dark gap through its center, material air not a solid gem. Cool silver and muted blue-gray lighting, deep blue-black ground. No flame, book, attack stream, giant lightning bolt, water drop, elemental creature or text.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "TWO OPEN HUMAN HANDS face upward from lower left and lower right, a wide relaxed supporting gesture. Between them rises ONE BRAIDED AIR CORE: a broad silver-white curl interwoven with a softer smoke-gray ribbon and one thin pale violet lightning thread, held in a compact open diamond shape. Clear empty dark gap through its center, material air not a solid gem. Cool silver and muted blue-gray lighting, deep blue-black ground. No flame, book, attack stream, giant lightning bolt, water drop, elemental creature or text.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "selectors",
+  "confusedWith": [
+    "ifrit-elemental-affinity-selection",
+    "ifrit-energy-resistance-selection",
+    "ifrit-racial-spell-like-ability-selection",
+    "oread-elemental-affinity-selection",
+    "oread-energy-resistance-selection",
+    "oread-racial-spell-like-ability-selection",
+    "sylph-energy-resistance-selection",
+    "sylph-racial-spell-like-ability-selection",
+    "undine-racial-spell-like-ability-selection"
+  ],
+  "uiSurfaces": [
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark.",
+    "No flame, book, attack stream, giant lightning bolt, water drop, elemental creature or text."
+  ]
+}

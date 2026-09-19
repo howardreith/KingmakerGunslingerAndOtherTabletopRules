@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "ifrit-energy-resistance-selection",
+  "behavior": "Ifrit Energy Resistance trait selector and retain entry: static protective role combined with Ifrit identity, no additional resistance granted by the picture.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/ifrit-energy-resistance-selection.png",
+  "sourceSha256": "2d6592154f85fc18c9d2fc1297511641f241921fdf391d89d206e69f2650fc76",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painted elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square hand-painted fantasy CRPG TRAIT-CATEGORY icon, a restrained static symbol for a selection category and its retain choice, not a new spell or active buff. Use supplied approved project art for deliberate rich brushwork and material lighting, not its composition. One bold centered subject legible at 32/48/128px, about 80% of square, important edges at least 7% inside canvas. Deep full-bleed charcoal ground. No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark. TWO OVERLAPPING POINTED KITE-SHIELD PLATES, the rear one offset up-left and the front one down-right. Dark burnished iron surfaces, restrained bronze edges. One compact ORANGE FLAME RELIEF is carved into the front plate, warm internal glow restricted to its groove. Whole two-shield silhouette clearly visible against brown-black ground. This is a quiet category identity: no incoming fire attack, sparks, weapon, crossed tools or shield strapped to a person.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "TWO OVERLAPPING POINTED KITE-SHIELD PLATES, the rear one offset up-left and the front one down-right. Dark burnished iron surfaces, restrained bronze edges. One compact ORANGE FLAME RELIEF is carved into the front plate, warm internal glow restricted to its groove. Whole two-shield silhouette clearly visible against brown-black ground. This is a quiet category identity: no incoming fire attack, sparks, weapon, crossed tools or shield strapped to a person.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "selectors",
+  "confusedWith": [
+    "ifrit-elemental-affinity-selection",
+    "ifrit-racial-spell-like-ability-selection",
+    "oread-elemental-affinity-selection",
+    "oread-energy-resistance-selection",
+    "oread-racial-spell-like-ability-selection",
+    "sylph-elemental-affinity-selection",
+    "sylph-energy-resistance-selection",
+    "sylph-racial-spell-like-ability-selection",
+    "undine-racial-spell-like-ability-selection"
+  ],
+  "uiSurfaces": [
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark.",
+    "no incoming fire attack, sparks, weapon, crossed tools or shield strapped to a person."
+  ]
+}

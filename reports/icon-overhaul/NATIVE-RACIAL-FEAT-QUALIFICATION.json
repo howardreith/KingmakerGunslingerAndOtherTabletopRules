@@ -1,0 +1,919 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Native racial feat menu qualification; owner art/UI approval remains pending",
+  "artifact": {
+    "generatedAtUtc": "2026-09-13T18:59:36.7399709Z",
+    "commit": "3d46cad39ab74ab4f68dd228c02e57b1af40de5c",
+    "branch": "codex/icon-art-overhaul-v2",
+    "version": "0.0.128",
+    "sourceStateSha256": "1be9713bfda492491794b14cff5df70519ecda191f0602df82b7c7e46acff5f7",
+    "packageSha256": "c625fb133c823b18b184cb807c50f029953b9f10e4bfdefabda5d9ebb6241747",
+    "dllSha256": "1d06760cc82b28a483f387d549725d8b1a10aeb072b6f7c5fb73ae4f0bc7e24a",
+    "dllMvid": "954660fc-44bf-487e-9caa-8664d0ac8343"
+  },
+  "qualification": {
+    "status": "PASS",
+    "runs": 5,
+    "assertions": 59,
+    "nativeCaptures": 138,
+    "targetCaptures": 14,
+    "distinctFeatIdentities": 11,
+    "tests": {
+      "catalog": 23,
+      "nativeCapture": 19,
+      "paired": 6,
+      "request": 11,
+      "domain": 1629
+    },
+    "cleanRelease": true,
+    "strictPackageFiles": 224,
+    "framebuffer": {
+      "width": 1280,
+      "height": 720
+    },
+    "moduleProfile": {
+      "featureModules": "all ON; no request-local module override",
+      "settingsSha256": "a3fb0a2136547c5467d65469a782570b7e61ff9e3a83314197789b4095ea4749"
+    }
+  },
+  "runs": [
+    {
+      "directory": "20260913T1901332484934Z-disposable-elemental-character-creation-case",
+      "runId": "20260913T1901332635519Z-11f8c90b14f949bda4cde14394839925",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 12,
+      "startedUtc": "2026-09-13T19:04:22.0485492Z",
+      "endedUtc": "2026-09-13T19:04:26.7749769Z",
+      "resultSha256": "69b839dbb48659c01bc9d92e9e48b88accea0949398098ee4fb4d2b41a3d0241",
+      "requestSha256": "b7537788640120ed12a260b9fe777903efbce488f0c6f04f3ab6982fc65732df",
+      "identitySha256": "6d00742dc460dc74b1bb3ff55f2e04741002f3ed5a1b1ef746e454aacd305c16",
+      "parameters": {
+        "race": "Ifrit",
+        "class": "Gunslinger",
+        "allocation": "point-buy"
+      },
+      "screenCount": 38,
+      "screensSha256": "e96a3ba4988965222290f935e8167fd0eac8e1be219bb1ac438d7e4f5fa864e6",
+      "fixtureSha256": "ea948fa95cc1f6e2276cac1d0179d2389fd430840ab35d97ce907c91718ca4bf",
+      "menu": {
+        "race": "Ifrit",
+        "originalShowAll": false,
+        "originalFilter": "None",
+        "expectedFeatGuids": [
+          "e116e1e0a17a4aceb001000000000001",
+          "e116e1e0a17a4aceb001000000000002",
+          "e116e1e0a17a4aceb001000000000003",
+          "e116e1e0a17a4aceb001000000000004",
+          "e116e1e0a17a4aceb001000000000005"
+        ],
+        "capturedFeatGuids": [
+          "e116e1e0a17a4aceb001000000000001",
+          "e116e1e0a17a4aceb001000000000002",
+          "e116e1e0a17a4aceb001000000000003",
+          "e116e1e0a17a4aceb001000000000004",
+          "e116e1e0a17a4aceb001000000000005"
+        ],
+        "restored": true,
+        "selectionAndFactsRetained": true,
+        "nativeScrollCount": 1
+      },
+      "creatorAcceptance": "PASS; native final review reached and canceled, no commit/save",
+      "targets": [
+        {
+          "file": "native-ui-023.png",
+          "sha256": "b214f39fa608a6449d5227066a1b65211e6bca644994a6fb8792bd191648f400",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000001",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.0000038,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.9614782,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000001",
+            "name": "Elemental Strike",
+            "iconName": "KMG_Icon_elemental-strike",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "CanSelect",
+            "nativeInteractable": true,
+            "nativeMarkers": {
+              "m_DisableMark": true,
+              "m_ForbiddenMark": false,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-024.png",
+          "sha256": "c527507214688ba89ef942f8424e9d1cc772b53a3df5402bfbe71f746d8656e7",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000002",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.0039,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.0000038,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.90836513,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000002",
+            "name": "Scorching Weapons",
+            "iconName": "KMG_Icon_scorching-weapons",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "CanSelect",
+            "nativeInteractable": true,
+            "nativeMarkers": {
+              "m_DisableMark": true,
+              "m_ForbiddenMark": false,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-025.png",
+          "sha256": "1c9fd8128983ac3048da73372336a0dc886e6174f487cefdd3cfd759b6f5e4e3",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000003",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.9980583,
+            "rowMaxY": 32.0019341,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.271007955,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.00146484375
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000003",
+            "name": "Inner Flame",
+            "iconName": "KMG_Icon_inner-flame",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "Forbidden",
+            "nativeInteractable": false,
+            "nativeMarkers": {
+              "m_DisableMark": false,
+              "m_ForbiddenMark": true,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-026.png",
+          "sha256": "04562708f3ea712f3b2667740e63ae9741c7345a128f4fb8737befc833582460",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000004",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.002,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.9995155,
+            "rowMaxY": 32.00048,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.00000012,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -0.00146484375,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.7126853,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.00341796875
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000004",
+            "name": "Blazing Aura",
+            "iconName": "KMG_Icon_blazing-aura",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "Forbidden",
+            "nativeInteractable": false,
+            "nativeMarkers": {
+              "m_DisableMark": false,
+              "m_ForbiddenMark": true,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-027.png",
+          "sha256": "6529a7dcb6cdb868aa5fa0e11187ecc7e91acdc77906bed2640777e2c5e69d39",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000005",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.99757,
+            "rowMaxY": 32.0024223,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.00000012,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -0.00341796875,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.947501,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.00146484375
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000005",
+            "name": "Firesight",
+            "iconName": "KMG_Icon_firesight",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "CanSelect",
+            "nativeInteractable": true,
+            "nativeMarkers": {
+              "m_DisableMark": true,
+              "m_ForbiddenMark": false,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        }
+      ]
+    },
+    {
+      "directory": "20260913T1905050196959Z-disposable-elemental-character-creation-case",
+      "runId": "20260913T1905050389464Z-ecffe9b4a5fc419fb8ff477f481fd391",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 12,
+      "startedUtc": "2026-09-13T19:07:48.2483620Z",
+      "endedUtc": "2026-09-13T19:07:51.3824204Z",
+      "resultSha256": "cde58287062c31b076947d1172ce4f830d1fe2976717cedfc444ab4b0ddfadfe",
+      "requestSha256": "20a9a29dc669d9058909cb4a0f5b35101a53d5d10510fcebad62650ccd7a3976",
+      "identitySha256": "e5d3744482b8945ce57939b83737960a0a8790d4574ee04c21c9ea97af018878",
+      "parameters": {
+        "race": "Oread",
+        "class": "Gunslinger",
+        "allocation": "point-buy"
+      },
+      "screenCount": 34,
+      "screensSha256": "c837672555157984fe8d6a57d1601e6148a50d3212c876d035ea9f9a811cd48d",
+      "fixtureSha256": "90c6148c938f6cf7d96437ba2e918c249b0c19e707605c4b165d22702da98807",
+      "menu": {
+        "race": "Oread",
+        "originalShowAll": false,
+        "originalFilter": "None",
+        "expectedFeatGuids": [
+          "e116e1e0a17a4aceb001000000000001"
+        ],
+        "capturedFeatGuids": [
+          "e116e1e0a17a4aceb001000000000001"
+        ],
+        "restored": true,
+        "selectionAndFactsRetained": true,
+        "nativeScrollCount": 1
+      },
+      "creatorAcceptance": "PASS; native final review reached and canceled, no commit/save",
+      "targets": [
+        {
+          "file": "native-ui-023.png",
+          "sha256": "89de978ae83cd85e6c48248b88c8bfa794312dc28a23c6e2b3a435066a11b4b9",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000001",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.0000038,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.9614782,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000001",
+            "name": "Elemental Strike",
+            "iconName": "KMG_Icon_elemental-strike",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "CanSelect",
+            "nativeInteractable": true,
+            "nativeMarkers": {
+              "m_DisableMark": true,
+              "m_ForbiddenMark": false,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        }
+      ]
+    },
+    {
+      "directory": "20260913T1909031122668Z-disposable-elemental-character-creation-case",
+      "runId": "20260913T1909031435860Z-aef8a2e74d0e453f90c9f5cd554a21ba",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 12,
+      "startedUtc": "2026-09-13T19:11:50.4032011Z",
+      "endedUtc": "2026-09-13T19:11:53.4947659Z",
+      "resultSha256": "ff29895ed70d4d660e669a7f759fb4cb21505697400b96f1fe0b56b4e62c9f37",
+      "requestSha256": "36d581b8bbb6cf405618e400175a1aa4f37abaebe42bd0708d11109b6141c7d9",
+      "identitySha256": "26483b5a594358189d5ab2cf43818c7dc71eb53ab0d83a5715bb8c7173954729",
+      "parameters": {
+        "race": "Sylph",
+        "class": "Gunslinger",
+        "allocation": "point-buy"
+      },
+      "screenCount": 38,
+      "screensSha256": "1de5da187e23b3b8c99c2a2221a3e8fd4d44b680c35c6c1846b7121a51982cfd",
+      "fixtureSha256": "c4e4ac10c3e9fe7fd5fd2aa6c654d1fe06ce76bd10e1ac7770bd91ae36dec2af",
+      "menu": {
+        "race": "Sylph",
+        "originalShowAll": false,
+        "originalFilter": "None",
+        "expectedFeatGuids": [
+          "e116e1e0a17a4aceb001000000000001",
+          "e116e1e0a17a4aceb001000000000006",
+          "e116e1e0a17a4aceb001000000000007",
+          "e116e1e0a17a4aceb001000000000008",
+          "e116e1e0a17a4aceb001000000000009"
+        ],
+        "capturedFeatGuids": [
+          "e116e1e0a17a4aceb001000000000001",
+          "e116e1e0a17a4aceb001000000000006",
+          "e116e1e0a17a4aceb001000000000007",
+          "e116e1e0a17a4aceb001000000000008",
+          "e116e1e0a17a4aceb001000000000009"
+        ],
+        "restored": true,
+        "selectionAndFactsRetained": true,
+        "nativeScrollCount": 1
+      },
+      "creatorAcceptance": "PASS; native final review reached and canceled, no commit/save",
+      "targets": [
+        {
+          "file": "native-ui-023.png",
+          "sha256": "27d89550fd7a1e05f6fa5cca9e552c1435388309a4e0afac7eff3b9dd81b6726",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000001",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.002,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.0000038,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.9558873,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000001",
+            "name": "Elemental Strike",
+            "iconName": "KMG_Icon_elemental-strike",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "CanSelect",
+            "nativeInteractable": true,
+            "nativeMarkers": {
+              "m_DisableMark": true,
+              "m_ForbiddenMark": false,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-024.png",
+          "sha256": "7c7ce12ffca4ccbbfeb3744af999f51fc0863d1251b7acd14a2c6a484f403baa",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000006",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.0039,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.0000038,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.9978187,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000006",
+            "name": "Airy Step",
+            "iconName": "KMG_Icon_airy-step",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "CanSelect",
+            "nativeInteractable": true,
+            "nativeMarkers": {
+              "m_DisableMark": true,
+              "m_ForbiddenMark": false,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-025.png",
+          "sha256": "662485317ec6b986cc7bf26b198b083382a9d95f1478305103c233ef58b62cd5",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000007",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.0039,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -101.498039,
+            "rowMaxY": -37.49804,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": -4.13622381e-08,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.0009765625
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000007",
+            "name": "Wings of Air",
+            "iconName": "KMG_Icon_wings-of-air",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "Forbidden",
+            "nativeInteractable": false,
+            "nativeMarkers": {
+              "m_DisableMark": false,
+              "m_ForbiddenMark": true,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-026.png",
+          "sha256": "be4b97786f3cbbb3d5ddd0460de0d8f49931da7e046ffb5d02b0ff3af2318252",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000008",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.002,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.00098,
+            "rowMaxY": 31.999012,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -0.0009765625,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.9810462,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.0009765625
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000008",
+            "name": "Cloud Gazer",
+            "iconName": "KMG_Icon_cloud-gazer",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "CanSelect",
+            "nativeInteractable": true,
+            "nativeMarkers": {
+              "m_DisableMark": true,
+              "m_ForbiddenMark": false,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-027.png",
+          "sha256": "8295ed8f7d0a9f935329d4d7ee1a0d9227ca50af578edac0c8276cc91da7a049",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000009",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.99609,
+            "rowMaxY": 32.0039024,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -0.0009765625,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.276598662,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.00439453125
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000009",
+            "name": "Inner Breath",
+            "iconName": "KMG_Icon_inner-breath",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "Forbidden",
+            "nativeInteractable": false,
+            "nativeMarkers": {
+              "m_DisableMark": false,
+              "m_ForbiddenMark": true,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        }
+      ]
+    },
+    {
+      "directory": "20260913T1912467856504Z-disposable-elemental-character-creation-case",
+      "runId": "20260913T1912468048044Z-015c2fee2d194f468f2365c05bdd00c6",
+      "scenario": "disposable-elemental-character-creation-case",
+      "status": "PASS",
+      "assertions": 12,
+      "startedUtc": "2026-09-13T19:15:16.8225597Z",
+      "endedUtc": "2026-09-13T19:15:19.8213749Z",
+      "resultSha256": "4c1a76bca16c72462383212083cec499c986f3fe9ee7f8d3a1fbd1413d45315b",
+      "requestSha256": "544f292a51de5263a77c7169f88fa1830d9eae9083a327807ae6ae04781a09b1",
+      "identitySha256": "7dc6409f659a5d8649f63f21e726560f0b38706786e167d7825c5fdd3dcabcba",
+      "parameters": {
+        "race": "Undine",
+        "class": "Gunslinger",
+        "allocation": "point-buy"
+      },
+      "screenCount": 28,
+      "screensSha256": "1b89f0effd78e3fe92b8eb0cb30a39957c71a3d7a2ed0e2a18459d570d5eed00",
+      "fixtureSha256": "a42d021e1d2602c39f91e7b8d2c577e2b67fbd2abdc99f3b36fedcd4b6935069",
+      "menu": {
+        "race": "Undine",
+        "originalShowAll": false,
+        "originalFilter": "None",
+        "expectedFeatGuids": [
+          "e116e1e0a17a4aceb001000000000001",
+          "e116e1e0a17a4aceb001000000000010",
+          "e116e1e0a17a4aceb001000000000011"
+        ],
+        "capturedFeatGuids": [
+          "e116e1e0a17a4aceb001000000000001",
+          "e116e1e0a17a4aceb001000000000010",
+          "e116e1e0a17a4aceb001000000000011"
+        ],
+        "restored": true,
+        "selectionAndFactsRetained": true,
+        "nativeScrollCount": 1
+      },
+      "creatorAcceptance": "PASS; native final review reached and canceled, no commit/save",
+      "targets": [
+        {
+          "file": "native-ui-019.png",
+          "sha256": "c9ea9961d89fb02bf328f529903e59437d7087bc5ca8a6ddd2e9af037c8029ff",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000001",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.0000038,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.9614782,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000001",
+            "name": "Elemental Strike",
+            "iconName": "KMG_Icon_elemental-strike",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "CanSelect",
+            "nativeInteractable": true,
+            "nativeMarkers": {
+              "m_DisableMark": true,
+              "m_ForbiddenMark": false,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-020.png",
+          "sha256": "671a7acf0921e109039330eac22f9c82b0819dd464a7ae6d3bc4ae4680923beb",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000010",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.002,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -32.0000038,
+            "rowMaxY": 31.9999924,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.944705665,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": 0.0
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000010",
+            "name": "Hydraulic Maneuver",
+            "iconName": "KMG_Icon_hydraulic-maneuver",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "CanSelect",
+            "nativeInteractable": true,
+            "nativeMarkers": {
+              "m_DisableMark": true,
+              "m_ForbiddenMark": false,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        },
+        {
+          "file": "native-ui-021.png",
+          "sha256": "c273138690a9db513ff815186d15de3c2ab83feebe36fa8811ba7c8c22348b3f",
+          "stage": "native-racial-feat-row:e116e1e0a17a4aceb001000000000011",
+          "viewport": {
+            "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 24237.002,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -31.9980583,
+            "rowMaxY": 32.0019341,
+            "viewportMinY": -313.5,
+            "viewportMaxY": 313.5,
+            "originalX": 1.01721125e-05,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 1.01721125e-05,
+            "captureY": 0.0361922868,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -0.001953125
+          },
+          "target": {
+            "featureGuid": "e116e1e0a17a4aceb001000000000011",
+            "name": "Triton Portal",
+            "iconName": "KMG_Icon_triton-portal",
+            "renderedIconExact": true,
+            "titleExact": true,
+            "nativeEligibility": "Forbidden",
+            "nativeInteractable": false,
+            "nativeMarkers": {
+              "m_DisableMark": false,
+              "m_ForbiddenMark": true,
+              "m_AllreadyUsedMark": false
+            },
+            "nativeMarkersRetained": true,
+            "selectionAndEligibilityRetained": true,
+            "otherIconRows": 305,
+            "otherIconsExact": true
+          },
+          "visualInspection": "clear at 1280x720; complete target/name; native availability presentation retained"
+        }
+      ]
+    },
+    {
+      "directory": "20260913T1916076110117Z-working-save-smoke",
+      "runId": "20260913T1916076316402Z-a51d389c87694aa2a866daeff66afcd6",
+      "scenario": "working-save-smoke",
+      "status": "PASS",
+      "assertions": 11,
+      "startedUtc": "2026-09-13T19:16:14.7540782Z",
+      "endedUtc": "2026-09-13T19:18:16.6664231Z",
+      "resultSha256": "7171d754efc8bbebc817a27ab2f400426d812734423e55937c21e3fde69e928e",
+      "requestSha256": "c13b953036f7a77fd44003fb19d55e6e26d7568de969eff4215db23af3f7d313",
+      "identitySha256": "9be3ae6c1fca777708425dface278c9eabf6a3c09f7e9717f4bde3f85cef71fc",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      }
+    }
+  ],
+  "installationRestoration": {
+    "restored": true,
+    "originalFileCount": 136,
+    "verifiedUtc": "2026-09-13T19:19:47.653542+00:00"
+  },
+  "evidenceLimits": [
+    "Native ShowAll can display wrong-race feats as unavailable; each case deliberately targets its own race-specific set.",
+    "This checks icon rendering and preserves actual eligibility. It does not grant/select these feats or qualify their mechanics.",
+    "Ordinary first-level creator reached final review and was canceled; no committed actor or new save.",
+    "Other capture stages on this DLL retain provenance; earlier UI qualifications remain separately labeled artifacts.",
+    "Eighty production images and final native UI still await owner approval."
+  ],
+  "diagnostics": [
+    "Build 1 passed all tests but failed exact Release compilation on CS0136; no deployment. Corrected build 2 passed all gates.",
+    "A preliminary PowerShell array-count check rejected deployment before mutation. Independent full hashes proved all 136 originals unchanged; corrected check passed."
+  ],
+  "next": [
+    "Native racial actions, variants and visible buffs",
+    "Applicable higher dependent firearm rendered surfaces",
+    "Strategic text-control confirmation",
+    "Permitted saved-parameter prerequisite",
+    "Final artifact review and owner approvals"
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "scope": "89 painted icons mapped to 137 owned consumers; firearm completion/native UI/final owner approval pending",
+  "branch": "codex/icon-art-overhaul-v2",
+  "baseCommit": "a778d7c875267c8758a1f0f7f33620e2f6fe0efc",
+  "buildHadUncommittedChanges": true,
+  "builtAtUtc": "2026-09-13T06:08:37.2742218Z",
+  "version": "0.0.127",
+  "sourceStateSha256": "e17ba58b8385a4eb035f67b0614ee35b70b26bee9d668d82ad69073a178df382",
+  "packageSha256": "952462ca1eb766404e8b21d493b5e4d31964963c921157c2041bef810cc9b9d5",
+  "dllSha256": "a5f518be3a77ddc9df1431e9d7ac5f411fba873ecf9809884bf7e952ea062e33",
+  "dllMvid": "31c95e82-1b7e-4b3d-85eb-10f362e59cfb",
+  "repositoryValidation": "PASS",
+  "focusedCatalogTests": {
+    "passed": 22,
+    "failed": 0
+  },
+  "pairedEvidenceCorruptionTests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "requestPreflightAndJsonTests": {
+    "passed": 11,
+    "failed": 0
+  },
+  "domainTests": {
+    "passed": 1618,
+    "failed": 0
+  },
+  "cleanReleaseBuild": "PASS",
+  "strictBuildOutputAnd224FilePackageValidation": "PASS",
+  "buildLogSha256": "0f17042b27587357949a9918ebbba1ea73f33a14d69e7fa3a9e81b04157e985c",
+  "sameArtifactRebuild": {
+    "previousSourceStateSha256": "506906c9ce9e65588111d48a92a437fa4bdef145162a9f740bffad16c5ab1497",
+    "reason": "Request serializer and its JSON round-trip tests corrected; C# and pixels unchanged",
+    "packageDllAndMvidIdentical": true
+  },
+  "runtimeRuns": [
+    {
+      "purpose": "candidate",
+      "runId": "20260913T0603143949131Z-84ec6416ad0542c9994853f5f3836310",
+      "evidenceDirectoryName": "20260913T0603143786050Z-icon-overhaul-visual-evidence",
+      "status": "PASS",
+      "passedAssertions": 19,
+      "resultSha256": "f9e460b4c6b87d0fee373d712faa2509156f0ac2d49bda5c3c6f13cec6398280",
+      "steamAppId": 640820,
+      "evidenceClass": "structured live runtime; not native icon screen review"
+    },
+    {
+      "purpose": "control",
+      "runId": "20260913T0610239313301Z-34c03d7fd6cd4bc0b8a01381e74a2ddd",
+      "evidenceDirectoryName": "20260913T0610239156428Z-icon-overhaul-visual-evidence",
+      "status": "PASS",
+      "passedAssertions": 19,
+      "resultSha256": "00fea33968b3c0ea9186954c6b57839955bd965467de71de79bfbce2d506014c",
+      "steamAppId": 640820,
+      "evidenceClass": "structured live runtime; not native icon screen review"
+    },
+    {
+      "purpose": "working-save-smoke",
+      "runId": "20260913T0613155395530Z-86c16f682ba344d3be1865ff1dc6e484",
+      "evidenceDirectoryName": "20260913T0613155109029Z-working-save-smoke",
+      "status": "PASS",
+      "passedAssertions": 11,
+      "resultSha256": "0f48f4b44667d228ab0f549949a480abc5a585e62c46bc3a47f28b516e82325a",
+      "steamAppId": 640820,
+      "evidenceClass": "structured live runtime; not native icon screen review"
+    }
+  ],
+  "pairedCensusValidation": "PASS",
+  "pairedValidationLogSha256": "8208ecfa8ae36020da7037a54f3ca12d00e5e86f79c2b63cb5765cb8fc65332d",
+  "liveInventory": {
+    "catalogIdentities": 284,
+    "blueprints": 255,
+    "appearanceResources": 28,
+    "reservedAbsent": 1,
+    "mappedConsumers": 137,
+    "paintedExports": 89,
+    "protectedAssignmentsCompared": 35756,
+    "nativeSemanticReuseConsumers": 21
+  },
+  "compatibilityTransitions": {
+    "protectedIconChanges": [
+      "354d977fb59a10c40a447c6d6f58b5d2:DuergarInvisibilitySpellLikeAbilityFeature",
+      "94ebce9b9836cfc4b8d781374a586377:DuergarEnlargePersonSpellLikeAbilityFeature",
+      "df39e25d887a89042a1b4810eac902d0:DuergarImmunities"
+    ],
+    "ownedGraphChanges": [
+      "KMG.Spells.WordOfRecall.Ability",
+      "KMG.Spells.GreaterTeleport.Ability",
+      "KMG.Spells.Teleport.Ability"
+    ],
+    "acceptance": "Every protected before/after sprite and every owned graph/component signature matches the same-artifact no-mapping control; original component references preserved"
+  },
+  "candidateCensusSha256": "676ce799aa8a1ef5945068804518be6cbf3ac98e22c59958603d64d6f5bcfeef",
+  "controlCensusSha256": "60faee0e0e86c441fd2dc53f2d08d9b28c2e9c5316e346bfa019620f044fa784",
+  "saveScope": "Only KMG_AUTOMATION_WORKING through canonical guarded read-only smoke; no new save or save write authorized",
+  "restoration": {
+    "originalVersion": "0.0.117",
+    "filesVerified": 136,
+    "allPathsAndHashesExact": true,
+    "temporaryPackageFilesUnchanged": true,
+    "temporaryExtrasAudited": [
+      "FeatureModules.json",
+      "FeatureModules.json.previous",
+      "KingmakerGunslinger.dll.12046.cache"
+    ],
+    "auditSha256": "0460f6c9ec9d8c9371637f28593883b783b40f6f535d892e1e1aee6e0764ae5d"
+  },
+  "nativeUiEvidence": "PENDING; live-sprite facsimiles and the census are not native icon screen captures",
+  "ownerApproval": {
+    "approvedPilotImages": 10,
+    "unapprovedProductionImages": 80,
+    "finalAcceptance": "PENDING"
+  },
+  "fingerprintLimit": "Full-tree hashes describe build-time source. This curated report and status prose are added afterward. Prior candidate is paired only after a clean rebuild proved identical package/DLL/MVID.",
+  "knownValidationLimit": "The unrelated historical Test-RuntimeScenarioPreflight script has stale version fixtures; it was not changed or reported as passing. Focused current-version icon request tests passed.",
+  "failureHistory": "planning/ICON-OVERHAUL-JOURNAL.md"
+}

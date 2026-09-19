@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "key": "granite-skin",
+  "behavior": "Granite Skin grants +1 racial natural armor; rough protective arm/shoulder, no fist attack.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/granite-skin.png",
+  "sourceSha256": "a60c74d3be335dd0929b99b9e8dd9ab6b0a4fec66394e1cda410993e65244ce3",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted action/trait style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized mineral light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A CLOSE SIDE VIEW OF A BROAD HUMAN SHOULDER AND BENT UPPER ARM, relaxed forearm folded low across body. Thick ROUGH GRANITE PLATES grow naturally across the shoulder and outer arm, with blunt irregular edges and clear pale stone highlights. Main silhouette is a large protective rounded inverted U of shoulder and elbow; no face needed. Heavy gray stone texture, muted warm brown skin at small gaps, deep charcoal ground. No shiny crystals, incoming ray, clenched punching fist, metal armor, shield, weapon, flame or lava.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A CLOSE SIDE VIEW OF A BROAD HUMAN SHOULDER AND BENT UPPER ARM, relaxed forearm folded low across body. Thick ROUGH GRANITE PLATES grow naturally across the shoulder and outer arm, with blunt irregular edges and clear pale stone highlights. Main silhouette is a large protective rounded inverted U of shoulder and elbow; no face needed. Heavy gray stone texture, muted warm brown skin at small gaps, deep charcoal ground. No shiny crystals, incoming ray, clenched punching fist, metal armor, shield, weapon, flame or lava.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "oread-traits",
+  "confusedWith": [
+    "crystalline-form",
+    "earth-insight",
+    "stone-in-the-blood",
+    "treacherous-earth"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "no face needed.",
+    "No shiny crystals, incoming ray, clenched punching fist, metal armor, shield, weapon, flame or lava."
+  ]
+}

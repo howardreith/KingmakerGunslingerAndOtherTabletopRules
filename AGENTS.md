@@ -155,6 +155,19 @@ Maintain:
 Do not ask for routine engineering decisions. Stop only for a hard stop defined
 by the mission.
 
+## Icon authoring
+
+For any task that creates, replaces, clones, or remaps a player-visible icon,
+or adds a visible spell, feat, racial trait, ability, buff, item, or summon
+choice, first read `docs/ICON-ART-GUIDE.md`,
+`docs/art/ICON-REFERENCE-INDEX.md`, and
+`assets-source/original-icons/icon-catalog.json`. Follow the matching approved
+family and actual references. Record every touched consumer's disposition.
+Use native monograms where supported; unrelated donor art is not a completed
+new identity. Validate exports, packaging, protected assignments and actual UI
+use. Technical PASS is not owner visual approval. Update the guide/catalog
+when the authoring contract changes; never silently redefine an approved family.
+
 ## GitHub checkpoint publication
 
 After every coherent commit on a `codex/*` feature branch, and before ending,

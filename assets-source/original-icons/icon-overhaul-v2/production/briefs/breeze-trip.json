@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "breeze-trip",
+  "behavior": "Breeze-Kissed Trip child sweeps a creature's footing with wind using ordinary native CMB.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/breeze-trip.png",
+  "sourceSha256": "08c0a62b2a004410dc64ae2f06035717cab83b11f6965fc88e6b344bf15a3617",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painterly action/feat style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. This is the WIND action family: broad luminous ivory-silver air ribbons, soft blue shadows, deep midnight blue ground. No orange fire, electric bolts, turquoise liquid, droplets or icy particles. A CLOSE VIEW OF TWO BOOTED LOWER LEGS being SWEPT SIDEWAYS by one PALE WIND HOOK wrapped low around their ankles. Boots lift toward right, one sole facing the viewer and one in side view, knees and trousers enter from upper left. A large low crescent of silver air sweeps from left under the feet toward right. Strong sideways boots-and-hook silhouette; natural intact legs. No chest shove, fall injury, ropes, water, storm cloud or weapon.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A CLOSE VIEW OF TWO BOOTED LOWER LEGS being SWEPT SIDEWAYS by one PALE WIND HOOK wrapped low around their ankles. Boots lift toward right, one sole facing the viewer and one in side view, knees and trousers enter from upper left. A large low crescent of silver air sweeps from left under the feet toward right. Strong sideways boots-and-hook silhouette; natural intact legs. No chest shove, fall injury, ropes, water, storm cloud or weapon.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "wind-actions",
+  "confusedWith": [
+    "breeze-bull-rush",
+    "breeze-gust",
+    "calm-winds",
+    "hydraulic-trip",
+    "renew-winds"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No orange fire, electric bolts, turquoise liquid, droplets or icy particles.",
+    "No chest shove, fall injury, ropes, water, storm cloud or weapon."
+  ]
+}

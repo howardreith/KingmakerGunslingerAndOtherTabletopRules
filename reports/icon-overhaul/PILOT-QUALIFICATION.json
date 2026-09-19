@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "status": "pilot technical checkpoint; new raster art uninstalled and unapproved",
+  "sourceCommitAtBuild": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
+  "sourceStateSha256AtBuild": "b1f9a1ed73aa10a962a988363159a9ddffe5ed70b462b78489774e9effa234aa",
+  "sourceStateNote": "Dirty candidate explicitly permitted by mission checkpoint rules and -AllowDirtyGit. Later report/status/provenance-only updates do not claim the old full working-tree fingerprint; these executing C# files remain unchanged.",
+  "testedCode": [
+    {
+      "path": "src/KingmakerGunslinger/Feats/NativeFirearmFeatIntegration.cs",
+      "sha256": "99b7eae8ab73520658cb2c782e24c7e4c0abd96ed7b8a61e62a47a28be46a6e2"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/IconOverhaulVisualEvidenceScenario.cs",
+      "sha256": "c63ea113654f8b1eefff1cf862378e7f0ac3315a186ce99127c230b0df4c5131"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
+      "sha256": "e19720280aaf200d1e3f0550e7c387b7ffefbd10613a04fb75b4a5d09be29923"
+    }
+  ],
+  "artifact": {
+    "version": "0.0.127",
+    "packageSha256": "ca964c53bf983f9afeb822f62e2c6dff67f101ccd33e3a46a6c1007f420f267c",
+    "dllSha256": "fb81a01e3ff56289f6e86db6a0a61fc66e5cbcb6b5ca06fbb767c5cf02ac4fc9",
+    "dllMvid": "e35ff147-5fb4-4aa4-9d11-9612bf1a2f3c"
+  },
+  "validation": {
+    "repository": "PASS",
+    "focusedCatalogTests": 9,
+    "domainTests": 1612,
+    "domainFailures": 0,
+    "cleanReleaseBuild": "PASS",
+    "package": "PASS",
+    "repeatPilotManifestSha256": "6061ddf726b3d318d046ee8b9b404af1339f1b8d6abcdec0d6613522d1f925ce"
+  },
+  "runtimeRuns": [
+    {
+      "scenario": "icon-overhaul-visual-evidence",
+      "runId": "20260912T1803219775894Z-18aee0ff89d54749aaef3ad6d5469a99",
+      "evidenceDirectoryName": "20260912T1803219069435Z-icon-overhaul-visual-evidence",
+      "resultSha256": "087a99843866907c49fa80e03c7c6cd520ddaa3e8d1bebf36a88fa21700f8d4b",
+      "status": "PASS",
+      "assertions": 9,
+      "assertionNames": [
+        "rapid-reload-live-choices",
+        "weapon-focus-live-firearm-parameters",
+        "supported-firearm-item-icons",
+        "eastern-and-spear-item-icons",
+        "round2-native-comparator-rows",
+        "round2-shared-firearm-monograms",
+        "round2-cord-and-native-belt-icons",
+        "full-resolution-visual-evidence",
+        "loaded-mod-version"
+      ],
+      "startUtc": "2026-09-12T18:05:44.8449807Z",
+      "endUtc": "2026-09-12T18:05:44.8469737Z",
+      "loadedVersion": "0.0.127",
+      "loadedDllSha256": "fb81a01e3ff56289f6e86db6a0a61fc66e5cbcb6b5ca06fbb767c5cf02ac4fc9",
+      "loadedMvid": "e35ff147-5fb4-4aa4-9d11-9612bf1a2f3c",
+      "evidenceClass": "mechanical; icon scenario additionally emits explicitly labeled facsimiles",
+      "nativeUICapture": false,
+      "ownerVisualApproval": false
+    },
+    {
+      "scenario": "disposable-firearm-dependent-feats",
+      "runId": "20260912T1806469792393Z-7ce4e8341bca47088d82486cb6c76c4a",
+      "evidenceDirectoryName": "20260912T1806469491281Z-disposable-firearm-dependent-feats",
+      "resultSha256": "717bc291c91f0045629699627b4201eabfbdc970a36dec47baf8da5c7dbd754f",
+      "status": "PASS",
+      "assertions": 12,
+      "assertionNames": [
+        "dependent-feat-catalog",
+        "native-firearm-parameter-menus",
+        "native-firearm-level-up-parameter-menus",
+        "firearm-feat-icon-map",
+        "native-weapon-focus-level-up-commit",
+        "dependent-feat-prerequisites",
+        "dependent-feat-effects",
+        "dependent-feat-isolation",
+        "legacy-weapon-focus-compatibility",
+        "firearm-proficiency-acquisition-policy",
+        "legacy-firearm-proficiency-compatibility",
+        "loaded-mod-version"
+      ],
+      "startUtc": "2026-09-12T18:06:54.5533623Z",
+      "endUtc": "2026-09-12T18:08:34.6729745Z",
+      "loadedVersion": "0.0.127",
+      "loadedDllSha256": "fb81a01e3ff56289f6e86db6a0a61fc66e5cbcb6b5ca06fbb767c5cf02ac4fc9",
+      "loadedMvid": "e35ff147-5fb4-4aa4-9d11-9612bf1a2f3c",
+      "evidenceClass": "mechanical; icon scenario additionally emits explicitly labeled facsimiles",
+      "nativeUICapture": false,
+      "ownerVisualApproval": false
+    },
+    {
+      "scenario": "observe-feature-module-settings",
+      "runId": "20260912T1809242356406Z-de6d4240173748f89d3ac9f82342b334",
+      "evidenceDirectoryName": "20260912T1809242131007Z-observe-feature-module-settings",
+      "resultSha256": "8af1c244afff1e6cca92d20c6e6b8a16922902e649d181ecf345809587add68a",
+      "status": "PASS",
+      "assertions": 34,
+      "assertionNames": [
+        "feature-module-active-snapshot",
+        "feature-module-identity-count",
+        "feature-module-gunslinger-publication",
+        "feature-module-legacy-firearm-proficiency",
+        "feature-module-acadamae-publication",
+        "feature-module-bodyguard-publication-gate",
+        "feature-module-shield-other-publication",
+        "feature-module-protection-from-alignment-control-immunity",
+        "feature-module-teleportation-restart-snapshot",
+        "feature-module-elemental-races-restart-snapshot",
+        "feature-module-elemental-races-publication",
+        "feature-module-expanded-summoning-publication-gate",
+        "feature-module-elven-branched-spears-publication-gate",
+        "feature-module-eastern-weapons-publication-gate",
+        "feature-module-brown-fur-publication-gate",
+        "feature-module-urban-barbarian-publication-gate",
+        "loaded-mod-version",
+        "salesman-publication-C3_VendorTableLarge-KMG_Roadwarden_Item",
+        "salesman-publication-C3_VendorTableLarge-KMG_DeadReckoning_Item",
+        "salesman-publication-C3_VendorTableSmall-KMG_Roadwarden_Item",
+        "salesman-publication-C3_VendorTableSmall-KMG_DeadReckoning_Item",
+        "salesman-publication-C4_VendorTableLarge-KMG_Roadwarden_Item",
+        "salesman-publication-C4_VendorTableLarge-KMG_DeadReckoning_Item",
+        "salesman-publication-C4_VendorTableSmall-KMG_Roadwarden_Item",
+        "salesman-publication-C4_VendorTableSmall-KMG_DeadReckoning_Item",
+        "salesman-exclusive-acquisition",
+        "teleportation-three-real-spell-blueprints",
+        "teleportation-module-spell-publication",
+        "teleportation-exploration-module-hook",
+        "teleportation-familiarity-module-hooks",
+        "teleportation-destination-module-hooks",
+        "teleportation-gamepad-destination-module-hooks",
+        "teleportation-publication-duplicate-safe",
+        "teleportation-publication-exact-rollback"
+      ],
+      "startUtc": "2026-09-12T18:09:31.4418172Z",
+      "endUtc": "2026-09-12T18:11:09.8277935Z",
+      "loadedVersion": "0.0.127",
+      "loadedDllSha256": "fb81a01e3ff56289f6e86db6a0a61fc66e5cbcb6b5ca06fbb767c5cf02ac4fc9",
+      "loadedMvid": "e35ff147-5fb4-4aa4-9d11-9612bf1a2f3c",
+      "evidenceClass": "mechanical; icon scenario additionally emits explicitly labeled facsimiles",
+      "nativeUICapture": false,
+      "ownerVisualApproval": false
+    },
+    {
+      "scenario": "working-save-smoke",
+      "runId": "20260912T1812393075254Z-d668e794c5f44b79b280344beccd2111",
+      "evidenceDirectoryName": "20260912T1812392918429Z-working-save-smoke",
+      "resultSha256": "ea2977760fd1fba1845758133a7e4838aad730c4201c654fb2ca2e7d7f608416",
+      "status": "PASS",
+      "assertions": 11,
+      "assertionNames": [
+        "exact-ui-action",
+        "complete-catalog",
+        "unique-working-and-distinct-baseline",
+        "descriptor-load-correlation",
+        "load-completion-and-fingerprint",
+        "no-save-writing-api",
+        "loaded-mod-version",
+        "unique-working-slot",
+        "exact-receiver-bound-path",
+        "strict-receiver-bound-order",
+        "autonomous-action-invoked"
+      ],
+      "startUtc": "2026-09-12T18:12:46.5940203Z",
+      "endUtc": "2026-09-12T18:14:55.9350456Z",
+      "loadedVersion": "0.0.127",
+      "loadedDllSha256": "fb81a01e3ff56289f6e86db6a0a61fc66e5cbcb6b5ca06fbb767c5cf02ac4fc9",
+      "loadedMvid": "e35ff147-5fb4-4aa4-9d11-9612bf1a2f3c",
+      "evidenceClass": "mechanical; icon scenario additionally emits explicitly labeled facsimiles",
+      "nativeUICapture": false,
+      "ownerVisualApproval": false
+    }
+  ],
+  "restoration": {
+    "status": "PASS",
+    "originalFileCount": 136,
+    "restoredFileCount": 136,
+    "allPathsAndHashesIdentical": true,
+    "restoredVersion": "0.0.117",
+    "featureModulesSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17"
+  },
+  "notQualified": [
+    "new final raster runtime bindings",
+    "actual native UI screens/typography/clipping",
+    "saved firearm parameter-specific round trip",
+    "complete elemental/strategic live consumer census",
+    "owner pilot approval",
+    "owner final visual approval"
+  ],
+  "publication": {
+    "branch": "codex/icon-art-overhaul-v2",
+    "status": "wrapper denied non-allowlisted branch; no bypass"
+  },
+  "restorationPrecheckCaveat": "Packaged installed bytes matched. An extra-file audit rejected FeatureModules.json.previous before its backup comparison; the restore call nevertheless ran in the same orchestration cell. Subsequent source inspection confirms FeatureModuleSettingsStore creates this .previous backup with File.Replace. Its contents were not independently hashed before restoration. Final full-tree verification establishes that every original installed path/hash was restored (136/136)."
+}

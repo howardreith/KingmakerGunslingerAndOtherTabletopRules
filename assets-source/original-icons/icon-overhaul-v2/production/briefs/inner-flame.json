@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "key": "inner-flame",
+  "behavior": "Inner Flame: improves Scorching Weapons' saves and fire weapon damage, no new grapple mechanic.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/inner-flame.png",
+  "sourceSha256": "28f569b92f7d9aa4d1131540fdf17d68f87e6bb82f5b283c3782b181fd6d6f59",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/revisions/inner-flame-v1.png",
+      "role": "Unapproved draft edited: Blade tip and complete hilt needed safe framing"
+    }
+  ],
+  "prompt": "Use case: precise-object-edit. Correct ONLY the framing of this painted Inner Flame icon. Pull back enough to show the COMPLETE sword from the pointed blade tip through the crossguard, full leather grip and small pommel, with a dark margin of at least 8 percent of image height above the tip and below the pommel. The whole sword should occupy about 82 percent of square height. Keep the same upright centered sword, angular silver steel blade, two orange inner channels and concentrated bright ember core just above the guard, the same painterly brushwork and brown-black full-bleed background. Keep proportions natural and crossguard readable; the sword must not become a dagger. No other new objects, text, frame, border or UI-state symbols.",
+  "visualStatus": "production-awaiting-owner-review",
+  "revisions": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/revisions/inner-flame-v1.png",
+      "sha256": "2554f535a000df999f639e00aa3fce376900221cb17e5d4d7c6942a2fd4396a7",
+      "reason": "Blade tip and complete hilt needed safe framing"
+    },
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/revisions/inner-flame-v1.json",
+      "sha256": "1aebe7b794b8e5d054268b7de279b3570af4e47c4639e3a23bd20c64ba30067d",
+      "reason": "Exact original prompt and provenance"
+    }
+  ],
+  "subjectAndSilhouette": "Use case: precise-object-edit. Correct ONLY the framing of this painted Inner Flame icon. Pull back enough to show the COMPLETE sword from the pointed blade tip through the crossguard, full leather grip and small pommel, with a dark margin of at least 8 percent of image height above the tip and below the pommel. The whole sword should occupy about 82 percent of square height. Keep the same upright centered sword, angular silver steel blade, two orange inner channels and concentrated bright ember core just above the guard, the same painterly brushwork and brown-black full-bleed background. Keep proportions natural and crossguard readable; the sword must not become a dagger. No other new objects, text, frame, border or UI-state symbols.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "feats",
+  "confusedWith": [
+    "airy-step",
+    "blazing-aura",
+    "cloud-gazer",
+    "elemental-strike",
+    "firesight",
+    "hydraulic-maneuver",
+    "inner-breath",
+    "scorching-weapons",
+    "triton-portal",
+    "wings-of-air"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No other new objects, text, frame, border or UI-state symbols."
+  ]
+}

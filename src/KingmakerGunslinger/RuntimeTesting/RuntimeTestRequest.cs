@@ -371,6 +371,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ((string)request.Parameters["fixtureCase"] != "public117" && (string)request.Parameters["fixtureCase"] != "deferred117") ||
                     !request.ExitAfterCompletion)) return "deferred-marker-case-not-allowed";
                 bool creatorRegression = RuntimeTestScenarioCatalog.IsElementalCreatorRegressionScenario(request.Scenario);
+                bool nativeActionCase = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression &&
+                    request.Parameters != null &&
+                    request.Parameters.Property(NativeRacialActionIconRules.RequestCaseParameter) != null;
                 bool visualLifecycle = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveCreatorVisualLifecycle;
                 bool nereidPersistence = request.Parameters?["qualificationTrait"]?.Type == JTokenType.String &&
                     RuntimeTestScenarioCatalog.IsNereidPersistenceScope(request.Scenario,
@@ -379,10 +382,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool treacherousEffect = nereidPersistence && request.Parameters?["qualificationEffect"]?.Type == JTokenType.String &&
                     (string)request.Parameters["qualificationEffect"] == "TreacherousEarth";
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
-                if (request.Parameters == null || request.Parameters.Count != (persistence ? 3 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (persistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
+                if (nativeActionCase && ((string)request.Parameters[NativeRacialActionIconRules.RequestCaseParameter] != NativeRacialActionIconRules.RequestCaseValue ||
+                    (string)request.Parameters["class"] != "Fighter" ||
+                    (string)request.Parameters["allocation"] != "point-buy" ||
+                    !request.ExitAfterCompletion))
+                    return "native-action-case-not-allowed";
                 if ((creatorRegression || visualLifecycle) && (request.Parameters["race"]?.Type != JTokenType.String ||
                     request.Parameters["class"]?.Type != JTokenType.String ||
                     request.Parameters["allocation"]?.Type != JTokenType.String ||
@@ -544,7 +552,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return "scenario-timeouts-not-allowed";
                 bool elementalOffCreator = IsElementalOffCreatorScope(request);
                 if (elementalOffCreator && !request.ExitAfterCompletion) return "elemental-off-creator-exit-required";
-                if (!elementalOffCreator && (request.Parameters == null || request.Parameters.Count != 0))
+                bool iconControl = IconCensusControlPolicy.IsControl(request.Scenario, request.ExitAfterCompletion, request.Parameters);
+                if (!elementalOffCreator && !iconControl && (request.Parameters == null || request.Parameters.Count != 0))
                     return "parameters-not-allowed";
             }
 

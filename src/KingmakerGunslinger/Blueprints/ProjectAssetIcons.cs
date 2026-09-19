@@ -43,6 +43,7 @@ namespace KingmakerGunslinger.Blueprints
             names = names.Concat(new[] { "elven-branched-spear",
                 "wakizashi", "katana", "nodachi", "night-without-moon",
                 "heavens-measure", "world-tree-severer" }).ToArray();
+            names = names.Concat(OwnedIconAssignments.IconKeys).ToArray();
             foreach (string name in names)
             {
                 string path = Path.Combine(directory, name + ".png");

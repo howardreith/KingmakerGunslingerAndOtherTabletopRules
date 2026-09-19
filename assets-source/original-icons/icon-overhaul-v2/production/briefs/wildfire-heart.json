@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "key": "wildfire-heart",
+  "behavior": "Wildfire Heart grants +4 racial initiative; ember-heart with a leading spark, not healing.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/wildfire-heart.png",
+  "sourceSha256": "0c7d94b4e48a95c31c882fe8ed0662dd35021447303f7b0897d7e5a27a82437f",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painterly elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized warm light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A compact HEART-SHAPED EMBER leans forward at lower left, bursting into one FAST LEADING FLAME SPARK toward upper right, with two broad tapered trails connecting the heart to the spark. Strong diagonal launch silhouette, pale yellow leading point and orange heart core, deep brown-black ground. Keep recognizable heart notch and both rounded lobes. No blood vessels, medical cross, resting hand, slow aura, explosion or regeneration circle.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A compact HEART-SHAPED EMBER leans forward at lower left, bursting into one FAST LEADING FLAME SPARK toward upper right, with two broad tapered trails connecting the heart to the spark. Strong diagonal launch silhouette, pale yellow leading point and orange heart core, deep brown-black ground. Keep recognizable heart notch and both rounded lobes. No blood vessels, medical cross, resting hand, slow aura, explosion or regeneration circle.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "ifrit-traits",
+  "confusedWith": [
+    "brazen-flame",
+    "efreeti-magic",
+    "fire-in-the-blood",
+    "fire-insight",
+    "forge-hardened"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No blood vessels, medical cross, resting hand, slow aura, explosion or regeneration circle."
+  ]
+}

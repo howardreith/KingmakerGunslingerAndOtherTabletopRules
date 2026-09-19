@@ -1,6 +1,29 @@
 # Changelog
 
+## 0.0.130-icon-art-overhaul
+
+- Complete icon art overhaul: 90 owner-approved images (89 paintings plus the
+  Rapid Reload emblem) integrated across racial actions, variants, held-touch
+  deliveries, activatables, racial feats, heritages, alternate traits,
+  selectors, buffs and scroll items, with all 90 exact source/export hashes
+  frozen in the repository approval records and re-verified no-write at
+  release time.
+- Native P/M/B monogram presentation preserved for the five integrated
+  firearm feat roots; the four higher roots (Greater Weapon Focus, Weapon
+  Specialization, Greater Weapon Specialization, Improved Critical) qualified
+  12/12 through real level-up selections with native prerequisite
+  enforcement, snapshot-proven cancellation and cleanup, and FeatureUIData
+  monogram verification.
+- Guarded runtime qualification for the 39 racial action consumers through
+  native widgets with exact sprite references, a pinned native control
+  observation and full post-cleanup restoration; ordinary menu-flow screens
+  and saved-parameter persistence remain explicitly pending owner review per
+  the shipped checklists and request documents.
+- All 0.0.129 gameplay (Recall, automatic scroll readers, Oracle behavior)
+  preserved unchanged.
+
 ## 0.0.129-recall-and-smart-scrolls
+
 
 - Qualified Word of Recall through native Oracle 11-to-12 candidate selection,
   cancel/commit and spontaneous casting using one ordinary level-6 choice.

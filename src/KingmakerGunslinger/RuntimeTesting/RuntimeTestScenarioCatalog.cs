@@ -282,6 +282,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "working-save-eastern-weapons-verify-absent";
         internal const string DisposableFirearmDependentFeats =
             "disposable-firearm-dependent-feats";
+        internal const string DisposableFirearmHigherFeatRoots =
+            "disposable-firearm-higher-feat-roots";
         internal const string DisposableEmptyFirearmCommand =
             "disposable-empty-firearm-command";
         internal const string ObserveVendorTableContracts =
@@ -626,6 +628,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveEasternWeaponsVerifyCleanup,
                 WorkingSaveEasternWeaponsVerifyAbsent,
                 DisposableFirearmDependentFeats,
+                DisposableFirearmHigherFeatRoots,
                 DisposableEmptyFirearmCommand,
                 ObserveVendorTableContracts,
                 ObserveCapitalCordVendor,

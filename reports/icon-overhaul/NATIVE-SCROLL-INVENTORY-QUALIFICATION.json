@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "status": "TECHNICALLY_QUALIFIED_NATIVE_SCROLL_INVENTORY; COMPLETE_UI_AND_OWNER_APPROVAL_PENDING",
+  "scope": "Actual inventory slots and native item descriptions for Teleport, Greater Teleport and Word of Recall; exact request-owned cleanup. No art, mapping, gameplay, purchase, use or save-write change.",
+  "artifact": {
+    "generatedAtUtc": "2026-09-13T18:08:27.4522168Z",
+    "commit": "197f9f6198e4f2d706cf0ac64cc491c7e6ef3bca",
+    "branch": "codex/icon-art-overhaul-v2",
+    "sourceStateSha256": "59d7067ec489cb775200903c1c7c638ac0fc7a618132c0376759af52f6564990",
+    "version": "0.0.128",
+    "packageSha256": "0e1c87225e0bdf3d25a2729e86126a141596e6a6b34b051b32233169102e5256",
+    "dllSha256": "337140eba471f730d753307f785aedf07c95049b44829c04538bb8853a9b94c4",
+    "dllMvid": "4a268866-874b-425c-ba4c-40dfcf6a715b"
+  },
+  "currentMaster": "9dc2b6301d97bc83540845240544d34b6fad4b48",
+  "buildChecks": {
+    "repositoryValidation": "PASS",
+    "catalogCases": 23,
+    "nativeScreenshotCases": 16,
+    "pairedEvidenceCases": 6,
+    "currentVersionRequestCases": 11,
+    "domainTests": 1629,
+    "domainFailures": 0,
+    "cleanRelease": "PASS",
+    "strictPackageFiles": 224
+  },
+  "qualification": {
+    "guardedSteamRuns": 2,
+    "assertions": 49,
+    "originalNativeScreens": 16,
+    "targetScreens": 6,
+    "saveWritesObserved": false
+  },
+  "runs": [
+    {
+      "directory": "20260913T1809335245829Z-disposable-teleportation-spellbook-ui",
+      "runId": "20260913T1809335402128Z-2746141dfa8e4fb588416c4fb94e17a9",
+      "scenario": "disposable-teleportation-spellbook-ui",
+      "status": "PASS",
+      "startedUtc": "2026-09-13T18:09:40.7894123Z",
+      "endedUtc": "2026-09-13T18:12:21.6338081Z",
+      "assertions": 38,
+      "resultSha256": "33363958eccbad5488c4ea000ef07bf2e5aa9343f0974c51ccd2ac06e6115d3a",
+      "identitySha256": "6e53c242bbfd0998c7bb8fd8b3862d3116c313c2356ac8a33620ba9cd5edaab6",
+      "requestSha256": "058d69e948aa592cead71b7ce43ec0d3c925c39898c9c55ceaf879bb3dbc9c93",
+      "nativeScreens": 16,
+      "screenManifestSha256": "e5b12bfc8ca8dd4eacd9af71a02c196926ed548134661edb3f189374f2ee5d6c",
+      "fixtureSha256": "c9a75dc6d0668b393ae96fe8e2e8c6d68134ce3a916498b1d846757d3b594d56",
+      "cleanup": {
+        "surface": "native-scroll-inventory",
+        "status": "three-native-scroll-slots-and-descriptions-captured",
+        "checks": {
+          "itemReferencesAndOrder": true,
+          "itemScalarsAndIcons": true,
+          "money": true,
+          "tabsClosed": true,
+          "inventoryClosed": true,
+          "descriptionClosed": true,
+          "filter": true,
+          "sorter": true,
+          "filterSave": true,
+          "savedFilter": true,
+          "savedSorter": true,
+          "sheetCharacter": true,
+          "sheetSection": true,
+          "group": true,
+          "zeroSaveWrites": true
+        },
+        "restored": true,
+        "originalItemCount": 21,
+        "temporaryItemCount": 3
+      },
+      "targets": [
+        {
+          "stage": "native-scroll-row:2c283c993b233df53b487fc7eeac2ba3",
+          "file": "native-ui-010.png",
+          "sha256": "a6516a10a5b6725949f7aedf185771a17aaa57aa44a4506b4003971a8b054916",
+          "surface": "native-scroll-inventory",
+          "target": {
+            "name": "Scroll of Teleport",
+            "itemGuid": "2c283c993b233df53b487fc7eeac2ba3",
+            "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+            "iconName": "KMG_Icon_teleport",
+            "renderedIconExact": true,
+            "spellIconMatchesItem": true,
+            "itemReferenceRetained": true,
+            "itemCount": 1,
+            "charges": 1,
+            "identified": true,
+            "otherItemRows": 9,
+            "otherItemIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter",
+            "scrollType": "Kingmaker.UI.Common.ScrollRectExtended",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 785.100037,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -116.300049,
+            "rowMaxY": -60.80005,
+            "viewportMinY": -665.772,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 0.999999464,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": 0.0,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -6.10351563e-05
+          },
+          "description": null
+        },
+        {
+          "stage": "native-scroll-description:2c283c993b233df53b487fc7eeac2ba3",
+          "file": "native-ui-011.png",
+          "sha256": "d7914f14c30610c6fc33986edd3a58cdbba583419d691f92bd44f7ac8ed474e1",
+          "surface": "native-scroll-description",
+          "target": {
+            "name": "Scroll of Teleport",
+            "itemGuid": "2c283c993b233df53b487fc7eeac2ba3",
+            "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+            "iconName": "KMG_Icon_teleport",
+            "renderedIconExact": true,
+            "spellIconMatchesItem": true,
+            "itemReferenceRetained": true,
+            "itemCount": 1,
+            "charges": 1,
+            "identified": true,
+            "otherItemRows": 9,
+            "otherItemIconsExact": true
+          },
+          "viewport": null,
+          "description": {
+            "nameExact": true,
+            "matchingIcons": 1,
+            "tooltipItemExact": true,
+            "tooltipDataItemExact": true,
+            "shown": true
+          }
+        },
+        {
+          "stage": "native-scroll-row:2a2b0185be1d2dba5aa1b5a24774e17d",
+          "file": "native-ui-012.png",
+          "sha256": "f6d14d9abdb29979aab105343de86d654aea7b2ede82aba5d6f1d2e2266abdf8",
+          "surface": "native-scroll-inventory",
+          "target": {
+            "name": "Scroll of Greater Teleport",
+            "itemGuid": "2a2b0185be1d2dba5aa1b5a24774e17d",
+            "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+            "iconName": "KMG_Icon_greater-teleport",
+            "renderedIconExact": true,
+            "spellIconMatchesItem": true,
+            "itemReferenceRetained": true,
+            "itemCount": 1,
+            "charges": 1,
+            "identified": true,
+            "otherItemRows": 9,
+            "otherItemIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter",
+            "scrollType": "Kingmaker.UI.Common.ScrollRectExtended",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 785.1,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -116.300049,
+            "rowMaxY": -60.80005,
+            "viewportMinY": -665.772,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": -6.10351563e-05,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -6.10351563e-05
+          },
+          "description": null
+        },
+        {
+          "stage": "native-scroll-description:2a2b0185be1d2dba5aa1b5a24774e17d",
+          "file": "native-ui-013.png",
+          "sha256": "b8782bb479c26521f9f53e3876c481d68badc4b910725c7f4b4ffc3f6657f51f",
+          "surface": "native-scroll-description",
+          "target": {
+            "name": "Scroll of Greater Teleport",
+            "itemGuid": "2a2b0185be1d2dba5aa1b5a24774e17d",
+            "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+            "iconName": "KMG_Icon_greater-teleport",
+            "renderedIconExact": true,
+            "spellIconMatchesItem": true,
+            "itemReferenceRetained": true,
+            "itemCount": 1,
+            "charges": 1,
+            "identified": true,
+            "otherItemRows": 9,
+            "otherItemIconsExact": true
+          },
+          "viewport": null,
+          "description": {
+            "nameExact": true,
+            "matchingIcons": 1,
+            "tooltipItemExact": true,
+            "tooltipDataItemExact": true,
+            "shown": true
+          }
+        },
+        {
+          "stage": "native-scroll-row:42d3daeb7d503687df8953b47727372b",
+          "file": "native-ui-014.png",
+          "sha256": "a27b106b3f9398e20df52fef77ac9af41e4a7c56e43e183fa7350f0ab5c7a1fd",
+          "surface": "native-scroll-inventory",
+          "target": {
+            "name": "Scroll of Word of Recall",
+            "itemGuid": "42d3daeb7d503687df8953b47727372b",
+            "spellGuid": "596d85a666204d6ea5c0188e53f4b4de",
+            "iconName": "KMG_Icon_word-of-recall",
+            "renderedIconExact": true,
+            "spellIconMatchesItem": true,
+            "itemReferenceRetained": true,
+            "itemCount": 1,
+            "charges": 1,
+            "identified": true,
+            "otherItemRows": 9,
+            "otherItemIconsExact": true
+          },
+          "viewport": {
+            "nativeApi": "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter",
+            "scrollType": "Kingmaker.UI.Common.ScrollRectExtended",
+            "scrollObject": "Scroll View",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 785.1,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -116.300049,
+            "rowMaxY": -60.80005,
+            "viewportMinY": -665.772,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 1.0,
+            "horizontalEnabled": false,
+            "originalContentX": 0.0,
+            "originalContentY": -6.10351563e-05,
+            "captureX": 0.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -6.10351563e-05
+          },
+          "description": null
+        },
+        {
+          "stage": "native-scroll-description:42d3daeb7d503687df8953b47727372b",
+          "file": "native-ui-015.png",
+          "sha256": "b04046bb94e9937c484be3a0cc76e72a48ba7b0a88458268b06342b2757876f7",
+          "surface": "native-scroll-description",
+          "target": {
+            "name": "Scroll of Word of Recall",
+            "itemGuid": "42d3daeb7d503687df8953b47727372b",
+            "spellGuid": "596d85a666204d6ea5c0188e53f4b4de",
+            "iconName": "KMG_Icon_word-of-recall",
+            "renderedIconExact": true,
+            "spellIconMatchesItem": true,
+            "itemReferenceRetained": true,
+            "itemCount": 1,
+            "charges": 1,
+            "identified": true,
+            "otherItemRows": 9,
+            "otherItemIconsExact": true
+          },
+          "viewport": null,
+          "description": {
+            "nameExact": true,
+            "matchingIcons": 1,
+            "tooltipItemExact": true,
+            "tooltipDataItemExact": true,
+            "shown": true
+          }
+        }
+      ]
+    },
+    {
+      "directory": "20260913T1814212694765Z-working-save-smoke",
+      "runId": "20260913T1814212957075Z-99a876b9dc854c81af27f9ccaf92426d",
+      "scenario": "working-save-smoke",
+      "status": "PASS",
+      "startedUtc": "2026-09-13T18:14:28.2573894Z",
+      "endedUtc": "2026-09-13T18:16:28.4775548Z",
+      "assertions": 11,
+      "resultSha256": "fb6bd61ded78621eb0bc0b27daae86762226855f798096310c025aa01202e666",
+      "identitySha256": "ab2416df919f76b0020607f81063f63d386bca606654bf4514e0a08316a5ec9d",
+      "requestSha256": "220903f1758e3d7283dc8ed7b27832e5a70dd8c4831d02551c8861fa9160a711"
+    }
+  ],
+  "priorFailure": {
+    "directory": "20260913T1757436387594Z-disposable-teleportation-spellbook-ui",
+    "status": "ERROR",
+    "dllMvid": "8da5c8b4-708e-4253-ae67-0e21547ca4ad",
+    "reason": "First inventory slot passed, but the fixture checked an uninitialized tooltip object before normal native opening. Cleanup failure during unwinding obscured the first exception. Native lifecycle checks were corrected; cleanup now reports individual predicates without replacing a prior exception.",
+    "originalInstallationRestored": true
+  },
+  "visualObservations": [
+    "All six original item-slot/description captures were inspected at 1280x720. The three distinct spell paintings retain their matching scroll identities, native item frames and description placement. Neighboring ordinary item art remains intact. Screenshots support appearance only; actual object assertions establish wiring."
+  ],
+  "installationRestoration": {
+    "restored": true,
+    "originalFileCount": 136,
+    "verifiedUtc": "2026-09-13T18:17:26.642244+00:00",
+    "gameClosed": true,
+    "restorationSha256": "3909d9750eccf1782c6c94c0c0b3b98d697d8493a1d7a186274bb64ff29d435a",
+    "restoreAuditSha256": "b15503829bb867c42784311130ed67f47276996e53d40bec9191b62f4768810b",
+    "auditedPackageFiles": 224,
+    "auditedRuntimeAdditions": 3
+  },
+  "inheritedEvidence": [
+    "reports/icon-overhaul/NATIVE-128-QUALIFICATION.json",
+    "reports/icon-overhaul/NATIVE-VIEWPORT-QUALIFICATION.json",
+    "reports/icon-overhaul/NATIVE-FACT-SLOT-QUALIFICATION.json"
+  ],
+  "pending": [
+    "Native merchant scroll views, complete racial feat/action/variant/buff views, higher dependent feat rendered surfaces as applicable, and live strategic text-control confirmation.",
+    "Existing working save lacks supported P/M/B saved parameters; any new save/write requires separate authorization.",
+    "Owner approval of eighty later paintings and final native UI. Ten exact pilot images/family direction are approved."
+  ]
+}

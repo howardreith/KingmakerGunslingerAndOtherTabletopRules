@@ -1475,6 +1475,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'disposable-firearm-higher-feat-roots' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'disposable-empty-firearm-command' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1589,6 +1595,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         [Parameter(Mandatory = $true)][string]$Scenario,
         [Parameter(Mandatory = $true)][string]$ExpectedVersion,
         [Parameter(Mandatory = $true)][int]$TimeoutSeconds,
+        [bool]$ExitAfterCompletion = $true,
         [int]$StartupTimeoutSeconds = 180,
         [int]$CatalogTimeoutSeconds = 0,
         [int]$SelectionTimeoutSeconds = 0,
@@ -1621,9 +1628,9 @@ function Assert-KmgRuntimeScenarioPreflight {
         $Parameters.Count -ne 1 -or $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING')) {
         throw 'Public 0.0.117 authority permits only its exact disposable persistence producer, without another producer authority.'
     }
-    if ($ExpectedVersion -cne '0.0.129' -and
+    if ($ExpectedVersion -cne '0.0.130' -and
         -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.129.'
+        throw 'ExpectedVersion must be exactly the active version 0.0.130.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -1670,12 +1677,19 @@ function Assert-KmgRuntimeScenarioPreflight {
             }
             if ($Parameters.saveName -cne $allowedName) { throw 'Persistence input is not owned by this phase transaction.' }
         }
-        $requiredParameterCount = if ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
+            $Parameters.ContainsKey('nativeActionCase')
+        $requiredParameterCount = if ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
             (-not $persistence -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
             throw "$Scenario requires its exact working save and allowlisted parameters."
+        }
+        if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
+            [string]$Parameters['class'] -cne 'Fighter' -or
+            [string]$Parameters['allocation'] -cne 'point-buy')) {
+            throw 'The native action review case permits only nativeActionCase=racial-actions with Fighter and point-buy.'
         }
         if ($Scenario -ceq 'working-save-elemental-deferred-markers' -and
             (-not $Parameters.ContainsKey('fixtureCase') -or $Parameters.fixtureCase -isnot [string] -or
@@ -1789,6 +1803,13 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw "$Scenario requires exactly one allowlisted assetConfiguration."
         }
     }
+    elseif ($Scenario -ceq 'icon-overhaul-visual-evidence' -and $Parameters.Count -gt 0) {
+        if (-not $ExitAfterCompletion -or $Parameters.Count -ne 1 -or
+            -not $Parameters.ContainsKey('iconCensusControl') -or
+            $Parameters.iconCensusControl -isnot [bool] -or -not $Parameters.iconCensusControl) {
+            throw 'Icon census control requires only iconCensusControl=true and automatic exit; no save parameters.'
+        }
+    }
     elseif ($Parameters.Count -ne 0 -and -not (Test-KmgElementalOffCreatorScope $Scenario $Parameters)) {
         throw "Scenario '$Scenario' does not accept parameters."
     }
@@ -1856,7 +1877,7 @@ function New-KmgRuntimeRequest {
         (Test-KmgElementalOffCreatorScope $Scenario $Parameters)) -and -not $ExitAfterCompletion) {
         throw 'Guarded Nereid player qualification requires automatic process exit.'
     }
-    $metadata = Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario `
+    $metadata = Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario -ExitAfterCompletion $ExitAfterCompletion `
         -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
         -StartupTimeoutSeconds $StartupTimeoutSeconds `
         -CatalogTimeoutSeconds $CatalogTimeoutSeconds `
@@ -1897,8 +1918,14 @@ function New-KmgRuntimeRequest {
             [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
                 class = [string]$Parameters.class; allocation = [string]$Parameters.allocation; sex = [string]$Parameters.sex }
         } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec', 'working-save-creator-visual-lifecycle')) {
-            [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
-                class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
+            if ($Scenario -ceq 'working-save-elemental-character-creation-regression' -and $Parameters.ContainsKey('nativeActionCase')) {
+                [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
+                    class = [string]$Parameters.class; allocation = [string]$Parameters.allocation
+                    nativeActionCase = [string]$Parameters.nativeActionCase }
+            } else {
+                [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
+                    class = [string]$Parameters.class; allocation = [string]$Parameters.allocation }
+            }
         } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
             [ordered]@{ saveName = [string]$Parameters.saveName; fixtureCase = [string]$Parameters.fixtureCase }
         } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
@@ -1945,6 +1972,8 @@ function New-KmgRuntimeRequest {
             }
         } elseif (Test-KmgElementalOffCreatorScope $Scenario $Parameters) {
             [ordered]@{ creatorCase = 'module-off' }
+        } elseif ($Scenario -ceq 'icon-overhaul-visual-evidence' -and $Parameters.Count -eq 1) {
+            [ordered]@{ iconCensusControl = [bool]$Parameters.iconCensusControl }
         } else { [ordered]@{} }
     }
 }
