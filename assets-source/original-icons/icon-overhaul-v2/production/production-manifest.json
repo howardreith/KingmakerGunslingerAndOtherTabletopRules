@@ -1529,13 +1529,13 @@
                     {
                         "key":  "scroll-of-teleport",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-teleport.png",
-                        "sourceSha256":  "e0d6ecda8903daa14ba152e23adbf202474763e9f5c8eb9172d0f86510fe8d8a",
+                        "sourceSha256":  "10cf212631bbc4e319c6e71afab466f86eadc2051fe2ffdd16ceacee6047975d",
                         "sourceSize":  [
                                            128,
                                            128
                                        ],
                         "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-teleport.png",
-                        "exportSha256":  "e0d6ecda8903daa14ba152e23adbf202474763e9f5c8eb9172d0f86510fe8d8a",
+                        "exportSha256":  "10cf212631bbc4e319c6e71afab466f86eadc2051fe2ffdd16ceacee6047975d",
                         "exportSize":  [
                                            128,
                                            128
@@ -1549,13 +1549,13 @@
                     {
                         "key":  "scroll-of-greater-teleport",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-greater-teleport.png",
-                        "sourceSha256":  "dc7cdbc8782bdf0c095d11b9003d81f429c49962b8a5e8b15630b9f566633c24",
+                        "sourceSha256":  "413c935aa139daec845250d696f0a862062f84ba84a3ff80d6a6dd2e61df0c6b",
                         "sourceSize":  [
                                            128,
                                            128
                                        ],
                         "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-greater-teleport.png",
-                        "exportSha256":  "dc7cdbc8782bdf0c095d11b9003d81f429c49962b8a5e8b15630b9f566633c24",
+                        "exportSha256":  "413c935aa139daec845250d696f0a862062f84ba84a3ff80d6a6dd2e61df0c6b",
                         "exportSize":  [
                                            128,
                                            128
@@ -1569,13 +1569,13 @@
                     {
                         "key":  "scroll-of-word-of-recall",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-word-of-recall.png",
-                        "sourceSha256":  "881a1c4b084cc1d7f1043865cb53c8b8c7b3485dfae1b9808376af09157b34f0",
+                        "sourceSha256":  "512c572bb55d6c9b182f4ede08041dd15c8c0c4aaa8617e26766853d832bec90",
                         "sourceSize":  [
                                            128,
                                            128
                                        ],
                         "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-word-of-recall.png",
-                        "exportSha256":  "881a1c4b084cc1d7f1043865cb53c8b8c7b3485dfae1b9808376af09157b34f0",
+                        "exportSha256":  "512c572bb55d6c9b182f4ede08041dd15c8c0c4aaa8617e26766853d832bec90",
                         "exportSize":  [
                                            128,
                                            128
