@@ -8,6 +8,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot 'common.ps1')
+. (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger"
 
@@ -30,6 +31,9 @@ $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit'
     'rifle','revolver','lead-ball','black-powder','repair-kit',
     'gunsmith-kit','overhaul-kit','wakizashi','katana','nodachi',
     'night-without-moon','heavens-measure','world-tree-severer')
+$integratedIcons = @(Get-KmgIntegratedIconRecords -RepositoryRoot $repositoryRoot)
+$requiredIcons = @($requiredIcons + @($integratedIcons | ForEach-Object { $_.Key }) | Select-Object -Unique)
+Assert-KmgIntegratedIconFiles -ModDirectory $outputDirectory -Records $integratedIcons
 foreach ($name in $requiredIcons) {
     $requiredFiles += "assets\icons\$name.png"
 }

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "earth-insight",
+  "behavior": "Earth Insight adds two rounds to earth-subtype creatures summoned by Summon Monster or Summon Nature's Ally.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/earth-insight.png",
+  "sourceSha256": "78b921468c8301f7eadc5371d061063787039e1927ced9096123ec0b72f5c980",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted action/trait style"
+    },
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/sources/fire-insight.png",
+      "role": "unapproved production sibling motif; not an approval authority"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized mineral light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A SMALL EARTH ELEMENTAL constructed of broad irregular sandstone BOULDERS, stocky torso, short head and TWO HEAVY BLOCK ARMS hanging at its sides. Its sturdy separated legs hover just above a LOW HORIZONTAL PALE GREEN SUMMONING ELLIPSE, with two short ascending wisps supporting the feet. Three-quarter pose, slightly wider left shoulder gives chunky asymmetric silhouette. Quiet warm gray/ochre stone, muted jade magical highlights, deep black-olive ground. No fire, eye, clock, glyphs, weapon, punching action, travel gate or circular UI frame.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A SMALL EARTH ELEMENTAL constructed of broad irregular sandstone BOULDERS, stocky torso, short head and TWO HEAVY BLOCK ARMS hanging at its sides. Its sturdy separated legs hover just above a LOW HORIZONTAL PALE GREEN SUMMONING ELLIPSE, with two short ascending wisps supporting the feet. Three-quarter pose, slightly wider left shoulder gives chunky asymmetric silhouette. Quiet warm gray/ochre stone, muted jade magical highlights, deep black-olive ground. No fire, eye, clock, glyphs, weapon, punching action, travel gate or circular UI frame.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "oread-traits",
+  "confusedWith": [
+    "air-insight",
+    "crystalline-form",
+    "fire-insight",
+    "granite-skin",
+    "stone-in-the-blood",
+    "treacherous-earth",
+    "triton-portal"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No fire, eye, clock, glyphs, weapon, punching action, travel gate or circular UI frame."
+  ]
+}

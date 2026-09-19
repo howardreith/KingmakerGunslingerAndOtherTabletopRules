@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "key": "wings-of-air",
+  "behavior": "Wings of Air: improved air/electricity saves; unarmored/light-armored flight abstraction grants melee defense and ground-effect immunity. No new 3D flight navigation.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatBlueprintFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalFeatPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/wings-of-air.png",
+  "sourceSha256": "260461d33f8ef1b8ad6fb9ba47273b875edd81bb9aab36adeb92d0ee4a99f5ac",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted action/feat style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. TWO large translucent WINGS MADE OF WIND, symmetrically swept upward and outward in a broad V, with a small clean gap between their roots. Each wing is three flowing ivory-silver ribbons of air, tapering at graceful curled tips; no actual feathers and no bird. Delicate cool pale teal highlights over deep blue-black ground. The clear open V silhouette fills 80 percent of square with tips 8 percent inside edges. No flames, lightning, figure, shield, circular frame, insects or wings cropped off.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "TWO large translucent WINGS MADE OF WIND, symmetrically swept upward and outward in a broad V, with a small clean gap between their roots. Each wing is three flowing ivory-silver ribbons of air, tapering at graceful curled tips; no actual feathers and no bird. Delicate cool pale teal highlights over deep blue-black ground. The clear open V silhouette fills 80 percent of square with tips 8 percent inside edges. No flames, lightning, figure, shield, circular frame, insects or wings cropped off.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "feats",
+  "confusedWith": [
+    "airy-step",
+    "blazing-aura",
+    "cloud-gazer",
+    "elemental-strike",
+    "firesight",
+    "hydraulic-maneuver",
+    "inner-breath",
+    "inner-flame",
+    "scorching-weapons",
+    "triton-portal"
+  ],
+  "uiSurfaces": [
+    "effects and conditions / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "no actual feathers and no bird.",
+    "No flames, lightning, figure, shield, circular frame, insects or wings cropped off."
+  ]
+}

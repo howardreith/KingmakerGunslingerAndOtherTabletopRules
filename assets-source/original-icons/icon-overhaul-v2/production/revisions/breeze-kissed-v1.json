@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "key": "breeze-kissed",
+  "behavior": "Breeze-Kissed: ready winds defend against nonmagical ranged weapon attacks; optional gust exhausts daily winds.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/breeze-kissed.png",
+  "sourceSha256": "2111f862c48784578b74e118ca1efbe99e1a017e4abc61eadfd4892bd741419a",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized cool ivory-silver light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.  Use a cool desaturated blue-black ground; do not carry over orange flames from the style reference. A broad PALE WIND RIBBON curls protectively in front of a small dark HUMAN SHOULDER SILHOUETTE on the right. One wooden ARROW enters from left and is visibly DEFLECTED UPWARD by the wind, feathered rear left, arrowhead angled up near center. The protective wind is a broad upright C with a clean dark interior, no enclosing frame. Bright silver air edge, quiet cool blue-gray atmosphere. No fire, ray of light, lightning, bow, shield object, attack explosion, multiple arrows or written symbols.",
+  "visualStatus": "production-awaiting-owner-review"
+}

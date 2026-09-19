@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "key": "storm-in-the-blood",
+  "behavior": "Storm in the Blood: electricity damage triggers limited fast healing; lightning-linked blood vitality.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/storm-in-the-blood.png",
+  "sourceSha256": "93b1dc20ebf1db7f396c3ad987c8e90b181d794973fd3b9f542304aefb3a6c83",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted style reference"
+    },
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/sources/fire-in-the-blood.png",
+      "role": "unapproved sibling composition; no inferred visual approval"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized cool ivory-silver light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.  Use a cool desaturated blue-black ground; do not carry over orange flames from the style reference. A large RUBY BLOOD DROP is tilted diagonally to the upper right. Within the droplet, ONE BRIGHT WHITE-BLUE LIGHTNING FORK branches like a vein, feeding two broad looping electrical arcs that cradle the drop from lower left and upper right. Smooth dark red translucent drop remains prominent inside, with cool blue-violet edge light. The whole outer silhouette is a wide diagonal lightning-and-drop form, not a simple upright recolor of a fire drop. No target, attack beam, cloud, flame, medical cross, skull, poison bottle, wound or heart.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A large RUBY BLOOD DROP is tilted diagonally to the upper right. Within the droplet, ONE BRIGHT WHITE-BLUE LIGHTNING FORK branches like a vein, feeding two broad looping electrical arcs that cradle the drop from lower left and upper right. Smooth dark red translucent drop remains prominent inside, with cool blue-violet edge light. The whole outer silhouette is a wide diagonal lightning-and-drop form, not a simple upright recolor of a fire drop. No target, attack beam, cloud, flame, medical cross, skull, poison bottle, wound or heart.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "sylph-traits",
+  "confusedWith": [
+    "air-insight",
+    "breeze-kissed",
+    "fire-in-the-blood",
+    "like-the-wind",
+    "secretive",
+    "stone-in-the-blood",
+    "thunderous-resilience",
+    "whispering-wind"
+  ],
+  "uiSurfaces": [
+    "effects and conditions / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No target, attack beam, cloud, flame, medical cross, skull, poison bottle, wound or heart."
+  ]
+}

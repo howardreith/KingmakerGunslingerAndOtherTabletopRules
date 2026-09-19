@@ -9,6 +9,25 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class FirearmFeatIconTests
     {
+        internal static void NativeMonogramScopeIsExact()
+        {
+            var official = OfficialFirearmSupport.Kinds;
+            string[] expected = { "P", "M", "B" };
+            string letter;
+            for (int index = 0; index < official.Length; index++)
+            {
+                Assertions.True(Feats.FirearmNativeMonogramPolicy.TryLetter(official[index], true, false, out letter) &&
+                    letter == expected[index], "Integrated native firearm parameter lost its exact letter.");
+                Assertions.True(Feats.FirearmNativeMonogramPolicy.TryLetter(official[index], false, true, out letter) &&
+                    letter == expected[index], "Registered Rapid Reload child lost its exact letter.");
+                Assertions.False(Feats.FirearmNativeMonogramPolicy.TryLetter(official[index], false, false, out letter),
+                    "An unrelated firearm feature acquired the native override.");
+            }
+            foreach (var kind in new[] { FirearmKind.Unknown, FirearmKind.Rifle, FirearmKind.Revolver })
+                Assertions.False(Feats.FirearmNativeMonogramPolicy.TryLetter(kind, true, true, out letter),
+                    "A legacy or unrecognized firearm acquired the native override.");
+        }
+
         internal static void OfficialSupportBoundaryIsExact()
         {
             FirearmKind[] expected = { FirearmKind.Pistol,
@@ -101,11 +120,20 @@ namespace KingmakerGunslinger.DomainTests
                 "Retired or rejected selector styling returned to the specification.");
             string wrapper = File.ReadAllText(Path.Combine(root, "tools",
                 "New-FirearmFeatIcons.ps1"));
-            Assertions.True(wrapper.Contains("icon-art/New-IconOverhaulAssets.ps1") &&
-                wrapper.Contains("-Mode Feat"),
-                "Compatibility generator does not delegate to the overhaul pipeline.");
+            Assertions.True(wrapper.Contains("icon-art/Export-IconPilot.ps1") &&
+                !wrapper.Contains("-Mode Feat"),
+                "Compatibility generator can still restore rejected runtime art.");
             string generator = File.ReadAllText(Path.Combine(root, "tools",
                 "icon-art", "New-IconOverhaulAssets.ps1"));
+            Assertions.True(generator.Contains("$Mode -eq 'All' -or $Mode -eq 'Feat'") &&
+                generator.Contains("generation is retired"),
+                "Legacy broad generation must fail before rewriting protected art.");
+            string nativePresentation = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Feats", "NativeFirearmFeatIntegration.cs"));
+            Assertions.True(nativePresentation.Contains("new FeatureParam(parameter)") &&
+                nativePresentation.Contains("displayName, parameter.Description, null,") &&
+                nativePresentation.Contains("displayName.Substring(0, 1)"),
+                "Native firearm menu must retain blueprint parameters and select P/M/B text.");
             foreach (string token in new[] { "Draw-SelectorField",
                 "Draw-OriginalMonogram", "Draw-RapidReloadGlyph",
                 "Get-MonogramTransform", "Get-MonogramAlphaBounds",
@@ -192,7 +220,8 @@ namespace KingmakerGunslinger.DomainTests
                 "value.Param != null",
                 "BlueprintItemEquipmentBelt", "BeltOfConstitution2",
                 "KMG_Icon_cord-of-stubborn-resolve",
-                "new FeatureUIData(match.Feature, match.Param)",
+                "ParameterFallbackIcon(match)",
+                "parameter.Icon : new FeatureUIData(value.Feature, value.Param).Icon",
                 "value.Param.WeaponCategory.HasValue",
                 "ReferenceEquals(",
                 "feats.WeaponFocusChoices[iconIndex].Icon",

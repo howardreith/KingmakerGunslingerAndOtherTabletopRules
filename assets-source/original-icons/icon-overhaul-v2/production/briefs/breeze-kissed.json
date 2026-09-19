@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "key": "breeze-kissed",
+  "behavior": "Breeze-Kissed: ready winds defend against nonmagical ranged weapon attacks; optional gust exhausts daily winds.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/breeze-kissed.png",
+  "sourceSha256": "efe41b838b8932494e8b6f0bcf52bd26e1d18e3cfac9939124e431c4e9d728df",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/revisions/breeze-kissed-v1.png",
+      "role": "Unapproved draft edited: The arrow must turn as an intact straight projectile, not bend like rubber"
+    }
+  ],
+  "prompt": "Use case: precise-object-edit. Correct ONLY the wooden arrow in this Breeze-Kissed painted icon. Replace its bent shaft with ONE perfectly STRAIGHT wooden arrow, with a continuous straight slender shaft from feathered tail at middle left to triangular steel point at upper center-right. Tilt the entire intact arrow diagonally upward and away from the protected person's head, riding along the upper edge of the wind curve. The arrow's path changed; its physical shaft has not bent. Keep the exact large protective C-shaped silver wind ribbon, dark human profile, blue-black background, painterly texture and overall lighting unchanged. All arrow parts inside frame, no new arrows, text, motion badges or other objects.",
+  "visualStatus": "production-awaiting-owner-review",
+  "revisions": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/revisions/breeze-kissed-v1.png",
+      "sha256": "2111f862c48784578b74e118ca1efbe99e1a017e4abc61eadfd4892bd741419a",
+      "reason": "The arrow must turn as an intact straight projectile, not bend like rubber"
+    },
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/revisions/breeze-kissed-v1.json",
+      "sha256": "b9656220fc2b075e714dea4dbb03159920b2e39ac0a97a5ef81be574bb80e54a",
+      "reason": "Exact original prompt and provenance"
+    }
+  ],
+  "subjectAndSilhouette": "Use case: precise-object-edit. Correct ONLY the wooden arrow in this Breeze-Kissed painted icon. Replace its bent shaft with ONE perfectly STRAIGHT wooden arrow, with a continuous straight slender shaft from feathered tail at middle left to triangular steel point at upper center-right. Tilt the entire intact arrow diagonally upward and away from the protected person's head, riding along the upper edge of the wind curve. The arrow's path changed; its physical shaft has not bent. Keep the exact large protective C-shaped silver wind ribbon, dark human profile, blue-black background, painterly texture and overall lighting unchanged. All arrow parts inside frame, no new arrows, text, motion badges or other objects.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "sylph-traits",
+  "confusedWith": [
+    "air-insight",
+    "like-the-wind",
+    "secretive",
+    "storm-in-the-blood",
+    "thunderous-resilience",
+    "whispering-wind"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "no new arrows, text, motion badges or other objects."
+  ]
+}

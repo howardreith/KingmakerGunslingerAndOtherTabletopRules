@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "key": "forge-hardened",
+  "behavior": "Forge-Hardened: +2 racial saves against fatigue/exhaustion; enduring forged body, not active crafting.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/forge-hardened.png",
+  "sourceSha256": "49eba2c2dac825140f974c849b762b71e2ddf80547d3c5824c1585cebadfa4f4",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painterly elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized warm light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. A STOUT HUMAN UPPER TORSO stands with square strong shoulders, skin reading as dark tempered bronze and iron with broad hammered facets. A restrained AMBER FORGE GLOW outlines one shoulder and side of the chest while the body remains upright and composed. The head is small and bowed slightly, arms braced naturally low, central chest broad and solid. Dark soot background, one sweeping heat impression behind left shoulder. No hammer in hand, anvil, crafting tools, weapon, armor suit, flames consuming skin, crystal facets, heart, aura ring or breath loop.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A STOUT HUMAN UPPER TORSO stands with square strong shoulders, skin reading as dark tempered bronze and iron with broad hammered facets. A restrained AMBER FORGE GLOW outlines one shoulder and side of the chest while the body remains upright and composed. The head is small and bowed slightly, arms braced naturally low, central chest broad and solid. Dark soot background, one sweeping heat impression behind left shoulder. No hammer in hand, anvil, crafting tools, weapon, armor suit, flames consuming skin, crystal facets, heart, aura ring or breath loop.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "ifrit-traits",
+  "confusedWith": [
+    "brazen-flame",
+    "efreeti-magic",
+    "fire-in-the-blood",
+    "fire-insight",
+    "wildfire-heart"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No hammer in hand, anvil, crafting tools, weapon, armor suit, flames consuming skin, crystal facets, heart, aura ring or breath loop."
+  ]
+}

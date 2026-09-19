@@ -1,0 +1,2530 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Native inactive racial buff-sheet qualification; owner art/UI approval remains pending",
+  "artifact": {
+    "generatedAtUtc": "2026-09-13T23:28:37.4799098Z",
+    "commit": "a20b0d236a1259f4c92521ab3a7780956095631e",
+    "branch": "codex/icon-art-overhaul-v2",
+    "version": "0.0.129",
+    "sourceStateSha256": "7e15cd13cbcf0917c9eaefab78a90d52e89467708c1b6fa93c3eac1572a0eb62",
+    "packageSha256": "30030682eda80a3a41f65dc0a0c42993e0eb3f5dfd45ec034088eeaeebcdd994",
+    "dllSha256": "804f0b30ab8e2dd417e1c6fd267c9bb23c8efa675889e87b3bff198eff2906f3",
+    "dllMvid": "ff0b4a9c-7daa-4a94-8f82-f9ca3bb47693"
+  },
+  "qualification": {
+    "status": "PASS",
+    "runs": 5,
+    "assertions": 63,
+    "nativeCaptures": 393,
+    "targetCaptures": 13,
+    "distinctBuffIdentities": 13,
+    "tests": {
+      "catalog": 23,
+      "nativeCapture": 25,
+      "paired": 6,
+      "request": 11,
+      "domain": 1639
+    },
+    "cleanRelease": true,
+    "strictPackageFiles": 224
+  },
+  "runs": [
+    {
+      "directory": "20260913T2329421641175Z-working-save-elemental-character-creation-regression",
+      "runId": "20260913T2329421797435Z-a30d443376f449849d7fc93fb9cc013a",
+      "scenario": "working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "assertions": 13,
+      "startedUtc": "2026-09-13T23:37:26.4612535Z",
+      "endedUtc": "2026-09-13T23:37:31.4831261Z",
+      "resultSha256": "07f39a59826890b77bd95a5d4b5268d603b181ee496a33d63d520327beca9f6e",
+      "requestSha256": "583ccfb107ec8c4e9280cd500db076572c4565456de3b5ac284c8c68fc82d63c",
+      "identitySha256": "6feb3aec8ca79fcf8b4c418b7f3721fd5847e678dd6629259c717e0a80cbf3aa",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING",
+        "race": "Undine",
+        "class": "Gunslinger",
+        "allocation": "roll"
+      },
+      "saveWritingApiObserved": false,
+      "workingSaveLoadCompleted": true,
+      "screenCount": 89,
+      "screensSha256": "f6699919570a544ce7db2114f72c27b1e16027be414947ea90e74873ddfa5a34",
+      "fixtureSha256": "16d287060fd7a0a33932f9d667a39ec0cb0a46368aa8841e0e1aa357d6c096b6",
+      "setup": {
+        "stage": "native-fixture-ready",
+        "ownerId": "94ad5073-6919-4293-b9f3-4e22cc694e61",
+        "ownsSheet": true,
+        "ownerInGame": false,
+        "ownerTurnedOn": true,
+        "activeByDefaultProperty": true,
+        "buffsActiveByDefault": false,
+        "loadedEvidencePresent": true,
+        "guardOwned": true,
+        "sameOwner": true,
+        "committed": true,
+        "inParty": false,
+        "customCompanion": true,
+        "originalBuffs": [],
+        "bindingSymbols": [
+          "KMG.ElementalRaces.Traits.Undine.NereidFascination.FascinatedBuff",
+          "KMG.ElementalRaces.Traits.Undine.NereidFascination.AssistanceBuff",
+          "KMG.ElementalRaces.Traits.Undine.NereidFascination.AuraBuff"
+        ],
+        "ownedBuffs": [
+          {
+            "guid": "e118e1e0a17a4acec001000000000003",
+            "hidden": false,
+            "icon": "KMG_Icon_nereid-fascination"
+          },
+          {
+            "guid": "e118e1e0a17a4acec001000000000005",
+            "hidden": false,
+            "icon": "KMG_Icon_shake-free"
+          },
+          {
+            "guid": "e118e1e0a17a4acec001000000000006",
+            "hidden": false,
+            "icon": "KMG_Icon_nereid-fascination"
+          }
+        ],
+        "nativeBlessMatches": [
+          "87b8c6270ea85c743afc734dfe99afee"
+        ]
+      },
+      "buffSheet": {
+        "race": "Undine",
+        "ownerId": "94ad5073-6919-4293-b9f3-4e22cc694e61",
+        "presentation": "native inactive buff rows on the dormant remote mercenary; no effect activation",
+        "expectedBuffGuids": [
+          "e118e1e0a17a4acec001000000000003",
+          "e118e1e0a17a4acec001000000000005",
+          "e118e1e0a17a4acec001000000000006"
+        ],
+        "capturedBuffGuids": [
+          "e118e1e0a17a4acec001000000000003",
+          "e118e1e0a17a4acec001000000000005",
+          "e118e1e0a17a4acec001000000000006"
+        ],
+        "restored": true,
+        "nativeRowsBeforeCapture": [
+          {
+            "guid": "e118e1e0a17a4acec001000000000003",
+            "ownerId": "94ad5073-6919-4293-b9f3-4e22cc694e61",
+            "name": "Nereid Fascination",
+            "expectedName": "Nereid Fascination",
+            "sprite": "KMG_Icon_nereid-fascination",
+            "alpha": 1.0
+          },
+          {
+            "guid": "e118e1e0a17a4acec001000000000005",
+            "ownerId": "94ad5073-6919-4293-b9f3-4e22cc694e61",
+            "name": "Shake Free",
+            "expectedName": "Shake Free",
+            "sprite": "KMG_Icon_shake-free",
+            "alpha": 1.0
+          },
+          {
+            "guid": "e118e1e0a17a4acec001000000000006",
+            "ownerId": "94ad5073-6919-4293-b9f3-4e22cc694e61",
+            "name": "Nereid Fascination Aura",
+            "expectedName": "Nereid Fascination Aura",
+            "sprite": "KMG_Icon_nereid-fascination",
+            "alpha": 1.0
+          },
+          {
+            "guid": "87b8c6270ea85c743afc734dfe99afee",
+            "ownerId": "94ad5073-6919-4293-b9f3-4e22cc694e61",
+            "name": "Bless",
+            "expectedName": "Bless",
+            "sprite": "Bless",
+            "alpha": 1.0
+          }
+        ],
+        "exceptions": [],
+        "originalBuffsRestored": true,
+        "worldAndOriginalFactsRetained": true,
+        "pooledRowsReleased": true
+      },
+      "creatorCleanup": {
+        "crossSceneExact": true,
+        "remoteCompanionsExact": true,
+        "partyCharactersExact": true,
+        "inventoryReferencesExact": true,
+        "inventoryCountsExact": true,
+        "moneyExact": true,
+        "respecPauseExact": true
+      },
+      "creatorAcceptance": "Three native disposable mercenary commits; exact rollback; no save writes",
+      "targets": [
+        {
+          "file": "native-ui-028.png",
+          "sha256": "12f76febe7f688f6579040a01da49758fd8dcfb72b9dbdd8926c679e22afbb2d",
+          "stage": "native-racial-buff-row:e118e1e0a17a4acec001000000000003",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 150.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -70.0000458,
+            "rowMaxY": -10.0000305,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -6.10351563e-05,
+            "captureX": 1.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 1.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Nereid Fascination",
+            "buffGuid": "e118e1e0a17a4acec001000000000003",
+            "ownerId": "94ad5073-6919-4293-b9f3-4e22cc694e61",
+            "expectedSprite": "KMG_Icon_nereid-fascination",
+            "renderedSprite": "KMG_Icon_nereid-fascination",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Nereid Fascination",
+              "parsedText": "Nereid Fascination",
+              "characterCount": 18,
+              "requiredGlyphCount": 17,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -140.0,
+                  "maxX": 395.270081,
+                  "minY": -386.219971,
+                  "maxY": 40.00009
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 3,
+              "otherRowBounds": [
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": -99.9999847,
+                  "maxY": -39.99997
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": -29.9999847,
+                  "maxY": 30.00003
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": -99.9999847,
+                  "maxY": -39.99997
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.3456268,
+                "maxX": 91.48877,
+                "minY": 10.2229156,
+                "maxY": 25.0512238
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.9999542,
+                "maxX": 120.000061,
+                "minY": 6.144989,
+                "maxY": 27.8549957
+              },
+              "iconBounds": {
+                "minX": -119.999954,
+                "maxX": -69.99997,
+                "minY": -25.0,
+                "maxY": 25.0000153
+              },
+              "timerBounds": {
+                "minX": -42.9999847,
+                "maxX": -2.08996582,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.9999542,
+                "maxX": -47.99997,
+                "minY": -22.4549866,
+                "maxY": -6.255005
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 4,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: three native buff icons and complete labels, timers and Bless control. Aura title is fully visible beyond its nominal unmasked row; actual mask and neighbor geometry pass. Unrelated long fixture header overlaps."
+        },
+        {
+          "file": "native-ui-029.png",
+          "sha256": "60a812faaa3272f67638acdd5e4d5a57f65398d6cb0d50e249f1d15a37602082",
+          "stage": "native-racial-buff-row:e118e1e0a17a4acec001000000000005",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 150.000015,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -140.000031,
+            "rowMaxY": -80.00003,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 0.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -3.05175781e-05,
+            "captureX": 1.0,
+            "captureY": 0.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -6.10351563e-05,
+            "restoredX": 1.0,
+            "restoredY": 1.0
+          },
+          "target": {
+            "name": "Shake Free",
+            "buffGuid": "e118e1e0a17a4acec001000000000005",
+            "ownerId": "94ad5073-6919-4293-b9f3-4e22cc694e61",
+            "expectedSprite": "KMG_Icon_shake-free",
+            "renderedSprite": "KMG_Icon_shake-free",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Shake Free",
+              "parsedText": "Shake Free",
+              "characterCount": 10,
+              "requiredGlyphCount": 9,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -140.0,
+                  "maxX": 395.270081,
+                  "minY": -316.22,
+                  "maxY": 110.000061
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 3,
+              "otherRowBounds": [
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": 40.0000153,
+                  "maxY": 100.000031
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": 40.0000153,
+                  "maxY": 100.000031
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": -30.0,
+                  "maxY": 30.0
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.4811554,
+                "maxX": 26.6453552,
+                "minY": 10.26355,
+                "maxY": 25.0511932
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.9999542,
+                "maxX": 120.000061,
+                "minY": 6.14499664,
+                "maxY": 27.855011
+              },
+              "iconBounds": {
+                "minX": -119.999954,
+                "maxX": -69.99997,
+                "minY": -25.0,
+                "maxY": 25.0
+              },
+              "timerBounds": {
+                "minX": -42.9999847,
+                "maxX": -2.08996582,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.9999542,
+                "maxX": -47.99997,
+                "minY": -22.4549866,
+                "maxY": -6.25499725
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 4,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: three native buff icons and complete labels, timers and Bless control. Aura title is fully visible beyond its nominal unmasked row; actual mask and neighbor geometry pass. Unrelated long fixture header overlaps."
+        },
+        {
+          "file": "native-ui-030.png",
+          "sha256": "12f76febe7f688f6579040a01da49758fd8dcfb72b9dbdd8926c679e22afbb2d",
+          "stage": "native-racial-buff-row:e118e1e0a17a4acec001000000000006",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 150.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -70.0000458,
+            "rowMaxY": -10.0000305,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -6.10351563e-05,
+            "captureX": 1.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 1.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Nereid Fascination Aura",
+            "buffGuid": "e118e1e0a17a4acec001000000000006",
+            "ownerId": "94ad5073-6919-4293-b9f3-4e22cc694e61",
+            "expectedSprite": "KMG_Icon_nereid-fascination",
+            "renderedSprite": "KMG_Icon_nereid-fascination",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Nereid Fascination Aura",
+              "parsedText": "Nereid Fascination Aura",
+              "characterCount": 23,
+              "requiredGlyphCount": 21,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": false,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -385.0,
+                  "maxX": 150.270081,
+                  "minY": -386.219971,
+                  "maxY": 40.00009
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 3,
+              "otherRowBounds": [
+                {
+                  "minX": -365.0,
+                  "maxX": -124.999939,
+                  "minY": -29.9999847,
+                  "maxY": 30.00003
+                },
+                {
+                  "minX": -365.0,
+                  "maxX": -124.999939,
+                  "minY": -99.9999847,
+                  "maxY": -39.99997
+                },
+                {
+                  "minX": -119.999969,
+                  "maxX": 120.000061,
+                  "minY": -99.9999847,
+                  "maxY": -39.99997
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 16.5,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.3167725,
+                "maxX": 120.214111,
+                "minY": 7.4495697,
+                "maxY": 21.0422058
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -60.0,
+                "maxX": 120.000061,
+                "minY": -2.67614746,
+                "maxY": 30.00003
+              },
+              "iconBounds": {
+                "minX": -119.999969,
+                "maxX": -69.99997,
+                "minY": -25.0,
+                "maxY": 25.0000153
+              },
+              "timerBounds": {
+                "minX": -42.99991,
+                "maxX": -2.08990479,
+                "minY": -29.4831085,
+                "maxY": -10.1930847
+              },
+              "timerIconBounds": {
+                "minX": -59.99994,
+                "maxX": -47.9998779,
+                "minY": -27.9380951,
+                "maxY": -11.7380829
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 4,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: three native buff icons and complete labels, timers and Bless control. Aura title is fully visible beyond its nominal unmasked row; actual mask and neighbor geometry pass. Unrelated long fixture header overlaps."
+        }
+      ]
+    },
+    {
+      "directory": "20260913T2337424902799Z-working-save-elemental-character-creation-regression",
+      "runId": "20260913T2337424902799Z-3aa9fe438fba4d29adb643260bc19524",
+      "scenario": "working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "assertions": 13,
+      "startedUtc": "2026-09-13T23:49:15.1307939Z",
+      "endedUtc": "2026-09-13T23:49:21.2747224Z",
+      "resultSha256": "4a115d88c0d789f7241d5828f8c952260349a593be889bdecbb467b1894c8245",
+      "requestSha256": "2954ab1e0461672572df7ace59a90395ab94514f24f29998a0b7835ca667776c",
+      "identitySha256": "61698d6731edf5378b8b9b9211aff0bd64381c157b555f46389c14dee2b41936",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING",
+        "race": "Sylph",
+        "class": "Gunslinger",
+        "allocation": "roll"
+      },
+      "saveWritingApiObserved": false,
+      "workingSaveLoadCompleted": true,
+      "screenCount": 101,
+      "screensSha256": "8b3601f7353df499591cb71ae40c07a91cc2ff60191325d9e3737172808bc6ff",
+      "fixtureSha256": "b7c78209b584ce11c3a447fdedca59f50ed9804f833935d7b7459ca1be82a28b",
+      "setup": {
+        "stage": "native-fixture-ready",
+        "ownerId": "0e6856d6-88ba-4789-9700-bb47796b29bd",
+        "ownsSheet": true,
+        "ownerInGame": false,
+        "ownerTurnedOn": true,
+        "activeByDefaultProperty": true,
+        "buffsActiveByDefault": false,
+        "loadedEvidencePresent": true,
+        "guardOwned": true,
+        "sameOwner": true,
+        "committed": true,
+        "inParty": false,
+        "customCompanion": true,
+        "originalBuffs": [],
+        "bindingSymbols": [
+          "KMG.ElementalRaces.Feats.WingsOfAir.Buff",
+          "KMG.ElementalRaces.Traits.Sylph.StormInTheBlood.FastHealingBuff",
+          "KMG.ElementalRaces.Traits.Sylph.BreezeKissed.CalmedBuff"
+        ],
+        "ownedBuffs": [
+          {
+            "guid": "e116e1e0a17a4aceb001000000000019",
+            "hidden": false,
+            "icon": "KMG_Icon_wings-of-air"
+          },
+          {
+            "guid": "e117e1e0a17a4acec001000000000065",
+            "hidden": false,
+            "icon": "KMG_Icon_storm-in-the-blood"
+          },
+          {
+            "guid": "e117e1e0a17a4acec001000000000081",
+            "hidden": false,
+            "icon": "KMG_Icon_calm-winds"
+          }
+        ],
+        "nativeBlessMatches": [
+          "87b8c6270ea85c743afc734dfe99afee"
+        ]
+      },
+      "buffSheet": {
+        "race": "Sylph",
+        "ownerId": "0e6856d6-88ba-4789-9700-bb47796b29bd",
+        "presentation": "native inactive buff rows on the dormant remote mercenary; no effect activation",
+        "expectedBuffGuids": [
+          "e116e1e0a17a4aceb001000000000019",
+          "e117e1e0a17a4acec001000000000065",
+          "e117e1e0a17a4acec001000000000081"
+        ],
+        "capturedBuffGuids": [
+          "e116e1e0a17a4aceb001000000000019",
+          "e117e1e0a17a4acec001000000000065",
+          "e117e1e0a17a4acec001000000000081"
+        ],
+        "restored": true,
+        "nativeRowsBeforeCapture": [
+          {
+            "guid": "e116e1e0a17a4aceb001000000000019",
+            "ownerId": "0e6856d6-88ba-4789-9700-bb47796b29bd",
+            "name": "Wings of Air",
+            "expectedName": "Wings of Air",
+            "sprite": "KMG_Icon_wings-of-air",
+            "alpha": 1.0
+          },
+          {
+            "guid": "e117e1e0a17a4acec001000000000065",
+            "ownerId": "0e6856d6-88ba-4789-9700-bb47796b29bd",
+            "name": "Storm in the Blood",
+            "expectedName": "Storm in the Blood",
+            "sprite": "KMG_Icon_storm-in-the-blood",
+            "alpha": 1.0
+          },
+          {
+            "guid": "e117e1e0a17a4acec001000000000081",
+            "ownerId": "0e6856d6-88ba-4789-9700-bb47796b29bd",
+            "name": "Breeze-Kissed: Winds Calmed",
+            "expectedName": "Breeze-Kissed: Winds Calmed",
+            "sprite": "KMG_Icon_calm-winds",
+            "alpha": 1.0
+          },
+          {
+            "guid": "87b8c6270ea85c743afc734dfe99afee",
+            "ownerId": "0e6856d6-88ba-4789-9700-bb47796b29bd",
+            "name": "Bless",
+            "expectedName": "Bless",
+            "sprite": "Bless",
+            "alpha": 1.0
+          }
+        ],
+        "exceptions": [],
+        "originalBuffsRestored": true,
+        "worldAndOriginalFactsRetained": true,
+        "pooledRowsReleased": true
+      },
+      "creatorCleanup": {
+        "crossSceneExact": true,
+        "remoteCompanionsExact": true,
+        "partyCharactersExact": true,
+        "inventoryReferencesExact": true,
+        "inventoryCountsExact": true,
+        "moneyExact": true,
+        "respecPauseExact": true
+      },
+      "creatorAcceptance": "Three native disposable mercenary commits; exact rollback; no save writes",
+      "targets": [
+        {
+          "file": "native-ui-032.png",
+          "sha256": "355afb0a4d9fd077b2e431263c0b42703dfea5fe3c0ebdd98c602c029280472a",
+          "stage": "native-racial-buff-row:e116e1e0a17a4aceb001000000000019",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 150.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -70.0000458,
+            "rowMaxY": -10.0000305,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -6.10351563e-05,
+            "captureX": 1.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 1.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Wings of Air",
+            "buffGuid": "e116e1e0a17a4aceb001000000000019",
+            "ownerId": "0e6856d6-88ba-4789-9700-bb47796b29bd",
+            "expectedSprite": "KMG_Icon_wings-of-air",
+            "renderedSprite": "KMG_Icon_wings-of-air",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Wings of Air",
+              "parsedText": "Wings of Air",
+              "characterCount": 12,
+              "requiredGlyphCount": 10,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -140.0,
+                  "maxX": 395.270081,
+                  "minY": -386.219971,
+                  "maxY": 40.00009
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 3,
+              "otherRowBounds": [
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": -99.9999847,
+                  "maxY": -39.99997
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": -29.9999847,
+                  "maxY": 30.00003
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": -99.9999847,
+                  "maxY": -39.99997
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.5489349,
+                "maxX": 42.91046,
+                "minY": 5.424698,
+                "maxY": 25.0512238
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.9999542,
+                "maxX": 120.000061,
+                "minY": 6.144989,
+                "maxY": 27.8549957
+              },
+              "iconBounds": {
+                "minX": -119.999954,
+                "maxX": -69.99997,
+                "minY": -25.0,
+                "maxY": 25.0000153
+              },
+              "timerBounds": {
+                "minX": -42.9999847,
+                "maxX": -2.08996582,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.9999542,
+                "maxX": -47.99997,
+                "minY": -22.4549866,
+                "maxY": -6.255005
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 4,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: three distinct native buff icons and full labels, including two-line Winds Calmed; timers and Bless control unobscured. Unrelated long fixture header overlaps."
+        },
+        {
+          "file": "native-ui-033.png",
+          "sha256": "1fef2689e9e035ac502878f5fd600748b645cb846e226d6eaab6bd9da9962cc8",
+          "stage": "native-racial-buff-row:e117e1e0a17a4acec001000000000065",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 150.000015,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -140.000031,
+            "rowMaxY": -80.00003,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 0.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -3.05175781e-05,
+            "captureX": 1.0,
+            "captureY": 0.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -6.10351563e-05,
+            "restoredX": 1.0,
+            "restoredY": 1.0
+          },
+          "target": {
+            "name": "Storm in the Blood",
+            "buffGuid": "e117e1e0a17a4acec001000000000065",
+            "ownerId": "0e6856d6-88ba-4789-9700-bb47796b29bd",
+            "expectedSprite": "KMG_Icon_storm-in-the-blood",
+            "renderedSprite": "KMG_Icon_storm-in-the-blood",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Storm in the Blood",
+              "parsedText": "Storm in the Blood",
+              "characterCount": 18,
+              "requiredGlyphCount": 15,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -140.0,
+                  "maxX": 395.270081,
+                  "minY": -316.22,
+                  "maxY": 110.000061
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 3,
+              "otherRowBounds": [
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": 40.0000153,
+                  "maxY": 100.000031
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": 40.0000153,
+                  "maxY": 100.000031
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": -30.0,
+                  "maxY": 30.0
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.4811554,
+                "maxX": 89.33362,
+                "minY": 10.26355,
+                "maxY": 25.0511932
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.9999542,
+                "maxX": 120.000061,
+                "minY": 6.14499664,
+                "maxY": 27.855011
+              },
+              "iconBounds": {
+                "minX": -119.999954,
+                "maxX": -69.99997,
+                "minY": -25.0,
+                "maxY": 25.0
+              },
+              "timerBounds": {
+                "minX": -42.9999847,
+                "maxX": -2.08996582,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.9999542,
+                "maxX": -47.99997,
+                "minY": -22.4549866,
+                "maxY": -6.25499725
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 4,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: three distinct native buff icons and full labels, including two-line Winds Calmed; timers and Bless control unobscured. Unrelated long fixture header overlaps."
+        },
+        {
+          "file": "native-ui-034.png",
+          "sha256": "355afb0a4d9fd077b2e431263c0b42703dfea5fe3c0ebdd98c602c029280472a",
+          "stage": "native-racial-buff-row:e117e1e0a17a4acec001000000000081",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 150.0,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -70.0000458,
+            "rowMaxY": -10.0000305,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 1.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -6.10351563e-05,
+            "captureX": 1.0,
+            "captureY": 1.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 1.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Breeze-Kissed: Winds Calmed",
+            "buffGuid": "e117e1e0a17a4acec001000000000081",
+            "ownerId": "0e6856d6-88ba-4789-9700-bb47796b29bd",
+            "expectedSprite": "KMG_Icon_calm-winds",
+            "renderedSprite": "KMG_Icon_calm-winds",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": true,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Breeze-Kissed: Winds Calmed",
+              "parsedText": "Breeze-Kissed: Winds Calmed",
+              "characterCount": 27,
+              "requiredGlyphCount": 25,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -385.0,
+                  "maxX": 150.270081,
+                  "minY": -386.219971,
+                  "maxY": 40.00009
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 3,
+              "otherRowBounds": [
+                {
+                  "minX": -365.0,
+                  "maxX": -124.999939,
+                  "minY": -29.9999847,
+                  "maxY": 30.00003
+                },
+                {
+                  "minX": -365.0,
+                  "maxX": -124.999939,
+                  "minY": -99.9999847,
+                  "maxY": -39.99997
+                },
+                {
+                  "minX": -119.999969,
+                  "maxX": 120.000061,
+                  "minY": -99.9999847,
+                  "maxY": -39.99997
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": true,
+              "fontSize": 14.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.17395,
+                "maxX": 75.00836,
+                "minY": -0.0165405273,
+                "maxY": 28.3629761
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -60.0,
+                "maxX": 120.000061,
+                "minY": -2.67614746,
+                "maxY": 30.00003
+              },
+              "iconBounds": {
+                "minX": -119.999969,
+                "maxX": -69.99997,
+                "minY": -25.0,
+                "maxY": 25.0000153
+              },
+              "timerBounds": {
+                "minX": -42.99991,
+                "maxX": -2.08990479,
+                "minY": -29.4831085,
+                "maxY": -10.1930847
+              },
+              "timerIconBounds": {
+                "minX": -59.99994,
+                "maxX": -47.9998779,
+                "minY": -27.9380951,
+                "maxY": -11.7380829
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 4,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: three distinct native buff icons and full labels, including two-line Winds Calmed; timers and Bless control unobscured. Unrelated long fixture header overlaps."
+        }
+      ]
+    },
+    {
+      "directory": "20260913T2349321697498Z-working-save-elemental-character-creation-regression",
+      "runId": "20260913T2349321697498Z-ede1e28dd63943d6936f6cd66c5d9965",
+      "scenario": "working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "assertions": 13,
+      "startedUtc": "2026-09-13T23:59:03.7499040Z",
+      "endedUtc": "2026-09-13T23:59:07.9337512Z",
+      "resultSha256": "6e03ae6595eb20bc26ec73785ebd08c0e6818be2a9f062eeff7ce75531c25228",
+      "requestSha256": "a993376883737172eb8e70e8348bf4052a34d95cafdad53fb1dac922e6b9fa17",
+      "identitySha256": "fb5dbdd599a2e1cbb8b6d6a9da0f62d747fab0f67d0fd37c0ff2f57dc0df94f2",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING",
+        "race": "Oread",
+        "class": "Gunslinger",
+        "allocation": "roll"
+      },
+      "saveWritingApiObserved": false,
+      "workingSaveLoadCompleted": true,
+      "screenCount": 101,
+      "screensSha256": "3cf0179e3ba14ccb4b933f4635597aa711cbc09d4ddddc4ec8e159fd0c49eb35",
+      "fixtureSha256": "849424ae630d19ab4ec08e69027222bd6e25e992cfc9318179429ef3bc52a55f",
+      "setup": {
+        "stage": "native-fixture-ready",
+        "ownerId": "c96231c3-987d-49af-abdb-95e5ec3f1dff",
+        "ownsSheet": true,
+        "ownerInGame": false,
+        "ownerTurnedOn": true,
+        "activeByDefaultProperty": true,
+        "buffsActiveByDefault": false,
+        "loadedEvidencePresent": true,
+        "guardOwned": true,
+        "sameOwner": true,
+        "committed": true,
+        "inParty": false,
+        "customCompanion": true,
+        "originalBuffs": [],
+        "bindingSymbols": [
+          "KMG.ElementalRaces.Traits.Oread.StoneInTheBlood.FastHealingBuff",
+          "KMG.ElementalRaces.Traits.Oread.CrystallineForm.ArmedBuff",
+          "KMG.ElementalRaces.Traits.Oread.TreacherousEarth.TerrainBuff"
+        ],
+        "ownedBuffs": [
+          {
+            "guid": "e117e1e0a17a4acec001000000000064",
+            "hidden": false,
+            "icon": "KMG_Icon_stone-in-the-blood"
+          },
+          {
+            "guid": "e117e1e0a17a4acec001000000000071",
+            "hidden": false,
+            "icon": "KMG_Icon_deflect-next-ray"
+          },
+          {
+            "guid": "e118e1e0a17a4acec001000000000010",
+            "hidden": false,
+            "icon": "KMG_Icon_treacherous-earth"
+          }
+        ],
+        "nativeBlessMatches": [
+          "87b8c6270ea85c743afc734dfe99afee"
+        ]
+      },
+      "buffSheet": {
+        "race": "Oread",
+        "ownerId": "c96231c3-987d-49af-abdb-95e5ec3f1dff",
+        "presentation": "native inactive buff rows on the dormant remote mercenary; no effect activation",
+        "expectedBuffGuids": [
+          "e117e1e0a17a4acec001000000000064",
+          "e117e1e0a17a4acec001000000000071",
+          "e118e1e0a17a4acec001000000000010"
+        ],
+        "capturedBuffGuids": [
+          "e117e1e0a17a4acec001000000000064",
+          "e117e1e0a17a4acec001000000000071",
+          "e118e1e0a17a4acec001000000000010"
+        ],
+        "restored": true,
+        "nativeRowsBeforeCapture": [
+          {
+            "guid": "e117e1e0a17a4acec001000000000064",
+            "ownerId": "c96231c3-987d-49af-abdb-95e5ec3f1dff",
+            "name": "Stone in the Blood",
+            "expectedName": "Stone in the Blood",
+            "sprite": "KMG_Icon_stone-in-the-blood",
+            "alpha": 1.0
+          },
+          {
+            "guid": "e117e1e0a17a4acec001000000000071",
+            "ownerId": "c96231c3-987d-49af-abdb-95e5ec3f1dff",
+            "name": "Crystalline Deflection Ready",
+            "expectedName": "Crystalline Deflection Ready",
+            "sprite": "KMG_Icon_deflect-next-ray",
+            "alpha": 1.0
+          },
+          {
+            "guid": "e118e1e0a17a4acec001000000000010",
+            "ownerId": "c96231c3-987d-49af-abdb-95e5ec3f1dff",
+            "name": "Treacherous Earth",
+            "expectedName": "Treacherous Earth",
+            "sprite": "KMG_Icon_treacherous-earth",
+            "alpha": 1.0
+          },
+          {
+            "guid": "87b8c6270ea85c743afc734dfe99afee",
+            "ownerId": "c96231c3-987d-49af-abdb-95e5ec3f1dff",
+            "name": "Bless",
+            "expectedName": "Bless",
+            "sprite": "Bless",
+            "alpha": 1.0
+          }
+        ],
+        "exceptions": [],
+        "originalBuffsRestored": true,
+        "worldAndOriginalFactsRetained": true,
+        "pooledRowsReleased": true
+      },
+      "creatorCleanup": {
+        "crossSceneExact": true,
+        "remoteCompanionsExact": true,
+        "partyCharactersExact": true,
+        "inventoryReferencesExact": true,
+        "inventoryCountsExact": true,
+        "moneyExact": true,
+        "respecPauseExact": true
+      },
+      "creatorAcceptance": "Three native disposable mercenary commits; exact rollback; no save writes",
+      "targets": [
+        {
+          "file": "native-ui-032.png",
+          "sha256": "462a4c7d8e1c3b6f16f43da14ade83adea20f73ebf2636cd976c86f4bf926237",
+          "stage": "native-racial-buff-row:e117e1e0a17a4acec001000000000064",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 150.000015,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -70.0000153,
+            "rowMaxY": -10.0000153,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 0.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -3.05175781e-05,
+            "captureX": 0.0,
+            "captureY": 0.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 0.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Stone in the Blood",
+            "buffGuid": "e117e1e0a17a4acec001000000000064",
+            "ownerId": "c96231c3-987d-49af-abdb-95e5ec3f1dff",
+            "expectedSprite": "KMG_Icon_stone-in-the-blood",
+            "renderedSprite": "KMG_Icon_stone-in-the-blood",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Stone in the Blood",
+              "parsedText": "Stone in the Blood",
+              "characterCount": 18,
+              "requiredGlyphCount": 15,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -140.0,
+                  "maxX": 395.270081,
+                  "minY": -386.220032,
+                  "maxY": 40.00006
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 3,
+              "otherRowBounds": [
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.0,
+                  "minY": -100.0,
+                  "maxY": -39.9999847
+                },
+                {
+                  "minX": 124.999969,
+                  "maxX": 365.000061,
+                  "minY": -29.9999847,
+                  "maxY": 30.0000153
+                },
+                {
+                  "minX": 124.999969,
+                  "maxX": 365.000061,
+                  "minY": -100.0,
+                  "maxY": -39.9999847
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.4811249,
+                "maxX": 85.43001,
+                "minY": 10.2635651,
+                "maxY": 25.0512238
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.9999847,
+                "maxX": 120.0,
+                "minY": 6.14500427,
+                "maxY": 27.855011
+              },
+              "iconBounds": {
+                "minX": -119.999954,
+                "maxX": -69.99994,
+                "minY": -25.0,
+                "maxY": 25.0000153
+              },
+              "timerBounds": {
+                "minX": -43.0000153,
+                "maxX": -2.08999634,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.9999847,
+                "maxX": -48.0,
+                "minY": -22.4549866,
+                "maxY": -6.25498962
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 4,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: three distinct Oread buff icons, full native labels and timers, ordinary Bless control. Small Crystalline Deflection Ready title is complete and clear of the adjacent cell. Unrelated long fixture header overlaps."
+        },
+        {
+          "file": "native-ui-033.png",
+          "sha256": "462a4c7d8e1c3b6f16f43da14ade83adea20f73ebf2636cd976c86f4bf926237",
+          "stage": "native-racial-buff-row:e117e1e0a17a4acec001000000000071",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 150.000015,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -140.000031,
+            "rowMaxY": -80.0000153,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 0.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -3.05175781e-05,
+            "captureX": 0.0,
+            "captureY": 0.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 0.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Crystalline Deflection Ready",
+            "buffGuid": "e117e1e0a17a4acec001000000000071",
+            "ownerId": "c96231c3-987d-49af-abdb-95e5ec3f1dff",
+            "expectedSprite": "KMG_Icon_deflect-next-ray",
+            "renderedSprite": "KMG_Icon_deflect-next-ray",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Crystalline Deflection Ready",
+              "parsedText": "Crystalline Deflection Ready",
+              "characterCount": 28,
+              "requiredGlyphCount": 26,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": true,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -140.0,
+                  "maxX": 395.270081,
+                  "minY": -316.220032,
+                  "maxY": 110.000061
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 3,
+              "otherRowBounds": [
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.0,
+                  "minY": 40.0000153,
+                  "maxY": 100.000015
+                },
+                {
+                  "minX": 124.999969,
+                  "maxX": 365.000061,
+                  "minY": 40.0000153,
+                  "maxY": 100.000015
+                },
+                {
+                  "minX": 124.999969,
+                  "maxX": 365.000061,
+                  "minY": -30.0,
+                  "maxY": 30.0000153
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 14.15,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.0052948,
+                "maxX": 119.9917,
+                "minY": 4.562454,
+                "maxY": 19.9910431
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.9999847,
+                "maxX": 120.0,
+                "minY": -2.67616272,
+                "maxY": 30.0
+              },
+              "iconBounds": {
+                "minX": -119.999954,
+                "maxX": -69.99994,
+                "minY": -25.0,
+                "maxY": 25.0
+              },
+              "timerBounds": {
+                "minX": -42.9999847,
+                "maxX": -2.0899353,
+                "minY": -29.4830933,
+                "maxY": -10.1930923
+              },
+              "timerIconBounds": {
+                "minX": -59.9999847,
+                "maxX": -48.0,
+                "minY": -27.9380951,
+                "maxY": -11.7380981
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 4,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: three distinct Oread buff icons, full native labels and timers, ordinary Bless control. Small Crystalline Deflection Ready title is complete and clear of the adjacent cell. Unrelated long fixture header overlaps."
+        },
+        {
+          "file": "native-ui-034.png",
+          "sha256": "462a4c7d8e1c3b6f16f43da14ade83adea20f73ebf2636cd976c86f4bf926237",
+          "stage": "native-racial-buff-row:e118e1e0a17a4acec001000000000010",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 150.000015,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -70.0000153,
+            "rowMaxY": -10.0000153,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 0.0,
+            "originalY": 0.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -3.05175781e-05,
+            "captureX": 0.0,
+            "captureY": 0.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 0.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Treacherous Earth",
+            "buffGuid": "e118e1e0a17a4acec001000000000010",
+            "ownerId": "c96231c3-987d-49af-abdb-95e5ec3f1dff",
+            "expectedSprite": "KMG_Icon_treacherous-earth",
+            "renderedSprite": "KMG_Icon_treacherous-earth",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Treacherous Earth",
+              "parsedText": "Treacherous Earth",
+              "characterCount": 17,
+              "requiredGlyphCount": 16,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -385.0,
+                  "maxX": 150.270081,
+                  "minY": -386.220032,
+                  "maxY": 40.00006
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 3,
+              "otherRowBounds": [
+                {
+                  "minX": -365.0,
+                  "maxX": -125.0,
+                  "minY": -29.9999847,
+                  "maxY": 30.0000153
+                },
+                {
+                  "minX": -365.0,
+                  "maxX": -125.0,
+                  "minY": -100.0,
+                  "maxY": -39.9999847
+                },
+                {
+                  "minX": -120.000031,
+                  "maxX": 120.000061,
+                  "minY": -100.0,
+                  "maxY": -39.9999847
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.42688,
+                "maxX": 86.86676,
+                "minY": 10.2635651,
+                "maxY": 25.0512238
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.99994,
+                "maxX": 120.000122,
+                "minY": 6.14500427,
+                "maxY": 27.855011
+              },
+              "iconBounds": {
+                "minX": -119.999969,
+                "maxX": -69.99991,
+                "minY": -25.0,
+                "maxY": 25.0000153
+              },
+              "timerBounds": {
+                "minX": -42.99991,
+                "maxX": -2.08990479,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.99994,
+                "maxX": -47.9998779,
+                "minY": -22.4549866,
+                "maxY": -6.25498962
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 4,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: three distinct Oread buff icons, full native labels and timers, ordinary Bless control. Small Crystalline Deflection Ready title is complete and clear of the adjacent cell. Unrelated long fixture header overlaps."
+        }
+      ]
+    },
+    {
+      "directory": "20260913T2359225631851Z-working-save-elemental-character-creation-regression",
+      "runId": "20260913T2359225631851Z-d8e05ba56bb949c6a6af15a2199ce829",
+      "scenario": "working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "assertions": 13,
+      "startedUtc": "2026-09-14T00:08:58.5397624Z",
+      "endedUtc": "2026-09-14T00:09:02.5124024Z",
+      "resultSha256": "e6be525d4f78e9ebb018608a014516c2f760d3bac4d891c8985f19d77250d166",
+      "requestSha256": "15a0d5392820b8108f3c0f17d967762d64ef752c8289a78bf50cd83ab9ffceb4",
+      "identitySha256": "52a3206737e51b3f3adc74096dff78068204453a8acf210a74c722a1d8e6c5e4",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING",
+        "race": "Ifrit",
+        "class": "Gunslinger",
+        "allocation": "roll"
+      },
+      "saveWritingApiObserved": false,
+      "workingSaveLoadCompleted": true,
+      "screenCount": 102,
+      "screensSha256": "68f0feabe6fc97b51bd9bd04e69ab3e2f0be6fe108918effa6eaa137a1a86bd8",
+      "fixtureSha256": "89d4e854fa6987c3879e7aa6b8348af4b7198459844eb3c209031dd19844fb2c",
+      "setup": {
+        "stage": "native-fixture-ready",
+        "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+        "ownsSheet": true,
+        "ownerInGame": false,
+        "ownerTurnedOn": true,
+        "activeByDefaultProperty": true,
+        "buffsActiveByDefault": false,
+        "loadedEvidencePresent": true,
+        "guardOwned": true,
+        "sameOwner": true,
+        "committed": true,
+        "inParty": false,
+        "customCompanion": true,
+        "originalBuffs": [],
+        "bindingSymbols": [
+          "KMG.ElementalRaces.Feats.ElementalStrike.Buff",
+          "KMG.ElementalRaces.Feats.ScorchingWeapons.Buff",
+          "KMG.ElementalRaces.Feats.BlazingAura.Buff",
+          "KMG.ElementalRaces.Traits.Ifrit.FireInTheBlood.FastHealingBuff"
+        ],
+        "ownedBuffs": [
+          {
+            "guid": "e116e1e0a17a4aceb001000000000013",
+            "hidden": false,
+            "icon": "KMG_Icon_elemental-strike"
+          },
+          {
+            "guid": "e116e1e0a17a4aceb001000000000015",
+            "hidden": false,
+            "icon": "KMG_Icon_scorching-weapons"
+          },
+          {
+            "guid": "e116e1e0a17a4aceb001000000000018",
+            "hidden": false,
+            "icon": "KMG_Icon_blazing-aura"
+          },
+          {
+            "guid": "e117e1e0a17a4acec001000000000063",
+            "hidden": false,
+            "icon": "KMG_Icon_fire-in-the-blood"
+          }
+        ],
+        "nativeBlessMatches": [
+          "87b8c6270ea85c743afc734dfe99afee"
+        ]
+      },
+      "buffSheet": {
+        "race": "Ifrit",
+        "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+        "presentation": "native inactive buff rows on the dormant remote mercenary; no effect activation",
+        "expectedBuffGuids": [
+          "e116e1e0a17a4aceb001000000000013",
+          "e116e1e0a17a4aceb001000000000015",
+          "e116e1e0a17a4aceb001000000000018",
+          "e117e1e0a17a4acec001000000000063"
+        ],
+        "capturedBuffGuids": [
+          "e116e1e0a17a4aceb001000000000013",
+          "e116e1e0a17a4aceb001000000000015",
+          "e116e1e0a17a4aceb001000000000018",
+          "e117e1e0a17a4acec001000000000063"
+        ],
+        "restored": true,
+        "nativeRowsBeforeCapture": [
+          {
+            "guid": "e116e1e0a17a4aceb001000000000013",
+            "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+            "name": "Elemental Strike",
+            "expectedName": "Elemental Strike",
+            "sprite": "KMG_Icon_elemental-strike",
+            "alpha": 1.0
+          },
+          {
+            "guid": "e116e1e0a17a4aceb001000000000015",
+            "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+            "name": "Scorching Weapons",
+            "expectedName": "Scorching Weapons",
+            "sprite": "KMG_Icon_scorching-weapons",
+            "alpha": 1.0
+          },
+          {
+            "guid": "e116e1e0a17a4aceb001000000000018",
+            "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+            "name": "Blazing Aura",
+            "expectedName": "Blazing Aura",
+            "sprite": "KMG_Icon_blazing-aura",
+            "alpha": 1.0
+          },
+          {
+            "guid": "e117e1e0a17a4acec001000000000063",
+            "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+            "name": "Fire in the Blood",
+            "expectedName": "Fire in the Blood",
+            "sprite": "KMG_Icon_fire-in-the-blood",
+            "alpha": 1.0
+          },
+          {
+            "guid": "87b8c6270ea85c743afc734dfe99afee",
+            "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+            "name": "Bless",
+            "expectedName": "Bless",
+            "sprite": "Bless",
+            "alpha": 1.0
+          }
+        ],
+        "exceptions": [],
+        "originalBuffsRestored": true,
+        "worldAndOriginalFactsRetained": true,
+        "pooledRowsReleased": true
+      },
+      "creatorCleanup": {
+        "crossSceneExact": true,
+        "remoteCompanionsExact": true,
+        "partyCharactersExact": true,
+        "inventoryReferencesExact": true,
+        "inventoryCountsExact": true,
+        "moneyExact": true,
+        "respecPauseExact": true
+      },
+      "creatorAcceptance": "Three native disposable mercenary commits; exact rollback; no save writes",
+      "targets": [
+        {
+          "file": "native-ui-032.png",
+          "sha256": "dace137b70bb9b4ae5128a251c90a8c2b1e6d8619df29528b15abcdd4e5eaab3",
+          "stage": "native-racial-buff-row:e116e1e0a17a4aceb001000000000013",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 220.000015,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -70.0000153,
+            "rowMaxY": -10.0,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 0.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -3.05175781e-05,
+            "captureX": 1.0,
+            "captureY": 0.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 1.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Elemental Strike",
+            "buffGuid": "e116e1e0a17a4aceb001000000000013",
+            "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+            "expectedSprite": "KMG_Icon_elemental-strike",
+            "renderedSprite": "KMG_Icon_elemental-strike",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Elemental Strike",
+              "parsedText": "Elemental Strike",
+              "characterCount": 16,
+              "requiredGlyphCount": 15,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -140.0,
+                  "maxX": 395.270081,
+                  "minY": -386.22,
+                  "maxY": 40.00006
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 4,
+              "otherRowBounds": [
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": -100.0,
+                  "maxY": -40.0
+                },
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": -169.999985,
+                  "maxY": -109.999985
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": -29.9999847,
+                  "maxY": 30.00003
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": -100.0,
+                  "maxY": -40.0
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.2642975,
+                "maxX": 70.94057,
+                "minY": 10.2635651,
+                "maxY": 25.0512238
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.9999542,
+                "maxX": 120.000061,
+                "minY": 6.144989,
+                "maxY": 27.8549957
+              },
+              "iconBounds": {
+                "minX": -119.999954,
+                "maxX": -69.99997,
+                "minY": -24.9999847,
+                "maxY": 25.0000153
+              },
+              "timerBounds": {
+                "minX": -42.9999847,
+                "maxX": -2.08996582,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.9999542,
+                "maxX": -47.99997,
+                "minY": -22.4549866,
+                "maxY": -6.255005
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 5,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: four distinct Ifrit buff icons, complete native labels and timers, ordinary Bless control unobscured. Unrelated long fixture header overlaps."
+        },
+        {
+          "file": "native-ui-033.png",
+          "sha256": "dace137b70bb9b4ae5128a251c90a8c2b1e6d8619df29528b15abcdd4e5eaab3",
+          "stage": "native-racial-buff-row:e116e1e0a17a4aceb001000000000015",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 220.000015,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -140.000031,
+            "rowMaxY": -80.00003,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 0.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -3.05175781e-05,
+            "captureX": 1.0,
+            "captureY": 0.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 1.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Scorching Weapons",
+            "buffGuid": "e116e1e0a17a4aceb001000000000015",
+            "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+            "expectedSprite": "KMG_Icon_scorching-weapons",
+            "renderedSprite": "KMG_Icon_scorching-weapons",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Scorching Weapons",
+              "parsedText": "Scorching Weapons",
+              "characterCount": 17,
+              "requiredGlyphCount": 16,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -140.0,
+                  "maxX": 395.270081,
+                  "minY": -316.22,
+                  "maxY": 110.000061
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 4,
+              "otherRowBounds": [
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": 40.0000153,
+                  "maxY": 100.000031
+                },
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": -99.9999847,
+                  "maxY": -39.9999847
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": 40.0000153,
+                  "maxY": 100.000031
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": -30.0,
+                  "maxY": 30.0
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.4811554,
+                "maxX": 97.5475159,
+                "minY": 5.424713,
+                "maxY": 25.0511932
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.9999542,
+                "maxX": 120.000061,
+                "minY": 6.14499664,
+                "maxY": 27.855011
+              },
+              "iconBounds": {
+                "minX": -119.999954,
+                "maxX": -69.99997,
+                "minY": -25.0,
+                "maxY": 25.0
+              },
+              "timerBounds": {
+                "minX": -42.9999847,
+                "maxX": -2.08996582,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.9999542,
+                "maxX": -47.99997,
+                "minY": -22.4549866,
+                "maxY": -6.25499725
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 5,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: four distinct Ifrit buff icons, complete native labels and timers, ordinary Bless control unobscured. Unrelated long fixture header overlaps."
+        },
+        {
+          "file": "native-ui-034.png",
+          "sha256": "dace137b70bb9b4ae5128a251c90a8c2b1e6d8619df29528b15abcdd4e5eaab3",
+          "stage": "native-racial-buff-row:e116e1e0a17a4aceb001000000000018",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 220.000015,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -210.000015,
+            "rowMaxY": -150.000015,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 0.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -3.05175781e-05,
+            "captureX": 1.0,
+            "captureY": 0.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 1.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Blazing Aura",
+            "buffGuid": "e116e1e0a17a4aceb001000000000018",
+            "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+            "expectedSprite": "KMG_Icon_blazing-aura",
+            "renderedSprite": "KMG_Icon_blazing-aura",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Blazing Aura",
+              "parsedText": "Blazing Aura",
+              "characterCount": 12,
+              "requiredGlyphCount": 11,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -140.0,
+                  "maxX": 395.270081,
+                  "minY": -246.22,
+                  "maxY": 180.000061
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 4,
+              "otherRowBounds": [
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": 110.000023,
+                  "maxY": 170.000031
+                },
+                {
+                  "minX": -119.999985,
+                  "maxX": 120.000061,
+                  "minY": 40.0,
+                  "maxY": 100.0
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": 110.000023,
+                  "maxY": 170.000031
+                },
+                {
+                  "minX": 125.000031,
+                  "maxX": 365.000061,
+                  "minY": 40.0,
+                  "maxY": 100.0
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.2236176,
+                "maxX": 45.7568359,
+                "minY": 5.424698,
+                "maxY": 25.0512085
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -59.9999542,
+                "maxX": 120.000061,
+                "minY": 6.14500427,
+                "maxY": 27.855011
+              },
+              "iconBounds": {
+                "minX": -119.999954,
+                "maxX": -69.99997,
+                "minY": -25.0000153,
+                "maxY": 25.0000153
+              },
+              "timerBounds": {
+                "minX": -42.9999847,
+                "maxX": -2.08996582,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.9999542,
+                "maxX": -47.99997,
+                "minY": -22.4550018,
+                "maxY": -6.255005
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 5,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: four distinct Ifrit buff icons, complete native labels and timers, ordinary Bless control unobscured. Unrelated long fixture header overlaps."
+        },
+        {
+          "file": "native-ui-035.png",
+          "sha256": "dace137b70bb9b4ae5128a251c90a8c2b1e6d8619df29528b15abcdd4e5eaab3",
+          "stage": "native-racial-buff-row:e117e1e0a17a4acec001000000000063",
+          "viewport": {
+            "nativeApi": "native viewport observation",
+            "positionApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+            "scrollMutationRequested": false,
+            "scrollType": "UnityEngine.UI.ScrollRect",
+            "scrollObject": "Scroll View (1)",
+            "contentObject": "Content",
+            "viewportObject": "Viewport",
+            "contentHeight": 220.000015,
+            "rowActive": true,
+            "rowVerticallyVisible": true,
+            "rowMinY": -70.0000153,
+            "rowMaxY": -10.0,
+            "viewportMinY": -426.22,
+            "viewportMaxY": 0.0,
+            "originalX": 1.0,
+            "originalY": 0.0,
+            "horizontalEnabled": true,
+            "originalContentX": 0.0,
+            "originalContentY": -3.05175781e-05,
+            "captureX": 1.0,
+            "captureY": 0.0,
+            "restored": true,
+            "restoredContentX": 0.0,
+            "restoredContentY": -3.05175781e-05,
+            "restoredX": 1.0,
+            "restoredY": 0.0
+          },
+          "target": {
+            "name": "Fire in the Blood",
+            "buffGuid": "e117e1e0a17a4acec001000000000063",
+            "ownerId": "b3bfe250-1e8c-4858-95cd-1a061f9a0146",
+            "expectedSprite": "KMG_Icon_fire-in-the-blood",
+            "renderedSprite": "KMG_Icon_fire-in-the-blood",
+            "spriteExact": true,
+            "labelExact": true,
+            "nativeSectionShown": true,
+            "labelTruncated": false,
+            "labelOverflowing": false,
+            "labelGeometry": {
+              "api": "native TMP_TextInfo final mesh vertices; read-only",
+              "complete": true,
+              "generatedText": "Fire in the Blood",
+              "parsedText": "Fire in the Blood",
+              "characterCount": 17,
+              "requiredGlyphCount": 14,
+              "allGlyphsGenerated": true,
+              "finiteGeometry": true,
+              "glyphsWithinRow": true,
+              "glyphsWithinNameRect": false,
+              "glyphsWithinClippingMasks": true,
+              "clipMaskCount": 1,
+              "clippingMaskBounds": [
+                {
+                  "minX": -385.0,
+                  "maxX": 150.270081,
+                  "minY": -386.22,
+                  "maxY": 40.00006
+                }
+              ],
+              "glyphsClearOfOtherRows": true,
+              "otherRowCount": 4,
+              "otherRowBounds": [
+                {
+                  "minX": -365.0,
+                  "maxX": -124.999939,
+                  "minY": -29.9999847,
+                  "maxY": 30.00003
+                },
+                {
+                  "minX": -365.0,
+                  "maxX": -124.999939,
+                  "minY": -100.0,
+                  "maxY": -40.0
+                },
+                {
+                  "minX": -365.0,
+                  "maxX": -124.999939,
+                  "minY": -169.999985,
+                  "maxY": -109.999985
+                },
+                {
+                  "minX": -119.999969,
+                  "maxX": 120.000061,
+                  "minY": -100.0,
+                  "maxY": -40.0
+                }
+              ],
+              "glyphsClearOfIconAndTimer": true,
+              "canvasRendererCulled": false,
+              "overflowMode": "Overflow",
+              "overflowReported": false,
+              "fontSize": 18.0,
+              "fontSizeMin": 14.0,
+              "fontSizeMax": 18.0,
+              "autoSizing": true,
+              "glyphBounds": {
+                "minX": -60.39978,
+                "maxX": 72.17407,
+                "minY": 10.2635651,
+                "maxY": 25.0512238
+              },
+              "rowBounds": {
+                "minX": -120.0,
+                "maxX": 120.0,
+                "minY": -30.0,
+                "maxY": 30.0
+              },
+              "nameBounds": {
+                "minX": -60.0,
+                "maxX": 120.000061,
+                "minY": 6.144989,
+                "maxY": 27.8549957
+              },
+              "iconBounds": {
+                "minX": -119.999969,
+                "maxX": -69.99997,
+                "minY": -24.9999847,
+                "maxY": 25.0000153
+              },
+              "timerBounds": {
+                "minX": -42.99991,
+                "maxX": -2.08990479,
+                "minY": -24.0,
+                "maxY": -4.70999146
+              },
+              "timerIconBounds": {
+                "minX": -59.99994,
+                "maxX": -47.9998779,
+                "minY": -22.4549866,
+                "maxY": -6.255005
+              }
+            },
+            "buffActive": false,
+            "buffTurnedOn": false,
+            "ownerOutsideWorld": true,
+            "ownerTurnedOnRetained": true,
+            "buffCollectionInactive": true,
+            "nativeAlpha": 1.0,
+            "nativeStateRetained": true,
+            "nativeControlGuid": "87b8c6270ea85c743afc734dfe99afee",
+            "nativeControlExact": true,
+            "fixtureBuffCount": 5,
+            "worldAndOriginalFactsRetained": true
+          },
+          "visualInspection": "CLEAR: four distinct Ifrit buff icons, complete native labels and timers, ordinary Bless control unobscured. Unrelated long fixture header overlaps."
+        }
+      ]
+    },
+    {
+      "directory": "20260914T0009115546403Z-working-save-smoke",
+      "runId": "20260914T0009115546403Z-9d5f3e7491b34f31a8ab993112af2430",
+      "scenario": "working-save-smoke",
+      "status": "PASS",
+      "assertions": 11,
+      "startedUtc": "2026-09-14T00:09:19.3497054Z",
+      "endedUtc": "2026-09-14T00:11:21.9493260Z",
+      "resultSha256": "1a8169e31decfead60170e9422b4dd79eb6dd30387110963e9c56142646c257e",
+      "requestSha256": "11e7b026b63e16d29f26f7143eb5dbacb0731acdf156c1c06d6f686f5589b907",
+      "identitySha256": "c4fbc9e4a2673c6e069dc223c150e6dd096f8b91b5a50a7c0b0db761b967ee33",
+      "parameters": {
+        "saveName": "KMG_AUTOMATION_WORKING"
+      },
+      "saveWritingApiObserved": false,
+      "workingSaveLoadCompleted": true
+    }
+  ],
+  "installationRestoration": {
+    "restored": true,
+    "originalFileCount": 136,
+    "verifiedUtc": "2026-09-14T00:17:14.376986+00:00"
+  },
+  "evidenceLimits": [
+    "The native remote owner remains outside the active world with its original enabled descriptor and inactive buff collection. No lifecycle flag or effect activation changes.",
+    "Real native buff rows preserve native titles, icons, timers, dimming and an ordinary Bless control; this does not qualify active effects or combat mechanics.",
+    "The native Show animation finishes at alpha 1 for these inactive rows. The fixture preserves the observed alpha and does not impose different dimming.",
+    "Twelve native disposable mercenaries complete the existing creator regression; exact original membership/items/money/pause restored and no save writes.",
+    "Final native TMP glyph meshes, actual clipping-mask containment, separation from every other visible buff row and icon/timer, and exact character sequences are validated. Raw Overflow flags and nominal label/row rectangle containment remain explicit diagnostics; no title/font/layout is changed.",
+    "Other capture stages on this DLL retain provenance; earlier UI qualifications remain separately labeled artifacts.",
+    "Eighty production images and final native UI still await owner approval."
+  ],
+  "diagnostics": [
+    "Build 1 passed tests but failed exact compilation on a missing namespace; no deployment.",
+    "Build 2 first Ifrit failed before buff insertion; immediate sheet cleanup masked the original exception. Original installation restored.",
+    "Build 3 diagnostic Ifrit identified an overstrict descriptor-off guard; native remote descriptors stay on while buff collections are inactive. Original installation restored.",
+    "The corrected guard preserves that observed descriptor state and retains the native inactive-collection requirement.",
+    "Build 4 proved exact inactive additions and restoration but encountered a cached empty native buff section. Build 5 calls the native SetDirty before Refresh, uses actual section membership and records native rows before capture.",
+    "Build 5 Ifrit passed 13 assertions / 102 captures; Oread failed normalized-scroll restoration after its third target capture. Owned buffs/world/creator state and installation restored; remaining races did not launch.",
+    "Build 6 uses explicit read-only observation for already-visible buff rows, with no scroll writes and the existing actual-position tolerance, velocity/axis and bounds checks. Oread records confirm the normalized getter can flip 1 to 0 on approximately 0.00003 layout-unit rounding while actual geometry is retained. Existing reveal-and-restore callers keep their behavior.",
+    "Build 6 Oread and Ifrit passed. Sylph failed the raw TMP overflow flag for the visibly complete two-line Winds Calmed title. Buff/world cleanup succeeded, but the overall run failed before creator completion; Undine/smoke did not launch. Original installation restored.",
+    "Owner-requested master e5f1426a was integrated and independently qualified as a20b0d23, preserving the buff WIP. Build 7 resumes on version 0.0.129.",
+    "Build 7 replaces the insufficient raw-overflow gate with observations of the complete final native mesh and independently validates actual row/mask containment and icon/timer separation. Missing, nonfinite, clipped, culled, truncated or overlapping glyphs fail; overflow remains reported.",
+    "The first build 7 Sylph run passed all three buff mesh observations and its buff assertion, then failed an atomic JSON evidence File.Replace with a Windows sharing violation during live-file status reads. It finished 11/13 assertions, two complete creators and full original cleanup; no save writes. Subsequent matrix monitoring reads each final evidence set only after the game exits. No compiled source or artifact changed for the retry.",
+    "Build 7 retry passed Sylph/Oread/Ifrit. Undine failed because Nereid Fascination Aura final mesh exceeded its unmasked layout row by 0.214111 units while all glyphs were generated inside the actual mask and clear of its icon/timer. Buff/world and seven creator cleanup checks passed; early-exception service animation was not fully closed at observation. Overall FAIL, normal exit, no save writes; original 136 files restored. Smoke did not launch.",
+    "Build 8 treats nominal unmasked row containment as diagnostic and requires every actual clipping mask and separation from every neighboring visible buff row. No arbitrary geometry tolerance increase or native text/layout edit. One new focused corruption test adds omitted masks/rows, neighbor overlap, nonfinite geometry and false containment checks. All four races and smoke must pass this new artifact."
+  ],
+  "next": [
+    "Native racial actions and variants",
+    "Applicable higher dependent firearm rendered surfaces",
+    "Permitted saved-parameter prerequisite",
+    "Final artifact review and owner approvals"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "renew-winds",
+  "behavior": "Renew Winds restores voluntarily calmed Breeze-Kissed winds only while a daily gust remains; does not restore exhausted use.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalBreezeKissedPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/renew-winds.png",
+  "sourceSha256": "1195c7f914f5c6e07eb1acb3d6da690533ea0008f6d5a5a9fbae52e004146df8",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painterly action/feat style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. Asset type: ONE original square painted fantasy CRPG racial FEAT icon, also suitable for its matching action/effect. Use supplied approved project icon only for rich painterly material, strong silhouette, localized light, and deep full-bleed dark ground. New composition. Subject 75-85 percent of square with clear important tips and strong readability at 32/48/128px. Broad deliberate brushwork and lighting, restrained detail. No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo. This is the WIND action family: broad luminous ivory-silver air ribbons, soft blue shadows, deep midnight blue ground. No orange fire, electric bolts, turquoise liquid, droplets or icy particles. A LARGE HUMAN HAND held PALM UP at lower center, fingers open to left, lifts ONE FRESH VERTICAL WIND SPIRAL. A broad ivory air ribbon rises from above the palm in a clean open S and forks gently outward near the top, showing winds resuming. The main silhouette is upward hand-and-rising-air, visibly different from a palm pressing down flat ribbons. Natural neutral skin. No energy meter, extra hand, clock, circular recharge arrow, text, closed ring, shield, liquid wave, healing cross or elemental creature.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A LARGE HUMAN HAND held PALM UP at lower center, fingers open to left, lifts ONE FRESH VERTICAL WIND SPIRAL. A broad ivory air ribbon rises from above the palm in a clean open S and forks gently outward near the top, showing winds resuming. The main silhouette is upward hand-and-rising-air, visibly different from a palm pressing down flat ribbons. Natural neutral skin. No energy meter, extra hand, clock, circular recharge arrow, text, closed ring, shield, liquid wave, healing cross or elemental creature.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "wind-actions",
+  "confusedWith": [
+    "breeze-bull-rush",
+    "breeze-gust",
+    "breeze-trip",
+    "calm-winds"
+  ],
+  "uiSurfaces": [
+    "granted action / variants / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No letters, numbers, symbols of UI state, decorative frame, border, grid, watermark, comic or realistic photo.",
+    "No orange fire, electric bolts, turquoise liquid, droplets or icy particles.",
+    "No energy meter, extra hand, clock, circular recharge arrow, text, closed ring, shield, liquid wave, healing cross or elemental creature."
+  ]
+}

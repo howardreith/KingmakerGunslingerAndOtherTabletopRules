@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "key": "fire-in-the-blood",
+  "behavior": "Fire in the Blood: fire damage triggers limited fast healing; fire-linked vitality through a blood/vein motif.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/fire-in-the-blood.png",
+  "sourceSha256": "155c8dcd97f63456b47dcf3b2979675c41df825a990f45a6aa638d9daedfba93",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/general-ifrit.png",
+      "role": "approved painterly elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized warm light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators. ONE large upright BLOOD DROP, deep translucent ruby red, with a SMALL GOLDEN FLAME held safely inside its lower core. Three broad warm branching VEIN LINES extend upward inside the droplet from the flame; the drop's thick smooth outer outline remains clear. A few outward warm gleams suggest restored vitality. Strong teardrop silhouette against near-black umber, no heart shape, attack streak, wound, medical cross, skull or bottle.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "ONE large upright BLOOD DROP, deep translucent ruby red, with a SMALL GOLDEN FLAME held safely inside its lower core. Three broad warm branching VEIN LINES extend upward inside the droplet from the flame; the drop's thick smooth outer outline remains clear. A few outward warm gleams suggest restored vitality. Strong teardrop silhouette against near-black umber, no heart shape, attack streak, wound, medical cross, skull or bottle.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "ifrit-traits",
+  "confusedWith": [
+    "brazen-flame",
+    "efreeti-magic",
+    "fire-insight",
+    "forge-hardened",
+    "stone-in-the-blood",
+    "storm-in-the-blood",
+    "wildfire-heart"
+  ],
+  "uiSurfaces": [
+    "effects and conditions / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "no heart shape, attack streak, wound, medical cross, skull or bottle."
+  ]
+}

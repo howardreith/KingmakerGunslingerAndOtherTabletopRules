@@ -74,9 +74,20 @@ if ($scenarioMetadata.RequiresSaveName) {
         $Parameters = $Parameters.Clone()
         $Parameters.saveName = $SaveName
     } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec', 'working-save-creator-visual-lifecycle')) {
-        $creatorParameterCount = if ($Scenario -ceq 'working-save-elemental-nereid-respec') { 4 } else { 3 }
+        $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
+            $Parameters.ContainsKey('nativeActionCase')
+        $creatorParameterCount = if ($Scenario -ceq 'working-save-elemental-nereid-respec') { 4 }
+            elseif ($nativeActionCase) { 4 }
+            else { 3 }
         if ($Parameters.Count -ne $creatorParameterCount -or $Parameters.ContainsKey('saveName')) {
             throw 'Use typed -SaveName plus the exact creator parameters; bounded Nereid respec also requires sex.'
+        }
+        if ($nativeActionCase) {
+            if ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
+                [string]$Parameters['class'] -cne 'Fighter' -or
+                [string]$Parameters['allocation'] -cne 'point-buy' -or -not $ExitAfterCompletion) {
+                throw 'The native action review case permits only nativeActionCase=racial-actions with Fighter and point-buy and automatic exit.'
+            }
         }
         $Parameters = $Parameters.Clone()
         $Parameters.saveName = $SaveName
@@ -147,7 +158,7 @@ $requestFingerprintTimeout = if ($scenarioMetadata.UsesWorkingStageTimeouts) {
     $FingerprintTimeoutSeconds
 } else { 0 }
 
-[void](Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario `
+[void](Assert-KmgRuntimeScenarioPreflight -Scenario $Scenario -ExitAfterCompletion $ExitAfterCompletion `
     -ExpectedVersion $ExpectedVersion -TimeoutSeconds $TimeoutSeconds `
     -StartupTimeoutSeconds $ObserverStartupTimeoutSeconds `
     -CatalogTimeoutSeconds $requestCatalogTimeout `

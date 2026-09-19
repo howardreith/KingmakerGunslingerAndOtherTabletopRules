@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "key": "oread-elemental-affinity-selection",
+  "behavior": "Oread Elemental Affinity selector and retain entry: earth/mineral channeling category; actual heritage DC mechanics unchanged.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitBlueprintFactory.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/oread-elemental-affinity-selection.png",
+  "sourceSha256": "2490b5a8984a19f60c9eaa38f867490d5182329b7eebcd1e8c46afa85fa3f031",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted elemental family style"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square hand-painted fantasy CRPG TRAIT-CATEGORY icon, a restrained static symbol for a selection category and its retain choice, not a new spell or active buff. Use supplied approved project art for deliberate rich brushwork and material lighting, not its composition. One bold centered subject legible at 32/48/128px, about 80% of square, important edges at least 7% inside canvas. Deep full-bleed charcoal ground. No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark. TWO LARGE HUMAN HANDS face inward from lower left and lower right, gently framing ONE FLOATING FACETED MINERAL CORE. Core has a broad dark rough-earth lower section, one pale green crystal peak at upper left and one polished silver plane at upper right, joined as a single compact angular stone. Hands are warm neutral skin with dusty gray highlights, fingers intact. Strong open hands and central angular form, quiet charcoal-olive ground. No flame, lava, attack ray, shield, book, rune, eye or floating UI badge.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "TWO LARGE HUMAN HANDS face inward from lower left and lower right, gently framing ONE FLOATING FACETED MINERAL CORE. Core has a broad dark rough-earth lower section, one pale green crystal peak at upper left and one polished silver plane at upper right, joined as a single compact angular stone. Hands are warm neutral skin with dusty gray highlights, fingers intact. Strong open hands and central angular form, quiet charcoal-olive ground. No flame, lava, attack ray, shield, book, rune, eye or floating UI badge.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "selectors",
+  "confusedWith": [
+    "ifrit-elemental-affinity-selection",
+    "ifrit-energy-resistance-selection",
+    "ifrit-racial-spell-like-ability-selection",
+    "oread-energy-resistance-selection",
+    "oread-racial-spell-like-ability-selection",
+    "sylph-elemental-affinity-selection",
+    "sylph-energy-resistance-selection",
+    "sylph-racial-spell-like-ability-selection",
+    "undine-racial-spell-like-ability-selection"
+  ],
+  "uiSurfaces": [
+    "creation and level-up selection / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, numbers, arrow UI controls, badges, checkmarks, on/off status, border, circular frame or watermark.",
+    "No flame, lava, attack ray, shield, book, rune, eye or floating UI badge."
+  ]
+}

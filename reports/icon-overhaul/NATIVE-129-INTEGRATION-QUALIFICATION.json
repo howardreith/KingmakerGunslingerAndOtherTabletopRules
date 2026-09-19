@@ -1,0 +1,1411 @@
+{
+  "schemaVersion": 1,
+  "status": "TECHNICAL_INTEGRATION_PASS; ICON_MISSION_AND_OWNER_APPROVAL_PENDING",
+  "scope": "Owner-requested v0.0.129 master integration into the published icon feature branch. Preserve upstream camera isolation and native icon panel readiness together; requalify affected strategic controls, spellbook/item art, native scroll behavior, Oracle Recall learning and working save.",
+  "integratedMaster": "e5f1426a6347793e1e978237be4b0a88d4c9d662",
+  "publishedParentAtBuild": "2969801d8fa17fa9d8ca09cc4fe2cc1c500fbbbc",
+  "integrationAuthority": "Owner requested proper merged baseline; normal feature-branch merge preserves published history. No feature-to-master merge or icon release.",
+  "artifact": {
+    "generatedAtUtc": "2026-09-13T21:57:35.6160114Z",
+    "commit": "2969801d8fa17fa9d8ca09cc4fe2cc1c500fbbbc",
+    "branch": "codex/icon-art-overhaul-v2",
+    "sourceStateSha256": "28341346def10fa61f08533094a7448f9193c3165076572dba7ff0f493c0a3b3",
+    "version": "0.0.129",
+    "packageSha256": "ceb355c28891c71827a1116b5b39e49b5d65534b6e3ba788b4aaeaefb7ecf9a9",
+    "dllSha256": "5acabee74149901cc0476bf384631855f7936a36e04b6e3e98dffb09cd54473c",
+    "dllMvid": "3e431017-1e9b-41b2-9b7f-4264ccf2a2bc"
+  },
+  "buildChecks": {
+    "repositoryValidation": "PASS",
+    "catalogCases": 23,
+    "nativeCaptureCases": 20,
+    "pairedCases": 6,
+    "requestCases": 11,
+    "domainPassed": 1639,
+    "domainFailed": 0,
+    "cleanRelease": "PASS",
+    "strictPackageFiles": 224
+  },
+  "validatorFollowup": {
+    "sameRuntimePackageAndDll": true,
+    "repositoryValidation": "PASS",
+    "catalogCases": 23,
+    "nativeCaptureCases": 21,
+    "pairedCases": 6,
+    "requestCases": 11,
+    "domainPassed": 1639,
+    "domainFailed": 0,
+    "cleanRelease": "PASS",
+    "strictPackageFiles": 224,
+    "artifact": {
+      "generatedAtUtc": "2026-09-13T22:22:39.1211938Z",
+      "commit": "2969801d8fa17fa9d8ca09cc4fe2cc1c500fbbbc",
+      "branch": "codex/icon-art-overhaul-v2",
+      "sourceStateSha256": "dc585bb2a8ed60f5858f76ab15f46e61884fab28c6a46efbd972590a4f865b85",
+      "version": "0.0.129",
+      "packageSha256": "ceb355c28891c71827a1116b5b39e49b5d65534b6e3ba788b4aaeaefb7ecf9a9",
+      "dllSha256": "5acabee74149901cc0476bf384631855f7936a36e04b6e3e98dffb09cd54473c",
+      "dllMvid": "3e431017-1e9b-41b2-9b7f-4264ccf2a2bc"
+    },
+    "buildLogSha256": "416b167b7c8e890140e5640e0ac25d16b7fb2038a0efe615b47dd4c4a505922d",
+    "validatorSha256": "504e0ef7d7f268a944932db4650440d65aeb3d0f3b5897996a48b804833a757e",
+    "reason": "Earlier validator allowed only levels 5/7. Exact Oracle Recall sixth-level learning and class/spell/stage corruption cases were added after its native runtime PASS. No compiled code or art changed."
+  },
+  "qualification": {
+    "guardedSteamRuns": 5,
+    "steamAppId": 640820,
+    "assertions": 208,
+    "nativeCaptures": 30,
+    "inspectedCaptures": 30,
+    "frameBuffer": {
+      "width": 1280,
+      "height": 720
+    },
+    "saveWritesObserved": false
+  },
+  "runs": [
+    {
+      "directory": "20260913T2159223304818Z-disposable-teleportation-interaction",
+      "scenario": "disposable-teleportation-interaction",
+      "runId": "20260913T2159223440485Z-6eab19fc2df64bdc812429f791047358",
+      "status": "PASS",
+      "assertions": 43,
+      "startedUtc": "2026-09-13T21:59:29.8049607Z",
+      "endedUtc": "2026-09-13T22:02:05.4503771Z",
+      "resultSha256": "09901f2af6e6b9dfd7928e71612e284ff3ca4b0ea509f66d5165182bcf6e16b3",
+      "identitySha256": "d9bb0ad2d8f1bdb2668e88f77b616d7e5716886042e114c5afe2f8566add794b",
+      "requestSha256": "a7485c04412a5cb162eda8d6a2a3c22696c5fa4a6ec0a1d30c32a4dfe8dba89b",
+      "automaticNormalExit": true,
+      "saveWritingApiObserved": false,
+      "nativeCaptureCount": 6,
+      "screenManifestSha256": "f1f10441bdc2b48780f5fa1b8e5227e6695bc6809d17bd599049bdfea498baa7",
+      "nativeTargets": [
+        {
+          "file": "native-ui-000.png",
+          "sha256": "3e05da7eaf63914c23ef60cbcdf44a86e6b5ce72e3515632b148df496d96b2d0",
+          "stage": "native-strategic-control:0",
+          "nativeState": {
+            "surface": "native-strategic-text-control",
+            "presentation": "native two-line text button; no spell image assignment",
+            "targetRow": {
+              "name": "Cast Greater Teleport\nHedwirg, Wizard · 1 prepared",
+              "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/535ba77c-6fe4-4e1d-a12c-8bd6abb402ae/5a38c9ac8607890409fcb8f6342da6f4/1",
+              "spellKind": "GreaterTeleport",
+              "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+              "sourceKind": "Prepared",
+              "bookGuid": "5a38c9ac8607890409fcb8f6342da6f4",
+              "casterId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+              "uses": 1,
+              "labelExact": true,
+              "labelTruncated": false,
+              "labelOverflowing": false,
+              "nativeFont": "NexusSerif-Regular SDF",
+              "buttonActive": true,
+              "buttonInteractable": true,
+              "nativeImageCount": 1,
+              "canonicalSpellImages": 0,
+              "nativeImageNames": [
+                "spellbook_button"
+              ],
+              "nativeImagesRetained": true,
+              "nativeControlCount": 2,
+              "nativeControlsRetained": true,
+              "contextAndResourcesRetained": true
+            },
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "KMG_DestinationSpellActions",
+              "contentObject": "NativeSpellRows",
+              "viewportObject": "KMG_DestinationSpellActions",
+              "contentHeight": 454.000031,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": 38.7351227,
+              "rowMaxY": 109.735123,
+              "viewportMinY": -109.73513,
+              "viewportMaxY": 109.73513,
+              "originalX": 1.0,
+              "originalY": 0.99999994,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": 0.0,
+              "captureX": 1.0,
+              "captureY": 0.99999994,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": 0.0
+            }
+          },
+          "visualInspection": "Exact target and adjacent native controls are visible at 1280x720. Full two-line source label and original native background are clear; long sorcerer detail uses native smaller text. The native scroll viewport shows part of the six-row list, with each target brought into view separately. No painted spell image is assigned to these text buttons."
+        },
+        {
+          "file": "native-ui-001.png",
+          "sha256": "8161f4ab479c87bef6d13f199bf6dca31c452dcf8508e0cdb134870b98829336",
+          "stage": "native-strategic-control:1",
+          "nativeState": {
+            "surface": "native-strategic-text-control",
+            "presentation": "native two-line text button; no spell image assignment",
+            "targetRow": {
+              "name": "Cast Greater Teleport\nHedwirg, Sorcerer · 7 seventh-level slots",
+              "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/535ba77c-6fe4-4e1d-a12c-8bd6abb402ae/b3db3766a4b605040b366265e2af0e50/1",
+              "spellKind": "GreaterTeleport",
+              "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+              "sourceKind": "Spontaneous",
+              "bookGuid": "b3db3766a4b605040b366265e2af0e50",
+              "casterId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+              "uses": 7,
+              "labelExact": true,
+              "labelTruncated": false,
+              "labelOverflowing": false,
+              "nativeFont": "NexusSerif-Regular SDF",
+              "buttonActive": true,
+              "buttonInteractable": true,
+              "nativeImageCount": 1,
+              "canonicalSpellImages": 0,
+              "nativeImageNames": [
+                "spellbook_button"
+              ],
+              "nativeImagesRetained": true,
+              "nativeControlCount": 2,
+              "nativeControlsRetained": true,
+              "contextAndResourcesRetained": true
+            },
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "KMG_DestinationSpellActions",
+              "contentObject": "NativeSpellRows",
+              "viewportObject": "KMG_DestinationSpellActions",
+              "contentHeight": 454.000061,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -35.50003,
+              "rowMaxY": 35.4999542,
+              "viewportMinY": -109.73513,
+              "viewportMaxY": 109.73513,
+              "originalX": 1.0,
+              "originalY": 0.99999994,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": 0.0,
+              "captureX": 1.0,
+              "captureY": 0.9839473,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": 3.05175781e-05
+            }
+          },
+          "visualInspection": "Exact target and adjacent native controls are visible at 1280x720. Full two-line source label and original native background are clear; long sorcerer detail uses native smaller text. The native scroll viewport shows part of the six-row list, with each target brought into view separately. No painted spell image is assigned to these text buttons."
+        },
+        {
+          "file": "native-ui-002.png",
+          "sha256": "ee498388dcc9617ce601a2742fa62560f4f14ed66ef57a8b930c136f17d11a62",
+          "stage": "native-strategic-control:2",
+          "nativeState": {
+            "surface": "native-strategic-text-control",
+            "presentation": "native two-line text button; no spell image assignment",
+            "targetRow": {
+              "name": "Cast Greater Teleport\nLinzi · 1 prepared",
+              "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/1a6be110-384b-4ae3-bf19-629ca6be4cf5/5a38c9ac8607890409fcb8f6342da6f4/1",
+              "spellKind": "GreaterTeleport",
+              "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+              "sourceKind": "Prepared",
+              "bookGuid": "5a38c9ac8607890409fcb8f6342da6f4",
+              "casterId": "1a6be110-384b-4ae3-bf19-629ca6be4cf5",
+              "uses": 1,
+              "labelExact": true,
+              "labelTruncated": false,
+              "labelOverflowing": false,
+              "nativeFont": "NexusSerif-Regular SDF",
+              "buttonActive": true,
+              "buttonInteractable": true,
+              "nativeImageCount": 1,
+              "canonicalSpellImages": 0,
+              "nativeImageNames": [
+                "spellbook_button"
+              ],
+              "nativeImagesRetained": true,
+              "nativeControlCount": 2,
+              "nativeControlsRetained": true,
+              "contextAndResourcesRetained": true
+            },
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "KMG_DestinationSpellActions",
+              "contentObject": "NativeSpellRows",
+              "viewportObject": "KMG_DestinationSpellActions",
+              "contentHeight": 454.000061,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -35.49997,
+              "rowMaxY": 35.50003,
+              "viewportMinY": -109.73513,
+              "viewportMaxY": 109.73513,
+              "originalX": 1.0,
+              "originalY": 0.99999994,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": 3.05175781e-05,
+              "captureX": 1.0,
+              "captureY": 0.651366532,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": 7.62939453e-06
+            }
+          },
+          "visualInspection": "Exact target and adjacent native controls are visible at 1280x720. Full two-line source label and original native background are clear; long sorcerer detail uses native smaller text. The native scroll viewport shows part of the six-row list, with each target brought into view separately. No painted spell image is assigned to these text buttons."
+        },
+        {
+          "file": "native-ui-003.png",
+          "sha256": "63a9879a2fb2ae2488d464f0b13c3cd3e5f5ef0e0ae79b4cb86866a81013a089",
+          "stage": "native-strategic-control:3",
+          "nativeState": {
+            "surface": "native-strategic-text-control",
+            "presentation": "native two-line text button; no spell image assignment",
+            "targetRow": {
+              "name": "Cast Teleport\nHedwirg, Wizard · 2 prepared",
+              "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/535ba77c-6fe4-4e1d-a12c-8bd6abb402ae/5a38c9ac8607890409fcb8f6342da6f4/2",
+              "spellKind": "Teleport",
+              "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+              "sourceKind": "Prepared",
+              "bookGuid": "5a38c9ac8607890409fcb8f6342da6f4",
+              "casterId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+              "uses": 2,
+              "labelExact": true,
+              "labelTruncated": false,
+              "labelOverflowing": false,
+              "nativeFont": "NexusSerif-Regular SDF",
+              "buttonActive": true,
+              "buttonInteractable": true,
+              "nativeImageCount": 1,
+              "canonicalSpellImages": 0,
+              "nativeImageNames": [
+                "spellbook_button"
+              ],
+              "nativeImagesRetained": true,
+              "nativeControlCount": 2,
+              "nativeControlsRetained": true,
+              "contextAndResourcesRetained": true
+            },
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "KMG_DestinationSpellActions",
+              "contentObject": "NativeSpellRows",
+              "viewportObject": "KMG_DestinationSpellActions",
+              "contentHeight": 454.0,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -35.49997,
+              "rowMaxY": 35.50003,
+              "viewportMinY": -109.73513,
+              "viewportMaxY": 109.73513,
+              "originalX": 1.0,
+              "originalY": 0.99999994,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": 7.62939453e-06,
+              "captureX": 1.0,
+              "captureY": 0.348633081,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": 7.62939453e-06
+            }
+          },
+          "visualInspection": "Exact target and adjacent native controls are visible at 1280x720. Full two-line source label and original native background are clear; long sorcerer detail uses native smaller text. The native scroll viewport shows part of the six-row list, with each target brought into view separately. No painted spell image is assigned to these text buttons."
+        },
+        {
+          "file": "native-ui-004.png",
+          "sha256": "3ca50d42847e34088491311952ad8f2febc8d714420ad366a32f74c37a5e398c",
+          "stage": "native-strategic-control:4",
+          "nativeState": {
+            "surface": "native-strategic-text-control",
+            "presentation": "native two-line text button; no spell image assignment",
+            "targetRow": {
+              "name": "Cast Teleport\nHedwirg, Sorcerer · 8 fifth-level slots",
+              "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/535ba77c-6fe4-4e1d-a12c-8bd6abb402ae/b3db3766a4b605040b366265e2af0e50/2",
+              "spellKind": "Teleport",
+              "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+              "sourceKind": "Spontaneous",
+              "bookGuid": "b3db3766a4b605040b366265e2af0e50",
+              "casterId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+              "uses": 8,
+              "labelExact": true,
+              "labelTruncated": false,
+              "labelOverflowing": false,
+              "nativeFont": "NexusSerif-Regular SDF",
+              "buttonActive": true,
+              "buttonInteractable": true,
+              "nativeImageCount": 1,
+              "canonicalSpellImages": 0,
+              "nativeImageNames": [
+                "spellbook_button"
+              ],
+              "nativeImagesRetained": true,
+              "nativeControlCount": 2,
+              "nativeControlsRetained": true,
+              "contextAndResourcesRetained": true
+            },
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "KMG_DestinationSpellActions",
+              "contentObject": "NativeSpellRows",
+              "viewportObject": "KMG_DestinationSpellActions",
+              "contentHeight": 454.0,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -35.49991,
+              "rowMaxY": 35.50009,
+              "viewportMinY": -109.73513,
+              "viewportMaxY": 109.73513,
+              "originalX": 1.0,
+              "originalY": 0.99999994,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": 7.62939453e-06,
+              "captureX": 1.0,
+              "captureY": 0.0160524826,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": -1.52587891e-05
+            }
+          },
+          "visualInspection": "Exact target and adjacent native controls are visible at 1280x720. Full two-line source label and original native background are clear; long sorcerer detail uses native smaller text. The native scroll viewport shows part of the six-row list, with each target brought into view separately. No painted spell image is assigned to these text buttons."
+        },
+        {
+          "file": "native-ui-005.png",
+          "sha256": "42c82828ff5b274475c8be6f457770b99f9206af6c80326b70016ae6a7a1d800",
+          "stage": "native-strategic-control:5",
+          "nativeState": {
+            "surface": "native-strategic-text-control",
+            "presentation": "native two-line text button; no spell image assignment",
+            "targetRow": {
+              "name": "Cast Teleport\nLinzi · 2 prepared",
+              "sourceKey": "b78220bfcf6d25145a808aa1f1f7eee8/1a6be110-384b-4ae3-bf19-629ca6be4cf5/5a38c9ac8607890409fcb8f6342da6f4/2",
+              "spellKind": "Teleport",
+              "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+              "sourceKind": "Prepared",
+              "bookGuid": "5a38c9ac8607890409fcb8f6342da6f4",
+              "casterId": "1a6be110-384b-4ae3-bf19-629ca6be4cf5",
+              "uses": 2,
+              "labelExact": true,
+              "labelTruncated": false,
+              "labelOverflowing": false,
+              "nativeFont": "NexusSerif-Regular SDF",
+              "buttonActive": true,
+              "buttonInteractable": true,
+              "nativeImageCount": 1,
+              "canonicalSpellImages": 0,
+              "nativeImageNames": [
+                "spellbook_button"
+              ],
+              "nativeImagesRetained": true,
+              "nativeControlCount": 2,
+              "nativeControlsRetained": true,
+              "contextAndResourcesRetained": true
+            },
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "KMG_DestinationSpellActions",
+              "contentObject": "NativeSpellRows",
+              "viewportObject": "KMG_DestinationSpellActions",
+              "contentHeight": 454.0,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -109.734985,
+              "rowMaxY": -38.7349854,
+              "viewportMinY": -109.73513,
+              "viewportMaxY": 109.73513,
+              "originalX": 1.0,
+              "originalY": 1.00000024,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": -1.52587891e-05,
+              "captureX": 1.0,
+              "captureY": -4.87959e-07,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": -5.340576e-05
+            }
+          },
+          "visualInspection": "Exact target and adjacent native controls are visible at 1280x720. Full two-line source label and original native background are clear; long sorcerer detail uses native smaller text. The native scroll viewport shows part of the six-row list, with each target brought into view separately. No painted spell image is assigned to these text buttons."
+        }
+      ],
+      "fixtureSha256": "b24f3b414e9132043ba72839217050c7a1de944d9971d4d88c17c427b7f52798",
+      "cleanup": {
+        "restored": true,
+        "Starts": 3,
+        "Stops": 3,
+        "cameraTargetRestored": true
+      },
+      "reopenViewportHeights": [
+        219.470383,
+        219.470383,
+        219.470383,
+        219.470383,
+        219.470383,
+        219.470383,
+        219.470383,
+        219.470261
+      ]
+    },
+    {
+      "directory": "20260913T2202128459370Z-disposable-teleportation-spellbook-ui",
+      "scenario": "disposable-teleportation-spellbook-ui",
+      "runId": "20260913T2202128459370Z-2e97cb7f5ed5471ebb3517c441213695",
+      "status": "PASS",
+      "assertions": 42,
+      "startedUtc": "2026-09-13T22:02:21.0093902Z",
+      "endedUtc": "2026-09-13T22:05:06.4150761Z",
+      "resultSha256": "fa80569a70e5b173b14ec056fce04691775945fe36e8687de8180a81b339e24b",
+      "identitySha256": "85e1651e3f5c24ddacf1df98977fa2fbd1479b4cfbc2c9fdb909415692bddeb8",
+      "requestSha256": "650d91555d8eed7ad9d8326a1bc00a41fa3c4dbabdfbbce1bde2698abab9e145",
+      "automaticNormalExit": true,
+      "saveWritingApiObserved": false,
+      "nativeCaptureCount": 19,
+      "screenManifestSha256": "f0abd23061ce739abaa29cbe2af63fc3c633950062ec90a6fc436e41567867ca",
+      "nativeTargets": [
+        {
+          "file": "native-ui-000.png",
+          "sha256": "60c9228138049cd3bb80a36def1f39c97ef609597278d2c8442bb084cd2f82c7",
+          "stage": "spell-description-5a38c9ac8607890409fcb8f6342da6f4-5",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained."
+        },
+        {
+          "file": "native-ui-001.png",
+          "sha256": "d5ae2a666d0ad43d2b24e3c650369dec06ec4e1b1d6d805e3626b906abb4a4d1",
+          "stage": "spell-preparation-5a38c9ac8607890409fcb8f6342da6f4-5",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained."
+        },
+        {
+          "file": "native-ui-002.png",
+          "sha256": "c65aae8cfd0d61b57810028d5a5fedb08c72589dcb311e817347ac1cb9243307",
+          "stage": "spell-description-5a38c9ac8607890409fcb8f6342da6f4-7",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained."
+        },
+        {
+          "file": "native-ui-003.png",
+          "sha256": "68964a8470f6870fc83e6a2c77cf308245b61bdc3f88a0bade5745327c3d571c",
+          "stage": "spell-preparation-5a38c9ac8607890409fcb8f6342da6f4-7",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained."
+        },
+        {
+          "file": "native-ui-004.png",
+          "sha256": "30ec4c1a2133b0d385aec136a21765e72ee4405ae3eee63913b655b1b3e09ba3",
+          "stage": "spell-description-b3db3766a4b605040b366265e2af0e50-5",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained."
+        },
+        {
+          "file": "native-ui-005.png",
+          "sha256": "46e55c8ff041a4f12d7bc59512a69466d0fe01ec8036c9c9807b601151cb5c6b",
+          "stage": "spell-description-b3db3766a4b605040b366265e2af0e50-7",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained."
+        },
+        {
+          "file": "native-ui-006.png",
+          "sha256": "9e41e5769cc660193971ab5ea6b593aad046e73ea68fa88ad15d789ebc4e875a",
+          "stage": "spell-description-4673d19a0cf2fab4f885cc4d1353da33-6",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained."
+        },
+        {
+          "file": "native-ui-007.png",
+          "sha256": "0b094126c6258fa540c03bb2f0995cd9313b28dd71873c89a4fc0d8bfe447755",
+          "stage": "spell-preparation-4673d19a0cf2fab4f885cc4d1353da33-6",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained. An unrelated native Eagle's Splendor, Mass hover panel covers another portion of the book; the target Word of Recall row and prepared slot remain fully clear. This is not a globally unobscured-frame claim."
+        },
+        {
+          "file": "native-ui-008.png",
+          "sha256": "f4eb298035bd2a94183511e8e27ad9202dff4320af320d0332fc201cc9338815",
+          "stage": "spell-description-fc78193f68150454483a7eea8b605b71-8",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained."
+        },
+        {
+          "file": "native-ui-009.png",
+          "sha256": "e92722dd5fef565bb5a6fee987ebe7540d458aa6c82c82750de1727ec1ad30bc",
+          "stage": "spell-preparation-fc78193f68150454483a7eea8b605b71-8",
+          "nativeState": {
+            "$id": "1"
+          },
+          "visualInspection": "Correct distinct spell artwork is clear in its actual native spellbook description or prepared slot and visible target row at 1280x720; native frames and applicable adjacent spell controls are retained. An unrelated native Blood Mist hover panel covers another portion of the book; the target Word of Recall row and prepared slot remain fully clear. This is not a globally unobscured-frame claim."
+        },
+        {
+          "file": "native-ui-010.png",
+          "sha256": "feddaa8e47720ee6cbb77085c82bc4eaaa59f69ae1688a442ab6dc0e4423a4fd",
+          "stage": "native-scroll-row:2c283c993b233df53b487fc7eeac2ba3",
+          "nativeState": {
+            "surface": "native-scroll-inventory",
+            "targetRow": {
+              "name": "Scroll of Teleport",
+              "itemGuid": "2c283c993b233df53b487fc7eeac2ba3",
+              "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+              "iconName": "KMG_Icon_teleport",
+              "renderedIconExact": true,
+              "spellIconMatchesItem": true,
+              "itemReferenceRetained": true,
+              "itemCount": 1,
+              "charges": 1,
+              "identified": true,
+              "otherItemRows": 9,
+              "otherItemIconsExact": true
+            },
+            "viewport": {
+              "nativeApi": "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter",
+              "scrollType": "Kingmaker.UI.Common.ScrollRectExtended",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 785.1,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -116.300049,
+              "rowMaxY": -60.80005,
+              "viewportMinY": -665.772,
+              "viewportMaxY": 0.0,
+              "originalX": 0.0,
+              "originalY": 0.999999464,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": 0.0,
+              "captureX": 0.0,
+              "captureY": 1.0,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": -6.10351563e-05
+            }
+          },
+          "visualInspection": "Actual scroll target artwork is clear in its native inventory slot or named item description. Distinct sibling scrolls and ordinary inventory controls remain visible; the native unavailable state is retained."
+        },
+        {
+          "file": "native-ui-011.png",
+          "sha256": "d7914f14c30610c6fc33986edd3a58cdbba583419d691f92bd44f7ac8ed474e1",
+          "stage": "native-scroll-description:2c283c993b233df53b487fc7eeac2ba3",
+          "nativeState": {
+            "surface": "native-scroll-description",
+            "targetRow": {
+              "name": "Scroll of Teleport",
+              "itemGuid": "2c283c993b233df53b487fc7eeac2ba3",
+              "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+              "iconName": "KMG_Icon_teleport",
+              "renderedIconExact": true,
+              "spellIconMatchesItem": true,
+              "itemReferenceRetained": true,
+              "itemCount": 1,
+              "charges": 1,
+              "identified": true,
+              "otherItemRows": 9,
+              "otherItemIconsExact": true
+            },
+            "description": {
+              "nameExact": true,
+              "matchingIcons": 1,
+              "tooltipItemExact": true,
+              "tooltipDataItemExact": true,
+              "shown": true
+            }
+          },
+          "visualInspection": "Actual scroll target artwork is clear in its native inventory slot or named item description. Distinct sibling scrolls and ordinary inventory controls remain visible; the native unavailable state is retained."
+        },
+        {
+          "file": "native-ui-012.png",
+          "sha256": "70bef9858102c3594678f77a996ca0b41924c711386d1d02c02abc45be9d0c7f",
+          "stage": "native-scroll-row:2a2b0185be1d2dba5aa1b5a24774e17d",
+          "nativeState": {
+            "surface": "native-scroll-inventory",
+            "targetRow": {
+              "name": "Scroll of Greater Teleport",
+              "itemGuid": "2a2b0185be1d2dba5aa1b5a24774e17d",
+              "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+              "iconName": "KMG_Icon_greater-teleport",
+              "renderedIconExact": true,
+              "spellIconMatchesItem": true,
+              "itemReferenceRetained": true,
+              "itemCount": 1,
+              "charges": 1,
+              "identified": true,
+              "otherItemRows": 9,
+              "otherItemIconsExact": true
+            },
+            "viewport": {
+              "nativeApi": "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter",
+              "scrollType": "Kingmaker.UI.Common.ScrollRectExtended",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 785.1,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -116.300049,
+              "rowMaxY": -60.80005,
+              "viewportMinY": -665.772,
+              "viewportMaxY": 0.0,
+              "originalX": 0.0,
+              "originalY": 1.0,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": -6.10351563e-05,
+              "captureX": 0.0,
+              "captureY": 1.0,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": -6.10351563e-05
+            }
+          },
+          "visualInspection": "Actual scroll target artwork is clear in its native inventory slot or named item description. Distinct sibling scrolls and ordinary inventory controls remain visible; the native unavailable state is retained."
+        },
+        {
+          "file": "native-ui-013.png",
+          "sha256": "b8782bb479c26521f9f53e3876c481d68badc4b910725c7f4b4ffc3f6657f51f",
+          "stage": "native-scroll-description:2a2b0185be1d2dba5aa1b5a24774e17d",
+          "nativeState": {
+            "surface": "native-scroll-description",
+            "targetRow": {
+              "name": "Scroll of Greater Teleport",
+              "itemGuid": "2a2b0185be1d2dba5aa1b5a24774e17d",
+              "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+              "iconName": "KMG_Icon_greater-teleport",
+              "renderedIconExact": true,
+              "spellIconMatchesItem": true,
+              "itemReferenceRetained": true,
+              "itemCount": 1,
+              "charges": 1,
+              "identified": true,
+              "otherItemRows": 9,
+              "otherItemIconsExact": true
+            },
+            "description": {
+              "nameExact": true,
+              "matchingIcons": 1,
+              "tooltipItemExact": true,
+              "tooltipDataItemExact": true,
+              "shown": true
+            }
+          },
+          "visualInspection": "Actual scroll target artwork is clear in its native inventory slot or named item description. Distinct sibling scrolls and ordinary inventory controls remain visible; the native unavailable state is retained."
+        },
+        {
+          "file": "native-ui-014.png",
+          "sha256": "53985fb3747fe4941e728c9148a8709366c86fd588696204dcf6ce1bafebb52b",
+          "stage": "native-scroll-row:42d3daeb7d503687df8953b47727372b",
+          "nativeState": {
+            "surface": "native-scroll-inventory",
+            "targetRow": {
+              "name": "Scroll of Word of Recall",
+              "itemGuid": "42d3daeb7d503687df8953b47727372b",
+              "spellGuid": "596d85a666204d6ea5c0188e53f4b4de",
+              "iconName": "KMG_Icon_word-of-recall",
+              "renderedIconExact": true,
+              "spellIconMatchesItem": true,
+              "itemReferenceRetained": true,
+              "itemCount": 1,
+              "charges": 1,
+              "identified": true,
+              "otherItemRows": 9,
+              "otherItemIconsExact": true
+            },
+            "viewport": {
+              "nativeApi": "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter",
+              "scrollType": "Kingmaker.UI.Common.ScrollRectExtended",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 785.1,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -116.300049,
+              "rowMaxY": -60.80005,
+              "viewportMinY": -665.772,
+              "viewportMaxY": 0.0,
+              "originalX": 0.0,
+              "originalY": 1.0,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": -6.10351563e-05,
+              "captureX": 0.0,
+              "captureY": 1.0,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": -6.10351563e-05
+            }
+          },
+          "visualInspection": "Actual scroll target artwork is clear in its native inventory slot or named item description. Distinct sibling scrolls and ordinary inventory controls remain visible; the native unavailable state is retained."
+        },
+        {
+          "file": "native-ui-015.png",
+          "sha256": "b04046bb94e9937c484be3a0cc76e72a48ba7b0a88458268b06342b2757876f7",
+          "stage": "native-scroll-description:42d3daeb7d503687df8953b47727372b",
+          "nativeState": {
+            "surface": "native-scroll-description",
+            "targetRow": {
+              "name": "Scroll of Word of Recall",
+              "itemGuid": "42d3daeb7d503687df8953b47727372b",
+              "spellGuid": "596d85a666204d6ea5c0188e53f4b4de",
+              "iconName": "KMG_Icon_word-of-recall",
+              "renderedIconExact": true,
+              "spellIconMatchesItem": true,
+              "itemReferenceRetained": true,
+              "itemCount": 1,
+              "charges": 1,
+              "identified": true,
+              "otherItemRows": 9,
+              "otherItemIconsExact": true
+            },
+            "description": {
+              "nameExact": true,
+              "matchingIcons": 1,
+              "tooltipItemExact": true,
+              "tooltipDataItemExact": true,
+              "shown": true
+            }
+          },
+          "visualInspection": "Actual scroll target artwork is clear in its native inventory slot or named item description. Distinct sibling scrolls and ordinary inventory controls remain visible; the native unavailable state is retained."
+        },
+        {
+          "file": "native-ui-016.png",
+          "sha256": "4569c2356696a2c5c23a0469dfac6d3f74a66b612e36886177aea273284d1c6d",
+          "stage": "native-scroll-merchant-row:2c283c993b233df53b487fc7eeac2ba3",
+          "nativeState": {
+            "surface": "native-scroll-merchant",
+            "targetRow": {
+              "name": "Scroll of Teleport",
+              "itemGuid": "2c283c993b233df53b487fc7eeac2ba3",
+              "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+              "iconName": "KMG_Icon_teleport",
+              "renderedIconExact": true,
+              "spellIconMatchesItem": true,
+              "itemReferenceRetained": true,
+              "itemCount": 1,
+              "charges": 1,
+              "identified": true,
+              "otherItemRows": 1,
+              "otherItemIconsExact": true
+            },
+            "merchant": {
+              "nativeVendorBound": true,
+              "nativeStoreBound": true,
+              "privateStock": true,
+              "stockCount": 4,
+              "transferCollectionsEmpty": true,
+              "playerInventoryUnchanged": true,
+              "unregisteredVendor": true,
+              "controlBlueprintRetained": true
+            },
+            "viewport": {
+              "nativeApi": "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter",
+              "scrollType": "Kingmaker.UI.Common.ScrollRectExtended",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 275.000031,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -185.36264,
+              "rowMaxY": -117.362671,
+              "viewportMinY": -338.78,
+              "viewportMaxY": 338.78,
+              "originalX": 0.8333333,
+              "originalY": 0.0,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": 0.0,
+              "captureX": 0.8333333,
+              "captureY": 1.0,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": 0.0
+            }
+          },
+          "visualInspection": "All three scroll merchant rows and the ordinary potion control are clear in the real private-stock native VendorUI. The three target captures are byte-identical; frame 016 was visually inspected and frames 017/018 match its verified SHA-256. No transaction was performed."
+        },
+        {
+          "file": "native-ui-017.png",
+          "sha256": "4569c2356696a2c5c23a0469dfac6d3f74a66b612e36886177aea273284d1c6d",
+          "stage": "native-scroll-merchant-row:2a2b0185be1d2dba5aa1b5a24774e17d",
+          "nativeState": {
+            "surface": "native-scroll-merchant",
+            "targetRow": {
+              "name": "Scroll of Greater Teleport",
+              "itemGuid": "2a2b0185be1d2dba5aa1b5a24774e17d",
+              "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+              "iconName": "KMG_Icon_greater-teleport",
+              "renderedIconExact": true,
+              "spellIconMatchesItem": true,
+              "itemReferenceRetained": true,
+              "itemCount": 1,
+              "charges": 1,
+              "identified": true,
+              "otherItemRows": 1,
+              "otherItemIconsExact": true
+            },
+            "merchant": {
+              "nativeVendorBound": true,
+              "nativeStoreBound": true,
+              "privateStock": true,
+              "stockCount": 4,
+              "transferCollectionsEmpty": true,
+              "playerInventoryUnchanged": true,
+              "unregisteredVendor": true,
+              "controlBlueprintRetained": true
+            },
+            "viewport": {
+              "nativeApi": "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter",
+              "scrollType": "Kingmaker.UI.Common.ScrollRectExtended",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 275.000031,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -192.531586,
+              "rowMaxY": -124.531586,
+              "viewportMinY": -338.78,
+              "viewportMaxY": 338.78,
+              "originalX": 0.8333333,
+              "originalY": 0.0,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": 0.0,
+              "captureX": 0.8333333,
+              "captureY": 1.0,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": 0.0
+            }
+          },
+          "visualInspection": "All three scroll merchant rows and the ordinary potion control are clear in the real private-stock native VendorUI. The three target captures are byte-identical; frame 016 was visually inspected and frames 017/018 match its verified SHA-256. No transaction was performed."
+        },
+        {
+          "file": "native-ui-018.png",
+          "sha256": "4569c2356696a2c5c23a0469dfac6d3f74a66b612e36886177aea273284d1c6d",
+          "stage": "native-scroll-merchant-row:42d3daeb7d503687df8953b47727372b",
+          "nativeState": {
+            "surface": "native-scroll-merchant",
+            "targetRow": {
+              "name": "Scroll of Word of Recall",
+              "itemGuid": "42d3daeb7d503687df8953b47727372b",
+              "spellGuid": "596d85a666204d6ea5c0188e53f4b4de",
+              "iconName": "KMG_Icon_word-of-recall",
+              "renderedIconExact": true,
+              "spellIconMatchesItem": true,
+              "itemReferenceRetained": true,
+              "itemCount": 1,
+              "charges": 1,
+              "identified": true,
+              "otherItemRows": 1,
+              "otherItemIconsExact": true
+            },
+            "merchant": {
+              "nativeVendorBound": true,
+              "nativeStoreBound": true,
+              "privateStock": true,
+              "stockCount": 4,
+              "transferCollectionsEmpty": true,
+              "playerInventoryUnchanged": true,
+              "unregisteredVendor": true,
+              "controlBlueprintRetained": true
+            },
+            "viewport": {
+              "nativeApi": "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter",
+              "scrollType": "Kingmaker.UI.Common.ScrollRectExtended",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 275.0,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -329.666,
+              "rowMaxY": -261.666,
+              "viewportMinY": -338.78,
+              "viewportMaxY": 338.78,
+              "originalX": 0.8333333,
+              "originalY": 0.0,
+              "horizontalEnabled": false,
+              "originalContentX": 0.0,
+              "originalContentY": 0.0,
+              "captureX": 0.8333333,
+              "captureY": 1.0,
+              "restored": true,
+              "restoredContentX": 0.0,
+              "restoredContentY": 0.0
+            }
+          },
+          "visualInspection": "All three scroll merchant rows and the ordinary potion control are clear in the real private-stock native VendorUI. The three target captures are byte-identical; frame 016 was visually inspected and frames 017/018 match its verified SHA-256. No transaction was performed."
+        }
+      ],
+      "fixtureSha256": "477063671d78aa71c46d79cfe0e35ce445b563af529328f53524ec3463845c5d",
+      "cleanup": {
+        "native-scroll-inventory-cleanup": {
+          "surface": "native-scroll-inventory",
+          "status": "three-native-scroll-slots-and-descriptions-captured",
+          "checks": {
+            "itemReferencesAndOrder": true,
+            "itemScalarsAndIcons": true,
+            "money": true,
+            "tabsClosed": true,
+            "inventoryClosed": true,
+            "descriptionClosed": true,
+            "filter": true,
+            "sorter": true,
+            "filterSave": true,
+            "savedFilter": true,
+            "savedSorter": true,
+            "sheetCharacter": true,
+            "sheetSection": true,
+            "group": true,
+            "zeroSaveWrites": true
+          },
+          "restored": true,
+          "originalItemCount": 21,
+          "temporaryItemCount": 3
+        },
+        "native-scroll-merchant-cleanup": {
+          "restored": true,
+          "checks": {
+            "tradeClosed": true,
+            "ownedStockRemoved": true,
+            "closedCollectionsOwned": true,
+            "playerInventory": true,
+            "ordinaryBlueprint": true,
+            "originalUnitRegistry": true,
+            "vendorData": true,
+            "vendorPrices": true,
+            "filterValues": true,
+            "nativeCollections": true,
+            "group": true,
+            "zeroSaveWrites": true
+          }
+        }
+      }
+    },
+    {
+      "directory": "20260913T2205143848814Z-disposable-teleportation-scrolls",
+      "scenario": "disposable-teleportation-scrolls",
+      "runId": "20260913T2205143848814Z-e259dc976d6542ad8bf2891fa5ff8789",
+      "status": "PASS",
+      "assertions": 65,
+      "startedUtc": "2026-09-13T22:05:21.5059284Z",
+      "endedUtc": "2026-09-13T22:08:04.1479983Z",
+      "resultSha256": "d17b5bcec78edb93d46445d37a93c1b8a62b22ac5d46469dff4cb8954aba9521",
+      "identitySha256": "4d6884711f1837dbc394a3660962e06ec833b8ce7af39134beb0c201792b903d",
+      "requestSha256": "613841e4af8ce9cbb2a30f44a06eec31b28ac12e93f6c5fcfc884f6b89b0b33e",
+      "automaticNormalExit": true,
+      "saveWritingApiObserved": false,
+      "fixtureSha256": "47cffabe9f0d1a9f28e624774657ccc92f283669f3cad2cf1bcacede0fd189bf",
+      "verifiedBehavior": [
+        "teleportation-scrolls-shared-stock-counts-distinct-collections",
+        "teleportation-scrolls-reader-wizard-classlist-zero-umd",
+        "teleportation-scrolls-reader-per-spell-negative",
+        "teleportation-scrolls-oracle-final-list-recall-exactly-once",
+        "teleportation-scrolls-oracle-native-classlist-eligibility",
+        "teleportation-scrolls-oracle-reader-row-offered",
+        "teleportation-scrolls-oracle-reader-not-know-spell",
+        "teleportation-scrolls-oracle-scroll-teaching-intact",
+        "teleportation-scrolls-reader-druid-recall-zero-umd",
+        "teleportation-scrolls-reader-ineligible-control",
+        "teleportation-scrolls-reader-umd-only",
+        "teleportation-scrolls-reader-umd-per-spell",
+        "teleportation-scrolls-scroll-fixture-book-knows-canonical-spell",
+        "teleportation-scrolls-scroll-row-composed",
+        "teleportation-scrolls-scroll-cancellation-consumes-nothing",
+        "teleportation-scrolls-native-item-failure-changes-best-reader",
+        "teleportation-scrolls-native-best-fallible-reader",
+        "teleportation-scrolls-native-reader-ties-stable",
+        "teleportation-scrolls-group-row-native-presentation",
+        "teleportation-scrolls-ranking-render-refresh-read-only",
+        "teleportation-scrolls-reader-change-preserves-native-row",
+        "teleportation-scrolls-changed-reader-cancels-confirmation",
+        "teleportation-scrolls-no-reader-at-click-unspent",
+        "teleportation-scrolls-scroll-failure-native-notification",
+        "teleportation-scrolls-scroll-activation-umd-failure",
+        "teleportation-scrolls-automatic-failure-one-native-attempt",
+        "teleportation-scrolls-automatic-success-native-reader",
+        "teleportation-scrolls-scroll-cast-exactly-one",
+        "teleportation-scrolls-scroll-cast-rebuilds-arrows",
+        "teleportation-scrolls-scroll-first-arrow-moves",
+        "teleportation-scrolls-variant-discovery-separate-row",
+        "teleportation-scrolls-variant-ordinary-use-refused",
+        "teleportation-scrolls-variant-activation-spends-chosen-variant",
+        "teleportation-scrolls-ordinary-use-refused-before-activation",
+        "teleportation-scrolls-variant-rows-visibly-distinct",
+        "teleportation-scrolls-variant-spelllevel-not-conflated",
+        "teleportation-scrolls-variant-teaching-mismatch-rejected",
+        "teleportation-scrolls-variant-standard-teaching-intact",
+        "teleportation-scrolls-migration-fresh-native-stock",
+        "teleportation-scrolls-migration-fresh-marker-only",
+        "teleportation-scrolls-migration-bought-out-never-refills",
+        "teleportation-scrolls-migration-batch-once-per-shared-family",
+        "teleportation-scrolls-migration-arcane-batch",
+        "teleportation-scrolls-migration-fallback-inactive-while-primary-active",
+        "teleportation-scrolls-migration-fallback-decision",
+        "teleportation-scrolls-migration-fallback-batch-once",
+        "teleportation-scrolls-market-purchase-native",
+        "teleportation-scrolls-market-copy-eligible",
+        "teleportation-scrolls-market-copy-native",
+        "teleportation-scrolls-market-specialist-prepare",
+        "teleportation-scrolls-market-cast-row",
+        "teleportation-scrolls-market-cast-first-arrow",
+        "teleportation-scrolls-oracle-sanctuary-destination-known",
+        "teleportation-scrolls-oracle-sanctuary-row-composed",
+        "teleportation-scrolls-recall-direct-success-quiet",
+        "teleportation-scrolls-oracle-sanctuary-cast-exactly-one",
+        "teleportation-scrolls-recall-failed-activation-consumed-notification",
+        "teleportation-scrolls-consumption-contracts-remain-distinct",
+        "teleportation-scrolls-native-consumption-KMG_Disposable_RecallConsumption_0",
+        "teleportation-scrolls-native-consumption-KMG_Disposable_RecallConsumption_1",
+        "teleportation-scrolls-depleted-renewable-not-offered",
+        "teleportation-scrolls-native-consumption-KMG_Disposable_RecallConsumption_2",
+        "teleportation-scrolls-recall-failed-activation-charge-notification",
+        "teleportation-scrolls-native-preservation-1",
+        "teleportation-scrolls-native-preservation-100"
+      ]
+    },
+    {
+      "directory": "20260913T2208114938021Z-working-save-smoke",
+      "scenario": "working-save-smoke",
+      "runId": "20260913T2208114938021Z-feab2caeb8c4492ca4c7a5ef5d0eb357",
+      "status": "PASS",
+      "assertions": 11,
+      "startedUtc": "2026-09-13T22:08:18.4244391Z",
+      "endedUtc": "2026-09-13T22:10:19.9194017Z",
+      "resultSha256": "cb3da25ef34fe16ddc95b58aa4b5a397174b10098cb56b7f0045f5bafcff238a",
+      "identitySha256": "e6288b3394b49a1196808580870c235532a622545cec9bebd010b726925daaa1",
+      "requestSha256": "8e032d2171d3391670a22ba7cbbcaef80e4fd69f0941255f416fcf0083f63bd6",
+      "automaticNormalExit": true,
+      "saveWritingApiObserved": false
+    },
+    {
+      "directory": "20260913T2211438536314Z-disposable-teleportation-level-up",
+      "scenario": "disposable-teleportation-level-up",
+      "runId": "20260913T2211438848856Z-361eeec1e30c48ccb2b8a622534448db",
+      "status": "PASS",
+      "assertions": 47,
+      "startedUtc": "2026-09-13T22:11:50.8662120Z",
+      "endedUtc": "2026-09-13T22:14:59.4687536Z",
+      "resultSha256": "aec13fe7c86369f5fce4a183c97f0b74b956d634be208e773f9ba3d298171265",
+      "identitySha256": "13e105692bd9035931b9f58c756e44cdc0ffb9377b0bb1283cb793f5c81825e7",
+      "requestSha256": "86da24a39404279830a7c35af2af2e5a1c83a80dd7f6a5b3436779ed8678c3d1",
+      "automaticNormalExit": true,
+      "saveWritingApiObserved": false,
+      "nativeCaptureCount": 5,
+      "screenManifestSha256": "bb3af5dd0fcb624c172a2c42283632536e6c6cc274b0c1c00825348bdca49e79",
+      "nativeTargets": [
+        {
+          "file": "native-ui-000.png",
+          "sha256": "0ba8fe970306fd8cf669141ac02beb7c94272314fa51d35589f953880f2e0304",
+          "stage": "native-learning-row:32c02466b2364c8a906e6e4761175099-6",
+          "nativeState": {
+            "targetRow": {
+              "spellGuid": "596d85a666204d6ea5c0188e53f4b4de",
+              "name": "Word of Recall",
+              "spellLevel": 6,
+              "classGuid": "32c02466b2364c8a906e6e4761175099",
+              "previewOnly": true,
+              "enabled": true
+            },
+            "phase": "Spells",
+            "ownerId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 1721.00024,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -243.500031,
+              "rowMaxY": -179.499969,
+              "viewportMinY": -313.5,
+              "viewportMaxY": 313.5,
+              "originalX": 5.08615958e-05,
+              "originalY": 1.0,
+              "horizontalEnabled": true,
+              "originalContentX": 284.0,
+              "originalContentY": -860.5,
+              "captureX": 5.08615958e-05,
+              "captureY": 0.0,
+              "restored": true,
+              "restoredContentX": 284.0,
+              "restoredContentY": -860.5002
+            }
+          },
+          "visualInspection": "Exact native learning row has clear artwork, complete spell name and correct level badge beside native spell controls. Oracle Recall is a normal sixth-level choice; Wizard/Sorcerer Teleport and Greater Teleport remain distinct."
+        },
+        {
+          "file": "native-ui-001.png",
+          "sha256": "b08e15847c9d9ed44efa070485262c04d62112a7c33a8f1846c6dbf482034d4e",
+          "stage": "native-learning-row:ba34257984f4c41408ce1dc2004e342e-5",
+          "nativeState": {
+            "targetRow": {
+              "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+              "name": "Teleport",
+              "spellLevel": 5,
+              "classGuid": "ba34257984f4c41408ce1dc2004e342e",
+              "previewOnly": true,
+              "enabled": true
+            },
+            "phase": "Spells",
+            "ownerId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 14261.002,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -31.9999962,
+              "rowMaxY": 31.9999924,
+              "viewportMinY": -313.5,
+              "viewportMaxY": 313.5,
+              "originalX": 5.08615958e-05,
+              "originalY": 1.0,
+              "horizontalEnabled": true,
+              "originalContentX": 284.0,
+              "originalContentY": -7130.5,
+              "captureX": 5.08615958e-05,
+              "captureY": 0.855838358,
+              "restored": true,
+              "restoredContentX": 284.0,
+              "restoredContentY": -7130.5
+            }
+          },
+          "visualInspection": "Exact native learning row has clear artwork, complete spell name and correct level badge beside native spell controls. Oracle Recall is a normal sixth-level choice; Wizard/Sorcerer Teleport and Greater Teleport remain distinct."
+        },
+        {
+          "file": "native-ui-002.png",
+          "sha256": "aafab05b51d83832314559375389f9e813aea131b71cf34f21bbcbc84d4063d7",
+          "stage": "native-learning-row:ba34257984f4c41408ce1dc2004e342e-7",
+          "nativeState": {
+            "targetRow": {
+              "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+              "name": "Greater Teleport",
+              "spellLevel": 7,
+              "classGuid": "ba34257984f4c41408ce1dc2004e342e",
+              "previewOnly": true,
+              "enabled": true
+            },
+            "phase": "Spells",
+            "ownerId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 19475.0,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -31.9999962,
+              "rowMaxY": 31.9999924,
+              "viewportMinY": -313.5,
+              "viewportMaxY": 313.5,
+              "originalX": 5.08615958e-05,
+              "originalY": 1.0,
+              "horizontalEnabled": true,
+              "originalContentX": 284.0,
+              "originalContentY": -9737.5,
+              "captureX": 5.08615958e-05,
+              "captureY": 0.97275573,
+              "restored": true,
+              "restoredContentX": 284.0,
+              "restoredContentY": -9737.5
+            }
+          },
+          "visualInspection": "Exact native learning row has clear artwork, complete spell name and correct level badge beside native spell controls. Oracle Recall is a normal sixth-level choice; Wizard/Sorcerer Teleport and Greater Teleport remain distinct. Non-icon fixture observation: central Wizard book header displays 5 while the scrolled seventh-level candidates and target badge display 7. This capture qualifies the exact visible target, not that native header."
+        },
+        {
+          "file": "native-ui-003.png",
+          "sha256": "c9b78587daab90981940da53b732c92a4458fd32df75141cdf07c6e8e8350a34",
+          "stage": "native-learning-row:b3a505fb61437dc4097f43c3f8f9a4cf-5",
+          "nativeState": {
+            "targetRow": {
+              "spellGuid": "82e3fb1dce1647b58d3b7169c8520af0",
+              "name": "Teleport",
+              "spellLevel": 5,
+              "classGuid": "b3a505fb61437dc4097f43c3f8f9a4cf",
+              "previewOnly": true,
+              "enabled": true
+            },
+            "phase": "Spells",
+            "ownerId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 2579.00049,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -31.9998283,
+              "rowMaxY": 32.000164,
+              "viewportMinY": -313.5,
+              "viewportMaxY": 313.5,
+              "originalX": 5.08615958e-05,
+              "originalY": 0.9999995,
+              "horizontalEnabled": true,
+              "originalContentX": 284.0,
+              "originalContentY": -1289.499,
+              "captureX": 5.08615958e-05,
+              "captureY": 0.0268954225,
+              "restored": true,
+              "restoredContentX": 284.0,
+              "restoredContentY": -1289.49951
+            }
+          },
+          "visualInspection": "Exact native learning row has clear artwork, complete spell name and correct level badge beside native spell controls. Oracle Recall is a normal sixth-level choice; Wizard/Sorcerer Teleport and Greater Teleport remain distinct."
+        },
+        {
+          "file": "native-ui-004.png",
+          "sha256": "93d3e21b69b17622a26007c39a5dc754c6d831c4ee68d20f3abcd62dd233c690",
+          "stage": "native-learning-row:b3a505fb61437dc4097f43c3f8f9a4cf-7",
+          "nativeState": {
+            "targetRow": {
+              "spellGuid": "73d19adfe18743e0a2a3a21abf4af5f3",
+              "name": "Greater Teleport",
+              "spellLevel": 7,
+              "classGuid": "b3a505fb61437dc4097f43c3f8f9a4cf",
+              "previewOnly": true,
+              "enabled": true
+            },
+            "phase": "Spells",
+            "ownerId": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+            "viewport": {
+              "nativeApi": "UnityEngine.UI.ScrollRect.normalizedPosition",
+              "scrollType": "UnityEngine.UI.ScrollRect",
+              "scrollObject": "Scroll View",
+              "contentObject": "Content",
+              "viewportObject": "Viewport",
+              "contentHeight": 2447.00049,
+              "rowActive": true,
+              "rowVerticallyVisible": true,
+              "rowMinY": -31.9998741,
+              "rowMaxY": 32.00011,
+              "viewportMinY": -313.5,
+              "viewportMaxY": 313.5,
+              "originalX": 5.08615958e-05,
+              "originalY": 1.0,
+              "horizontalEnabled": true,
+              "originalContentX": 284.0,
+              "originalContentY": -1223.5,
+              "captureX": 5.08615958e-05,
+              "captureY": 0.7541208,
+              "restored": true,
+              "restoredContentX": 284.0,
+              "restoredContentY": -1223.50012
+            }
+          },
+          "visualInspection": "Exact native learning row has clear artwork, complete spell name and correct level badge beside native spell controls. Oracle Recall is a normal sixth-level choice; Wizard/Sorcerer Teleport and Greater Teleport remain distinct."
+        }
+      ],
+      "fixtureSha256": "b682b41136bb6fcab3a13ef8e0d8625402c4d55f45d2b52bb827a244f7f8ce86",
+      "cleanup": {
+        "restored": true,
+        "originalMoney": 4,
+        "money": 4,
+        "partyRestored": true,
+        "crossRestored": true,
+        "inventoryRestored": true,
+        "exceptions": []
+      },
+      "cleanupAssertions": [
+        {
+          "name": "teleportation-level-up-book-cleanup-32c02466b2364c8a906e6e4761175099-6",
+          "observed": "restored=True",
+          "status": "PASS"
+        },
+        {
+          "name": "teleportation-level-up-book-cleanup-ba34257984f4c41408ce1dc2004e342e-5",
+          "observed": "restored=True",
+          "status": "PASS"
+        },
+        {
+          "name": "teleportation-level-up-book-cleanup-ba34257984f4c41408ce1dc2004e342e-7",
+          "observed": "restored=True",
+          "status": "PASS"
+        },
+        {
+          "name": "teleportation-level-up-book-cleanup-b3a505fb61437dc4097f43c3f8f9a4cf-5",
+          "observed": "restored=True",
+          "status": "PASS"
+        },
+        {
+          "name": "teleportation-level-up-book-cleanup-b3a505fb61437dc4097f43c3f8f9a4cf-7",
+          "observed": "restored=True",
+          "status": "PASS"
+        },
+        {
+          "name": "teleportation-level-up-saved-owner-cleanup",
+          "observed": "restored=True",
+          "status": "PASS"
+        },
+        {
+          "name": "teleportation-level-up-cleanup",
+          "observed": "unchanged=True",
+          "status": "PASS"
+        },
+        {
+          "name": "teleportation-level-up-oracle-cast-map-cleanup",
+          "observed": "map=True",
+          "status": "PASS"
+        },
+        {
+          "name": "teleportation-level-up-oracle-real-cleanup",
+          "observed": "restored=True",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "orchestrationNote": "The initial four-run helper checked process exit before the final smoke process finished closing. A subsequent read-only check confirmed zero processes before the learning launch; no force termination or scenario retry. All five guarded runtime results PASS.",
+  "installationRestoration": {
+    "restored": true,
+    "originalFileCount": 136,
+    "verifiedUtc": "2026-09-13T22:18:56.409124+00:00"
+  },
+  "evidenceLimits": [
+    "New v0.0.129 artifact qualifies the listed affected surfaces. Earlier unmodified icon families retain separately labeled historical evidence.",
+    "Native strategic controls are text buttons with original backgrounds; no spell image assignment is fabricated.",
+    "Native scroll behavior is structured evidence; it does not add a screenshot claim for every grouped-reader/Recall action.",
+    "The unfinished inactive buff checkpoint is preserved in its exact named stash and local archive; its partial 0.0.128 runs are not this qualification.",
+    "Ten exact pilots are approved; eighty production images and final native UI approval are pending."
+  ],
+  "remaining": [
+    "Reapply preserved buff WIP; qualify actual glyph geometry for Sylph and complete four racial buff cases",
+    "Supported action/variant UI and applicable higher dependent firearm rendered feats",
+    "Existing-save P/M/B parameter prerequisite requires a separately authorized save fixture",
+    "Owner production and final native UI approval"
+  ]
+}

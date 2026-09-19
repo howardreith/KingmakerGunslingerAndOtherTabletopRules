@@ -1,9 +1,13 @@
-﻿# Installation, updates, removal, and compatibility
+# Installation, updates, removal, and compatibility
 
-Full release: `0.0.129-recall-and-smart-scrolls` (UMM version `0.0.129`).
-The installable archive is `KingmakerGunslinger-0.0.129-recall-and-smart-scrolls.zip`.
-Recall and automatic-reader qualification, supported activation rules and exact
-NOT RUN limits are recorded in [the mission evidence](Z-RECALL-AND-SMART-SCROLL-STATE.md).
+Full release: `0.0.130-icon-art-overhaul` (UMM version `0.0.130`).
+The installable archive is `KingmakerGunslinger-0.0.130-icon-art-overhaul.zip`.
+Icon overhaul qualification, the owner review checklist and exact NOT RUN
+limits are recorded in [the mission evidence](planning/ICON-OVERHAUL-STATE.md).
+The previous full release was `0.0.129-recall-and-smart-scrolls`
+(archive `KingmakerGunslinger-0.0.129-recall-and-smart-scrolls.zip`); Recall
+and automatic-reader qualification remains in
+[its mission evidence](Z-RECALL-AND-SMART-SCROLL-STATE.md).
 The retained 0.0.121 archive is
 `KingmakerGunslinger-0.0.121-unified-firearm-maintenance.zip`.
 

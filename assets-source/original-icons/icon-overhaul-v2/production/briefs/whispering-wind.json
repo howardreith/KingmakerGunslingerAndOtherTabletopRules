@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "whispering-wind",
+  "behavior": "Whispering Wind grants +4 racial Stealth; nearly vanished footfall, not a message spell.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/ElementalAlternateTraitPolicy.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/whispering-wind.png",
+  "sourceSha256": "12f95574bd7cc98c33c87e94a02a8a251bdb724afc9f77befe8b24fe618c3c38",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted style reference"
+    }
+  ],
+  "prompt": "Use case: style-transfer. ONE original square painted fantasy CRPG racial TRAIT icon. Match the approved project reference's rich hand-painted strokes, strong simple silhouette, localized cool ivory-silver light and deep full-bleed charcoal ground; make a NEW composition. Main meaning must read at 32/48/128px. Subject fills 75-85% with important tips comfortably inside edges. No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.  Use a cool desaturated blue-black ground; do not carry over orange flames from the style reference. A single LIGHT FOOTFALL on a dark flat ground: a soft leather boot seen in three-quarter rear view gently touches down on its toe at lower center, while its heel and calf FADE QUIETLY INTO SHADOW. ONE THIN PALE WIND RIBBON curls low around the ankle and fades horizontally. The toe, sole and lower ankle remain crisply readable, with the upper figure absent. Quiet desaturated blue and silver, very little motion. No running stride, wings, cushioning air under whole sole, footprints trail, floating messages, mouth, eye, flames or loud glow.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "A single LIGHT FOOTFALL on a dark flat ground: a soft leather boot seen in three-quarter rear view gently touches down on its toe at lower center, while its heel and calf FADE QUIETLY INTO SHADOW. ONE THIN PALE WIND RIBBON curls low around the ankle and fades horizontally. The toe, sole and lower ankle remain crisply readable, with the upper figure absent. Quiet desaturated blue and silver, very little motion. No running stride, wings, cushioning air under whole sole, footprints trail, floating messages, mouth, eye, flames or loud glow.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "sylph-traits",
+  "confusedWith": [
+    "air-insight",
+    "airy-step",
+    "breeze-kissed",
+    "like-the-wind",
+    "secretive",
+    "storm-in-the-blood",
+    "thunderous-resilience"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No words, numbers, letters, decorative frame, watermark, tiny detail, modern graphic flatness or UI indicators.",
+    "No running stride, wings, cushioning air under whole sole, footprints trail, floating messages, mouth, eye, flames or loud glow."
+  ]
+}

@@ -83,7 +83,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal))
                 .OrderBy(value => value.Name, StringComparer.Ordinal).ToArray();
             Entry[] weaponFocusChoices = firearmMenu.Select(value => new Entry(
-                value.Name, "Weapon Focus parameter", value.Icon,
+                value.Name, "Blueprint fallback; menu uses native " +
+                    value.NameForAcronim, ParameterFallbackIcon(value),
                 value.Param.Blueprint.name + ":" +
                     value.Param.Blueprint.AssetGuid)).ToArray();
             Entry[] blunderbussComparators = SelectParameterRows(
@@ -135,8 +136,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SequenceEqual(expectedRapid) &&
                 rapidChoices.Select(value => IconName(value.Icon))
                     .SequenceEqual(expectedIcons);
-            bool weaponFocusExact = weaponFocusChoices.Select(value => value.Name)
-                    .SequenceEqual(expected) &&
+            bool weaponFocusExact = firearmMenu.Select(value => value.Name)
+                    .SequenceEqual(expected) && firearmMenu.All(value =>
+                    value.Icon == null &&
+                    value.NameForAcronim == value.Name.Substring(0, 1) &&
+                    Kingmaker.UI.Common.UIUtility.GetAbilityAcronym(
+                        value.NameForAcronim) == value.NameForAcronim) &&
                 weaponFocusChoices.Select(value => IconName(value.Icon))
                     .SequenceEqual(expectedIcons);
             bool itemsExact = firearmItems.Length == 6 &&
@@ -239,6 +244,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { "runtimeIdentity", JObject.FromObject(identity) },
                 { "rapidReloadChoices", EntriesJson(rapidChoices) },
                 { "weaponFocusFirearmParameters", EntriesJson(weaponFocusChoices) },
+                { "firearmSelectorPresentation", new JArray(firearmMenu.Select(
+                    value => new JObject {
+                        { "name", value.Name },
+                        { "parameterGuid", value.Param.Blueprint.AssetGuid },
+                        { "menuIconIsNull", value.Icon == null },
+                        { "nativeAcronym", Kingmaker.UI.Common.UIUtility
+                            .GetAbilityAcronym(value.NameForAcronim) },
+                        { "facsimileShows", "preserved blueprint fallback; not native typography" }
+                    })) },
                 { "weaponFocusBlunderbussComparators",
                     EntriesJson(blunderbussComparators) },
                 { "weaponFocusMusketPistolComparators",
@@ -260,7 +274,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(rapidChoices), rapidExact,
                 "live Rapid Reload AllFeatures and Sprite references");
             Add(assertions, "weapon-focus-live-firearm-parameters",
-                "exactly Blunderbuss, Musket, Pistol; no Rifle or Revolver",
+                "exactly B/M/P native text entries with preserved blueprint parameters and fallback sprites; no Rifle or Revolver",
                 Describe(weaponFocusChoices), weaponFocusExact,
                 "BlueprintParametrizedFeature.GetFullSelectionItems");
             Add(assertions, "supported-firearm-item-icons",
@@ -299,6 +313,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal),
                 "Unity Mod Manager ModEntry.Info.Version");
 
+            var censusFiles = new List<string>();
+            IconConsumerCensus.Exercise(context, request, assertions, censusFiles);
+            FirearmMonogramEvidence.Exercise(request, assertions, censusFiles);
             bool pass = assertions.All(value => value.Status ==
                 RuntimeTestStatuses.Pass);
             return new RuntimeTestResult
@@ -329,7 +346,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExceptionSummary = string.Empty,
                 EvidenceFiles = records.Select(value => Path.Combine(
                         request.EvidenceDirectory, (string)value["fileName"]))
-                    .Concat(new[] { indexPath }).ToList(),
+                    .Concat(new[] { indexPath }).Concat(censusFiles).ToList(),
                 AutomaticExitRequested = request.ExitAfterCompletion,
                 EvidenceDirectory = request.EvidenceDirectory
             };
@@ -382,18 +399,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                             value.Name).OrderBy(value => value,
                                 StringComparer.Ordinal).ToArray()));
                 FeatureUIData match = matches[0];
-                FeatureUIData rendered = match.Icon == null
-                    ? new FeatureUIData(match.Feature, match.Param)
-                    : match;
-                if (rendered.Icon == null)
+                Sprite rendered = match.Icon == null ? ParameterFallbackIcon(match) : match.Icon;
+                if (rendered == null)
                     throw new InvalidOperationException(
                         "Weapon Focus row has no native parameter icon: " +
                         requestedName + ";identity=" +
                         ParameterIdentity(match));
-                selected.Add(new Entry(match.Name, "Weapon Focus category",
-                    rendered.Icon, ParameterIdentity(match)));
+                selected.Add(new Entry(match.Name, match.Icon == null
+                    ? "Blueprint fallback; native text " + match.NameForAcronim
+                    : "Weapon Focus category",
+                    rendered, ParameterIdentity(match)));
             }
             return selected.ToArray();
+        }
+
+        private static Sprite ParameterFallbackIcon(FeatureUIData value)
+        {
+            // These explicitly labeled facsimiles show retained blueprint
+            // fallback pixels. Native text needs separate real-screen evidence.
+            var parameter = value.Param == null ? null : value.Param.Blueprint as BlueprintFeature;
+            return parameter != null ? parameter.Icon : new FeatureUIData(value.Feature, value.Param).Icon;
         }
 
         private static string ParameterIdentity(FeatureUIData value)

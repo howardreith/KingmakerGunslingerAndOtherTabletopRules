@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.129-recall-and-smart-scrolls",
-  "version": "0.0.129",
+  "milestone": "0.0.130-icon-art-overhaul",
+  "version": "0.0.130",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1565,7 +1565,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "firearmHotfix128": {
-    "deterministicTestCount": 1632,
+    "deterministicTestCount": 1653,
     "publicReleaseAuthorized": false,
     "fieldRepairBrokenOnlyOutOfCombat": true,
     "completedRestRestoresCarriedDamage": true,
@@ -1589,5 +1589,14 @@
     "acceptedCandidateNativeAssertions": 520,
     "optionalAbsentStartupAssertions": 22,
     "releaseArtifactEvidence": "Z-RECALL-AND-SMART-SCROLL-STATE.md"
+  },
+  "iconOverhaul130": {
+    "deterministicTestCount": 1653,
+    "publicReleaseAuthorized": true,
+    "allNinetyImagesOwnerApproved": true,
+    "racialActionWidgetBindingQualified": true,
+    "higherFeatRootsTwelveCombinationsQualified": true,
+    "runtimeQualificationPending": false,
+    "compatibilityRuntimeQualificationPending": true
   }
 }
