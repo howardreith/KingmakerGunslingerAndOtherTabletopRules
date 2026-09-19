@@ -1,4 +1,4 @@
-# Kingmaker Gunslinger 0.0.130 player smoke test (icon art overhaul)
+# Kingmaker Gunslinger 0.0.131 player smoke test (icon art overhaul)
 
 Use a disposable save. With Elemental Races enabled, create one elemental-race
 character and confirm: racial action/feat icons show the new paintings

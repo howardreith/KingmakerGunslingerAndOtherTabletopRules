@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
@@ -86,7 +86,7 @@ def validate(root: Path) -> None:
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
     release_suffix = ("icon-art-overhaul"
-        if VERSION == "0.0.130" else "recall-and-smart-scrolls"
+        if VERSION in ("0.0.130", "0.0.131") else "recall-and-smart-scrolls"
         if VERSION == "0.0.129" else "firearm-postrelease-hotfix"
         if VERSION == "0.0.128" else "firearm-maintenance"
         if VERSION == "0.0.127" else "word-of-recall-oracle"
