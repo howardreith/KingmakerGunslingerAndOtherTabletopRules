@@ -99,3 +99,13 @@ spellbook-UI PASS runs and the live census; the pre-existing spellbook
 preparation-capture race was fixed with a bounded settle-wait. Evidence:
 [SCROLL-ITEM-ICON-QUALIFICATION.json](../reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json).
 All 90 approved images and protected assets remain unchanged.
+
+## 0.0.132 native scroll shell correction (2026-09-19)
+
+Owner correction: the 0.0.131 scroll icons were procedurally drawn parchment
+and read as new artwork. The corrected icons composite the approved spell
+paintings onto the exact native scroll shell (cross-donor median of five
+same-design native donors), qualified 42/42 through the guarded spellbook
+UI scenario. Evidence:
+[SCROLL-ITEM-ICON-QUALIFICATION.json](../reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json).
+All 90 approved images and protected assets remain unchanged.

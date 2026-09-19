@@ -1,12 +1,12 @@
 # Kingmaker Gunslinger
 
-**0.0.131-icon-art-overhaul** is the owner-authorized full release for the
+**0.0.132-icon-art-overhaul** is the owner-authorized full release for the
 complete icon art overhaul: 90 owner-approved images integrated across racial
 actions, feats, heritages, traits, selectors, buffs and scrolls, native P/M/B
 monograms preserved for the firearm feat roots, and guarded runtime
 qualification for the integrated consumers. All 0.0.129 gameplay (Recall,
 automatic scroll readers, Oracle behavior) is preserved unchanged. See the
-[release notes](docs/RELEASE-NOTES-0.0.130.md) and the [0.0.131 notes](docs/RELEASE-NOTES-0.0.131.md),
+[release notes](docs/RELEASE-NOTES-0.0.130.md) and the [0.0.131 notes](docs/RELEASE-NOTES-0.0.131.md) and the [0.0.132 notes](docs/RELEASE-NOTES-0.0.132.md),
 [mission state](planning/ICON-OVERHAUL-STATE.md) and
 [review packet](reports/icon-overhaul/NATIVE-UI-REVIEW-PACKET.md).
 

@@ -1,7 +1,7 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.131-icon-art-overhaul` (UMM version `0.0.131`).
-The installable archive is `KingmakerGunslinger-0.0.131-icon-art-overhaul.zip`.
+Full release: `0.0.132-icon-art-overhaul` (UMM version `0.0.132`).
+The installable archive is `KingmakerGunslinger-0.0.132-icon-art-overhaul.zip`.
 Icon overhaul qualification, the owner review checklist and exact NOT RUN
 limits are recorded in [the mission evidence](planning/ICON-OVERHAUL-STATE.md).
 The previous full release was `0.0.129-recall-and-smart-scrolls`
