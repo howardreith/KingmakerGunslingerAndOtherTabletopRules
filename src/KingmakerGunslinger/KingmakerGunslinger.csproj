@@ -1009,6 +1009,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRequest.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestResult.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmMaintenance.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmRepairWarnings.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmInputNegatives.cs" />
