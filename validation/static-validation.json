@@ -1565,7 +1565,7 @@
     "compatibilityRuntimeQualificationPending": true
   },
   "firearmHotfix128": {
-    "deterministicTestCount": 1653,
+    "deterministicTestCount": 1657,
     "publicReleaseAuthorized": false,
     "fieldRepairBrokenOnlyOutOfCombat": true,
     "completedRestRestoresCarriedDamage": true,
@@ -1591,7 +1591,7 @@
     "releaseArtifactEvidence": "Z-RECALL-AND-SMART-SCROLL-STATE.md"
   },
   "iconOverhaul130": {
-    "deterministicTestCount": 1653,
+    "deterministicTestCount": 1657,
     "publicReleaseAuthorized": true,
     "allNinetyImagesOwnerApproved": true,
     "racialActionWidgetBindingQualified": true,

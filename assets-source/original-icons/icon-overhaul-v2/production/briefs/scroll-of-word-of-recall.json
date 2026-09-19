@@ -1,0 +1,40 @@
+{
+ "schemaVersion": 1,
+ "key": "scroll-of-word-of-recall",
+ "behavior": "Scroll of Word Of Recall item (symbol KMG.Spells.WordOfRecall.Scroll): usable Word Of Recall scroll; one-shot cast of the strategic Word Of Recall spell through the native scroll-use flow.",
+ "implementationReferences": [
+  "src/KingmakerGunslinger/Blueprints/TeleportationScrollBlueprints.cs",
+  "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs"
+ ],
+ "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-word-of-recall.png",
+ "sourceSha256": "881a1c4b084cc1d7f1043865cb53c8b8c7b3485dfae1b9808376af09157b34f0",
+ "tool": "deterministic GDI+ composition (artifacts/icon-overhaul-v2/Compose-ScrollIcons.ps1); no image generation",
+ "referenceImages": [
+  {
+   "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/word-of-recall.png",
+   "role": "approved inner spell symbol, reused unmodified inside the parchment treatment"
+  }
+ ],
+ "prompt": "Use case: deterministic item-icon composition. Asset type: one square fantasy CRPG SCROLL ITEM icon following the native Kingmaker scroll convention: vertical parchment sheet with rolled rod ends top and bottom (rods slightly wider than the sheet), warm cream-to-tan parchment with soft mottling, crisp rod cast shadows, and a continuous dark silhouette rim. The approved Word Of Recall spell painting is painted directly onto the parchment, centered in the measured native symbol window, scaled by its opaque content so the emblem reads at inventory size. The spell ability icon itself is NOT replaced; only the item icon carries the scroll treatment.",
+ "visualStatus": "production-awaiting-owner-review",
+ "subjectAndSilhouette": "Use case: deterministic item-icon composition. Asset type: one square fantasy CRPG SCROLL ITEM icon following the native Kingmaker scroll convention: vertical parchment sheet with rolled rod ends top and bottom (rods slightly wider than the sheet), warm cream-to-tan parchment with soft mottling, crisp rod cast shadows, and a continuous dark silhouette rim. The approved Word Of Recall spell painting is painted directly onto the parchment, centered in the measured native symbol window, scaled by its opaque content so the emblem reads at inventory size. The spell ability icon itself is NOT replaced; only the item icon carries the scroll treatment.",
+ "artFamily": "painted-magical",
+ "reviewGroup": "strategic",
+ "confusedWith": [
+  "greater-teleport",
+  "scroll-of-greater-teleport",
+  "scroll-of-teleport",
+  "teleport",
+  "word-of-recall"
+ ],
+ "uiSurfaces": [
+  "inventory / merchant / item tooltip / strategic cast"
+ ],
+ "exportProfile": "project-painted-128",
+ "forbiddenInterpretations": [
+  "Not a spellbook or ability icon: the bare approved painting stays the spell identity.",
+  "No window or frame cut into the parchment: the symbol is painted on the sheet.",
+  "No unrelated spell symbol inside the scroll.",
+  "No non-scroll item shapes (potion, wand, book, weapon)."
+ ]
+}

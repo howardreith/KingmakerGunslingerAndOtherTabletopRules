@@ -1524,6 +1524,66 @@
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "approved",
                         "approvedHash":  "bd351a85618aa50e00348587610184ce0d4db4d65ca95672728d651f24caa1e6"
+                    },
+
+                    {
+                        "key":  "scroll-of-teleport",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-teleport.png",
+                        "sourceSha256":  "e0d6ecda8903daa14ba152e23adbf202474763e9f5c8eb9172d0f86510fe8d8a",
+                        "sourceSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-teleport.png",
+                        "exportSha256":  "e0d6ecda8903daa14ba152e23adbf202474763e9f5c8eb9172d0f86510fe8d8a",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-teleport.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "candidate-awaiting-owner-review",
+                        "approvedHash":  null
+                    },
+
+                    {
+                        "key":  "scroll-of-greater-teleport",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-greater-teleport.png",
+                        "sourceSha256":  "dc7cdbc8782bdf0c095d11b9003d81f429c49962b8a5e8b15630b9f566633c24",
+                        "sourceSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-greater-teleport.png",
+                        "exportSha256":  "dc7cdbc8782bdf0c095d11b9003d81f429c49962b8a5e8b15630b9f566633c24",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-greater-teleport.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "candidate-awaiting-owner-review",
+                        "approvedHash":  null
+                    },
+
+                    {
+                        "key":  "scroll-of-word-of-recall",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-word-of-recall.png",
+                        "sourceSha256":  "881a1c4b084cc1d7f1043865cb53c8b8c7b3485dfae1b9808376af09157b34f0",
+                        "sourceSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-word-of-recall.png",
+                        "exportSha256":  "881a1c4b084cc1d7f1043865cb53c8b8c7b3485dfae1b9808376af09157b34f0",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-word-of-recall.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "candidate-awaiting-owner-review",
+                        "approvedHash":  null
                     }
                 ]
 }

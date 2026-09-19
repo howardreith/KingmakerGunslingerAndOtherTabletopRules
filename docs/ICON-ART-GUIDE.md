@@ -28,6 +28,20 @@ A scroll is an independent item consumer. Its spell association does not prove
 its item icon changed. Generic parchment can remain native; an unrelated donor
 glyph cannot be accepted as the new spell's identity.
 
+Owner-directed scroll item convention (2026-09-18): the three strategic scroll
+ITEMS — Teleport, Greater Teleport, Word of Recall — use composed item art: the
+measured native parchment scroll treatment (sheet x4–60/y13–51 of a 64 reference
+frame, rod ends wider than the sheet, continuous dark silhouette rim, symbol
+painted directly on the sheet) with the approved spell painting integrated
+inside, unmodified. The bare approved painting remains the spell ability
+identity. Each composed icon is a dedicated per-item concept (`scroll-of-*`)
+with production-manifest authority and a deterministic composition record
+(artifacts script, machine-local); the parchment convention was measured from
+the exact native scroll donors through the guarded
+`icon-overhaul-visual-evidence` reference dump (`after-12-native-scroll-references.png`,
+local-only). Generic native parchment still governs any future scroll whose
+spell identity has no approved painting.
+
 ## Choose and inspect a visual family
 
 **Painted magical/racial art:** one strong subject, broad silhouette, controlled

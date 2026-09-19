@@ -246,6 +246,17 @@
       ],
       "publication": "local-reference-only",
       "subject": "Rapid Reload parent negative; Precise Strike/Shield Proficiency/Skill Focus neighbor emblems inform ring weight and negative space."
+    },
+    {
+      "id": "native-11",
+      "relativeIntakePath": "runtime-evidence/20260919T0240507434337Z-icon-overhaul-visual-evidence/after-12-native-scroll-references.png",
+      "sha256": "d379bbbc9630e49e54b038cc982462399cbbd75cfed38d6df69efb2a026ee034",
+      "size": [
+        1920,
+        1200
+      ],
+      "publication": "local-reference-only",
+      "subject": "Exact 64x64 live-sprite cells of five native scroll donors (ScrollOfShadowEvocationFireball, ScrollOfHoldPersonMassAbility, ScrollOfPlantShapeIISpell, ScrollOfSummonElementalGreaterEarth, ScrollOfElementalBodyIIIFire); parchment convention measured for the composed strategic scroll item icons; reference only, pixels never incorporated."
     }
   ]
 }
