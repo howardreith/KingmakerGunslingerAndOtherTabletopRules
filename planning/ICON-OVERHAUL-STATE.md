@@ -37,6 +37,11 @@ No feature-to-master merge, history rewrite, force push, policy change, tag or
 release is authorized. Historical evidence keeps its original artifact and
 approval status; the new approval record supersedes old production-pending captions.
 
+Release: the icon art overhaul ships as full public release
+**0.0.130-icon-art-overhaul** (owner-authorized merge/push/release on
+2026-09-18). The qualification records, owner review checklist and honest
+pending gates below are part of the release evidence.
+
 ## Z continuation (2026-09-17/18)
 
 Status: **FINALIZATION_FIXES_APPLIED_AND_REQUALIFIED (controller lifecycle,

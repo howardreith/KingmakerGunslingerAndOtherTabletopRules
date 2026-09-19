@@ -72,15 +72,24 @@ dependency-free test suite, production compilation, strict build-output
 validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
-## Current 0.0.129 publication authorization
+## Current 0.0.130 publication authorization
+
+The owner explicitly requested merge to master, push and a public release of
+the icon art overhaul on 2026-09-18 ("Please merge to master, push to remote,
+and cut a release. I will install that release on my main computer and test
+the icons there."). Use version 0.0.130 from merged, clean, pushed master,
+with the existing exact-reference publisher and current notes. Preserve the
+qualification evidence, honest limits and owner review materials under
+reports/icon-overhaul and planning/ICON-OVERHAUL-STATE.md. Focused guarded
+runtime checks qualified the versioned artifact before publication; verify
+the downloaded public ZIP/checksum/manifest and preserve installed settings
+and other mods.
+
+## Historical 0.0.129 publication authorization
 
 The owner accepted the completed Recall/automatic-reader mission and explicitly
-requested merge, push and a new full public release on 2026-09-13. Use version
-0.0.129 from merged, clean, pushed master, with the existing exact-reference
-publisher and current notes. Preserve the accepted candidate's evidence and
-limitations in Z-RECALL-AND-SMART-SCROLL-STATE.md. Focused guarded runtime checks
-qualify the versioned artifact before publication; verify the downloaded public
-ZIP/checksum/manifest and preserve installed settings and other mods.
+requested merge, push and a new full public release on 2026-09-13. Preserve the
+accepted candidate's evidence and limitations in Z-RECALL-AND-SMART-SCROLL-STATE.md.
 
 ## Historical 0.0.119 publication authorization
 

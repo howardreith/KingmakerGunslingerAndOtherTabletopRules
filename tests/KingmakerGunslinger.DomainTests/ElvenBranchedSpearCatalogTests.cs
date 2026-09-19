@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.129\"") &&
-                props.Contains("<KmgVersion>0.0.129</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.129-recall-and-smart-scrolls</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.129\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.129\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.129-recall-and-smart-scrolls\")"),
+            Assertions.True(info.Contains("\"Version\": \"0.0.130\"") &&
+                props.Contains("<KmgVersion>0.0.130</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.130-icon-art-overhaul</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.130\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.130\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.130-icon-art-overhaul\")"),
                 "Release and assembly identity are not transactionally pinned to the Firearm Maintenance candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-recall-and-smart-scrolls.zip") &&
+                "$($info.Id)-$($info.Version)-icon-art-overhaul.zip") &&
                 !package.Contains("expanded-summoning.zip"),
                 "Package identity is not pinned to the Firearm Maintenance archive.");
-            Assertions.True(runtime.Contains("active version 0.0.129") &&
-                localBuild.Contains("active version 0.0.129") &&
-                localBuild.Contains("local-runtime\\0.0.129"),
+            Assertions.True(runtime.Contains("active version 0.0.130") &&
+                localBuild.Contains("active version 0.0.130") &&
+                localBuild.Contains("local-runtime\\0.0.130"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

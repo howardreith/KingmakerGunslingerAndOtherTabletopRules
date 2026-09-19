@@ -1,3 +1,13 @@
+# Kingmaker Gunslinger 0.0.130 player smoke test (icon art overhaul)
+
+Use a disposable save. With Elemental Races enabled, create one elemental-race
+character and confirm: racial action/feat icons show the new paintings
+(Ifrit Burning Hands deliberately keeps its native spell icon), the racial
+buff icons appear on the character sheet, and a firearm feat's weapon choice
+shows the native P/M/B monogram entries. The owner review checklist
+(`reports/icon-overhaul/SUPERVISED-NATIVE-FLOW-CHECKLIST.md`) lists the full
+visual pass. Previous-release Recall checks follow below.
+
 # Kingmaker Gunslinger 0.0.129 player smoke test
 
 Use a disposable save for these checks. On an Oracle gaining a normal level-6
