@@ -28,19 +28,26 @@ A scroll is an independent item consumer. Its spell association does not prove
 its item icon changed. Generic parchment can remain native; an unrelated donor
 glyph cannot be accepted as the new spell's identity.
 
-Owner-directed scroll item convention (2026-09-18): the three strategic scroll
-ITEMS — Teleport, Greater Teleport, Word of Recall — use composed item art: the
-measured native parchment scroll treatment (sheet x4–60/y13–51 of a 64 reference
-frame, rod ends wider than the sheet, continuous dark silhouette rim, symbol
-painted directly on the sheet) with the approved spell painting integrated
-inside, unmodified. The bare approved painting remains the spell ability
-identity. Each composed icon is a dedicated per-item concept (`scroll-of-*`)
-with production-manifest authority and a deterministic composition record
-(artifacts script, machine-local); the parchment convention was measured from
-the exact native scroll donors through the guarded
-`icon-overhaul-visual-evidence` reference dump (`after-12-native-scroll-references.png`,
-local-only). Generic native parchment still governs any future scroll whose
-spell identity has no approved painting.
+Owner-directed scroll item convention (2026-09-19, corrected): the three
+strategic scroll ITEMS — Teleport, Greater Teleport, Word of Recall — are
+ASSET COMPOSITES on the exact native scroll shell, not newly painted scroll
+artwork. The shell is reconstructed symbol-free from five same-design native
+scroll donor sprites captured through the guarded
+`icon-overhaul-visual-evidence` reference dump
+(`after-12-native-scroll-references.png`, local-only): per-pixel cross-donor
+median (the donors are pixel-identical outside their symbols), ring fill for
+the small core covered by symbols in three or more donors, cool-pixel ghost
+enforcement (the shell is entirely warm-toned), and background-to-alpha
+unmixing. Parchment shape, roller/cap design, border/shading, proportions
+and silhouette are the native shell's own pixels; only the inner emblem
+window (measured donor symbol bboxes) carries the approved spell painting.
+The bare approved painting remains the spell ability identity; each
+composite is a dedicated per-item concept (`scroll-of-*`) with
+production-manifest authority. Kingmaker has no procedural "scroll icon from
+symbol" mechanism — native scroll items are individually authored 64x64
+atlas sprites assigned as static textures — so this is necessarily offline
+compositing plus texture assignment. Generic native parchment still governs
+any future scroll whose spell identity has no approved painting.
 
 ## Choose and inspect a visual family
 

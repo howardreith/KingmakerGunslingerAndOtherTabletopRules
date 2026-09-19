@@ -109,7 +109,7 @@ def validate(root: Path) -> None:
             raise AssertionError(f"Bodyguard static validation mismatch: {key}")
 
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleSettingsStore.cs",
-        ("CurrentSchemaVersion = 11" if VERSION in {"0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127", "0.0.128", "0.0.129", "0.0.130", "0.0.131"}
+        ("CurrentSchemaVersion = 11" if VERSION in {"0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127", "0.0.128", "0.0.129", "0.0.130", "0.0.131", "0.0.132"}
             else "CurrentSchemaVersion = 10"), "BodyguardFeatsId", "ElementalRacesId")
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/FeatureModuleConfiguration.cs",
         'BodyguardFeatsId = "bodyguard-feats"', "BodyguardFeats ? 256 : 0",
@@ -132,7 +132,7 @@ def validate(root: Path) -> None:
         "observe-bodyguard-native-contracts", "disposable-bodyguard-feats",
         "disposable-bodyguard-feats-disabled", f"active version {VERSION}")
     package_suffix = ("icon-art-overhaul"
-        if VERSION in ("0.0.130", "0.0.131") else "recall-and-smart-scrolls"
+        if VERSION in ("0.0.130", "0.0.131", "0.0.132") else "recall-and-smart-scrolls"
         if VERSION == "0.0.129" else "firearm-postrelease-hotfix"
         if VERSION == "0.0.128" else "firearm-maintenance"
         if VERSION == "0.0.127" else "word-of-recall-oracle"

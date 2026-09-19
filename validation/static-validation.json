@@ -1,6 +1,6 @@
 {
-  "milestone": "0.0.131-icon-art-overhaul",
-  "version": "0.0.131",
+  "milestone": "0.0.132-icon-art-overhaul",
+  "version": "0.0.132",
   "requiredFiles": {
     "Info.json": true,
     "KingmakerGunslinger.csproj": true,
@@ -1603,6 +1603,14 @@
     "deterministicTestCount": 1657,
     "publicReleaseAuthorized": true,
     "scrollItemIconsComposed": true,
+    "scrollItemIconsRuntimeQualified": true,
+    "runtimeQualificationPending": false,
+    "compatibilityRuntimeQualificationPending": true
+  },
+  "iconOverhaul132": {
+    "deterministicTestCount": 1657,
+    "publicReleaseAuthorized": true,
+    "scrollItemIconsNativeShellComposite": true,
     "scrollItemIconsRuntimeQualified": true,
     "runtimeQualificationPending": false,
     "compatibilityRuntimeQualificationPending": true
