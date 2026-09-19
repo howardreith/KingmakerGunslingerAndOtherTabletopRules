@@ -633,6 +633,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleEvil &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
                     !IsTeleportationCoexistenceFixture &&
@@ -1802,6 +1803,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
@@ -1906,6 +1908,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
@@ -2511,6 +2514,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap)
                 {
                     PollTeleportationWorldMapForensics();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil)
+                {
+                    var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+                    if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
+                    Complete(RunMagicCircleEvilNative());
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableBrownFurNativeCast)
@@ -5300,6 +5309,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .IsSummonSameTurnWorkingSaveScenario(
                     _request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 IsTeleportationCoexistenceFixture ||
@@ -14096,6 +14106,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (expectedProtectionFromAlignmentControlImmunity ? 15 : 0) &&
                     protectionObservation.InvalidDescriptions == 0,
                     "exact terminal-buff component and player-description inventories"),
+                Assertion("feature-module-magic-circle-restart-snapshot",
+                    _request.Parameters["magicCircleSpells"].ToString(),
+                    _context.FeatureModules.Active.MagicCircleSpells.ToString(),
+                    _context.FeatureModules.Active.MagicCircleSpells == (bool)_request.Parameters["magicCircleSpells"],
+                    "immutable restart-bound Magic Circle intent; active-save hydration is qualified separately"),
                 Assertion("feature-module-teleportation-restart-snapshot",
                     _request.Parameters["teleportationSpells"].ToString(),
                     _context.FeatureModules.Active.TeleportationSpells.ToString(),

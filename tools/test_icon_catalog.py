@@ -171,6 +171,19 @@ class IconCatalogTests(unittest.TestCase):
         resource["runtimePresence"] = "registered"
         self.rejects("Runtime registration contract mismatch:", catalog=catalog)
 
+    def test_gameplay_extension_retains_exact_protected_mapping(self):
+        delta = next(d for d in self.catalog["authorizedPresentationDeltas"]
+                     if d["path"].endswith("BlueprintBootstrap.cs"))
+        text = (ROOT/delta["path"]).read_text(encoding="utf-8")
+        self.assertTrue(presentation_delta_matches(text, delta))
+        mutated = text.replace("OwnedIconAssignments.Apply(library, manifest, teleportation != null)",
+                               "OwnedIconAssignments.Apply(library, manifest, false)")
+        self.assertNotEqual(text, mutated)
+        self.assertFalse(presentation_delta_matches(mutated, delta))
+        unauthorized = text.replace("MagicCircleBlueprints.Register(library", "MagicCircleBlueprints.Register(null")
+        self.assertNotEqual(text, unauthorized)
+        self.assertFalse(presentation_delta_matches(unauthorized, delta))
+
     def test_presentation_exception_preserves_all_other_code(self):
         delta = self.catalog["authorizedPresentationDeltas"][0]
         text = (ROOT/delta["path"]).read_text(encoding="utf-8")

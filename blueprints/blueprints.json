@@ -15095,6 +15095,38 @@
       "status": "active",
       "milestone": "Contextual world-map teleportation scrolls",
       "notes": "Native scroll of the strategic world-map Word of Recall; canonical spell association."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Ability",
+      "guid": "ec63a7d4606a467f948ba03c19cfa42d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle Evil vertical slice",
+      "notes": "Distinct cast/area-owned Magic Circle identity; always registered for save hydration."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Carrier",
+      "guid": "40d23af78f45430faf881a9a3259efe0",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Magic Circle Evil vertical slice",
+      "notes": "Distinct cast/area-owned Magic Circle identity; always registered for save hydration."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Area",
+      "guid": "fe3bfffe4e13459587cb11280226d2df",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Magic Circle Evil vertical slice",
+      "notes": "Distinct cast/area-owned Magic Circle identity; always registered for save hydration."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Recipient",
+      "guid": "753de0df0b3c49a0982e37981ddee018",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Magic Circle Evil vertical slice",
+      "notes": "Distinct cast/area-owned Magic Circle identity; always registered for save hydration."
     }
   ]
 }

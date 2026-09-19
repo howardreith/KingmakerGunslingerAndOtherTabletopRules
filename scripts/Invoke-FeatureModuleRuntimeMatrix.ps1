@@ -40,7 +40,7 @@ try {
 $moduleCatalog = @(Get-KmgFeatureModuleCatalog)
 $boundaryRequested = $Combination -ceq 'all'
 if ($Boundary14) {
-    Write-Warning '-Boundary14 is obsolete; it now selects the complete generic boundary matrix (26 states for twelve modules).'
+    Write-Warning '-Boundary14 is obsolete; it now selects the complete generic boundary matrix (28 states for thirteen modules).'
 }
 if (($Boundary -or $Boundary14) -and $Combination -ne 'all') {
     throw 'A boundary matrix cannot be combined with a single -Combination.'
@@ -72,7 +72,7 @@ $failure = $null
 try {
     foreach ($entry in $combinations) {
         $configuration = [ordered]@{
-            schemaVersion = 11
+            schemaVersion = 12
         }
         $runtimeParameters = @{}
         foreach ($module in $moduleCatalog) {

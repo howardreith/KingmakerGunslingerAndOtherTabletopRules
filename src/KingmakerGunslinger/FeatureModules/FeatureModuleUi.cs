@@ -51,10 +51,12 @@ namespace KingmakerGunslinger.FeatureModules
                 "Elemental Races: Ifrit, Oread, Sylph, and Undine");
             bool teleportationSpells = ImmediateModeGui.Toggle(
                 _state.Pending.TeleportationSpells, "World-Map Teleportation Spells");
+            bool magicCircleSpells = ImmediateModeGui.Toggle(
+                _state.Pending.MagicCircleSpells, "Magic Circle Spells");
             _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
                 elvenBranchedSpears, easternWeapons, brownFurTransmuter,
                 urbanBarbarian, bodyguardFeats,
-                protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells);
+                protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, magicCircleSpells);
             BrownFurFeatureStatus brownFurStatus =
                 BrownFurFeatureStatusRegistry.Current;
             ImmediateModeGui.Label("Brown-Fur dependency: " +

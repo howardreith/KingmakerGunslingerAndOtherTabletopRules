@@ -807,3 +807,16 @@ cleanup. Native area serialization owns position and the original lifetime.
 The draft uses native supernatural command plumbing for a magical terrain
 effect, with no spell clone, spell resistance, damage or save. Surface,
 command, scene and persistence qualification remain required.
+
+
+### Magic Circle candidate
+
+The Evil vertical slice appends four identities, bringing the candidate ledger
+to 1890 stable IDs: 1888 active and 2 reserved. A timed carrier uses native
+AddAreaEffect to retain the original spell context while attaching the area to
+the touched bearer. A distinct, stacking recipient identity uses native
+SourceAreaEffectId ownership. The existing Protection from Alignment control
+component remains the only control policy. The separate magic-circle-spells
+module controls publication and new casts; identities remain registered for
+save hydration. Native lifecycle qualification and original-art acceptance are
+pending; this addition has no release approval.
