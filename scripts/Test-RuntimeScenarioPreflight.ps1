@@ -41,7 +41,7 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
 
 $expected = @(
     'mod-load-smoke',
-    'observe-magic-circle-native-contracts',
+    'observe-magic-circle-native-contracts', 'disposable-magic-circle-evil',
     'disposable-firearm-break-interruption',
     'observe-teleportation-native-contracts',
     'observe-teleportation-world-map',
@@ -950,7 +950,7 @@ Assert-True ($orchestrator.Contains("'working-save-fatigue-prepare',") -and
 $modules = @(Get-KmgFeatureModuleCatalog)
 $moduleParameters = @{}
 foreach ($module in $modules) { $moduleParameters[$module.RuntimeParameter] = $false }
-Assert-True ($modules.Count -eq 12) 'teleportation-twelve-module-catalog'
+Assert-True ($modules.Count -eq 13) 'magic-circle-thirteen-module-catalog'
 $moduleRequest = New-KmgRuntimeRequest -Scenario 'observe-feature-module-settings' `
     -ExpectedVersion '0.0.132' -TimeoutSeconds 120 -ExitAfterCompletion $true `
     -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'module-request-test') `

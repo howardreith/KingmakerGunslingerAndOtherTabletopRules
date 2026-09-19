@@ -282,6 +282,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.IsSummonSameTurnWorkingSaveScenario(
                     request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistence ||
@@ -486,7 +487,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.LoadEntryTimeoutSeconds != 0 ||
                     request.FingerprintTimeoutSeconds != 0)
                     return "scenario-timeouts-not-allowed";
-                if (request.Parameters == null || request.Parameters.Count != 12 ||
+                if (request.Parameters == null || request.Parameters.Count != 13 ||
                     request.Parameters.Property("gunslinger") == null ||
                     request.Parameters["gunslinger"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("acadamaeGraduate") == null ||
@@ -518,7 +519,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters["elementalRaces"].Type !=
                         JTokenType.Boolean ||
                     request.Parameters.Property("teleportationSpells") == null ||
-                    request.Parameters["teleportationSpells"].Type != JTokenType.Boolean)
+                    request.Parameters["teleportationSpells"].Type != JTokenType.Boolean ||
+                    request.Parameters.Property("magicCircleSpells") == null ||
+                    request.Parameters["magicCircleSpells"].Type != JTokenType.Boolean)
                     return "module-states-required";
             }
             else if (request.Scenario == RuntimeTestScenarioCatalog

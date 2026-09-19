@@ -5,7 +5,9 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f"
+    "registrySha256": "6c7c96203515383aa7eee9402efb8a5871243480c4c78ac47546fed25976f268",
+    "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
+    "registryExtensionAuthorization": "Magic Circle implementation mission: four appended Evil identities; unchanged 1886-entry prefix is checked by tools/validate_magic_circle.py. Original art baseline and approved assignments remain protected."
   },
   "coveragePrefixes": [
     "KMG.ElementalRaces.",
@@ -8890,7 +8892,26 @@
       "baselineSha256": "c40afd2fbd1e8059624ba4b83430991f8e425e2d7147eb2b368adbcd2198974e",
       "before": "                return new BlueprintInitializationResult(\n",
       "after": "                RuntimeTesting.IconConsumerCensus.CaptureBeforeOwnedMapping(\n                    context, library, manifest);\n                if (!RuntimeTesting.IconConsumerCensus.IsControlRequest)\n                    OwnedIconAssignments.Apply(library, manifest, teleportation != null);\n                RuntimeTesting.IconConsumerCensus.CaptureAfterOwnedMapping();\n                return new BlueprintInitializationResult(\n",
-      "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline."
+      "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline.",
+      "authorizedFeatureEdits": [
+        {
+          "before": "        internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }\n        internal static TeleportationScrollVendorPublication TeleportationScrollVendors { get { return _teleportationScrollVendors; } }\n        internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }\n        private static ShieldOtherBlueprintSet _shieldOther;\n        private static ShieldOtherSpellListPublication _shieldOtherPublication;\n        private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;\n",
+          "after": "        internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }\n        internal static TeleportationScrollVendorPublication TeleportationScrollVendors { get { return _teleportationScrollVendors; } }\n        internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }\n        private static MagicCircleBlueprintSet[] _magicCircles;\n        private static MagicCircleSpellListPublication _magicCirclePublication;\n        internal static MagicCircleBlueprintSet[] MagicCircles { get { return _magicCircles; } }\n        internal static MagicCircleSpellListPublication MagicCirclePublication { get { return _magicCirclePublication; } }\n        private static ShieldOtherBlueprintSet _shieldOther;\n        private static ShieldOtherSpellListPublication _shieldOtherPublication;\n        private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;\n"
+        },
+        {
+          "before": "            FirearmFeatCatalogPublication featPublication = null;\n            AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;\n            BodyguardFeatCatalogPublication bodyguardFeatPublication = null;\n            var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);\n            TeleportationSpellBlueprintSet teleportation = null;\n            TeleportationSpellListPublication teleportationPublication = null;\n",
+          "after": "            FirearmFeatCatalogPublication featPublication = null;\n            AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;\n            BodyguardFeatCatalogPublication bodyguardFeatPublication = null;\n            var magicCircleRegistry = new BlueprintRegistry(library, manifest, context.Logger);\n            var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);\n            TeleportationSpellBlueprintSet teleportation = null;\n            TeleportationSpellListPublication teleportationPublication = null;\n"
+        },
+        {
+          "before": "                        \"publication.failed\",\n                        \"Required protection/control blueprint publication failed and was rolled back; this feature is disabled for the process and other modules will continue.\",\n                        protectionPublicationException);\n                }\n\n                ShieldOtherBlueprintSet shieldOther =\n",
+          "after": "                        \"publication.failed\",\n                        \"Required protection/control blueprint publication failed and was rolled back; this feature is disabled for the process and other modules will continue.\",\n                        protectionPublicationException);\n                }\n\n                try\n                {\n                    bool circleControl = publicationPlan.ProtectionFromAlignmentControlImmunity &&\n                        protectionFromAlignmentPublication != null &&\n                        protectionFromAlignmentPublication.Summary.MissingRequiredAssets.Count == 0;\n                    _magicCircles = MagicCircleBlueprints.Register(library, magicCircleRegistry, circleControl);\n                    if (publicationPlan.MagicCircleSpellLists)\n                        _magicCirclePublication = MagicCircleSpellListPublication.Publish(library, _magicCircles);\n                }\n                catch (Exception circleException)\n                {\n                    if (_magicCirclePublication != null) _magicCirclePublication.Rollback();\n                    _magicCirclePublication = null;\n                    context.Logger.Failure(\"magic-circle\", \"publication.failed\",\n                        \"Magic Circle publication failed; new casts are disabled.\", circleException);\n                }\n\n                ShieldOtherBlueprintSet shieldOther =\n"
+        },
+        {
+          "before": "                    elementalFeats,\n                    elementalFeatPublication,\n                    martialPerformancePublication,\n                    registry.RegisteredCount + teleportationRegistry.RegisteredCount,\n                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount);\n            }\n            catch (Exception initializationException)\n            {\n                try {\n                    if (teleportationPublication != null) teleportationPublication.Rollback();\n                    teleportationRegistry.RollbackAll();\n",
+          "after": "                    elementalFeats,\n                    elementalFeatPublication,\n                    martialPerformancePublication,\n                    registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount,\n                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount);\n            }\n            catch (Exception initializationException)\n            {\n                try {\n                    if (_magicCirclePublication != null) _magicCirclePublication.Rollback();\n                    _magicCirclePublication = null;\n                    _magicCircles = null;\n                    magicCircleRegistry.RollbackAll();\n                }\n                catch (Exception circleRollbackException) {\n                    context.Logger.Failure(\"magic-circle\", \"bootstrap.rollback-failed\",\n                        \"Core initialization failed; exact Magic Circle rollback was refused.\", circleRollbackException);\n                }\n\n                try {\n                    if (teleportationPublication != null) teleportationPublication.Rollback();\n                    teleportationRegistry.RollbackAll();\n"
+        }
+      ],
+      "featureAuthorization": "Magic Circle implementation mission; exact new module registration, publication, rollback and counts only. Reverse these edits before enforcing the original protected icon-mapping insertion."
     }
   ],
   "artProductionStatus": "complete-main-scope-owner-approved-images",
@@ -8901,5 +8922,27 @@
     "paintedConsumerCount": 137,
     "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
     "technicalStatus": "qualified-paired-census-and-working-save-smoke"
-  }
+  },
+  "magicCircleCandidateConsumers": [
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Ability",
+      "disposition": "provisional-native-protection-reuse",
+      "acceptance": "pending; original Magic Circle artwork and native UI evidence required before release"
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Carrier",
+      "disposition": "provisional-native-protection-reuse",
+      "acceptance": "pending; original Magic Circle artwork and native UI evidence required before release"
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Recipient",
+      "disposition": "provisional-native-protection-reuse",
+      "acceptance": "pending; original Magic Circle artwork and native UI evidence required before release"
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Area",
+      "disposition": "hidden-internal",
+      "acceptance": "pending; original Magic Circle artwork and native UI evidence required before release"
+    }
+  ]
 }

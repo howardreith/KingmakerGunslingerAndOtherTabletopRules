@@ -796,6 +796,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'disposable-magic-circle-evil' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'disposable-brown-fur-native-cast' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -1770,7 +1776,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
     }
     elseif ($Scenario -ceq 'observe-feature-module-settings') {
-        if ($Parameters.Count -ne 12 -or
+        if ($Parameters.Count -ne 13 -or
             -not $Parameters.ContainsKey('gunslinger') -or
             $Parameters.gunslinger -isnot [bool] -or
             -not $Parameters.ContainsKey('acadamaeGraduate') -or
@@ -1795,8 +1801,10 @@ function Assert-KmgRuntimeScenarioPreflight {
             -not $Parameters.ContainsKey('elementalRaces') -or
             $Parameters.elementalRaces -isnot [bool] -or
             -not $Parameters.ContainsKey('teleportationSpells') -or
-            $Parameters.teleportationSpells -isnot [bool]) {
-            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, and teleportationSpells parameters."
+            $Parameters.teleportationSpells -isnot [bool] -or
+            -not $Parameters.ContainsKey('magicCircleSpells') -or
+            $Parameters.magicCircleSpells -isnot [bool]) {
+            throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, and magicCircleSpells parameters."
         }
     }
     elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -1970,6 +1978,7 @@ function New-KmgRuntimeRequest {
                     [bool]$Parameters.protectionFromAlignmentControlImmunity
                 elementalRaces = [bool]$Parameters.elementalRaces
                 teleportationSpells = [bool]$Parameters.teleportationSpells
+                magicCircleSpells = [bool]$Parameters.magicCircleSpells
             }
         } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {

@@ -68,10 +68,10 @@ def validate(root: Path) -> None:
 
     src = root / "src/KingmakerGunslinger"
     require_tokens(src / "FeatureModules/FeatureModuleConfiguration.cs",
-        "ModuleCount = 12", 'TeleportationSpellsId = "teleportation-spells"',
+        "ModuleCount = 13", 'TeleportationSpellsId = "teleportation-spells"',
         "TeleportationSpells == other.TeleportationSpells")
     require_tokens(src / "FeatureModules/FeatureModuleSettingsStore.cs",
-        "CurrentSchemaVersion = 11")
+        "CurrentSchemaVersion = 12")
     require_tokens(src / "Blueprints/TeleportationSpellBlueprints.cs",
         "SpellSchool.Conjuration", "CommandType.Standard",
         "ability.MaterialComponent = new BlueprintAbility.MaterialComponentData()",

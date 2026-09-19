@@ -72,11 +72,11 @@ def validate(root: Path) -> None:
         raise AssertionError("The four stable elemental race identities drifted")
 
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/"
-        "FeatureModuleConfiguration.cs", "internal const int ModuleCount = 12",
+        "FeatureModuleConfiguration.cs", "internal const int ModuleCount = 13",
         'ElementalRacesId = "elemental-races"', "(ElementalRaces ? 1024 : 0)",
         "true, true, true, true, true); } }")
     require_tokens(root / "src/KingmakerGunslinger/FeatureModules/"
-        "FeatureModuleSettingsStore.cs", "CurrentSchemaVersion = 11",
+        "FeatureModuleSettingsStore.cs", "CurrentSchemaVersion = 12",
         "ReadDefaultOn", "recovered defaults (all modules ON)")
     require_tokens(root / "tests/KingmakerGunslinger.DomainTests/"
         "FeatureModuleSettingsTests.cs", "ExhaustiveCount(12)",

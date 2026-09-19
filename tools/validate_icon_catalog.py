@@ -26,6 +26,12 @@ def sha256(path):
 
 def presentation_delta_matches(text, record):
     text = text.replace("\r\n", "\n")
+    # Gameplay extensions must enumerate exact authorized hunks. Reverse them
+    # before checking the original presentation baseline, preserving all old art.
+    for edit in record.get("authorizedFeatureEdits", []):
+        if text.count(edit["after"]) != 1:
+            return False
+        text = text.replace(edit["after"], edit["before"])
     if text.count(record["after"]) != 1:
         return False
     restored = text.replace(record["after"], record["before"])

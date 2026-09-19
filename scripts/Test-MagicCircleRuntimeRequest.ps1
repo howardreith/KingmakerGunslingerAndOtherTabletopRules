@@ -24,5 +24,23 @@ Assert-Throws {
         -ExpectedVersion $version -TimeoutSeconds 30 -ExitAfterCompletion $true `
         -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
 } 'magic-circle-audit-rejects-save-parameters'
+$workingTimeouts = @{
+    CatalogTimeoutSeconds = 30; SelectionTimeoutSeconds = 30
+    CompletionTimeoutSeconds = 30; MainMenuTimeoutSeconds = 30
+    ActionResolutionTimeoutSeconds = 30; ActionInvocationTimeoutSeconds = 30
+    DescriptorResolutionTimeoutSeconds = 30; LoadEntryTimeoutSeconds = 30
+    FingerprintTimeoutSeconds = 30
+}
+$native = New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-evil' @workingTimeouts `
+    -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
+if ($native.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
+    $failures.Add('magic-circle-native-exact-working-save')
+}
+Assert-Throws {
+    New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-evil' @workingTimeouts `
+        -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
+        -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' }
+} 'magic-circle-native-rejects-baseline'
 if ($failures.Count -gt 0) { throw ($failures -join ', ') }
 Write-Output 'PASS Magic Circle guarded request tests.'

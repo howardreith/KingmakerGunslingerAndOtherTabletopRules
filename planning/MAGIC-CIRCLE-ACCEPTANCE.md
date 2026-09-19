@@ -119,3 +119,107 @@ at `C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260919T220335464874
 Restore it through `Restore-Live-Mod.ps1` before handoff when the game has exited.
 The audit process exited normally. Original settings hash:
 `a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17`.
+
+
+## Evil vertical slice in progress
+
+Checkpoint A committed/published as
+`2c396bcdb8b2738f4ef25d0f940b593753bdc5f8` through the required guarded helper.
+The Evil implementation now registers four stable identities and uses the
+native carrier/area/recipient path. The independent content setting adds schema
+12 and the thirteenth module; all 8,192 combinations round-trip in the complete
+1,657-case suite. Base spell lists are Cleric, Wizard/Sorcerer, Inquisitor and
+Paladin at level 3. Only the shared Protection enhancement enables the added
+control component. Recipient contributions are not independently dispellable;
+the carrier owns dispel/expiration. Remaining variants, hostile touch delivery,
+metamagic, stronger equipment, optional lists, scrolls, full lifecycle/settings
+persistence, and final art/UI qualification remain incomplete.
+
+Candidate 1: validation PASS, clean full domain suite 1,657/1,657 PASS, clean
+Release PASS, strict package PASS (`artifacts-magic-circle-evil-build-second.log`).
+Package `0c27d2816ca855137bb1395bff860097bf27beb44412975c1fb34221ad12e14f`;
+DLL `e09cd4b837089f1d9da59de951a91e3312bc0b2e3c11e93e938582f1c1348ab8`;
+MVID `eb14e4e4-5244-4d69-b682-b800243e0458`;
+source state `9fae50a7207136965bafd20ce1529ec2ca646994b2ab1566b4ba59c63d52a7dc`.
+Native run FAIL at fixture animation completion:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20260919T2251280708741Z-disposable-magic-circle-evil/runtime-result.json`.
+The exact working save loaded; targeting/availability/CanStart were true.
+The fixture incorrectly looked for the inherited animation setter only on the
+runtime type. Candidate IL identifies the failing reflection call. Use the
+existing `FinishExpandedSummoningAnimation` helper, which walks the native base
+types. Cleanup PASS: original units, party, areas and buff instances restored;
+no save writes. No mechanical PASS is inferred from this partial cast.
+
+The optional broad preflight script exposes a pre-existing omitted expected
+`disposable-firearm-higher-feat-roots` entry. Record it separately rather than
+repairing that unrelated case. Its new-module count assertion is updated to 13.
+Focused Magic Circle guarded request tests PASS and reject the protected
+baseline save. The older generic request test remains pinned to 0.0.87.
+
+Native area IL confirms `Size.Meters` is the cylinder radius (10 feet = 3.048m),
+with 2D containment including unit corpulence and a native obstacle check.
+The next candidate adds hostile-recipient, actual AC/save, radius/bearer motion,
+same-caster stacking and standalone coexistence observations.
+Four original imagegen sources and exact 128px exports are preserved locally in
+`artifacts/magic-circle/art-preview`; export review was presented to the owner.
+Approval is pending; no response is approval. Native UI evidence is also pending.
+The candidate still uses explicitly provisional Protection sprites.
+
+Candidate 2: all required source/package checks PASS; full suite 1,657/1,657.
+Package `a65ae6b04c1f1275a12a721e99a5f7db569ed30ccd7146e0f221189bc71108e3`;
+DLL `db46385f66cf5c98f1a1b324835ef8768ceaf887b95de5564c3210b54f7e6fb4`;
+MVID `42b0f19c-6c78-4d1e-bde7-ae0bf4bcd929`;
+source state `1b7f66029895403c3b99a1ca2a748cacd2ed9c688825b0e7642c22e8d2746032`.
+Native run `20260919T2310294791518Z-disposable-magic-circle-evil` FAIL:
+cast command Success and carrier present, then area lookup failed before the
+native EntityCreator queue was ticked. Candidate IL at 0x044e confirms that
+lookup, not carrier application. Cleanup PASS and no save writes. The fixture
+now ticks the native creation queue before reading areas and records the exact
+published identities. No production behavior is changed to accommodate it.
+
+Candidate 3: repository/full 1,657-test/Release/package checks PASS.
+Package `c6bcf9f1c7f10f4a73a9c42aa2b7b6dc56aedff134c8c5f56a86e302b143cb35`;
+DLL `74beb3cfda5e24f17b2e3d7a5cf578ac5ef213fbca690d5b4ebe8557d9a7657a`.
+Native run `20260919T2318073456637Z-disposable-magic-circle-evil` FAIL.
+Native cast spends exactly one slot (5 -> 4); another bearer owns the carrier;
+original caster is retained in carrier/area and CL6 gives 3,600 seconds.
+The area follows the bearer. Coverage is absent (0/0), so subsequent immunity
+and stacking observations do not qualify those mechanics. Positive control
+applications and final exact cleanup pass; no save writes.
+Installed IL shows area membership enumerates the native InteractiveObjectGrid,
+which UnitMoveController.Tick reconciles. The paused one-frame fixture had not
+run that controller. Next fixture uses the existing bounded, zero-time native
+movement pattern on only its standing actors, records ShouldUnitBeInside/shape
+before reconciliation, and fails before downstream claims if coverage is absent.
+Production membership rules and entry conditions remain untouched.
+
+## Evil core native checkpoint (candidate 4)
+
+Validation PASS; complete clean domain suite 1,657/1,657 PASS; clean Release
+PASS; strict package PASS. Build log: `artifacts-magic-circle-evil-build-fifth.log`.
+Guarded Steam run `20260919T2326498442084Z-disposable-magic-circle-evil` PASS,
+18/18 assertions, exact working save, no save writes, exact final cleanup.
+Curated results and exact package/DLL/MVID/source-state identities are in
+`reports/magic-circle/EVIL-VERTICAL-SLICE.json`. This is the pre-commit candidate
+built from the recorded dirty source state, not qualification of a later commit.
+
+Observed native slot debit 5 -> 4; original caster on the different bearer and
+area; 3,600-second duration at CL6; bearer and hostile creature each receive an
+area-owned contribution. Actual matching attack AC 10 -> 12 and Will save 0 -> 2.
+New matching-source Dominate Person terminal application is vetoed by RuleApplyBuff;
+wrong-alignment and unprotected controls actually apply. Existing domination
+survives entry. Native 3.048m boundary includes recipient corpulence (0.5m).
+Bearer motion follows correctly; two same-caster contributions coexist without
++4 bonuses; removing one leaves the other; standalone Protection survives both.
+
+No production change was needed for the failed paused-fixture coverage: native
+spatial-grid reconciliation resolved it. Remaining acceptance items in the table
+still apply. Full incoming spell casts, more catalog paths, metamagic, hostile
+touch, other casters/alignments, native dispel/expiry, persistence/transitions,
+module boundary profiles, learning/acquisition, and final presentation are next.
+
+A rules clarification is pending: end on bearer death (native ordinary buff
+cleanup) versus persistence around the corpse until original expiry. PF1's
+entry does not specify that case; AGENTS design authority reserves unresolved
+adaptations for the owner. Original caster death and unconsciousness are separate.
+The four exported paintings remain awaiting owner approval; silence is not approval.
