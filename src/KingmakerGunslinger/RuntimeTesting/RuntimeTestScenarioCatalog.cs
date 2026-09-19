@@ -6,6 +6,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
+        internal const string ObserveMagicCircleNativeContracts = "observe-magic-circle-native-contracts";
         internal const string DisposableFirearmBreakInterruption =
             "disposable-firearm-break-interruption";
         internal const string DisposableTeleportationResources = "disposable-teleportation-resources";
@@ -533,6 +534,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveBrownFurVerifyCleanup,
                 WorkingSaveBrownFurOffVerifyCleanup,
                 ObserveShieldOtherInventory,
+                ObserveMagicCircleNativeContracts,
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
