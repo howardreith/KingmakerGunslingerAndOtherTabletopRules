@@ -259,6 +259,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     prepared.Length == before + 1 && shownSlots.Length > 0 && !prepared.Last().Available);
                 entry.Book.Rest();
                 for (int frame = 0; frame < 8; frame++) yield return 0;
+                // Record every preparation-capture guard term so a failed
+                // capture identifies its exact cause in structured evidence.
+                CaptureTeleportSpellbookUi("native-spell-preparation-guard-" + caseId, new {
+                    controllerIsShow = controller.IsShow,
+                    currentSpellbookExact = ReferenceEquals(controller.CurrentSpellbook, entry.Book),
+                    rowActiveInHierarchy = row.gameObject.activeInHierarchy,
+                    rowActiveSelf = row.gameObject.activeSelf,
+                    descriptionActiveInHierarchy = description.gameObject.activeInHierarchy,
+                    currentBookLevel = controller.CurrentBookLevel,
+                    currentPageIndex = controller.CurrentPageIndex,
+                    frame = Time.frameCount });
                 foreach (int frame in _teleportationNativeIconScreens.Capture("spell-preparation-" + caseId,
                     JObject.FromObject(new { spell = entry.Spell.AssetGuid, book = entry.Book.Blueprint.AssetGuid, entry.Level,
                         preparationCount = prepared.Length, visibleSlots = shownSlots.Length }),
