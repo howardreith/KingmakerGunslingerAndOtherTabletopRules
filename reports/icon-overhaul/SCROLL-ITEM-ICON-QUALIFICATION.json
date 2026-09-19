@@ -20,15 +20,19 @@
   "referencePublication": "local-reference-only (native-11 in docs/art/icon-reference-records.json)"
  },
  "composition": {
-  "tool": "artifacts/icon-overhaul-v2/Compose-ScrollIcons.ps1 (deterministic GDI+; machine-local artifact per icon authoring contract)",
-  "innerSymbols": "approved pilot paintings teleport/greater-teleport/word-of-recall, reused unmodified",
+  "supersededApproach": "0.0.131 shipped procedurally drawn parchment (GDI+ geometry from measured convention); the owner rejected it as new artwork",
+  "correctedApproach": "asset compositing on the exact native scroll shell",
+  "tool": "artifacts/icon-overhaul-v2/Compose-ScrollIcons.ps1 + icon-recovery/native-scroll-references/Build-NativeShell.ps1 (deterministic GDI+/byte math; machine-local artifacts per icon authoring contract)",
+  "shellReconstruction": "cross-donor per-pixel median of the five same-design native scroll sprites (identical outside their symbols), ring fill for the core covered by symbols in 3+ donors, cool-pixel ghost enforcement (the shell is entirely warm-toned), background-to-alpha unmixing; zero ghost pixels verified",
+  "innerSymbols": "approved pilot paintings teleport/greater-teleport/word-of-recall, reused unmodified, fitted by opaque content into the measured native symbol window",
   "exports": [
-   { "key": "scroll-of-teleport", "exportSha256": "e0d6ecda8903daa14ba152e23adbf202474763e9f5c8eb9172d0f86510fe8d8a" },
-   { "key": "scroll-of-greater-teleport", "exportSha256": "dc7cdbc8782bdf0c095d11b9003d81f429c49962b8a5e8b15630b9f566633c24" },
-   { "key": "scroll-of-word-of-recall", "exportSha256": "881a1c4b084cc1d7f1043865cb53c8b8c7b3485dfae1b9808376af09157b34f0" }
+   { "key": "scroll-of-teleport", "exportSha256": "e70e10f1d1533b5848ddabcec4119248333f4f2392bef0e58c1aa32dda3c1633" },
+   { "key": "scroll-of-greater-teleport", "exportSha256": "cdd515854a3f41c9f6ade36519edf81da5c0f552fcc474bb56a0ed6d067e1fd2" },
+   { "key": "scroll-of-word-of-recall", "exportSha256": "0c21a1ec29f290e4cd22abf6020f1984ed0e9c336ff45463a4ace2131de33a08" }
   ],
   "allExports128x128Rgba": true,
-  "distinctArtwork": true
+  "distinctArtwork": true,
+  "nativeIconMechanism": "Kingmaker has no procedural scroll-icon generation: native scroll items are individually authored 64x64 atlas sprites bound as static textures; the mod path is offline compositing plus ProjectAssetIcons texture assignment"
  },
  "catalogRegistration": {
   "conceptsAdded": ["scroll-of-teleport", "scroll-of-greater-teleport", "scroll-of-word-of-recall"],
@@ -86,7 +90,14 @@
    "observed": "two ERROR runs (20260919T0333236377617Z, 20260919T0340529634853Z) failed before any scroll phase: the spellbook preparation screenshot guard lost a fixed eight-frame race against the asynchronous native page rebuild triggered by Rest()",
    "attribution": "parent commit 23db3384 passed the identical scenario (20260919T0425329126535Z, 42 assertions) while the scroll-composition build lost the race twice; the race is timing-sensitive, not caused by the icon assignment",
    "fix": "bounded settle-wait polling the exact guard terms (commit a9d6dfa2) plus permanent guard-term evidence capture (commit b4001966); two consecutive PASS runs after the fix"
+  },
+  "correctionRun": {
+   "scope": "native-shell composited icons replacing the released 0.0.131 procedural parchment",
+   "commit": "c034b800",
+   "run": "20260919T1211542435298Z-disposable-teleportation-spellbook-ui",
+   "status": "PASS",
+   "assertions": "42/42 including the 17 scroll surface assertions (inventory rows, item descriptions, merchant rows) on the corrected icons; installation restored and verified byte-exact afterwards"
   }
  },
- "ownerApproval": "pending; composed item icons are new art requiring owner visual review"
+ "ownerApproval": "pending; the corrected native-shell composites require owner visual review"
 }
