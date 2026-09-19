@@ -35,9 +35,9 @@ namespace KingmakerGunslinger.DomainTests
                     ".Scroll\", \"" + spell + "\","),
                     "Scroll item binds the bare spell painting again: " + spell);
             Assertions.True(assignment.Contains(
-                "parchment scroll") && assignment.Contains(
-                "artwork with the approved spell painting integrated inside"),
-                "The scroll-convention rationale is not recorded at the binding site.");
+                "composite the exact native scroll shell") && assignment.Contains(
+                "approved spell painting as the inner emblem"),
+                "The native-shell compositing rationale is not recorded at the binding site.");
         }
 
         internal static void ComposedScrollAssetsAreRegistered()
@@ -97,6 +97,20 @@ namespace KingmakerGunslinger.DomainTests
                 "scroll-of-word-of-recall" })
                 Assertions.True(catalog.Contains(token),
                     "Catalog lacks scroll composition contract token: " + token);
+            // The corrected icons are asset composites on the exact native
+            // scroll shell, not newly painted scroll artwork.
+            foreach (string token in new[] {
+                "asset compositing: exact native scroll shell",
+                "cross-donor median of five same-design native scroll sprites" })
+                Assertions.True(catalog.Contains(token),
+                    "Catalog lacks the native-shell compositing method token: " + token);
+            string guide = File.ReadAllText(Path.Combine(root, "docs",
+                "ICON-ART-GUIDE.md"));
+            foreach (string token in new[] {
+                "ASSET COMPOSITES on the exact native scroll shell",
+                "cross-donor\nmedian", "no procedural" })
+                Assertions.True(guide.Contains(token),
+                    "Guide lacks the corrected native-shell contract token: " + token);
             // Package count carries the three composed icons.
             string package = File.ReadAllText(Path.Combine(root, "scripts", "package.ps1"));
             Assertions.True(package.Contains("{ 227 } else { 225 }"),
