@@ -25,7 +25,7 @@ def validate(root: Path) -> None:
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))["iconOverhaul130"]
     expected = {
-        "deterministicTestCount": 1653,
+        "deterministicTestCount": 1657,
         "publicReleaseAuthorized": True,
         "allNinetyImagesOwnerApproved": True,
         "racialActionWidgetBindingQualified": True,

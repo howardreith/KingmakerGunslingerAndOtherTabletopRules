@@ -110,10 +110,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in _teleportationNativeIconScreens.CaptureRow("native-scroll-merchant-row:" + itemBlueprint.AssetGuid,
                         (RectTransform)slot.transform, describe, retained)) yield return frame;
                     var stateAfter = describe(); var target = (JObject)stateAfter["targetRow"];
-                    bool exact = retained() && (bool)target["renderedIconExact"] && (bool)target["spellIconMatchesItem"] &&
+                    bool exact = retained() && (bool)target["renderedIconExact"] && (bool)target["scrollIconExact"] &&
+                        (bool)target["spellIconDistinctFromItem"] &&
                         (bool)target["identified"] && (int)target["otherItemRows"] > 0 && (bool)target["otherItemIconsExact"];
                     TeleportSpellbookUiAssert("merchant-icon-" + itemBlueprint.AssetGuid,
-                        "actual native merchant row retains exact scroll/spell art, private stock, ordinary control and empty trade collections", stateAfter.ToString(), exact);
+                        "actual native merchant row retains the composed scroll identity with the approved spell symbol inside, private stock, ordinary control and empty trade collections", stateAfter.ToString(), exact);
                     if (!exact) throw new InvalidOperationException("Native merchant scroll icon identity differs.");
                 }
                 if (!ownsShop()) throw new InvalidOperationException("Native merchant ownership changed before normal close.");

@@ -111,10 +111,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (RectTransform)slot.transform, describe, ownsSlot)) yield return frame;
                     var state = describe();
                     var target = (JObject)state["targetRow"];
-                    bool exact = (bool)target["renderedIconExact"] && (bool)target["spellIconMatchesItem"] &&
+                    bool exact = (bool)target["renderedIconExact"] && (bool)target["scrollIconExact"] &&
+                        (bool)target["spellIconDistinctFromItem"] &&
                         (bool)target["itemReferenceRetained"] && (int)target["otherItemRows"] > 0 && (bool)target["otherItemIconsExact"];
                     TeleportSpellbookUiAssert("inventory-icon-" + blueprint.AssetGuid,
-                        "real native item slot uses its matching strategic spell identity and preserves existing controls", state.ToString(), exact);
+                        "real native item slot uses its composed scroll item identity with the approved spell symbol inside and preserves existing controls", state.ToString(), exact);
                     if (!exact) throw new InvalidOperationException("Native scroll inventory icon identity differs.");
                     var tooltip = slot.Tooltip;
                     var tipObject = typeof(TooltipTrigger).GetField("m_Obj", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -215,14 +216,36 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var otherRows = slot.ParentGroup.GetComponentsInChildren<ItemSlot>(true).Where(value =>
                 value.gameObject.activeInHierarchy && value.Item != null && controls.Contains(value.Item)).ToArray();
+            // Scroll items carry their own composed scroll-convention icon
+            // (parchment treatment wrapping the approved spell painting); the
+            // bare spell painting remains the ability's icon.
+            string expectedKey = ExpectedScrollIconKey(blueprint);
+            bool scrollIconExact = expectedKey != null && blueprint.Icon != null &&
+                ReferenceEquals(blueprint.Icon,
+                    KingmakerGunslinger.Blueprints.ProjectAssetIcons.RequireIcon(expectedKey));
+            bool spellIconDistinct = blueprint.Ability == null || blueprint.Ability.Icon == null ||
+                !ReferenceEquals(blueprint.Icon, blueprint.Ability.Icon);
             return new JObject { ["surface"] = "native-scroll-inventory", ["targetRow"] = new JObject {
                 ["name"] = item.Name, ["itemGuid"] = blueprint.AssetGuid, ["spellGuid"] = blueprint.Ability.AssetGuid,
-                ["iconName"] = blueprint.Icon?.name, ["renderedIconExact"] = ReferenceEquals(slot.ItemImage.sprite, blueprint.Icon),
-                ["spellIconMatchesItem"] = ReferenceEquals(blueprint.Icon, blueprint.Ability.Icon),
+                ["iconName"] = blueprint.Icon?.name, ["expectedIconKey"] = expectedKey,
+                ["renderedIconExact"] = ReferenceEquals(slot.ItemImage.sprite, blueprint.Icon),
+                ["scrollIconExact"] = scrollIconExact,
+                ["spellIconDistinctFromItem"] = spellIconDistinct,
                 ["itemReferenceRetained"] = retained, ["itemCount"] = item.Count, ["charges"] = item.Charges,
                 ["identified"] = item.IsIdentified, ["otherItemRows"] = otherRows.Length,
                 ["otherItemIconsExact"] = otherRows.All(value => ReferenceEquals(value.ItemImage.sprite,
                     value.Item.Icon ?? Game.Instance.BlueprintRoot.UIRoot.UIIcons.DefaultItemIcon)) } };
+        }
+
+        private static string ExpectedScrollIconKey(
+            BlueprintItemEquipmentUsable blueprint)
+        {
+            var set = BlueprintBootstrap.TeleportationScrolls;
+            if (set == null || blueprint == null) return null;
+            if (ReferenceEquals(blueprint, set.Teleport)) return "scroll-of-teleport";
+            if (ReferenceEquals(blueprint, set.GreaterTeleport)) return "scroll-of-greater-teleport";
+            if (ReferenceEquals(blueprint, set.WordOfRecall)) return "scroll-of-word-of-recall";
+            return null;
         }
     }
 }
