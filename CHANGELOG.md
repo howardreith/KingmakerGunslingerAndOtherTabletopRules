@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.0.131-icon-art-overhaul
+
+- Strategic scroll item icons recomposed to the native parchment scroll
+  convention: Scroll of Teleport, Scroll of Greater Teleport and Scroll of
+  Word Of Recall each use a dedicated composed item icon (measured native
+  scroll treatment with the owner-approved spell painting integrated
+  inside); the spell ability icons are unchanged and no other icon was
+  touched. Registered as scroll-of-* concepts with production-manifest
+  records, briefs and catalog authority.
+- Guarded runtime qualification: two consecutive unattended fresh-launch
+  PASS runs verified the composed icons on real native inventory rows, item
+  descriptions and merchant rows with preserved controls and zero save
+  writes; the live census confirmed all 137 painted assignments exact and
+  every protected/native-reuse binding unchanged.
+- Native spellbook screenshot hardening: the preparation-capture guard now
+  waits (bounded) for the spellbook page rebuild that Rest() triggers
+  instead of a fixed eight-frame count that raced it, and every guard term
+  is recorded as structured evidence.
+
 ## 0.0.130-icon-art-overhaul
 
 - Complete icon art overhaul: 90 owner-approved images (89 paintings plus the

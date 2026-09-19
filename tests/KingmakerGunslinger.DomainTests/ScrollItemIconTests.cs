@@ -1,0 +1,157 @@
+using System;
+using System.IO;
+using System.Linq;
+
+namespace KingmakerGunslinger.DomainTests
+{
+    internal static class ScrollItemIconTests
+    {
+        // The strategic scroll items follow the owner-directed native scroll
+        // convention: the item icon is a composed parchment scroll that
+        // integrates the approved spell painting inside, while the bare
+        // approved painting remains the spell ability identity.
+        internal static void ComposedScrollAssignmentIsExact()
+        {
+            string root = Environment.CurrentDirectory;
+            string assignment = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Blueprints", "OwnedIconAssignments.cs"));
+            string[] spellKeys = { "teleport", "greater-teleport", "word-of-recall" };
+            foreach (string spell in spellKeys)
+            {
+                Assertions.True(assignment.Contains(
+                    "new Binding(\"KMG.Spells." + PascalSpell(spell) +
+                    ".Scroll\", \"scroll-of-" + spell + "\", typeof(BlueprintItemEquipmentUsable))"),
+                    "Scroll item lost its composed scroll icon binding: " + spell);
+                Assertions.True(assignment.Contains(
+                    "new Binding(\"KMG.Spells." + PascalSpell(spell) +
+                    ".Ability\", \"" + spell + "\", typeof(BlueprintAbility))"),
+                    "Spell ability lost its approved painting binding: " + spell);
+            }
+            // The composed item binding must not collapse back onto the bare
+            // spell painting (the exact regression this change fixes).
+            foreach (string spell in spellKeys)
+                Assertions.False(assignment.Contains(
+                    "new Binding(\"KMG.Spells." + PascalSpell(spell) +
+                    ".Scroll\", \"" + spell + "\","),
+                    "Scroll item binds the bare spell painting again: " + spell);
+            Assertions.True(assignment.Contains(
+                "parchment scroll") && assignment.Contains(
+                "artwork with the approved spell painting integrated inside"),
+                "The scroll-convention rationale is not recorded at the binding site.");
+        }
+
+        internal static void ComposedScrollAssetsAreRegistered()
+        {
+            string root = Environment.CurrentDirectory;
+            string[] keys = { "scroll-of-teleport",
+                "scroll-of-greater-teleport", "scroll-of-word-of-recall" };
+            foreach (string key in keys)
+            {
+                string asset = Path.Combine(root, "assets", "game", "icons",
+                    key + ".png");
+                Assertions.True(File.Exists(asset),
+                    "Composed scroll icon is missing from game assets: " + key);
+                byte[] header = new byte[24];
+                using (FileStream stream = File.OpenRead(asset))
+                    Assertions.Equal(24, stream.Read(header, 0, 24),
+                        "Composed scroll icon is truncated: " + key);
+                Assertions.True(header[0] == 0x89 && header[1] == 0x50 &&
+                    header[2] == 0x4e && header[3] == 0x47,
+                    "Composed scroll icon is not a PNG: " + key);
+                Assertions.True(ReadBigEndian(header, 16) == 128 &&
+                    ReadBigEndian(header, 20) == 128,
+                    "Composed scroll icon is not an exact 128-by-128 PNG: " + key);
+            }
+            // The three composed icons must be distinct assets.
+            var hashes = new System.Collections.Generic.HashSet<string>(
+                StringComparer.OrdinalIgnoreCase);
+            foreach (string key in keys)
+                using (var sha = System.Security.Cryptography.SHA256.Create())
+                    hashes.Add(BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(
+                        Path.Combine(root, "assets", "game", "icons", key + ".png")))));
+            Assertions.Equal(keys.Length, hashes.Count,
+                "Composed scroll icons are not distinct assets.");
+        }
+
+        internal static void CatalogAndRuntimeContractStayAligned()
+        {
+            string root = Environment.CurrentDirectory;
+            string catalog = File.ReadAllText(Path.Combine(root,
+                "assets-source", "original-icons", "icon-catalog.json"));
+            string[] symbols = { "KMG.Spells.Teleport.Scroll",
+                "KMG.Spells.GreaterTeleport.Scroll", "KMG.Spells.WordOfRecall.Scroll" };
+            foreach (string symbol in symbols)
+            {
+                int at = catalog.IndexOf("\"symbol\": \"" + symbol + "\"",
+                    StringComparison.Ordinal);
+                Assertions.True(at >= 0, "Scroll consumer vanished from catalog: " + symbol);
+                string region = catalog.Substring(at, Math.Min(900, catalog.Length - at));
+                Assertions.True(region.Contains("\"currentArt\": \"owned-v3-scroll-composition\""),
+                    "Scroll consumer does not use the composed art source: " + symbol);
+                Assertions.True(region.Contains("\"disposition\": \"original-required\""),
+                    "Scroll consumer is not dedicated original art: " + symbol);
+            }
+            foreach (string token in new[] {
+                "\"paintedConceptCount\": 92", "\"paintedConsumerCount\": 137",
+                "scroll-of-teleport", "scroll-of-greater-teleport",
+                "scroll-of-word-of-recall" })
+                Assertions.True(catalog.Contains(token),
+                    "Catalog lacks scroll composition contract token: " + token);
+            // Package count carries the three composed icons.
+            string package = File.ReadAllText(Path.Combine(root, "scripts", "package.ps1"));
+            Assertions.True(package.Contains("{ 227 } else { 225 }"),
+                "Package file count does not include the three composed scroll icons.");
+            // The runtime identity check must verify the composed item icon,
+            // not the retired spell-matches-item equality.
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.TeleportationScrollIcons.cs"));
+            string merchant = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.TeleportationScrollMerchantIcons.cs"));
+            foreach (string source in new[] { runner, merchant })
+            {
+                Assertions.True(source.Contains("scrollIconExact") &&
+                    source.Contains("spellIconDistinctFromItem"),
+                    "Guarded runtime lost the composed scroll identity assertion.");
+                Assertions.False(source.Contains("spellIconMatchesItem"),
+                    "The retired spell-matches-item icon assertion returned.");
+            }
+            Assertions.True(runner.Contains("ExpectedScrollIconKey") &&
+                merchant.Contains("DescribeNativeScrollSlot"),
+                "Guarded runtime lost the shared composed scroll identity helper.");
+            foreach (string key in new[] { "scroll-of-teleport",
+                "scroll-of-greater-teleport", "scroll-of-word-of-recall" })
+                Assertions.True(runner.Contains("\"" + key + "\""),
+                    "Guarded runtime does not expect the composed key: " + key);
+        }
+
+        internal static void NativeScrollReferenceDumpStaysReadonly()
+        {
+            string root = Environment.CurrentDirectory;
+            string scenario = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "IconOverhaulVisualEvidenceScenario.cs"));
+            foreach (string token in new[] {
+                "DumpNativeScrollReferences", "after-12-native-scroll-references.png",
+                "REFERENCE ONLY - NOT PROJECT ART", "nativeScrollReferences" })
+                Assertions.True(scenario.Contains(token),
+                    "Native scroll reference dump lacks: " + token);
+            Assertions.False(scenario.Contains("ScreenCapture") ||
+                scenario.Contains("Input.") || scenario.Contains("SendKeys"),
+                "Native scroll reference dump gained UI input or screen capture.");
+        }
+
+        private static string PascalSpell(string key)
+        {
+            return string.Concat(key.Split('-').Select(
+                part => char.ToUpperInvariant(part[0]) + part.Substring(1)));
+        }
+
+        private static int ReadBigEndian(byte[] bytes, int offset)
+        {
+            return (bytes[offset] << 24) | (bytes[offset + 1] << 16) |
+                (bytes[offset + 2] << 8) | (bytes[offset + 3]);
+        }
+    }
+}

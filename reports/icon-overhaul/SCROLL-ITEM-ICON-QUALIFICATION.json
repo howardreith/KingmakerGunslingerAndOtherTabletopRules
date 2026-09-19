@@ -1,0 +1,92 @@
+{
+ "schemaVersion": 1,
+ "scope": "3 strategic scroll item icons recomposed to the native parchment scroll convention (Teleport, Greater Teleport, Word of Recall)",
+ "ownerInstruction": "A scroll icon on the outside and the icon/symbol of the spell inside the scroll; item-icon fix only, spell icons unchanged",
+ "branch": "codex/icon-art-overhaul-v2",
+ "baseCommit": "23db3384",
+ "version": "0.0.130",
+ "conventionMeasurement": {
+  "method": "guarded icon-overhaul-visual-evidence native scroll donor reference dump (after-12-native-scroll-references.png), exact 64x64 live-sprite cells",
+  "runtimeRun": "20260919T0240507434337Z",
+  "donors": [
+   "02086fbbda266ed4b8e9124abe5abd75 ScrollOfShadowEvocationFireball",
+   "0033529da3b90bd226232e1962ca34ba ScrollOfHoldPersonMassAbility",
+   "00843bddf42908953a0d77e7155c20f0 ScrollOfPlantShapeIISpell",
+   "013c0f5972c1b794b869b284ba426542 ScrollOfSummonElementalGreaterEarth",
+   "0437d7a2ea4b01542907c4d5fb12c4da ScrollOfElementalBodyIIIFire"
+  ],
+  "measuredConvention": "vertical parchment body x4-60 y13-51 of a 64 frame; rod ends y7-13 and y51-57 wider than the body at x2-62; continuous dark silhouette rim; spell symbol painted directly on the sheet in window x12-52 y16-48",
+  "pixelsIncorporated": false,
+  "referencePublication": "local-reference-only (native-11 in docs/art/icon-reference-records.json)"
+ },
+ "composition": {
+  "tool": "artifacts/icon-overhaul-v2/Compose-ScrollIcons.ps1 (deterministic GDI+; machine-local artifact per icon authoring contract)",
+  "innerSymbols": "approved pilot paintings teleport/greater-teleport/word-of-recall, reused unmodified",
+  "exports": [
+   { "key": "scroll-of-teleport", "exportSha256": "e0d6ecda8903daa14ba152e23adbf202474763e9f5c8eb9172d0f86510fe8d8a" },
+   { "key": "scroll-of-greater-teleport", "exportSha256": "dc7cdbc8782bdf0c095d11b9003d81f429c49962b8a5e8b15630b9f566633c24" },
+   { "key": "scroll-of-word-of-recall", "exportSha256": "881a1c4b084cc1d7f1043865cb53c8b8c7b3485dfae1b9808376af09157b34f0" }
+  ],
+  "allExports128x128Rgba": true,
+  "distinctArtwork": true
+ },
+ "catalogRegistration": {
+  "conceptsAdded": ["scroll-of-teleport", "scroll-of-greater-teleport", "scroll-of-word-of-recall"],
+  "productionManifestRecords": 3,
+  "briefs": 3,
+  "consumersRepointed": {
+   "KMG.Spells.Teleport.Scroll": "scroll-of-teleport",
+   "KMG.Spells.GreaterTeleport.Scroll": "scroll-of-greater-teleport",
+   "KMG.Spells.WordOfRecall.Scroll": "scroll-of-word-of-recall"
+  },
+  "disposition": "original-required",
+  "currentArt": "owned-v3-scroll-composition",
+  "paintedConceptCount": 92,
+  "paintedConsumerCount": 137,
+  "spellAbilityBindingsUnchanged": true
+ },
+ "staticGates": {
+  "repositoryValidation": "PASS (validate_icon_overhaul130 chain; deterministic test count 1657)",
+  "iconCatalog": "PASS",
+  "domainTests": "PASS 1657/1657 (4 new scroll-item-icons cases)",
+  "cleanReleaseBuild": "PASS",
+  "packageValidation": "PASS (227 files with SoundBank / 225 without)",
+  "qualifyingRunsGitCommit": "a9d6dfa22101f4e46cb1e4ed97b6e85e53c54d59",
+  "qualifyingRunsDllMvid": "d1fa9d66-1095-4caf-9520-e3f039fdebfd"
+ },
+ "deployment": {
+  "backups": ["20260919T0330189961802Z", "20260919T0333188908163Z"],
+  "deploymentManifests": ["20260919T0330237561968Z", "20260919T0333235942375Z"],
+  "restored": "2026-09-19T04:47Z from 20260919T0330189961802Z; all 227 live files byte-identical to the backup; no composed scroll icon remains installed"
+ },
+ "runtimeQualification": {
+  "status": "PASS",
+  "scenario": "disposable-teleportation-spellbook-ui",
+  "surfaces": ["inventory", "item description/tooltip", "merchant"],
+  "consecutivePassRuns": [
+   "20260919T0436137029234Z-disposable-teleportation-spellbook-ui",
+   "20260919T0439128495517Z-disposable-teleportation-spellbook-ui"
+  ],
+  "assertionsPerRun": 42,
+  "scrollAssertions": "inventory-icon, inventory-description and merchant-icon PASS for all three scroll blueprints (guids 2c283c993b233df53b487fc7eeac2ba3, 2a2b0185be1d2dba5aa1b5a24774e17d, 42d3daeb7d503687df8953b47727372b); composed item icon exact on every native row; item icon distinct from the spell ability icon; native control rows and cleanup exact; zero save writes",
+  "liveCensus": {
+   "run": "20260919T0442127064822Z-icon-overhaul-visual-evidence",
+   "status": "PASS",
+   "mappedConsumers": 137,
+   "mappedExact": "immediate and late stages",
+   "scrollMappings": {
+    "KMG.Spells.Teleport.Scroll": "KMG_Icon_scroll-of-teleport (was native fireball_scroll donor)",
+    "KMG.Spells.GreaterTeleport.Scroll": "KMG_Icon_scroll-of-greater-teleport (was native hold_pers_scroll donor)",
+    "KMG.Spells.WordOfRecall.Scroll": "KMG_Icon_scroll-of-word-of-recall (was native entanglrd_scroll donor)"
+   },
+   "unrelatedIconsChanged": false,
+   "integratedExports": 93
+  },
+  "failureInvestigation": {
+   "observed": "two ERROR runs (20260919T0333236377617Z, 20260919T0340529634853Z) failed before any scroll phase: the spellbook preparation screenshot guard lost a fixed eight-frame race against the asynchronous native page rebuild triggered by Rest()",
+   "attribution": "parent commit 23db3384 passed the identical scenario (20260919T0425329126535Z, 42 assertions) while the scroll-composition build lost the race twice; the race is timing-sensitive, not caused by the icon assignment",
+   "fix": "bounded settle-wait polling the exact guard terms (commit a9d6dfa2) plus permanent guard-term evidence capture (commit b4001966); two consecutive PASS runs after the fix"
+  }
+ },
+ "ownerApproval": "pending; composed item icons are new art requiring owner visual review"
+}

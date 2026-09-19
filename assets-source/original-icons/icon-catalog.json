@@ -1115,6 +1115,14 @@
       "nativeDonorGuid": null,
       "evidenceClass": "source-integration",
       "liveStatus": "pending"
+    },
+    "owned-v3-scroll-composition": {
+      "source": "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs",
+      "assignment": "The exact scroll item symbol maps to its composed scroll-concept runtimeExport cacheKey; the approved spell painting is integrated inside the parchment treatment and remains the separate spell concept for the ability binding.",
+      "nativeDonorGuid": null,
+      "evidenceClass": "structured-live-paired-census",
+      "liveStatus": "qualified",
+      "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
     }
   },
   "concepts": [
@@ -3688,6 +3696,81 @@
         "path": "assets-source/original-icons/icon-overhaul-v2/references/rapid-reload-rejected.png",
         "sha256": "efab95075ad8af61fe10425090015a75432b74113fbc34ebc185969e1e82b321"
       }
+    },
+    {
+      "key": "scroll-of-teleport",
+      "name": "Scroll of Teleport",
+      "family": "painted-magical",
+      "sharingReason": "Owner-directed scroll item identity: native parchment scroll convention wrapping the approved teleport painting as the inner symbol; dedicated to this item and not shared with the spell ability.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "scroll-of-teleport"
+      },
+      "technicalStatus": "runtime-qualified-paired-census",
+      "visualReview": {
+        "status": "not-reviewed",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-teleport.json",
+      "reviewGroup": "strategic",
+      "runtimeExport": {
+        "path": "assets/game/icons/scroll-of-teleport.png",
+        "installedPath": "assets/icons/scroll-of-teleport.png",
+        "cacheKey": "scroll-of-teleport"
+      },
+      "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
+    },
+    {
+      "key": "scroll-of-greater-teleport",
+      "name": "Scroll of Greater Teleport",
+      "family": "painted-magical",
+      "sharingReason": "Owner-directed scroll item identity: native parchment scroll convention wrapping the approved greater-teleport painting as the inner symbol; dedicated to this item and not shared with the spell ability.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "scroll-of-greater-teleport"
+      },
+      "technicalStatus": "runtime-qualified-paired-census",
+      "visualReview": {
+        "status": "not-reviewed",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-greater-teleport.json",
+      "reviewGroup": "strategic",
+      "runtimeExport": {
+        "path": "assets/game/icons/scroll-of-greater-teleport.png",
+        "installedPath": "assets/icons/scroll-of-greater-teleport.png",
+        "cacheKey": "scroll-of-greater-teleport"
+      },
+      "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
+    },
+    {
+      "key": "scroll-of-word-of-recall",
+      "name": "Scroll of Word Of Recall",
+      "family": "painted-magical",
+      "sharingReason": "Owner-directed scroll item identity: native parchment scroll convention wrapping the approved word-of-recall painting as the inner symbol; dedicated to this item and not shared with the spell ability.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "scroll-of-word-of-recall"
+      },
+      "technicalStatus": "runtime-qualified-paired-census",
+      "visualReview": {
+        "status": "not-reviewed",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-word-of-recall.json",
+      "reviewGroup": "strategic",
+      "runtimeExport": {
+        "path": "assets/game/icons/scroll-of-word-of-recall.png",
+        "installedPath": "assets/icons/scroll-of-word-of-recall.png",
+        "cacheKey": "scroll-of-word-of-recall"
+      },
+      "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
     }
   ],
   "consumers": [
@@ -7678,25 +7761,25 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Teleport",
       "module": "Teleportation",
-      "publication": "published; listed native surfaces qualified on 0.0.129; owner visual approval pending",
+      "publication": "published; scroll-convention composed icons pending runtime requalification and owner visual approval",
       "surface": "inventory / merchant / item tooltip / strategic cast",
-      "currentArt": "owned-v2-painting",
-      "concept": "teleport",
-      "disposition": "intentional-family-share",
-      "reason": "Scroll requires explicit item assignment; intentionally share its own spell identity.",
+      "currentArt": "owned-v3-scroll-composition",
+      "concept": "scroll-of-teleport",
+      "disposition": "original-required",
+      "reason": "Owner-directed scroll item identity: native parchment scroll convention with the approved spell painting integrated inside; dedicated composed item art, spell ability icon unchanged.",
       "baselineArt": "scroll-Teleport",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
       "nativeScreenEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
-        "status": "PASS actual inventory, item description and merchant rows; strategic controls and owner UI approval pending",
+        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "matching canonical spell identity; native item frames and overlays preserved",
-        "report": "reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json"
+        "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
       "nativeMerchantEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollMerchantIcons.cs",
-        "status": "PASS actual native merchant rows; owner UI approval pending",
+        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
-        "report": "reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json"
+        "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
       "nativeStrategicText": {
         "disposition": "non-icon surface: shared native two-line text button",
@@ -7715,6 +7798,12 @@
         ],
         "disposition": "intentional canonical spell identity on actual native item consumers",
         "ownerApproval": "pending"
+      },
+      "scrollComposition": {
+        "method": "deterministic GDI+ composition (measured native scroll convention + approved spell painting)",
+        "conventionReference": "icon-overhaul-visual-evidence native scroll donor reference sheet (after-12-native-scroll-references.png); local-only runtime evidence, not committed pixels",
+        "approvedInnerSymbol": "teleport",
+        "ownerInstruction": "scroll icon on the outside, spell symbol inside the scroll"
       }
     },
     {
@@ -7723,25 +7812,25 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Greater Teleport",
       "module": "Teleportation",
-      "publication": "published; listed native surfaces qualified on 0.0.129; owner visual approval pending",
+      "publication": "published; scroll-convention composed icons pending runtime requalification and owner visual approval",
       "surface": "inventory / merchant / item tooltip / strategic cast",
-      "currentArt": "owned-v2-painting",
-      "concept": "greater-teleport",
-      "disposition": "intentional-family-share",
-      "reason": "Scroll requires explicit item assignment; intentionally share its own spell identity.",
+      "currentArt": "owned-v3-scroll-composition",
+      "concept": "scroll-of-greater-teleport",
+      "disposition": "original-required",
+      "reason": "Owner-directed scroll item identity: native parchment scroll convention with the approved spell painting integrated inside; dedicated composed item art, spell ability icon unchanged.",
       "baselineArt": "scroll-GreaterTeleport",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
       "nativeScreenEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
-        "status": "PASS actual inventory, item description and merchant rows; strategic controls and owner UI approval pending",
+        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "matching canonical spell identity; native item frames and overlays preserved",
-        "report": "reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json"
+        "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
       "nativeMerchantEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollMerchantIcons.cs",
-        "status": "PASS actual native merchant rows; owner UI approval pending",
+        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
-        "report": "reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json"
+        "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
       "nativeStrategicText": {
         "disposition": "non-icon surface: shared native two-line text button",
@@ -7760,6 +7849,12 @@
         ],
         "disposition": "intentional canonical spell identity on actual native item consumers",
         "ownerApproval": "pending"
+      },
+      "scrollComposition": {
+        "method": "deterministic GDI+ composition (measured native scroll convention + approved spell painting)",
+        "conventionReference": "icon-overhaul-visual-evidence native scroll donor reference sheet (after-12-native-scroll-references.png); local-only runtime evidence, not committed pixels",
+        "approvedInnerSymbol": "greater-teleport",
+        "ownerInstruction": "scroll icon on the outside, spell symbol inside the scroll"
       }
     },
     {
@@ -7768,25 +7863,25 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Word Of Recall",
       "module": "Teleportation",
-      "publication": "published; listed native surfaces qualified on 0.0.129; owner visual approval pending",
+      "publication": "published; scroll-convention composed icons pending runtime requalification and owner visual approval",
       "surface": "inventory / merchant / item tooltip / strategic cast",
-      "currentArt": "owned-v2-painting",
-      "concept": "word-of-recall",
-      "disposition": "intentional-family-share",
-      "reason": "Scroll requires explicit item assignment; intentionally share its own spell identity.",
+      "currentArt": "owned-v3-scroll-composition",
+      "concept": "scroll-of-word-of-recall",
+      "disposition": "original-required",
+      "reason": "Owner-directed scroll item identity: native parchment scroll convention with the approved spell painting integrated inside; dedicated composed item art, spell ability icon unchanged.",
       "baselineArt": "scroll-WordOfRecall",
-      "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
+      "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
       "nativeScreenEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
-        "status": "PASS actual inventory, item description and merchant rows; strategic controls and owner UI approval pending",
+        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "matching canonical spell identity; native item frames and overlays preserved",
-        "report": "reports/icon-overhaul/NATIVE-SCROLL-INVENTORY-QUALIFICATION.json"
+        "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
       "nativeMerchantEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollMerchantIcons.cs",
-        "status": "PASS actual native merchant rows; owner UI approval pending",
+        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
-        "report": "reports/icon-overhaul/NATIVE-SCROLL-MERCHANT-QUALIFICATION.json"
+        "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
       "nativeStrategicText": {
         "disposition": "non-icon surface: shared native two-line text button",
@@ -7805,6 +7900,12 @@
         ],
         "disposition": "intentional canonical spell identity on actual native item consumers",
         "ownerApproval": "pending"
+      },
+      "scrollComposition": {
+        "method": "deterministic GDI+ composition (measured native scroll convention + approved spell painting)",
+        "conventionReference": "icon-overhaul-visual-evidence native scroll donor reference sheet (after-12-native-scroll-references.png); local-only runtime evidence, not committed pixels",
+        "approvedInnerSymbol": "word-of-recall",
+        "ownerInstruction": "scroll icon on the outside, spell symbol inside the scroll"
       }
     },
     {
@@ -8793,7 +8894,7 @@
   "runtimeMapping": {
     "source": "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs",
     "stage": "after existing registration/publication, immediately before BlueprintInitializationResult in InitializeCore",
-    "paintedConceptCount": 89,
+    "paintedConceptCount": 92,
     "paintedConsumerCount": 137,
     "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
     "technicalStatus": "qualified-paired-census-and-working-save-smoke"

@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [string]$MSBuildPath,
     [string]$ReferenceBundleDir,
@@ -12,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.130') { throw "Build-Local supports only active version 0.0.130, observed $($info.Version)." }
+if ($info.Version -ne '0.0.131') { throw "Build-Local supports only active version 0.0.131, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -51,7 +51,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean -MSBuildPath $msbuild
 
-$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.130'
+$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.131'
 $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
@@ -104,8 +104,9 @@ $packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
 $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Existing 135-file package plus 89 original elemental/strategic paintings.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 224 } else { 222 }
+# Existing 135-file package plus 89 original elemental/strategic paintings and
+# the 3 composed strategic scroll item icons.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 227 } else { 225 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `
