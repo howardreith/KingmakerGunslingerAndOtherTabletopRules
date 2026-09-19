@@ -1,4 +1,4 @@
-﻿Set-StrictMode -Version Latest
+Set-StrictMode -Version Latest
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
 $script:KmgRuntimeScenarioMetadata = [ordered]@{
@@ -1628,9 +1628,9 @@ function Assert-KmgRuntimeScenarioPreflight {
         $Parameters.Count -ne 1 -or $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING')) {
         throw 'Public 0.0.117 authority permits only its exact disposable persistence producer, without another producer authority.'
     }
-    if ($ExpectedVersion -cne '0.0.130' -and
+    if ($ExpectedVersion -cne '0.0.131' -and
         -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.130.'
+        throw 'ExpectedVersion must be exactly the active version 0.0.131.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
