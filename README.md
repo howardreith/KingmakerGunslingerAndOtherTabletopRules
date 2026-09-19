@@ -1,15 +1,23 @@
-﻿# Kingmaker Gunslinger
+# Kingmaker Gunslinger
 
-**0.0.129-recall-and-smart-scrolls** is the owner-authorized full release for
-Word of Recall and automatic scroll readers. Recall is qualified through normal
-Oracle level-up, casts directly to its sanctuary, and arrives quietly. Strategic
-scroll actions show one row per equivalent group and automatically choose the
-best eligible reader under the supported native activation rules. Ordinary
-Teleport retains its risk confirmation and outcomes. See the
+**0.0.130-icon-art-overhaul** is the owner-authorized full release for the
+complete icon art overhaul: 90 owner-approved images integrated across racial
+actions, feats, heritages, traits, selectors, buffs and scrolls, native P/M/B
+monograms preserved for the firearm feat roots, and guarded runtime
+qualification for the integrated consumers. All 0.0.129 gameplay (Recall,
+automatic scroll readers, Oracle behavior) is preserved unchanged. See the
+[release notes](docs/RELEASE-NOTES-0.0.130.md),
+[mission state](planning/ICON-OVERHAUL-STATE.md) and
+[review packet](reports/icon-overhaul/NATIVE-UI-REVIEW-PACKET.md).
+
+The previous **0.0.129-recall-and-smart-scrolls** release qualified Word of
+Recall through normal Oracle level-up, casts directly to its sanctuary, and
+arrives quietly; strategic scroll actions show one row per equivalent group
+and automatically choose the best eligible reader. See its
 [release notes](docs/RELEASE-NOTES-0.0.129.md) and
 [qualification evidence](Z-RECALL-AND-SMART-SCROLL-STATE.md).
 
-The previous **0.0.128-firearm-postrelease-hotfix** release retains contextual
+The **0.0.128-firearm-postrelease-hotfix** release retains contextual
 Repair Firearm rejection and native attack-order ownership through reload,
 paused orders and committed degradation; see its
 [qualification](docs/FIREARM-POSTRELEASE-HOTFIX-QUALIFICATION.md).
