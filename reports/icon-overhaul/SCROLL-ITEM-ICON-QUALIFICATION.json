@@ -51,19 +51,42 @@
   "domainTests": "PASS 1657/1657 (4 new scroll-item-icons cases)",
   "cleanReleaseBuild": "PASS",
   "packageValidation": "PASS (227 files with SoundBank / 225 without)",
-  "packageSha256": "81b6350745dcee1c86a1aba165b2e02764f02fbff4b1d5c59349c6982ead9bb3",
-  "dllSha256": "e34a1abad68c8e51d66fc5139692c2987b4a531f2477f022f3c22151d3594576",
-  "dllMvid": "e0d0fd75-61e6-40c2-b70d-0c4eaee353c9"
+  "qualifyingRunsGitCommit": "a9d6dfa22101f4e46cb1e4ed97b6e85e53c54d59",
+  "qualifyingRunsDllMvid": "d1fa9d66-1095-4caf-9520-e3f039fdebfd"
  },
  "deployment": {
-  "backup": "20260919T0330189961802Z",
-  "deploymentManifest": "20260919T0330237561968Z",
-  "restoreAfterTesting": "pending"
+  "backups": ["20260919T0330189961802Z", "20260919T0333188908163Z"],
+  "deploymentManifests": ["20260919T0330237561968Z", "20260919T0333235942375Z"],
+  "restored": "2026-09-19T04:47Z from 20260919T0330189961802Z; all 227 live files byte-identical to the backup; no composed scroll icon remains installed"
  },
  "runtimeQualification": {
-  "status": "pending",
+  "status": "PASS",
   "scenario": "disposable-teleportation-spellbook-ui",
-  "surfaces": ["inventory", "item description/tooltip", "merchant"]
+  "surfaces": ["inventory", "item description/tooltip", "merchant"],
+  "consecutivePassRuns": [
+   "20260919T0436137029234Z-disposable-teleportation-spellbook-ui",
+   "20260919T0439128495517Z-disposable-teleportation-spellbook-ui"
+  ],
+  "assertionsPerRun": 42,
+  "scrollAssertions": "inventory-icon, inventory-description and merchant-icon PASS for all three scroll blueprints (guids 2c283c993b233df53b487fc7eeac2ba3, 2a2b0185be1d2dba5aa1b5a24774e17d, 42d3daeb7d503687df8953b47727372b); composed item icon exact on every native row; item icon distinct from the spell ability icon; native control rows and cleanup exact; zero save writes",
+  "liveCensus": {
+   "run": "20260919T0442127064822Z-icon-overhaul-visual-evidence",
+   "status": "PASS",
+   "mappedConsumers": 137,
+   "mappedExact": "immediate and late stages",
+   "scrollMappings": {
+    "KMG.Spells.Teleport.Scroll": "KMG_Icon_scroll-of-teleport (was native fireball_scroll donor)",
+    "KMG.Spells.GreaterTeleport.Scroll": "KMG_Icon_scroll-of-greater-teleport (was native hold_pers_scroll donor)",
+    "KMG.Spells.WordOfRecall.Scroll": "KMG_Icon_scroll-of-word-of-recall (was native entanglrd_scroll donor)"
+   },
+   "unrelatedIconsChanged": false,
+   "integratedExports": 93
+  },
+  "failureInvestigation": {
+   "observed": "two ERROR runs (20260919T0333236377617Z, 20260919T0340529634853Z) failed before any scroll phase: the spellbook preparation screenshot guard lost a fixed eight-frame race against the asynchronous native page rebuild triggered by Rest()",
+   "attribution": "parent commit 23db3384 passed the identical scenario (20260919T0425329126535Z, 42 assertions) while the scroll-composition build lost the race twice; the race is timing-sensitive, not caused by the icon assignment",
+   "fix": "bounded settle-wait polling the exact guard terms (commit a9d6dfa2) plus permanent guard-term evidence capture (commit b4001966); two consecutive PASS runs after the fix"
+  }
  },
  "ownerApproval": "pending; composed item icons are new art requiring owner visual review"
 }
