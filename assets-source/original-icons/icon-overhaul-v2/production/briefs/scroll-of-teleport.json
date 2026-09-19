@@ -1,40 +1,40 @@
 {
- "schemaVersion": 1,
- "key": "scroll-of-teleport",
- "behavior": "Scroll of Teleport item (symbol KMG.Spells.Teleport.Scroll): usable Teleport scroll; one-shot cast of the strategic Teleport spell through the native scroll-use flow.",
- "implementationReferences": [
-  "src/KingmakerGunslinger/Blueprints/TeleportationScrollBlueprints.cs",
-  "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs"
- ],
- "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-teleport.png",
- "sourceSha256": "e0d6ecda8903daa14ba152e23adbf202474763e9f5c8eb9172d0f86510fe8d8a",
- "tool": "deterministic GDI+ composition (artifacts/icon-overhaul-v2/Compose-ScrollIcons.ps1); no image generation",
- "referenceImages": [
-  {
-   "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/teleport.png",
-   "role": "approved inner spell symbol, reused unmodified inside the parchment treatment"
-  }
- ],
- "prompt": "Use case: deterministic item-icon composition. Asset type: one square fantasy CRPG SCROLL ITEM icon following the native Kingmaker scroll convention: vertical parchment sheet with rolled rod ends top and bottom (rods slightly wider than the sheet), warm cream-to-tan parchment with soft mottling, crisp rod cast shadows, and a continuous dark silhouette rim. The approved Teleport spell painting is painted directly onto the parchment, centered in the measured native symbol window, scaled by its opaque content so the emblem reads at inventory size. The spell ability icon itself is NOT replaced; only the item icon carries the scroll treatment.",
- "visualStatus": "production-awaiting-owner-review",
- "subjectAndSilhouette": "Use case: deterministic item-icon composition. Asset type: one square fantasy CRPG SCROLL ITEM icon following the native Kingmaker scroll convention: vertical parchment sheet with rolled rod ends top and bottom (rods slightly wider than the sheet), warm cream-to-tan parchment with soft mottling, crisp rod cast shadows, and a continuous dark silhouette rim. The approved Teleport spell painting is painted directly onto the parchment, centered in the measured native symbol window, scaled by its opaque content so the emblem reads at inventory size. The spell ability icon itself is NOT replaced; only the item icon carries the scroll treatment.",
- "artFamily": "painted-magical",
- "reviewGroup": "strategic",
- "confusedWith": [
-  "greater-teleport",
-  "scroll-of-greater-teleport",
-  "scroll-of-word-of-recall",
-  "teleport",
-  "word-of-recall"
- ],
- "uiSurfaces": [
-  "inventory / merchant / item tooltip / strategic cast"
- ],
- "exportProfile": "project-painted-128",
- "forbiddenInterpretations": [
-  "Not a spellbook or ability icon: the bare approved painting stays the spell identity.",
-  "No window or frame cut into the parchment: the symbol is painted on the sheet.",
-  "No unrelated spell symbol inside the scroll.",
-  "No non-scroll item shapes (potion, wand, book, weapon)."
- ]
+  "schemaVersion": 1,
+  "key": "scroll-of-teleport",
+  "behavior": "Scroll of Teleport item (symbol KMG.Spells.Teleport.Scroll): usable Teleport scroll; one-shot cast of the strategic Teleport spell through the native scroll-use flow.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/Blueprints/TeleportationScrollBlueprints.cs",
+    "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-teleport.png",
+  "sourceSha256": "10cf212631bbc4e319c6e71afab466f86eadc2051fe2ffdd16ceacee6047975d",
+  "tool": "asset compositing (artifacts/icon-overhaul-v2/Compose-ScrollIcons.ps1) on the reconstructed native scroll shell; no image generation, no repainting",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/teleport.png",
+      "role": "approved inner spell symbol, reused unmodified inside the parchment treatment"
+    }
+  ],
+  "prompt": "Use case: asset compositing on the native scroll shell. Asset type: one square fantasy CRPG SCROLL ITEM icon that preserves the exact native Kingmaker scroll shell - parchment body, roller/cap design, border and shading, proportions and silhouette - reconstructed symbol-free from five same-design native scroll sprites (cross-donor median, ring fill, alpha unmix). Only the inner emblem differs: the approved Teleport spell painting is composited into the measured native symbol window, fitted by its opaque content. No scroll repainting, no new scroll art direction; the spell ability icon is NOT replaced.",
+  "visualStatus": "production-awaiting-owner-review",
+  "subjectAndSilhouette": "Use case: asset compositing on the native scroll shell. Asset type: one square fantasy CRPG SCROLL ITEM icon that preserves the exact native Kingmaker scroll shell - parchment body, roller/cap design, border and shading, proportions and silhouette - reconstructed symbol-free from five same-design native scroll sprites (cross-donor median, ring fill, alpha unmix). Only the inner emblem differs: the approved Teleport spell painting is composited into the measured native symbol window, fitted by its opaque content. No scroll repainting, no new scroll art direction; the spell ability icon is NOT replaced.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "strategic",
+  "confusedWith": [
+    "greater-teleport",
+    "scroll-of-greater-teleport",
+    "scroll-of-word-of-recall",
+    "teleport",
+    "word-of-recall"
+  ],
+  "uiSurfaces": [
+    "inventory / merchant / item tooltip / strategic cast"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "Not a spellbook or ability icon: the bare approved painting stays the spell identity.",
+    "No newly painted or redesigned scroll shell: the native shell is preserved.",
+    "No unrelated spell symbol inside the scroll.",
+    "No non-scroll item shapes (potion, wand, book, weapon)."
+  ]
 }

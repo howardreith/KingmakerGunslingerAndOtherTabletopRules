@@ -3701,7 +3701,7 @@
       "key": "scroll-of-teleport",
       "name": "Scroll of Teleport",
       "family": "painted-magical",
-      "sharingReason": "Owner-directed scroll item identity: native parchment scroll convention wrapping the approved teleport painting as the inner symbol; dedicated to this item and not shared with the spell ability.",
+      "sharingReason": "Owner-directed scroll item identity: the exact native scroll shell carries the approved teleport painting as the inner symbol; dedicated to this item and not shared with the spell ability.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3726,7 +3726,7 @@
       "key": "scroll-of-greater-teleport",
       "name": "Scroll of Greater Teleport",
       "family": "painted-magical",
-      "sharingReason": "Owner-directed scroll item identity: native parchment scroll convention wrapping the approved greater-teleport painting as the inner symbol; dedicated to this item and not shared with the spell ability.",
+      "sharingReason": "Owner-directed scroll item identity: the exact native scroll shell carries the approved greater-teleport painting as the inner symbol; dedicated to this item and not shared with the spell ability.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -3751,7 +3751,7 @@
       "key": "scroll-of-word-of-recall",
       "name": "Scroll of Word Of Recall",
       "family": "painted-magical",
-      "sharingReason": "Owner-directed scroll item identity: native parchment scroll convention wrapping the approved word-of-recall painting as the inner symbol; dedicated to this item and not shared with the spell ability.",
+      "sharingReason": "Owner-directed scroll item identity: the exact native scroll shell carries the approved word-of-recall painting as the inner symbol; dedicated to this item and not shared with the spell ability.",
       "exportProfile": "project-painted-128",
       "assetAuthority": {
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
@@ -7761,23 +7761,23 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Teleport",
       "module": "Teleportation",
-      "publication": "published; scroll-convention composed icons pending runtime requalification and owner visual approval",
+      "publication": "published; native-shell composited icons pending runtime requalification and owner visual approval",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v3-scroll-composition",
       "concept": "scroll-of-teleport",
       "disposition": "original-required",
-      "reason": "Owner-directed scroll item identity: native parchment scroll convention with the approved spell painting integrated inside; dedicated composed item art, spell ability icon unchanged.",
+      "reason": "Owner-directed scroll item identity: the exact native scroll shell with the approved spell painting integrated as the inner symbol; dedicated composited item art, spell ability icon unchanged.",
       "baselineArt": "scroll-Teleport",
       "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
       "nativeScreenEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
-        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
+        "status": "superseded art on 0.0.131 (procedural parchment); native-shell composite requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "matching canonical spell identity; native item frames and overlays preserved",
         "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
       "nativeMerchantEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollMerchantIcons.cs",
-        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
+        "status": "superseded art on 0.0.131 (procedural parchment); native-shell composite requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
         "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
@@ -7800,10 +7800,11 @@
         "ownerApproval": "pending"
       },
       "scrollComposition": {
-        "method": "deterministic GDI+ composition (measured native scroll convention + approved spell painting)",
+        "method": "asset compositing: exact native scroll shell (cross-donor median of five same-design native scroll sprites + ring fill + alpha unmix) with the approved spell painting as the inner symbol",
+        "shellBase": "native scroll shell reconstructed from donors 02086fbbda266ed4b8e9124abe5abd75, 0033529da3b90bd226232e1962ca34ba, 00843bddf42908953a0d77e7155c20f0, 013c0f5972c1b794b869b284ba426542, 0437d7a2ea4b01542907c4d5fb12c4da",
         "conventionReference": "icon-overhaul-visual-evidence native scroll donor reference sheet (after-12-native-scroll-references.png); local-only runtime evidence, not committed pixels",
         "approvedInnerSymbol": "teleport",
-        "ownerInstruction": "scroll icon on the outside, spell symbol inside the scroll"
+        "ownerInstruction": "native scroll icon on the outside, approved spell symbol inside; not newly painted scroll artwork"
       }
     },
     {
@@ -7812,23 +7813,23 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Greater Teleport",
       "module": "Teleportation",
-      "publication": "published; scroll-convention composed icons pending runtime requalification and owner visual approval",
+      "publication": "published; native-shell composited icons pending runtime requalification and owner visual approval",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v3-scroll-composition",
       "concept": "scroll-of-greater-teleport",
       "disposition": "original-required",
-      "reason": "Owner-directed scroll item identity: native parchment scroll convention with the approved spell painting integrated inside; dedicated composed item art, spell ability icon unchanged.",
+      "reason": "Owner-directed scroll item identity: the exact native scroll shell with the approved spell painting integrated as the inner symbol; dedicated composited item art, spell ability icon unchanged.",
       "baselineArt": "scroll-GreaterTeleport",
       "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
       "nativeScreenEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
-        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
+        "status": "superseded art on 0.0.131 (procedural parchment); native-shell composite requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "matching canonical spell identity; native item frames and overlays preserved",
         "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
       "nativeMerchantEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollMerchantIcons.cs",
-        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
+        "status": "superseded art on 0.0.131 (procedural parchment); native-shell composite requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
         "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
@@ -7851,10 +7852,11 @@
         "ownerApproval": "pending"
       },
       "scrollComposition": {
-        "method": "deterministic GDI+ composition (measured native scroll convention + approved spell painting)",
+        "method": "asset compositing: exact native scroll shell (cross-donor median of five same-design native scroll sprites + ring fill + alpha unmix) with the approved spell painting as the inner symbol",
+        "shellBase": "native scroll shell reconstructed from donors 02086fbbda266ed4b8e9124abe5abd75, 0033529da3b90bd226232e1962ca34ba, 00843bddf42908953a0d77e7155c20f0, 013c0f5972c1b794b869b284ba426542, 0437d7a2ea4b01542907c4d5fb12c4da",
         "conventionReference": "icon-overhaul-visual-evidence native scroll donor reference sheet (after-12-native-scroll-references.png); local-only runtime evidence, not committed pixels",
         "approvedInnerSymbol": "greater-teleport",
-        "ownerInstruction": "scroll icon on the outside, spell symbol inside the scroll"
+        "ownerInstruction": "native scroll icon on the outside, approved spell symbol inside; not newly painted scroll artwork"
       }
     },
     {
@@ -7863,23 +7865,23 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Scroll of Word Of Recall",
       "module": "Teleportation",
-      "publication": "published; scroll-convention composed icons pending runtime requalification and owner visual approval",
+      "publication": "published; native-shell composited icons pending runtime requalification and owner visual approval",
       "surface": "inventory / merchant / item tooltip / strategic cast",
       "currentArt": "owned-v3-scroll-composition",
       "concept": "scroll-of-word-of-recall",
       "disposition": "original-required",
-      "reason": "Owner-directed scroll item identity: native parchment scroll convention with the approved spell painting integrated inside; dedicated composed item art, spell ability icon unchanged.",
+      "reason": "Owner-directed scroll item identity: the exact native scroll shell with the approved spell painting integrated as the inner symbol; dedicated composited item art, spell ability icon unchanged.",
       "baselineArt": "scroll-WordOfRecall",
       "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
       "nativeScreenEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollIcons.cs",
-        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
+        "status": "superseded art on 0.0.131 (procedural parchment); native-shell composite requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "matching canonical spell identity; native item frames and overlays preserved",
         "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
       "nativeMerchantEvidence": {
         "source": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationScrollMerchantIcons.cs",
-        "status": "superseded art (bare painting) on 0.0.129; composed scroll art requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
+        "status": "superseded art on 0.0.131 (procedural parchment); native-shell composite requalification recorded in reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
         "disposition": "same canonical spell art on actual merchant item rows; native control preserved; no purchase or sale",
         "report": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
       },
@@ -7902,10 +7904,11 @@
         "ownerApproval": "pending"
       },
       "scrollComposition": {
-        "method": "deterministic GDI+ composition (measured native scroll convention + approved spell painting)",
+        "method": "asset compositing: exact native scroll shell (cross-donor median of five same-design native scroll sprites + ring fill + alpha unmix) with the approved spell painting as the inner symbol",
+        "shellBase": "native scroll shell reconstructed from donors 02086fbbda266ed4b8e9124abe5abd75, 0033529da3b90bd226232e1962ca34ba, 00843bddf42908953a0d77e7155c20f0, 013c0f5972c1b794b869b284ba426542, 0437d7a2ea4b01542907c4d5fb12c4da",
         "conventionReference": "icon-overhaul-visual-evidence native scroll donor reference sheet (after-12-native-scroll-references.png); local-only runtime evidence, not committed pixels",
         "approvedInnerSymbol": "word-of-recall",
-        "ownerInstruction": "scroll icon on the outside, spell symbol inside the scroll"
+        "ownerInstruction": "native scroll icon on the outside, approved spell symbol inside; not newly painted scroll artwork"
       }
     },
     {

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.0.132-icon-art-overhaul
+
+- Corrected the three strategic scroll item icons to asset composites on the
+  exact native Kingmaker scroll shell: the shell was reconstructed
+  symbol-free from five same-design native scroll donor sprites
+  (cross-donor median, ring fill, cool-pixel ghost enforcement,
+  background-to-alpha unmixing), preserving the native parchment,
+  rollers/caps, border, proportions and silhouette; only the inner emblem
+  carries the owner-approved spell painting in the measured native symbol
+  window. Supersedes the 0.0.131 procedural parchment; spell ability icons
+  and every other icon are unchanged.
+- Guarded runtime qualification passed 42/42 on the corrected build,
+  including every scroll inventory row, item description and merchant row
+  with native controls preserved and zero save writes; the lab installation
+  was restored byte-exact after the run.
+
 ## 0.0.131-icon-art-overhaul
 
 - Strategic scroll item icons recomposed to the native parchment scroll
