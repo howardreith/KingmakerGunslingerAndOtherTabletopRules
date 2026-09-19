@@ -90,3 +90,12 @@ authorization gate ([SAVED-PARAMETER-AUTHORIZATION-REQUEST.md](../reports/icon-o
 and final artifact reconciliation with the owner native UI acceptance packet.
 All 90 art approvals and protected assets remain unchanged (verified no-write).
 
+## 0.0.131 scroll item icons (2026-09-19)
+
+Owner-directed follow-up: the three strategic scroll items now use composed
+scroll-convention item icons (native parchment treatment wrapping the
+approved spell paintings), qualified by two consecutive guarded
+spellbook-UI PASS runs and the live census; the pre-existing spellbook
+preparation-capture race was fixed with a bounded settle-wait. Evidence:
+[SCROLL-ITEM-ICON-QUALIFICATION.json](../reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json).
+All 90 approved images and protected assets remain unchanged.

@@ -173,9 +173,12 @@ namespace KingmakerGunslinger.Blueprints
             new Binding("KMG.ElementalRaces.Traits.Undine.NereidFascination.AuraBuff", "nereid-fascination", typeof(BlueprintBuff)),
             new Binding("KMG.ElementalRaces.Traits.Oread.TreacherousEarth.Ability", "treacherous-earth", typeof(BlueprintAbility)),
             new Binding("KMG.ElementalRaces.Traits.Oread.TreacherousEarth.TerrainBuff", "treacherous-earth", typeof(BlueprintBuff)),
-            new Binding("KMG.Spells.Teleport.Scroll", "teleport", typeof(BlueprintItemEquipmentUsable)),
-            new Binding("KMG.Spells.GreaterTeleport.Scroll", "greater-teleport", typeof(BlueprintItemEquipmentUsable)),
-            new Binding("KMG.Spells.WordOfRecall.Scroll", "word-of-recall", typeof(BlueprintItemEquipmentUsable)),
+            // Scroll ITEMS follow the native scroll convention: parchment scroll
+            // artwork with the approved spell painting integrated inside. The
+            // spell Ability bindings above keep the bare approved paintings.
+            new Binding("KMG.Spells.Teleport.Scroll", "scroll-of-teleport", typeof(BlueprintItemEquipmentUsable)),
+            new Binding("KMG.Spells.GreaterTeleport.Scroll", "scroll-of-greater-teleport", typeof(BlueprintItemEquipmentUsable)),
+            new Binding("KMG.Spells.WordOfRecall.Scroll", "scroll-of-word-of-recall", typeof(BlueprintItemEquipmentUsable)),
         };
 
         internal static IEnumerable<Binding> Bindings => Entries;

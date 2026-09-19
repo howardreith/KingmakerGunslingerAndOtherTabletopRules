@@ -1,0 +1,40 @@
+{
+ "schemaVersion": 1,
+ "key": "scroll-of-greater-teleport",
+ "behavior": "Scroll of Greater Teleport item (symbol KMG.Spells.GreaterTeleport.Scroll): usable Greater Teleport scroll; one-shot cast of the strategic Greater Teleport spell through the native scroll-use flow.",
+ "implementationReferences": [
+  "src/KingmakerGunslinger/Blueprints/TeleportationScrollBlueprints.cs",
+  "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs"
+ ],
+ "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-greater-teleport.png",
+ "sourceSha256": "dc7cdbc8782bdf0c095d11b9003d81f429c49962b8a5e8b15630b9f566633c24",
+ "tool": "deterministic GDI+ composition (artifacts/icon-overhaul-v2/Compose-ScrollIcons.ps1); no image generation",
+ "referenceImages": [
+  {
+   "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/greater-teleport.png",
+   "role": "approved inner spell symbol, reused unmodified inside the parchment treatment"
+  }
+ ],
+ "prompt": "Use case: deterministic item-icon composition. Asset type: one square fantasy CRPG SCROLL ITEM icon following the native Kingmaker scroll convention: vertical parchment sheet with rolled rod ends top and bottom (rods slightly wider than the sheet), warm cream-to-tan parchment with soft mottling, crisp rod cast shadows, and a continuous dark silhouette rim. The approved Greater Teleport spell painting is painted directly onto the parchment, centered in the measured native symbol window, scaled by its opaque content so the emblem reads at inventory size. The spell ability icon itself is NOT replaced; only the item icon carries the scroll treatment.",
+ "visualStatus": "production-awaiting-owner-review",
+ "subjectAndSilhouette": "Use case: deterministic item-icon composition. Asset type: one square fantasy CRPG SCROLL ITEM icon following the native Kingmaker scroll convention: vertical parchment sheet with rolled rod ends top and bottom (rods slightly wider than the sheet), warm cream-to-tan parchment with soft mottling, crisp rod cast shadows, and a continuous dark silhouette rim. The approved Greater Teleport spell painting is painted directly onto the parchment, centered in the measured native symbol window, scaled by its opaque content so the emblem reads at inventory size. The spell ability icon itself is NOT replaced; only the item icon carries the scroll treatment.",
+ "artFamily": "painted-magical",
+ "reviewGroup": "strategic",
+ "confusedWith": [
+  "greater-teleport",
+  "scroll-of-teleport",
+  "scroll-of-word-of-recall",
+  "teleport",
+  "word-of-recall"
+ ],
+ "uiSurfaces": [
+  "inventory / merchant / item tooltip / strategic cast"
+ ],
+ "exportProfile": "project-painted-128",
+ "forbiddenInterpretations": [
+  "Not a spellbook or ability icon: the bare approved painting stays the spell identity.",
+  "No window or frame cut into the parchment: the symbol is painted on the sheet.",
+  "No unrelated spell symbol inside the scroll.",
+  "No non-scroll item shapes (potion, wand, book, weapon)."
+ ]
+}

@@ -230,6 +230,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scene => DrawEquippedBelt(scene, nativeBeltEntry,
                     "UNMODIFIED NATIVE BELT  |  LIVE BLUEPRINT SPRITE"));
 
+            // Read-only native scroll reference dump: exact full-resolution
+            // sprites of the native scroll donors used by the strategic scroll
+            // items, written as evidence PNGs for offline authoring reference.
+            // No game state is touched; the files stay machine-local.
+            var scrollReferences = DumpNativeScrollReferences(context, request);
+
             RuntimeBuildIdentity identity = RuntimeBuildIdentity.Capture(
                 context.Assembly, context.ModEntry.Info.Version);
             string indexPath = Path.Combine(request.EvidenceDirectory,
@@ -263,7 +269,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EntriesJson(new[] { cordEntry, nativeBeltEntry }) },
                 { "easternItemCount", easternAll.Length },
                 { "spearItemCount", spearAll.Length },
-                { "screenshots", records }
+                { "screenshots", records },
+                { "nativeScrollReferences", scrollReferences }
             };
             RuntimeTestResultWriter.WriteAtomic(indexPath,
                 index.ToString(Formatting.Indented) + Environment.NewLine);
@@ -346,7 +353,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExceptionSummary = string.Empty,
                 EvidenceFiles = records.Select(value => Path.Combine(
                         request.EvidenceDirectory, (string)value["fileName"]))
-                    .Concat(new[] { indexPath }).Concat(censusFiles).ToList(),
+                    .Concat(new[] { indexPath }).Concat(censusFiles)
+                    .Concat(scrollReferences.Select(value => (string)value["path"]))
+                    .ToList(),
                 AutomaticExitRequested = request.ExitAfterCompletion,
                 EvidenceDirectory = request.EvidenceDirectory
             };
@@ -927,6 +936,80 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Invalid color: " + value);
                 return parsed;
             }
+        }
+
+        // Bounded, read-only reference render of the native scroll donor
+        // icons. The strategic scroll items are clones of these exact native
+        // scrolls; their sprites are the authoritative parchment convention
+        // for composing the project's own scroll item icons. Each donor is
+        // drawn at its exact native 64x64 pixel size through the proven
+        // live-sprite facsimile renderer; the cell rects are recorded for
+        // offline cropping. No game state is touched and no pixels are
+        // committed to Git.
+        private static JArray DumpNativeScrollReferences(ModContext context,
+            RuntimeTestRequest request)
+        {
+            string[] donorGuids = {
+                "02086fbbda266ed4b8e9124abe5abd75", // Teleport donor (CotW profile)
+                "0033529da3b90bd226232e1962ca34ba", // Greater Teleport donor (CotW)
+                "00843bddf42908953a0d77e7155c20f0", // Word of Recall donor (CotW)
+                "013c0f5972c1b794b869b284ba426542", // fallback: Summon Greater Earth Elemental
+                "0437d7a2ea4b01542907c4d5fb12c4da"  // fallback: Elemental Body III (Fire)
+            };
+            var results = new JArray();
+            var library = BlueprintBootstrap.Library;
+            var cells = new List<KeyValuePair<string, Sprite>>();
+            foreach (string guid in donorGuids)
+            {
+                BlueprintItemEquipmentUsable donor;
+                if (library == null || library.BlueprintsByAssetId == null ||
+                    !library.BlueprintsByAssetId.TryGetValue(guid, out var raw) ||
+                    (donor = raw as BlueprintItemEquipmentUsable) == null ||
+                    donor.Icon == null)
+                {
+                    results.Add(new JObject { ["guid"] = guid, ["present"] = false });
+                    continue;
+                }
+                cells.Add(new KeyValuePair<string, Sprite>(guid + ":" + donor.name, donor.Icon));
+            }
+            const float cell = 64f;
+            const float pitch = 96f;
+            float startX = (Width - pitch * cells.Count + pitch - cell) / 2f;
+            float y = Height / 2f - cell / 2f;
+            var placements = new JArray();
+            for (int index = 0; index < cells.Count; index++)
+            {
+                float x = startX + index * pitch;
+                // Record the top-down crop rect for offline extraction.
+                placements.Add(new JObject {
+                    ["guid"] = cells[index].Key.Split(':')[0],
+                    ["blueprintName"] = cells[index].Key.Split(':')[1],
+                    ["cropX"] = (int)x, ["cropY"] = (int)(Height - y - cell),
+                    ["size"] = 64 });
+            }
+            Render(request, new JArray(), "after-12-native-scroll-references.png",
+                "NATIVE SCROLL DONOR REFERENCES",
+                "EXACT NATIVE 64 x 64 LIVE-SPRITE CELLS; PARCHMENT CONVENTION REFERENCE",
+                scene =>
+                {
+                    scene.Panel(new Rect(startX - 40f, y - 80f, pitch * cells.Count + 20f, 260f));
+                    for (int index = 0; index < cells.Count; index++)
+                    {
+                        float x = startX + index * pitch;
+                        scene.Icon(cells[index].Value, new Rect(x, y, cell, cell));
+                        scene.Text(cells[index].Key.Split(':')[1],
+                            new Rect(x - 64f, y - 48f, 192f, 30f), 16f, EvidenceScene.Muted, true);
+                    }
+                    scene.Text("REFERENCE ONLY - NOT PROJECT ART",
+                        new Rect(startX - 40f, y + cell + 24f, pitch * cells.Count, 32f),
+                        20f, EvidenceScene.Gold, true);
+                });
+            string sheetPath = Path.Combine(request.EvidenceDirectory,
+                "after-12-native-scroll-references.png");
+            foreach (var placement in placements.OfType<JObject>())
+                placement["sheet"] = sheetPath;
+            results = new JArray(placements);
+            return results;
         }
 
         private static byte[] EncodePng(Texture2D texture)

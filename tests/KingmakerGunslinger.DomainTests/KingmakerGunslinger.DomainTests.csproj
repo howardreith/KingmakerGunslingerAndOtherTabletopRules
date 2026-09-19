@@ -333,6 +333,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmProficiencyPolicy.cs"><Link>Domain\FirearmProficiencyPolicy.cs</Link></Compile>
     <Compile Include="FirearmAudioTests.cs" />
     <Compile Include="FirearmFeatIconTests.cs" />
+    <Compile Include="ScrollItemIconTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Feats\FirearmNativeMonogramPolicy.cs"><Link>Feats\FirearmNativeMonogramPolicy.cs</Link></Compile>
     <Compile Include="NativeRacialActionIconFixtureTests.cs" />
     <Compile Include="FirearmHigherFeatRootsTests.cs" />
