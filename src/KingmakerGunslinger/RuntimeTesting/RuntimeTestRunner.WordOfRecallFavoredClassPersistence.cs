@@ -133,6 +133,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             var originalCounts = originalItems.Select(value => value.Count).ToArray();
             long originalMoney = player.Money;
             bool originalPause = game.IsPaused;
+            var starterDeltas = new Dictionary<Kingmaker.Items.ItemEntity, int>();
+            Action<string> captureStarterItems = stage => {
+                foreach (var item in player.Inventory.Items)
+                {
+                    int index = Array.IndexOf(originalItems, item);
+                    int delta = item.Count - (index < 0 ? 0 : originalCounts[index]);
+                    if (delta > 0) starterDeltas[item] = delta;
+                }
+            };
             var experienceProperty = typeof(UnitProgressionData).GetProperty("Experience");
             UnitEntityData unit = null;
             LevelUpController backend = null;
@@ -233,6 +242,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         unit.HoldingState.AllEntityData.Contains(unit))
                         unit.HoldingState.RemoveEntityData(unit);
                     player.InvalidateCharacterLists(); player.UpdateCharacterLists();
+                    captureStarterItems("persistence-prepare-starter-items");
+                    foreach (var entry in starterDeltas)
+                        if (ReferenceEquals(entry.Key.Collection, player.Inventory) &&
+                            entry.Key.Count >= entry.Value)
+                            player.Inventory.Remove(entry.Key, entry.Value);
                     unit.Dispose(); unit = null;
                 }
                 else
