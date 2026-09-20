@@ -1,8 +1,8 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [string]$ExpectedVersion = '0.0.133',
-    [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
-    [Parameter(Mandatory = $true)][string]$PackagePath,
+    [string]$DeploymentManifestPath,
+    [string]$PackagePath,
     [switch]$AllowDirtyGit
 )
 Set-StrictMode -Version Latest
@@ -92,8 +92,7 @@ try {
         try {
             & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $scenario -ExpectedVersion $ExpectedVersion `
                 -SaveName $inputSave.name -Parameters @{ phase = $phase; planPath = $planPath } -TimeoutSeconds 900 `
-                -CompletionTimeoutSeconds 600 -ExitAfterCompletion:$true -AllowDirtyGit:$AllowDirtyGit -Confirm:$false `
-                -ReuseInstalledArtifact -DeploymentManifestPath $DeploymentManifestPath -PackagePath $PackagePath
+                -CompletionTimeoutSeconds 600 -ExitAfterCompletion:$true -AllowDirtyGit:$AllowDirtyGit -Confirm:$false
             if ($LASTEXITCODE -ne 0) { throw "Native Favored Class persistence phase $phase failed." }
         } catch { $phaseFailure = $_ }
         finally {
