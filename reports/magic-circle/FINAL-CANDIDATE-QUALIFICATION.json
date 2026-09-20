@@ -15,12 +15,14 @@
   },
   "packageRelativePath": "artifacts/local-runtime/0.0.132/KingmakerGunslinger-0.0.132-local-runtime.zip",
   "sourceCorrespondence": {
-    "explanation": "Clean Release compilation used the validated working tree at the embedded commit. Later curated records and documentation do not change the frozen product inputs. The source commit containing this record carries that tested product tree; verify canonical input hash against its Git tree. The embedded commit alone is not the final source identity.",
+    "explanation": "Clean Release compilation used the validated working tree at the embedded commit. Every frozen product path and Git-filtered blob matches committedSource. Subsequent curated records and documentation preserve that product tree. The embedded commit alone is not the final source identity.",
     "productInputCount": 1387,
     "rawInputSha256": "4079737f044b9363213a0fe60c7d14603ebb51faaaca2457a6110c9051fed7db",
     "canonicalInputAlgorithm": "SHA-256 of the same sorted UTF-8 path|git-filtered-blob-id LF rows",
     "canonicalInputSha256": "f7c1f3484230cc119f741df035661575d0d1bda1efd644c8f698553345dbe5d5",
-    "localFullManifest": "artifacts/magic-circle/final-curated/FROZEN-INPUTS-DRAFT.json"
+    "localFullManifest": "artifacts/magic-circle/final-curated/FROZEN-INPUTS-DRAFT.json",
+    "committedSource": "1c3f5acca108408a81a0ea02d9551b2569b1c2b4",
+    "verificationRecord": "COMMITTED-SOURCE-CORRESPONDENCE.json"
   },
   "buildChecks": {
     "repositoryValidation": "PASS",
