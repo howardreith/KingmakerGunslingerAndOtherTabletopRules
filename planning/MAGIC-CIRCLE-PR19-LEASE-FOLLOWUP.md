@@ -13,7 +13,7 @@ orchestration only; compiled product changes are not intended.
 - [x] Run production entry-point regressions, including interruption and WhatIf;
   retain Circle settings/preparation/selector coverage and required gates.
 - [x] Record applicable native evidence and exact artifact attribution.
-- [ ] Publish coherent commits through the guarded helper, without merging.
+- [x] Publish coherent commits through the guarded helper, without merging.
 
 Integration inspection: GitHub reports draft PR #19 CONFLICTING/DIRTY against
 master `d7fe028c8fa60f85b5f7c58a38207088f17c7546`. Read-only `merge-tree`

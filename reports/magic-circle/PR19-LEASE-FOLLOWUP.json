@@ -356,5 +356,19 @@
     "The native parent run used equal original/override values; distinct-byte restoration and foreign edits remain covered by the retained 12-case Circle suite.",
     "Older unbound generic journals require investigation; no lease theft or unconditional deletion.",
     "Owner approval and prior native UI evidence are retained for unchanged art; no new UI screenshots, gamepad, reduced-profile save repair or uninstall claims."
-  ]
+  ],
+  "sourceCommit": "1f1dcce6c100d298ddf673ca705514679d513b68",
+  "committedSourceCorrespondence": {
+    "status": "PASS",
+    "inputCount": 1885,
+    "method": "Every frozen path and Git-filtered blob matches git ls-tree -r at sourceCommit; raw working-file identity was checked before committing."
+  },
+  "publication": {
+    "publishedSourceCommit": "1f1dcce6c100d298ddf673ca705514679d513b68",
+    "branch": "codex/magic-circle-alignment-spells",
+    "pr": 19,
+    "draft": true,
+    "helper": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "status": "PASS; local and remote source commit verified; subsequent metadata-only commit preserves these inputs."
+  }
 }
