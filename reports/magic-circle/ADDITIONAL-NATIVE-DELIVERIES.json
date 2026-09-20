@@ -1,0 +1,649 @@
+{
+  "schemaVersion": 1,
+  "scope": "Additional native control delivery, stronger equipment and summon lifecycle checkpoint; final acceptance pending",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "145c7a3daf01eba242634751385d46a811a75eee",
+  "sourceWasDirty": true,
+  "sourceStateSha256": "3e9fc7c884619997f0293e0dd7ecbaccb3da2840c880e34dbc8971841d7b9a95",
+  "artifact": {
+    "schemaVersion": 1,
+    "semanticVersion": "0.0.132",
+    "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+    "informationalVersion": "0.0.132-icon-art-overhaul",
+    "gitCommit": "145c7a3daf01eba242634751385d46a811a75eee",
+    "moduleVersionId": "a6e718fe-2652-4e17-9167-4e14997cdda9",
+    "loadedModuleSha256": "61aac7af5dc5e658d779bc3a6f1ba54555d674be85be366393ab2cdcd6b9435d"
+  },
+  "packageSha256": "1ab06693fc1926301222b0ba533c36adca367c281d5e994f2996727218043ec3",
+  "checks": {
+    "repositoryValidation": "PASS",
+    "fullCleanDomainSuite": {
+      "passed": 1657,
+      "failed": 0,
+      "settingsCombinations": 8192
+    },
+    "cleanRelease": "PASS",
+    "strictPackage": "PASS",
+    "buildLog": "artifacts-magic-circle-deliveries-exact-build.log"
+  },
+  "fixtureFailure": {
+    "evidenceDirectoryName": "20260920T0351141221915Z-disposable-magic-circle-evil",
+    "status": "FAIL",
+    "passingAssertions": 66,
+    "runtimeResultSha256": "c45ee30675ff20b807e70daae2788a34a3d4082b1bf9c04434e5da9dcdc292a8",
+    "cause": "Fixture looked up the internal name Confusion instead of the native ConfusionSpell. No new delivery claim accepted. Corrected using exact native IDs corroborated in local CotW source and the loaded library; unchanged production mechanics.",
+    "packageSha256": "c0fdb437593ce2bf687ff972bf59103d417e6e6e58f879089e5ddf58d16c6523",
+    "dllSha256": "01b217182bd4ca83567dfa5b217b6a97a27b682657958991836f04bd6e35c856"
+  },
+  "native": {
+    "evidenceDirectoryName": "20260920T0401029525146Z-disposable-magic-circle-evil",
+    "runId": "20260920T0401029843384Z-776248b726e04e8faa9ff094b57d279b",
+    "status": "PASS",
+    "assertionCount": 204,
+    "additionalAssertions": 84,
+    "regressionAssertions": 120,
+    "runtimeResultSha256": "9409f051a10b1bc03e2b611774acddb7609f65f738634bc8c05b33008bddb99f",
+    "steamAppId": 640820,
+    "save": "KMG_AUTOMATION_WORKING",
+    "saveWriteObserved": false,
+    "settings": "All thirteen ON; shared control enhancement ON",
+    "profile": "Installed all-loadable profile with Call of the Wild 1.14.4c-2.1; optional-absent qualification pending",
+    "assertions": [
+      {
+        "name": "circle-native-stronger-equipment",
+        "expected": "+3 native ring AC and cloak saves",
+        "observed": "ac=13;save=-1",
+        "status": "PASS",
+        "evidence": "actual equipped native RingOfProtection3 and CloakOfResistance3 entities"
+      },
+      {
+        "name": "circle-stronger-equipment-Evil",
+        "expected": "stronger typed bonuses remain +3",
+        "observed": "ac=13;save=-1",
+        "status": "PASS",
+        "evidence": "actual matching-alignment attack and saving-throw rules; separate native equipment sources"
+      },
+      {
+        "name": "circle-excluded-Evil-CauseFear-25ec6cb6ab1845c48a95f9c20b034220",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Evil-CauseFear-f08a7239aa961f34c8301518e71d4cdf",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Evil-ConfusionSpell-886c7407dc629dc499b9f1465ff382df",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Evil-HoldPerson-11cb2fe4fe9c44b448cfe1788ae1ab59",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Evil-HoldPerson-f03405e1c4c38dd34c3766949de96eab",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Evil-HoldPerson-5faccc01f31a8a79798a49e2904d2f84",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Evil-HoldMonster-2cfcce5b62d3e6d4082ec31b58468cc8",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Evil-HoldMonster-76cce3c6387d14d3ce1dd337060a0acd",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Evil-HoldMonster-d9542a260fa41379fba0fc410bae4be2",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-optional-terminal-Evil-ControlUndeadBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Evil-ControlUndeadBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-optional-terminal-Evil-ControlConstructBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Evil-ControlConstructBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-optional-terminal-Evil-WitchAnimalServantHexBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Evil-WitchAnimalServantHexBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-native-translocate-Evil",
+        "expected": "exit/re-entry rebuilds one contribution without timer reset",
+        "observed": "outside=True",
+        "status": "PASS",
+        "evidence": "actual native UnitEntityData.Translocate and area membership; this is same-scene teleportation, not cross-area travel"
+      },
+      {
+        "name": "circle-weaker-removal-Evil",
+        "expected": "native equipment still supplies +3",
+        "observed": "ac=13;save=-1",
+        "status": "PASS",
+        "evidence": "removing the circle leaves exact equipped ring and cloak sources intact"
+      },
+      {
+        "name": "circle-stronger-equipment-Good",
+        "expected": "stronger typed bonuses remain +3",
+        "observed": "ac=13;save=-1",
+        "status": "PASS",
+        "evidence": "actual matching-alignment attack and saving-throw rules; separate native equipment sources"
+      },
+      {
+        "name": "circle-excluded-Good-CauseFear-25ec6cb6ab1845c48a95f9c20b034220",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Good-CauseFear-f08a7239aa961f34c8301518e71d4cdf",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Good-ConfusionSpell-886c7407dc629dc499b9f1465ff382df",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Good-HoldPerson-11cb2fe4fe9c44b448cfe1788ae1ab59",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Good-HoldPerson-f03405e1c4c38dd34c3766949de96eab",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Good-HoldPerson-5faccc01f31a8a79798a49e2904d2f84",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Good-HoldMonster-2cfcce5b62d3e6d4082ec31b58468cc8",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Good-HoldMonster-76cce3c6387d14d3ce1dd337060a0acd",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Good-HoldMonster-d9542a260fa41379fba0fc410bae4be2",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-optional-terminal-Good-ControlUndeadBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Good-ControlUndeadBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-optional-terminal-Good-ControlConstructBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Good-ControlConstructBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-optional-terminal-Good-WitchAnimalServantHexBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Good-WitchAnimalServantHexBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-native-translocate-Good",
+        "expected": "exit/re-entry rebuilds one contribution without timer reset",
+        "observed": "outside=True",
+        "status": "PASS",
+        "evidence": "actual native UnitEntityData.Translocate and area membership; this is same-scene teleportation, not cross-area travel"
+      },
+      {
+        "name": "circle-weaker-removal-Good",
+        "expected": "native equipment still supplies +3",
+        "observed": "ac=13;save=-1",
+        "status": "PASS",
+        "evidence": "removing the circle leaves exact equipped ring and cloak sources intact"
+      },
+      {
+        "name": "circle-stronger-equipment-Law",
+        "expected": "stronger typed bonuses remain +3",
+        "observed": "ac=13;save=-1",
+        "status": "PASS",
+        "evidence": "actual matching-alignment attack and saving-throw rules; separate native equipment sources"
+      },
+      {
+        "name": "circle-excluded-Law-CauseFear-25ec6cb6ab1845c48a95f9c20b034220",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Law-CauseFear-f08a7239aa961f34c8301518e71d4cdf",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Law-ConfusionSpell-886c7407dc629dc499b9f1465ff382df",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Law-HoldPerson-11cb2fe4fe9c44b448cfe1788ae1ab59",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Law-HoldPerson-f03405e1c4c38dd34c3766949de96eab",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Law-HoldPerson-5faccc01f31a8a79798a49e2904d2f84",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Law-HoldMonster-2cfcce5b62d3e6d4082ec31b58468cc8",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Law-HoldMonster-76cce3c6387d14d3ce1dd337060a0acd",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Law-HoldMonster-d9542a260fa41379fba0fc410bae4be2",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-optional-terminal-Law-ControlUndeadBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Law-ControlUndeadBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-optional-terminal-Law-ControlConstructBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Law-ControlConstructBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-optional-terminal-Law-WitchAnimalServantHexBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Law-WitchAnimalServantHexBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-native-translocate-Law",
+        "expected": "exit/re-entry rebuilds one contribution without timer reset",
+        "observed": "outside=True",
+        "status": "PASS",
+        "evidence": "actual native UnitEntityData.Translocate and area membership; this is same-scene teleportation, not cross-area travel"
+      },
+      {
+        "name": "circle-weaker-removal-Law",
+        "expected": "native equipment still supplies +3",
+        "observed": "ac=13;save=-1",
+        "status": "PASS",
+        "evidence": "removing the circle leaves exact equipped ring and cloak sources intact"
+      },
+      {
+        "name": "circle-stronger-equipment-Chaos",
+        "expected": "stronger typed bonuses remain +3",
+        "observed": "ac=13;save=-1",
+        "status": "PASS",
+        "evidence": "actual matching-alignment attack and saving-throw rules; separate native equipment sources"
+      },
+      {
+        "name": "circle-excluded-Chaos-CauseFear-25ec6cb6ab1845c48a95f9c20b034220",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Chaos-CauseFear-f08a7239aa961f34c8301518e71d4cdf",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Chaos-ConfusionSpell-886c7407dc629dc499b9f1465ff382df",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Chaos-HoldPerson-11cb2fe4fe9c44b448cfe1788ae1ab59",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Chaos-HoldPerson-f03405e1c4c38dd34c3766949de96eab",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Chaos-HoldPerson-5faccc01f31a8a79798a49e2904d2f84",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Chaos-HoldMonster-2cfcce5b62d3e6d4082ec31b58468cc8",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Chaos-HoldMonster-76cce3c6387d14d3ce1dd337060a0acd",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-excluded-Chaos-HoldMonster-d9542a260fa41379fba0fc410bae4be2",
+        "expected": "native terminal actually applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "public AddBuff with actual spell ability context and its own terminal blueprint; no blanket descriptor immunity"
+      },
+      {
+        "name": "circle-optional-terminal-Chaos-ControlUndeadBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Chaos-ControlUndeadBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-optional-terminal-Chaos-ControlConstructBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Chaos-ControlConstructBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-optional-terminal-Chaos-WitchAnimalServantHexBuff",
+        "expected": "cataloged terminal blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "existing shared optional catalog, real public terminal delivery without a source ability"
+      },
+      {
+        "name": "circle-optional-positive-Chaos-WitchAnimalServantHexBuff",
+        "expected": "wrong-alignment terminal really applies",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same actual terminal delivery; only controller alignment changes"
+      },
+      {
+        "name": "circle-native-translocate-Chaos",
+        "expected": "exit/re-entry rebuilds one contribution without timer reset",
+        "observed": "outside=True",
+        "status": "PASS",
+        "evidence": "actual native UnitEntityData.Translocate and area membership; this is same-scene teleportation, not cross-area travel"
+      },
+      {
+        "name": "circle-weaker-removal-Chaos",
+        "expected": "native equipment still supplies +3",
+        "observed": "ac=13;save=-1",
+        "status": "PASS",
+        "evidence": "removing the circle leaves exact equipped ring and cloak sources intact"
+      },
+      {
+        "name": "circle-native-summoned-controller",
+        "expected": "Chaotic Evil controller linked to Lawful Good summoner",
+        "observed": "source=ChaoticEvil;summoner=LawfulGood",
+        "status": "PASS",
+        "evidence": "actual native RuleSummonUnit with original summon context and lifecycle; no summon spell slot claim"
+      },
+      {
+        "name": "circle-succubus-unprotected-positive",
+        "expected": "actual custom control applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "native UnitUseAbility and ContextActionSuccubusDominate, observed failed Will and real RuleApplyBuff"
+      },
+      {
+        "name": "circle-covers-summon-Evil",
+        "expected": "summoned creature receives its own owned contribution",
+        "observed": "1",
+        "status": "PASS",
+        "evidence": "native area membership includes a real linked summon"
+      },
+      {
+        "name": "circle-succubus-source-Evil",
+        "expected": "control blocked by controller alignment",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "actual Chaotic Evil summoned controller; Lawful Good summoner; existing shared source resolver and catalog"
+      },
+      {
+        "name": "circle-covers-summon-Good",
+        "expected": "summoned creature receives its own owned contribution",
+        "observed": "1",
+        "status": "PASS",
+        "evidence": "native area membership includes a real linked summon"
+      },
+      {
+        "name": "circle-succubus-source-Good",
+        "expected": "control applies despite opposite summoner alignment",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "actual Chaotic Evil summoned controller; Lawful Good summoner; existing shared source resolver and catalog"
+      },
+      {
+        "name": "circle-covers-summon-Law",
+        "expected": "summoned creature receives its own owned contribution",
+        "observed": "1",
+        "status": "PASS",
+        "evidence": "native area membership includes a real linked summon"
+      },
+      {
+        "name": "circle-succubus-source-Law",
+        "expected": "control applies despite opposite summoner alignment",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "actual Chaotic Evil summoned controller; Lawful Good summoner; existing shared source resolver and catalog"
+      },
+      {
+        "name": "circle-covers-summon-Chaos",
+        "expected": "summoned creature receives its own owned contribution",
+        "observed": "1",
+        "status": "PASS",
+        "evidence": "native area membership includes a real linked summon"
+      },
+      {
+        "name": "circle-succubus-source-Chaos",
+        "expected": "control blocked by controller alignment",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "actual Chaotic Evil summoned controller; Lawful Good summoner; existing shared source resolver and catalog"
+      },
+      {
+        "name": "circle-permanent-bearer-despawn",
+        "expected": "despawn removes this carrier and all its area contributions",
+        "observed": "before=True;ended=True",
+        "status": "PASS",
+        "evidence": "native summoned-unit removal while bearing an actually cast circle; no recipient cleanup by blueprint"
+      }
+    ]
+  },
+  "limits": [
+    "Excluded Cause Fear, Confusion, Hold Person and Hold Monster use real public native terminal applications with their original ability contexts. This is not an area Confusion cast into the working-save party or proof of its saving-throw casting path.",
+    "Optional Control Undead, Control Construct and Animal Servant use real terminal-only applications and equivalent neutral-controller positive cases; no optional full spell/hex cast claim.",
+    "The native RuleSummonUnit creates and links the real registered Succubus. Only its request-owned appearance staging buff is ended before its real domination cast; no summon spell slot or placement claim.",
+    "All four circles cover the native summon. Succubus natural Chaotic Evil differs from Lawful Good summoner; Evil/Chaos block and Good/Law allow the actual failed-save domination.",
+    "Same-scene UnitEntityData.Translocate and permanent bearer despawn qualify; final disk/scene/profile/UI cases remain pending."
+  ]
+}
