@@ -240,6 +240,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CircleFamily(caster, bearer, recipient, controller, book, actors, assertions, diagnostics);
                 stage = "additional-native-deliveries";
                 CircleOtherDeliveries(caster, bearer, recipient, controller, book, actors, assertions, diagnostics);
+                stage = "communal-paladin-coexistence";
+                CircleCommunalAndPaladin(caster, bearer, recipient, controller, book, actors, assertions, diagnostics);
+                stage = "hostile-touch-and-metamagic";
+                CircleTouchAndMetamagic(caster, bearer, recipient, book, actors, prototypes, assertions, diagnostics);
                 stage = "native-scroll-acquisition";
                 CircleAcquisition(caster, bearer, recipient, book, actors, prototypes, assertions, diagnostics);
                 stage = "removed-caster-context";
@@ -350,7 +354,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var queuedBefore = caster.Commands.Queue.ToArray();
             caster.Commands.Run(command); command.Start();
             CircleCompleteCommand(command, evidence);
-            var sticky = data.Blueprint.GetComponent<Kingmaker.UnitLogic.Abilities.Components.AbilityEffectStickyTouch>();
+            // Reach converts root to delivery in UnitUseAbility's constructor.
+            var sticky = command.Spell.Blueprint.GetComponent<Kingmaker.UnitLogic.Abilities.Components.AbilityEffectStickyTouch>();
+            evidence.Add("native-command:root=" + data.Blueprint.AssetGuid + ";executed=" + command.Spell.Blueprint.AssetGuid);
             if (sticky != null && !ReferenceEquals(target.Unit, caster)) {
                 // Observe the actual command created by native StickyTouch.
                 // Never fabricate a replacement delivery or directly run effects.
@@ -367,10 +373,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static void CircleCompleteCommand(UnitUseAbility command, List<string> evidence)
         {
+            bool reach = command.Spell.HasMetamagic(Metamagic.Reach);
+            if (reach && (!Game.Instance.IsPaused || Game.Instance.ProjectileController.Projectiles.Any()))
+                throw new InvalidOperationException("Reach fixture requires a paused world with no pre-existing projectiles.");
             if (command.Animation != null) command.Animation.IsActed = true;
             command.Tick();
             if (command.ExecutionProcess == null) throw new InvalidOperationException("No native spell execution process.");
-            for (int tick = 0; tick < 5000 && !command.ExecutionProcess.IsEnded; tick++) command.ExecutionProcess.Tick();
+            if (reach) CircleCompleteReach(command, evidence);
+            else for (int tick = 0; tick < 5000 && !command.ExecutionProcess.IsEnded; tick++) command.ExecutionProcess.Tick();
             if (!command.ExecutionProcess.IsEnded) throw new InvalidOperationException("Native spell process did not settle.");
             bool processEnded = command.ExecutionProcess.IsEnded;
             evidence.Add("cast:process-ended=" + processEnded);
@@ -378,6 +388,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!command.IsFinished) command.Tick();
             Game.Instance.EntityCreator.Tick();
             evidence.Add("cast:result=" + command.Result + ";ended=" + processEnded);
+        }
+
+        private static void CircleCompleteReach(UnitUseAbility command, List<string> evidence)
+        {
+            var game = Game.Instance;
+            var time = game.TimeController.GameTime;
+            float delta = game.TimeController.DeltaTime;
+            var created = new List<Kingmaker.Controllers.Projectiles.Projectile>();
+            var frame = typeof(Kingmaker.Controllers.Projectiles.Projectile).GetField("m_LaunchFrame", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (frame == null) throw new MissingFieldException("Projectile.m_LaunchFrame");
+            try {
+                for (int tick = 0; tick < 5000 && !command.ExecutionProcess.IsEnded; tick++) {
+                    command.ExecutionProcess.Tick();
+                    foreach (var projectile in game.ProjectileController.Projectiles.ToArray()) {
+                        if (!ReferenceEquals(projectile.Launcher, command.Spell.Caster.Unit))
+                            throw new InvalidOperationException("Unexpected foreign projectile during owned Reach cast.");
+                        if (!created.Contains(projectile)) {
+                            created.Add(projectile);
+                            // Permit synchronous request-local simulation across the
+                            // engine's launch-frame guard. Never change hit or dice.
+                            frame.SetValue(projectile, Time.frameCount - 1);
+                        }
+                        game.TimeController.SetDeltaTime(0.05f);
+                        try { projectile.Tick(); }
+                        finally { game.TimeController.SetDeltaTime(delta); }
+                    }
+                }
+                if (created.Count != 1 || !created[0].IsHit || created[0].AttackRoll == null)
+                    throw new InvalidOperationException("Reach did not resolve one native ranged-touch projectile.");
+                evidence.Add("reach-projectile:attack=" + created[0].AttackRoll.AttackType + ";hit=" + created[0].AttackRoll.IsHit +
+                    ";autoHit=" + created[0].AttackRoll.AutoHit + ";distance=" + Vector3.Distance(created[0].LaunchPosition, created[0].CorePosition) + ";simulatedSeconds=" + created[0].PassedTime);
+            }
+            finally {
+                game.TimeController.SetDeltaTime(0);
+                try {
+                    foreach (var projectile in created) projectile.Cleared = true;
+                    game.ProjectileController.Tick(); game.ProjectileController.Tick();
+                }
+                finally { game.TimeController.SetDeltaTime(delta); }
+            }
+            if (game.TimeController.GameTime != time || game.ProjectileController.Projectiles.Any())
+                throw new InvalidOperationException("Reach fixture failed to retain the world clock or clean its projectile.");
         }
 
         private static int CircleAttackAC(UnitEntityData attacker, UnitEntityData target)

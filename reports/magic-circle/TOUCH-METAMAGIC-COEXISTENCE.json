@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 1,
+  "scope": "Native touch, metamagic and shared Protection coexistence checkpoint; final acceptance pending",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "882e98472c2129158e684ca7a00a5fb13114468f",
+  "sourceWasDirty": true,
+  "sourceStateSha256": "ea7baa8082f7ba234567d8a16bf0b3b2cfa6e546fc07efef5027863316702dc7",
+  "artifact": {
+    "schemaVersion": 1,
+    "semanticVersion": "0.0.132",
+    "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+    "informationalVersion": "0.0.132-icon-art-overhaul",
+    "gitCommit": "882e98472c2129158e684ca7a00a5fb13114468f",
+    "moduleVersionId": "3541ec64-19e0-4fab-b498-653cf7c4d10a",
+    "loadedModuleSha256": "818ab26a03c0691f23664541ffeba4f137ca20e4010275517c47f54d2a1a462e"
+  },
+  "packageSha256": "6518315d5db0225ad8bcc427caeba14b692b27d9d4343a3229482931a2f0eb54",
+  "checks": {
+    "repositoryValidation": "PASS",
+    "fullCleanDomainSuite": {
+      "passed": 1657,
+      "failed": 0,
+      "settingsCombinations": 8192
+    },
+    "cleanRelease": "PASS",
+    "strictPackage": "PASS",
+    "buildLog": "artifacts-magic-circle-touch-projectile-exact-build.log",
+    "initialCompileFailure": "Private native projectile distance field in diagnostics; replaced with public position properties before clean checks and runtime qualification."
+  },
+  "fixtureFailures": [
+    {
+      "evidenceDirectoryName": "20260920T0422063647007Z-disposable-magic-circle-evil",
+      "status": "FAIL",
+      "passingAssertions": 150,
+      "failedAssertions": 1,
+      "runtimeResultSha256": "ab075a10f7c9a410521c55aa19c58d578d60077453085a3b8090e58e3cd3edac",
+      "cause": "Native communal target preflight failed before casting. Initial faction/position setup did not establish the required isolated target set; the missing exact target diagnostic prevents a narrower cause claim. Revised fixture isolates owned actors on verified native walkable geometry and records the actual selector output.",
+      "packageSha256": "2b1f70e4a1e0baae4884f9ca28769f9e9fb52b76ce1f79fc22f5fb9aafb6f7f2",
+      "dllSha256": "6972bc94403f0390757cb0ed5dd5d9a9d10027ed776457c3d6c68c4432e1660d"
+    },
+    {
+      "evidenceDirectoryName": "20260920T0431210985361Z-disposable-magic-circle-evil",
+      "status": "FAIL",
+      "passingAssertions": 157,
+      "failedAssertions": 2,
+      "runtimeResultSha256": "494e93e7579976fb922adfbe03a79c209946c99f4b0d42c666b0a9c528853b13",
+      "cause": "The reused target did not produce a native missed touch in the bounded attempts. Its earlier control history prevents a clean hostile baseline; the exact reason for all hits was not proved. Replaced only the fixture target with a fresh native hostile actor and added actual attack, alignment/faction and auto-hit observations.",
+      "packageSha256": "7847471e23ee141cbf729ed530b9fd6477554200edc57f86037817a0f41ed6dc",
+      "dllSha256": "2559ce636ce4e77fc6b0407f8ee94bf4fdf136eadccf12cebbbc9b9df521d53f"
+    },
+    {
+      "evidenceDirectoryName": "20260920T0440506007350Z-disposable-magic-circle-evil",
+      "status": "FAIL",
+      "passingAssertions": 164,
+      "failedAssertions": 1,
+      "runtimeResultSha256": "8a1c4f256ce7b5997ca89445f4aa0f895424e7fd60bff21fbb3a139adaf097d2",
+      "cause": "Fixture incorrectly expected a separate held command for Reach. Installed UnitUseAbility constructor converts Reach to direct delivery; fixed the helper to observe its actual command and advance only its native projectile. No production spell mechanics changed.",
+      "packageSha256": "f6012940913c0e53719a903ab8aaf4b1bc2f874ce8d2c7a59658d59fef0b8554",
+      "dllSha256": "2b193c5ab702f5f93f06ee3cc3503a131da7f51165a914f28636ea6ef3beb1f3"
+    }
+  ],
+  "native": {
+    "evidenceDirectoryName": "20260920T0505176211970Z-disposable-magic-circle-evil",
+    "runId": "20260920T0505176681157Z-7e95de3de39747bfb76bdd3ef8c51bae",
+    "status": "PASS",
+    "assertionCount": 231,
+    "additionalAssertions": 27,
+    "regressionAssertions": 204,
+    "runtimeResultSha256": "c61e50e73b5339915b2b348eb66ce4d1e943c1a466a32a51e917c09c8f929797",
+    "steamAppId": 640820,
+    "save": "KMG_AUTOMATION_WORKING",
+    "saveWriteObserved": false,
+    "settings": "All thirteen ON; shared control enhancement ON",
+    "profile": "Installed all-loadable profile with Call of the Wild 1.14.4c-2.1",
+    "assertions": [
+      {
+        "$id": "151",
+        "name": "circle-native-communal-delivery",
+        "expected": "one level-2 slot, native one-minute communal duration",
+        "observed": "slots=9->8;seconds=60",
+        "status": "PASS",
+        "evidence": "real unchanged native communal spell, selector parent, target selection and shared terminal"
+      },
+      {
+        "$id": "152",
+        "name": "circle-communal-paladin-coexistence",
+        "expected": "three distinct sources with only +2 typed defenses",
+        "observed": "ac=12;save=-2",
+        "status": "PASS",
+        "evidence": "actual communal cast, native Paladin AuraFeatureComponent and independently cast circle"
+      },
+      {
+        "$id": "153",
+        "name": "circle-leaves-communal-and-paladin",
+        "expected": "exact existing Protection sources remain",
+        "observed": "communal=True;paladin=True",
+        "status": "PASS",
+        "evidence": "only the circle carrier was removed; no shared Protection instance or aura was removed"
+      },
+      {
+        "$id": "154",
+        "name": "circle-remaining-communal-paladin-control",
+        "expected": "native incoming control blocked",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "same real Dominate Person spell and observed failed save after circle removal"
+      },
+      {
+        "$id": "155",
+        "name": "circle-paladin-only-shared-control",
+        "expected": "native incoming control blocked",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "native Paladin recipient is now the only remaining shared Protection delivery"
+      },
+      {
+        "$id": "156",
+        "name": "circle-family-removed-control-positive",
+        "expected": "same incoming spell now applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False",
+        "status": "PASS",
+        "evidence": "positive control after native Paladin feature removal; no lingering circle or communal immunity"
+      },
+      {
+        "$id": "157",
+        "name": "circle-family-coexistence-isolation",
+        "expected": "all foreign buffs remain exact",
+        "observed": "foreign=622",
+        "status": "PASS",
+        "evidence": "native communal selection was preflighted; native Paladin and circle sources belong only to request actors"
+      },
+      {
+        "$id": "158",
+        "name": "circle-hostile-touch-miss",
+        "expected": "one slot spent; charge held; no save or carrier",
+        "observed": "attacks=1;hits=0;misses=1;passed=0;failed=0;type=Touch;autoHit=False;roll=7;bonus=0;ac=10;flat=True",
+        "status": "PASS",
+        "evidence": "actual hostile touch attack; bounded native random rolls, no forced outcomes"
+      },
+      {
+        "$id": "159",
+        "name": "circle-held-touch-save-and-cost",
+        "expected": "hit and passed Will consume charge without another slot or carrier",
+        "observed": "attacks=1;hits=1;misses=0;passed=1;failed=0;type=Touch;autoHit=False;roll=5;bonus=14;ac=6;flat=True",
+        "status": "PASS",
+        "evidence": "retry uses the exact native held AbilityData and original spell context; a successful save negates bearer application"
+      },
+      {
+        "$id": "160",
+        "name": "circle-hostile-bearer-application",
+        "expected": "failed Will creates one moving emanation for all covered creatures",
+        "observed": "attacks=1;hits=1;misses=0;passed=0;failed=1;type=Touch;autoHit=False;roll=9;bonus=14;ac=6;flat=True",
+        "status": "PASS",
+        "evidence": "real hostile touch attack and native Will result; hostile bearer remains the area owner"
+      },
+      {
+        "$id": "161",
+        "name": "circle-hostile-area-no-entry-saves",
+        "expected": "no additional saves; original deadline",
+        "observed": "attacks=1;hits=1;misses=0;passed=0;failed=1;type=Touch;autoHit=False;roll=9;bonus=14;ac=6;flat=True",
+        "status": "PASS",
+        "evidence": "membership, including entry by an enemy of the bearer, does not repeat the spell's initial Will save"
+      },
+      {
+        "$id": "162",
+        "name": "circle-metamagic-Evil-Extend",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=4;action=Standard;fullRound=True;seconds=16800",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "163",
+        "name": "circle-metamagic-Evil-Quicken",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=7;action=Swift;fullRound=False;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "164",
+        "name": "circle-metamagic-Evil-Heighten",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=5;action=Standard;fullRound=True;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "165",
+        "name": "circle-metamagic-Evil-Reach",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=4;action=Standard;fullRound=True;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "166",
+        "name": "circle-metamagic-Good-Extend",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=4;action=Standard;fullRound=True;seconds=16800",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "167",
+        "name": "circle-metamagic-Good-Quicken",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=7;action=Swift;fullRound=False;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "168",
+        "name": "circle-metamagic-Good-Heighten",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=5;action=Standard;fullRound=True;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "169",
+        "name": "circle-metamagic-Good-Reach",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=4;action=Standard;fullRound=True;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "170",
+        "name": "circle-metamagic-Law-Extend",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=4;action=Standard;fullRound=True;seconds=16800",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "171",
+        "name": "circle-metamagic-Law-Quicken",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=7;action=Swift;fullRound=False;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "172",
+        "name": "circle-metamagic-Law-Heighten",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=5;action=Standard;fullRound=True;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "173",
+        "name": "circle-metamagic-Law-Reach",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=4;action=Standard;fullRound=True;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "174",
+        "name": "circle-metamagic-Chaos-Extend",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=4;action=Standard;fullRound=True;seconds=16800",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "175",
+        "name": "circle-metamagic-Chaos-Quicken",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=7;action=Swift;fullRound=False;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "176",
+        "name": "circle-metamagic-Chaos-Heighten",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=5;action=Standard;fullRound=True;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      },
+      {
+        "$id": "177",
+        "name": "circle-metamagic-Chaos-Reach",
+        "expected": "native adjusted slot, action, context and original duration",
+        "observed": "level=4;action=Standard;fullRound=True;seconds=8400",
+        "status": "PASS",
+        "evidence": "native spontaneous metamagic casting; Reach executes the engine's converted command, ranged-touch rule and isolated native projectile ticks; no real-time animation claim"
+      }
+    ],
+    "reachDelivery": [
+      "reach-projectile:attack=RangedTouch;hit=True;autoHit=True;distance=7.704025;simulatedSeconds=0.8000001",
+      "reach-projectile:attack=RangedTouch;hit=True;autoHit=True;distance=7.704025;simulatedSeconds=0.8000001",
+      "reach-projectile:attack=RangedTouch;hit=True;autoHit=True;distance=7.704025;simulatedSeconds=0.8000001",
+      "reach-projectile:attack=RangedTouch;hit=True;autoHit=True;distance=7.704025;simulatedSeconds=0.8000001"
+    ]
+  },
+  "limits": [
+    "Reach projectile movement is synchronously advanced using native Tick on its exact request-owned projectile with a temporary delta, retaining the world clock. The launch-frame guard alone is advanced; dice/hit results are not forced. The willing target receives the native automatic hit. This is not real-time animation acceptance or hostile Reach accuracy qualification.",
+    "Native UI, committed learning, final four-variant persistence and optional-absent profiles remain pending.",
+    "No uninstall-safety or release-readiness claim."
+  ]
+}
