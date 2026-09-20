@@ -28,6 +28,11 @@ if (Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) {
     throw 'Pathfinder: Kingmaker must not be running before a settings transaction.'
 }
 
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+if (-not $PSCmdlet.ShouldProcess($settings, 'run guarded settings matrix with shared runtime ownership')) { return }
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Invoke-FeatureModuleRuntimeMatrix.ps1'
+try {
+Assert-KmgNotRunning
 $originalExists = Test-Path -LiteralPath $settings -PathType Leaf
 $originalBytes = if ($originalExists) { [IO.File]::ReadAllBytes($settings) } else { $null }
 $sha = [Security.Cryptography.SHA256]::Create()
@@ -40,7 +45,7 @@ try {
 $moduleCatalog = @(Get-KmgFeatureModuleCatalog)
 $boundaryRequested = $Combination -ceq 'all'
 if ($Boundary14) {
-    Write-Warning '-Boundary14 is obsolete; it now selects the complete generic boundary matrix (26 states for twelve modules).'
+    Write-Warning '-Boundary14 is obsolete; it now selects the complete generic boundary matrix (28 states for thirteen modules).'
 }
 if (($Boundary -or $Boundary14) -and $Combination -ne 'all') {
     throw 'A boundary matrix cannot be combined with a single -Combination.'
@@ -72,7 +77,7 @@ $failure = $null
 try {
     foreach ($entry in $combinations) {
         $configuration = [ordered]@{
-            schemaVersion = 11
+            schemaVersion = 12
         }
         $runtimeParameters = @{}
         foreach ($module in $moduleCatalog) {
@@ -102,7 +107,7 @@ try {
             $invokeArguments.DeploymentManifestPath = $DeploymentManifestPath
             $invokeArguments.PackagePath = $PackagePath
         }
-        & $invoke @invokeArguments
+        & $invoke @invokeArguments -RuntimeLease $sharedRuntimeScope.Lease
         if ($LASTEXITCODE -ne 0) {
             throw "Feature-module runtime combination $($entry.Name) failed."
         }
@@ -140,3 +145,5 @@ try {
 }
 if ($failure -ne $null) { throw $failure }
 Write-Host "Feature-module runtime matrix PASS: $($combinations.Name -join ', ')"
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

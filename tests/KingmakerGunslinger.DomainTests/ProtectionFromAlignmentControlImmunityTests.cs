@@ -354,7 +354,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ProtectionFromAlignmentControlImmunityComponent.cs"));
             foreach (string token in new[] {
                 "RuleInitiatorLogicComponent<RuleApplyBuff>",
-                "evt.Blueprint", "context.SourceAbility", "context.MaybeCaster",
+                "evt.Blueprint", "context.SourceAbility", "ProtectionFromAlignmentRuntime.ResolveIncomingSource(context)",
                 "source.Descriptor.Alignment.Value", "evt.CanApply = false",
                 "ReportUnresolvedSourceOnce" })
                 Assertions.True(adapter.Contains(token),
@@ -365,6 +365,11 @@ namespace KingmakerGunslinger.DomainTests
 
             string runtime = File.ReadAllText(Path.Combine(root,
                 "ProtectionFromAlignmentRuntime.cs"));
+            Assertions.True(runtime.Contains("context.GetType() != typeof(MechanicsContext)") &&
+                runtime.Contains("context.AssociatedBlueprint is BlueprintBuff") &&
+                runtime.Contains("ReferenceEquals(context.MaybeCaster, context.MaybeOwner)") &&
+                runtime.Contains("if (parent.MaybeCaster == null) return null;"),
+                "Shared source resolution must reject native buff-clone owner fallback without walking through an actual ability execution context.");
             Assertions.True(runtime.Contains("HashSet<string>") &&
                 runtime.Contains("ReportedUnresolvedSources.Add(key)") &&
                 runtime.Contains("logger.Debug") &&

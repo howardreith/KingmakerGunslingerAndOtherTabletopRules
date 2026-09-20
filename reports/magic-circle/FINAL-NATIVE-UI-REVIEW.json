@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "Codex",
+  "ownerApproval": "Exact four exports already approved by owner; reports/magic-circle/OWNER-DECISIONS.json. This native review does not impersonate owner approval.",
+  "status": "PASS for control-ON and control-OFF native desktop UI within the stated inspection scope",
+  "evidenceDirectoryName": "20260920T0929442278836Z-disposable-magic-circle-ui",
+  "dllMvid": "ea9ac240-4984-421b-b2e1-4336fa5770c6",
+  "screens": [
+    {
+      "stage": "learning-candidate-0",
+      "file": "native-ui-000.png",
+      "sha256": "abf307c56dec60807607114499c87c4abf9d9a912f950cc510c515ea47d42ec6",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "learning-candidate-1",
+      "file": "native-ui-001.png",
+      "sha256": "0e3548a3b57ac12925d4604176ab69589c8bf0e00fe7881ecfce75a7f324787a",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "spell-description-ec63a7d4606a467f948ba03c19cfa42d",
+      "file": "native-ui-002.png",
+      "sha256": "f7e5f5445ec6d19b8b5f5841d7339d49123fc5164b97a9909c5a8b222f701e05",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "spell-preparation-ec63a7d4606a467f948ba03c19cfa42d",
+      "file": "native-ui-003.png",
+      "sha256": "820ece8d0a354ca62b8e809ca041fefb9d783b179933bb934815b8c78685bc7d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "spell-description-8d9b3a1b06c141518230c6dd8aae95ee",
+      "file": "native-ui-004.png",
+      "sha256": "d0ebef1b6064a76d245882c857329c3f22a74277ba9d482e25d269c3f4df6972",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "spell-preparation-8d9b3a1b06c141518230c6dd8aae95ee",
+      "file": "native-ui-005.png",
+      "sha256": "dd943602a9f2ee1985b8577d9c236e884dba1f62529e6257063d3307794b699e",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "spell-description-d98b1dff1952451989943907617f5b0d",
+      "file": "native-ui-006.png",
+      "sha256": "06b0c582d742a52c9b39b6f273315364b6a8c225ee0eced5d09b73e8048028d6",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "spell-preparation-d98b1dff1952451989943907617f5b0d",
+      "file": "native-ui-007.png",
+      "sha256": "70364e343277b1835fe9538bc118fd9ca1d21ee89e971791f879c746b59addf0",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "spell-description-cafa8a0681b84b00ad4f0e3ff6393c78",
+      "file": "native-ui-008.png",
+      "sha256": "0a23a9ef481f5d39e3a7ecb2cc0d641ebd1967e6e8918b4a5e86884ff610396c",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "spell-preparation-cafa8a0681b84b00ad4f0e3ff6393c78",
+      "file": "native-ui-009.png",
+      "sha256": "0b7e90845e280f89b064644a49bfe9bf91748214a49c8408259a46fb380fcc02",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-radius-Evil",
+      "file": "native-ui-010.png",
+      "sha256": "53af6ce644ff7855950e615d095433cf3952ee489954bdc83253764e4a8813d8",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "held-touch-Evil",
+      "file": "native-ui-011.png",
+      "sha256": "59abecf7a729c5e6d5fb3386a100eb5e34bba47517ca4a7caad8c8ebbbe98bd7",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-40d23af78f45430faf881a9a3259efe0",
+      "file": "native-ui-012.png",
+      "sha256": "e1bceaa02181af9141450888fe881528e2b91b3565eeee93544a8da3e7f02c00",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-description-40d23af78f45430faf881a9a3259efe0",
+      "file": "native-ui-013.png",
+      "sha256": "8d11fa5949f04b6b05adf5754afae9afdadaad348e59aafae8673c563368301d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-753de0df0b3c49a0982e37981ddee018",
+      "file": "native-ui-014.png",
+      "sha256": "e1bceaa02181af9141450888fe881528e2b91b3565eeee93544a8da3e7f02c00",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-description-753de0df0b3c49a0982e37981ddee018",
+      "file": "native-ui-015.png",
+      "sha256": "ca5766df90405565e9993a72a8af959ffa6a6105de4f0d6ae0866907764acf9b",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-radius-Good",
+      "file": "native-ui-016.png",
+      "sha256": "d73bbdc220096a19c95d7bc410e81534491874ef3dc629e9c3dae7b42fcad7cc",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "held-touch-Good",
+      "file": "native-ui-017.png",
+      "sha256": "84a56ed270c6312b9c2d6275155d0eafd4c343a1b3de03fbcab0efee88c634f4",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-b533bfe6409a457d9290dde8b18066ac",
+      "file": "native-ui-018.png",
+      "sha256": "6e0f8e7a7b879bde3cfcef25b843e42b70062d46dd2510271ead53d6b6be858e",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-description-b533bfe6409a457d9290dde8b18066ac",
+      "file": "native-ui-019.png",
+      "sha256": "3595997f359f1b87a3605a58dc21dec0440de30a04915538eb97f6bdcf01758f",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-b81680c923aa4ec59b46d12fdb5084fa",
+      "file": "native-ui-020.png",
+      "sha256": "6e0f8e7a7b879bde3cfcef25b843e42b70062d46dd2510271ead53d6b6be858e",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-description-b81680c923aa4ec59b46d12fdb5084fa",
+      "file": "native-ui-021.png",
+      "sha256": "2d92cc4ee5fe131fed20b6be2f1f170485abd33b8f8658872c3d700b14b1c334",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-radius-Law",
+      "file": "native-ui-022.png",
+      "sha256": "1d587ec051a27131ee140712b6772d471347e49034d9d81ce5b66936bb0a630f",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "held-touch-Law",
+      "file": "native-ui-023.png",
+      "sha256": "00fffafcb30df1be6b6977b5ac58ff148629c8bedd7fd6c9aac3172576ef17ef",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-ab3b489192dd40e192bc3bac47e816cb",
+      "file": "native-ui-024.png",
+      "sha256": "a98911d272fb5c23eef625694faf389806a2a1261fc9a2f2b5156b51fbe1dc0e",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-description-ab3b489192dd40e192bc3bac47e816cb",
+      "file": "native-ui-025.png",
+      "sha256": "f5a538539b157d6a0af8433e6c3f0b4a7ff8714b8c415e37367dfead2f19c727",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-b17bf64cf088447d87d1258a5c052e38",
+      "file": "native-ui-026.png",
+      "sha256": "a98911d272fb5c23eef625694faf389806a2a1261fc9a2f2b5156b51fbe1dc0e",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-description-b17bf64cf088447d87d1258a5c052e38",
+      "file": "native-ui-027.png",
+      "sha256": "b791f1a2ff206a3ecd19f4e87dea1d931f732f54fd745b8bf991768d869a4206",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-radius-Chaos",
+      "file": "native-ui-028.png",
+      "sha256": "76e398df9badb3a0a1104b9b358e913ea562857ed728bd03f35fc15ffb6a60b6",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "held-touch-Chaos",
+      "file": "native-ui-029.png",
+      "sha256": "505273b46b7aa0c9d8a49523e48bde2c7c4ce73b07ddf702b2900435c4d5be7a",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-1aae3d67cf06435a959474c4cd0b7796",
+      "file": "native-ui-030.png",
+      "sha256": "0d2134ece92db6e4e18dd1782571fba5ae7ac2e073b0d927317d9e4646856030",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-description-1aae3d67cf06435a959474c4cd0b7796",
+      "file": "native-ui-031.png",
+      "sha256": "67bc3006df9e8e0fa8c646afca3de904f545d5eafa448b120465754ab181f38e",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-1ee6f15bf4cc42f8ac4c1eb20e30f71f",
+      "file": "native-ui-032.png",
+      "sha256": "e251f338301329fdec7d068facac324d9f7e7659d4bfa3054d0b6a045d23c9d3",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "buff-description-1ee6f15bf4cc42f8ac4c1eb20e30f71f",
+      "file": "native-ui-033.png",
+      "sha256": "a916f9fd4448f05d986c275ec34bf5d556dd6c72eb62a676d92c6cfd71860156",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-scroll-row:04954b1da0964fc288e00abdcf1f82ae",
+      "file": "native-ui-034.png",
+      "sha256": "241a467ddeb7d61c632a37cd435430411e7ccccdd38d1bbbb4f2ecf846f5c8d2",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-scroll-description:04954b1da0964fc288e00abdcf1f82ae",
+      "file": "native-ui-035.png",
+      "sha256": "0d4ae6beaa4100eeb580f18cbba23016b79261ae2d6c8aa9d2160e03aa7a7fd1",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-scroll-row:f8ef52b288bc4c369c51a1fa754db605",
+      "file": "native-ui-036.png",
+      "sha256": "348ead85331053700ea6a5e49c7489aedacc2e01c76a44383efa2a0cc8ed0d65",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-scroll-description:f8ef52b288bc4c369c51a1fa754db605",
+      "file": "native-ui-037.png",
+      "sha256": "e2b0191c0e4ab701ea69d3ca8a1746952ad03df6d4435f3cd9da931e4fcf256f",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-scroll-row:c6342ebc91c54c82a43f985aa8e225bd",
+      "file": "native-ui-038.png",
+      "sha256": "55ed1828475c3173c6b15106d2a3f91b66dfa79fb0ae2d97672114b476dbe436",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-scroll-description:c6342ebc91c54c82a43f985aa8e225bd",
+      "file": "native-ui-039.png",
+      "sha256": "9d5d36a8870f9a3d7000aaa92b94c43608c8f8f2c27de92ea2090ecebc6b3c05",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-scroll-row:4c7d27edc91246f5b3557ca480af941c",
+      "file": "native-ui-040.png",
+      "sha256": "5561f708b4e811df51ac4500bc7573faac3054ba3cac4b3fd10f3c0f0fd27fe1",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "stage": "native-scroll-description:4c7d27edc91246f5b3557ca480af941c",
+      "file": "native-ui-041.png",
+      "sha256": "d7156912637dd598e563ac2d25e68e3d01f7dcbaaea1c57f0bc5036e31844249",
+      "width": 1280,
+      "height": 720
+    }
+  ],
+  "visualInspection": "All native-ui-000.png through native-ui-041.png inspected directly with view_image. Native screenshots, not sprite sheets, composites, OCR, or mechanical evidence.",
+  "findings": [
+    "Four separate level-three learning and preparation entries; Evil gold dome, Good purple canopy, Law teal spiral, Chaos architectural ward retain distinct approved forms.",
+    "All four spell descriptions, held-touch menus, timed carrier and proximity recipient rows/tooltips, and scroll inventory/tooltips use their exact intended painting.",
+    "Four native targeting rings visible over real terrain. Structured native radius assertions separately establish diameter 6.096 metres.",
+    "Carrier rows show 1h 20m for this CL8 fixture. Recipient rows show native Permanent with explicit Within Circle name and proximity/removal description.",
+    "Carrier/recipient descriptions state ordinary typed defenses and new matching-controller protection; existing control remains active. Native target summary says burst; authored description explains moving emanation.",
+    "Native scroll tooltips retain charge 1 and caster level 5. No global UI/icon patch or extra configuration panel."
+  ],
+  "scope": "Desktop 1280x720 native UI. Structured rules, resources, learning and lifecycle results are recorded separately; screenshots alone do not prove those outcomes.",
+  "controlOffReview": {
+    "evidenceDirectoryName": "20260920T0936571829178Z-disposable-magic-circle-ui",
+    "nativeAssertions": 62,
+    "screens": [
+      {
+        "stage": "buff-description-40d23af78f45430faf881a9a3259efe0",
+        "file": "native-ui-013.png",
+        "sha256": "b7295587dc952d0aa8d603a49cb6dc9ed7ddfbfdc2f86da90c83e8aad9ab328e",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "buff-description-753de0df0b3c49a0982e37981ddee018",
+        "file": "native-ui-015.png",
+        "sha256": "e6da5927a9df169c8ccaa58855d67e30e1c36c543c281edf2cf022701b71f3a0",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "buff-description-b533bfe6409a457d9290dde8b18066ac",
+        "file": "native-ui-019.png",
+        "sha256": "43b4ce37cf81f6e992f406e0ebf19405adea41c23e733b503a16f6380ae40ddd",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "buff-description-b81680c923aa4ec59b46d12fdb5084fa",
+        "file": "native-ui-021.png",
+        "sha256": "7049de842de99f7010af562af466142f03eb0c5b3b2c6d8bca6e6d4851ec7f2c",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "buff-description-ab3b489192dd40e192bc3bac47e816cb",
+        "file": "native-ui-025.png",
+        "sha256": "18a06a3b27681e9024869fe0732d17d20db87b5d91a233249d6dc26f7a122583",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "buff-description-b17bf64cf088447d87d1258a5c052e38",
+        "file": "native-ui-027.png",
+        "sha256": "66e468a4586658df4bd2e3885b9c1d0c0a8d0bc08b3fb84b0e97b61d04a095b5",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "buff-description-1aae3d67cf06435a959474c4cd0b7796",
+        "file": "native-ui-031.png",
+        "sha256": "4df52d65fafd349c0a01dda334f3bcf9d2d79209ac2e4bc3494a502d14a57547",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "buff-description-1ee6f15bf4cc42f8ac4c1eb20e30f71f",
+        "file": "native-ui-033.png",
+        "sha256": "f98325c8957e5b5dc3e3c0a4eea805941e767828a256f95aa64583a40041d867",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "scope": "All eight carrier/recipient tooltips directly viewed. All twenty visible consumer descriptions additionally pass actual native UI text/identity assertions; unchanged role placement and pixels are inspected in the complete control-ON set.",
+    "finding": "Every inspected tooltip retains +2 deflection and resistance defenses and explicitly states no added mental-control protection in the current startup configuration. No control-blocking claim remains enabled in these tooltips."
+  }
+}

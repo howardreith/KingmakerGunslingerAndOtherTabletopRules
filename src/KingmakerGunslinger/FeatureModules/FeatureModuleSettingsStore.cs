@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.FeatureModules
 {
     internal static class FeatureModuleSettingsStore
     {
-        internal const int CurrentSchemaVersion = 11;
+        internal const int CurrentSchemaVersion = 12;
         internal const string FileName = "FeatureModules.json";
 
         internal static FeatureModuleSettingsState Load(string modPath,
@@ -56,13 +56,15 @@ namespace KingmakerGunslinger.FeatureModules
                     FeatureModuleConfiguration.ElementalRacesId);
                 bool teleportationSpells = ReadDefaultOn(root,
                     FeatureModuleConfiguration.TeleportationSpellsId);
+                bool magicCircleSpells = ReadDefaultOn(root,
+                    FeatureModuleConfiguration.MagicCircleSpellsId);
                 var state = new FeatureModuleSettingsState(
                     new FeatureModuleConfiguration(gunslinger, acadamae,
                         shieldOther, expandedSummoning, elvenBranchedSpears,
                         easternWeapons, brownFurTransmuter, urbanBarbarian,
                         bodyguardFeats,
                         protectionFromAlignmentControlImmunity,
-                        elementalRaces, teleportationSpells), path,
+                        elementalRaces, teleportationSpells, magicCircleSpells), path,
                     schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
                         "settings", false);
                 if (schema < CurrentSchemaVersion) Save(state);
@@ -123,7 +125,9 @@ namespace KingmakerGunslinger.FeatureModules
                 [FeatureModuleConfiguration.ElementalRacesId] =
                     state.Pending.ElementalRaces,
                 [FeatureModuleConfiguration.TeleportationSpellsId] =
-                    state.Pending.TeleportationSpells
+                    state.Pending.TeleportationSpells,
+                [FeatureModuleConfiguration.MagicCircleSpellsId] =
+                    state.Pending.MagicCircleSpells
             };
             string temporary = state.Path + ".tmp";
             string backup = state.Path + ".previous";

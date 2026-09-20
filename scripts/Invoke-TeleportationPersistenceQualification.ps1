@@ -15,6 +15,10 @@ $settingsPath = Join-Path $modsRoot 'KingmakerGunslinger\FeatureModules.json'
 $scenario = 'disposable-teleportation-persistence'
 if (Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) { throw 'A persistence transaction requires no existing game process.' }
 if (-not $PSCmdlet.ShouldProcess('KMG_AUTOMATION_WORKING and unique transaction-owned saves', 'Run four fresh Steam processes with protected pre-existing saves and exact settings restoration')) { return }
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Invoke-TeleportationPersistenceQualification.ps1'
+try {
+Assert-KmgNotRunning
 $ConfirmPreference = 'None'
 $tx = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '_' + [Guid]::NewGuid().ToString('N')
 $transactionDirectory = Join-Path $evidenceRoot ('teleportation-persistence-' + $tx)
@@ -98,7 +102,7 @@ try {
         $beforeRuns = @(Get-ChildItem -LiteralPath $evidenceRoot -Directory | ForEach-Object FullName)
         $phaseFailure = $null; $runDirectory = $null
         try {
-            & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $scenario -ExpectedVersion $ExpectedVersion `
+            & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -RuntimeLease $sharedRuntimeScope.Lease -Scenario $scenario -ExpectedVersion $ExpectedVersion `
                 -SaveName $inputSave.name -Parameters @{ phase = $phase; planPath = $planPath } -TimeoutSeconds 420 `
                 -CompletionTimeoutSeconds 240 -ExitAfterCompletion:$true -AllowDirtyGit:$AllowDirtyGit -Confirm:$false `
                 -ReuseInstalledArtifact -DeploymentManifestPath $DeploymentManifestPath -PackagePath $PackagePath
@@ -166,3 +170,5 @@ finally {
 }
 if ($null -ne $failure) { throw $failure }
 Write-Host "PASS fresh-process teleportation persistence A/B/C/D; evidence=$transactionDirectory"
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

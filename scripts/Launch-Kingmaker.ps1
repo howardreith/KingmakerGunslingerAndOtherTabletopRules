@@ -4,7 +4,8 @@ param(
     [string]$GameDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     [string]$RecordPath,
     [int]$SteamAppId = 640820,
-    [string]$RuntimeRequestPath
+    [string]$RuntimeRequestPath,
+    $RuntimeLease
 )
 
 Set-StrictMode -Version Latest
@@ -14,6 +15,10 @@ $ErrorActionPreference = 'Stop'
 
 if (-not (Test-Path -LiteralPath $SteamPath -PathType Leaf)) { throw "Steam executable is missing: $SteamPath" }
 if (-not (Test-Path -LiteralPath $GameDirectory -PathType Container)) { throw "Game directory is missing: $GameDirectory" }
+$launchScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose 'standalone Steam launch'
+$launch = $null
+try {
+Assert-KmgNotRunning
 $launch = Start-KmgSteamKingmaker -SteamPath $SteamPath -AppId $SteamAppId `
     -RequestPath $RuntimeRequestPath
 $record = [ordered]@{
@@ -29,3 +34,18 @@ if ($RecordPath) {
     $record | ConvertTo-Json | Set-Content -LiteralPath $RecordPath -Encoding UTF8
 }
 $record | ConvertTo-Json
+
+} finally {
+    if ($launchScope.Acquired -and $null -ne $launch) {
+        # This entry point only starts the game: it owns no settings override or
+        # deployment to restore. Once the exact process exists, ordinary game-
+        # running guards protect it. Guarded qualification callers retain their
+        # inherited parent lease through their own exit/restoration boundary.
+        Assert-KmgRuntimeLease $launchScope.Lease
+        $launchScope.Lease.State.status = 'Completed'
+        $launchScope.Lease.State.reason = 'Steam launch handed to the identified game process; no live files changed.'
+        Write-KmgRuntimeLeaseState $launchScope.Lease
+        $launchScope.Lease.Stream.Dispose()
+        Remove-KmgCompatibilityOwnedLock $launchScope.Lease.LockPath $launchScope.Lease.RunId
+    } else { Exit-KmgRuntimeLease $launchScope }
+}

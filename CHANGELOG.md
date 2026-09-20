@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.0.134-magic-circle-alignment-spells
+
+- Add Magic Circle against Evil, Good, Law and Chaos: level-3 touch spells with
+  source-owned moving ten-foot protection, native typed defenses and shared
+  Protection control immunity for new qualifying applications.
+- Add approved original alignment artwork, class-list publication, scrolls and
+  ordinary vendor acquisition, stable save hydration and exact Oracle Favored
+  Class selection support.
+- Bind disposable persistence cleanup to its exact preparation before mutation;
+  own settings overrides and guarded runtime completion/recovery.
+- Integrate the 0.0.133 Word of Recall repair without changing its selection or
+  owned-save cleanup contracts. Deferred tabletop mechanics remain absent.
+- Owner authorized merge, push and a full public release. Qualification and
+  existing profile/UI limits are recorded in the release notes.
+
 ## 0.0.133-word-of-recall-favored-class
 
 - Repaired the Favored Class Oracle bonus-spell pick gate for Word of

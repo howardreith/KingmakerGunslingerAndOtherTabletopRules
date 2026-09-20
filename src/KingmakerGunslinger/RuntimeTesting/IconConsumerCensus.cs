@@ -60,8 +60,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static BlueprintManifest _manifest;
 
         private static readonly string[] CoveragePrefixes = {
-            "KMG.ElementalRaces.", "KMG.Spells.Teleport.",
-            "KMG.Spells.GreaterTeleport.", "KMG.Spells.WordOfRecall."
+            "KMG.ElementalRaces.",
+            "KMG.Spells.Teleport.",
+            "KMG.Spells.GreaterTeleport.",
+            "KMG.Spells.WordOfRecall.",
+            "KMG.Spells.MagicCircle.",
         };
         private static readonly string[] AdditionalSymbols = {
             "KMG.Feats.FirearmWeaponFocus",

@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "scope": "Evil lifetime and dispel checkpoint; incomplete feature candidate, not release acceptance",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "07db7d7de73b65b887f9a32f0954ca7b03a594a9",
+  "sourceStateSha256": "591b3708a15245aba16c615997637eabc2255677ccca4d491d08b47360b71c38",
+  "version": "0.0.132",
+  "packageSha256": "1bbdaa96d8115d2438d230656776f438e06875fd379caaf268cc86250f122017",
+  "dllSha256": "6ce9236b856529416aa64e081912d9b08cfa5d802a6d035b7a0069db85dccd3b",
+  "dllMvid": "af77bdbc-2ee4-445b-9b84-bd9a13a75863",
+  "nativeAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "validation": "PASS",
+  "domainTests": {
+    "passed": 1657,
+    "failed": 0,
+    "settingsCombinations": 8192
+  },
+  "cleanRelease": "PASS",
+  "packageGates": "PASS",
+  "buildLog": "artifacts-magic-circle-lifetime-build-fourth.log",
+  "nativeRun": "20260920T0014148181378Z-disposable-magic-circle-evil",
+  "launch": "guarded Steam App ID 640820",
+  "save": "KMG_AUTOMATION_WORKING",
+  "saveWrites": false,
+  "nativeStatus": "PASS",
+  "assertions": [
+    {
+      "name": "circle-native-slot-debit",
+      "status": "PASS",
+      "observed": "7->6",
+      "evidence": "native UnitUseAbility and execution process"
+    },
+    {
+      "name": "circle-original-caster-context",
+      "status": "PASS",
+      "observed": "Both contexts retain the exact original caster on another bearer",
+      "evidence": "carrier and area native MechanicsContext; bearer owns the carrier"
+    },
+    {
+      "name": "circle-original-duration",
+      "status": "PASS",
+      "observed": "4800",
+      "evidence": "native ContextActionApplyBuff duration from original caster rank"
+    },
+    {
+      "name": "circle-initial-membership",
+      "status": "PASS",
+      "observed": "1/1",
+      "evidence": "native AbilityAreaEffectBuff entry and exact SourceAreaEffectId"
+    },
+    {
+      "name": "circle-non-ally-membership",
+      "status": "PASS",
+      "observed": "enemy=True",
+      "evidence": "request-local hostile faction; no changes to native factions"
+    },
+    {
+      "name": "circle-native-defensive-outcomes",
+      "status": "PASS",
+      "observed": "ac=10->12;will=0->2",
+      "evidence": "actual RuleAttackWithWeapon/RuleAttackRoll.TargetAC and RuleSavingThrow.StatValue"
+    },
+    {
+      "name": "circle-new-matching-control",
+      "status": "PASS",
+      "observed": "buff=False;canApply=False",
+      "evidence": "real native terminal-buff application, differing caster/bearer/recipient/controller alignments"
+    },
+    {
+      "name": "circle-wrong-alignment-control-positive",
+      "status": "PASS",
+      "observed": "buff=True",
+      "evidence": "same native delivery and recipient; only controller alignment differs"
+    },
+    {
+      "name": "circle-exit",
+      "status": "PASS",
+      "observed": "0",
+      "evidence": "native membership exit"
+    },
+    {
+      "name": "circle-unprotected-control-positive",
+      "status": "PASS",
+      "observed": "buff=True",
+      "evidence": "same evil controller after native area exit"
+    },
+    {
+      "name": "circle-existing-control-retained",
+      "status": "PASS",
+      "observed": "active=True",
+      "evidence": "entry neither removes nor suppresses previously applied domination"
+    },
+    {
+      "name": "circle-native-radius-boundary",
+      "status": "PASS",
+      "observed": "radius=3.048;corpulence=0.5;inside=True;outside=True",
+      "evidence": "ScriptZoneCylinder.Contains actual membership; line of effect remains native"
+    },
+    {
+      "name": "circle-follows-bearer",
+      "status": "PASS",
+      "observed": "followed=True",
+      "evidence": "caster stays stationary; native attached area moves with the touched bearer"
+    },
+    {
+      "name": "circle-same-caster-overlap",
+      "status": "PASS",
+      "observed": "2",
+      "evidence": "second native cast; Stack identities retain exact area ownership"
+    },
+    {
+      "name": "circle-overlap-typed-nonstacking",
+      "status": "PASS",
+      "observed": "ac=12;will=2",
+      "evidence": "native typed-bonus rules with two distinct area contributions"
+    },
+    {
+      "name": "circle-owned-cleanup",
+      "status": "PASS",
+      "observed": "1",
+      "evidence": "removing one carrier ends only its exact native area"
+    },
+    {
+      "name": "circle-independent-protection-survives",
+      "status": "PASS",
+      "observed": "circleCount=0;individual=True",
+      "evidence": "both carriers removed; no blueprint-wide recipient removal"
+    },
+    {
+      "name": "circle-recipient-native-dispel",
+      "status": "PASS",
+      "observed": "rules=0;contributions=2",
+      "evidence": "actual native targeted Dispel Magic cast; native IsNotDispelable gate; one spent slot"
+    },
+    {
+      "name": "circle-native-carrier-dispel-ownership",
+      "status": "PASS",
+      "observed": "attempts=1;successfulRules=1;carriers=1",
+      "evidence": "bounded real native Dispel Magic casts and unmodified RuleDispelMagic dice; exact buff/area ownership"
+    },
+    {
+      "name": "circle-native-area-dispel-carrier-cleanup",
+      "status": "PASS",
+      "observed": "attempts=1;successfulRules=1;carrierActive=False;areaEnded=True",
+      "evidence": "actual native point Dispel Magic; exact parent/area link; carrier cannot reconstruct a dispelled area"
+    },
+    {
+      "name": "circle-extend-native-context-and-cost",
+      "status": "PASS",
+      "observed": "seconds=9600;slots=5->4",
+      "evidence": "native metamagic AbilityData/UnitUseAbility, original caster and different area owner"
+    },
+    {
+      "name": "circle-faction-change-bearer",
+      "status": "PASS",
+      "observed": "changed=True;count=1",
+      "evidence": "native SwitchFactions(resetAttackFactions=true); no faction-sensitive coverage filter"
+    },
+    {
+      "name": "circle-faction-change-recipient",
+      "status": "PASS",
+      "observed": "changed=True;count=1",
+      "evidence": "native SwitchFactions(resetAttackFactions=true); no faction-sensitive coverage filter"
+    },
+    {
+      "name": "circle-unconscious-caster",
+      "status": "PASS",
+      "observed": "conscious=False;dead=False",
+      "evidence": "native UnitLifeController resolves negative HP; no class-aura shutdown component"
+    },
+    {
+      "name": "circle-unconscious-bearer",
+      "status": "PASS",
+      "observed": "conscious=False;dead=False",
+      "evidence": "native UnitLifeController resolves negative HP; no class-aura shutdown component"
+    },
+    {
+      "name": "circle-native-original-expiration",
+      "status": "PASS",
+      "observed": "before=True;after=True",
+      "evidence": "original extended EndTime; native BuffCollection.Tick and area exit/destruction; clock restored"
+    },
+    {
+      "name": "circle-original-caster-death",
+      "status": "PASS",
+      "observed": "damage=10130;dead=True;finallyDead=True;areaEnded=False",
+      "evidence": "actual native lethal damage and life controller; no source substitution or refreshed timer"
+    },
+    {
+      "name": "circle-dead-caster-carrier-cleanup",
+      "status": "PASS",
+      "observed": "ended=True;recipientCount=0",
+      "evidence": "native AddAreaEffect deactivation retains ownership after caster death"
+    },
+    {
+      "name": "circle-request-local-cleanup",
+      "status": "PASS",
+      "observed": "stage=complete;writeObserved=False",
+      "evidence": "guarded request owns only disposable actors and areas; no persistence operation"
+    }
+  ],
+  "nativeDispelObservation": "point dispel: roll=12;casterLevel=8;DC=19;Success=true",
+  "profile": "Existing installed profile with Call of the Wild; final optional-profile matrix still pending",
+  "settingsSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+  "gameVersionReported": "UNKNOWN",
+  "artwork": "Provisional Protection sprites; four original exports awaiting owner approval and native UI acceptance",
+  "limitations": [
+    "Save/load, module-OFF hydration, transitions, teleport, permanent removal and bearer-death decision pending",
+    "Remaining alignment variants, full catalog/native control casts, hostile touch, acquisition and class-learning qualification pending",
+    "No release readiness, uninstall safety, or owner visual approval claimed"
+  ]
+}

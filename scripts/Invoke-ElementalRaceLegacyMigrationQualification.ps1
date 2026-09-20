@@ -61,6 +61,10 @@ if (-not $PSCmdlet.ShouldProcess($SaveName,
     return
 }
 
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Invoke-ElementalRaceLegacyMigrationQualification.ps1'
+try {
+Assert-KmgNotRunning
 $ConfirmPreference = 'None'
 $WhatIfPreference = $false
 $originalSettingsExisted = Test-Path -LiteralPath $settings -PathType Leaf
@@ -155,7 +159,7 @@ function Invoke-QualifiedPhase {
     else {
         $arguments.ReuseInstalledArtifact = $true
     }
-    & $invoke @arguments
+    & $invoke @arguments -RuntimeLease $sharedRuntimeScope.Lease
     if ($LASTEXITCODE -ne 0) {
         throw "Guarded legacy migration phase failed: $Scenario"
     }
@@ -210,7 +214,7 @@ function Invoke-QualifiedPhase {
 
 try {
     Set-ElementalRacesEnabled
-    $legacyDeploymentManifestPath = & $deployLegacy `
+    $legacyDeploymentManifestPath = & $deployLegacy -RuntimeLease $sharedRuntimeScope.Lease `
         -PackagePath $legacy -Confirm:$false -PassThru
     if ([string]::IsNullOrWhiteSpace($legacyDeploymentManifestPath)) {
         throw 'Pinned 0.0.114 deployment did not return its evidence manifest.'
@@ -220,7 +224,7 @@ try {
         -DeploymentManifest $legacyDeploymentManifestPath -Package $legacy `
         -UseQualifiedLegacy
 
-    $migrationDeploymentManifestPath = & $deployCurrent `
+    $migrationDeploymentManifestPath = & $deployCurrent -RuntimeLease $sharedRuntimeScope.Lease `
         -PackagePath $current.PackagePath -Confirm:$false -PassThru
     if ([string]::IsNullOrWhiteSpace($migrationDeploymentManifestPath)) {
         throw 'Current migration build deployment did not return its evidence manifest.'
@@ -241,7 +245,7 @@ finally {
     try {
         Wait-ForGuardedKingmakerExit 'final restoration'
         Restore-OriginalFeatureState
-        $restoredDeploymentManifestPath = & $deployCurrent `
+        $restoredDeploymentManifestPath = & $deployCurrent -RuntimeLease $sharedRuntimeScope.Lease `
             -PackagePath $current.PackagePath -Confirm:$false -PassThru
         if ([string]::IsNullOrWhiteSpace($restoredDeploymentManifestPath)) {
             throw 'Final current-build restoration did not return a deployment manifest.'
@@ -306,3 +310,5 @@ if ($failure -ne $null) { throw $failure }
 Write-Host ('Elemental Race 0.0.114-to-{0} migration PASS; phases={1}; ' +
     'current artifact and exact feature settings restored.' -f
     $ExpectedVersion, $phases.Count)
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

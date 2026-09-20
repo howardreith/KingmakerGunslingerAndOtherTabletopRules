@@ -13,6 +13,9 @@ INFORMATIONAL_VERSION = "0.0.116-midgame-firearms-and-protection"
 # Current deterministic suite includes contextual teleportation; historical release evidence below remains 1398.
 DETERMINISTIC_TEST_COUNT = 1490
 STATIC_KEY = "midgameFirearms116"
+# Later feature gates may supply an exact separately validated source digest.
+# Standalone 0.0.116 validation retains its original wording-only freeze.
+PROTECTION_CONTROL_SOURCE_SHA256 = "4496f413b51cb9e9df59b0827702fe643107697baa6815bcbe4f6f6cd82f3e9e"
 
 
 def require_tokens(path: Path, *tokens: str) -> str:
@@ -187,7 +190,7 @@ def validate_content_contract(root: Path) -> None:
         if path.name != "ProtectionFromAlignmentDescriptions.cs":
             protection_hash.update(path.relative_to(root).as_posix().encode() + b"\0" +
                 path.read_bytes().replace(b"\r\n", b"\n"))
-    if protection_hash.hexdigest() != "4496f413b51cb9e9df59b0827702fe643107697baa6815bcbe4f6f6cd82f3e9e":
+    if protection_hash.hexdigest() != PROTECTION_CONTROL_SOURCE_SHA256:
         raise AssertionError("Protection control/publication source changed in a wording-only patch")
 
     require_tokens(root / "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.MidgameFirearms.cs",

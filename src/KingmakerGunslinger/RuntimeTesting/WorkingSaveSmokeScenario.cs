@@ -316,6 +316,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             get { return _expectedWorkingSaveRoutineCount == 1; }
         }
         internal object WorkingDescriptor { get { return _workingDescriptor; } }
+        internal SaveCatalogDescriptorEvidence WorkingIdentity { get { return DescriptorEvidence(_workingDescriptor, "working"); } }
         internal bool SelectionLoadObservation { get { return _observeSelectionLoadAction; } }
         internal bool ReceiverBoundObservation { get { return _observeReceiverBoundAction; } }
         internal bool AutonomousReceiverBoundAction

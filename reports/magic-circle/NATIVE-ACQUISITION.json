@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "scope": "Native scroll acquisition and spell publication checkpoint; full feature acceptance still pending",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "54325aa19d9cc5a4a1ab5dac3dc7a13a305df095",
+  "sourceWasDirty": true,
+  "sourceStateSha256": "03295f12f1ffd18797181e1b68fb5cbb665cb111aefa61840094e6cc8885a952",
+  "artifact": {
+    "schemaVersion": 1,
+    "semanticVersion": "0.0.132",
+    "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+    "informationalVersion": "0.0.132-icon-art-overhaul",
+    "gitCommit": "54325aa19d9cc5a4a1ab5dac3dc7a13a305df095",
+    "moduleVersionId": "ddc42908-b751-49f1-ad3e-401d6eefa77d",
+    "loadedModuleSha256": "3e2cd37e4625cfb4fc5100e7c8568574e2a437a70fb40d7c7586b73aa5646499"
+  },
+  "packageSha256": "b66ae44105b03a277bfb15023e8a502cd9f3fb3eb49bf3f6e00bedb18194dd9f",
+  "checks": {
+    "repositoryValidation": "PASS",
+    "fullCleanDomainSuite": {
+      "passed": 1657,
+      "failed": 0,
+      "settingsCombinations": 8192
+    },
+    "cleanRelease": "PASS",
+    "strictPackage": "PASS",
+    "buildLog": "artifacts-magic-circle-acquisition-build.log"
+  },
+  "native": {
+    "evidenceDirectoryName": "20260920T0312194897210Z-disposable-magic-circle-evil",
+    "runId": "20260920T0312195053964Z-882b2a4cfbd443f99eb5359760ad12b1",
+    "status": "PASS",
+    "assertionCount": 107,
+    "acquisitionAssertions": 30,
+    "regressionAssertions": 77,
+    "runtimeResultSha256": "fd06febf3fc46b478903ed70419550a715f2888cb8be3b9e3242515f82628379",
+    "steamAppId": 640820,
+    "save": "KMG_AUTOMATION_WORKING",
+    "saveWriteObserved": false,
+    "gameVersion": "UNKNOWN",
+    "settings": "All thirteen ON; shared control enhancement ON",
+    "profile": "Installed all-loadable profile with Call of the Wild 1.14.4c-2.1, Races Unleashed 1.0.11, Tweak or Treat 1.1.0 and Favored Class 1.3.1; final optional-absent qualification pending",
+    "assertions": [
+      {
+        "name": "circle-publication-ClericSpellList",
+        "expected": "exact legitimate level-three variants after repeated publication and rollback",
+        "observed": "ClericSpellList",
+        "status": "PASS",
+        "evidence": "actual final native class list; duplicate-safe secondary publisher owns no existing entries"
+      },
+      {
+        "name": "circle-publication-WizardSpellList",
+        "expected": "exact legitimate level-three variants after repeated publication and rollback",
+        "observed": "WizardSpellList",
+        "status": "PASS",
+        "evidence": "actual final native class list; duplicate-safe secondary publisher owns no existing entries"
+      },
+      {
+        "name": "circle-publication-InquisitorSpellList",
+        "expected": "exact legitimate level-three variants after repeated publication and rollback",
+        "observed": "InquisitorSpellList",
+        "status": "PASS",
+        "evidence": "actual final native class list; duplicate-safe secondary publisher owns no existing entries"
+      },
+      {
+        "name": "circle-publication-PaladinSpellList",
+        "expected": "exact legitimate level-three variants after repeated publication and rollback",
+        "observed": "PaladinSpellList",
+        "status": "PASS",
+        "evidence": "actual final native class list; duplicate-safe secondary publisher owns no existing entries"
+      },
+      {
+        "name": "circle-publication-native-ownership",
+        "expected": "cache invalidation/idempotence; foreign replacement and component survive rollback",
+        "observed": "cache=True;once=True",
+        "status": "PASS",
+        "evidence": "production publication on unregistered native blueprint fixtures; no foreign library object is replaced"
+      },
+      {
+        "name": "circle-market-finite-stock",
+        "expected": "five of each canonical scroll",
+        "observed": "5,5,5,5",
+        "status": "PASS",
+        "evidence": "native shared-table generation and actual BeginTrading migration callback"
+      },
+      {
+        "name": "circle-market-purchase-Evil",
+        "expected": "two scrolls at native price; remaining finite stock three",
+        "observed": "unitPrice=375;gold=20000->19250",
+        "status": "PASS",
+        "evidence": "actual VendorLogic.AddForBuy/Deal; no direct grant substituted for purchase"
+      },
+      {
+        "name": "circle-market-purchase-Good",
+        "expected": "two scrolls at native price; remaining finite stock three",
+        "observed": "unitPrice=375;gold=19250->18500",
+        "status": "PASS",
+        "evidence": "actual VendorLogic.AddForBuy/Deal; no direct grant substituted for purchase"
+      },
+      {
+        "name": "circle-market-purchase-Law",
+        "expected": "two scrolls at native price; remaining finite stock three",
+        "observed": "unitPrice=375;gold=18500->17750",
+        "status": "PASS",
+        "evidence": "actual VendorLogic.AddForBuy/Deal; no direct grant substituted for purchase"
+      },
+      {
+        "name": "circle-market-purchase-Chaos",
+        "expected": "two scrolls at native price; remaining finite stock three",
+        "observed": "unitPrice=375;gold=17750->17000",
+        "status": "PASS",
+        "evidence": "actual VendorLogic.AddForBuy/Deal; no direct grant substituted for purchase"
+      },
+      {
+        "name": "circle-market-partial-no-refill",
+        "expected": "repeat visits preserve three remaining",
+        "observed": "3,3,3,3",
+        "status": "PASS",
+        "evidence": "actual migration hook on a recorded shared-table grant"
+      },
+      {
+        "name": "circle-scribe-Evil",
+        "expected": "one exact level-three spell learned; one scroll consumed; no spontaneous copying",
+        "observed": "known=0->1",
+        "status": "PASS",
+        "evidence": "native CanCopy/DoCopy/RemoveItem inventory action boundaries and canonical CopyScroll association"
+      },
+      {
+        "name": "circle-scroll-native-cast-Evil",
+        "expected": "one scroll, no spellbook debit, CL5 and original 3000-second duration",
+        "observed": "used=True;cl=5;seconds=3000",
+        "status": "PASS",
+        "evidence": "public ItemEntity.TryUseFromInventory uses native held-touch delivery, RuleCastSpell and source-item Spend exactly once"
+      },
+      {
+        "name": "circle-scroll-refresh-free-Evil",
+        "expected": "entry/re-entry costs nothing and retains original deadline",
+        "observed": "deadline=493814140000",
+        "status": "PASS",
+        "evidence": "native area membership after the one-shot source item was consumed"
+      },
+      {
+        "name": "circle-prepared-cast-Evil",
+        "expected": "copied spell casts from one ordinary preparation",
+        "observed": "ready=1->0",
+        "status": "PASS",
+        "evidence": "native Memorize/Rest/UnitUseAbility; purchased, copied, prepared and cast without granting the spell directly"
+      },
+      {
+        "name": "circle-scribe-Good",
+        "expected": "one exact level-three spell learned; one scroll consumed; no spontaneous copying",
+        "observed": "known=1->2",
+        "status": "PASS",
+        "evidence": "native CanCopy/DoCopy/RemoveItem inventory action boundaries and canonical CopyScroll association"
+      },
+      {
+        "name": "circle-scroll-native-cast-Good",
+        "expected": "one scroll, no spellbook debit, CL5 and original 3000-second duration",
+        "observed": "used=True;cl=5;seconds=3000",
+        "status": "PASS",
+        "evidence": "public ItemEntity.TryUseFromInventory uses native held-touch delivery, RuleCastSpell and source-item Spend exactly once"
+      },
+      {
+        "name": "circle-scroll-refresh-free-Good",
+        "expected": "entry/re-entry costs nothing and retains original deadline",
+        "observed": "deadline=493814140000",
+        "status": "PASS",
+        "evidence": "native area membership after the one-shot source item was consumed"
+      },
+      {
+        "name": "circle-prepared-cast-Good",
+        "expected": "copied spell casts from one ordinary preparation",
+        "observed": "ready=1->0",
+        "status": "PASS",
+        "evidence": "native Memorize/Rest/UnitUseAbility; purchased, copied, prepared and cast without granting the spell directly"
+      },
+      {
+        "name": "circle-scribe-Law",
+        "expected": "one exact level-three spell learned; one scroll consumed; no spontaneous copying",
+        "observed": "known=2->3",
+        "status": "PASS",
+        "evidence": "native CanCopy/DoCopy/RemoveItem inventory action boundaries and canonical CopyScroll association"
+      },
+      {
+        "name": "circle-scroll-native-cast-Law",
+        "expected": "one scroll, no spellbook debit, CL5 and original 3000-second duration",
+        "observed": "used=True;cl=5;seconds=3000",
+        "status": "PASS",
+        "evidence": "public ItemEntity.TryUseFromInventory uses native held-touch delivery, RuleCastSpell and source-item Spend exactly once"
+      },
+      {
+        "name": "circle-scroll-refresh-free-Law",
+        "expected": "entry/re-entry costs nothing and retains original deadline",
+        "observed": "deadline=493814140000",
+        "status": "PASS",
+        "evidence": "native area membership after the one-shot source item was consumed"
+      },
+      {
+        "name": "circle-prepared-cast-Law",
+        "expected": "copied spell casts from one ordinary preparation",
+        "observed": "ready=1->0",
+        "status": "PASS",
+        "evidence": "native Memorize/Rest/UnitUseAbility; purchased, copied, prepared and cast without granting the spell directly"
+      },
+      {
+        "name": "circle-scribe-Chaos",
+        "expected": "one exact level-three spell learned; one scroll consumed; no spontaneous copying",
+        "observed": "known=3->4",
+        "status": "PASS",
+        "evidence": "native CanCopy/DoCopy/RemoveItem inventory action boundaries and canonical CopyScroll association"
+      },
+      {
+        "name": "circle-scroll-native-cast-Chaos",
+        "expected": "one scroll, no spellbook debit, CL5 and original 3000-second duration",
+        "observed": "used=True;cl=5;seconds=3000",
+        "status": "PASS",
+        "evidence": "public ItemEntity.TryUseFromInventory uses native held-touch delivery, RuleCastSpell and source-item Spend exactly once"
+      },
+      {
+        "name": "circle-scroll-refresh-free-Chaos",
+        "expected": "entry/re-entry costs nothing and retains original deadline",
+        "observed": "deadline=493814140000",
+        "status": "PASS",
+        "evidence": "native area membership after the one-shot source item was consumed"
+      },
+      {
+        "name": "circle-prepared-cast-Chaos",
+        "expected": "copied spell casts from one ordinary preparation",
+        "observed": "ready=1->0",
+        "status": "PASS",
+        "evidence": "native Memorize/Rest/UnitUseAbility; purchased, copied, prepared and cast without granting the spell directly"
+      },
+      {
+        "name": "circle-specialist-native-eligibility",
+        "expected": "four known circles once each in Abjuration favorite; Evocation refused",
+        "observed": "special=4",
+        "status": "PASS",
+        "evidence": "actual native specialization feature, spellbook PostLoad callback and slot eligibility; fresh-load stale-cache case remains separate"
+      },
+      {
+        "name": "circle-market-bought-out-no-refill",
+        "expected": "all four stocks remain empty after native buyout and revisit",
+        "observed": "0,0,0,0",
+        "status": "PASS",
+        "evidence": "finite stock and saved-marker production logic; disk save/load is a separate guarded persistence scenario"
+      },
+      {
+        "name": "circle-acquisition-exact-cleanup",
+        "expected": "original inventory, money, stock object and grant marker",
+        "observed": "money=4",
+        "status": "PASS",
+        "evidence": "synchronous request-only fixture; no save write or campaign merchant mutation"
+      }
+    ]
+  },
+  "fixtureIsolation": [
+    "Native shared vendor tables were generated in a request-owned native SharedVendorTables instance; original readonly field reference restored in finally.",
+    "Inventory exact instance ordering, counts, charges, original gold, original stock object, Magic Circle marker and Teleportation marker/payload restored.",
+    "Real native Wizard class/CL5 and existing Sorcerer/CL8 actors; no direct grant replaced purchase, scribing or casting.",
+    "Native CopyScroll private DoCopy and public RemoveItem are the same sequence invoked by its ordinary inventory action."
+  ],
+  "limits": [
+    "No disk vendor stock/grant persistence, class level-up selection, class-alignment restriction, stale specialist save, held-charge miss or native UI acceptance claim.",
+    "Native buyout and repeat-visit checks cover the established arcane supplier. Priest supplier, alias/fallback and module-OFF persistence still require qualification.",
+    "Existing 77-assertion native casting/control/lifecycle regression passed on this artifact; prior save-load evidence belongs to its earlier exact artifact."
+  ]
+}

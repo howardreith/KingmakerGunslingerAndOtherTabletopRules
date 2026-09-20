@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "scope": "Original cast attribution after permanent caster removal; broader feature acceptance pending",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "1d949e256dd34af993d322db58dcb7811a41ff07",
+  "sourceWasDirty": true,
+  "sourceStateSha256": "9305db260fab408f082399b41819ac2b590f3b9cfacf4e8773c22d3679cbcd63",
+  "artifact": {
+    "schemaVersion": 1,
+    "semanticVersion": "0.0.132",
+    "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+    "informationalVersion": "0.0.132-icon-art-overhaul",
+    "gitCommit": "1d949e256dd34af993d322db58dcb7811a41ff07",
+    "moduleVersionId": "bb4b020d-b318-44d7-8569-783792f7fe10",
+    "loadedModuleSha256": "6463954ebe73293c52308ffad2c12e619439cd46066f3c9704371ae1bf606bda"
+  },
+  "packageSha256": "e5aeffcdee3abe9e4238f536029eede2706b8138563b80e98952aaea731a3c19",
+  "nativeAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "checks": {
+    "repositoryValidation": "PASS",
+    "fullCleanDomainSuite": {
+      "passed": 1657,
+      "failed": 0,
+      "settingsCombinations": 8192
+    },
+    "cleanRelease": "PASS",
+    "strictPackage": "PASS",
+    "buildLog": "artifacts-magic-circle-cast-context-build.log"
+  },
+  "red": {
+    "evidenceDirectoryName": "20260920T0325278816184Z-disposable-magic-circle-evil",
+    "status": "FAIL",
+    "assertionCount": 119,
+    "runtimeResultSha256": "76bb782c6920f5f735ac548e961e5b3067e266e745704396199efe565de4c16c",
+    "failures": [
+      {
+        "name": "circle-removed-source-reentry-Evil",
+        "expected": "new derivative retains original caster ID instead of recipient fallback",
+        "observed": "source=e9b9b2be-8732-4933-bb70-a2b2f595ae70",
+        "status": "FAIL",
+        "evidence": "public native aura re-entry and BuffCollection.CloneFor after permanent caster removal"
+      },
+      {
+        "name": "circle-removed-source-reconstruction-Evil",
+        "expected": "rebuilt area and recipient retain original caster ID and deadline",
+        "observed": "areaSource=5ecca2b3-9f3a-4810-a144-3afa2b134221;recipientSource=5ecca2b3-9f3a-4810-a144-3afa2b134221",
+        "status": "FAIL",
+        "evidence": "native AddAreaEffect callbacks and SpawnAttachedToTarget; original source reference must survive unresolved-source cloning"
+      },
+      {
+        "name": "circle-removed-source-reentry-Good",
+        "expected": "new derivative retains original caster ID instead of recipient fallback",
+        "observed": "source=e9b9b2be-8732-4933-bb70-a2b2f595ae70",
+        "status": "FAIL",
+        "evidence": "public native aura re-entry and BuffCollection.CloneFor after permanent caster removal"
+      },
+      {
+        "name": "circle-removed-source-reconstruction-Good",
+        "expected": "rebuilt area and recipient retain original caster ID and deadline",
+        "observed": "areaSource=5ecca2b3-9f3a-4810-a144-3afa2b134221;recipientSource=5ecca2b3-9f3a-4810-a144-3afa2b134221",
+        "status": "FAIL",
+        "evidence": "native AddAreaEffect callbacks and SpawnAttachedToTarget; original source reference must survive unresolved-source cloning"
+      },
+      {
+        "name": "circle-removed-source-reentry-Law",
+        "expected": "new derivative retains original caster ID instead of recipient fallback",
+        "observed": "source=e9b9b2be-8732-4933-bb70-a2b2f595ae70",
+        "status": "FAIL",
+        "evidence": "public native aura re-entry and BuffCollection.CloneFor after permanent caster removal"
+      },
+      {
+        "name": "circle-removed-source-reconstruction-Law",
+        "expected": "rebuilt area and recipient retain original caster ID and deadline",
+        "observed": "areaSource=5ecca2b3-9f3a-4810-a144-3afa2b134221;recipientSource=5ecca2b3-9f3a-4810-a144-3afa2b134221",
+        "status": "FAIL",
+        "evidence": "native AddAreaEffect callbacks and SpawnAttachedToTarget; original source reference must survive unresolved-source cloning"
+      },
+      {
+        "name": "circle-removed-source-reentry-Chaos",
+        "expected": "new derivative retains original caster ID instead of recipient fallback",
+        "observed": "source=e9b9b2be-8732-4933-bb70-a2b2f595ae70",
+        "status": "FAIL",
+        "evidence": "public native aura re-entry and BuffCollection.CloneFor after permanent caster removal"
+      },
+      {
+        "name": "circle-removed-source-reconstruction-Chaos",
+        "expected": "rebuilt area and recipient retain original caster ID and deadline",
+        "observed": "areaSource=5ecca2b3-9f3a-4810-a144-3afa2b134221;recipientSource=5ecca2b3-9f3a-4810-a144-3afa2b134221",
+        "status": "FAIL",
+        "evidence": "native AddAreaEffect callbacks and SpawnAttachedToTarget; original source reference must survive unresolved-source cloning"
+      }
+    ]
+  },
+  "green": {
+    "evidenceDirectoryName": "20260920T0337086796527Z-disposable-magic-circle-evil",
+    "runId": "20260920T0337087109600Z-4e157006fb8049d4884ec231dc634fb2",
+    "status": "PASS",
+    "assertionCount": 120,
+    "runtimeResultSha256": "77a7f9cc1b1ea93248c6b31ef72577180a21287e6c4f035c245e010543c1b7fe",
+    "steamAppId": 640820,
+    "save": "KMG_AUTOMATION_WORKING",
+    "saveWriteObserved": false,
+    "settings": "All thirteen ON; shared control enhancement ON",
+    "profile": "Installed all-loadable profile including Call of the Wild 1.14.4c-2.1; optional-absent qualification pending",
+    "assertions": [
+      {
+        "name": "circle-mixed-alignment-overlap",
+        "expected": "four independent casts; four slots; typed +2 total",
+        "observed": "contributions=4",
+        "status": "PASS",
+        "evidence": "four native casts from the same second caster; lawful-good attack matches both Good and Law wards without stacking"
+      },
+      {
+        "name": "circle-permanent-caster-removal",
+        "expected": "original source ID/CL/deadlines retained; living bearer's circles continue",
+        "observed": "destroyed=True",
+        "status": "PASS",
+        "evidence": "actual permanent native destruction of the request-owned controller, distinct from death or temporary scene unloading"
+      },
+      {
+        "name": "circle-context-foreign-isolation",
+        "expected": "same-GUID foreign clones retain native owner fallback",
+        "observed": "area=2a24807a-b9df-4dba-9de9-3a2a8f81d986;buff=aa8ee11e-bb34-4943-ac41-32fdf82e4a81",
+        "status": "PASS",
+        "evidence": "actual native CloneFor on unregistered foreign copies; correction is scoped by canonical object identity"
+      },
+      {
+        "name": "circle-removed-source-reentry-Evil",
+        "expected": "new derivative retains original caster ID instead of recipient fallback",
+        "observed": "source=88b32eeb-6b36-4696-a2d2-46fe4e540b1e",
+        "status": "PASS",
+        "evidence": "public native aura re-entry and BuffCollection.CloneFor after permanent caster removal"
+      },
+      {
+        "name": "circle-removed-source-reconstruction-Evil",
+        "expected": "rebuilt area and recipient retain original caster ID and deadline",
+        "observed": "areaSource=88b32eeb-6b36-4696-a2d2-46fe4e540b1e;recipientSource=88b32eeb-6b36-4696-a2d2-46fe4e540b1e",
+        "status": "PASS",
+        "evidence": "native AddAreaEffect callbacks and SpawnAttachedToTarget; original source reference must survive unresolved-source cloning"
+      },
+      {
+        "name": "circle-removed-source-reentry-Good",
+        "expected": "new derivative retains original caster ID instead of recipient fallback",
+        "observed": "source=88b32eeb-6b36-4696-a2d2-46fe4e540b1e",
+        "status": "PASS",
+        "evidence": "public native aura re-entry and BuffCollection.CloneFor after permanent caster removal"
+      },
+      {
+        "name": "circle-removed-source-reconstruction-Good",
+        "expected": "rebuilt area and recipient retain original caster ID and deadline",
+        "observed": "areaSource=88b32eeb-6b36-4696-a2d2-46fe4e540b1e;recipientSource=88b32eeb-6b36-4696-a2d2-46fe4e540b1e",
+        "status": "PASS",
+        "evidence": "native AddAreaEffect callbacks and SpawnAttachedToTarget; original source reference must survive unresolved-source cloning"
+      },
+      {
+        "name": "circle-removed-source-reentry-Law",
+        "expected": "new derivative retains original caster ID instead of recipient fallback",
+        "observed": "source=88b32eeb-6b36-4696-a2d2-46fe4e540b1e",
+        "status": "PASS",
+        "evidence": "public native aura re-entry and BuffCollection.CloneFor after permanent caster removal"
+      },
+      {
+        "name": "circle-removed-source-reconstruction-Law",
+        "expected": "rebuilt area and recipient retain original caster ID and deadline",
+        "observed": "areaSource=88b32eeb-6b36-4696-a2d2-46fe4e540b1e;recipientSource=88b32eeb-6b36-4696-a2d2-46fe4e540b1e",
+        "status": "PASS",
+        "evidence": "native AddAreaEffect callbacks and SpawnAttachedToTarget; original source reference must survive unresolved-source cloning"
+      },
+      {
+        "name": "circle-removed-source-reentry-Chaos",
+        "expected": "new derivative retains original caster ID instead of recipient fallback",
+        "observed": "source=88b32eeb-6b36-4696-a2d2-46fe4e540b1e",
+        "status": "PASS",
+        "evidence": "public native aura re-entry and BuffCollection.CloneFor after permanent caster removal"
+      },
+      {
+        "name": "circle-removed-source-reconstruction-Chaos",
+        "expected": "rebuilt area and recipient retain original caster ID and deadline",
+        "observed": "areaSource=88b32eeb-6b36-4696-a2d2-46fe4e540b1e;recipientSource=88b32eeb-6b36-4696-a2d2-46fe4e540b1e",
+        "status": "PASS",
+        "evidence": "native AddAreaEffect callbacks and SpawnAttachedToTarget; original source reference must survive unresolved-source cloning"
+      },
+      {
+        "name": "circle-mixed-source-owned-removal",
+        "expected": "one alignment carrier removed; other three contributions and matching Law bonus survive",
+        "observed": "ac=12",
+        "status": "PASS",
+        "evidence": "exact carrier removal after area reconstruction; independent alignment contributions coexist"
+      },
+      {
+        "name": "circle-removed-source-cleanup",
+        "expected": "no orphaned areas/contributions; original AC",
+        "observed": "ac=10",
+        "status": "PASS",
+        "evidence": "original carrier lifetime remains authoritative after permanent source removal"
+      }
+    ]
+  },
+  "correction": "Native MechanicsContext.CloneFor postfix copies its original serialized UnitReference only for exact owned carrier, area and recipient blueprint objects. Parent, owner, parameters and ranks remain native; no new serialized state. Foreign objects copying those GUIDs retain the native owner fallback.",
+  "limits": [
+    "Scoped AddAreaEffect unload/load callbacks were exercised. This is not actual scene travel; earlier real scene-reload evidence remains on its earlier artifact.",
+    "No additional incoming-control policy or catalog changes. Prior 107 native regressions pass on this exact candidate.",
+    "Full persistence/profile matrix, native UI and broader delivery/learning cases remain open."
+  ]
+}

@@ -25,6 +25,9 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("magic-circle.binding-two-valid-fixtures", MagicCirclePreparationBindingTests.DifferentValidPreparationCannotMutate),
+            Case("magic-circle.binding-rejects-malformed", MagicCirclePreparationBindingTests.MalformedAndMismatchedBindingsFailClosed),
+            Case("magic-circle.binding-immutable", MagicCirclePreparationBindingTests.ReceiptOwnsItsImmutableSnapshot),
             Case("elemental-terrain.total-level-duration", ElementalTreacherousPolicyTests.TotalLevelDuration),
             Case("elemental-terrain.material-and-reach", ElementalTreacherousPolicyTests.ExactMaterialAndGroundRequirements),
             Case("elemental-terrain.unknown-closed", ElementalTreacherousPolicyTests.UnknownEvidenceFailsClosed),
@@ -479,7 +482,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("feature-settings.defaults-and-legacy", FeatureModuleSettingsTests.DefaultsAndLegacyAreOn),
             Case("feature-settings.schemas-zero-through-ten", FeatureModuleSettingsTests.SchemasZeroThroughTenPreserveValuesAndElementalIntent),
             Case("urban-barbarian.rage-inventory-contract", UrbanBarbarianInventoryContractTests.GuardedInventoryIsReadOnlyAndComplete),
-            Case("feature-settings.four-thousand-ninety-six-combinations", FeatureModuleSettingsTests.FourThousandNinetySixCombinationsRoundTrip),
+            Case("feature-settings.eight-thousand-one-hundred-ninety-two-combinations", FeatureModuleSettingsTests.EightThousandOneHundredNinetyTwoCombinationsRoundTrip),
             Case("feature-settings.malformed-recovery", FeatureModuleSettingsTests.MalformedRecoversAndQuarantines),
             Case("feature-settings.future-schema-and-order", FeatureModuleSettingsTests.FutureSchemaIsRejectedAndSerializationIsOrdered),
             Case("feature-settings.active-snapshot", FeatureModuleSettingsTests.ActiveSnapshotIsImmutable),
@@ -489,7 +492,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("feature-settings.teleportation-migration", FeatureModuleSettingsTests.TeleportationMigrationAndIsolation),
             Case("feature-settings.value-semantics", FeatureModuleSettingsTests.ValueSemanticsIncludeAllModules),
             Case("feature-settings.brown-fur-status", FeatureModuleSettingsTests.BrownFurStatusDistinguishesIntentAndDependency),
-            Case("feature-settings.matrix-counts", FeatureModuleSettingsTests.TwelveModuleMatrixCountsAreExact),
+            Case("feature-settings.matrix-counts", FeatureModuleSettingsTests.ThirteenModuleMatrixCountsAreExact),
             Case("feature-modules.publication-plans", FeatureModuleSettingsTests.PublicationPlansAreIndependent),
             Case("feature-modules.runtime-matrix", FeatureModuleSettingsTests.RuntimeMatrixUsesAuthoritativeTwelveModuleCatalog),
             Case("protection-alignment.policy-alignments", ProtectionFromAlignmentControlImmunityTests.MatchingAndMismatchedAlignmentsAreExact),

@@ -1,7 +1,9 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.132-icon-art-overhaul` (UMM version `0.0.132`).
-The installable archive is `KingmakerGunslinger-0.0.133-word-of-recall-favored-class.zip`.
+Full release: `0.0.134-magic-circle-alignment-spells` (UMM version `0.0.134`).
+The installable archive is `KingmakerGunslinger-0.0.134-magic-circle-alignment-spells.zip`.
+Magic Circle settings, acquisition, save hydration and qualification limits are
+recorded in [its release notes](docs/RELEASE-NOTES-0.0.134.md).
 Icon overhaul qualification, the owner review checklist and exact NOT RUN
 limits are recorded in [the mission evidence](planning/ICON-OVERHAUL-STATE.md).
 The previous full release was `0.0.129-recall-and-smart-scrolls`
@@ -14,8 +16,9 @@ The retained 0.0.121 archive is
 The retained 0.0.120 archive is
 `KingmakerGunslinger-0.0.120-elemental-races-completion.zip`.
 Back up the installed mod and preserve FeatureModules.json before installing
-through Unity Mod Manager. The twelve-module, schema-11 configuration inherited
-from 0.0.119 is unchanged.
+through Unity Mod Manager. The thirteen-module, schema-12 configuration adds
+`magic-circle-spells` while preserving existing settings. The existing Protection
+control-immunity setting also controls the new circles. Restart after changes.
 
 Nereid Fascination and Treacherous Earth are selectable. The owner authorized
 release with remaining qualification waived, including Treacherous's full native

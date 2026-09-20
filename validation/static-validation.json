@@ -929,6 +929,17 @@
     "runtimeQualificationPending": true,
     "tweakOrTreatHeirloomMustComplete": true
   },
+  "magicCircle134": {
+    "approvedArtworkPreserved": true,
+    "bearerDeathEndsCircle": true,
+    "compatibilityRuntimeQualificationPending": true,
+    "deterministicTestCount": 1678,
+    "ownedRuntimeLeaseRecovery": true,
+    "preparationBindingBeforeMutation": true,
+    "publicReleaseAuthorized": true,
+    "runtimeQualificationPending": false,
+    "sharedProtectionControlAuthority": true
+  },
   "martialPerformanceRepairNotifications109": {
     "combatLogBeforeTopNotification": true,
     "conditionNotificationFocusedCaseCount": 9,
@@ -967,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.133-word-of-recall-favored-class",
+  "milestone": "0.0.134-magic-circle-alignment-spells",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1593,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.133",
+  "version": "0.0.134",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,

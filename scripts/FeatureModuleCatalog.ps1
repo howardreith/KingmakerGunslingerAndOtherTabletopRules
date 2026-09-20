@@ -86,6 +86,13 @@ function Get-KmgFeatureModuleCatalog {
             DependencyState = 'independent'
             RuntimeParameter = 'teleportationSpells'
         }
+        [pscustomobject]@{
+            InternalProperty = 'MagicCircleSpells'
+            JsonKey = 'magic-circle-spells'
+            DisplayName = 'Magic Circle Spells'
+            DependencyState = 'independent'
+            RuntimeParameter = 'magicCircleSpells'
+        }
     )
 }
 

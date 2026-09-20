@@ -1,0 +1,374 @@
+{
+  "reviewedHead": "3794fb57bc4ba536d26fce1ca1bafb7bd6dbea23",
+  "scope": "PowerShell orchestration only; no C# or shipped content source changes",
+  "artifact": {
+    "version": "0.0.132",
+    "commit": "3794fb57bc4ba536d26fce1ca1bafb7bd6dbea23",
+    "sourceStateSha256": "0f745ef693e13b00e6877ddbab5ef3fde6d56a4d69d956906e5fe259781cdee2",
+    "packageSha256": "3f02386bd4791b4ff7ddd45636369cacfc3c99bc6da8f88a89ca17321b7f7c95",
+    "dllSha256": "1a90163216b77029e3ff862506e6591e9969cde9ed24132b1cc9e9f0786b8d43",
+    "dllMvid": "ff443bc8-92dd-4288-a599-10d0bb957dcf"
+  },
+  "embeddedCommitIsNotFinalSourceCommit": true,
+  "packagePath": "artifacts/local-runtime/0.0.132/KingmakerGunslinger-0.0.132-local-runtime.zip",
+  "packageBytes": 28170701,
+  "packageEntries": 231,
+  "changedPackageEntriesSinceReviewedCandidate": [
+    "KingmakerGunslinger/KingmakerGunslinger.dll"
+  ],
+  "frozenInputs": {
+    "fileCount": 1885,
+    "gitBlobManifestSha256": "dec8828068866741fb085522ad50bc15cb7fdeec53ce17427228544b44e95fb8",
+    "rawManifestSha256": "cedf4d6f588d5c2af9c539f84fe541b1b039336372d68a20e0b65b13cb3944de"
+  },
+  "frozenInputScope": [
+    "src/",
+    "assets/",
+    "blueprints/",
+    "Info.json",
+    "Directory.Build.props",
+    "Directory.Build.targets",
+    "scripts/",
+    "tests/",
+    "tools/",
+    "validation/"
+  ],
+  "scripts": [
+    {
+      "path": "scripts/Complete-KingmakerRuntimeLease.ps1",
+      "gitBlob": "f7c15b998f7b41792c9d14700d7d078dd3e9555f",
+      "rawSha256": "cb6944ee42c131fe74118232e7408771a765bb664093471b4146a01727cb0973"
+    },
+    {
+      "path": "scripts/Invoke-KingmakerRuntimeTest.ps1",
+      "gitBlob": "4848516ae2e0b75fac12884e9544048f75631238",
+      "rawSha256": "347e913c3de5ff0dd1e86f72341df4c912be5fe533d8d23067b032ad682cfbfb"
+    },
+    {
+      "path": "scripts/RuntimeCoordination.Common.ps1",
+      "gitBlob": "aca8b33cf5c88d40d326e9b678165d14b69c9faa",
+      "rawSha256": "118e7d540116fe0f81070498905ca96a78892b2ac9eef273681894baa64dad7a"
+    },
+    {
+      "path": "scripts/Test-RuntimeLeaseLifecycle.ps1",
+      "gitBlob": "c7ec0a56f943ad07a11c7bf155bba3f853374b09",
+      "rawSha256": "ccedf14826fa6c508de58b0af8439a273e9b33aba823c5a131867d32485f86d8"
+    }
+  ],
+  "red": {
+    "evidenceDirectory": "artifacts/local-runtime/lease-tests-a6d76b8df70d4363a3f31ce8f3715490",
+    "status": "REPRODUCED",
+    "nativeResult": "controlled external-boundary PASS fixture, not a real game result",
+    "sequence": [
+      "production generic launcher accepted the matching PASS result",
+      "ExitAfterCompletion=false left the identified process open",
+      "Exit-KmgRuntimeLease threw and retained RecoveryRequired"
+    ]
+  },
+  "regressions": {
+    "evidenceDirectory": "artifacts/local-runtime/lease-tests-88ef0e874bc844a4ad0dd52f3af481de",
+    "status": "PASS",
+    "assertions": [
+      "leave-open-native-PASS-is-successful-owned-handoff",
+      "handoff-pins-exact-process-and-native-outcome",
+      "leave-open-live-owner-rejected",
+      "leave-open-recorded-game-rejected",
+      "leave-open-foreign-game-or-reused-game-PID-rejected",
+      "leave-open-rejections-preserve-files",
+      "leave-open-completion-WhatIf-mutation-free",
+      "completion-rejects-foreign-lock",
+      "completion-preserves-foreign-lock",
+      "completion-rejects-foreign-request",
+      "completion-preserves-foreign-request",
+      "completion-rechecks-game-after-acquiring-ownership",
+      "completion-game-start-race-is-mutation-free",
+      "competing-completion-handle-rejected",
+      "completion-rejects-journal-change-during-owner-check",
+      "completion-preserves-foreign-journal",
+      "leave-open-normal-exit-guarded-completion-with-PID-reuse-and-competing-recovery",
+      "completion-does-not-rewrite-native-PASS",
+      "automatic-exit-PASS-releases-ordinary-lease",
+      "interruption-retains-generic-recovery-record",
+      "interruption-actual-generic-terminal-error-recorded",
+      "interruption-live-owner-rejected",
+      "interruption-recorded-game-rejected",
+      "interruption-foreign-game-or-reused-game-PID-rejected",
+      "interruption-rejections-preserve-files",
+      "interruption-completion-WhatIf-mutation-free",
+      "interruption-normal-exit-guarded-completion-with-PID-reuse-and-competing-recovery",
+      "timeout-retains-generic-recovery-record",
+      "timeout-actual-generic-terminal-error-recorded",
+      "timeout-live-owner-rejected",
+      "timeout-recorded-game-rejected",
+      "timeout-foreign-game-or-reused-game-PID-rejected",
+      "timeout-rejections-preserve-files",
+      "timeout-completion-WhatIf-mutation-free",
+      "timeout-normal-exit-guarded-completion-with-PID-reuse-and-competing-recovery",
+      "generic-inherited-ownership-leaves-parent-restoration-pending",
+      "generic-completion-rejects-settings-parent",
+      "generic-rejects-foreign-owner-before-launch",
+      "generic-WhatIf-no-file-mutation-or-launch"
+    ],
+    "caseResults": [
+      {
+        "case": "leave-open",
+        "error": null,
+        "status": "CompletionPending",
+        "lock": true
+      },
+      {
+        "case": "automatic-exit",
+        "error": null,
+        "status": "Completed",
+        "lock": false
+      },
+      {
+        "case": "interruption",
+        "error": "EXPECTED failure; see production-path case evidence",
+        "status": "RecoveryRequired",
+        "lock": true
+      },
+      {
+        "case": "timeout",
+        "error": "EXPECTED failure; see production-path case evidence",
+        "status": "RecoveryRequired",
+        "lock": true
+      },
+      {
+        "case": "inherited",
+        "error": null,
+        "status": "Active",
+        "lock": true
+      },
+      {
+        "case": "busy",
+        "error": "EXPECTED failure; see production-path case evidence",
+        "status": "<none>",
+        "lock": true
+      },
+      {
+        "case": "what-if",
+        "error": null,
+        "status": "<none>",
+        "lock": false
+      }
+    ]
+  },
+  "gates": {
+    "repositoryValidation": "PASS",
+    "cleanDomainTests": 1660,
+    "domainFailures": 0,
+    "cleanReleaseBuild": "PASS",
+    "buildOutput": "PASS",
+    "strictPackage": "PASS",
+    "sharedPassingSuites": [
+      "MagicCircleRuntimeRequest",
+      "MagicCircleSettingsTransaction (12 cases)",
+      "SteamLaunch (47 checks)",
+      "RuntimeResult",
+      "RuntimeRunner",
+      "WorkingSaveExitResultRace",
+      "KingmakerCompatibilityProfile",
+      "KingmakerCompatibilityProfileResolution"
+    ],
+    "preExistingFailures": {
+      "RuntimeRequest": "hard-coded expected version 0.0.87",
+      "RuntimeDeployment": "legacy-deployment-pins-complete-artifact-identity",
+      "RuntimeScenarioPreflight": "documented-scenarios-retained (isolated rerun)"
+    },
+    "parallelTestInterference": "An earlier concurrent preflight also observed disposable artifact churn; the isolated rerun removed that failure."
+  },
+  "nativeRuns": [
+    {
+      "evidenceDirectory": "20260920T1754074609310Z-mod-load-smoke",
+      "runId": "20260920T1754074766160Z-6b5cbbe81b8044fb887e13ceb96195f7",
+      "scenario": "mod-load-smoke",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "loaded-mod-version",
+          "status": "PASS"
+        },
+        {
+          "name": "runtime-identity",
+          "status": "PASS"
+        },
+        {
+          "name": "core-initialization",
+          "status": "PASS"
+        }
+      ],
+      "loadedDllSha256": "1a90163216b77029e3ff862506e6591e9969cde9ed24132b1cc9e9f0786b8d43",
+      "loadedDllMvid": "ff443bc8-92dd-4288-a599-10d0bb957dcf",
+      "embeddedCommit": "3794fb57bc4ba536d26fce1ca1bafb7bd6dbea23",
+      "processId": 17124,
+      "steamAppId": 640820,
+      "processStartedUtc": "2026-09-20T17:54:08.5606750Z",
+      "automaticExitRequested": true,
+      "automaticExitInitiated": true,
+      "leaseId": "runtime-20260920T175406Z-c5393066cb4c4f5fbd77b76ddac7ce32",
+      "leasePurpose": "runtime mod-load-smoke",
+      "leaseStatus": "Completed",
+      "recoveryRequired": false,
+      "resultSha256": "fe046b10447e3fb4ebd363f41a479bfcf7684bc9d2734d98dd04a39821b5e7dc",
+      "identitySha256": "ac988abb4b455eaf7d206d6db09de41139f62fcc22c900025f63b8814ff6e1c2",
+      "leaseSha256": "181870610ae3e9ae3fdde4fdd9e2e0be8f15a2cea4e4d149ca047904f6cac265"
+    },
+    {
+      "evidenceDirectory": "20260920T1756315821384Z-working-save-magic-circle-absent",
+      "runId": "20260920T1756316134097Z-374cd3cea11e49d7a20d12d32f3fd077",
+      "scenario": "working-save-magic-circle-absent",
+      "status": "PASS",
+      "assertions": [
+        {
+          "name": "circle-persistence-cleanup-fresh-load-absence",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-fresh-market-cleanup",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "loadedDllSha256": "1a90163216b77029e3ff862506e6591e9969cde9ed24132b1cc9e9f0786b8d43",
+      "loadedDllMvid": "ff443bc8-92dd-4288-a599-10d0bb957dcf",
+      "embeddedCommit": "3794fb57bc4ba536d26fce1ca1bafb7bd6dbea23",
+      "processId": 12556,
+      "steamAppId": 640820,
+      "processStartedUtc": "2026-09-20T17:56:32.5196860Z",
+      "automaticExitRequested": true,
+      "automaticExitInitiated": true,
+      "leaseId": "runtime-20260920T175629Z-d0ee15a0ca3c438fa9b572b7353b91f4",
+      "leasePurpose": "Magic Circle persistence settings",
+      "leaseStatus": "Completed",
+      "recoveryRequired": false,
+      "resultSha256": "c03e4ca47cc78bc4174ddf6e71304e5b15d8b67c3c24b7d559fe076eddcd2b31",
+      "identitySha256": "8c64f110f3b1fbd6c619cf166f32a0a6e7bf5dec23b21d10e926d2c61eaebb76",
+      "leaseSha256": "1fe7a37a003c69bcada1ef73b40b6779d7963fb13778e25ab93717c44e2e23bd",
+      "settings": {
+        "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+        "overrideSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+        "backupSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+        "restoredSha256BeforeNormalPlayRollback": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+        "nativeOverrideChangedValues": false
+      },
+      "nativeGameVersion": "2.1.7b",
+      "saveIdentity": {
+        "Name": "KMG_AUTOMATION_WORKING",
+        "FileName": "Manual_299_KMG_AUTOMATION_WORKING.zks",
+        "GameId": "dce769e0-229c-4bfd-b8ea-e2d572bf8472",
+        "Area": "JamandisMansion"
+      },
+      "saveWrites": 0
+    }
+  ],
+  "nativeProfile": {
+    "gameVersion": "2.1.7b",
+    "mods": [
+      {
+        "id": "BagOfTricks",
+        "version": "1.16.4",
+        "active": true
+      },
+      {
+        "id": "CallOfTheWild",
+        "version": "1.14.4c-2.1",
+        "active": true
+      },
+      {
+        "id": "CheatMenu",
+        "version": "1.2.3",
+        "active": true
+      },
+      {
+        "id": "CraftMagicItems",
+        "version": "2.1.0",
+        "active": true
+      },
+      {
+        "id": "KingmakerBuffPlanner",
+        "version": "0.0.16",
+        "active": true
+      },
+      {
+        "id": "KingmakerDiceRoller",
+        "version": "0.1.2",
+        "active": true
+      },
+      {
+        "id": "KingmakerGunslinger",
+        "version": "0.0.132",
+        "active": true
+      },
+      {
+        "id": "KingmakerLastAzlantiPreserver",
+        "version": "0.1.0",
+        "active": true
+      },
+      {
+        "id": "RacesUnleashed",
+        "version": "1.0.11",
+        "active": true
+      },
+      {
+        "id": "TweakOrTreat",
+        "version": "1.1.0",
+        "active": true
+      },
+      {
+        "id": "ZFavoredClass",
+        "version": "1.3.1",
+        "active": true
+      }
+    ],
+    "ummLogSha256": "8491399f5c098c7ba9d2d5e3a39e5d1c313ee1952c68d42f4224058935f97619"
+  },
+  "normalPlayRestoration": {
+    "status": "PASS",
+    "files": 136,
+    "backup": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20260920T1754009353031Z",
+    "version": "0.0.117",
+    "dllSha256": "fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f",
+    "settingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "gameProcesses": 0,
+    "sharedLockAbsent": true,
+    "globalBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18"
+  },
+  "integration": {
+    "base": "master",
+    "baseCommit": "d7fe028c8fa60f85b5f7c58a38207088f17c7546",
+    "status": "CONFLICTING / DIRTY",
+    "readOnlyAnalysis": "git merge-tree --write-tree --name-only HEAD FETCH_HEAD; no index/worktree/history merge",
+    "conflicts": [
+      "scripts/RuntimeAutomation.Common.ps1",
+      "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs",
+      "tools/validate_bodyguard90.py",
+      "tools/validate_icon_overhaul132.py",
+      "validation/static-validation.json"
+    ]
+  },
+  "limits": [
+    "No real leave-open/timeout was induced; production launcher lifecycle regressions use controlled external process boundaries.",
+    "Only the two listed native scenarios qualify this new DLL. Earlier feature-wide/R1/C1/UI native evidence retains its original artifact identity.",
+    "The native parent run used equal original/override values; distinct-byte restoration and foreign edits remain covered by the retained 12-case Circle suite.",
+    "Older unbound generic journals require investigation; no lease theft or unconditional deletion.",
+    "Owner approval and prior native UI evidence are retained for unchanged art; no new UI screenshots, gamepad, reduced-profile save repair or uninstall claims."
+  ],
+  "sourceCommit": "1f1dcce6c100d298ddf673ca705514679d513b68",
+  "committedSourceCorrespondence": {
+    "status": "PASS",
+    "inputCount": 1885,
+    "method": "Every frozen path and Git-filtered blob matches git ls-tree -r at sourceCommit; raw working-file identity was checked before committing."
+  },
+  "publication": {
+    "publishedSourceCommit": "1f1dcce6c100d298ddf673ca705514679d513b68",
+    "branch": "codex/magic-circle-alignment-spells",
+    "pr": 19,
+    "draft": true,
+    "helper": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "status": "PASS; local and remote source commit verified; subsequent metadata-only commit preserves these inputs."
+  }
+}

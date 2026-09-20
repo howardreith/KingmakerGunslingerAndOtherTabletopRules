@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "scope": "Evil core vertical slice; incomplete feature candidate, not release acceptance",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "2c396bcdb8b2738f4ef25d0f940b593753bdc5f8",
+  "sourceStateSha256": "b7f3bf97a0ba6daac7c6f578d79ea4e103d7f29121426c7b8b3aaf638d23f912",
+  "version": "0.0.132",
+  "packageSha256": "e1dc5816e2341da720f1db31bbfcd8227f560c96bc482f665c5ed5c77d14a2b4",
+  "dllSha256": "dfbda4f26ed1baa42d121bbdf24722ffa46ca4c65c4f85076a710950b8f66a5d",
+  "dllMvid": "e7739a05-ea91-4b5d-b187-f5e876081ba4",
+  "nativeAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "validation": "PASS",
+  "domainTests": {
+    "passed": 1657,
+    "failed": 0,
+    "settingsCombinations": 8192
+  },
+  "cleanRelease": "PASS",
+  "packageGates": "PASS",
+  "nativeRun": "20260919T2326498442084Z-disposable-magic-circle-evil",
+  "launch": "guarded Steam App ID 640820",
+  "save": "KMG_AUTOMATION_WORKING",
+  "saveWrites": false,
+  "nativeStatus": "PASS",
+  "assertions": [
+    {
+      "name": "circle-native-slot-debit",
+      "status": "PASS",
+      "observed": "5->4"
+    },
+    {
+      "name": "circle-original-caster-context",
+      "status": "PASS",
+      "observed": "carrier=ac6af2be-2bd8-464b-9d8f-d6697cb40c74;area=ac6af2be-2bd8-464b-9d8f-d6697cb40c74"
+    },
+    {
+      "name": "circle-original-duration",
+      "status": "PASS",
+      "observed": "3600"
+    },
+    {
+      "name": "circle-initial-membership",
+      "status": "PASS",
+      "observed": "1/1"
+    },
+    {
+      "name": "circle-non-ally-membership",
+      "status": "PASS",
+      "observed": "enemy=True"
+    },
+    {
+      "name": "circle-native-defensive-outcomes",
+      "status": "PASS",
+      "observed": "ac=10->12;will=0->2"
+    },
+    {
+      "name": "circle-new-matching-control",
+      "status": "PASS",
+      "observed": "buff=False;canApply=False"
+    },
+    {
+      "name": "circle-wrong-alignment-control-positive",
+      "status": "PASS",
+      "observed": "buff=True"
+    },
+    {
+      "name": "circle-exit",
+      "status": "PASS",
+      "observed": "0"
+    },
+    {
+      "name": "circle-unprotected-control-positive",
+      "status": "PASS",
+      "observed": "buff=True"
+    },
+    {
+      "name": "circle-existing-control-retained",
+      "status": "PASS",
+      "observed": "active=True"
+    },
+    {
+      "name": "circle-native-radius-boundary",
+      "status": "PASS",
+      "observed": "radius=3.048;corpulence=0.5;inside=True;outside=True"
+    },
+    {
+      "name": "circle-follows-bearer",
+      "status": "PASS",
+      "observed": "followed=True"
+    },
+    {
+      "name": "circle-same-caster-overlap",
+      "status": "PASS",
+      "observed": "2"
+    },
+    {
+      "name": "circle-overlap-typed-nonstacking",
+      "status": "PASS",
+      "observed": "ac=12;will=2"
+    },
+    {
+      "name": "circle-owned-cleanup",
+      "status": "PASS",
+      "observed": "1"
+    },
+    {
+      "name": "circle-independent-protection-survives",
+      "status": "PASS",
+      "observed": "circleCount=0;individual=True"
+    },
+    {
+      "name": "circle-request-local-cleanup",
+      "status": "PASS",
+      "observed": "stage=complete;writeObserved=False"
+    }
+  ],
+  "profile": "Existing installed profile, Call of the Wild present; settings preserved by deployment",
+  "artwork": "Provisional native Protection sprites; original generated export review and actual native UI acceptance pending",
+  "limitations": [
+    "No lifecycle persistence/transition/death qualification yet",
+    "No hostile touch or metamagic qualification yet",
+    "Good/Law/Chaos, optional list adapters and scroll acquisition not yet implemented",
+    "No release readiness or owner visual approval claimed"
+  ]
+}
