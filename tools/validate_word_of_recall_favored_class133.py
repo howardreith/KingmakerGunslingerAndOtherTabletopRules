@@ -35,7 +35,9 @@ def validate(root: Path) -> None:
         "deterministicTestCount": 1669,
         "publicReleaseAuthorized": False,
         "favoredClassPickGateVariants": True,
+        "favoredClassPickGateTransaction": True,
         "favoredClassRuntimeQualified": True,
+        "favoredClassPersistenceQualified": True,
         "runtimeQualificationPending": False,
         "compatibilityRuntimeQualificationPending": True,
     }
@@ -47,7 +49,8 @@ def validate(root: Path) -> None:
         "variants", "pick gate", "pending owner approval")
     baseline.baseline.require_tokens(root /
         "Z-WORD-OF-RECALL-FAVORED-CLASS-STATE.md",
-        "variantRecall=1", "66/66")
+        "variantRecall=1", "66/66", "67/67", "red demonstration",
+        "KMG_FCB_PERSISTENCE_", "fcb-persistence-plan-parameters-invalid")
 
 
 def main() -> int:

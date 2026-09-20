@@ -1607,6 +1607,8 @@
   "wordOfRecallFavoredClass133": {
     "compatibilityRuntimeQualificationPending": true,
     "deterministicTestCount": 1669,
+    "favoredClassPersistenceQualified": true,
+    "favoredClassPickGateTransaction": true,
     "favoredClassPickGateVariants": true,
     "favoredClassRuntimeQualified": true,
     "publicReleaseAuthorized": false,

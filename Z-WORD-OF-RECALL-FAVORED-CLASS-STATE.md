@@ -1,8 +1,9 @@
-# Word of Recall Oracle Favored-Class Selection — Mission State
+﻿# Word of Recall Oracle Favored-Class Selection — Mission State
 
 Branch: `codex/z-word-of-recall-favored-class`
 Base: master `525625df` (release 0.0.132)
-Version: 0.0.133-word-of-recall-favored-class (candidate)
+Version: 0.0.133-word-of-recall-favored-class (candidate; corrective pass applied)
+Final artifact commit: `2e78313c407dc7680d2532e2280cf65620170514`
 
 ## Owner request
 
@@ -130,6 +131,15 @@ duplicate fail-closed behavior unchanged.
   `20260920T0205257237750Z-disposable-teleportation-scrolls` PASS 65/65
   with every previously qualified Oracle scroll assertion intact.
 - Owner FeatureModules.json preserved exactly across every deployment.
+
+Corrective-pass red demonstration, the persistence transaction names
+(KMG_FCB_PERSISTENCE_ saves) and the guarded rejection evidence
+(fcb-persistence-plan-parameters-invalid) are recorded in
+Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md and the run directories.
+See Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md for the owner-review
+corrective pass (R1 transaction, R2 target validation, R3 behavioral
+tests and the at-level allowance invariant, R4 real save-file persistence
+with the per-run qualification mapping of the final binary).
 
 ## Honest boundaries
 
