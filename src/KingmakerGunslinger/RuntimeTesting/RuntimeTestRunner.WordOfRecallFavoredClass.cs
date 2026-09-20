@@ -333,19 +333,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     favoredProgression = aasimarUnit.Descriptor.Progression.Features.Enumerable
                         .Any(value => value.Blueprint.AssetGuid == FcbOracleProgressionId),
                     trace = aasimarTrace.ToArray() });
+                var partialPicks = aasimarTrace.Count(value => {
+                    var pick = value.GetType().GetProperty("picked").GetValue(value, null) as string;
+                    return pick != null && pick.StartsWith(FcbOraclePartialFeatureId);
+                });
+                var firstFcbCandidates = aasimarTrace.FirstOrDefault(value => {
+                    var policy = value.GetType().GetProperty("policy").GetValue(value, null) as string;
+                    return policy == "fcb-partial-first";
+                });
+                var creditlessCandidates = firstFcbCandidates == null ? new string[0] :
+                    ((System.Collections.IEnumerable)firstFcbCandidates.GetType()
+                        .GetProperty("candidates").GetValue(firstFcbCandidates, null))
+                        .Cast<object>().Select(value => value as string).ToArray();
                 TeleportSpellbookUiAssert("fcb-aasimar-seeded",
-                    "a genuine Aasimar Oracle 13 with two native half-spell awards and no Recall",
+                    "a genuine Aasimar Oracle 13 with the completed native half-spell credit and no Recall",
                     "level=" + aasimarUnit.Descriptor.Progression.GetClassLevel(oracle) +
                         ";caster=" + book.CasterLevel + ";max=" + book.MaxSpellLevel +
                         ";partialRank=" + (partialFact.Length == 0 ? 0 : partialFact[0].Rank) +
-                        ";knows=" + book.IsKnown(recall),
+                        ";partialPicks=" + partialPicks + ";knows=" + book.IsKnown(recall),
                     aasimarUnit.Descriptor.Progression.GetClassLevel(oracle) == 13 &&
-                        book.CasterLevel == 13 && book.MaxSpellLevel >= 7 &&
-                        partialFact.Length == 1 && partialFact[0].Rank == 2 &&
-                        !book.IsKnown(recall) && aasimarTrace.Count(value => {
-                            var pick = value.GetType().GetProperty("picked").GetValue(value, null) as string;
-                            return pick != null && pick.StartsWith(FcbOraclePartialFeatureId);
-                        }) == 2);
+                        book.CasterLevel == 13 && book.MaxSpellLevel == 6 &&
+                        partialFact.Length == 1 && partialFact[0].Rank >= 1 &&
+                        partialPicks == 1 && !book.IsKnown(recall));
+                TeleportSpellbookUiAssert("fcb-incomplete-award-control",
+                    "before any partial credit the completed bonus-spell award is not offered",
+                    "firstCandidates=" + string.Join("|", creditlessCandidates.ToArray()),
+                    creditlessCandidates.Length > 0 && !creditlessCandidates.Any(value =>
+                        value != null && value.StartsWith(FcbOracleBonusSpellSelectionId)));
                 // ----- The genuine 13 -> 14 award level-up through the presenter.
                 experienceProperty.SetValue(aasimarUnit.Descriptor.Progression,
                     game.BlueprintRoot.Progression.XPTable.GetBonus(14), null);
@@ -360,7 +374,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Favored Class level-up did not create an independent preview.");
                     for (int frame = 0; frame < 15; frame++) yield return 0;
                     presenter.SetClass(oracle);
-                    CompleteTeleportLevelUpPrerequisites(presenter);
                     foreach (int tick in OpenFcbAwardAndSelectRecall(oracle, bonusSelection,
                         level6Feature, recall, "aasimar-" + attempt)) yield return tick;
                     if (attempt == 0)
@@ -390,7 +403,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ";rank=" + (cancelPartial.Length == 0 ? 0 : cancelPartial[0].Rank),
                             !book.IsKnown(recall) &&
                                 aasimarUnit.Descriptor.Progression.GetClassLevel(oracle) == 13 &&
-                                cancelPartial.Length == 1 && cancelPartial[0].Rank == 2);
+                                cancelPartial.Length == 1 && cancelPartial[0].Rank == 1);
                         continue;
                     }
                     FillFcbOracleChoices(backend, oracle, aasimarTrace);
@@ -450,7 +463,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             book.GetKnownSpells(6).Count(value =>
                                 ReferenceEquals(value.Blueprint, recall)) == 1 &&
                             grantFacts.Length == 1 && recallFacts.Length == 1 &&
-                            committedPartial.Length == 1 && committedPartial[0].Rank == 2 &&
+                            committedPartial.Length == 1 && committedPartial[0].Rank == 1 &&
                             (finalSpells.ExtraSelected == null ||
                                 finalSpells.ExtraSelected.Length == 0) && ordinarySixthNormal);
                     // ----- Duplicate control: a further level-up must not re-offer Recall.
@@ -527,7 +540,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 backend = presenter.LevelUpController;
                 for (int frame = 0; frame < 15; frame++) yield return 0;
                 presenter.SetClass(oracle);
-                CompleteTeleportLevelUpPrerequisites(presenter);
                 var belowItems = level6Feature.ExtractSelectionItems(
                     backend.Unit, backend.Preview).ToArray();
                 var classState = backend.State.Selections.SingleOrDefault(value =>
@@ -592,7 +604,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 backend = presenter.LevelUpController;
                 for (int frame = 0; frame < 15; frame++) yield return 0;
                 presenter.SetClass(oracle);
-                CompleteTeleportLevelUpPrerequisites(presenter);
                 foreach (int tick in OpenFcbAwardAndSelectRecall(oracle, bonusSelection,
                     level6Feature, recall, "human")) yield return tick;
                 FillFcbOracleChoices(backend, oracle, humanTrace);
