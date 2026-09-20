@@ -4174,3 +4174,23 @@ build, strict package validation; deployed DLL SHA-256
 commit `6b4f1b05`. Candidate pending owner approval; no merge, no public
 release. Boundaries recorded in
 `Z-WORD-OF-RECALL-FAVORED-CLASS-STATE.md`.
+
+# 2026-09-20 Favored Class corrective pass qualified (0.0.133 candidate, final binary)
+
+Owner review R1-R4 applied on `codex/z-word-of-recall-favored-class`:
+the variants publication is now an owned array transaction with exact
+assigned-array retention, prior cache capture, correct rollback and
+foreign-mutation refusal (four behavioral regressions demonstrated red
+against the shipped sequence, then green); target resolution fully
+validates identity, parent, settings and grant configuration with
+absence/malformed/ambiguity diagnostics; the acceptance fixture asserts
+the installed at-level allowance (which caught and fixed a real
+cumulative-delta misreading); and a new guarded two-phase persistence
+transaction proved the learned Recall, granting parametrized feature and
+parameter, award accounting and one strategic cast through a fresh-process
+reload of an authorized disposable save. Final binary
+`2e78313c` / DLL `4f0cf610…` re-ran every scenario: observer 13/13,
+persistence prepare 6/6 + verify 8/8, level-up acceptance 67/67 twice
+consecutively, scroll control 65/65; domain suite 1,669/1,669, full
+validator chain and strict package gates PASS. Candidate remains pending
+owner approval; no merge, no public release.

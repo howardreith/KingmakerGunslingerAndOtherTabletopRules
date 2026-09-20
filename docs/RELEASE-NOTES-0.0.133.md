@@ -68,6 +68,23 @@ pre-existing ordinary-learning, scroll-eligibility and level-up controls.
   Craft Magic Items contract changed ( references
   are untouched).
 
+## Corrective pass
+
+After owner review, the variants publication was rebuilt as an owned array
+transaction (exact assigned-array retention, prior cache capture, correct
+rollback, foreign-mutation refusal, idempotent no-op on an already-correct
+array — four behavioral regressions demonstrated failing against the
+shipped sequence), the per-level target resolution now fully validates
+identity, parent relationship, selection settings and the actual
+LearnSpellParametrized grant configuration with distinct absence,
+malformed and ambiguity diagnostics, the acceptance fixture asserts the
+installed at-level ordinary allowance plus exactly one favored-class
+grant, and a real authorized disposable save-file persistence acceptance
+now proves the learned spell, granting feature and parameter, award
+accounting and one strategic cast through a fresh-process reload. Every
+qualification scenario was re-run on the final binary; see the per-run
+mapping in Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md.
+
 ## Boundaries
 
 - `publicReleaseAuthorized` is false pending owner approval of this
