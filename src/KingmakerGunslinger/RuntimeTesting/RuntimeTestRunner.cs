@@ -637,6 +637,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
                     !IsTeleportationCoexistenceFixture &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationPersistence &&
+                    _request.Scenario != FcbPersistenceIdentity.Scenario &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationResources &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationCasting &&
@@ -1047,6 +1048,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveBrownFurCotwContract)
                 {
                     Complete(BrownFurCotwContractObserver.Run(_context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveWordOfRecallFavoredClass)
+                {
+                    Complete(WordOfRecallFavoredClassObserver.Run(
+                        _context, _request));
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -1801,6 +1809,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                    _request.Scenario == FcbPersistenceIdentity.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
@@ -1905,6 +1914,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                    _request.Scenario == FcbPersistenceIdentity.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
@@ -1985,6 +1995,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario);
                 if (_request.Scenario == TeleportPersistenceIdentity.Scenario)
                     _teleportPersistencePlan = new TeleportPersistencePlan(_request);
+                if (_request.Scenario == FcbPersistenceIdentity.Scenario)
+                    _fcbPersistencePlan = new FcbPersistencePlan(_request);
                 _workingSaveSmoke = new WorkingSaveSmokeScenario(
                     _context, _elapsed, _request.RunId, _trace.Record,
                     _request.Scenario ==
@@ -1998,6 +2010,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction,
                     _teleportPersistencePlan != null ? _teleportPersistencePlan.Identity :
+                    _fcbPersistencePlan != null ? _fcbPersistencePlan.Identity :
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .GunslingerOutfitProductionPersistence
                             ? WorkingSaveSmokeIdentity
@@ -2498,6 +2511,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_request.Scenario == TeleportPersistenceIdentity.Scenario)
                 {
                     PollTeleportationPersistence();
+                }
+                else if (_request.Scenario == FcbPersistenceIdentity.Scenario)
+                {
+                    PollFcbPersistence();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity)
                 {
@@ -5299,6 +5316,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                    _request.Scenario == FcbPersistenceIdentity.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
