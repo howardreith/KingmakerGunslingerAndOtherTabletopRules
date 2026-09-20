@@ -9,7 +9,13 @@ handoff.
 Repository: `howardreith/KingmakerGunslingerAndOtherTabletopRules`.
 Base: `21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc`.
 Branch: `codex/magic-circle-alignment-spells` in its dedicated worktree.
-Final source commit and draft PR are recorded after guarded publication below.
+Qualified product source: `1c3f5acca108408a81a0ea02d9551b2569b1c2b4`.
+The branch is published through the required guarded helper.
+[Draft PR #19](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/19)
+targets `master` (`525625df443d0d2f575e5f984c0091a838889b63` at publication).
+GitHub reported MERGEABLE/CLEAN with no status checks reported. It remains open
+and draft; no merge was performed. Subsequent handoff-only commits preserve the
+qualified product tree.
 
 ## Behavior and decisions
 
@@ -76,7 +82,9 @@ The clean Release compilation used the validated working tree at the embedded
 commit. That embedded commit alone does not identify the final source. The
 qualification record fingerprints all 1,387 product inputs using both raw bytes
 and Git-filtered blobs, so the committed product tree can be matched to the exact
-tested build. Later documentation and curated evidence do not alter those inputs.
+tested build. [Committed-source verification](../reports/magic-circle/COMMITTED-SOURCE-CORRESPONDENCE.json)
+confirms every frozen path/blob at the qualified source commit and records the
+guarded publication. Later documentation and curated evidence do not alter those inputs.
 The frozen ZIP retains its original packaged documentation; this handoff supplies
 the completed qualification status without rebuilding the tested binary.
 
