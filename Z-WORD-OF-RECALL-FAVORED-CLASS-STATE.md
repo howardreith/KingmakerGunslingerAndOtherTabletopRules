@@ -3,7 +3,7 @@
 Branch: `codex/z-word-of-recall-favored-class`
 Base: master `525625df` (release 0.0.132)
 Version: 0.0.133-word-of-recall-favored-class (candidate; corrective pass applied)
-Final artifact commit: `6e8d62d274d2b20b509986377c41d07ac7851765` (second corrective pass applied; see Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md)
+Final artifact commit: `a76eb3a0` (protected finalization pass applied; corrected driver separately qualified; see Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md)
 
 ## Owner request
 

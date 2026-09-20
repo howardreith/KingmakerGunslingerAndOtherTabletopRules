@@ -96,6 +96,17 @@ hardened the owned-save destructive cleanup with receipt-hash
 revalidation, preservation of changed or replaced output, and filesystem
 regressions.
 
+A final script-only pass placed the persistence driver's cleanup
+finalization under per-stage protection: every remaining stage runs
+independently, a live game process prohibits mutating stages while
+disposal and reporting continue, primary and stage failures accumulate
+without losing their causes, the final record reports accurate stage
+outcomes before any aggregate propagates, and preserved owned output is
+never excused or deleted to satisfy the catalog assertion. Twelve
+filesystem regressions run through the actual finalization path, and the
+corrected driver was re-qualified by a fresh native persistence
+transaction.
+
 ## Boundaries
 
 - `publicReleaseAuthorized` is false pending owner approval of this

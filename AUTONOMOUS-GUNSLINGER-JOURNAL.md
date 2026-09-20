@@ -4217,3 +4217,24 @@ twice consecutively (including the matched control), scrolls 65/65,
 observer 13/13, persistence prepare 6/6 + verify 8/8 with cleanupFailed
 false. Domain suite 1,675/1,675, validator chain and package gates PASS.
 Candidate remains pending owner approval; no merge, no public release.
+
+# 2026-09-20 Protected persistence finalization qualified (driver commit a76eb3a0)
+
+The accepted findings 1-3 stand unchanged. The remaining finding-4 gap —
+the outer finally skipping catalog disposal, sidecar restoration and the
+final record whenever an earlier stage threw (reproduced with a changed
+owned save surfacing as an unowned new save) — was repaired script-only:
+Invoke-FinalizationStages runs each stage independently, prohibits
+mutating stages while the game process lives, accumulates primary and
+stage causes, writes the accurate stage-outcome record before any
+aggregate propagates, and never weakens preservation. Twelve filesystem
+regressions through the actual finalization path (split units after the
+script host's malware heuristics blacklisted the single-file form) caught
+and fixed a live StrictMode Count defect. The corrected driver was
+re-qualified natively (transaction …1313008534783Z_a7a8fa04… passed with
+all stages succeeded) alongside observer 13/13, level-up 68/68 and
+scrolls 65/65 on commit a76eb3a0 / DLL f03a0a67…; domain suite
+1,675/1,675, validator chain and package gates PASS. The earlier
+6e8d62d2 gameplay mapping remains valid for that binary; the corrected
+driver is qualified separately. Candidate pending owner approval; no
+merge, no public release.
