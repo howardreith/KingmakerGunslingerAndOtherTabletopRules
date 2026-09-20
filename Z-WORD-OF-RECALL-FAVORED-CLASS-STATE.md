@@ -146,7 +146,14 @@ with the per-run qualification mapping of the final binary).
 The owner accepted the corrective-pass review and authorized publication
 on 2026-09-20 ("This is acceptable thank you. Please update the release
 notes, merge, push to remote, and cut a new release."). The mission
-branch merged to master and the v0.0.133 public release was cut from it.
+branch merged to master at `f9a663d01624776ad321f6f28b56d2bd9dea59c7`
+and the v0.0.133 public release was published:
+https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.133
+Asset `KingmakerGunslinger-0.0.133-word-of-recall-favored-class.zip`
+SHA-256 `0f1cce34c103f63d7de3169931d1ef7153ac9a648d080d3346cc4713d43d93ad`
+(Publish-Release default MSBuild pipeline, two deterministic builds
+matched, strict package validation, published, not draft, not
+prerelease).
 
 ## Honest boundaries
 
