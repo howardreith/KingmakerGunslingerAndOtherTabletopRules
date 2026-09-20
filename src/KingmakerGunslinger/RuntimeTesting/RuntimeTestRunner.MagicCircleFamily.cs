@@ -46,6 +46,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var matching = new[] { Alignment.LawfulEvil, Alignment.ChaoticGood, Alignment.LawfulNeutral, Alignment.ChaoticNeutral };
                 var opposite = new[] { Alignment.ChaoticGood, Alignment.LawfulEvil, Alignment.ChaoticEvil, Alignment.LawfulGood };
                 var descriptors = new[] { SpellDescriptor.Good, SpellDescriptor.Evil, SpellDescriptor.Chaos, SpellDescriptor.Law };
+                var individualSpells = new[] { "eee384c813b6d74498d1b9cc720d61f4", "2ac7637daeb2aa143a3bae860095b63e", "c3aafbbb6e8fc754fb8c82ede3280051", "1eaf1020e82028d4db55e6e464269e00" };
+                var individualBuffs = new[] { "4a6911969911ce9499bf27dde9bfcedc", "b19e788487556aa4397080ef3dbb3619", "744bec63273df53438c6b76aaaa78382", "a4742d7afde0f4f47b380abed025b219" };
                 var circles = BlueprintBootstrap.MagicCircles;
                 for (int index = 0; index < circles.Length; index++) {
                     var circle = circles[index];
@@ -98,10 +100,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                         observer.Applications == 1 && observer.SourceMissing && observer.CanApply && unresolved != null,
                         "native pending terminal context after permanent controller removal; no source ability or trusted metadata; native faction logic cannot find the removed controller"));
                     unresolved?.Remove();
+                    var publicUnresolved = CircleLostControllerTerminal(controller, recipient, dominated, observer, true);
+                    assertions.Add(Assertion(label + "public-unresolved-source", "fail-open through public AddBuff cloning", observer.Describe(),
+                        observer.Applications == 1 && observer.NativeOwnerFallback && observer.CanApply && publicUnresolved != null,
+                        "public native AddBuff calls CloneFor; original controller was permanently removed and recipient alignment matches the ward"));
+                    publicUnresolved?.Remove();
                     carrier.Remove(); CircleRefresh(area, actors);
                     assertions.Add(Assertion(label + "exit-cleanup", "only this cast removed", "recipient=" + CircleBuffs(recipient, circle.Recipient).Length,
                         CircleBuffs(recipient, circle.Recipient).Length == 0 && area.IsEnded,
                         "native carrier-owned area and derivative ownership"));
+                    var protection = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, individualSpells[index], "native individual Protection spell");
+                    var protectionBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, individualBuffs[index], "native individual Protection terminal");
+                    var faction = recipient.Faction;
+                    try {
+                        // Native individual Protection is allies-only. Use a real
+                        // willing touch without altering its targeting contract.
+                        recipient.Descriptor.SwitchFactions(caster.Faction, true);
+                        book.Rest(); book.AddKnown(1, protection, true);
+                        int protectionSlots = book.GetSpontaneousSlots(1);
+                        CircleCast(caster, recipient, new AbilityData(protection, book), diagnostics);
+                        var individual = CircleBuffs(recipient, protectionBuff).Single();
+                        assertions.Add(Assertion(label + "individual-native-cast", "one first-level slot and original individual duration", "seconds=" + individual.TimeLeft.TotalSeconds,
+                            book.GetSpontaneousSlots(1) == protectionSlots - 1 && Math.Abs(individual.TimeLeft.TotalSeconds - 60 * book.CasterLevel) < 2,
+                            "unchanged native individual spell, targeting and CL-based duration"));
+                        recipient.Descriptor.SwitchFactions(faction, true);
+                        CircleIncomingCast(controller, recipient, controlBook, dominate, dominated, observer, diagnostics);
+                        assertions.Add(Assertion(label + "individual-matching-control", enabled ? "blocked" : "allowed", observer.Describe(),
+                            observer.Applications == 1 && observer.CanApply != enabled && CircleBuffs(recipient, dominated).Length == (enabled ? 0 : 1),
+                            "same real incoming spell and failed save under independently cast native Protection"));
+                        foreach (var applied in CircleBuffs(recipient, dominated)) applied.Remove();
+                        var orphaned = CircleLostControllerTerminal(controller, recipient, dominated, observer, true);
+                        assertions.Add(Assertion(label + "individual-public-unresolved", "fail-open in the shared Protection family", observer.Describe(),
+                            observer.Applications == 1 && observer.NativeOwnerFallback && observer.CanApply && orphaned != null,
+                            "same public terminal delivery; requires the shared component to avoid native owner fallback"));
+                        orphaned?.Remove(); individual.Remove();
+                    }
+                    finally {
+                        foreach (var individual in CircleBuffs(recipient, protectionBuff)) individual.Remove();
+                        recipient.Descriptor.SwitchFactions(faction, true);
+                    }
                 }
             }
             finally {
@@ -110,7 +147,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
         private static Buff CircleLostControllerTerminal(UnitEntityData source, UnitEntityData recipient,
-            BlueprintBuff terminal, CircleControlCastCapture observer)
+            BlueprintBuff terminal, CircleControlCastCapture observer, bool viaPublicClone = false)
         {
             // Constructor(null, owner, ...) substitutes owner as the caster.
             // Model a genuinely unresolved pending application instead: assemble
@@ -132,6 +169,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var trigger = typeof(BuffCollection).GetMethod("TriggerRuleApplyBuff", BindingFlags.Instance | BindingFlags.NonPublic);
                 if (trigger == null) throw new MissingMethodException("Native pending buff dispatch boundary is absent.");
                 observer.Clear();
+                if (viaPublicClone) return recipient.Buffs.AddBuff(terminal, pending, TimeSpan.FromMinutes(1));
                 return (Buff)trigger.Invoke(recipient.Buffs, new object[] { terminal, pending, (TimeSpan?)TimeSpan.FromMinutes(1) });
             }
             finally {
@@ -160,12 +198,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class CircleControlCastCapture : IGlobalRulebookHandler<RuleApplyBuff>, IGlobalRulebookHandler<RuleSavingThrow>
         {
             private readonly UnitEntityData _target; private readonly BlueprintBuff _terminal;
-            internal int Applications, FailedSaves, PassedSaves; internal bool CanApply, SourceMissing;
+            internal int Applications, FailedSaves, PassedSaves; internal bool CanApply, SourceMissing, NativeOwnerFallback;
             internal CircleControlCastCapture(UnitEntityData target, BlueprintBuff terminal) { _target = target; _terminal = terminal; }
-            internal void Clear() { Applications = FailedSaves = PassedSaves = 0; CanApply = SourceMissing = false; }
-            internal string Describe() { return "failedSaves=" + FailedSaves + ";passedSaves=" + PassedSaves + ";applications=" + Applications + ";canApply=" + CanApply + ";sourceMissing=" + SourceMissing; }
+            internal void Clear() { Applications = FailedSaves = PassedSaves = 0; CanApply = SourceMissing = NativeOwnerFallback = false; }
+            internal string Describe() { return "failedSaves=" + FailedSaves + ";passedSaves=" + PassedSaves + ";applications=" + Applications + ";canApply=" + CanApply + ";sourceMissing=" + SourceMissing + ";nativeOwnerFallback=" + NativeOwnerFallback; }
             public void OnEventAboutToTrigger(RuleApplyBuff evt) { }
-            public void OnEventDidTrigger(RuleApplyBuff evt) { if (ReferenceEquals(evt.Initiator, _target) && ReferenceEquals(evt.Blueprint, _terminal)) { Applications++; CanApply = evt.CanApply; SourceMissing = evt.Context != null && evt.Context.MaybeCaster == null && evt.Context.SourceAbility == null; } }
+            public void OnEventDidTrigger(RuleApplyBuff evt) {
+                if (!ReferenceEquals(evt.Initiator, _target) || !ReferenceEquals(evt.Blueprint, _terminal)) return;
+                Applications++; CanApply = evt.CanApply;
+                SourceMissing = evt.Context != null && evt.Context.MaybeCaster == null && evt.Context.SourceAbility == null;
+                NativeOwnerFallback = evt.Context != null && ReferenceEquals(evt.Context.MaybeCaster, _target) &&
+                    evt.Context.ParentContext != null && evt.Context.ParentContext.MaybeCaster == null;
+            }
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt) { if (ReferenceEquals(evt.Initiator, _target)) { if (evt.IsPassed) PassedSaves++; else FailedSaves++; } }
         }

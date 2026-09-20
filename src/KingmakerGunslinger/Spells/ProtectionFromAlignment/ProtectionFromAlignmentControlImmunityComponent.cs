@@ -23,7 +23,7 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
 
             MechanicsContext context = evt.Context;
             BlueprintAbility ability = context == null ? null : context.SourceAbility;
-            UnitEntityData source = context == null ? null : context.MaybeCaster;
+            UnitEntityData source = ProtectionFromAlignmentRuntime.ResolveIncomingSource(context);
             bool sourceClassified = source != null && source.Descriptor != null &&
                 source.Descriptor.Alignment != null;
             ProtectionAlignment sourceAlignment = sourceClassified ?

@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Mechanics;
 using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
@@ -30,6 +33,31 @@ namespace KingmakerGunslinger.Spells.ProtectionFromAlignment
             MentalControlCatalog catalog;
             lock (Gate) { catalog = _catalog; }
             return ProtectionControlImmunityPolicy.Evaluate(catalog, request);
+        }
+
+        internal static UnitEntityData ResolveIncomingSource(MechanicsContext context)
+        {
+            UnitEntityData source = context == null ? null : context.MaybeCaster;
+            if (source == null) return null;
+            // Native BuffCollection.AddBuff calls CloneFor. When its parent's
+            // controller no longer resolves, the MechanicsContext constructor
+            // substitutes the recipient. That fallback is not a controller.
+            // Follow only plain native buff clones; an ability execution context
+            // remains authoritative even when its parent belongs to a summoner.
+            for (int depth = 0; depth < 32; depth++)
+            {
+                if (context.GetType() != typeof(MechanicsContext) ||
+                    !(context.AssociatedBlueprint is BlueprintBuff) ||
+                    !ReferenceEquals(context.MaybeCaster, context.MaybeOwner) ||
+                    context.ParentContext == null) return source;
+                MechanicsContext parent = context.ParentContext;
+                if (parent.MaybeCaster == null) return null;
+                if (!ReferenceEquals(parent.MaybeCaster, source)) return source;
+                context = parent;
+            }
+            // Malformed/cyclic provenance is unresolved, preserving fail-open
+            // policy (or existing exact trusted metadata) rather than guessing.
+            return null;
         }
 
         internal static ProtectionAlignment FromNativeAlignment(Alignment alignment)
