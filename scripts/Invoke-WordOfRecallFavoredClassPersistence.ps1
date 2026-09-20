@@ -108,6 +108,176 @@ function Remove-PersistenceOwnedSave {
     return $deleted
 }
 
+function Invoke-FinalizationStages {
+    # Protected finalization: every remaining stage runs independently, a
+    # stage failure never skips later stages, catalog handles are disposed
+    # through their own protected step, and the final record is attempted
+    # before the aggregate failure propagates. Save deletion and settings or
+    # sidecar restoration remain prohibited while the game process is alive.
+    # A preserved owned save is intentionally NOT excused in the final catalog
+    # assertion: it appears as an unowned new save, that assertion failure is
+    # recorded, and the preserved output stays on disk.
+    param(
+        [System.Collections.Generic.List[object]]$Owned,
+        $Catalog,
+        [string]$TransactionDirectory,
+        $PrimaryFailure,
+        [System.Collections.Generic.List[object]]$Runs,
+        [string]$ModsBeforeJson,
+        [string]$Tx,
+        [int]$ExpectedPhaseCount
+    )
+    $stageFailures = New-Object 'System.Collections.Generic.List[object]'
+    $stageOutcomes = New-Object 'System.Collections.Generic.List[object]'
+    function Add-Outcome([string]$stage, [string]$state, [string]$detail) {
+        $stageOutcomes.Add([ordered]@{ stage = $stage; state = $state; detail = $detail }) }
+    function Add-Failure([string]$stage, [string]$detail) {
+        $stageFailures.Add([ordered]@{ stage = $stage; detail = $detail }) }
+    $ownedDeleted = New-Object 'System.Collections.Generic.List[string]'
+    $preserved = New-Object 'System.Collections.Generic.List[object]'
+    $settingsRestored = $false
+    $noGameProcess = $false
+    $catalogClosed = ($null -eq $Catalog)
+    $preservation = $null
+    $modsMatch = $null
+
+    # Stage 1: guarded process exit. A live game process prohibits every
+    # mutating stage below but never prohibits disposal or reporting.
+    $mutationsProhibited = $false
+    try {
+        Wait-PersistenceExit
+        $noGameProcess = $true
+        Add-Outcome 'process-exit' 'succeeded' $null
+    } catch {
+        $mutationsProhibited = $true
+        Add-Failure 'process-exit' $_.ToString()
+        Add-Outcome 'process-exit' 'failed' $_.ToString()
+    }
+
+    # Stage 2: settings restoration (mutating).
+    if ($mutationsProhibited) {
+        Add-Outcome 'settings-restoration' 'skipped' 'prohibited while the game process is alive'
+    } else {
+        try {
+            Restore-PersistenceSettings
+            $settingsRestored = $true
+            Add-Outcome 'settings-restoration' 'succeeded' $null
+        } catch {
+            Add-Failure 'settings-restoration' $_.ToString()
+            Add-Outcome 'settings-restoration' 'failed' $_.ToString()
+        }
+    }
+
+    # Stage 3: owned-save destructive cleanup (mutating). Preserved output is
+    # never weakened or deleted to satisfy a later stage.
+    if ($mutationsProhibited) {
+        foreach ($save in $Owned) {
+            $preserved.Add([ordered]@{ path = [string]$save.path
+                reason = 'skipped: game process alive'; preserved = $true })
+        }
+        Add-Outcome 'owned-save-cleanup' 'skipped' 'prohibited while the game process is alive'
+    } else {
+        $cleanupFailures = New-Object 'System.Collections.Generic.List[object]'
+        foreach ($save in $Owned) {
+            $save.TransactionDirectory = $TransactionDirectory
+            if (Remove-PersistenceOwnedSave -Save $save -Catalog $Catalog -Failures $cleanupFailures) {
+                $ownedDeleted.Add([string]$save.path)
+            }
+        }
+        foreach ($item in $cleanupFailures) {
+            $preserved.Add($item)
+            Add-Failure 'owned-save-cleanup' ('preserved ' + $item.path + ' (' + $item.reason + ')')
+        }
+        Add-Outcome 'owned-save-cleanup' ($(if ($cleanupFailures.Count -eq 0) { 'succeeded' } else { 'failed' })) (
+            $(if ($cleanupFailures.Count -eq 0) { 'all proven owned saves deleted' }
+              else { ($cleanupFailures | ForEach-Object { $_.path + ': ' + $_.reason }) -join '; ' }))
+    }
+
+    # Stage 4: protected-save catalog assertion (read-only). Preserved owned
+    # output intentionally remains visible to this assertion.
+    if ($null -ne $Catalog) {
+        try {
+            $preservation = Assert-KmgProtectedSaveCatalog -Catalog $Catalog
+            Add-Outcome 'catalog-assertion' 'succeeded' $null
+        } catch {
+            Add-Failure 'catalog-assertion' $_.ToString()
+            Add-Outcome 'catalog-assertion' 'failed' $_.ToString()
+        }
+    } else {
+        Add-Outcome 'catalog-assertion' 'skipped' 'no protected catalog was opened'
+    }
+
+    # Stage 5: catalog handle disposal (non-mutating; always attempted).
+    if ($null -ne $Catalog) {
+        try {
+            Close-KmgProtectedSaveCatalog -Catalog $Catalog
+            $catalogClosed = $true
+            Add-Outcome 'catalog-disposal' 'succeeded' $null
+        } catch {
+            Add-Failure 'catalog-disposal' $_.ToString()
+            Add-Outcome 'catalog-disposal' 'failed' $_.ToString()
+        }
+    } else {
+        Add-Outcome 'catalog-disposal' 'skipped' 'no protected catalog was opened'
+    }
+
+    # Stage 6: sidecar restoration (mutating).
+    if ($mutationsProhibited) {
+        Add-Outcome 'sidecar-restoration' 'skipped' 'prohibited while the game process is alive'
+    } else {
+        try {
+            Restore-PersistenceSidecars
+            Add-Outcome 'sidecar-restoration' 'succeeded' $null
+        } catch {
+            Add-Failure 'sidecar-restoration' $_.ToString()
+            Add-Outcome 'sidecar-restoration' 'failed' $_.ToString()
+        }
+    }
+
+    # Stage 7: complete Mods inventory comparison (read-only).
+    try {
+        $modsAfter = Get-PersistenceModsInventory
+        $modsMatch = ($ModsBeforeJson -ceq ($modsAfter | ConvertTo-Json -Depth 10 -Compress))
+        Write-PersistenceEvidence 'mods-after.json' $modsAfter
+        Add-Outcome 'mods-inventory' ($(if ($modsMatch) { 'succeeded' } else { 'failed' })) $null
+        if (-not $modsMatch) { Add-Failure 'mods-inventory' 'complete Mods inventory differs after the transaction' }
+    } catch {
+        Add-Failure 'mods-inventory' $_.ToString()
+        Add-Outcome 'mods-inventory' 'failed' $_.ToString()
+    }
+
+    $passed = ($null -eq $PrimaryFailure) -and $stageFailures.Count -eq 0 -and
+        $noGameProcess -and $settingsRestored -and $catalogClosed -and
+        ($modsMatch -eq $true) -and $Runs.Count -eq $ExpectedPhaseCount
+
+    $aggregateParts = New-Object 'System.Collections.Generic.List[string]'
+    if ($null -ne $PrimaryFailure) { $aggregateParts.Add('primary: ' + $PrimaryFailure.ToString()) }
+    foreach ($item in $stageFailures) { $aggregateParts.Add($item.stage + ': ' + $item.detail) }
+
+    # Stage 8: the final record is attempted BEFORE any failure propagates.
+    try {
+        Write-PersistenceEvidence 'transaction-result.json' ([ordered]@{ schemaVersion = 1; transactionId = $Tx
+            passed = $passed; phases = @($Runs.ToArray()); stageOutcomes = @($stageOutcomes.ToArray())
+            finalizationFailures = @($stageFailures.ToArray())
+            preservedSaves = $preservation; catalogClosed = $catalogClosed
+            settingsRestored = $settingsRestored; completeModsTreeRestored = $modsMatch
+            ownedSavesDeleted = @($ownedDeleted.ToArray())
+            preservedOwnedSaves = @($preserved.ToArray())
+            cleanupFailed = @($stageFailures | Where-Object stage -CEQ 'owned-save-cleanup').Count -ne 0
+            noGameProcess = $noGameProcess
+            primaryError = if ($null -eq $PrimaryFailure) { $null } else { $PrimaryFailure.ToString() }
+            error = if ($aggregateParts.Count -eq 0) { $null } else { ($aggregateParts -join ' | ') } })
+    } catch {
+        # The evidence destination may be unwritable; the aggregate then
+        # carries the reporting failure alongside every earlier cause.
+        $aggregateParts.Add('result-write: ' + $_.ToString())
+        throw ('Persistence finalization failed before its record could be written: ' + ($aggregateParts -join ' | '))
+    }
+    if (-not $passed) {
+        throw ('Persistence finalization failed: ' + ($aggregateParts -join ' | '))
+    }
+}
+
 $dllSha = (Get-FileHash -LiteralPath (Join-Path $modsRoot 'KingmakerGunslinger\KingmakerGunslinger.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
 $modsBefore = Get-PersistenceModsInventory
 Write-PersistenceEvidence 'mods-before.json' $modsBefore
@@ -176,32 +346,8 @@ try {
     }
 } catch { $failure = $_ }
 finally {
-    Wait-PersistenceExit
-    Restore-PersistenceSettings
-    $cleanupFailures = New-Object 'System.Collections.Generic.List[object]'
-    foreach ($save in $owned) {
-        $save.TransactionDirectory = $transactionDirectory
-        [void](Remove-PersistenceOwnedSave -Save $save -Catalog $catalog -Failures $cleanupFailures)
-    }
-    if ($cleanupFailures.Count -ne 0 -and $null -eq $failure) {
-        $failure = New-Object InvalidOperationException (
-            'Owned-save cleanup preserved files instead of deleting: ' +
-            (($cleanupFailures | ForEach-Object { $_.path + ' (' + $_.reason + ')' }) -join '; '))
-    }
-    $preservation = if ($null -ne $catalog) { Assert-KmgProtectedSaveCatalog -Catalog $catalog } else { $null }
-    if ($null -ne $catalog) { Close-KmgProtectedSaveCatalog -Catalog $catalog }
-    try { Restore-PersistenceSidecars } catch { if ($null -eq $failure) { $failure = $_ } }
-    $modsAfter = Get-PersistenceModsInventory
-    Write-PersistenceEvidence 'mods-after.json' $modsAfter
-    $modsMatch = ($modsBefore | ConvertTo-Json -Depth 10 -Compress) -ceq ($modsAfter | ConvertTo-Json -Depth 10 -Compress)
-    Write-PersistenceEvidence 'transaction-result.json' ([ordered]@{ schemaVersion = 1; transactionId = $tx
-        passed = ($null -eq $failure -and $runs.Count -eq 2 -and $modsMatch); phases = @($runs.ToArray())
-        preservedSaves = $preservation; settingsRestored = $true; completeModsTreeRestored = $modsMatch
-        ownedSavesDeleted = @($owned | Where-Object { -not ($cleanupFailures | Where-Object path -CEQ $_.path) } | ForEach-Object path)
-        preservedOwnedSaves = @($cleanupFailures.ToArray())
-        cleanupFailed = ($cleanupFailures.Count -ne 0); noGameProcess = $true
-        error = if ($null -eq $failure) { $null } else { $failure.ToString() } })
-    if (-not $modsMatch) { throw 'Complete Mods inventory differs after the persistence transaction.' }
+    Invoke-FinalizationStages -Owned $owned -Catalog $catalog `
+        -TransactionDirectory $transactionDirectory -PrimaryFailure $failure -Runs $runs `
+        -ModsBeforeJson ($modsBefore | ConvertTo-Json -Depth 10 -Compress) -Tx $tx -ExpectedPhaseCount 2
 }
-if ($null -ne $failure) { throw $failure }
 Write-Host "PASS fresh-process Favored Class persistence prepare/verify; evidence=$transactionDirectory"
