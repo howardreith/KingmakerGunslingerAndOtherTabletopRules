@@ -2,6 +2,9 @@
 
 Reviewed baseline: `3794fb57bc4ba536d26fce1ca1bafb7bd6dbea23`.
 Branch: `codex/magic-circle-alignment-spells`; draft [PR #19](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/19).
+Validated source commit `1f1dcce6c100d298ddf673ca705514679d513b68` was published
+through the mandated helper. All 1,885 frozen input paths/blobs match that
+committed tree. Subsequent evidence metadata preserves those inputs.
 The [curated evidence](PR19-LEASE-FOLLOWUP.json) records exact identities,
 assertions, native runs, restoration and integration conflicts. Raw evidence
 and packages remain local and uncommitted.
