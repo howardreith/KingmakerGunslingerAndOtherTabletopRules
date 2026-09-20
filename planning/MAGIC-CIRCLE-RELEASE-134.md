@@ -13,10 +13,19 @@ Branch: `codex/magic-circle-alignment-spells`. Preserve history and other worktr
 - [x] Run focused integration/shared orchestration regressions.
 - [x] Run repository validation, full clean domain suite, Release and package.
 - [x] Qualify merged candidate through guarded native scenarios with exact hashes.
-- [ ] Commit and publish through the mandated helper; integrate into master.
-- [ ] Qualify exact clean master binary; publish through existing release helper.
-- [ ] Download and independently verify public assets; restore normal-play bytes.
-- [ ] Record exact final identities and retained qualification limits.
+- [x] Commit and publish through the mandated helper; integrate into master.
+- [x] Qualify exact clean master binary; publish through existing release helper.
+- [x] Download and independently verify public assets; restore normal-play bytes.
+- [x] Record exact final identities and retained qualification limits.
+
+Published [v0.0.134](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.134)
+from master merge `3c1a4b232e09d51dfbb6e90447d3fe825ae38925` after nine successful
+guarded native runs (669 assertions) on the exact release DLL. The earlier random
+save fixture failure remains recorded separately. Two deterministic publication
+builds and independently downloaded public assets match the native-tested package.
+All 136 original normal-play files/settings were restored exactly; no game or
+shared lease remains. Final identities, evidence and retained limitations are in
+[`RELEASE-134-PUBLIC.md`](../reports/magic-circle/RELEASE-134-PUBLIC.md) and its JSON.
 
 Conflict resolutions retain Circle preparation binding plus Word of Recall phase
 plans in shell/native request validation, schema 12, the appended Circle identity
@@ -39,5 +48,5 @@ PASS. Native Circle 269/269 and Word of Recall level-up 68/68 PASS on DLL
 The earlier point-dispel fixture refusal remains FAIL in the evidence; a bounded
 walkable relocation fallback retains the foreign-area guard and restores only
 owned actors. The passing retry did not need that fallback. Final master sealing
-still requires new artifact identities and applicable native checks.
+received new artifact identities and applicable native checks, recorded above.
 See `reports/magic-circle/RELEASE-134-INTEGRATION.json`.
