@@ -64,21 +64,27 @@ namespace KingmakerGunslinger.DomainTests
                 "BlueprintParameterVariants",
                 "m_CachedItems",
                 "FeatureParameterType.LearnSpell",
-                "ReferenceEquals(level.SpellList, classList)",
-                "ReferenceEquals(level.SpellcasterClass, candidate)",
-                "level.SpellLevel != OracleWordOfRecallLevel",
-                "ClearItemCache",
+                "FavoredClassTargetPolicy.Resolve",
+                "HasValidGrantConfiguration",
+                "ReadItemCache",
+                "WriteItemCache",
+                "FavoredClassVariantsTransaction<BlueprintScriptableObject>",
                 "Favored Class Oracle level-6 variants are not singular",
-                "Favored Class variants changed during rollback; restoration refused." })
+                "favored-class.absent",
+                "favored-class.malformed",
+                "favored-class.ambiguous",
+                "favored-class.published",
+                "favored-class.unchanged",
+                "favored-class.failed" })
                 Assertions.True(source.Contains(token),
                     "Favored Class reconciler contract is missing: " + token);
-            Assertions.True(source.Split(new[] { "ReconcileFavoredClass(library, wordOfRecall);" },
+            Assertions.True(source.Split(new[] { "ReconcileFavoredClass(library, wordOfRecall, context);" },
                 StringSplitOptions.None).Length == 3,
                 "The Favored Class variants reconciliation must run an idempotent second pass.");
-            Assertions.True(source.Contains("if (!library.BlueprintsByAssetId.TryGetValue(selectionId, out raw) ||") &&
-                source.Contains("!(raw is BlueprintFeatureSelection selection) ||") &&
-                source.Contains("selection.AllFeatures == null) return null;"),
-                "An absent optional Favored Class integration must remain a safe no-op.");
+            Assertions.True(source.Contains("FavoredClassTargetResolution.Absent(") &&
+                source.Contains("FavoredClassTargetResolution.Malformed(") &&
+                source.Contains("FavoredClassTargetResolution.Ambiguous("),
+                "Optional absence, malformed presence and ambiguity must be distinct outcomes.");
         }
 
         internal static void FavoredClassRouteScenarioContract()
