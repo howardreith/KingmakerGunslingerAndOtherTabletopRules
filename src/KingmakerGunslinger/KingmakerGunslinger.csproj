@@ -318,6 +318,7 @@
     <Compile Include="Spells\MagicCircle\MagicCircleAreaLifetime.cs" />
     <Compile Include="Blueprints\MagicCircleBlueprints.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleFamily.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleAcquisition.cs" />
     <Compile Include="Spells\MagicCircle\MagicCircleSpecialistSpellCachePatches.cs" />
     <Compile Include="Spells\MagicCircle\MagicCircleScrollVendors.cs" />
     <Compile Include="Spells\MagicCircle\MagicCircleFinalLiveReconciler.cs" />

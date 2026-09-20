@@ -238,6 +238,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (individual != null) individual.Remove();
                 stage = "four-variant-native-control";
                 CircleFamily(caster, bearer, recipient, controller, book, actors, assertions, diagnostics);
+                stage = "native-scroll-acquisition";
+                CircleAcquisition(caster, bearer, recipient, book, actors, prototypes, assertions, diagnostics);
                 stage = "lifecycle";
                 CircleLifecycle(caster, bearer, recipient, book, circle, actors, assertions, diagnostics);
                 stage = "complete";
