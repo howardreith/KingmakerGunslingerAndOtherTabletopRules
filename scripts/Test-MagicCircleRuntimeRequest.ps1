@@ -42,6 +42,17 @@ Assert-Throws {
         -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
         -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' }
 } 'magic-circle-native-rejects-baseline'
+$native = New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-ui' @workingTimeouts `
+    -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
+if ($native.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
+    $failures.Add('magic-circle-ui-exact-working-save')
+}
+Assert-Throws {
+    New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-ui' @workingTimeouts `
+        -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
+        -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' }
+} 'magic-circle-ui-rejects-baseline'
 foreach ($phase in @('prepare', 'verify', 'cleanup', 'absent', 'scene')) {
     $request = New-KmgRuntimeRequest -Scenario "working-save-magic-circle-$phase" @workingTimeouts `
         -ExpectedVersion $version -TimeoutSeconds 180 -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `

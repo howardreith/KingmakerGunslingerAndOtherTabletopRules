@@ -3792,7 +3792,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "magic-circle-against-evil"
       },
-      "technicalStatus": "integrated; native UI acceptance pending",
+      "technicalStatus": "native desktop consumer checkpoint PASS; final artifact/profile qualification pending",
       "visualReview": {
         "status": "approved",
         "reviewedExportSha256": "c6c8aa108c1beb1d1f37d78a84437d93da2743455cc70d0680862d6322484167",
@@ -3816,7 +3816,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "magic-circle-against-good"
       },
-      "technicalStatus": "integrated; native UI acceptance pending",
+      "technicalStatus": "native desktop consumer checkpoint PASS; final artifact/profile qualification pending",
       "visualReview": {
         "status": "approved",
         "reviewedExportSha256": "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a",
@@ -3840,7 +3840,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "magic-circle-against-law"
       },
-      "technicalStatus": "integrated; native UI acceptance pending",
+      "technicalStatus": "native desktop consumer checkpoint PASS; final artifact/profile qualification pending",
       "visualReview": {
         "status": "approved",
         "reviewedExportSha256": "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5",
@@ -3864,7 +3864,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "magic-circle-against-chaos"
       },
-      "technicalStatus": "integrated; native UI acceptance pending",
+      "technicalStatus": "native desktop consumer checkpoint PASS; final artifact/profile qualification pending",
       "visualReview": {
         "status": "approved",
         "reviewedExportSha256": "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f",
@@ -8577,12 +8577,12 @@
       "type": "BlueprintAbility",
       "name": "Magic Circle against Evil Ability",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "learning / preparation / spellbook / action bar / spell tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.TouchDelivery",
@@ -8590,12 +8590,12 @@
       "type": "BlueprintAbility",
       "name": "Magic Circle against Evil TouchDelivery",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "held touch / action bar / touch tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.Carrier",
@@ -8603,12 +8603,12 @@
       "type": "BlueprintBuff",
       "name": "Magic Circle against Evil Carrier",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "carrier buff tooltip and remaining duration",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.Recipient",
@@ -8616,12 +8616,12 @@
       "type": "BlueprintBuff",
       "name": "Magic Circle against Evil Recipient",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "recipient proximity-dependent buff tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.Scroll",
@@ -8629,12 +8629,12 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Magic Circle against Evil Scroll",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "inventory / merchant / item tooltip / scroll casting and scribing",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.Area",
@@ -8655,12 +8655,12 @@
       "type": "BlueprintAbility",
       "name": "Magic Circle against Good Ability",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "learning / preparation / spellbook / action bar / spell tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.TouchDelivery",
@@ -8668,12 +8668,12 @@
       "type": "BlueprintAbility",
       "name": "Magic Circle against Good TouchDelivery",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "held touch / action bar / touch tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.Carrier",
@@ -8681,12 +8681,12 @@
       "type": "BlueprintBuff",
       "name": "Magic Circle against Good Carrier",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "carrier buff tooltip and remaining duration",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.Recipient",
@@ -8694,12 +8694,12 @@
       "type": "BlueprintBuff",
       "name": "Magic Circle against Good Recipient",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "recipient proximity-dependent buff tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.Scroll",
@@ -8707,12 +8707,12 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Magic Circle against Good Scroll",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "inventory / merchant / item tooltip / scroll casting and scribing",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.Area",
@@ -8733,12 +8733,12 @@
       "type": "BlueprintAbility",
       "name": "Magic Circle against Law Ability",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "learning / preparation / spellbook / action bar / spell tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.TouchDelivery",
@@ -8746,12 +8746,12 @@
       "type": "BlueprintAbility",
       "name": "Magic Circle against Law TouchDelivery",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "held touch / action bar / touch tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.Carrier",
@@ -8759,12 +8759,12 @@
       "type": "BlueprintBuff",
       "name": "Magic Circle against Law Carrier",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "carrier buff tooltip and remaining duration",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.Recipient",
@@ -8772,12 +8772,12 @@
       "type": "BlueprintBuff",
       "name": "Magic Circle against Law Recipient",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "recipient proximity-dependent buff tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.Scroll",
@@ -8785,12 +8785,12 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Magic Circle against Law Scroll",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "inventory / merchant / item tooltip / scroll casting and scribing",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.Area",
@@ -8811,12 +8811,12 @@
       "type": "BlueprintAbility",
       "name": "Magic Circle against Chaos Ability",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "learning / preparation / spellbook / action bar / spell tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.TouchDelivery",
@@ -8824,12 +8824,12 @@
       "type": "BlueprintAbility",
       "name": "Magic Circle against Chaos TouchDelivery",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "held touch / action bar / touch tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.Carrier",
@@ -8837,12 +8837,12 @@
       "type": "BlueprintBuff",
       "name": "Magic Circle against Chaos Carrier",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "carrier buff tooltip and remaining duration",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.Recipient",
@@ -8850,12 +8850,12 @@
       "type": "BlueprintBuff",
       "name": "Magic Circle against Chaos Recipient",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "recipient proximity-dependent buff tooltip",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.Scroll",
@@ -8863,12 +8863,12 @@
       "type": "BlueprintItemEquipmentUsable",
       "name": "Magic Circle against Chaos Scroll",
       "module": "Magic Circle spells",
-      "publication": "stable hydration identity; content publication follows startup setting; native UI pending",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
       "surface": "inventory / merchant / item tooltip / scroll casting and scribing",
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native UI placement still requires qualification."
+      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.Area",
@@ -9338,6 +9338,6 @@
     "paintedConsumerCount": 157,
     "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
     "technicalStatus": "qualified-paired-census-and-working-save-smoke",
-    "magicCircleStatus": "source mappings integrated; separate native UI acceptance pending"
+    "magicCircleStatus": "twenty native desktop consumers qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json; final artifact/profile checks pending"
   }
 }

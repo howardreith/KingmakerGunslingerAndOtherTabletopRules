@@ -1023,6 +1023,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleUi.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleLifetime.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleDispel.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCirclePersistence.cs" />

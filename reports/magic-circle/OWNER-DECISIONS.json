@@ -17,7 +17,7 @@
       128
     ],
     "reviewArtifact": "artifacts/magic-circle/art-preview/review.html",
-    "approvalScope": "Exact reviewed exported pixels; native UI acceptance remains pending.",
+    "approvalScope": "Exact reviewed exported pixels. Native UI evidence is separate: reports/magic-circle/NATIVE-UI-AND-LEARNING.json; no additional owner decision is implied.",
     "exports": [
       {
         "key": "magic-circle-against-evil",

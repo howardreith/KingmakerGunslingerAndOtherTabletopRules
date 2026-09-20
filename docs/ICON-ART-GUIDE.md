@@ -283,5 +283,6 @@ painting is intentionally shared across its spell, held touch, timed carrier,
 proximity recipient and scroll item; native frames, casting effects and sounds
 remain native. The four area identities have no independent icon. These new
 scroll items use the approved alignment paintings directly; the three protected
-strategic scroll composites retain their existing assignments. Native UI
-acceptance for Magic Circle is still pending and separate from pixel approval.
+strategic scroll composites retain their existing assignments. The native desktop consumer checkpoint passes for all twenty Magic Circle
+roles; see `reports/magic-circle/NATIVE-UI-AND-LEARNING.json`. Final artifact and
+profile qualification remain pending. This is separate from owner pixel approval.
