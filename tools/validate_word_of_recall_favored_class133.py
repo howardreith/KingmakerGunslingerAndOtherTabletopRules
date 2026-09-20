@@ -39,6 +39,7 @@ def validate(root: Path) -> None:
         "favoredClassRuntimeQualified": True,
         "favoredClassPersistenceQualified": True,
         "favoredClassOwnedSaveCleanupHardened": True,
+        "favoredClassMatchedControlQualified": True,
         "runtimeQualificationPending": False,
         "compatibilityRuntimeQualificationPending": True,
     }

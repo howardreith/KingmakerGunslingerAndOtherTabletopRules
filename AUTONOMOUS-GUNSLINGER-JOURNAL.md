@@ -4194,3 +4194,26 @@ persistence prepare 6/6 + verify 8/8, level-up acceptance 67/67 twice
 consecutively, scroll control 65/65; domain suite 1,669/1,669, full
 validator chain and strict package gates PASS. Candidate remains pending
 owner approval; no merge, no public release.
+
+# 2026-09-20 Second Favored Class corrective pass qualified (final binary 6e8d62d2)
+
+Owner review findings 1-4 closed on \`codex/z-word-of-recall-favored-class\`:
+publication now runs inside one failure contract with attempt-marked owned
+writes (four behavioral regressions demonstrated red against the committed
+transaction, then green); the intended per-level child validates its
+selection-side contract (specific level, zero penalty, class spell-level
+prerequisite) separately from the grant component with malformed
+no-publication regressions; the ordinary-spell contradiction was resolved
+by evidence — the installed SpellsKnown table is cumulative and the native
+ApplySpellbook reader offers the difference (0.0.129 was right; the
+fixture extras are CotW mystery bonus spells) — proven live by a matched
+native control whose ordinary choices are identical while the Recall route
+adds exactly its one grant; and the persistence driver's destructive
+cleanup now revalidates the current file against its completed-save
+receipt hash before deletion, preserving changed or replaced output, with
+seven filesystem regressions and cleanup-failure ordering guarantees. Final
+binary \`6e8d62d2\` / DLL \`56f53d00…\` re-ran every scenario: level-up 68/68
+twice consecutively (including the matched control), scrolls 65/65,
+observer 13/13, persistence prepare 6/6 + verify 8/8 with cleanupFailed
+false. Domain suite 1,675/1,675, validator chain and package gates PASS.
+Candidate remains pending owner approval; no merge, no public release.
