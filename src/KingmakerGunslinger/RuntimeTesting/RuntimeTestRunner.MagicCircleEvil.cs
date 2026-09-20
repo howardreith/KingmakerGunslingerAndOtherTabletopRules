@@ -79,9 +79,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
                     "b3a505fb61437dc4097f43c3f8f9a4cf", "native Sorcerer class");
                 caster.Stats.Charisma.BaseValue = 30;
-                AdvanceDisposableSpellcaster(caster.Descriptor, sorcerer, 6, ref levelController);
+                AdvanceDisposableSpellcaster(caster.Descriptor, sorcerer, 8, ref levelController);
                 var book = caster.Descriptor.Spellbooks.Single(value => ReferenceEquals(value.Blueprint, sorcerer.Spellbook));
-                while (book.CasterLevel < 6) book.AddCasterLevel();
+                while (book.CasterLevel < 8) book.AddCasterLevel();
                 book.UpdateAllSlotsSize(false);
                 book.Rest();
                 book.AddKnown(3, circle.Spell, true);
@@ -236,6 +236,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     recipient.Buffs.Enumerable.Contains(individual) && Math.Abs(individual.TimeLeft.TotalSeconds - 300) < 2,
                     "both carriers removed; no blueprint-wide recipient removal"));
                 if (individual != null) individual.Remove();
+                stage = "lifecycle";
+                CircleLifecycle(caster, bearer, recipient, book, circle, actors, assertions, diagnostics);
                 stage = "complete";
             }
             catch (Exception ex) { failure = stage + ": " + ex; }
@@ -328,9 +330,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static void CircleCast(UnitEntityData caster, UnitEntityData target, AbilityData data, List<string> evidence)
+        { CircleCast(caster, new TargetWrapper(target), data, evidence); }
+
+        private static void CircleCast(UnitEntityData caster, TargetWrapper target, AbilityData data, List<string> evidence)
         {
-            var command = new UnitUseAbility(data, new TargetWrapper(target));
-            evidence.Add("cast:targetable=" + data.CanTarget(target) + ";available=" + data.IsAvailable + ";canStart=" + command.CanStart);
+            var command = new UnitUseAbility(data, target);
+            evidence.Add("cast:ability=" + data.Blueprint.AssetGuid + ";level=" + data.SpellLevel + ";targetable=" + data.CanTarget(target) + ";available=" + data.IsAvailable + ";canStart=" + command.CanStart);
             if (!data.CanTarget(target) || !data.IsAvailable || !command.CanStart)
                 throw new InvalidOperationException("Native circle cast unavailable.");
             command.IgnoreCooldown(TimeSpan.Zero);

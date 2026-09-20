@@ -24,6 +24,7 @@ using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Spells.ProtectionFromAlignment;
+using KingmakerGunslinger.Spells.MagicCircle;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -73,6 +74,7 @@ namespace KingmakerGunslinger.Blueprints
                 () => CreateArea(alignment, recipient));
             var carrier = registry.Register<BlueprintBuff>(symbol + "Carrier",
                 () => CreateCarrier(donorBuff, alignment, icon, area, control));
+            area.GetComponent<MagicCircleAreaLifetime>().Carrier = carrier;
             var spell = registry.Register<BlueprintAbility>(symbol + "Ability",
                 () => CreateSpell(donor, alignment, descriptor, icon, carrier, control));
             return new MagicCircleBlueprintSet(alignment, spell, carrier, area, recipient);
@@ -127,7 +129,10 @@ namespace KingmakerGunslinger.Blueprints
             delivery.name = "$KMG_MagicCircle_AllCoveredCreatures";
             delivery.Buff = recipient;
             delivery.Condition = new ConditionsChecker { Conditions = Array.Empty<Condition>() };
-            area.ComponentsArray = new BlueprintComponent[] { delivery };
+            MagicCircleAreaLifetime.VerifyContract();
+            var lifetime = ScriptableObject.CreateInstance<MagicCircleAreaLifetime>();
+            lifetime.name = "$KMG_MagicCircle_OriginalCarrierLifetime";
+            area.ComponentsArray = new BlueprintComponent[] { delivery, lifetime };
             return area;
         }
 

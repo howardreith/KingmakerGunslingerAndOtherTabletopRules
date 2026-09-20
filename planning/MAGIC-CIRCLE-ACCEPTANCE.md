@@ -1,6 +1,6 @@
 # Magic Circle implementation and acceptance
 
-Status: implementation in progress; no Magic Circle runtime or visual acceptance.
+Status: implementation in progress. Evil core and lifetime/dispel native checkpoints pass; full feature and visual acceptance remain incomplete.
 
 ## Baseline and boundaries
 
@@ -48,12 +48,12 @@ from these rules after inspecting the installed contracts.
 | Gate | Required evidence | Current status |
 | --- | --- | --- |
 | A baseline/shared contract | installed RuleApplyBuff/area IL, donor inventory, Protection regressions, clean baseline checks | PASS baseline and guarded donor inventory; gameplay pending |
-| B Evil vertical slice | native cast on another bearer, area membership, typed outcomes, actual control positive/negative, resource debit | pending |
-| C ownership/lifecycle | overlaps, movement/teleport, dispel/expiry, unconscious/dead/unload, transition/save/load, OFF hydration | pending |
+| B Evil vertical slice | native cast on another bearer, area membership, typed outcomes, actual control positive/negative, resource debit | core PASS; hostile touch/full control-spell coverage pending |
+| C ownership/lifecycle | overlaps, movement/teleport, dispel/expiry, unconscious/dead/unload, transition/save/load, OFF hydration | same-caster overlap, native dispels, Extend, faction changes, unconsciousness, expiry, caster death PASS; persistence/remaining cases pending |
 | D complete family | four variants, verified lists/optional entitlements, scrolls/vendors/scribing, configuration text, icon graph | pending |
 | E final candidate | validation, complete clean domain suite, Release build, package gates, exact-artifact native matrix | pending |
 | Art acceptance | original sources/exports/catalog mappings, protected assignments, native UI, exact owner approvals | pending |
-| Publication | coherent qualified commits, guarded helper, owner-review branch/PR | branch created; no commits yet |
+| Publication | coherent qualified commits, guarded helper, owner-review branch/PR | audit/core commits published through helper; lifecycle checkpoint ready; no PR yet |
 
 ## Acceptance matrix
 
@@ -72,11 +72,12 @@ idempotence/foreign-safe rollback; module-OFF hydration; every visible icon/text
 
 ## Resume
 
-Inspect native area ownership and donor graphs, then implement the Evil vertical
-slice. Continue the mission through the remaining checkpoints without treating a
-build, checkpoint report, or policy test as native acceptance. Record exact hashes,
-profiles and evidence paths here; preserve raw artifacts locally under `artifacts`
-or the guarded evidence root. No blocker identified yet.
+Continue with guarded persistence/module-OFF hydration and scene reconstruction,
+then complete the family, touch delivery, lists, scrolls and remaining acceptance
+matrix. The latest source-qualified native checkpoint is recorded below and in
+`reports/magic-circle/EVIL-LIFETIME-AND-DISPEL.json`. Preserve raw artifacts locally
+under `artifacts` or the guarded evidence root. Owner decisions remain pending for
+bearer death and the four original icon exports; independent work continues.
 
 ## Checkpoint A: observed native contract
 
@@ -223,3 +224,99 @@ cleanup) versus persistence around the corpse until original expiry. PF1's
 entry does not specify that case; AGENTS design authority reserves unresolved
 adaptations for the owner. Original caster death and unconsciousness are separate.
 The four exported paintings remain awaiting owner approval; silence is not approval.
+
+## Lifecycle work after published Evil core
+
+Core checkpoint committed/published as
+`07db7d7de73b65b887f9a32f0954ca7b03a594a9` with the required helper.
+The next candidate adds a narrow Magic-Circle-only native area lifetime guard.
+The installed generic `EndEffectIfNecessary` ends source spell areas when their
+caster dies/disappears. PF1 timed duration has no concentration requirement here;
+the living bearer must retain the original circle deadline and original caster
+context. The guard reuses the native serialized AddAreaEffect area-instance link
+and exact parent Buff.Context. It adds no custom ownership state, timer or scan.
+An absent/inactive/mismatched carrier ends only that exact area. Native membership,
+line of effect, entry/exit and scene reconstruction remain authoritative.
+
+The expanded native fixture now uses a real level-8 Sorcerer for a legal level-4
+Extended cast, checks original doubled duration and one higher-slot debit,
+exercises unconscious caster/bearer through native life processing, crosses both
+sides of the original expiration with the existing paused owned-controller clock
+pattern, then deals actual lethal damage to the original caster. Source and
+runtime qualification of this candidate are pending. Bearer-death adaptation is
+still pending owner direction and is not accepted by this work.
+
+Lifecycle candidate 1: repository/full 1,657-test/clean Release/strict package
+PASS. Package `4a1a5c8c353f00384d8d6362c6a2a3c87715a2929a8015ce797a92f7dbff7954`;
+DLL `49b79b50cabf1cc9a83e7ebbdccb923c45e3cbe20691f92d42db4a3c19d2ae10`;
+MVID `1865faa3-6d82-40a9-8e67-94cbb1ecb2ba`.
+Native `20260919T2349049074541Z-disposable-magic-circle-evil` FAIL, 23/24
+assertions PASS: Extend 9,600 seconds and one level-4 slot (5 -> 4), unconscious
+caster/bearer, original expiry boundary, core regression and exact cleanup PASS.
+Caster received actual lethal damage and was Dead, but IsFinallyDead stayed false.
+Installed UnitLifeController.OnUnitDeath IL shows this depends on player-faction
+TrueDeath difficulty, not elapsed death animation. The owned fixture now uses its
+existing disposable hostile faction with GiveExperienceOnDeath=false before lethal
+damage. No global difficulty, life result flag, or production mechanic is changed.
+No save writes occurred. Final caster death remains unqualified until the rerun.
+
+Lifecycle candidate 2: all source/package checks PASS, complete suite 1,657/1,657.
+Package `acdc0d7f26f3534fce1d94fda030677a8d3f5829d6091ace71eb1b41208901a4`;
+DLL `45dc2f4584f587fb909ee4c8cc3a7ecc7ce66d1a8652c56572b85135037adeab`.
+Native `20260919T2356360754250Z-disposable-magic-circle-evil` FAIL: the new
+final-death prerequisite used IsPlayersEnemy, which reads UnitGroup attack
+factions, not the cloned blueprint's faction. It stopped before lethal damage;
+core, Extend, unconsciousness, expiry and cleanup still pass. Installed native
+SwitchFactions(faction, resetAttackFactions) updates the descriptor and faction
+handlers. The fixture now uses that API and checks the exact non-player faction
+contract that OnUnitDeath actually consumes. Difficulty remains untouched.
+
+The next lifecycle candidate also closes the native area-dispel ownership gap:
+RuleDispelMagic.OnTrigger calls AreaEffect.ForceEnd (sets m_ForceEnded only),
+leaving AddAreaEffect's serialized carrier link alive. A successful native rule
+for an exact registered Magic Circle area now removes only its exact active
+parent carrier. Foreign clones and generic ForceEnd/temporary scene unloading
+are untouched. Native casts test derivative-recipient non-dispellability, one
+carrier removed from two overlaps, and point-area dispel removing its carrier.
+Real native dice are bounded to twelve attempts; no outcomes are forced.
+
+Lifecycle candidate 3: repository/full 1,657-test/clean Release/package PASS.
+Package `67e8278dcd2164c67a9b622ad9938096019a191913cf6d011b124df7288bd32a`;
+DLL `946ff58a4a0c9f34c3344eff366a7549d056c7b75a1df94349ed759dbc6d9697`;
+MVID `2d6249a3-0ea1-4593-9911-bcba7bc5b9e9`.
+Native `20260920T0005560907500Z-disposable-magic-circle-evil` FAIL before Dispel
+casting: the fixture constructed a bare variant AbilityData, which cannot spend
+its known parent spell. Core regression and exact cleanup PASS; no save writes.
+Native graph: creature variant `143775c49ae6b7446b805d3b2e702298`, point variant
+`9f6daa93291737c40b8a432c374226a7`. Installed AbilityData constructors/availability
+and existing Brown-Fur native-cast fixtures verify the required production path:
+`new AbilityData(new AbilityData(root, book), selectedVariant)`. The fixture now
+uses that path (no SpellLevel override or availability bypass). Added exact
+ability/level diagnostics and native bearer/recipient faction-change checks.
+
+## Evil lifetime/dispel native checkpoint (candidate 4)
+
+Guarded run `20260920T0014148181378Z-disposable-magic-circle-evil`: PASS 29/29.
+Repository validation, full clean 1,657-test suite, clean Release, strict package
+all PASS separately. Exact hashes/source state are in
+`reports/magic-circle/EVIL-LIFETIME-AND-DISPEL.json`; this is the recorded
+pre-commit source candidate, not qualification of a later rebuilt artifact.
+
+Actual targeted Dispel Magic spent one slot and left two derivative contributions
+unchanged (zero eligible RuleDispelMagic events). Targeting the bearer removed
+one exact carrier/contribution from two. Point-targeting the remaining area
+succeeded at native roll 12 + CL8 versus DC19 and removed its exact carrier.
+No independent timed recipient spell exists. Both native dispels succeeded on
+one attempt in this run; earlier fixture failures remain recorded above.
+
+Native Extend: 9,600 seconds at CL8, one level-4 slot (5 -> 4). Bearer and
+recipient faction switches preserve the same contribution and original deadline.
+Unconscious caster/bearer retain coverage. Original expiry removes all owned
+contributions. Actual lethal damage yields Dead and FinallyDead while the living
+bearer's original timed circle remains active, retaining caster/CL context.
+Exact final actor/area/buff cleanup and no-save-write checks PASS.
+
+Persistence, temporary unload/scene reload, permanent despawn, stronger equipment,
+other casters and alignment combinations, learning/acquisition and remaining
+control deliveries still need their own qualification. Bearer death remains an
+owner rules-adaptation decision; artwork remains unapproved. No release claim.
