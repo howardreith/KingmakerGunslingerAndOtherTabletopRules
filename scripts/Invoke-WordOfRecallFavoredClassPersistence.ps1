@@ -55,10 +55,59 @@ function Register-PersistenceOwnedSave([string]$runDirectory) {
         throw 'Disposable save ownership is ambiguous; no deletion is authorized.'
     }
     if (@($owned | Where-Object path -CEQ $path).Count -ne 0) { throw 'Duplicate save lifecycle receipt.' }
+    $completedPath = Join-Path $runDirectory 'word-of-recall-favored-class-persistence.json'
+    if (-not (Test-Path -LiteralPath $completedPath -PathType Leaf)) { throw 'Owned save lacks its completed-save receipt.' }
+    $completed = Get-Content -LiteralPath $completedPath -Raw | ConvertFrom-Json
+    if ($completed.savedInfo -eq $null -or [string]::IsNullOrWhiteSpace([string]$completed.savedInfo.sha256) -or
+        [string]$completed.savedInfo.name -cne $name -or
+        [IO.Path]::GetFullPath([string]$completed.savedInfo.path) -cne $path) {
+        throw 'Completed-save receipt does not prove this owned save identity.'
+    }
     $owned.Add([ordered]@{ name = $name; path = $path; phase = 'prepare'; runId = $entry.runId; receipt = $receiptPath
+        completedReceiptPath = $completedPath; completedSha256 = [string]$completed.savedInfo.sha256
         createdSha256 = if (Test-Path -LiteralPath $path) { (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null } })
     Write-PersistenceEvidence 'owned-saves.json' @($owned.ToArray())
 }
+function Remove-PersistenceOwnedSave {
+    # Deletes one transaction-owned save only when the current file is
+    # revalidated against its authoritative completed-save identity: exact
+    # safe path inside the catalog directory, never part of the protected
+    # inventory, current hash equal to both the completed receipt hash and
+    # the creation hash. On replacement, mismatch, missing proof or any
+    # error the file is PRESERVED and the failure recorded.
+    param($Save, $Catalog, [System.Collections.Generic.List[object]]$Failures)
+    $reason = $null
+    $deleted = $false
+    try {
+        if ($null -eq $Save -or [string]::IsNullOrWhiteSpace([string]$Save.completedSha256) -or
+            [string]::IsNullOrWhiteSpace([string]$Save.createdSha256)) {
+            $reason = 'missing authoritative owned-save proof'
+        } else {
+            $safePath = [IO.Path]::GetFullPath([string]$Save.path)
+            if ([IO.Path]::GetDirectoryName($safePath) -cne $Catalog.Directory -or
+                @($Catalog.Files | Where-Object path -CEQ $safePath).Count -ne 0) {
+                $reason = 'cleanup target escaped its proven transaction'
+            } elseif (-not (Test-Path -LiteralPath $safePath -PathType Leaf)) {
+                $reason = 'owned save file is absent'
+            } else {
+                $current = (Get-FileHash -LiteralPath $safePath -Algorithm SHA256).Hash.ToLowerInvariant()
+                if ($current -cne $Save.completedSha256) { $reason = 'current file differs from its completed-save receipt (changed or replaced output)' }
+                elseif ($current -cne $Save.createdSha256) { $reason = 'current file differs from its creation hash' }
+                else {
+                    $copy = Join-Path $Save.TransactionDirectory ([IO.Path]::GetFileName($safePath))
+                    if (-not (Test-Path -LiteralPath $copy)) { Copy-Item -LiteralPath $safePath -Destination $copy }
+                    Remove-Item -LiteralPath $safePath -Force
+                    $deleted = $true
+                }
+            }
+        }
+    } catch { $reason = 'cleanup error: ' + $_.ToString() }
+    if (-not $deleted) {
+        $Failures.Add([ordered]@{ path = [string]$Save.path; reason = $reason; preserved = $true })
+    }
+    return $deleted
+}
+
 $dllSha = (Get-FileHash -LiteralPath (Join-Path $modsRoot 'KingmakerGunslinger\KingmakerGunslinger.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
 $modsBefore = Get-PersistenceModsInventory
 Write-PersistenceEvidence 'mods-before.json' $modsBefore
@@ -129,15 +178,15 @@ try {
 finally {
     Wait-PersistenceExit
     Restore-PersistenceSettings
+    $cleanupFailures = New-Object 'System.Collections.Generic.List[object]'
     foreach ($save in $owned) {
-        if (Test-Path -LiteralPath $save.path -PathType Leaf) {
-            $safePath = [IO.Path]::GetFullPath($save.path)
-            if ([IO.Path]::GetDirectoryName($safePath) -cne $catalog.Directory -or
-                @($catalog.Files | Where-Object path -CEQ $safePath).Count -ne 0) { throw 'Owned-save cleanup target escaped its proven transaction.' }
-            $copy = Join-Path $transactionDirectory ([IO.Path]::GetFileName($safePath))
-            if (-not (Test-Path -LiteralPath $copy)) { Copy-Item -LiteralPath $safePath -Destination $copy }
-            Remove-Item -LiteralPath $safePath -Force
-        }
+        $save.TransactionDirectory = $transactionDirectory
+        [void](Remove-PersistenceOwnedSave -Save $save -Catalog $catalog -Failures $cleanupFailures)
+    }
+    if ($cleanupFailures.Count -ne 0 -and $null -eq $failure) {
+        $failure = New-Object InvalidOperationException (
+            'Owned-save cleanup preserved files instead of deleting: ' +
+            (($cleanupFailures | ForEach-Object { $_.path + ' (' + $_.reason + ')' }) -join '; '))
     }
     $preservation = if ($null -ne $catalog) { Assert-KmgProtectedSaveCatalog -Catalog $catalog } else { $null }
     if ($null -ne $catalog) { Close-KmgProtectedSaveCatalog -Catalog $catalog }
@@ -148,7 +197,9 @@ finally {
     Write-PersistenceEvidence 'transaction-result.json' ([ordered]@{ schemaVersion = 1; transactionId = $tx
         passed = ($null -eq $failure -and $runs.Count -eq 2 -and $modsMatch); phases = @($runs.ToArray())
         preservedSaves = $preservation; settingsRestored = $true; completeModsTreeRestored = $modsMatch
-        ownedSavesDeleted = @($owned | ForEach-Object path); noGameProcess = $true
+        ownedSavesDeleted = @($owned | Where-Object { -not ($cleanupFailures | Where-Object path -CEQ $_.path) } | ForEach-Object path)
+        preservedOwnedSaves = @($cleanupFailures.ToArray())
+        cleanupFailed = ($cleanupFailures.Count -ne 0); noGameProcess = $true
         error = if ($null -eq $failure) { $null } else { $failure.ToString() } })
     if (-not $modsMatch) { throw 'Complete Mods inventory differs after the persistence transaction.' }
 }

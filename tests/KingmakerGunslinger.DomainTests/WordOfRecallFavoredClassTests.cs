@@ -123,6 +123,42 @@ namespace KingmakerGunslinger.DomainTests
                 "The ordinary filler picks must never consume the canonical Word of Recall.");
         }
 
+        internal static void PersistenceDriverCleanupContract()
+        {
+            string root = Environment.CurrentDirectory;
+            string driver = File.ReadAllText(Path.Combine(root, "scripts",
+                "Invoke-WordOfRecallFavoredClassPersistence.ps1"));
+            string selfTest = File.ReadAllText(Path.Combine(root, "scripts",
+                "Test-WordOfRecallFavoredClassPersistence.ps1"));
+            foreach (string token in new[] {
+                "function Remove-PersistenceOwnedSave",
+                "completedSha256",
+                "createdSha256",
+                "changed or replaced output",
+                "preserved = $true",
+                "cleanupFailed",
+                "preservedOwnedSaves",
+                "Close-KmgProtectedSaveCatalog" })
+                Assertions.True(driver.Contains(token),
+                    "Persistence driver cleanup contract is missing: " + token);
+            foreach (string token in new[] {
+                "Remove-PersistenceOwnedSave",
+                "completed-save receipt",
+                "missing authoritative owned-save proof",
+                "owned save file is absent",
+                "escaped its proven transaction",
+                "checks=$checks" })
+                Assertions.True(selfTest.Contains(token),
+                    "Persistence cleanup filesystem regression lacks: " + token);
+            // Cleanup failures must be recorded before any throw and cannot
+            // skip catalog disposal.
+            int cleanupIndex = driver.IndexOf("foreach ($save in $owned)", StringComparison.Ordinal);
+            int catalogIndex = driver.IndexOf("Close-KmgProtectedSaveCatalog", StringComparison.Ordinal);
+            int resultIndex = driver.IndexOf("'transaction-result.json'", StringComparison.Ordinal);
+            Assertions.True(cleanupIndex >= 0 && catalogIndex > cleanupIndex && resultIndex > catalogIndex,
+                "Cleanup, catalog disposal and the failure record must run in that order.");
+        }
+
         internal static void FavoredClassObserverContract()
         {
             string root = Environment.CurrentDirectory;
