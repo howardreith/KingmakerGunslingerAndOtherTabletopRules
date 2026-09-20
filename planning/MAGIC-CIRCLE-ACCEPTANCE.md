@@ -1,6 +1,6 @@
 # Magic Circle implementation and acceptance
 
-Status: implementation in progress. Evil core, lifetime/dispel, bearer death, fresh save/load in all four settings combinations, and native scene reconstruction pass. Full family and native UI acceptance remain incomplete.
+Status: all four spells, separate held touch/scrolls, native area ownership, shared control protection, list publication and approved artwork are implemented. Latest guarded disposable checkpoint: 204/204 PASS. Final persistence/profile matrix, learning and native UI acceptance remain open.
 
 ## Baseline and boundaries
 
@@ -47,13 +47,13 @@ from these rules after inspecting the installed contracts.
 
 | Gate | Required evidence | Current status |
 | --- | --- | --- |
-| A baseline/shared contract | installed RuleApplyBuff/area IL, donor inventory, Protection regressions, clean baseline checks | PASS baseline and guarded donor inventory; gameplay pending |
+| A baseline/shared contract | installed RuleApplyBuff/area IL, donor inventory, Protection regressions, clean baseline checks | PASS installed contracts, donor inventory and shared Protection native regressions |
 | B Evil vertical slice | native cast on another bearer, area membership, typed outcomes, actual control positive/negative, resource debit | core PASS; hostile touch/full control-spell coverage pending |
 | C ownership/lifecycle | overlaps, movement/teleport, dispel/expiry, unconscious/dead/unload, transition/save/load, OFF hydration | same-caster overlap, native dispels, Extend, faction changes, unconsciousness, expiry, caster and bearer death, four settings persistence, scene reconstruction and cleanup PASS; remaining cases pending |
-| D complete family | four variants, verified lists/optional entitlements, scrolls/vendors/scribing, configuration text, icon graph | pending |
+| D complete family | four variants, verified lists/optional entitlements, scrolls/vendors/scribing, configuration text, icon graph | implemented; four-variant casts/control, acquisition/scribing, typed stacking and custom/optional terminal deliveries PASS; learning/UI and final profiles pending |
 | E final candidate | validation, complete clean domain suite, Release build, package gates, exact-artifact native matrix | pending |
-| Art acceptance | original sources/exports/catalog mappings, protected assignments, native UI, exact owner approvals | four exact exports owner-approved; integration and native UI pending |
-| Publication | coherent qualified commits, guarded helper, owner-review branch/PR | audit/core commits published through helper; lifecycle checkpoint ready; no PR yet |
+| Art acceptance | original sources/exports/catalog mappings, protected assignments, native UI, exact owner approvals | four exact exports owner-approved and integrated; native UI pending |
+| Publication | coherent qualified commits, guarded helper, owner-review branch/PR | coherent checkpoints published through helper; no PR yet |
 
 ## Acceptance matrix
 
@@ -72,16 +72,19 @@ idempotence/foreign-safe rollback; module-OFF hydration; every visible icon/text
 
 ## Resume
 
-Persistence/module-OFF hydration and native scene reconstruction are qualified
-for the Evil checkpoint. Continue with all four variants, native held touch,
-verified class/implement lists, scrolls, approved artwork integration and the
-remaining acceptance matrix. Prepared implementation drafts are retained under
-ignored `artifacts/magic-circle/next`; they are not yet active source. The latest source-qualified native checkpoint is recorded below and in
-`reports/magic-circle/EVIL-LIFETIME-AND-DISPEL.json`. Preserve raw artifacts locally
-under `artifacts` or the guarded evidence root. Owner decisions are resolved:
-end the circle on bearer death; all four reviewed 128px icon exports are approved.
-Native UI acceptance remains pending. Exact approval hashes are recorded in
-`reports/magic-circle/OWNER-DECISIONS.json`.
+Latest published production correction: `145c7a3d`, preserving original caster
+references through native context cloning. The current additional-delivery
+candidate passes 204/204 native assertions and clean full source/package gates;
+see `reports/magic-circle/ADDITIONAL-NATIVE-DELIVERIES.json`. Continue with
+communal/Paladin coexistence, hostile held touch/metamagic, native learning/UI,
+and final all-variant persistence/settings/optional-profile qualification.
+Prepared drafts under ignored `artifacts/magic-circle/next` are not active source.
+
+Owner decisions are resolved: end on bearer death; all four exact reviewed
+128px exports are approved. Native UI remains separate. The working-save
+persistence fixture is currently absent. Raw packages/evidence remain local.
+Original normal-play backup for final restoration:
+`C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260919T2203354648740Z`.
 
 ## Checkpoint A: observed native contract
 
@@ -464,3 +467,9 @@ Next native regression targets original cast attribution after permanent source 
 `20260920T0325278816184Z-disposable-magic-circle-evil` confirmed the original-caster propagation bug: FAIL, 111/119 assertions PASS. Exactly eight rows failed: all four new recipients after re-entry acquired the recipient source ID, and all four reconstructed areas/recipients acquired the bearer source ID. Original carrier IDs, CL/deadlines, mixed typed stacking, other ownership/cleanup and all 107 prior regressions passed; no save writes. Archive: `artifacts/magic-circle/checkpoints/removed-source-regression/`. Package `8de48b16ced7012dc8fd54cfb544c149927698713197c4c3724910742e76252d`, DLL `8b41aaef36ac3d40da10820fddf1fb9dd23ee67d620801b687d24b9d9c8b1fce`. A narrowly scoped native-reference copy for owned Circle contexts is next; no custom saved tracking or control catalog is needed.
 
 Cast-context correction passed: `20260920T0337086796527Z-disposable-magic-circle-evil`, 120/120 native assertions. All eight red attribution cases now retain the original stored caster ID after permanent removal, and foreign same-GUID objects retain native behavior. Four mixed-alignment casts debit four slots, retain +2 typed stacking, and exact one-carrier removal preserves the other three. Cleanup and zero save writes pass. Clean 1,657-test/8,192-settings Release/package gates pass. See [curated red/green evidence](../reports/magic-circle/CAST-CONTEXT-REGRESSION.json); exact archive `artifacts/magic-circle/checkpoints/cast-context/`. These scoped native unload callbacks do not replace final actual scene/save qualification.
+
+Additional guarded delivery coverage now uses actual native equipment, public excluded/optional terminal applications, UnitEntityData.Translocate and a native RuleSummonUnit-created Succubus whose own domination is cast through UnitUseAbility. Its natural Chaotic Evil alignment differs from the Lawful Good summoner. This does not claim a summon spell resource test or actual area Confusion casting; it exercises the shared application boundary without affecting campaign actors. Full source and runtime qualification are pending.
+
+Additional-delivery candidate 1: full clean 1,657-test/Release/package PASS; native `20260920T0351141221915Z-disposable-magic-circle-evil` FAIL on a fixture internal-name lookup before new delivery tests (66 earlier assertions including exact cleanup PASS; no save writes). No new mechanic result was accepted. Exact archive `artifacts/magic-circle/checkpoints/deliveries-lookup-failure/`, package `c0fdb437593ce2bf687ff972bf59103d417e6e6e58f879089e5ddf58d16c6523`, DLL `01b217182bd4ca83567dfa5b217b6a97a27b682657958991836f04bd6e35c856`. Native spell identities are now resolved by the exact IDs corroborated in the local CotW source and installed lookup, with names recorded diagnostically.
+
+Additional delivery checkpoint: `20260920T0401029525146Z-disposable-magic-circle-evil` PASS 204/204 (84 new, 120 regression). Excluded native terminals apply; all three installed optional control terminals block matching and apply from neutral controllers; native +3 ring/cloak bonuses survive all four weaker circles and their removal; native same-scene translocation preserves carrier deadlines. Real Succubus domination uses the summoned controller's Chaotic Evil alignment instead of its Lawful Good summoner: Evil/Chaos block, Good/Law and unprotected cases apply after observed failed saves. Native summon coverage and permanent bearer despawn cleanup pass. Clean full validation/1,657 tests/Release/package PASS. See [curated evidence](../reports/magic-circle/ADDITIONAL-NATIVE-DELIVERIES.json); archive `artifacts/magic-circle/checkpoints/deliveries/`. Native UI, learning and final persistence/profiles remain open.
