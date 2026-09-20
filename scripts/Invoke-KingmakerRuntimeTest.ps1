@@ -238,6 +238,7 @@ if (-not $PSCmdlet.ShouldProcess(
 # fan out into separate prompts. Direct invocation of those scripts retains
 # their own ShouldProcess behavior.
 $runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose ('runtime ' + $Scenario)
+$permitRuntimeHandoff = $false
 try {
 Assert-KmgNotRunning
 $ConfirmPreference = 'None'
@@ -290,6 +291,7 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
 $requestPath = $initialized.requestPath
+Set-KmgGenericRuntimeRequest $runtimeScope $requestPath $deploymentManifestPath
 $resultPath = $initialized.resultPath
 $orchestration = $initialized.orchestration
 $orchestration.stage = 'request-written'
@@ -323,6 +325,7 @@ try {
     $launch = $launchOutput[0]
     Assert-KmgRuntimeLaunchResult -LaunchResult $launch
     $process = $launch.kingmakerProcess
+    Set-KmgGenericRuntimeProcess $runtimeScope $process
     $orchestration.launchBegan = $true
     $orchestration.steamExecutable = $launch.steamExecutable
     $orchestration.steamAppId = $launch.steamAppId
@@ -805,6 +808,8 @@ try {
     Write-Host "Runtime result: $resultPath"
     Write-Host "Status: $($result.status)"
     Write-Host 'Stage: final-result-received'
+    Set-KmgGenericRuntimeOutcome $runtimeScope $resultPath
+    $permitRuntimeHandoff = -not $ExitAfterCompletion -and $result.status -ceq 'PASS'
     if ($result.status -ne 'PASS') { exit 1 }
 }
 catch {
@@ -841,5 +846,5 @@ finally {
         while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
             [DateTime]::UtcNow -lt $leaseExitDeadline) { Start-Sleep -Milliseconds 250 }
     }
-    Exit-KmgRuntimeLease $runtimeScope
+    Exit-KmgRuntimeLease $runtimeScope -PermitRuntimeHandoff:$permitRuntimeHandoff
 }
