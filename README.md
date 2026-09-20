@@ -1,15 +1,15 @@
 # Kingmaker Gunslinger
 
-**0.0.133-word-of-recall-favored-class** is the current candidate: the
-canonical Word of Recall can finally be picked and learned through the
-genuine Favored Class Oracle bonus-spell route for Aasimar and Human
-Oracles, with ordinary Oracle learning, scroll eligibility and the native
-Cleric 6 / Druid 8 publication unchanged. The owner-authorized full
-release remains **0.0.132-icon-art-overhaul** (90 owner-approved images
-with native monograms preserved) until this candidate is approved. See the
+**0.0.133-word-of-recall-favored-class** is the owner-authorized full
+release: the canonical Word of Recall can be picked and learned through
+the genuine Favored Class Oracle bonus-spell route for Aasimar and Human
+Oracles, protected by a transactional pick-gate publication, complete
+target validation and a guarded save-file persistence qualification, with
+ordinary Oracle learning, scroll eligibility and the native Cleric 6 /
+Druid 8 publication unchanged. See the
+[0.0.133 notes](docs/RELEASE-NOTES-0.0.133.md), the
 [0.0.132 notes](docs/RELEASE-NOTES-0.0.132.md), the
-[0.0.133 notes](docs/RELEASE-NOTES-0.0.133.md),
-[mission state](Z-WORD-OF-RECALL-FAVORED-CLASS-STATE.md) and
+[mission state](Z-WORD-OF-RECALL-FAVORED-CLASS-STATE.md) and the
 [review packet](reports/icon-overhaul/NATIVE-UI-REVIEW-PACKET.md).
 
 The previous **0.0.129-recall-and-smart-scrolls** release qualified Word of

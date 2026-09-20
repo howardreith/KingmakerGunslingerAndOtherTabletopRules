@@ -109,13 +109,16 @@ transaction.
 
 ## Boundaries
 
-- `publicReleaseAuthorized` is false pending owner approval of this
-  candidate; no public release was published from this version.
-- The full compatibility-profile matrix was not rerun for this candidate;
+- The owner authorized publication of this release on 2026-09-20 after
+  accepting the corrective-pass review; the release ships the owner
+  authorized finalization-protected driver qualified natively.
+- The full compatibility-profile matrix was not rerun for this release;
   the focused qualification ran on the live installed owner profile with
   Favored Class and Call of the Wild enabled
   (`compatibilityRuntimeQualificationPending` remains true).
-- Persistence is proven through the native save-format serialization
+- Persistence is proven both through the guarded disposable save-file
+  fresh-process reload with a strategic cast (`exact=True`) and through
+  the native save-format serialization
   round-trip of the committed unit (preview rebuild); a dedicated
   save-file reload campaign was not run.
 
