@@ -31,9 +31,13 @@ namespace KingmakerGunslinger.Spells.Teleportation
             internal object SpellcasterClass;
             internal bool IsLearnSpellParameter;
             internal int SpellLevel;
+            // The selection-side contract of the intended per-level child: a
+            // specific (non-penalty) spell level on the feature itself plus
+            // the expected class-spell-level prerequisite that gates which
+            // class levels may pick it.
+            internal bool HasValidSelectionContract;
             // The child carries exactly one grant component configured for
-            // this class, this shared list, this spell level and a specific
-            // (non-penalty) level grant.
+            // this class, this shared list and this spell level.
             internal bool HasValidGrantConfiguration;
         }
 
@@ -72,6 +76,12 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     ReferenceEquals(candidate.SpellcasterClass, spellcasterClass) &&
                     candidate.IsLearnSpellParameter && candidate.SpellLevel == spellLevel;
                 if (!binding) continue;
+                if (!candidate.HasValidSelectionContract)
+                {
+                    malformed = "Child " + index + " (" +
+                        (candidate.Name ?? "unnamed") + ") lacks the intended per-level selection contract (specific spell level, zero spell-level penalty, class spell-level prerequisite).";
+                    continue;
+                }
                 if (!candidate.HasValidGrantConfiguration)
                 {
                     malformed = "Child " + index + " (" +
