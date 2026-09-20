@@ -33,7 +33,7 @@ def validate(root: Path) -> None:
         encoding="utf-8"))["wordOfRecallFavoredClass133"]
     expected = {
         "deterministicTestCount": 1675,
-        "publicReleaseAuthorized": False,
+        "publicReleaseAuthorized": True,
         "favoredClassPickGateVariants": True,
         "favoredClassPickGateTransaction": True,
         "favoredClassRuntimeQualified": True,
@@ -48,7 +48,7 @@ def validate(root: Path) -> None:
             raise AssertionError(f"Favored Class release metadata mismatch: {key}")
     baseline.baseline.require_tokens(root / "docs/RELEASE-NOTES-0.0.133.md",
         INFORMATIONAL_VERSION, "favored class", "Favored Class",
-        "variants", "pick gate", "pending owner approval")
+        "variants", "pick gate", "owner authorized")
     baseline.baseline.require_tokens(root /
         "Z-WORD-OF-RECALL-FAVORED-CLASS-STATE.md",
         "variantRecall=1", "66/66", "67/67", "red demonstration",

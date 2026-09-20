@@ -141,11 +141,16 @@ corrective pass (R1 transaction, R2 target validation, R3 behavioral
 tests and the at-level allowance invariant, R4 real save-file persistence
 with the per-run qualification mapping of the final binary).
 
+## Publication record
+
+The owner accepted the corrective-pass review and authorized publication
+on 2026-09-20 ("This is acceptable thank you. Please update the release
+notes, merge, push to remote, and cut a new release."). The mission
+branch merged to master and the v0.0.133 public release was cut from it.
+
 ## Honest boundaries
 
-- `publicReleaseAuthorized` false pending owner approval; no public
-  release, no merge, no branch publication beyond the guarded checkpoint
-  push.
+- `publicReleaseAuthorized` true (owner authorized 2026-09-20).
 - Compatibility matrix not rerun; focused qualification ran on the live
   owner profile with Favored Class and Call of the Wild enabled
   (`compatibilityRuntimeQualificationPending` true).

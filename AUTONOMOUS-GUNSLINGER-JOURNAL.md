@@ -4238,3 +4238,13 @@ scrolls 65/65 on commit a76eb3a0 / DLL f03a0a67…; domain suite
 6e8d62d2 gameplay mapping remains valid for that binary; the corrected
 driver is qualified separately. Candidate pending owner approval; no
 merge, no public release.
+
+# 2026-09-20 v0.0.133 word-of-recall-favored-class publicly released
+
+The owner accepted the corrective-pass review and authorized publication.
+Release notes, README, state record and static validation were updated to
+the authorized state; the full source gates passed (domain 1,675/1,675,
+validator chain, clean build, strict package validation); the mission
+branch \`codex/z-word-of-recall-favored-class\` merged to master and the
+tagged v0.0.133 GitHub release was cut through the guarded
+Publish-Release pipeline.

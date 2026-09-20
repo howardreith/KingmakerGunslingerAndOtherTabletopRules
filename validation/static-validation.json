@@ -1613,7 +1613,7 @@
     "favoredClassPickGateTransaction": true,
     "favoredClassPickGateVariants": true,
     "favoredClassRuntimeQualified": true,
-    "publicReleaseAuthorized": false,
+    "publicReleaseAuthorized": true,
     "runtimeQualificationPending": false
   },
   "wordOfRecallOracle126": {
