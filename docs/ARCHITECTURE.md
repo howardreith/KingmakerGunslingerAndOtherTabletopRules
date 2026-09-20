@@ -811,12 +811,13 @@ command, scene and persistence qualification remain required.
 
 ### Magic Circle candidate
 
-The Evil vertical slice appends four identities, bringing the candidate ledger
-to 1890 stable IDs: 1888 active and 2 reserved. A timed carrier uses native
+The four Magic Circle variants append 24 identities, bringing the candidate ledger
+to 1910 stable IDs: 1908 active and 2 reserved. A timed carrier uses native
 AddAreaEffect to retain the original spell context while attaching the area to
 the touched bearer. A distinct, stacking recipient identity uses native
 SourceAreaEffectId ownership. The existing Protection from Alignment control
 component remains the only control policy. The separate magic-circle-spells
 module controls publication and new casts; identities remain registered for
-save hydration. Native lifecycle qualification and original-art acceptance are
-pending; this addition has no release approval.
+save hydration. Native Evil lifecycle qualification and owner approval of the
+four original paintings are recorded in reports/magic-circle. Native UI and
+complete four-variant acceptance remain pending; there is no release approval.

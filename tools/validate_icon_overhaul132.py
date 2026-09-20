@@ -25,8 +25,8 @@ def validate(root: Path) -> None:
     # The original prefix and every protected-art gate remain authoritative.
     from validate_magic_circle import validate as validate_magic_circle
     validate_magic_circle(root)
-    baseline.MANIFEST_TOTAL = 1890
-    baseline.MANIFEST_ACTIVE = 1888
+    baseline.MANIFEST_TOTAL = 1910
+    baseline.MANIFEST_ACTIVE = 1908
     baseline.validate(root)
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))["iconOverhaul132"]

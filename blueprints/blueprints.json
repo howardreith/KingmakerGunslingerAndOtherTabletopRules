@@ -15127,6 +15127,166 @@
       "status": "active",
       "milestone": "Magic Circle Evil vertical slice",
       "notes": "Distinct cast/area-owned Magic Circle identity; always registered for save hydration."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.TouchDelivery",
+      "guid": "1242a0687d374c1792629384fc716ad5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Scroll",
+      "guid": "04954b1da0964fc288e00abdcf1f82ae",
+      "plannedType": "BlueprintItemEquipmentUsable",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Ability",
+      "guid": "8d9b3a1b06c141518230c6dd8aae95ee",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Carrier",
+      "guid": "b533bfe6409a457d9290dde8b18066ac",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Area",
+      "guid": "4b6d501574c74186b42e583a6b26a6da",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Recipient",
+      "guid": "b81680c923aa4ec59b46d12fdb5084fa",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.TouchDelivery",
+      "guid": "b05e3a50c1e147c2badb7bbc49ae6e5e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Scroll",
+      "guid": "f8ef52b288bc4c369c51a1fa754db605",
+      "plannedType": "BlueprintItemEquipmentUsable",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Ability",
+      "guid": "d98b1dff1952451989943907617f5b0d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Carrier",
+      "guid": "ab3b489192dd40e192bc3bac47e816cb",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Area",
+      "guid": "43ec68312894436db1dc0928118e9678",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Recipient",
+      "guid": "b17bf64cf088447d87d1258a5c052e38",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.TouchDelivery",
+      "guid": "edcb7eba83cf499a97d8c4ba6d1bfd35",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Scroll",
+      "guid": "c6342ebc91c54c82a43f985aa8e225bd",
+      "plannedType": "BlueprintItemEquipmentUsable",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Ability",
+      "guid": "cafa8a0681b84b00ad4f0e3ff6393c78",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Carrier",
+      "guid": "1aae3d67cf06435a959474c4cd0b7796",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Area",
+      "guid": "d4dd789baf954c0e97d2d9da8404696a",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Recipient",
+      "guid": "1ee6f15bf4cc42f8ac4c1eb20e30f71f",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.TouchDelivery",
+      "guid": "e9c92183bd7f4600adab27edbe68d04b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Scroll",
+      "guid": "4c7d27edc91246f5b3557ca480af941c",
+      "plannedType": "BlueprintItemEquipmentUsable",
+      "status": "active",
+      "milestone": "Magic Circle alignment spell family",
+      "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
     }
   ]
 }

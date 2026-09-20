@@ -78,6 +78,11 @@ namespace KingmakerGunslinger.Bootstrap
         private static MagicCircleSpellListPublication _magicCirclePublication;
         internal static MagicCircleBlueprintSet[] MagicCircles { get { return _magicCircles; } }
         internal static MagicCircleSpellListPublication MagicCirclePublication { get { return _magicCirclePublication; } }
+        private static Spells.MagicCircle.MagicCircleScrollVendors _magicCircleVendors;
+        internal static void DisableMagicCirclePublication()
+        {
+            _magicCirclePublication?.Rollback(); _magicCirclePublication = null;
+        }
         private static ShieldOtherBlueprintSet _shieldOther;
         private static ShieldOtherSpellListPublication _shieldOtherPublication;
         private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;
@@ -820,13 +825,17 @@ namespace KingmakerGunslinger.Bootstrap
                         protectionFromAlignmentPublication != null &&
                         protectionFromAlignmentPublication.Summary.MissingRequiredAssets.Count == 0;
                     _magicCircles = MagicCircleBlueprints.Register(library, magicCircleRegistry, circleControl);
-                    if (publicationPlan.MagicCircleSpellLists)
+                    // Native shared-table reconciliation needs stable finite
+                    // stock definitions across ON/OFF loads, as for Teleportation.
+                    // Activation, learning and saved-stock migration stay gated.
+                    _magicCircleVendors = Spells.MagicCircle.MagicCircleScrollVendors.Publish(library, _magicCircles);
+                    if (publicationPlan.MagicCircleSpellLists) {
                         _magicCirclePublication = MagicCircleSpellListPublication.Publish(library, _magicCircles);
+                    }
                 }
                 catch (Exception circleException)
                 {
-                    if (_magicCirclePublication != null) _magicCirclePublication.Rollback();
-                    _magicCirclePublication = null;
+                    DisableMagicCirclePublication();
                     context.Logger.Failure("magic-circle", "publication.failed",
                         "Magic Circle publication failed; new casts are disabled.", circleException);
                 }
@@ -1221,8 +1230,8 @@ namespace KingmakerGunslinger.Bootstrap
             catch (Exception initializationException)
             {
                 try {
-                    if (_magicCirclePublication != null) _magicCirclePublication.Rollback();
-                    _magicCirclePublication = null;
+                    DisableMagicCirclePublication();
+                    _magicCircleVendors?.Rollback(); _magicCircleVendors = null;
                     _magicCircles = null;
                     magicCircleRegistry.RollbackAll();
                 }
