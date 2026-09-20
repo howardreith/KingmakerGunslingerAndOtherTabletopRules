@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.0.133-word-of-recall-favored-class
+
+- Repaired the Favored Class Oracle bonus-spell pick gate for Word of
+  Recall: the per-level BlueprintParametrizedFeature lists the reconciled
+  spell through its shared Oracle class list, but the native pick admits
+  only items present in BlueprintParameterVariants (the m_CachedItems
+  source), a load-time snapshot that never contained the reconciled spell.
+  The final-live reconciler now also merges the canonical ability into the
+  variants of exactly the structurally validated sixth-level feature and
+  clears its item cache; the pass is additive, idempotent, rolled back on
+  failure and a safe no-op when the optional integration is absent.
+- Guarded runtime qualification passed 66/66 through the genuine favored
+  class route on fresh native Aasimar and Human Oracles (credit, award,
+  native candidates, pick, cancellation, commit, duplicate, below-level and
+  serialization controls, world-map casting), with ordinary Oracle
+  learning, scroll eligibility and native Cleric 6 / Druid 8 publication
+  unchanged.
+
 ## 0.0.132-icon-art-overhaul
 
 - Corrected the three strategic scroll item icons to asset composites on the

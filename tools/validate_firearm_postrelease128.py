@@ -61,7 +61,7 @@ def validate(root: Path) -> None:
         raise AssertionError("Static validation does not identify the firearm hotfix candidate.")
     state = static.get(STATIC_KEY, {})
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": globals().get("ARCHIVED_TEST_COUNT", DETERMINISTIC_TEST_COUNT),
         "publicReleaseAuthorized": False,
         "fieldRepairBrokenOnlyOutOfCombat": True,
         "completedRestRestoresCarriedDamage": True,

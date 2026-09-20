@@ -131,6 +131,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TeleportSpellbookUiAssert("exceptions", "zero native or mod exceptions from level-up fixture setup through cleanup", "count=" + _teleportationSpellbookUiExceptions.Count, _teleportationSpellbookUiExceptions.Count == 0);
             }
             foreach (int frame in QualifyOracleCommittedLearning()) yield return frame;
+            foreach (int frame in QualifyOracleFavoredClassLearning()) yield return frame;
         }
         // A fresh request-local Oracle uses native progression, native level-up
         // selectors and the real completion button. No Recall AddKnown call,

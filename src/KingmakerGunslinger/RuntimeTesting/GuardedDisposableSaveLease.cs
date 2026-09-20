@@ -16,8 +16,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal int StashedAreaCount { get; private set; }
         internal GuardedDisposableSaveLease(SaveInfo requested, string transaction, string phase,
             string directory, Action<SaveInfo> prepared)
+            : this(requested, TeleportPersistenceIdentity.Name(transaction, phase), directory, prepared)
+        { }
+        internal GuardedDisposableSaveLease(SaveInfo requested, string expectedName,
+            string directory, Action<SaveInfo> prepared)
         {
-            _name = TeleportPersistenceIdentity.Name(transaction, phase);
+            _name = expectedName;
             if (requested == null || requested.Name != _name || requested.IsActuallySaved ||
                 requested.Type != SaveInfo.SaveType.Manual || requested.Saver != null)
                 throw new InvalidOperationException("Persistence requires a newly created exact native manual descriptor.");

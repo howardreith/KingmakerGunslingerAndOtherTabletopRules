@@ -622,6 +622,18 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-word-of-recall-favored-class' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'disposable-word-of-recall-favored-class-persistence' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'transaction-owned Favored Class persistence input'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'observe-brown-fur-cotw-absent-isolation' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1628,9 +1640,9 @@ function Assert-KmgRuntimeScenarioPreflight {
         $Parameters.Count -ne 1 -or $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING')) {
         throw 'Public 0.0.117 authority permits only its exact disposable persistence producer, without another producer authority.'
     }
-    if ($ExpectedVersion -cne '0.0.132' -and
+    if ($ExpectedVersion -cne '0.0.133' -and
         -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.132.'
+        throw 'ExpectedVersion must be exactly the active version 0.0.133.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -1650,6 +1662,33 @@ function Assert-KmgRuntimeScenarioPreflight {
         $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')
         $visualLifecycle = $Scenario -ceq 'working-save-creator-visual-lifecycle'
         $persistence = $Scenario -ceq 'disposable-teleportation-persistence'
+        $fcbPersistence = $Scenario -ceq 'disposable-word-of-recall-favored-class-persistence'
+        if ($fcbPersistence) {
+            if ($Parameters.Count -ne 3 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath') -or
+                $Parameters.phase -cnotin @('prepare', 'verify') -or $Parameters.planPath -isnot [string] -or
+                -not [IO.Path]::IsPathRooted($Parameters.planPath) -or -not (Test-Path -LiteralPath $Parameters.planPath -PathType Leaf)) {
+                throw 'Favored Class persistence requires an exact phase and an existing guarded plan.'
+            }
+            $guardedPath = [IO.Path]::GetFullPath($Parameters.planPath)
+            if (-not $guardedPath.StartsWith($script:KmgRuntimeEvidenceRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
+                throw 'Favored Class persistence plan must be inside the guarded evidence root.'
+            }
+            for ($ancestor = Get-Item -LiteralPath $guardedPath; $null -ne $ancestor; $ancestor = if ($ancestor -is [IO.DirectoryInfo]) { $ancestor.Parent } else { $ancestor.Directory }) {
+                if (($ancestor.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw 'Favored Class persistence plan cannot cross a reparse point.' }
+            }
+            $plan = Get-Content -LiteralPath $Parameters.planPath -Raw | ConvertFrom-Json
+            $txPattern = '[0-9]{8}T[0-9]{13}Z_[a-f0-9]{32}'
+            if ($plan.transactionId -cnotmatch ('^' + $txPattern + '$') -or $plan.phase -cne $Parameters.phase -or
+                $plan.schemaVersion -ne 1 -or $plan.version -cne $ExpectedVersion -or
+                $plan.input.name -cne $Parameters.saveName -or
+                $plan.input.sha256 -cne (Get-FileHash -LiteralPath $plan.input.path -Algorithm SHA256).Hash.ToLowerInvariant()) {
+                throw 'Favored Class persistence input identity or hash differs from its exact plan.'
+            }
+            $allowedName = if ($Parameters.phase -ceq 'prepare') { 'KMG_AUTOMATION_WORKING' } else {
+                'KMG_FCB_PERSISTENCE_' + $plan.transactionId + '_prepare'
+            }
+            if ($Parameters.saveName -cne $allowedName) { throw 'Favored Class persistence input is not owned by this phase transaction.' }
+        }
         if ($persistence) {
             if ($Parameters.Count -ne 3 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath') -or
                 $Parameters.phase -cnotin @('A', 'B', 'C', 'D') -or $Parameters.planPath -isnot [string] -or
@@ -1679,11 +1718,11 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
         $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
             $Parameters.ContainsKey('nativeActionCase')
-        $requiredParameterCount = if ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $requiredParameterCount = if ($persistence -or $fcbPersistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
-            (-not $persistence -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
+            (-not $persistence -and -not $fcbPersistence -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
             throw "$Scenario requires its exact working save and allowlisted parameters."
         }
         if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
@@ -1934,6 +1973,8 @@ function New-KmgRuntimeRequest {
             if (Test-KmgCompletionSceneScope $Scenario $Parameters) { $scopeArgs.qualificationOperation = 'scene-roundtrip' }
             $scopeArgs
         } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {
+            [ordered]@{ saveName = [string]$Parameters.saveName; phase = [string]$Parameters.phase; planPath = [string]$Parameters.planPath }
+        } elseif ($Scenario -ceq 'disposable-word-of-recall-favored-class-persistence') {
             [ordered]@{ saveName = [string]$Parameters.saveName; phase = [string]$Parameters.phase; planPath = [string]$Parameters.planPath }
         } elseif ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
