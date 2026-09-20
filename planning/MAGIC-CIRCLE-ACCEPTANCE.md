@@ -425,3 +425,32 @@ checkpoint does not accept every unresolved-source delivery or acquisition/UI.
 Full clean 1,657-test suite, all 8,192 settings combinations, Release and strict
 package pass. Exact archive: `artifacts/magic-circle/checkpoints/family-context/`.
 Acquisition, final persistence/profile combinations and native UI remain open.
+
+Public missing-source regression is now an explicit native test for all four
+circles and all four independently cast native Protection spells. It first
+assembles a real pending context, destroys its disposable controller, then uses
+public BuffCollection.AddBuff. The observer distinguishes a genuinely missing
+parent source from the native clone's owner fallback. It expects fail-open and
+actual application, while separate real matching-controller casts must still
+be vetoed. No production source-resolution change has been made yet; qualify
+this regression before choosing a shared correction.
+
+`20260920T0237444408343Z-disposable-magic-circle-evil` confirmed the public
+source-loss regression: FAIL, 69/77 PASS. The eight failures are exactly the
+four circles and four native individual Protection wards under public AddBuff
+after controller destruction. Each saw `nativeOwnerFallback=True`, one actual
+RuleApplyBuff, and `CanApply=False` instead of the required fail-open result.
+Native individual casts retained their original level-1 slot debit and 1 minute
+per CL; real matching-controller casts still blocked. Exact cleanup and no save
+writes passed. This is a pre-existing shared-source bug, not a separate circle
+policy defect. Package `7ff23a1a54df3fc3544531c54a8c62991936a205a5706fad5975707ec5f00856`,
+DLL `58a2d02baa8089675b40b904fd281461c6e6f4e255265900b0d0e1f9a6f767ef`,
+MVID `33475602-05cf-4d55-b85f-d185efc410de`.
+
+A narrow shared resolver now rejects the native recipient fallback when its
+plain buff-clone parent has lost the controller. It stops at actual ability
+execution contexts, preserving a summoned creature's own cast source. Catalog,
+alignment predicate, trusted metadata, settings and RuleApplyBuff initiator
+contract remain unchanged. Native qualification of the correction is pending.
+
+Shared-source green checkpoint: `20260920T0253030021863Z-disposable-magic-circle-evil` PASS 77/77. All eight previously failing public missing-controller cases now apply as required, while real matching-controller casts still block and native individual spells retain original slot/duration behavior. Exact cleanup and zero save writes pass. See [shared regression evidence](../reports/magic-circle/SHARED-SOURCE-REGRESSION.json). Clean 1,657-test/8,192-settings Release/package gates pass; the exact source gate rejects six corruption cases. Archive: `artifacts/magic-circle/checkpoints/shared-source/`. Acquisition, broader delivery/lifecycle cases, final profiles and native UI remain open.

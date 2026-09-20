@@ -27,7 +27,17 @@ def validate(root: Path) -> None:
     validate_magic_circle(root)
     baseline.MANIFEST_TOTAL = 1910
     baseline.MANIFEST_ACTIVE = 1908
-    baseline.validate(root)
+    # The assigned Magic Circle feature fixes a proven shared source bug.
+    # Its gate validates the two exact edits and retains the original digest
+    # for every other Protection control/publication file.
+    import validate_midgame_firearms116 as protection_baseline
+    from validate_magic_circle import PROTECTION_SOURCE_SHA256
+    old_protection_digest = protection_baseline.PROTECTION_CONTROL_SOURCE_SHA256
+    try:
+        protection_baseline.PROTECTION_CONTROL_SOURCE_SHA256 = PROTECTION_SOURCE_SHA256
+        baseline.validate(root)
+    finally:
+        protection_baseline.PROTECTION_CONTROL_SOURCE_SHA256 = old_protection_digest
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))["iconOverhaul132"]
     expected = {

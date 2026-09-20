@@ -38,15 +38,26 @@ repository's normal IL inspection workflow before implementation:
 - `evt.Blueprint` is the terminal `BlueprintBuff` being attempted.
 - `evt.Context.SourceAbility` is the originating `BlueprintAbility` when the
   delivery retains one.
-- `evt.Context.MaybeCaster` is the originating `UnitEntityData` when one is
-  available. Its `Descriptor.Alignment.Value` is tested with native
-  `Alignment.HasComponent(AlignmentComponent)` semantics.
+- `ProtectionFromAlignmentRuntime.ResolveIncomingSource` starts with native
+  `evt.Context.MaybeCaster`. Its `Descriptor.Alignment.Value` is tested with
+  native `Alignment.HasComponent(AlignmentComponent)` semantics.
 - Native `BuffDescriptorImmunity`, `SpellImmunityToSpellDescriptor`, and
   related descriptor components are broader than this rule and cannot express
   the explicit catalog plus source-alignment predicate safely.
 
 No global Harmony patch or new dependency is used. Runtime handling is one
 small target-side rulebook component on each terminal protection buff.
+
+Magic Circle qualification exposed one native context edge: public `AddBuff`
+calls `CloneFor`, and its constructor substitutes the recipient when the
+parent context's original controller no longer resolves. The shared resolver
+recognizes only that plain native buff-clone chain and treats the missing
+parent source as unresolved. It stops at an actual ability execution context,
+so a summoned creature's own control cast retains that creature as controller.
+The existing fail-open/trusted-metadata policy and catalog are unchanged. This
+single resolver serves individual, communal, Paladin and other existing
+Protection deliveries as well as Magic Circle. Native regression and exact
+candidate results are tracked in `planning/MAGIC-CIRCLE-ACCEPTANCE.md`.
 
 ## Patched protection-buff inventory
 
