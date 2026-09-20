@@ -1974,6 +1974,8 @@ function New-KmgRuntimeRequest {
             $scopeArgs
         } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {
             [ordered]@{ saveName = [string]$Parameters.saveName; phase = [string]$Parameters.phase; planPath = [string]$Parameters.planPath }
+        } elseif ($Scenario -ceq 'disposable-word-of-recall-favored-class-persistence') {
+            [ordered]@{ saveName = [string]$Parameters.saveName; phase = [string]$Parameters.phase; planPath = [string]$Parameters.planPath }
         } elseif ($metadata.RequiresSaveName) {
             [ordered]@{ saveName = [string]$Parameters.saveName }
         } elseif ($Scenario -cin @('disposable-elemental-nereid-creation','disposable-elemental-nereid-respec')) {
