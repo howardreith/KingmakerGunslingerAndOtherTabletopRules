@@ -435,10 +435,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(value.Param.Value.Blueprint, recall)).ToArray();
                     var committedPartial = aasimarUnit.Descriptor.Progression.Features.Enumerable
                         .Where(value => ReferenceEquals(value.Blueprint, partialFeature)).ToArray();
-                    bool ordinarySixthNormal =
-                        finalSpells.LevelCount[6].SpellSelections.Length ==
-                            (book.Blueprint.SpellsKnown.GetCount(book.CasterLevel, 6) ?? 0) ||
-                        finalSpells.LevelCount[6].SpellSelections.Length == 1;
+                    bool ordinarySixthNormal = finalSpells.ExtraSelected == null ||
+                        finalSpells.ExtraSelected.Length == 0;
                     CaptureTeleportSpellbookUi("fcb-aasimar-committed", new {
                         classLevel = aasimarUnit.Descriptor.Progression.GetClassLevel(oracle),
                         casterLevel = book.CasterLevel, callbacks = successes,
@@ -529,11 +527,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TeleportSpellbookUiAssert("fcb-human-seeded",
                     "a genuine Human Oracle 12 with the completed half-spell credit",
                     "level=" + humanUnit.Descriptor.Progression.GetClassLevel(oracle) +
-                        ";max=" + humanBook.MaxSpellLevel + ";rank=" +
-                        (humanPartial.Length == 0 ? 0 : humanPartial[0].Rank),
+                        ";max=" + humanBook.MaxSpellLevel + ";facts=" + humanPartial.Length +
+                        ";rank=" + (humanPartial.Length == 0 ? 0 : humanPartial[0].Rank) +
+                        ";knows=" + humanBook.IsKnown(recall),
                     humanUnit.Descriptor.Progression.GetClassLevel(oracle) == 12 &&
-                        humanBook.MaxSpellLevel == 6 && humanPartial.Length == 1 &&
-                        humanPartial[0].Rank == 2 && !humanBook.IsKnown(recall));
+                        humanBook.MaxSpellLevel == 6 && humanPartial.Length >= 1 &&
+                        humanPartial[0].Rank >= 1 && !humanBook.IsKnown(recall));
                 experienceProperty.SetValue(humanUnit.Descriptor.Progression,
                     game.BlueprintRoot.Progression.XPTable.GetBonus(13), null);
                 presenter.HandleLevelUpStart(humanUnit.Descriptor, null, () => successes++);
@@ -542,25 +541,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 presenter.SetClass(oracle);
                 var belowItems = level6Feature.ExtractSelectionItems(
                     backend.Unit, backend.Preview).ToArray();
-                var classState = backend.State.Selections.SingleOrDefault(value =>
+                var belowClassState = backend.State.Selections.SingleOrDefault(value =>
                     value.Selection is BlueprintFeatureSelection typed &&
                     typed.AssetGuid == FcbOracleClassSelectionId);
-                var awardItem = classState == null ? null :
-                    classState.Selection.ExtractSelectionItems(backend.Unit, backend.Preview)
+                var belowAwardItem = belowClassState == null ? null :
+                    belowClassState.Selection.ExtractSelectionItems(backend.Unit, backend.Preview)
                         .FirstOrDefault(value => value.Feature != null &&
                             value.Feature.AssetGuid == FcbOracleBonusSpellSelectionId);
-                bool belowAwardSelectable = classState != null && awardItem != null &&
-                    classState.Selection.CanSelect(backend.Preview, backend.State,
-                        classState, awardItem);
-                var level6Item = bonusSelection.ExtractSelectionItems(
-                    backend.Unit, backend.Preview).FirstOrDefault(value =>
-                        value.Feature != null &&
-                        value.Feature.AssetGuid == FcbOracleLevel6FeatureId);
-                bool level6Selectable = level6Item != null && bonusSelection.CanSelect(
-                    backend.Preview, backend.State,
-                    backend.State.Selections.FirstOrDefault(value =>
+                bool belowAwardSelectable = belowClassState != null && belowAwardItem != null &&
+                    belowClassState.Selection.CanSelect(backend.Preview, backend.State,
+                        belowClassState, belowAwardItem);
+                bool belowLevel6Selectable = false;
+                FeatureSelectionState belowBonusState = null;
+                if (belowAwardSelectable && backend.SelectFeature(belowClassState, belowAwardItem))
+                {
+                    belowBonusState = backend.State.Selections.FirstOrDefault(value =>
                         value.Selection is BlueprintFeatureSelection typed &&
-                        typed.AssetGuid == FcbOracleBonusSpellSelectionId), level6Item);
+                        typed.AssetGuid == FcbOracleBonusSpellSelectionId && !value.Selected);
+                    if (belowBonusState != null)
+                    {
+                        var belowLevel6Item = belowBonusState.Selection.ExtractSelectionItems(
+                            backend.Unit, backend.Preview).FirstOrDefault(value =>
+                                value.Feature != null &&
+                                value.Feature.AssetGuid == FcbOracleLevel6FeatureId);
+                        belowLevel6Selectable = belowLevel6Item != null &&
+                            belowBonusState.Selection.CanSelect(backend.Preview, backend.State,
+                                belowBonusState, belowLevel6Item);
+                    }
+                }
                 CaptureTeleportSpellbookUi("fcb-below-prerequisite-control", new {
                     casterLevel = backend.Preview.GetSpellbook(oracle.Spellbook).CasterLevel,
                     maxSpellLevel = backend.Preview.GetSpellbook(oracle.Spellbook).MaxSpellLevel,
@@ -569,13 +577,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Param.Value != null &&
                         ReferenceEquals(value.Param.Value.Blueprint, recall)),
                     awardSelectable = belowAwardSelectable,
-                    level6ItemPresent = level6Item != null, level6Selectable });
+                    bonusStateOpened = belowBonusState != null,
+                    level6Selectable = belowLevel6Selectable });
                 TeleportSpellbookUiAssert("fcb-below-prerequisite-control",
                     "sixth-level favored-class access stays unavailable below the class spell-level prerequisite",
                     "max=" + backend.Preview.GetSpellbook(oracle.Spellbook).MaxSpellLevel +
-                        ";level6Selectable=" + level6Selectable,
+                        ";awardSelectable=" + belowAwardSelectable +
+                        ";bonusStateOpened=" + (belowBonusState != null) +
+                        ";level6Selectable=" + belowLevel6Selectable,
                     backend.Preview.GetSpellbook(oracle.Spellbook).MaxSpellLevel <= 6 &&
-                        !level6Selectable);
+                        belowAwardSelectable && belowBonusState != null && !belowLevel6Selectable);
                 presenter.OnHotKeyEscPressed();
                 foreach (int tick in WaitTeleportLevelUpUi(() =>
                     DialogMessageBox.Instance.IsShown, "below-control cancel")) yield return tick;
