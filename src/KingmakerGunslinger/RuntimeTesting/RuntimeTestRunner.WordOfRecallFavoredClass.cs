@@ -627,9 +627,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 StringComparer.Ordinal) &&
                         controlBefore.All(value => controlAfter.Contains(value)) &&
                         !controlBook.IsKnown(recall) && controlGrants.Length == 0 &&
-                        controlFcbPicks.Any() && controlFcbPicks.All(value =>
-                            value != null && !value.StartsWith(FcbOracleBonusSpellSelectionId) &&
-                            !value.StartsWith(FcbOraclePartialFeatureId)));
+                        controlFcbPicks.Any() && controlFcbPicks.Count(value =>
+                            value != null && value.StartsWith(FcbOraclePartialFeatureId)) == 1 &&
+                        controlFcbPicks.Last() != null &&
+                        !controlFcbPicks.Last().StartsWith(FcbOracleBonusSpellSelectionId) &&
+                        !controlFcbPicks.Last().StartsWith(FcbOraclePartialFeatureId)));
                 player.PartyCharacters.RemoveAll(value => value.UniqueId == controlUnit.UniqueId);
                 if (controlUnit.HoldingState != null &&
                     controlUnit.HoldingState.AllEntityData.Contains(controlUnit))
