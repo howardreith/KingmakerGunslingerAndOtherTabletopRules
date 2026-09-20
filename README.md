@@ -1,13 +1,15 @@
 # Kingmaker Gunslinger
 
-**0.0.132-icon-art-overhaul** is the owner-authorized full release for the
-complete icon art overhaul: 90 owner-approved images integrated across racial
-actions, feats, heritages, traits, selectors, buffs and scrolls, native P/M/B
-monograms preserved for the firearm feat roots, and guarded runtime
-qualification for the integrated consumers. All 0.0.129 gameplay (Recall,
-automatic scroll readers, Oracle behavior) is preserved unchanged. See the
-[release notes](docs/RELEASE-NOTES-0.0.130.md) and the [0.0.131 notes](docs/RELEASE-NOTES-0.0.131.md) and the [0.0.132 notes](docs/RELEASE-NOTES-0.0.132.md),
-[mission state](planning/ICON-OVERHAUL-STATE.md) and
+**0.0.133-word-of-recall-favored-class** is the current candidate: the
+canonical Word of Recall can finally be picked and learned through the
+genuine Favored Class Oracle bonus-spell route for Aasimar and Human
+Oracles, with ordinary Oracle learning, scroll eligibility and the native
+Cleric 6 / Druid 8 publication unchanged. The owner-authorized full
+release remains **0.0.132-icon-art-overhaul** (90 owner-approved images
+with native monograms preserved) until this candidate is approved. See the
+[0.0.132 notes](docs/RELEASE-NOTES-0.0.132.md), the
+[0.0.133 notes](docs/RELEASE-NOTES-0.0.133.md),
+[mission state](Z-WORD-OF-RECALL-FAVORED-CLASS-STATE.md) and
 [review packet](reports/icon-overhaul/NATIVE-UI-REVIEW-PACKET.md).
 
 The previous **0.0.129-recall-and-smart-scrolls** release qualified Word of

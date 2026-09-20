@@ -18,7 +18,9 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
-    // Read-only final-live diagnostic for the optional Favored Class Oracle
+    // Read-only final-live diagnostic (guarded scenario
+    // observe-word-of-recall-favored-class) for the optional Favored Class
+    // Oracle bonus-spell route.
     // bonus-spell route. Resolves the genuine installed blueprints by exact
     // identity and records each link of the selection chain — the Oracle class
     // list membership, the per-level parametrized feature's own SpellList

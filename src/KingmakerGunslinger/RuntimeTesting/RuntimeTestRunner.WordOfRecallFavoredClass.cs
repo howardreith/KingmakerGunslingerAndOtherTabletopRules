@@ -484,6 +484,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "candidates=" + duplicateItems.Length + ";recall=" + duplicateRecall,
                         duplicateRecall == 0 &&
                             backend.Preview.GetSpellbook(oracle.Spellbook).IsKnown(recall));
+                    // The preview is rebuilt by natively serializing the committed
+                    // unit and deserializing it through the save-format path, so a
+                    // surviving fact proves the parametrized pick persists.
+                    var persistedFacts = backend.Preview.Progression.Features.Enumerable
+                        .Where(value => ReferenceEquals(value.Blueprint, level6Feature)).ToArray();
+                    var persistedRecall = persistedFacts.Count(value => value.Param != null &&
+                        value.Param.Value != null &&
+                        ReferenceEquals(value.Param.Value.Blueprint, recall));
+                    var persistedBook = backend.Preview.GetSpellbook(oracle.Spellbook);
+                    TeleportSpellbookUiAssert("fcb-persistence-roundtrip",
+                        "the committed parametrized favored-class selection and learned spell survive native serialization",
+                        "facts=" + persistedFacts.Length + ";recall=" + persistedRecall +
+                            ";known6=" + persistedBook.GetKnownSpells(6).Count(value =>
+                                ReferenceEquals(value.Blueprint, recall)),
+                        persistedFacts.Length == 1 && persistedRecall == 1 &&
+                            persistedBook.GetKnownSpells(6).Count(value =>
+                                ReferenceEquals(value.Blueprint, recall)) == 1);
                     presenter.OnHotKeyEscPressed();
                     foreach (int tick in WaitTeleportLevelUpUi(() =>
                         DialogMessageBox.Instance.IsShown, "duplicate control cancel")) yield return tick;
