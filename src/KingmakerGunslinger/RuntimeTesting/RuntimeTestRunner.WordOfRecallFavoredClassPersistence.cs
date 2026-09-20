@@ -75,9 +75,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             { failure = failure == null ? exception : new AggregateException(failure, exception); }
             _fcbPersistenceSteps = null;
+            var combined = new List<RuntimeTestAssertion>(_fcbPersistenceAssertions);
+            combined.AddRange(_teleportationSpellbookUiAssertions);
             WriteFcbPersistenceReceipt(failure == null ? null : failure.ToString());
             Complete(CreateResult(failure == null ? RuntimeTestStatuses.Pass :
-                RuntimeTestStatuses.Error, _fcbPersistenceAssertions,
+                RuntimeTestStatuses.Error, combined,
                 failure == null ? null : failure.ToString()));
         }
 
@@ -305,7 +307,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             partialFacts.Length == 1 &&
                             partialFacts[0].Rank == (int)plan.Expected["partialRank"],
                         new { grants = grantFacts.Length,
-                            param = grantFacts.Length == 1 || grantFacts[0].Param == null ||
+                            param = grantFacts.Length != 1 || grantFacts[0].Param == null ||
                                 grantFacts[0].Param.Value == null ||
                                 grantFacts[0].Param.Value.Blueprint == null ? null :
                                     grantFacts[0].Param.Value.Blueprint.AssetGuid,
