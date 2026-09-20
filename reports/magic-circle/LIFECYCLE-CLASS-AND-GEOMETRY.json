@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 1,
+  "scope": "Additional native pet, obstruction, Paladin class access and specialist hydration; checkpoint, not final persistence/profile acceptance",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "75faf15ace983a225af1e0bc7d0faa605e77237f",
+  "sourceWasDirty": true,
+  "sourceStateSha256": "7ea25e163374006c0ab27971fbccd22e474d725080af71f0b270453b6b35f74d",
+  "artifact": {
+    "schemaVersion": 1,
+    "semanticVersion": "0.0.132",
+    "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+    "informationalVersion": "0.0.132-icon-art-overhaul",
+    "gitCommit": "75faf15ace983a225af1e0bc7d0faa605e77237f",
+    "moduleVersionId": "8fa76cb6-d080-4d93-a609-25ef321c2c2b",
+    "loadedModuleSha256": "48253c7af0071fc64c93bd6da79b6cf8064a93ee782cd61beafee13353989e12"
+  },
+  "packageSha256": "e1949cb24a00ac1d3e5c82243d389d4af856a9cbd9daf08e3f23f60202243283",
+  "checks": {
+    "repositoryValidation": "PASS",
+    "fullCleanDomainSuite": {
+      "passed": 1657,
+      "failed": 0,
+      "settingsCombinations": 8192
+    },
+    "cleanRelease": "PASS",
+    "strictPackage": "PASS",
+    "compatibilityParameterChecks": 8227,
+    "focusedRequestGuards": "PASS",
+    "buildLog": "artifacts-magic-circle-lifecycle-final-build.log"
+  },
+  "fixtureFailures": [
+    {
+      "run": "20260920T0629379329933Z-disposable-magic-circle-evil",
+      "status": "FAIL",
+      "assertionCounts": {
+        "PASS": 185,
+        "FAIL": 1
+      },
+      "cause": "Radial fixture search found no walkable wall pair. All eight native pet assertions passed. Replaced only the scene locator with bounded sampling of actual blocker edges.",
+      "failedAssertions": [
+        "circle-native-execution"
+      ],
+      "packageSha256": "d8cd856ec1ceca9fd168bb9cea33a8ab5c8c0b33b9f77d6f451a3d71ea4ddf8b",
+      "dllSha256": "88a7039bef17ce9ebc86f1edeacaa42ea991d7effd8e4f16600c4ff2486aa432",
+      "mvid": "8b9d3817-3090-47e5-93aa-3b1b8d8ca6b9",
+      "sourceStateSha256": "e9378ace035462d4534e9085a25df4eeb2bab73a38f8fd1e799892309fcdab81",
+      "runtimeResultSha256": "749138532eefbf92624c65e8cfc6e1f714b1187db466486bd4ce76aee1337a27",
+      "saveWrites": false
+    },
+    {
+      "run": "20260920T0640342277373Z-disposable-magic-circle-evil",
+      "status": "FAIL",
+      "assertionCounts": {
+        "PASS": 193,
+        "FAIL": 1
+      },
+      "cause": "Actual wall negative/positive pairs passed for every alignment. Minimal CharGen helper did not create the delayed Paladin spellbook; changed this fixture to the already qualified full native progression path.",
+      "failedAssertions": [
+        "circle-native-execution"
+      ],
+      "packageSha256": "a0e43d0178aeb26d3148cd5c6a78e7f2646bfaac1923306297bde88b4af36e1c",
+      "dllSha256": "059031b84c54dc022b43f7f4743bfc2c98d032064be864eee424d645a5650cfd",
+      "mvid": "66d90331-9fea-4136-a173-6f195fcabebf",
+      "sourceStateSha256": "ff709690c87ef6a34640aaa30c466d62c4240a3dcf4d0438027f345f4b8c134a",
+      "runtimeResultSha256": "da2bb914196ab32a5cd56360c89917a085d924477b83a058c442297494b24822",
+      "saveWrites": false
+    },
+    {
+      "run": "20260920T0648219809340Z-disposable-magic-circle-evil",
+      "status": "FAIL",
+      "assertionCounts": {
+        "PASS": 193,
+        "FAIL": 1
+      },
+      "cause": "The minimal disposable caster supplied a null race to native SelectRace. Installed IL confirmed the null dereference. Use an existing verified working-party race as the read-only template.",
+      "failedAssertions": [
+        "circle-native-execution"
+      ],
+      "packageSha256": "93606e2e41d1b73c38bf1c773bfe74f690bf4b0482f1d5253732961f25c14c7e",
+      "dllSha256": "b24f95977bc471c004821d5c95ad74fa194ba5e8dae39f0316bcc5ba105e535d",
+      "mvid": "dd342335-55b8-4dc5-b6b7-4d0d419b60d2",
+      "sourceStateSha256": "94f7e61fc16781b71f863b7b29e8c768da8fcc54b8d6b04e564c0d0773027671",
+      "runtimeResultSha256": "16ba40708f5bbdec733c21b5f0b69037af660d27f62f066ebf5bcc7ee85b4265",
+      "saveWrites": false
+    },
+    {
+      "run": "20260920T0659413987736Z-disposable-magic-circle-evil",
+      "status": "FAIL",
+      "assertionCounts": {
+        "PASS": 244,
+        "FAIL": 2
+      },
+      "cause": "All five native Paladin entitlement, alignment and prepared-cast checks passed. Its own native class aura remained after synchronous actor destruction; point-dispel guard refused and final area cleanup failed. Add exact source-owned Paladin-area cleanup before returning.",
+      "failedAssertions": [
+        "circle-request-local-cleanup",
+        "circle-native-execution"
+      ],
+      "packageSha256": "57ba17ffb603687bd7672476941e0be9b2d6c1c26b6149195c99943afa292422",
+      "dllSha256": "4777c1df333fc0b5d2b9e7510667feb4e8caaf0f6281df5df97010a98ab64247",
+      "mvid": "ffc49405-9169-4f44-95dd-e2b15003d855",
+      "sourceStateSha256": "4ab00a8255b347dce4b568a1b92b443ed48a0b58973a7fa7660f85749a9702e3",
+      "runtimeResultSha256": "c782c0c6cfade35f8722ce7791893e7b72a23707f5af352c613a86725adda0ce",
+      "saveWrites": false
+    }
+  ],
+  "native": {
+    "run": "20260920T0708419490802Z-disposable-magic-circle-evil",
+    "status": "PASS",
+    "assertions": 255,
+    "additionalAssertions": 24,
+    "runtimeResultSha256": "67dc0fa18521b55f7326ebfc73b647c239e4f80cf0c19f2083b44fc93697a43a",
+    "saveWritingApiObserved": false,
+    "newAssertions": [
+      {
+        "name": "circle-native-pet-Evil",
+        "expected": "reciprocal native animal companion receives the exact area contribution",
+        "observed": "pet=54cf380dee486ff42b803174d1b9da1b",
+        "status": "PASS",
+        "evidence": "registered native leopard and UnitDescriptor.SetMaster; no fabricated pet flag"
+      },
+      {
+        "name": "circle-pet-reentry-Evil",
+        "expected": "pet exit removes one source; entry restores it without cost or renewed carrier",
+        "observed": "outside=True",
+        "status": "PASS",
+        "evidence": "native translocation and area membership, same original carrier"
+      },
+      {
+        "name": "circle-native-pet-Good",
+        "expected": "reciprocal native animal companion receives the exact area contribution",
+        "observed": "pet=54cf380dee486ff42b803174d1b9da1b",
+        "status": "PASS",
+        "evidence": "registered native leopard and UnitDescriptor.SetMaster; no fabricated pet flag"
+      },
+      {
+        "name": "circle-pet-reentry-Good",
+        "expected": "pet exit removes one source; entry restores it without cost or renewed carrier",
+        "observed": "outside=True",
+        "status": "PASS",
+        "evidence": "native translocation and area membership, same original carrier"
+      },
+      {
+        "name": "circle-native-pet-Law",
+        "expected": "reciprocal native animal companion receives the exact area contribution",
+        "observed": "pet=54cf380dee486ff42b803174d1b9da1b",
+        "status": "PASS",
+        "evidence": "registered native leopard and UnitDescriptor.SetMaster; no fabricated pet flag"
+      },
+      {
+        "name": "circle-pet-reentry-Law",
+        "expected": "pet exit removes one source; entry restores it without cost or renewed carrier",
+        "observed": "outside=True",
+        "status": "PASS",
+        "evidence": "native translocation and area membership, same original carrier"
+      },
+      {
+        "name": "circle-native-pet-Chaos",
+        "expected": "reciprocal native animal companion receives the exact area contribution",
+        "observed": "pet=54cf380dee486ff42b803174d1b9da1b",
+        "status": "PASS",
+        "evidence": "registered native leopard and UnitDescriptor.SetMaster; no fabricated pet flag"
+      },
+      {
+        "name": "circle-pet-reentry-Chaos",
+        "expected": "pet exit removes one source; entry restores it without cost or renewed carrier",
+        "observed": "outside=True",
+        "status": "PASS",
+        "evidence": "native translocation and area membership, same original carrier"
+      },
+      {
+        "name": "circle-native-wall-exclusion-Evil",
+        "expected": "inside radius but native obstruction prevents coverage",
+        "observed": "inside=True;obstacle=True",
+        "status": "PASS",
+        "evidence": "actual installed scene wall and native area containment/line-of-sight; no distance-only substitution"
+      },
+      {
+        "name": "circle-native-wall-open-positive-Evil",
+        "expected": "same cast covers target after moving onto unobstructed side",
+        "observed": "count=1",
+        "status": "PASS",
+        "evidence": "native positive membership after obstruction removed by owned target movement"
+      },
+      {
+        "name": "circle-native-wall-exclusion-Good",
+        "expected": "inside radius but native obstruction prevents coverage",
+        "observed": "inside=True;obstacle=True",
+        "status": "PASS",
+        "evidence": "actual installed scene wall and native area containment/line-of-sight; no distance-only substitution"
+      },
+      {
+        "name": "circle-native-wall-open-positive-Good",
+        "expected": "same cast covers target after moving onto unobstructed side",
+        "observed": "count=1",
+        "status": "PASS",
+        "evidence": "native positive membership after obstruction removed by owned target movement"
+      },
+      {
+        "name": "circle-native-wall-exclusion-Law",
+        "expected": "inside radius but native obstruction prevents coverage",
+        "observed": "inside=True;obstacle=True",
+        "status": "PASS",
+        "evidence": "actual installed scene wall and native area containment/line-of-sight; no distance-only substitution"
+      },
+      {
+        "name": "circle-native-wall-open-positive-Law",
+        "expected": "same cast covers target after moving onto unobstructed side",
+        "observed": "count=1",
+        "status": "PASS",
+        "evidence": "native positive membership after obstruction removed by owned target movement"
+      },
+      {
+        "name": "circle-native-wall-exclusion-Chaos",
+        "expected": "inside radius but native obstruction prevents coverage",
+        "observed": "inside=True;obstacle=True",
+        "status": "PASS",
+        "evidence": "actual installed scene wall and native area containment/line-of-sight; no distance-only substitution"
+      },
+      {
+        "name": "circle-native-wall-open-positive-Chaos",
+        "expected": "same cast covers target after moving onto unobstructed side",
+        "observed": "count=1",
+        "status": "PASS",
+        "evidence": "native positive membership after obstruction removed by owned target movement"
+      },
+      {
+        "name": "circle-paladin-class-entitlements",
+        "expected": "native prepared book knows exactly Evil/Chaos, with its original owner and restriction",
+        "observed": "known=Evil,Chaos",
+        "status": "PASS",
+        "evidence": "actual native Paladin level progression and published list; no AddKnown bypass"
+      },
+      {
+        "name": "circle-paladin-alignment-gate-Evil",
+        "expected": "native lawful-good book availability disables on deviation and restores on return",
+        "observed": "allowed=True;forbidden=True;restored=True",
+        "status": "PASS",
+        "evidence": "native ForbidSpellbookOnAlignmentDeviation; no new alignment policy or forced resource result"
+      },
+      {
+        "name": "circle-paladin-prepared-cast-Evil",
+        "expected": "one legitimate level-three Paladin preparation creates the native bearer circle",
+        "observed": "cl=8",
+        "status": "PASS",
+        "evidence": "native Memorize/Rest/UnitUseAbility and original Paladin book"
+      },
+      {
+        "name": "circle-paladin-alignment-gate-Chaos",
+        "expected": "native lawful-good book availability disables on deviation and restores on return",
+        "observed": "allowed=True;forbidden=True;restored=True",
+        "status": "PASS",
+        "evidence": "native ForbidSpellbookOnAlignmentDeviation; no new alignment policy or forced resource result"
+      },
+      {
+        "name": "circle-paladin-prepared-cast-Chaos",
+        "expected": "one legitimate level-three Paladin preparation creates the native bearer circle",
+        "observed": "cl=8",
+        "status": "PASS",
+        "evidence": "native Memorize/Rest/UnitUseAbility and original Paladin book"
+      },
+      {
+        "name": "circle-paladin-fixture-cleanup",
+        "expected": "exact original areas, recipient facts and inventory restored",
+        "observed": "areas=0",
+        "status": "PASS",
+        "evidence": "only newly created source-owned Paladin areas, companion and starter items removed; no point dispel crosses a foreign source"
+      },
+      {
+        "name": "circle-specialist-unknown-negative",
+        "expected": "attached Abjuration list grants no unknown spell or favorite-slot entry",
+        "observed": "known=0",
+        "status": "PASS",
+        "evidence": "real native specialist with no circles learned; repeated production PostLoad must not teach spells"
+      },
+      {
+        "name": "circle-specialist-stale-cache",
+        "expected": "known spell repaired once without changing any learned spell or owner",
+        "observed": "special=4",
+        "status": "PASS",
+        "evidence": "removed only one exact cache entry on the request-owned native book; real PostLoad callback; fresh disk load remains separately tested"
+      }
+    ]
+  },
+  "limits": [
+    "Guarded read-only Working-save fixture only. This checkpoint does not qualify the expanded persistence matrix, optional profiles, final candidate or new preview framing.",
+    "The four previous failures are fixture prerequisites/cleanup defects; none is relabeled PASS. No save was written by these runs.",
+    "Only exact Paladin-source areas, reciprocal owned companion if present and starter-item instances created within its paused native progression scope are removed."
+  ]
+}

@@ -67,5 +67,19 @@ foreach ($phase in @('prepare', 'verify', 'cleanup', 'absent', 'scene')) {
     } "magic-circle-persistence-$phase-rejects-baseline"
 }
 
+$profile = New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-profile' -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true -EvidenceDirectory $synthetic
+if ($profile.parameters.Count -ne 0 -or (Get-KmgRuntimeScenarioMetadata -Scenario $profile.scenario).RequiresSaveName) {
+    $failures.Add('circle-profile-native-save-free-scope')
+}
+Assert-Throws {
+    New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-profile' -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $false -EvidenceDirectory $synthetic
+} 'circle-profile-requires-native-exit'
+Assert-Throws {
+    New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-profile' -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true -EvidenceDirectory $synthetic -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+} 'circle-profile-rejects-even-working-save'
+Assert-Throws {
+    New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-profile' -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true -EvidenceDirectory $synthetic -CatalogTimeoutSeconds 30
+} 'circle-profile-rejects-save-catalog-timeout'
+
 if ($failures.Count -gt 0) { throw ($failures -join ', ') }
 Write-Output 'PASS Magic Circle guarded request tests.'

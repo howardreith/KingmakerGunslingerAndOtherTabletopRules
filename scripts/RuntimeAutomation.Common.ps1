@@ -874,6 +874,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'disposable-magic-circle-profile' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-magic-circle-native-contracts' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1660,6 +1666,9 @@ function Assert-KmgRuntimeScenarioPreflight {
         [switch]$PermitQualifiedElementalRaces114,
         [switch]$PermitQualifiedElementalRaces117
     )
+    if ($Scenario -ceq 'disposable-magic-circle-profile' -and -not $ExitAfterCompletion) {
+        throw 'The native Magic Circle profile fixture requires automatic exit.'
+    }
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
     $qualifiedElementalRaces114 =
         $PermitQualifiedElementalRaces114 -and

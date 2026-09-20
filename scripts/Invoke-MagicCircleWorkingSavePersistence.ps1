@@ -78,15 +78,27 @@ try {
         ($record.settings.magicCircleSpells -ne $ContentEnabled -or $record.settings.sharedControlEnhancement -ne $ControlEnhancementEnabled)) {
         throw 'Observed startup settings do not match the requested profile.'
     }
-    if ($prepared) {
-        foreach ($key in @('area', 'actors', 'carriers', 'control')) {
+    if ($prepared -and $Phase -ne 'absent') {
+        foreach ($key in @('area', 'actors', 'carriers', 'control', 'market')) {
             $expected = $prepared.snapshot.$key | ConvertTo-Json -Depth 24 -Compress
             $actual = $record.snapshot.$key | ConvertTo-Json -Depth 24 -Compress
             if ($actual -cne $expected) { throw "Fresh native load changed original persisted $key." }
         }
         [ordered]@{ status = 'PASS'; prepareEvidence = $resolvedPrepare; observedEvidence = $resultDirectory
-            exactComparedFields = @('area', 'actors', 'carriers', 'control')
+            exactComparedFields = @('area', 'actors', 'carriers', 'control', 'market')
             content = $ContentEnabled; sharedControl = $ControlEnhancementEnabled
+        } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $resultDirectory 'magic-circle-cross-launch-comparison.json') -Encoding UTF8
+    }
+    if ($prepared -and $Phase -eq 'absent') {
+        $originalMarket = $prepared.snapshot.market
+        $absence = $record.marketAbsence
+        if (($absence.inventory | ConvertTo-Json -Compress) -cne ($originalMarket.originalInventory | ConvertTo-Json -Compress) -or
+            $absence.gold -ne $originalMarket.originalGold -or $originalMarket.table -in $absence.cachedTables -or
+            $originalMarket.table -in $absence.savedTables -or $originalMarket.table -in $absence.grants) {
+            throw 'Fresh absence did not restore exact pre-fixture inventory, gold, supplier and grant state.'
+        }
+        [ordered]@{ status = 'PASS'; prepareEvidence = $resolvedPrepare; observedEvidence = $resultDirectory
+            exactComparedFields = @('originalInventory', 'originalGold', 'ownedTableAbsent', 'ownedGrantAbsent')
         } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $resultDirectory 'magic-circle-cross-launch-comparison.json') -Encoding UTF8
     }
 }

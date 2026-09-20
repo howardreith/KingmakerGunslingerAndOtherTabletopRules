@@ -457,17 +457,17 @@ project-owned cord-and-clasp artwork instead of the donor belt icon.
 
 ## Feature modules
 
-Open Unity Mod Manager's Kingmaker Gunslinger panel to find twelve checkboxes:
+Open Unity Mod Manager's Kingmaker Gunslinger panel to find thirteen checkboxes:
 **Gunslinger**, **Acadamae Graduate**, **Shield Other**, **Expanded
 Summoning**, **Elven Branched Spears**, **Eastern Weapons**, **Brown-Fur
 Transmuter -- requires Call of the Wild**, **Urban Barbarian**, **Bodyguard
 and In Harms Way**, **Protection from Alignment: control immunity**, and
 **Elemental Races: Ifrit, Oread, Sylph, and Undine**, plus
-**World-Map Teleportation Spells**. All twelve modules
-default enabled. Older settings migrate to schema 11 while preserving every
-explicit value. Any absent module key, including Teleportation, migrates ON.
+**World-Map Teleportation Spells** and **Magic Circle Spells**. All thirteen modules
+default enabled. Older settings migrate to schema 12 while preserving every
+explicit value. Any absent module key, including Magic Circle, migrates ON.
 
-The current exploration-guard checkpoint has passed all 26 module boundary
+The Teleportation exploration-guard checkpoint passed its 26 module boundary
 configurations (897 assertions), plus desktop/gamepad casting and
 native resource, traveler, familiarity and working-save regressions.
 
@@ -493,14 +493,27 @@ other campaign/map contexts and required compatibility profiles remain under qua
 [player smoke guide](docs/TELEPORTATION-SPELLS-SMOKE-TEST.md) covers destination
 selection, confirmation and slot checks.
 
+Magic Circle adds separate level-3 spells against Evil, Good, Law and Chaos.
+The touched creature carries a moving ten-foot emanation for ten minutes per
+caster level; every covered creature receives its typed defenses. The existing
+Protection control-immunity setting also governs circles. Bearer death ends the
+circle; prior control remains active. Scrolls use the ordinary arcane/priest
+suppliers. Content OFF retains stable save identities and finite vendor definitions;
+known spells and inert scroll stock can remain visible, including at unvisited
+suppliers, but new casting is disabled.
+See [Magic Circle rules, access and limits](docs/MAGIC-CIRCLE-SPELLS.md) and the
+[qualification record](planning/MAGIC-CIRCLE-ACCEPTANCE.md). The
+[review-candidate handoff](docs/MAGIC-CIRCLE-HANDOFF.md) identifies the tested
+package, native coverage, restored installation and remaining environment limits.
+
 The panel shows **Active this process** and **Saved for next restart**. Checkbox changes are saved for the next complete Kingmaker restart; they never rebuild the live blueprint graph while the game is running.
 
 Disabling a module hides its content from new character choices and acquisition.
 It does not unregister stable blueprints or strip existing characters, facts,
-items, summons, ammunition state, or equipment from a save. All twelve modules
+items, summons, ammunition state, or equipment from a save. All thirteen modules
 publish independently. Brown-Fur is the only CotW-dependent module: absent or
 incompatible CotW leaves saved intent intact but prevents effective Brown-Fur
-publication while the other eleven modules continue. Urban Barbarian and
+publication while the other twelve modules continue. Urban Barbarian and
 Protection from Alignment remain available regardless of CotW compatibility.
 Keep the whole mod installed
 for any campaign that has used project content.

@@ -3792,7 +3792,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "magic-circle-against-evil"
       },
-      "technicalStatus": "native desktop consumer checkpoint PASS; final artifact/profile qualification pending",
+      "technicalStatus": "final candidate native desktop consumers PASS in both control configurations; reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json",
       "visualReview": {
         "status": "approved",
         "reviewedExportSha256": "c6c8aa108c1beb1d1f37d78a84437d93da2743455cc70d0680862d6322484167",
@@ -3816,7 +3816,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "magic-circle-against-good"
       },
-      "technicalStatus": "native desktop consumer checkpoint PASS; final artifact/profile qualification pending",
+      "technicalStatus": "final candidate native desktop consumers PASS in both control configurations; reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json",
       "visualReview": {
         "status": "approved",
         "reviewedExportSha256": "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a",
@@ -3840,7 +3840,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "magic-circle-against-law"
       },
-      "technicalStatus": "native desktop consumer checkpoint PASS; final artifact/profile qualification pending",
+      "technicalStatus": "final candidate native desktop consumers PASS in both control configurations; reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json",
       "visualReview": {
         "status": "approved",
         "reviewedExportSha256": "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5",
@@ -3864,7 +3864,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "magic-circle-against-chaos"
       },
-      "technicalStatus": "native desktop consumer checkpoint PASS; final artifact/profile qualification pending",
+      "technicalStatus": "final candidate native desktop consumers PASS in both control configurations; reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json",
       "visualReview": {
         "status": "approved",
         "reviewedExportSha256": "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f",
@@ -8582,7 +8582,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.TouchDelivery",
@@ -8595,7 +8595,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.Carrier",
@@ -8608,7 +8608,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.Recipient",
@@ -8621,7 +8621,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.Scroll",
@@ -8634,7 +8634,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-evil",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Evil.Area",
@@ -8660,7 +8660,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.TouchDelivery",
@@ -8673,7 +8673,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.Carrier",
@@ -8686,7 +8686,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.Recipient",
@@ -8699,7 +8699,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.Scroll",
@@ -8712,7 +8712,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-good",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Good.Area",
@@ -8738,7 +8738,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.TouchDelivery",
@@ -8751,7 +8751,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.Carrier",
@@ -8764,7 +8764,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.Recipient",
@@ -8777,7 +8777,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.Scroll",
@@ -8790,7 +8790,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-law",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Law.Area",
@@ -8816,7 +8816,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.TouchDelivery",
@@ -8829,7 +8829,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.Carrier",
@@ -8842,7 +8842,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.Recipient",
@@ -8855,7 +8855,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.Scroll",
@@ -8868,7 +8868,7 @@
       "currentArt": "owned-magic-circle-painting",
       "concept": "magic-circle-against-chaos",
       "disposition": "original-required",
-      "reason": "Exact owner-approved alignment painting; native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json."
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
     },
     {
       "symbol": "KMG.Spells.MagicCircle.Chaos.Area",
@@ -9338,6 +9338,6 @@
     "paintedConsumerCount": 157,
     "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
     "technicalStatus": "qualified-paired-census-and-working-save-smoke",
-    "magicCircleStatus": "twenty native desktop consumers qualified in reports/magic-circle/NATIVE-UI-AND-LEARNING.json; final artifact/profile checks pending"
+    "magicCircleStatus": "twenty final candidate native desktop consumers qualified ON/OFF in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json; scoped mechanics and profiles in reports/magic-circle/FINAL-CANDIDATE-QUALIFICATION.json"
   }
 }

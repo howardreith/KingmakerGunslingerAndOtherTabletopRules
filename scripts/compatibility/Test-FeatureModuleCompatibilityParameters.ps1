@@ -22,16 +22,16 @@ $assignment = @($guards[1].FindAll({ param($node)
 if ($assignment.Count -ne 1) { throw 'Exact compatibility module settings assignment changed.' }
 $makeSettings = [scriptblock]::Create($assignment[0].Extent.Text + "`nreturn `$settings")
 $catalog = @(Get-KmgFeatureModuleCatalog)
-if ($catalog.Count -ne 12) { throw 'Expected twelve canonical modules.' }
+if ($catalog.Count -ne 13) { throw 'Expected thirteen canonical modules.' }
 $checks = 0
-foreach ($mask in 0..4095) {
+foreach ($mask in 0..8191) {
     $Parameters = @{}
     for ($index = 0; $index -lt $catalog.Count; $index++) {
         $Parameters[$catalog[$index].RuntimeParameter] = [bool]($mask -band (1 -shl $index))
     }
     & $validation
     $settings = & $makeSettings
-    if ($settings.Count -ne 13 -or $settings.schemaVersion -ne 11) { throw 'Wrong compatibility settings schema/count.' }
+    if ($settings.Count -ne 14 -or $settings.schemaVersion -ne 12) { throw 'Wrong compatibility settings schema/count.' }
     foreach ($module in $catalog) {
         if ($settings[$module.JsonKey] -isnot [bool] -or
             $settings[$module.JsonKey] -ne $Parameters[$module.RuntimeParameter]) {

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "feature": "Magic Circle",
+  "verifiedUtc": "2026-09-20T10:11:21.6076804Z",
+  "result": "PASS",
+  "mechanism": "scripts/Restore-Live-Mod.ps1",
+  "explicitBackup": "C:/Dev/KingmakerGunslingerLab/runtime-backups/live-mod/20260919T2203354648740Z",
+  "target": "C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker/Mods/KingmakerGunslinger",
+  "originalVersion": "0.0.117",
+  "fileCount": 136,
+  "exactFileSetAndSha256Match": true,
+  "manifestSha256": "bcc6b4459ad5b4e963133b24dbafb0e12477a6ee0b577c2255804fd6683a0ebd",
+  "dllSha256": "fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f",
+  "settingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+  "globalFirearmBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+  "gameProcessCount": 0,
+  "candidateLeftInstalled": false,
+  "rawLog": "artifacts-magic-circle-normal-play-restore.log",
+  "settingsFile": "FeatureModules.json"
+}

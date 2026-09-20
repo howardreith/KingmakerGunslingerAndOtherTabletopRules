@@ -65,6 +65,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CircleCast(caster, bearer, new AbilityData(circle.Spell, book), diagnostics);
                     var carrier = CircleBuffs(bearer, circle.Carrier).Single(); var area = CircleArea(carrier);
                     CircleRefresh(area, actors); CircleRefresh(area, actors);
+                    diagnostics.Add(label + "native-membership:recipient=" + CircleBuffs(recipient, circle.Recipient).Length +
+                        ";areaRegistered=" + Game.Instance.State.AreaEffects.All.Contains(area) + ";areaInGame=" + area.IsInGame +
+                        ";recipientPosition=" + recipient.Position + ";areaPosition=" + area.Position +
+                        ";shape=" + area.View.Shape.Contains(recipient.Position, recipient.View.Corpulence) +
+                        ";ac=" + initialAc + "->" + CircleAttackAC(controller, recipient) +
+                        ";save=" + initialSave + "->" + CircleSave(controller, recipient, dominate));
                     assertions.Add(Assertion(label + "native-cast-and-defenses", "correct descriptor, one slot, caster/bearer context, +2 typed defenses", "source=" + carrier.Context.MaybeCaster?.UniqueId,
                         book.GetSpontaneousSlots(3) == slots - 1 && ReferenceEquals(carrier.Context.MaybeCaster, caster) &&
                         ReferenceEquals(area.Context.MaybeOwner, bearer) && circle.Spell.GetComponent<SpellComponent>().School == SpellSchool.Abjuration &&
@@ -165,7 +171,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var pending = new MechanicsContext(lost, recipient.Descriptor, terminal, null, new TargetWrapper(recipient));
                 lost.Destroy(); game.EntityDestroyer.Tick(); game.EntityDestroyer.Tick();
                 if (!lost.Destroyed || pending.MaybeCaster != null || pending.SourceAbility != null)
-                    throw new InvalidOperationException("Permanent-removal context did not become unresolved.");
+                    throw new InvalidOperationException("Permanent-removal context did not become unresolved: destroyed=" + lost.Destroyed +
+                        ";resolved=" + (pending.MaybeCaster != null) + ";ability=" + pending.SourceAbility?.AssetGuid +
+                        ";state=" + lost.HoldingState?.SceneName);
                 var trigger = typeof(BuffCollection).GetMethod("TriggerRuleApplyBuff", BindingFlags.Instance | BindingFlags.NonPublic);
                 if (trigger == null) throw new MissingMethodException("Native pending buff dispatch boundary is absent.");
                 observer.Clear();

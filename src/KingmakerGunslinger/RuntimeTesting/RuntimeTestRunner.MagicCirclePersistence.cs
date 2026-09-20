@@ -7,6 +7,7 @@ using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Persistence;
@@ -18,6 +19,8 @@ using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Parts;
+using Kingmaker.UnitLogic.Commands;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -38,6 +41,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<string> _circlePersistenceDiagnostics = new List<string>();
         private readonly JObject _circlePersistenceRecord = new JObject();
         private CircleSceneObservation _circleScene;
+        private int _circleSceneStage;
+        private BlueprintArea _circleSceneOrigin;
+        private Dictionary<string, Vector3> _circleScenePositions;
+        private readonly JArray _circleTransitionEvents = new JArray();
         private string[] _circleSceneParty, _circleSceneRemote, _circleSceneActorIds;
 
         private void PollMagicCirclePersistence()
@@ -60,20 +67,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
                 if (_circleScene != null) {
                     if (!_circleScene.Ready) return;
+                    if (_circleSceneStage == 2) {
+                        var travelers = game.Player.Party.Where(unit => _circleSceneActorIds.Contains(unit.UniqueId)).ToArray();
+                        var bearer = travelers.Single(unit => unit.Descriptor.CustomName == CircleSavedPrefix + "Bearer");
+                        var carriers = BlueprintBootstrap.MagicCircles.SelectMany(circle => CircleBuffs(bearer, circle.Carrier))
+                            .OrderBy(buff => buff.Blueprint.AssetGuid, StringComparer.Ordinal)
+                            .ThenBy(buff => buff.Context.MaybeCaster?.Descriptor.CustomName, StringComparer.Ordinal).ToArray();
+                        var rows = CirclePersistedCarriers(bearer, carriers);
+                        _circlePersistenceRecord["worldMapCarriers"] = rows;
+                        CirclePersistenceCheck("different-area-carriers-retained", travelers.Length == 4 &&
+                            game.CurrentlyLoadedArea != _circleSceneOrigin &&
+                            game.CurrentlyLoadedArea == game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint.Area &&
+                            JToken.DeepEquals(_circlePersistenceRecord["snapshot"]["carriers"], rows) && _circleScene.Saves == 0,
+                            "actual world-map load retains all original timed carriers/casters/deadlines while local views unload; no saves");
+                        FinishCircleSceneLeg("world-map");
+                        _circleSceneStage = 3; _circleScene = new CircleSceneObservation(); _circleScene.Start();
+                        // Installed private contract used by the public LoadArea:
+                        // original registered area, no entry teleport, no autosave,
+                        // ordinary unload and no SaveInfo/save-file operation.
+                        typeof(Game).GetMethod("LoadArea", BindingFlags.Instance | BindingFlags.NonPublic, null,
+                            new[] { typeof(BlueprintArea), typeof(BlueprintAreaEnterPoint), typeof(AutoSaveMode), typeof(bool), typeof(SaveInfo) }, null)
+                            .Invoke(game, new object[] { _circleSceneOrigin, null, AutoSaveMode.None, false, null });
+                        return;
+                    }
+                    if (_circleSceneStage == 3) {
+                        // Native arrival may spread the party formation. Restore
+                        // only the four fixture positions, never the effects.
+                        foreach (var unit in CircleSavedActors()) unit.Position = _circleScenePositions[unit.UniqueId];
+                    }
                     var after = CaptureCirclePersistence();
-                    _circlePersistenceRecord["afterScene"] = after;
+                    string phase = _circleSceneStage == 1 ? "scene" : "roundtrip";
+                    _circlePersistenceRecord[_circleSceneStage == 1 ? "afterScene" : "afterRoundtrip"] = after;
                     var before = (JObject)_circlePersistenceRecord["snapshot"];
-                    CirclePersistenceCheck("scene-original-context-and-expiration", JToken.DeepEquals(before["carriers"], after["carriers"]) &&
-                        JToken.DeepEquals(before["actors"], after["actors"]) && JToken.DeepEquals(before["control"], after["control"]),
-                        "original caster IDs, bearer, levels, metamagic, deadlines, known spells and control survive native scene reconstruction");
-                    CirclePersistenceCheck("scene-native-unload-and-reload", _circleScene.ActualReload && _circleScene.Saves == 0,
-                        "native scene handle replaced; loading callbacks observed; zero saving throws during reconstruction");
-                    _circlePersistenceRecord["sceneEvents"] = _circleScene.Events;
+                    CirclePersistenceCheck(phase + "-original-context-and-expiration",
+                        JToken.DeepEquals(before["area"], after["area"]) && JToken.DeepEquals(before["carriers"], after["carriers"]) &&
+                        JToken.DeepEquals(before["actors"], after["actors"]) && JToken.DeepEquals(before["control"], after["control"]) &&
+                        JToken.DeepEquals(before["market"], after["market"]),
+                        "original area, caster IDs, bearer, levels, metamagic, deadlines, known spells, spent slots, held touch, market and control survive native reconstruction");
+                    CirclePersistenceCheck(phase + "-native-unload-and-reload",
+                        (_circleSceneStage != 1 || _circleScene.ActualReload) && _circleScene.Saves == 0,
+                        "native loading callbacks and scene unload observed; zero saving throws during reconstruction");
+                    FinishCircleSceneLeg(phase);
+                    if (_circleSceneStage == 1) {
+                        var entry = game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint;
+                        if (entry == null || entry.Area == _circleSceneOrigin) throw new InvalidOperationException("Distinct native world-map entry required.");
+                        _circleSceneStage = 2; _circleScene = new CircleSceneObservation(); _circleScene.Start();
+                        game.LoadArea(entry, AutoSaveMode.None);
+                        return;
+                    }
                     FinishMagicCirclePersistence(null);
                     return;
                 }
                 _circlePersistenceStarted = true;
                 _circlePersistenceClock = Stopwatch.StartNew();
+                _circlePersistenceRecord["nativeGameVersion"] = GameVersion.Cached;
                 if (game.Player.Party.Count != WorkingSaveSmokeScenario.ExpectedPartyCount)
                     throw new InvalidOperationException("The original working-save party boundary changed.");
                 bool prepare = _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCirclePrepare;
@@ -85,6 +132,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         CirclePersistenceCheck("cleanup-fresh-load-absence", !game.State.AreaEffects.All.Any(area => circles.Any(c => ReferenceEquals(c.Area, area.Blueprint))) &&
                             !game.State.Units.All.SelectMany(unit => unit.Buffs.Enumerable).Any(buff => circles.Any(c => ReferenceEquals(c.Carrier, buff.Blueprint) || ReferenceEquals(c.Recipient, buff.Blueprint))),
                             "no saved fixture actor, circle area, carrier or derivative benefit after native cleanup save");
+                        CaptureCircleSavedMarketAbsence();
                         FinishMagicCirclePersistence(null); return;
                     }
                     PrepareCirclePersistence();
@@ -104,6 +152,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["temporaryTravelers"] = new JArray(_circleSceneActorIds),
                         ["areaExcludedFromSave"] = game.CurrentlyLoadedArea.ExcludeFromSave,
                         ["holdingStates"] = new JArray(sceneActors.Select(actor => actor.HoldingState?.GetType().FullName)) };
+                    _circleSceneOrigin = game.CurrentlyLoadedArea;
+                    _circleScenePositions = sceneActors.ToDictionary(unit => unit.UniqueId, unit => unit.Position);
+                    _circleSceneStage = 1;
                     _circleScene = new CircleSceneObservation();
                     _circleScene.Start();
                     game.ReloadArea();
@@ -150,6 +201,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!_context.FeatureModules.Active.MagicCircleSpells) throw new InvalidOperationException("Prepare requires content enabled.");
             var game = Game.Instance;
             var anchor = game.Player.Party.First(unit => unit.IsInGame && unit.View != null);
+            var originalItems = game.Player.Inventory.ToArray();
+            var originalInventory = CircleSavedItems(game.Player.Inventory);
             // Native registered blueprint only: these four request-owned entities
             // must hydrate in a new process. No shared blueprint is modified.
             foreach (string role in CircleSavedRoles) {
@@ -159,8 +212,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Stats.HitPoints.BaseValue = 10000;
             }
             game.EntityCreator.Tick();
+            // DefaultPlayerCharacter supplies starter equipment into the shared
+            // stash even for these non-party actors. Remove only the exact new
+            // instances before any fixture save, using native slot-aware removal.
+            foreach (var item in game.Player.Inventory.Except(originalItems).ToArray()) game.Player.Inventory.Remove(item).Dispose();
+            CirclePersistenceCheck("spawn-inventory-isolation", game.Player.Inventory.SequenceEqual(originalItems) &&
+                CircleSavedItems(game.Player.Inventory).SequenceEqual(originalInventory),
+                "exact spawned starter items removed; original inventory instances, slots, counts and charges retained before persistence");
             var actors = CircleSavedActors();
-            var circle = BlueprintBootstrap.MagicCircles.Single(value => value.Alignment == "Evil");
+            var circles = BlueprintBootstrap.MagicCircles;
             var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
                 "b3a505fb61437dc4097f43c3f8f9a4cf", "native Sorcerer persistence spellbook");
             for (int index = 0; index < 2; index++) {
@@ -171,7 +231,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     AdvanceDisposableSpellcaster(actors[index].Descriptor, sorcerer, 8 + index * 2, ref controller);
                     var book = actors[index].Descriptor.Spellbooks.Single(value => ReferenceEquals(value.Blueprint, sorcerer.Spellbook));
                     while (book.CasterLevel < 8 + index * 2) book.AddCasterLevel();
-                    book.UpdateAllSlotsSize(false); book.Rest(); book.AddKnown(3, circle.Spell, true);
+                    book.UpdateAllSlotsSize(false); book.Rest();
+                    foreach (var circle in circles) book.AddKnown(3, circle.Spell, true);
                 }
                 finally { (controller as IDisposable)?.Dispose(); }
             }
@@ -181,19 +242,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Positive pre-existing control prerequisite failed.");
             for (int index = 0; index < 2; index++) {
                 var book = actors[index].Descriptor.Spellbooks.Single(value => ReferenceEquals(value.Blueprint, sorcerer.Spellbook));
+                foreach (var circle in circles) {
                 var data = new AbilityData(circle.Spell, book);
                 if (index == 0) { var meta = new MetamagicData { SpellLevelCost = Metamagic.Extend.DefaultCost() }; meta.Add(Metamagic.Extend); data.MetamagicData = meta; }
                 CircleCast(actors[index], actors[2], data, _circlePersistenceDiagnostics);
+                }
             }
+            PrepareCircleSavedMarket(actors);
+            // Preserve a real held-touch charge as an additional hydration
+            // consumer, leaving its already spent slot and native pending
+            // delivery intact. No direct UnitPartTouch construction.
+            var heldCircle = circles.Single(value => value.Alignment == "Evil");
+            var heldBook = actors[1].Descriptor.Spellbooks.Single(value => ReferenceEquals(value.Blueprint, sorcerer.Spellbook));
+            var heldData = new AbilityData(heldCircle.Spell, heldBook);
+            int heldSlots = heldBook.GetSpontaneousSlots(3);
+            var command = new UnitUseAbility(heldData, new TargetWrapper(actors[2]));
+            if (!heldData.IsAvailable || !command.CanStart) throw new InvalidOperationException("Saved held-touch root is unavailable.");
+            command.IgnoreCooldown(TimeSpan.Zero); actors[1].Commands.Run(command); command.Start(); CircleCompleteCommand(command, _circlePersistenceDiagnostics);
+            CirclePersistenceCheck("native-held-touch-prepare", actors[1].Get<UnitPartTouch>()?.Ability.Data.Blueprint == heldCircle.Delivery &&
+                heldBook.GetSpontaneousSlots(3) == heldSlots - 1, "real cast spends once and leaves a native pending touch for fresh hydration");
         }
 
         private JObject CaptureCirclePersistence()
         {
             var game = Game.Instance;
             var actors = CircleSavedActors();
-            var circle = BlueprintBootstrap.MagicCircles.Single(value => value.Alignment == "Evil");
-            var carriers = CircleBuffs(actors[2], circle.Carrier).OrderBy(buff => buff.Context.MaybeCaster?.Descriptor.CustomName, StringComparer.Ordinal).ToArray();
-            if (carriers.Length != 2) throw new InvalidOperationException("Exactly two saved native carriers required.");
+            var circles = BlueprintBootstrap.MagicCircles;
+            var carriers = circles.SelectMany(circle => CircleBuffs(actors[2], circle.Carrier)).OrderBy(buff => buff.Blueprint.AssetGuid, StringComparer.Ordinal)
+                .ThenBy(buff => buff.Context.MaybeCaster?.Descriptor.CustomName, StringComparer.Ordinal).ToArray();
+            if (carriers.Length != 8) throw new InvalidOperationException("Exactly two saved native carriers of each alignment required.");
             var areas = carriers.Select(CircleArea).ToArray();
             foreach (var area in areas) {
                 if (area == null || area.IsEnded) throw new InvalidOperationException("The saved native area link is absent/ended.");
@@ -201,61 +278,78 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             // Native scene teardown can leave ended entities until the ordinary
             // destruction tick; tick only exact ended Circle areas for these actors.
-            foreach (var ended in game.State.AreaEffects.All.Where(area => ReferenceEquals(area.Blueprint, circle.Area) &&
+            foreach (var ended in game.State.AreaEffects.All.Where(area => circles.Any(circle => ReferenceEquals(area.Blueprint, circle.Area)) &&
                 area.IsEnded && actors.Contains(area.Context.MaybeCaster)).ToArray()) ended.Tick();
             game.EntityDestroyer.Tick();
-            var live = game.State.AreaEffects.All.Where(area => ReferenceEquals(area.Blueprint, circle.Area) && actors.Contains(area.Context.MaybeCaster)).ToArray();
-            CirclePersistenceCheck("two-caster-area-ownership", live.Length == 2 && live.All(area => areas.Contains(area)) &&
-                areas.Select(area => area.UniqueId).Distinct().Count() == 2 && carriers.Select(buff => buff.Context.MaybeCaster).Distinct().Count() == 2 &&
+            var live = game.State.AreaEffects.All.Where(area => circles.Any(circle => ReferenceEquals(area.Blueprint, circle.Area)) && actors.Contains(area.Context.MaybeCaster)).ToArray();
+            CirclePersistenceCheck("two-caster-area-ownership", live.Length == 8 && live.All(area => areas.Contains(area)) &&
+                areas.Select(area => area.UniqueId).Distinct().Count() == 8 && carriers.Select(buff => buff.Context.MaybeCaster).Distinct().Count() == 2 &&
                 areas.All(area => ReferenceEquals(area.Context.MaybeOwner, actors[2])) && carriers.All(buff => buff.Active && buff.TimeLeft > TimeSpan.Zero),
                 "two original casters, one bearer, exactly one native area per original active carrier");
-            CirclePersistenceCheck("two-caster-recipient-ownership", actors.All(unit => CircleBuffs(unit, circle.Recipient).Length == 2 &&
-                CircleBuffs(unit, circle.Recipient).Select(buff => buff.SourceAreaEffectId).OrderBy(id => id).SequenceEqual(areas.Select(area => area.UniqueId).OrderBy(id => id))),
-                "each covered actor retains exactly the two source-area contributions");
+            CirclePersistenceCheck("two-caster-recipient-ownership", actors.All(unit => circles.All(circle => CircleBuffs(unit, circle.Recipient).Length == 2 &&
+                CircleBuffs(unit, circle.Recipient).Select(buff => buff.SourceAreaEffectId).OrderBy(id => id).SequenceEqual(areas.Where(area => ReferenceEquals(area.Blueprint, circle.Area)).Select(area => area.UniqueId).OrderBy(id => id)))),
+                "each covered actor retains exactly two contributions per alignment, eight total");
             var controls = actors[3].Buffs.Enumerable.Where(buff => buff.Blueprint.AssetGuid == "c0f4e1c24c9cd334ca988ed1bd9d201f").ToArray();
             CirclePersistenceCheck("pre-existing-control-preserved", controls.Length == 1 && controls[0].Active && ReferenceEquals(controls[0].Context.MaybeCaster, actors[0]),
                 "original domination remains active after entry/load/reconstruction");
             return new JObject {
+                ["market"] = CaptureCircleSavedMarket(actors),
                 ["area"] = game.CurrentlyLoadedArea.AssetGuid, ["clockTicks"] = game.Player.GameTime.Ticks,
                 ["actors"] = new JArray(actors.Select(unit => new JObject { ["role"] = unit.Descriptor.CustomName, ["id"] = unit.UniqueId,
-                    ["blueprint"] = unit.Blueprint.AssetGuid, ["books"] = new JArray(unit.Descriptor.Spellbooks.Select(book => new JObject {
+                    ["blueprint"] = unit.Blueprint.AssetGuid,
+                    ["heldDelivery"] = unit.Get<UnitPartTouch>()?.Ability.Data.Blueprint.AssetGuid,
+                    ["heldRoot"] = unit.Get<UnitPartTouch>()?.Ability.Data.StickyTouch?.Blueprint.AssetGuid, ["books"] = new JArray(unit.Descriptor.Spellbooks.Select(book => new JObject {
                         ["blueprint"] = book.Blueprint.AssetGuid, ["level"] = book.CasterLevel, ["slots3"] = book.GetSpontaneousSlots(3), ["slots4"] = book.GetSpontaneousSlots(4),
-                        ["known"] = new JArray(book.GetKnownSpells(3).Where(data => ReferenceEquals(data.Blueprint, circle.Spell)).Select(data => data.Blueprint.AssetGuid)) })) })),
-                ["carriers"] = new JArray(carriers.Select(buff => new JObject { ["bearer"] = actors[2].UniqueId, ["caster"] = buff.Context.MaybeCaster.UniqueId,
-                    ["blueprint"] = buff.Blueprint.AssetGuid, ["sourceSpell"] = buff.Context.SourceAbility?.AssetGuid,
-                    ["level"] = buff.Context.Params.CasterLevel, ["endTimeTicks"] = buff.EndTime.Ticks, ["extend"] = buff.Context.HasMetamagic(Metamagic.Extend) })),
+                        ["known"] = new JArray(book.GetKnownSpells(3).Where(data => circles.Any(circle => ReferenceEquals(data.Blueprint, circle.Spell))).Select(data => data.Blueprint.AssetGuid).OrderBy(value => value, StringComparer.Ordinal)) })) })),
+                ["carriers"] = CirclePersistedCarriers(actors[2], carriers),
                 ["areas"] = new JArray(areas.Select(area => new JObject { ["id"] = area.UniqueId, ["caster"] = area.Context.MaybeCaster.UniqueId, ["owner"] = area.Context.MaybeOwner.UniqueId })),
                 ["control"] = new JArray(controls.Select(buff => new JObject { ["source"] = buff.Context.MaybeCaster.UniqueId, ["endTimeTicks"] = buff.EndTime.Ticks }))
             };
         }
 
+        private static JArray CirclePersistedCarriers(UnitEntityData bearer, Kingmaker.UnitLogic.Buffs.Buff[] carriers)
+        {
+            return new JArray(carriers.Select(buff => new JObject { ["bearer"] = bearer.UniqueId, ["caster"] = buff.Context.MaybeCaster?.UniqueId,
+                ["blueprint"] = buff.Blueprint.AssetGuid, ["sourceSpell"] = buff.Context.SourceAbility?.AssetGuid,
+                ["level"] = buff.Context.Params.CasterLevel, ["endTimeTicks"] = buff.EndTime.Ticks, ["extend"] = buff.Context.HasMetamagic(Metamagic.Extend) }));
+        }
+
+        private void FinishCircleSceneLeg(string name)
+        {
+            _circleTransitionEvents.Add(new JObject { ["leg"] = name, ["events"] = _circleScene.Events.DeepClone(),
+                ["sameSceneReplaced"] = _circleScene.ActualReload, ["savingThrows"] = _circleScene.Saves,
+                ["loadedArea"] = Game.Instance.CurrentlyLoadedArea.AssetGuid });
+            _circlePersistenceRecord["transitionLegs"] = _circleTransitionEvents;
+            _circleScene.Stop(); _circleScene = null;
+        }
+
         private void VerifyCirclePersistenceMechanics()
         {
             var actors = CircleSavedActors(); var caster = actors[0]; var target = actors[2];
-            var circle = BlueprintBootstrap.MagicCircles.Single(value => value.Alignment == "Evil");
-            var book = caster.Descriptor.Spellbooks.Single(value => value.GetKnownSpells(3).Any(data => ReferenceEquals(data.Blueprint, circle.Spell)));
+            var circles = BlueprintBootstrap.MagicCircles;
+            var book = caster.Descriptor.Spellbooks.Single(value => value.GetKnownSpells(3).Any(data => circles.Any(circle => ReferenceEquals(data.Blueprint, circle.Spell))));
             bool content = _context.FeatureModules.Active.MagicCircleSpells;
             bool enhancement = _context.FeatureModules.Active.ProtectionFromAlignmentControlImmunity;
             CirclePersistenceCheck("startup-publication-and-known-spell", (BlueprintBootstrap.MagicCirclePublication != null) == content &&
-                new AbilityData(circle.Spell, book).IsAvailable == content && book.GetKnownSpells(3).Count(data => ReferenceEquals(data.Blueprint, circle.Spell)) == 1,
+                circles.All(circle => new AbilityData(circle.Spell, book).IsAvailable == content && book.GetKnownSpells(3).Count(data => ReferenceEquals(data.Blueprint, circle.Spell)) == 1),
                 "known GUID hydrates; new cast availability follows content startup setting");
             var ability = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, "d7cbd2004ce66a042aeab2e95a3c5c61", "control source");
             var buff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library, "c0f4e1c24c9cd334ca988ed1bd9d201f", "control terminal");
             var alignment = caster.Descriptor.Alignment.Value;
             var capture = new CircleApplicationCapture(); EventBus.Subscribe(capture);
             try {
-                caster.Descriptor.Alignment.Set(Alignment.LawfulGood);
+                caster.Descriptor.Alignment.Set(Alignment.TrueNeutral);
                 int ac = CircleAttackAC(caster, target), save = CircleSave(caster, target, ability);
                 caster.Descriptor.Alignment.Set(Alignment.LawfulEvil);
                 CirclePersistenceCheck("hydrated-native-defenses", CircleAttackAC(caster, target) == ac + 2 && CircleSave(caster, target, ability) == save + 2,
-                    "two saved circles give only +2 native typed defenses even with content disabled");
+                    "eight saved circles give only +2 native typed defenses even with content disabled");
                 capture.Clear();
                 var applied = target.Buffs.AddBuff(buff, new MechanicsContext(caster, caster.Descriptor, ability, null, new TargetWrapper(target)), TimeSpan.FromMinutes(1));
                 CirclePersistenceCheck("hydrated-shared-control-setting", capture.Count == 1 &&
                     (enhancement ? applied == null && !capture.LastCanApply : applied != null && capture.LastCanApply),
                     "new matching control obeys only the shared enhancement startup setting");
                 applied?.Remove();
-                caster.Descriptor.Alignment.Set(Alignment.LawfulGood); capture.Clear();
+                caster.Descriptor.Alignment.Set(Alignment.TrueNeutral); capture.Clear();
                 applied = target.Buffs.AddBuff(buff, new MechanicsContext(caster, caster.Descriptor, ability, null, new TargetWrapper(target)), TimeSpan.FromMinutes(1));
                 CirclePersistenceCheck("hydrated-wrong-alignment-positive", applied != null && capture.Count == 1 && capture.LastCanApply,
                     "same delivery actually applies from a nonmatching controller");
@@ -268,11 +362,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void CleanupCirclePersistence()
         {
             var game = Game.Instance; var actors = CircleSavedActors();
-            var circle = BlueprintBootstrap.MagicCircles.Single(value => value.Alignment == "Evil");
+            var circles = BlueprintBootstrap.MagicCircles;
             var foreignUnits = game.State.Units.All.Except(actors).ToArray(); var party = game.Player.Party.ToArray();
-            var areas = CircleBuffs(actors[2], circle.Carrier).Select(CircleArea).ToArray();
-            foreach (var carrier in CircleBuffs(actors[2], circle.Carrier)) carrier.Remove();
+            var carriers = circles.SelectMany(circle => CircleBuffs(actors[2], circle.Carrier)).ToArray();
+            var areas = carriers.Select(CircleArea).ToArray();
+            foreach (var carrier in carriers) carrier.Remove();
             foreach (var area in areas) CircleRefresh(area, actors);
+            CleanupCircleSavedMarket(actors);
             foreach (var unit in actors) unit.Destroy();
             game.EntityDestroyer.Tick(); game.EntityDestroyer.Tick();
             CirclePersistenceCheck("exact-fixture-cleanup", CircleSavedCandidates().Length == 0 && game.State.Units.All.SequenceEqual(foreignUnits) &&
