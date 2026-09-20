@@ -134,6 +134,51 @@ Kingmaker unless a human explicitly supplies `-AllowForceTerminate`.
 
 ## Scenario isolation and assertions
 
+### Shared launcher ownership and completion
+
+The generic launcher, deployment/restore tools, compatibility profiles and
+Circle settings transactions share `compatibility-state/compatibility.lock`.
+Nested runtime calls inherit their parent's lease; they never release it or
+clear settings/profile restoration obligations.
+
+A permitted standalone `-ExitAfterCompletion:$false` run that collects PASS
+leaves the exact identified game process open. Its lease becomes
+`CompletionPending`, not an orchestration failure or a settings recovery debt.
+The lock remains held in durable state, preventing deployment or a conflicting
+run during play. After exiting Kingmaker normally and letting the original
+launcher process exit, complete the printed run ID from this worktree:
+
+```powershell
+.\scripts\Complete-KingmakerRuntimeLease.ps1 -RunId <recorded-runtime-run-id> -Confirm:$false
+```
+
+The same command completes a generic `RecoveryRequired` lease after a timeout
+or interruption and normal game/owner exit. It does not change the native
+failure into PASS. Automatic-exit success normally completes and releases its
+lease within the launcher; it needs no separate completion. Recovery also
+handles interruption after the completion journal write but before lock removal.
+
+Completion validates the exact run, original owner PID/start time, recorded
+game PID/start time, absence of any other Kingmaker process, immutable request,
+deployment receipt and available result hashes. It acquires exclusive recovery
+ownership, repeats checks before mutation and refuses a changed journal. PID
+reuse alone is not a live owner. Foreign changes are preserved. WhatIf performs
+no file mutation or launch. There is no background lease theft, game termination,
+settings restoration or deployment rollback in this command. A generic run
+interrupted before request/process binding may be completed only after its
+original owner and every Kingmaker process have exited.
+
+This command accepts only the generic runtime journals created by the current
+launcher. It rejects Circle settings and compatibility-profile transactions;
+use their existing recovery/restore entry points to discharge those obligations.
+Older journals lacking the generic binding remain fail-closed for inspection.
+
+`scripts/Test-RuntimeLeaseLifecycle.ps1` executes the actual generic launcher and
+completion entry point. Fixture hooks redirect fixed machine paths and replace
+external Steam/process boundaries; lease, atomic file handling, artifact checks,
+request/result validation and evidence collection remain production code.
+No real game is needed to reproduce a lease lifecycle problem.
+
 `mod-load-smoke` is production-allowlisted. It runs without a campaign and
 asserts that the actual UMM entry point completed, the published context and
 patch state are ready, the loaded UMM version exactly matches the request, and
