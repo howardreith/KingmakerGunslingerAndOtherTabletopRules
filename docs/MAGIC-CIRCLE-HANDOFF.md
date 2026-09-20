@@ -2,8 +2,10 @@
 
 The owner subsequently accepted PR #19 and explicitly authorized integration,
 merge, push and release 0.0.134. See [the release notes](RELEASE-NOTES-0.0.134.md)
-and [release acceptance](../planning/MAGIC-CIRCLE-RELEASE-134.md). The earlier
-review-only authorization and artifact identities below are historical.
+and [release acceptance](../planning/MAGIC-CIRCLE-RELEASE-134.md). Version 0.0.134
+is now published; [public release evidence](../reports/magic-circle/RELEASE-134-PUBLIC.md)
+records the exact tested/downloaded artifact and normal-play restoration. The
+earlier review-only authorization and artifact identities below are historical.
 
 The PR 19 review follow-up supersedes the candidate and source identities below.
 See [the current hardening handoff](../reports/magic-circle/PR19-REVIEW-HARDENING.md)
