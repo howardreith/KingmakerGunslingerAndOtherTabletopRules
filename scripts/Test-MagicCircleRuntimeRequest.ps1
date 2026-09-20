@@ -31,6 +31,11 @@ $workingTimeouts = @{
     DescriptorResolutionTimeoutSeconds = 30; LoadEntryTimeoutSeconds = 30
     FingerprintTimeoutSeconds = 30
 }
+Assert-Throws {
+    New-KmgRuntimeRequest -Scenario 'working-save-magic-circle-cleanup' @workingTimeouts `
+        -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
+        -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
+} 'circle-cleanup-rejects-missing-preparation-binding-before-launch'
 $native = New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-evil' @workingTimeouts `
     -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
     -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
@@ -53,12 +58,58 @@ Assert-Throws {
         -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
         -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' }
 } 'magic-circle-ui-rejects-baseline'
+$save = [ordered]@{ Name='KMG_AUTOMATION_WORKING'; FileName='Working.zks'; FolderName='Working.zks'; GameName='fixture'; GameId='fixture'; Area='fixture' }
+$fixtureActors=@(1..4 | ForEach-Object { @{ id=[Guid]::NewGuid().ToString('D');role="role$_";blueprint=('a'*32);books=@() } })
+$record = [ordered]@{ schemaVersion=2; phase='prepare'; runId='prepare-fixture-A'; exception=$null; workingSave=$save
+    artifact=[ordered]@{ version=$version; dllSha256=('a'*64); mvid='ea9ac240-4984-421b-b2e1-4336fa5770c6'; gitCommit=('b'*40) }
+    fixtureIdentity=@{ actors=$fixtureActors; area=('b'*32);favoredOracle=@{};marketReceipt=@{TableId=('c'*32)};inventory=@();gold=123
+        control=@(@{source=$fixtureActors[0].id;endTimeTicks=1234567})
+        carriers=@(1..8 | ForEach-Object { @{bearer=$fixtureActors[2].id;caster=$fixtureActors[0].id;blueprint=('d'*32);sourceSpell=('e'*32);level=8;endTimeTicks=1234567;extend=$true} }) } }
+$result = [ordered]@{ runId=$record.runId; scenario='working-save-magic-circle-prepare'; status='PASS'; loadedModVersion=$version; gitCommit=('b'*40)
+    automaticExitRequested=$true; automaticExitInitiated=$true; assertions=@(@{status='PASS'})
+    workingSaveSmoke=@{ descriptorReferenceCorrelated=$true; completionCallbackObserved=$true; saveWritingApiObserved=$false
+        hooksRemoved=$true; expectedWorkingSaveRoutineCount=1; expectedWorkingStashedAreaCount=1
+        resolvedDescriptor=@{safeFields=@($save.Keys | ForEach-Object { @{Key=$_;Value=$save[$_]} })} } }
+$recordBytes=[Text.Encoding]::UTF8.GetBytes(($record | ConvertTo-Json -Depth 12 -Compress))
+$resultBytes=[Text.Encoding]::UTF8.GetBytes(($result | ConvertTo-Json -Depth 12 -Compress))
+$identity=[ordered]@{semanticVersion=$version;loadedModuleSha256=$record.artifact.dllSha256;moduleVersionId=$record.artifact.mvid;gitCommit=$record.artifact.gitCommit}
+$identityBytes=[Text.Encoding]::UTF8.GetBytes(($identity | ConvertTo-Json -Compress))
+$binding=[ordered]@{schemaVersion=2;recordBase64=[Convert]::ToBase64String($recordBytes);recordSha256=(Get-KmgMagicCircleBytesHash $recordBytes)
+    resultBase64=[Convert]::ToBase64String($resultBytes);resultSha256=(Get-KmgMagicCircleBytesHash $resultBytes)
+    producerIdentityBase64=[Convert]::ToBase64String($identityBytes);producerIdentitySha256=(Get-KmgMagicCircleBytesHash $identityBytes)
+    consumerArtifact=$record.artifact} | ConvertTo-Json -Depth 4 -Compress
+foreach ($invalidBinding in @('', '{}', $binding.Replace('"schemaVersion":2','"schemaVersion":2,"schemaVersion":2'),
+    $binding.Replace((Get-KmgMagicCircleBytesHash $identityBytes), ('d'*64)),
+    $binding.Replace($record.runId, 'unused').Replace((Get-KmgMagicCircleBytesHash $recordBytes), ('c'*64)))) {
+    Assert-Throws {
+        New-KmgRuntimeRequest -Scenario 'working-save-magic-circle-cleanup' @workingTimeouts `
+            -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true -EvidenceDirectory $synthetic `
+            -Parameters @{ saveName='KMG_AUTOMATION_WORKING'; preparationBinding=$invalidBinding }
+    } 'circle-cleanup-rejects-malformed-or-hash-mismatched-binding'
+}
+Assert-Throws { ConvertFrom-KmgCircleBindingJson '{"record":{"a":1,"\u0061":2}}' } 'duplicate-escaped-record-member-rejected'
 foreach ($phase in @('prepare', 'verify', 'cleanup', 'absent', 'scene')) {
+    $phaseParameters = @{ saveName = 'KMG_AUTOMATION_WORKING' }
+    if ($phase -in @('verify','scene','cleanup')) { $phaseParameters.preparationBinding = $binding }
     $request = New-KmgRuntimeRequest -Scenario "working-save-magic-circle-$phase" @workingTimeouts `
-        -ExpectedVersion $version -TimeoutSeconds 180 -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
+        -ExpectedVersion $version -TimeoutSeconds 180 -Parameters $phaseParameters `
         -EvidenceDirectory $synthetic -ExitAfterCompletion:$true
     if ($request.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
         $failures.Add("magic-circle-persistence-$phase-exact-save")
+    }
+    if ($phase -in @('verify','scene','cleanup')) {
+        if ($request.parameters.Count -ne 2 -or -not $request.parameters.Contains('preparationBinding') -or
+            $request.parameters.preparationBinding -cne $binding) {
+            $failures.Add("magic-circle-persistence-$phase-transports-exact-binding")
+        } else {
+            # Exercise the production request's actual transport representation,
+            # not just the preflight validator that accepted the input binding.
+            $transport = ($request | ConvertTo-Json -Depth 8) | ConvertFrom-Json
+            if ($transport.parameters.preparationBinding -cne $binding) {
+                $failures.Add("magic-circle-persistence-$phase-binding-json-roundtrip")
+            }
+            [void](Read-KmgMagicCirclePreparationBinding $transport.parameters.preparationBinding $version)
+        }
     }
     Assert-Throws {
         New-KmgRuntimeRequest -Scenario "working-save-magic-circle-$phase" @workingTimeouts `

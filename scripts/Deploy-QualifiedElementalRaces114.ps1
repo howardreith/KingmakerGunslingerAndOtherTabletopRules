@@ -5,7 +5,8 @@ param(
     [string]$BackupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod',
     [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence',
     [switch]$PassThru,
-    [ValidateSet('0.0.114','0.0.117')][string]$ProducerVersion = '0.0.114'
+    [ValidateSet('0.0.114','0.0.117')][string]$ProducerVersion = '0.0.114',
+    $RuntimeLease
 )
 
 Set-StrictMode -Version Latest
@@ -114,6 +115,9 @@ try {
     }
     $WhatIfPreference = $false
     $ConfirmPreference = 'None'
+    $runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose 'deploy qualified legacy producer'
+    try {
+    Assert-KmgNotRunning
     $backup = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
         -LiveModDirectory $live -BackupRoot $BackupRoot -Confirm:$false
     $settings = Join-Path $live 'FeatureModules.json'
@@ -192,6 +196,7 @@ try {
         -LiteralPath $deploymentPath -Encoding UTF8
     Write-Host "Pinned public $expectedVersion deployment verified; manifest: $deploymentPath"
     if ($PassThru) { Write-Output $deploymentPath }
+    } finally { Exit-KmgRuntimeLease $runtimeScope }
 }
 finally {
     if (Test-Path -LiteralPath $temporary) {

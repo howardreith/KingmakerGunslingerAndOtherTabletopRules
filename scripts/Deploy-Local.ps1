@@ -5,6 +5,7 @@ param(
     [string]$BackupRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod',
     [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence',
     [switch]$AllowEmptyFirstInstall,
+    $RuntimeLease,
     [switch]$PassThru
 )
 
@@ -43,6 +44,10 @@ if (-not $PSCmdlet.ShouldProcess($live, "Back up and deploy version $($manifest.
 }
 $WhatIfPreference = $false
 
+$runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose 'deploy local candidate'
+try {
+Assert-KmgNotRunning
+$manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root
 $backup = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
     -LiveModDirectory $live -BackupRoot $BackupRoot `
     -AllowEmptySource:$AllowEmptyFirstInstall -Confirm:$false
@@ -146,3 +151,5 @@ Write-Host "Deployment verified; manifest: $deploymentManifestPath"
 if ($PassThru) {
     Write-Output $deploymentManifestPath
 }
+
+} finally { Exit-KmgRuntimeLease $runtimeScope }

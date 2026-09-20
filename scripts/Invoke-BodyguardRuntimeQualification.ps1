@@ -30,6 +30,10 @@ if (-not $PSCmdlet.ShouldProcess($settings,
     return
 }
 
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Invoke-BodyguardRuntimeQualification.ps1'
+try {
+Assert-KmgNotRunning
 $ConfirmPreference = 'None'
 $originalExists = Test-Path -LiteralPath $settings -PathType Leaf
 $originalBytes = if ($originalExists) {
@@ -82,7 +86,7 @@ function Wait-ForGuardedKingmakerExit([string]$scenario) {
 }
 
 function Invoke-BodyguardScenario([string]$scenario) {
-    & $invoke -Scenario $scenario -ExpectedVersion $ExpectedVersion `
+    & $invoke -Scenario $scenario -RuntimeLease $sharedRuntimeScope.Lease -ExpectedVersion $ExpectedVersion `
         -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
         -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach `
         -ReuseInstalledArtifact `
@@ -120,3 +124,5 @@ finally {
 }
 if ($failure -ne $null) { throw $failure }
 Write-Host "Bodyguard guarded qualification PASS; package=$PackagePath; deployment=$DeploymentManifestPath"
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

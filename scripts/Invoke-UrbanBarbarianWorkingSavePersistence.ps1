@@ -28,6 +28,10 @@ if (-not $ReuseInstalledArtifact -and (-not [string]::IsNullOrWhiteSpace($Deploy
 if (-not $PSCmdlet.ShouldProcess($SaveName, 'run the authorized two-launch Urban Barbarian module-OFF persistence sequence')) { return }
 
 $ConfirmPreference = 'None'
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Invoke-UrbanBarbarianWorkingSavePersistence.ps1'
+try {
+Assert-KmgNotRunning
 $originalExists = Test-Path -LiteralPath $settings -PathType Leaf
 $originalBytes = if ($originalExists) { [IO.File]::ReadAllBytes($settings) } else { $null }
 $failure = $null
@@ -73,16 +77,16 @@ try {
         & $build
         $PackagePath = Join-Path $root ("artifacts\local-runtime\$ExpectedVersion\KingmakerGunslinger-$ExpectedVersion-local-runtime.zip")
         if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) { throw "Build-Local did not produce the expected package: $PackagePath" }
-        & $deploy -PackagePath $PackagePath -WhatIf -Confirm:$false
-        $DeploymentManifestPath = & $deploy -PackagePath $PackagePath -Confirm:$false -PassThru
+        & $deploy -RuntimeLease $sharedRuntimeScope.Lease -PackagePath $PackagePath -WhatIf -Confirm:$false
+        $DeploymentManifestPath = & $deploy -RuntimeLease $sharedRuntimeScope.Lease -PackagePath $PackagePath -Confirm:$false -PassThru
     }
     if ($StartPhase -ceq 'prepare') {
-        & $invoke -Scenario 'working-save-urban-barbarian-prepare' -ExpectedVersion $ExpectedVersion -SaveName $SaveName -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach -ReuseInstalledArtifact -DeploymentManifestPath $DeploymentManifestPath -PackagePath $PackagePath
+        & $invoke -Scenario 'working-save-urban-barbarian-prepare' -RuntimeLease $sharedRuntimeScope.Lease -ExpectedVersion $ExpectedVersion -SaveName $SaveName -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach -ReuseInstalledArtifact -DeploymentManifestPath $DeploymentManifestPath -PackagePath $PackagePath
         if ($LASTEXITCODE -ne 0) { throw 'Urban Barbarian persistence prepare failed.' }
         Wait-ForGuardedKingmakerExit 'prepare'
     }
     Set-UrbanEnabled $false
-    & $invoke -Scenario 'working-save-urban-barbarian-off-verify-cleanup' -ExpectedVersion $ExpectedVersion -SaveName $SaveName -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach -ReuseInstalledArtifact -DeploymentManifestPath $DeploymentManifestPath -PackagePath $PackagePath
+    & $invoke -Scenario 'working-save-urban-barbarian-off-verify-cleanup' -RuntimeLease $sharedRuntimeScope.Lease -ExpectedVersion $ExpectedVersion -SaveName $SaveName -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach -ReuseInstalledArtifact -DeploymentManifestPath $DeploymentManifestPath -PackagePath $PackagePath
     if ($LASTEXITCODE -ne 0) { throw 'Urban Barbarian persistence OFF verify/cleanup failed.' }
     Wait-ForGuardedKingmakerExit 'verify-cleanup'
 }
@@ -98,3 +102,5 @@ finally {
 }
 if ($failure -ne $null) { throw $failure }
 Write-Host "Urban Barbarian two-launch module-OFF persistence PASS; package=$PackagePath; deployment=$DeploymentManifestPath"
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

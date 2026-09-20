@@ -1,6 +1,7 @@
 Set-StrictMode -Version Latest
 
 . (Join-Path $PSScriptRoot 'common.ps1')
+. (Join-Path $PSScriptRoot 'RuntimeCoordination.Common.ps1')
 
 function Assert-KmgNotRunning {
     $processes = @(Get-Process -Name 'Kingmaker' -ErrorAction SilentlyContinue)

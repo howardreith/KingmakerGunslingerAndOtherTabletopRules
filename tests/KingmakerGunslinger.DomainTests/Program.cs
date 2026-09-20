@@ -25,6 +25,9 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("magic-circle.binding-two-valid-fixtures", MagicCirclePreparationBindingTests.DifferentValidPreparationCannotMutate),
+            Case("magic-circle.binding-rejects-malformed", MagicCirclePreparationBindingTests.MalformedAndMismatchedBindingsFailClosed),
+            Case("magic-circle.binding-immutable", MagicCirclePreparationBindingTests.ReceiptOwnsItsImmutableSnapshot),
             Case("elemental-terrain.total-level-duration", ElementalTreacherousPolicyTests.TotalLevelDuration),
             Case("elemental-terrain.material-and-reach", ElementalTreacherousPolicyTests.ExactMaterialAndGroundRequirements),
             Case("elemental-terrain.unknown-closed", ElementalTreacherousPolicyTests.UnknownEvidenceFailsClosed),

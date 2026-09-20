@@ -1,4 +1,5 @@
 Set-StrictMode -Version Latest
+. (Join-Path $PSScriptRoot 'MagicCirclePreparation.Common.ps1')
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
 $script:KmgRuntimeScenarioMetadata = [ordered]@{
@@ -1707,6 +1708,13 @@ function Assert-KmgRuntimeScenarioPreflight {
         $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')
         $visualLifecycle = $Scenario -ceq 'working-save-creator-visual-lifecycle'
         $persistence = $Scenario -ceq 'disposable-teleportation-persistence'
+        $circleBound = $Scenario -cin @('working-save-magic-circle-verify','working-save-magic-circle-scene','working-save-magic-circle-cleanup')
+        if ($circleBound) {
+            if (-not $ExitAfterCompletion -or -not $Parameters.ContainsKey('preparationBinding') -or $Parameters.preparationBinding -isnot [string]) {
+                throw 'Magic Circle verification/scene/cleanup requires an immutable preparation binding and automatic exit.'
+            }
+            [void](Read-KmgMagicCirclePreparationBinding $Parameters.preparationBinding $ExpectedVersion)
+        }
         if ($persistence) {
             if ($Parameters.Count -ne 3 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath') -or
                 $Parameters.phase -cnotin @('A', 'B', 'C', 'D') -or $Parameters.planPath -isnot [string] -or
@@ -1736,7 +1744,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
         $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
             $Parameters.ContainsKey('nativeActionCase')
-        $requiredParameterCount = if ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
@@ -1973,7 +1981,9 @@ function New-KmgRuntimeRequest {
         descriptorResolutionTimeoutSeconds = $DescriptorResolutionTimeoutSeconds
         loadEntryTimeoutSeconds = $LoadEntryTimeoutSeconds
         fingerprintTimeoutSeconds = $FingerprintTimeoutSeconds
-        parameters = if ($Scenario -ceq 'working-save-elemental-nereid-respec') {
+        parameters = if ($Scenario -cin @('working-save-magic-circle-verify','working-save-magic-circle-scene','working-save-magic-circle-cleanup')) {
+            [ordered]@{ saveName = [string]$Parameters.saveName; preparationBinding = [string]$Parameters.preparationBinding }
+        } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') {
             [ordered]@{ saveName = [string]$Parameters.saveName; race = [string]$Parameters.race
                 class = [string]$Parameters.class; allocation = [string]$Parameters.allocation; sex = [string]$Parameters.sex }
         } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec', 'working-save-creator-visual-lifecycle')) {

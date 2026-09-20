@@ -1,0 +1,2312 @@
+{
+  "reviewedHead": "11039183780a7815e97024ae99abc3062abd9ef9",
+  "candidate": {
+    "commit": "11039183780a7815e97024ae99abc3062abd9ef9",
+    "version": "0.0.132",
+    "packageSha256": "5c21b73a7e715717dee7bf39c60c845735e96b44a2ae5dfe6518435b02bf9e5e",
+    "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+    "dllMvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+    "sourceStateSha256": "8ab2141a7c119f16e0b161b3413bfa26eaf0533cc7cb7248c11cc32f3c8aece9"
+  },
+  "frozenInputs": {
+    "scope": [
+      "src/",
+      "assets/",
+      "blueprints/",
+      "Info.json",
+      "Directory.Build.props",
+      "Directory.Build.targets",
+      "scripts/",
+      "tests/",
+      "tools/",
+      "validation/"
+    ],
+    "fileCount": 1883,
+    "canonicalSha256": "ca92b73dc8009e37c954c6bc33cfc8f3e680dfb96978e9d4183ab5af1ad75011",
+    "rawSha256": "9e9b21694e75722fe237cfced0598a53b1b7ed0b337059f98aebf2f95c9c749c"
+  },
+  "nativeEvidenceRoot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence",
+  "runs": [
+    {
+      "evidenceDirectory": "20260920T1228340304824Z-working-save-magic-circle-prepare",
+      "scenario": "working-save-magic-circle-prepare",
+      "nativeStatus": "FAIL",
+      "version": "0.0.132",
+      "dllSha256": "db03905d9ac86d2c73c27c768c4abad2915501f3fa16698b8532d750d4fe27f6",
+      "mvid": "dccc775f-5e94-43de-8ac8-1ad990792448",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": null,
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-spawn-inventory-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-normal-known-limit",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "FAIL"
+        }
+      ],
+      "exception": "System.InvalidOperationException: Legitimate Oracle level-up is incomplete; no commit/save authorized.\r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PrepareCircleFavoredOracle (Kingmaker.EntitySystem.Entities.UnitEntityData unit) [0x00c6b] in <dccc775f5e9443de8ac81ad990792448>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PrepareCirclePersistence () [0x001a5] in <dccc775f5e9443de8ac81ad990792448>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.BeginMagicCirclePersistencePhase () [0x00181] in <dccc775f5e9443de8ac81ad990792448>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PollMagicCirclePersistence () [0x005c9] in <dccc775f5e9443de8ac81ad990792448>:0 ",
+      "files": {
+        "runtime-result.json": "93e58c4168d5201c99f6bdc625445e9125049dcfd477ccd54b1dc588d36f5332",
+        "magic-circle-persistence.json": "c1e1e75a5801831df0dcbd7db582d6265ec20798d93188325b78a1beda8b37af",
+        "runtime-loaded-build-identity.json": "a7ff4cdcb6c0d3ae1f6dacd3afcf151b9d68d1f44ad9636e4e0b0524c42e5826"
+      },
+      "favoredClass": {
+        "status": "probing",
+        "enumeration": null,
+        "favoredKnownBefore": null,
+        "favoredKnownAfter": null,
+        "complete": true,
+        "normalSlots3": [],
+        "committed": null
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1245327011192Z-working-save-magic-circle-prepare",
+      "scenario": "working-save-magic-circle-prepare",
+      "nativeStatus": "FAIL",
+      "version": "0.0.132",
+      "dllSha256": "3ece1d3f2f2b30b68c352c59116af0036ef5f157a623780fe0bc9bcb7953f939",
+      "mvid": "e079b0d0-f076-4c44-9072-0e84670d1b0d",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": null,
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-spawn-inventory-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-native-enumeration",
+          "status": "FAIL"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "FAIL"
+        }
+      ],
+      "exception": "System.InvalidOperationException: Native Favored Class Magic Circle selection rejected; see real enumeration evidence.\r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PrepareCircleFavoredOracle (Kingmaker.EntitySystem.Entities.UnitEntityData unit) [0x005e0] in <e079b0d0f0764c4490720e84670d1b0d>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PrepareCirclePersistence () [0x001a5] in <e079b0d0f0764c4490720e84670d1b0d>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.BeginMagicCirclePersistencePhase () [0x00181] in <e079b0d0f0764c4490720e84670d1b0d>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PollMagicCirclePersistence () [0x005c9] in <e079b0d0f0764c4490720e84670d1b0d>:0 ",
+      "files": {
+        "runtime-result.json": "2ebc0a6f4df36fe7216c360306bb481df8e0665e904f46f6e1a511f68fc132d0",
+        "magic-circle-persistence.json": "66620ad6a0ddea6038de070ff17aa8435c26a8ea6a8c6aba3bc2909f519caa84",
+        "runtime-loaded-build-identity.json": "96dc610a6ebde90bee11b21bdadfd2ee9e45f3f412fc23641cbc501871bcc4f4"
+      },
+      "favoredClass": {
+        "status": "probing",
+        "enumeration": [
+          {
+            "spell": "ec63a7d4606a467f948ba03c19cfa42d",
+            "extracted": 1,
+            "items": 0,
+            "canSelect": false
+          },
+          {
+            "spell": "8d9b3a1b06c141518230c6dd8aae95ee",
+            "extracted": 1,
+            "items": 0,
+            "canSelect": false
+          },
+          {
+            "spell": "d98b1dff1952451989943907617f5b0d",
+            "extracted": 1,
+            "items": 0,
+            "canSelect": false
+          },
+          {
+            "spell": "cafa8a0681b84b00ad4f0e3ff6393c78",
+            "extracted": 1,
+            "items": 0,
+            "canSelect": false
+          }
+        ],
+        "favoredKnownBefore": null,
+        "favoredKnownAfter": null,
+        "complete": null,
+        "normalSlots3": null,
+        "committed": null
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1300124946650Z-working-save-magic-circle-prepare",
+      "scenario": "working-save-magic-circle-prepare",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+      "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 1,
+        "expectedWorkingStashedAreaCount": 2
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-spawn-inventory-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-publication-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-native-enumeration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-one-known-choice",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-normal-known-limit",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-inventory-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-native-market-purchase",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-native-held-touch-prepare",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "magic-circle-persistence.json": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "runtime-loaded-build-identity.json": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59"
+      },
+      "preparedActorIds": [
+        "bea6b543-e15b-457b-a03d-ca874cddd114",
+        "6e694afc-bdb0-4225-bdb7-da4b2389c69a",
+        "d47d5a85-9a25-4817-9cef-038be1725185",
+        "dbe8079a-a29d-471a-942c-1baec878459d"
+      ],
+      "favoredClass": {
+        "status": "native selection committed; fresh persistence pending",
+        "enumeration": [
+          {
+            "spell": "ec63a7d4606a467f948ba03c19cfa42d",
+            "extracted": 1,
+            "items": 1,
+            "canSelect": true
+          },
+          {
+            "spell": "8d9b3a1b06c141518230c6dd8aae95ee",
+            "extracted": 1,
+            "items": 1,
+            "canSelect": true
+          },
+          {
+            "spell": "d98b1dff1952451989943907617f5b0d",
+            "extracted": 1,
+            "items": 1,
+            "canSelect": true
+          },
+          {
+            "spell": "cafa8a0681b84b00ad4f0e3ff6393c78",
+            "extracted": 1,
+            "items": 1,
+            "canSelect": true
+          }
+        ],
+        "favoredKnownBefore": 2,
+        "favoredKnownAfter": 3,
+        "complete": true,
+        "normalSlots3": [],
+        "committed": {
+          "book": "3587fa91b34341e49b3a22cfb5450e0d",
+          "level": 8,
+          "normalAllowance3": 2,
+          "known3": [
+            "03ef36eaa5bb490da16a0716795dac40",
+            "04e820e1ce3a66f47a50ad5074d3ae40",
+            "ec63a7d4606a467f948ba03c19cfa42d"
+          ],
+          "selections": [
+            {
+              "feature": "bab7a67de47e4b6690c03fd5b744c482",
+              "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+              "rank": 1
+            }
+          ]
+        }
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1304214241207Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "nativeStatus": "ERROR",
+      "version": "0.0.132",
+      "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+      "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": null,
+      "gameVersionFromFeatureRecord": null,
+      "automaticExitInitiated": false,
+      "guard": {
+        "descriptorReferenceCorrelated": null,
+        "completionCallbackObserved": null,
+        "saveWritingApiObserved": null,
+        "hooksRemoved": null,
+        "expectedWorkingSaveRoutineCount": null,
+        "expectedWorkingStashedAreaCount": null
+      },
+      "assertions": [],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "cc33ce49fa913188b1e5108af31fa8b4064989df69d689b6a6c739a26843fc59",
+        "runtime-loaded-build-identity.json": "6ba2b772c7a5a18819ad2085c318a76b29bcebc789ab89f688a6ee1e184324fd"
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1547299430564Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "nativeStatus": "FAIL",
+      "version": "0.0.132",
+      "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+      "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": null,
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-rejected-binding-preserves-fixture",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": "System.InvalidOperationException: Magic Circle preparation rejected: loaded prepared fixture mismatch\r\n  at KingmakerGunslinger.RuntimeTesting.MagicCirclePreparationBinding.Require (System.Boolean condition, System.String message) [0x0000e] in <eb343b3312724ad7a3ea31068a789845>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.MagicCirclePreparationBinding.Execute (Newtonsoft.Json.Linq.JObject save, Newtonsoft.Json.Linq.JObject artifact, Newtonsoft.Json.Linq.JObject fixture, System.Action authorizedAction) [0x00038] in <eb343b3312724ad7a3ea31068a789845>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.AuthorizeCirclePreparedPhase (System.Action phase) [0x00133] in <eb343b3312724ad7a3ea31068a789845>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PollMagicCirclePersistence () [0x005b5] in <eb343b3312724ad7a3ea31068a789845>:0 ",
+      "files": {
+        "runtime-result.json": "a9415fa459811719815e15ec9a47455ad8508f230cd8385e3cd0f8a4f61d93c6",
+        "magic-circle-persistence.json": "fe95eb2980755bbb480a8486ad3c56897cc0045d5c637f31091562b5ad71e157",
+        "runtime-loaded-build-identity.json": "0c5a5514cbc021cee9c3816d323da20c3fcbc358c64c11ee8d0f052ca55ea0e4"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": null,
+        "producerArtifact": null,
+        "consumerArtifact": null,
+        "matched": false,
+        "fixtureMutationStarted": false,
+        "completeBeforeAfterEqual": true
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1604372269260Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "4fab14af45d9a74ce4e1cb49ca41c01ec2b25054985db8ce02e92e1dd5232bf2",
+        "magic-circle-persistence.json": "f7444161ad4801722f87752690b4182802abd2ffdfce71c6eb13e595cd503a2e",
+        "runtime-loaded-build-identity.json": "7dfa355c42694e6fe9482589dd3e01823ce14866a4e079b2ae09411700ab005d",
+        "magic-circle-cross-launch-comparison.json": "5191b0ef25ecab1788500edf1db94c49ef1d50c6b97b7e5446620c18d543ad41"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+          "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1608585840822Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": false
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "9860c384c18778ef1a7b848ab5280a27b15d0d1d7338ebfd705cc7f11b5c4421",
+        "magic-circle-persistence.json": "0347f25dac05946e57282d7a72676384708a4ca81961126aaa71b55ed60cf868",
+        "runtime-loaded-build-identity.json": "010dfc6efed25a126b589a388c76c5cfaa9c2756a08f3de5727d4a3868944d79",
+        "magic-circle-cross-launch-comparison.json": "3b8aaa3147f0744be21150fcb0b02a94db7833bf020b0db6f1ee9bea7cd46597"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+          "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1621554581645Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": false
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "e62cc6a4610b7a92e1d1dd5f0e54e569a6752d65a5eda3e1742e5a4fd6ac3fe1",
+        "magic-circle-persistence.json": "12d9a6cc2313c2de12c0d13480e70eb0f534c4f0eea1e846d26848ef3f55e483",
+        "runtime-loaded-build-identity.json": "7b7c450f8ae659288b87d201a87d3daa5c2b4ebf786ccfc73c09b1a6b508b6c9",
+        "magic-circle-cross-launch-comparison.json": "05e12385e9f1fa0708e5332629467e08ad5a8433f6222e27ed0072c837127c03"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+          "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1624352530404Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": false,
+        "sharedControlEnhancement": true
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "e3f44d956eb0dbcb3049546558d83cad509496f989a01259181fc76b8f85772e",
+        "magic-circle-persistence.json": "398e12aa39f9842e8df8b7ecb3447775a0d68e121c21d16efc35c14d7a1652e8",
+        "runtime-loaded-build-identity.json": "cc7d68c3a00f4412bbad092cd37d3ac05863f39d54661ffd3f49c4e71729ac68",
+        "magic-circle-cross-launch-comparison.json": "ed3662bf2c5d3ae46f04e2df188682cb8cfa7831ec63af3e55eec8f2ecc2a806"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+          "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1627116793342Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": false,
+        "sharedControlEnhancement": false
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "7f909927584421d26d0e7aaaf3cd28fde633e34d3bb3e34012d57cdd3b644183",
+        "magic-circle-persistence.json": "b18763e4e75381fcb92966e3a42cd95cbcab895e79390a0b00b0a44084801b38",
+        "runtime-loaded-build-identity.json": "837b738579796be43fa68772242cffb33972c64cae7098cc3bd896e05c8e3cf6",
+        "magic-circle-cross-launch-comparison.json": "334360af5d1aa5334e847a86a4903c50ab1f2c8a18609d8211852e1da548de80"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+          "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1629471474158Z-working-save-magic-circle-scene",
+      "scenario": "working-save-magic-circle-scene",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": null,
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-scene-original-context-and-expiration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-scene-native-unload-and-reload",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-different-area-carriers-retained",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-roundtrip-original-context-and-expiration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-roundtrip-native-unload-and-reload",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-scene-temporary-party-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "840d77a2fcbb1eaa24f262c6e6b45edb784fbe69d1a09335051926ef84c7537f",
+        "magic-circle-persistence.json": "83527f1cb33659ee452d450bfabfc93c103bb4e4f5de079774e84d51aaabb9e3",
+        "runtime-loaded-build-identity.json": "4851f83d58708691e89f2ce96279845b36a3dd42d7941025ebc4eaae77dc0924",
+        "magic-circle-cross-launch-comparison.json": "ceeec7cf602d81069a67ddc413688361ae919af61bc4b15ac65165c13d805129"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+          "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "requestedSettingsFromGuardedWrapper": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "settingsEvidenceNote": "Scene record does not repeat effective settings. Requested startup profile is pinned by wrapper log and owned settings journal."
+    },
+    {
+      "evidenceDirectory": "20260920T1633520358204Z-working-save-magic-circle-scene",
+      "scenario": "working-save-magic-circle-scene",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": null,
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-scene-original-context-and-expiration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-scene-native-unload-and-reload",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-different-area-carriers-retained",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-roundtrip-original-context-and-expiration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-roundtrip-native-unload-and-reload",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-scene-temporary-party-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "17ecaa4a6db497e0e08c43e7ba0e1c31187b7ee61fad6f27cd2625b8bd9efb5a",
+        "magic-circle-persistence.json": "797914dbcb5d1ff329431a39b45c24c573dd3e07a2dfb10f9386f33e25caf820",
+        "runtime-loaded-build-identity.json": "07332def304d1d5a9ede25df20e91b739380f4f4c7a299e47aa63d2e5d0790af",
+        "magic-circle-cross-launch-comparison.json": "f52fbce0e1fb4764d64816750aa178b0d8a99e7a330bd536f541912e651a1352"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+          "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "requestedSettingsFromGuardedWrapper": {
+        "magicCircleSpells": false,
+        "sharedControlEnhancement": false
+      },
+      "settingsEvidenceNote": "Scene record does not repeat effective settings. Requested startup profile is pinned by wrapper log and owned settings journal."
+    },
+    {
+      "evidenceDirectory": "20260920T1638228023618Z-working-save-magic-circle-cleanup",
+      "scenario": "working-save-magic-circle-cleanup",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 1,
+        "expectedWorkingStashedAreaCount": 2
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-market-restoration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-fixture-cleanup",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "bb3e1a6b94f1fb9ff0db89748a4aba7143b34c51abacd4640657cda4d956fd97",
+        "magic-circle-persistence.json": "7d6fb8170aa8a0bbe1f7c229e5c62cd3691c766fb6ab202cf2a621814928bc48",
+        "runtime-loaded-build-identity.json": "74f484f5edd7edc1d02e445add31c9ee2f8a9ee18b09f362673ddf5a821173db",
+        "magic-circle-cross-launch-comparison.json": "b4df067d20982fe87294c8f2e2da3301b503ae7408841f0ba9810cc1b44fe495"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+          "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1641099333999Z-working-save-magic-circle-prepare",
+      "scenario": "working-save-magic-circle-prepare",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 1,
+        "expectedWorkingStashedAreaCount": 2
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-spawn-inventory-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-publication-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-native-enumeration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-one-known-choice",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-normal-known-limit",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-inventory-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-native-market-purchase",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-native-held-touch-prepare",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "6253beab8cdf75f4020466a6017a14d46c53fe38205bac300ff93dc57862f511",
+        "magic-circle-persistence.json": "bcd8577f7b843af0de3b41848bc050bbb2ff2208b9252ae71f6af5da95cf883c",
+        "runtime-loaded-build-identity.json": "43ec52e9fcae8d438658c5fb738fce8e6f761acda951a05def71309c4dc56c76"
+      },
+      "preparedActorIds": [
+        "c1a13773-cf1d-4457-b10e-8a0bd65d37c5",
+        "6a99b323-c838-406b-ba4f-a797de8b795b",
+        "a41f67af-1098-43ac-9579-dcadb25cf6a2",
+        "568a8221-33a0-491a-81df-da22fe85ed66"
+      ],
+      "favoredClass": {
+        "status": "native selection committed; fresh persistence pending",
+        "enumeration": [
+          {
+            "spell": "ec63a7d4606a467f948ba03c19cfa42d",
+            "extracted": 1,
+            "items": 1,
+            "canSelect": true
+          },
+          {
+            "spell": "8d9b3a1b06c141518230c6dd8aae95ee",
+            "extracted": 1,
+            "items": 1,
+            "canSelect": true
+          },
+          {
+            "spell": "d98b1dff1952451989943907617f5b0d",
+            "extracted": 1,
+            "items": 1,
+            "canSelect": true
+          },
+          {
+            "spell": "cafa8a0681b84b00ad4f0e3ff6393c78",
+            "extracted": 1,
+            "items": 1,
+            "canSelect": true
+          }
+        ],
+        "favoredKnownBefore": 2,
+        "favoredKnownAfter": 3,
+        "complete": true,
+        "normalSlots3": [],
+        "committed": {
+          "book": "3587fa91b34341e49b3a22cfb5450e0d",
+          "level": 8,
+          "normalAllowance3": 2,
+          "known3": [
+            "03ef36eaa5bb490da16a0716795dac40",
+            "04e820e1ce3a66f47a50ad5074d3ae40",
+            "ec63a7d4606a467f948ba03c19cfa42d"
+          ],
+          "selections": [
+            {
+              "feature": "bab7a67de47e4b6690c03fd5b744c482",
+              "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+              "rank": 1
+            }
+          ]
+        }
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1644443777342Z-working-save-magic-circle-cleanup",
+      "scenario": "working-save-magic-circle-cleanup",
+      "nativeStatus": "FAIL",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": null,
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-rejected-binding-preserves-fixture",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "FAIL"
+        }
+      ],
+      "exception": "System.InvalidOperationException: Magic Circle preparation rejected: loaded prepared fixture mismatch\r\n  at KingmakerGunslinger.RuntimeTesting.MagicCirclePreparationBinding.Require (System.Boolean condition, System.String message) [0x0000e] in <17245bc932b9433083fd352aaa010e0b>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.MagicCirclePreparationBinding.Execute (Newtonsoft.Json.Linq.JObject save, Newtonsoft.Json.Linq.JObject artifact, Newtonsoft.Json.Linq.JObject fixture, System.Action authorizedAction) [0x00048] in <17245bc932b9433083fd352aaa010e0b>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.AuthorizeCirclePreparedPhase (System.Action phase) [0x0016b] in <17245bc932b9433083fd352aaa010e0b>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PollMagicCirclePersistence () [0x005b5] in <17245bc932b9433083fd352aaa010e0b>:0 ",
+      "files": {
+        "runtime-result.json": "6aa85905214c2658b6dcfa1590dcd12150ebd4bb8c5aa1423a0c5c1dc0fa1aeb",
+        "magic-circle-persistence.json": "c9eab17036f4f1d022975900598144e63f15f23798cecbfe1611fa4bb7d086f8",
+        "runtime-loaded-build-identity.json": "bbc2be0d2899d1f8cce256b57c8b1607524c3e7f7bc22d6d51a68e6711b47861"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+        "resultSha256": "04265e660f6402f8d3fb71f11148869cb7b09c9f7e9dbaa1d5b6b59ae276d839",
+        "recordSha256": "e390a94d2d472eb9e22814e10fcc7d79bf0dbf2f3308bc544d84e97c557deade",
+        "producerIdentitySha256": "59f846532485310d34dc1d5232e991a868472c8b19fd1a441f5f2c1ba10cdf59",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "365e78b29244038dcde38fb5d17f788504c55202130a637abe3308d82064dc2e",
+          "mvid": "eb343b33-1272-4ad7-a3ea-31068a789845",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": false,
+        "fixtureMutationStarted": false,
+        "completeBeforeAfterEqual": true
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1648395307832Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "e1dfd6ec1d770de9630ea73cea10ed67fc609716546d1588e430104100f09efe",
+        "magic-circle-persistence.json": "6aa9bc98a2fb49d63e0a9b25e8484e6347053384a00eacbd77a75c6a8bbd9d16",
+        "runtime-loaded-build-identity.json": "3d43ca48367ba43323eb0266d3aec26960d9e51c54fdf4899dbd85305f607830",
+        "magic-circle-cross-launch-comparison.json": "6b77cdb93cf3f740f28c140e9fe63b298feac1957ee93358faa3c20dca043e37"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1641099373995Z-269fca8d95094bd08f9725368f9bf424",
+        "resultSha256": "6253beab8cdf75f4020466a6017a14d46c53fe38205bac300ff93dc57862f511",
+        "recordSha256": "bcd8577f7b843af0de3b41848bc050bbb2ff2208b9252ae71f6af5da95cf883c",
+        "producerIdentitySha256": "43ec52e9fcae8d438658c5fb738fce8e6f761acda951a05def71309c4dc56c76",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1651154691147Z-working-save-magic-circle-cleanup",
+      "scenario": "working-save-magic-circle-cleanup",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 1,
+        "expectedWorkingStashedAreaCount": 2
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-preparation-bound-before-mutation",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-market-no-refill",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-saved-scroll-item-hydration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-favored-known-and-parameter",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-market-restoration",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-fixture-cleanup",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "60171e077e5dfd954ac59e76bf523251fef385d8924f2b279fca972614ac9e6f",
+        "magic-circle-persistence.json": "05c179546adc9b504d2b4ef1be8ecc31a75b73bfe9b896a5a83936c55e637b6b",
+        "runtime-loaded-build-identity.json": "4010abe55e8e00e4080ea45bbaab4652413d7de1d8bf4bb1013d3d809c9856c0",
+        "magic-circle-cross-launch-comparison.json": "c87b643e2da98debb9f10bf5fcc5628a853f434d96f829d40cf4b3363e99fb32"
+      },
+      "preparationAuthorization": {
+        "prepareRunId": "20260920T1641099373995Z-269fca8d95094bd08f9725368f9bf424",
+        "resultSha256": "6253beab8cdf75f4020466a6017a14d46c53fe38205bac300ff93dc57862f511",
+        "recordSha256": "bcd8577f7b843af0de3b41848bc050bbb2ff2208b9252ae71f6af5da95cf883c",
+        "producerIdentitySha256": "43ec52e9fcae8d438658c5fb738fce8e6f761acda951a05def71309c4dc56c76",
+        "producerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "consumerArtifact": {
+          "version": "0.0.132",
+          "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+          "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+          "gitCommit": "11039183780a7815e97024ae99abc3062abd9ef9"
+        },
+        "matched": true,
+        "fixtureMutationStarted": true
+      },
+      "favoredClassObserved": {
+        "book": "3587fa91b34341e49b3a22cfb5450e0d",
+        "level": 8,
+        "normalAllowance3": 2,
+        "known3": [
+          "03ef36eaa5bb490da16a0716795dac40",
+          "04e820e1ce3a66f47a50ad5074d3ae40",
+          "ec63a7d4606a467f948ba03c19cfa42d"
+        ],
+        "selections": [
+          {
+            "feature": "bab7a67de47e4b6690c03fd5b744c482",
+            "parameter": "ec63a7d4606a467f948ba03c19cfa42d",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "evidenceDirectory": "20260920T1654025656433Z-working-save-magic-circle-absent",
+      "scenario": "working-save-magic-circle-absent",
+      "nativeStatus": "PASS",
+      "version": "0.0.132",
+      "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+      "mvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+      "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+      "settings": null,
+      "gameVersionFromFeatureRecord": "2.1.7b",
+      "automaticExitInitiated": true,
+      "guard": {
+        "descriptorReferenceCorrelated": true,
+        "completionCallbackObserved": true,
+        "saveWritingApiObserved": false,
+        "hooksRemoved": true,
+        "expectedWorkingSaveRoutineCount": 0,
+        "expectedWorkingStashedAreaCount": 0
+      },
+      "assertions": [
+        {
+          "name": "circle-persistence-cleanup-fresh-load-absence",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-fresh-market-cleanup",
+          "status": "PASS"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS"
+        }
+      ],
+      "exception": null,
+      "files": {
+        "runtime-result.json": "01c5af58c7f84da385da597824983a82a49b74a2b343c5f5c0b696587f9d30d2",
+        "magic-circle-persistence.json": "97efa435f27188e34c78033a385dc687a099a9e4049d2b13a8b560eafe367e04",
+        "runtime-loaded-build-identity.json": "1bb41a3f7dd162a159584105770703a6d40ff3d713a076ec39a3a11d31ec7b1e",
+        "magic-circle-cross-launch-comparison.json": "fbf9345dbf2e408c748c8f033c8066f70052e71ff349e11afcf1d6f417191d9c"
+      }
+    }
+  ],
+  "settingsTransactions": [
+    {
+      "runId": "runtime-20260920T122831Z-c2834bd6f5bd4fad8d2f20df88fec392",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "917e77cc4308748b8953ef8b0e19cad08a5aa88bdf564add0fa8535740e62c92",
+      "journalSha256": "2f3584d49480dd2cd0b1ee57eb7e49fecd8894a0981cd93c8decdda9b295380d",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T124530Z-cf28b626cc0d4414bc6cba9a2fba4657",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "917e77cc4308748b8953ef8b0e19cad08a5aa88bdf564add0fa8535740e62c92",
+      "journalSha256": "a97648efca556501da5b84294b1d1ccb5d1c798767bb53f77376645402abb5a5",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T130009Z-da88639ab8f243358685fd9c501ea41c",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "917e77cc4308748b8953ef8b0e19cad08a5aa88bdf564add0fa8535740e62c92",
+      "journalSha256": "221551e12203f3bea7b399be9224b21f3f38e9b5bcb4e34baab107b38b290772",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T130417Z-9c149a9934354a20bae7a8ea6685baee",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "917e77cc4308748b8953ef8b0e19cad08a5aa88bdf564add0fa8535740e62c92",
+      "journalSha256": "2a099efdf331efe1e31bf5255ad8cc9f458d52bacc9338d20c663818b5fd0f93",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T154726Z-72a218babfd2425e9dbf5a667be905f8",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "917e77cc4308748b8953ef8b0e19cad08a5aa88bdf564add0fa8535740e62c92",
+      "journalSha256": "df0d1e39908274af93faa0aee366b649c3bd4c00158ad7a1782cc248167ae9ea",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T160433Z-b3ab1fed94e646478003883006341dc4",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "917e77cc4308748b8953ef8b0e19cad08a5aa88bdf564add0fa8535740e62c92",
+      "journalSha256": "fde38cb995e69171fa3d02cae4ebb5fe7c07f57438cb9236715166464d5a621d",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T160854Z-630d6227c2a7414480ee2f9dc27eaf07",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "b2b72138562ef5049f41a6a37ef27a978342245ce50ac84b0065ce3e0134df15",
+      "journalSha256": "2551a07b26546252ddab012cd2e07620d3ed45286573893b7a29fe21f94b200e",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": {
+        "predecessorSha256": "b2b72138562ef5049f41a6a37ef27a978342245ce50ac84b0065ce3e0134df15",
+        "currentSha256": "538a6c331116adad48e8f4038620f22c851322d97ec48920a9c547b4f6541bd3",
+        "evidencePath": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20260920T160854Z-630d6227c2a7414480ee2f9dc27eaf07\\FeatureModules.native-save.bin",
+        "contract": "exact owned .previous bytes -> native flat-schema serialization; no value changes"
+      }
+    },
+    {
+      "runId": "runtime-20260920T162152Z-4f8df8bf8a774f76b910722b4d3cbec0",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "538a6c331116adad48e8f4038620f22c851322d97ec48920a9c547b4f6541bd3",
+      "journalSha256": "1dca46948f7dd3e4e222405369d74c66610a77ca943abda4c6a79b8f911cbb42",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T162432Z-8a3e1625e38447c79f1126487f984bed",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "33fea5a3e91e6a7ce210211863adebd096e386524a2f25234abb269e3d6f7403",
+      "journalSha256": "778ea932321afecf780d06855ad79538858750b24600eaa34f627207fe9936ac",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T162709Z-a8f676c92572493ebb7f3cc12f3d3d2d",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "ab163a7f6fba8905e96e7f0d5d80466d7df5ea107b77da4701697cd076b7301c",
+      "journalSha256": "7209325f02e57fb2814f3cfbb65211540913e3db830008cfacc06b5c7b416cbd",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T162944Z-2a5074d4c2344f33be439eef4353dd5d",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "journalSha256": "7fcf7aeab1a82cbee04d2536f6a773138028e59b75555164cd2d7bb2f1aa03e0",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T163349Z-efb1d0ad26f94fc9a5bd1b11fc7c6729",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "ab163a7f6fba8905e96e7f0d5d80466d7df5ea107b77da4701697cd076b7301c",
+      "journalSha256": "a4619e69495276a5508654e21060755c78c59a82f663dd47ca64048d8f287201",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T163819Z-34989e5ceb864cafb63a41a34e0744c5",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "journalSha256": "2f672c8f57f840bfd69932bc6699b1aef9fe467a66325376dad11284e86b4858",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T164108Z-de9cdb48c3f8475da0134463af218740",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "journalSha256": "23856d2ada9c9735252fe32aef46df941a7f6ec8eb3a8005125844095c7efa54",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T164440Z-7148b4c2500f40ec96bbda9dd3f6ae32",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "journalSha256": "ee2078c0ea9f3e94dad3f413bb370dfaf41aaa4dff4a184b783ea71fc67bf6b0",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T164836Z-84b60ac814b044069ddc7a3f6a6bb731",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "journalSha256": "961bcc920bbfc9637e19bd280a0be9d916d1ae125c0521ed99efe686527286c3",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T165112Z-59529cdb8e814a9b89784975af2900a9",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "journalSha256": "cea76a116655296e8d2725d427000ff80d9ddb7af4a6e6ff45c2c2571597d0af",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    },
+    {
+      "runId": "runtime-20260920T165400Z-1d5c2e5842a04f4f9c96d2fa7a0e6312",
+      "status": "Completed",
+      "recoveryRequired": false,
+      "reason": null,
+      "originalSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "overrideSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "journalSha256": "5ed17bb4c3fa17f6e1b3ad6f83e46abbdf6d5ff04303fc2093074a07ab4fe3a8",
+      "retainedBackupHashMatches": true,
+      "nativeReserialization": null
+    }
+  ],
+  "localCheckLogs": {
+    "artifacts-magic-circle-review-binding-transport-green.log": "08d3f9afde9b3b893d89fa3ba7ae2e97d89b9025be0c6dd6f9c8cab323a1d2fe",
+    "artifacts-magic-circle-review-build9.log": "85c87fdec5884453a740bcf60cb034ecfa3769cb371f44a831350cfcd03de24c",
+    "artifacts-magic-circle-review-compatibility-green.log": "e004a7e80974035069da590690c186eb6075d1258e05e15c113dfcc455adacaf",
+    "artifacts-magic-circle-review-concurrent-recovery-green.log": "138b1861ae652d48f1729a0b41d6470ba6a11e0ae6509656527359fbe60a93e5",
+    "artifacts-magic-circle-review-concurrent-recovery-red.log": "22af7c61dd86565bb8852933472622149e46ac6a427e4fb1a807cb7732f22159",
+    "artifacts-magic-circle-review-native-format-recovery.log": "eca3b95a79b5c8df242f00f0de191273d671d7390cbedf71d3bef5921d57d92e",
+    "artifacts-magic-circle-review-native-settings-green.log": "00b6a210a1ea4356bb6211c9167d57cfefc17a3530ea5a260dfbf6b9c9c7e512",
+    "artifacts-magic-circle-review-native-settings-red.log": "897b5cb2c3a31d4378e4250de919c94c4f1e82dd190fe332b81ff984d8292568",
+    "artifacts-magic-circle-review-r1-current-green.log": "08d3f9afde9b3b893d89fa3ba7ae2e97d89b9025be0c6dd6f9c8cab323a1d2fe",
+    "artifacts-magic-circle-review-r1-red.log": "375d85338ee6efc4c47e111fb5fdf89471cb1312edb495d83242f527914921db",
+    "artifacts-magic-circle-review-r1-request-green.log": "08d3f9afde9b3b893d89fa3ba7ae2e97d89b9025be0c6dd6f9c8cab323a1d2fe",
+    "artifacts-magic-circle-review-r1-strict-green.log": "08d3f9afde9b3b893d89fa3ba7ae2e97d89b9025be0c6dd6f9c8cab323a1d2fe",
+    "artifacts-magic-circle-review-r2-current-green.log": "ba2ddfb5ddb6248b0f686940a8c9162d8500f6a832b80657c4b92e6d83158644",
+    "artifacts-magic-circle-review-r2-final-green.log": "d94ff1c4489017006acd7031d7b76a2f68864c73926e5fbc7171165c78ce3143",
+    "artifacts-magic-circle-review-r2-green.log": "b8b67f978597e2251e32d163a9ec978ab2299ac2d2337459972954bda2af6263",
+    "artifacts-magic-circle-review-r2-posttransport-green.log": "bc48aedf76481be643457399fe4b3f2b2f1e7876065b893e380993c5fde66372",
+    "artifacts-magic-circle-review-r2-recovery-green.log": "6ec06b5b66f9edf25f2d06badc9d0e9f36b700193a323ed22925b3a299fd7cd4",
+    "artifacts-magic-circle-review-r2-red.log": "6864518b0ff0fb02ddb78db0c76f03c3f2c3225f526688060707a0650302bcd5",
+    "artifacts-magic-circle-review-r2-reproduced-red.log": "cccac81677364d0ae8d5f44f47b8764d9d0159e8638091a4d33cff96d2ff3ec8",
+    "artifacts-magic-circle-review-r2-shared-green.log": "386af8448f33168dc519436228be691e3fcf80e83ec48a74e730f797cdcf67e6",
+    "artifacts-magic-circle-review-r2-v2-green.log": "885b89f9f4ff4430718a985d3912cfa2d8f4a09906ad29c7f3b8c043caea3dff",
+    "artifacts-magic-circle-review-real-recovery.log": "1680c0560e5f13909513c3860b8230ef6ed32aaaf7e648bc083df855a2fcf4fa"
+  },
+  "schemaVersion": 1,
+  "status": "PASS for the targeted R1/R2/C1 review scope; no blanket release, new UI, reduced-profile saved-world or uninstall claim",
+  "branch": "codex/magic-circle-alignment-spells",
+  "pr": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/19",
+  "packageRelativePath": "artifacts/local-runtime/0.0.132/KingmakerGunslinger-0.0.132-local-runtime.zip",
+  "packageBytes": 28170697,
+  "steamAppId": 640820,
+  "nativeGameVersion": "2.1.7b",
+  "genericRuntimeResultGameVersion": "UNKNOWN",
+  "profile": {
+    "kind": "original installed eleven-mod saved-world profile",
+    "mods": {
+      "BagOfTricks": "1.16.4",
+      "CallOfTheWild": "1.14.4c-2.1",
+      "CheatMenu": "1.2.3",
+      "CraftMagicItems": "2.1.0",
+      "KingmakerBuffPlanner": "0.0.16",
+      "KingmakerDiceRoller": "0.1.2",
+      "KingmakerGunslinger": "0.0.132",
+      "KingmakerLastAzlantiPreserver": "0.1.0",
+      "RacesUnleashed": "1.0.11",
+      "TweakOrTreat": "1.1.0",
+      "ZFavoredClass": "1.3.1"
+    }
+  },
+  "finalSequence": {
+    "evidenceDirectories": [
+      "20260920T1621554581645Z-working-save-magic-circle-verify",
+      "20260920T1624352530404Z-working-save-magic-circle-verify",
+      "20260920T1627116793342Z-working-save-magic-circle-verify",
+      "20260920T1629471474158Z-working-save-magic-circle-scene",
+      "20260920T1633520358204Z-working-save-magic-circle-scene",
+      "20260920T1638228023618Z-working-save-magic-circle-cleanup",
+      "20260920T1641099333999Z-working-save-magic-circle-prepare",
+      "20260920T1644443777342Z-working-save-magic-circle-cleanup",
+      "20260920T1648395307832Z-working-save-magic-circle-verify",
+      "20260920T1651154691147Z-working-save-magic-circle-cleanup",
+      "20260920T1654025656433Z-working-save-magic-circle-absent"
+    ],
+    "positiveRuns": 10,
+    "positiveAssertions": 145,
+    "intentionalNativeFailures": 1,
+    "currentCandidateAuthorizedSaveWrites": 3,
+    "wholeReviewAuthorizedSaveWrites": 4,
+    "writeExplanation": "Original producer prepared A once. Final candidate cleaned A, prepared B and cleaned B. All writes were guarded KMG_AUTOMATION_WORKING writes; no unexpected writes."
+  },
+  "stalePreparationAudit": {
+    "auditStatus": "PASS expected safety rejection; native scenario remains FAIL",
+    "nativeEvidenceDirectory": "20260920T1644443777342Z-working-save-magic-circle-cleanup",
+    "preparationA": "20260920T1300124946650Z-working-save-magic-circle-prepare",
+    "preparationB": "20260920T1641099333999Z-working-save-magic-circle-prepare",
+    "bothPreparationsSucceeded": true,
+    "nativeActorIdentitiesDisjoint": true,
+    "expectedPreparationRunId": "20260920T1300125258454Z-f12b3b6030014884b941f256c7c602fc",
+    "fixtureMutationStarted": false,
+    "completeObservedBeforeEqualsAfterEqualsPreparedB": true,
+    "authorizedSaveRoutineCalls": 0,
+    "unexpectedWrites": false,
+    "automaticExitInitiated": true,
+    "leaseStatus": "Completed",
+    "leaseRunId": "runtime-20260920T164440Z-7148b4c2500f40ec96bbda9dd3f6ae32",
+    "sharedLockAbsent": true,
+    "originalSettingsSha256Restored": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0"
+  },
+  "normalPlayRestoration": {
+    "status": "PASS",
+    "verifiedUtc": "2026-09-20T16:57:01.575865+00:00",
+    "mechanism": "scripts/Restore-Live-Mod.ps1",
+    "explicitBackup": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20260920T1225444445857Z",
+    "target": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Pathfinder Kingmaker\\Mods\\KingmakerGunslinger",
+    "version": "0.0.117",
+    "fileCount": 136,
+    "exactFileSetAndSha256Match": true,
+    "manifestAlgorithm": "SHA-256 of sorted UTF-8 relative-path|SHA-256 LF rows",
+    "manifestSha256": "fde95fd8a8a56f03964cb944b555afc06dae219be534791fb7e35afdc993755a",
+    "dllSha256": "fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f",
+    "settingsSha256": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+    "globalFirearmBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "gameProcessCount": 0,
+    "sharedLockAbsent": true,
+    "candidateLeftInstalled": false
+  },
+  "buildChecks": {
+    "repositoryValidation": "PASS",
+    "completeCleanReleaseDomainSuite": {
+      "passed": 1660,
+      "failed": 0
+    },
+    "cleanReleaseCompilation": "PASS",
+    "strictStandalonePackage": "PASS",
+    "buildLog": "artifacts-magic-circle-review-build9.log",
+    "buildLogSha256": "85c87fdec5884453a740bcf60cb034ecfa3769cb371f44a831350cfcd03de24c",
+    "requestRegressions": "PASS missing/malformed/mismatched binding, duplicate keys, exact transport and JSON round trip",
+    "settingsProductionOrchestrationRegressions": {
+      "passed": 12,
+      "failed": 0,
+      "cases": [
+        "busy owner",
+        "game-start race",
+        "foreign settings",
+        "exact restoration",
+        "nested ownership",
+        "launch exception",
+        "running recovery",
+        "recovery after exit and contention",
+        "WhatIf",
+        "native exit save",
+        "native predecessor recovery",
+        "unproven foreign formatting"
+      ]
+    },
+    "existingAuxiliaryFailures": [
+      "Test-RuntimeDeployment: reviewed-head legacy-114 inline-pin assertion",
+      "Test-RuntimeScenarioPreflight: reviewed-head documented-scenarios-retained allowlist mismatch"
+    ],
+    "finalRepositoryAndDocumentationValidation": {
+      "status": "PASS",
+      "localLog": "artifacts-magic-circle-review-final-doc-validation.log",
+      "sha256": "1d35d9b0734f042a02989a9fa437be8555e363db2f21069835f289df9bbe92c8"
+    }
+  },
+  "sourceCorrespondence": {
+    "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
+    "builtFromDirtyValidatedTree": true,
+    "explanation": "The tested DLL was built before committing. All 1883 frozen product, orchestration, test and validation inputs must match the committed-source verification; documentation changes do not create a new binary.",
+    "record": "PR19-COMMITTED-SOURCE.json"
+  },
+  "unchangedScope": {
+    "approvedArtworkAndAssignments": true,
+    "auraAndSharedProtectionMechanics": true,
+    "bearerDeathEndsCircle": true,
+    "deferredMechanics": [
+      "new saves or morale against existing control",
+      "control removal/suppression/resumption",
+      "summoned-creature contact barriers and breach/SR",
+      "inward circles/planar binding/trapping",
+      "blanket descriptor immunity"
+    ],
+    "noNewClaims": [
+      "native UI acceptance",
+      "gamepad",
+      "reduced-profile save repair",
+      "uninstall safety",
+      "public release"
+    ]
+  }
+}

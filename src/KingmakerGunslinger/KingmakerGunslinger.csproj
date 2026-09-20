@@ -1030,6 +1030,9 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCirclePetGeometry.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleLifetime.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleDispel.cs" />
+    <Compile Include="RuntimeTesting\MagicCirclePreparationBinding.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCirclePreparation.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleFavoredClass.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCirclePersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmMaintenance.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmRepairWarnings.cs" />

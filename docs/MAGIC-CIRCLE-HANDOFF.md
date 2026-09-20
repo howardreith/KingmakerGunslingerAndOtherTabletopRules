@@ -1,5 +1,11 @@
 # Magic Circle review candidate
 
+The PR 19 review follow-up supersedes the candidate and source identities below.
+See [the current hardening handoff](../reports/magic-circle/PR19-REVIEW-HARDENING.md)
+for R1/R2/C1, current native evidence, package hashes and restoration. The remainder
+of this file preserves the original feature qualification and its limits.
+
+
 Four Magic Circle spells are implemented and qualified within the profiles and
 scopes below. The owner approved the four exact artwork exports and the adaptation
 that bearer death ends the circle. This is an installable review candidate; no
