@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -36,6 +37,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private static readonly object Gate = new object();
         private static readonly FieldInfo FilteredCache = typeof(SpellLevelList)
             .GetField("m_SpellsFiltered", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo ItemCache = typeof(BlueprintParametrizedFeature)
+            .GetField("m_CachedItems", BindingFlags.Instance | BindingFlags.NonPublic);
         private static ModContext _context;
         private static bool _attached;
 
@@ -87,6 +90,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 }
                 ReconcileOptional(library, wordOfRecall);
                 ReconcileOptional(library, wordOfRecall);
+                ReconcileFavoredClass(library, wordOfRecall);
+                ReconcileFavoredClass(library, wordOfRecall);
                 context.Logger.Info("teleportation-spells", "reconcile.complete",
                     "Final-live optional Oracle level-6 Word of Recall reconciliation completed twice idempotently.");
             }
@@ -132,14 +137,114 @@ namespace KingmakerGunslinger.Spells.Teleportation
             }
         }
 
+        // Optional Favored Class Oracle bonus-spell reconciliation. The genuine
+        // per-level BlueprintParametrizedFeature shares the live Oracle class
+        // spell list (so the native level-up extraction already lists Word of
+        // Recall), but BlueprintParametrizedFeature.CanSelect admits a pick
+        // only when the exact Feature+Param item exists in get_Items(), the
+        // m_CachedItems array rebuilt from BlueprintParameterVariants — a
+        // load-time snapshot that never contained the reconciled spell. The
+        // visible choice therefore can never actually be picked. This pass
+        // merges the canonical ability into the variants of exactly the
+        // per-level feature whose shared list level already contains it and
+        // clears that feature's item cache so the native gate rebuilds.
+        private static void ReconcileFavoredClass(LibraryScriptableObject library,
+            BlueprintAbility wordOfRecall)
+        {
+            BlueprintCharacterClass candidate = ResolveOracleClass(library);
+            if (candidate == null) return;
+            BlueprintParametrizedFeature target = ResolveFavoredClassLevelFeature(
+                library, wordOfRecall, candidate);
+            if (target == null) return;
+            BlueprintScriptableObject[] before = target.BlueprintParameterVariants;
+            List<BlueprintScriptableObject> published = null;
+            try
+            {
+                published = ShieldOtherSpellListMergePolicy.Merge(before,
+                    wordOfRecall, value => value.AssetGuid);
+                if (!ReferenceEquals(before, published))
+                {
+                    target.BlueprintParameterVariants = published.ToArray();
+                    ClearItemCache(target);
+                }
+                int references = target.BlueprintParameterVariants.Count(value =>
+                    ReferenceEquals(value, wordOfRecall));
+                int guids = target.BlueprintParameterVariants.Count(value => value != null &&
+                    string.Equals(value.AssetGuid, wordOfRecall.AssetGuid,
+                        StringComparison.Ordinal));
+                if (references != 1 || guids != 1)
+                    throw new InvalidOperationException(
+                        "Favored Class Oracle level-6 variants are not singular.");
+            }
+            catch
+            {
+                if (published != null && !ReferenceEquals(published, before) &&
+                    !ReferenceEquals(target.BlueprintParameterVariants, published) &&
+                    !ReferenceEquals(target.BlueprintParameterVariants, before))
+                    throw new InvalidOperationException(
+                        "Favored Class variants changed during rollback; restoration refused.");
+                if (published != null && !ReferenceEquals(published, before) &&
+                    ReferenceEquals(target.BlueprintParameterVariants, published.ToArray()))
+                {
+                    target.BlueprintParameterVariants = before;
+                    ClearItemCache(target);
+                }
+                throw;
+            }
+        }
+
+        // The per-level Favored Class Oracle feature is resolved through the
+        // installed selection's exact identity plus structure: a feature
+        // selection whose children are parametrized LearnSpell features bound
+        // to this Oracle class and this exact class spell list, one of which
+        // carries the reconciled spell's own spell level. Absence of the
+        // optional integration is safe; a present-but-different structure
+        // fails closed without touching it.
+        internal static BlueprintParametrizedFeature ResolveFavoredClassLevelFeature(
+            LibraryScriptableObject library, BlueprintAbility wordOfRecall,
+            BlueprintCharacterClass candidate)
+        {
+            const string selectionId = "9ba3858327354e2093613efb9de198d7";
+            BlueprintScriptableObject raw;
+            if (!library.BlueprintsByAssetId.TryGetValue(selectionId, out raw) ||
+                !(raw is BlueprintFeatureSelection selection) ||
+                selection.AllFeatures == null) return null;
+            BlueprintParametrizedFeature[] levels = selection.AllFeatures
+                .OfType<BlueprintParametrizedFeature>().ToArray();
+            if (levels.Length == 0) return null;
+            BlueprintSpellList classList = candidate.Spellbook.SpellList;
+            foreach (BlueprintParametrizedFeature level in levels)
+            {
+                if (!ReferenceEquals(level.SpellList, classList) ||
+                    !ReferenceEquals(level.SpellcasterClass, candidate) ||
+                    level.ParameterType != FeatureParameterType.LearnSpell ||
+                    level.SpellLevel != OracleWordOfRecallLevel) continue;
+                SpellLevelList list = classList.SpellsByLevel == null ? null :
+                    classList.SpellsByLevel.SingleOrDefault(value =>
+                        value != null && value.SpellLevel == OracleWordOfRecallLevel);
+                if (list == null || list.Spells == null || !list.Spells.Any(
+                    value => value != null && string.Equals(value.AssetGuid,
+                        wordOfRecall.AssetGuid, StringComparison.Ordinal))) continue;
+                return level;
+            }
+            return null;
+        }
+
+        private static void ClearItemCache(BlueprintParametrizedFeature feature)
+        {
+            if (ItemCache == null)
+                throw new MissingFieldException(
+                    typeof(BlueprintParametrizedFeature).FullName, "m_CachedItems");
+            ItemCache.SetValue(feature, null);
+        }
+
         // Shared production identity resolution: the optional Oracle class is
         // resolved through its known Call of the Wild GUID plus the exact
         // structural contract (self-owned spontaneous divine Charisma
         // spellbook reaching the required spell level), never a display name
         // alone. Exactly one candidate or none; ambiguity fails closed.
         internal static BlueprintCharacterClass ResolveOracleClass(
-            LibraryScriptableObject library)
-        {
+            LibraryScriptableObject library)        {
             BlueprintCharacterClass[] named = FinalBlueprints(library)
                 .OfType<BlueprintCharacterClass>().Where(value =>
                 {
