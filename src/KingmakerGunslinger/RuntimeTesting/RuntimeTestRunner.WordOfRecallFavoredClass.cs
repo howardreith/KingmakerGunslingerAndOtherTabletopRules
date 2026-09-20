@@ -322,6 +322,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "KMG FCB Aasimar Oracle", anchor, player, out backend, 13, aasimarTrace);
                 captureStarterItems("fcb-aasimar-seed-starter-items");
                 var book = aasimarUnit.Descriptor.GetSpellbook(oracle.Spellbook);
+                string[] knownSixthBefore = book.GetKnownSpells(6).Select(value =>
+                    value.Blueprint.AssetGuid).ToArray();
+                int allowanceThirteenth = book.Blueprint.SpellsKnown.GetCount(13, 6) ?? 0;
+                int allowanceFourteenth = book.Blueprint.SpellsKnown.GetCount(14, 6) ?? 0;
                 var partialFact = aasimarUnit.Descriptor.Progression.Features.Enumerable
                     .Where(value => ReferenceEquals(value.Blueprint, partialFeature)).ToArray();
                 CaptureTeleportSpellbookUi("fcb-aasimar-seeded", new {
@@ -435,35 +439,50 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(value.Param.Value.Blueprint, recall)).ToArray();
                     var committedPartial = aasimarUnit.Descriptor.Progression.Features.Enumerable
                         .Where(value => ReferenceEquals(value.Blueprint, partialFeature)).ToArray();
-                    bool ordinarySixthNormal = finalSpells.ExtraSelected == null ||
-                        finalSpells.ExtraSelected.Length == 0;
+                    string[] knownSixthAfter = book.GetKnownSpells(6).Select(value =>
+                        value.Blueprint.AssetGuid).ToArray();
+                    string[] newSixth = knownSixthAfter.Except(knownSixthBefore,
+                        StringComparer.Ordinal).ToArray();
+                    int ordinaryAllowanceDelta = allowanceFourteenth - allowanceThirteenth;
+                    string[] ordinaryNewSixth = newSixth.Where(value =>
+                        !string.Equals(value, recall.AssetGuid,
+                            StringComparison.Ordinal)).ToArray();
                     CaptureTeleportSpellbookUi("fcb-aasimar-committed", new {
                         classLevel = aasimarUnit.Descriptor.Progression.GetClassLevel(oracle),
                         casterLevel = book.CasterLevel, callbacks = successes,
-                        knownSixth = book.GetKnownSpells(6).Select(value =>
-                            value.Blueprint.AssetGuid).ToArray(),
+                        knownSixthBefore, knownSixthAfter, newSixth, ordinaryNewSixth,
+                        allowanceThirteenth, allowanceFourteenth, ordinaryAllowanceDelta,
                         grantFacts = grantFacts.Length, recallFacts = recallFacts.Length,
                         partialRank = committedPartial.Length == 0 ? 0 : committedPartial[0].Rank,
-                        ordinarySixthSlots = finalSpells.LevelCount[6].SpellSelections.Length,
-                        ordinarySixthAllowance = book.Blueprint.SpellsKnown.GetCount(book.CasterLevel, 6),
+                        unfilledOrdinarySlots = finalSpells.LevelCount[6] == null ? -1 :
+                            finalSpells.LevelCount[6].SpellSelections.Count(value => value == null),
                         extraSelected = finalSpells.ExtraSelected == null ? 0 :
                             finalSpells.ExtraSelected.Length });
                     TeleportSpellbookUiAssert("fcb-aasimar-committed",
-                        "native completion teaches canonical Recall once at Oracle 6 through one favored-class award",
+                        "native completion teaches canonical Recall once at Oracle 6 through one favored-class award; the ordinary known-spell change equals the installed allowance delta with no extra choice",
                         "level=" + aasimarUnit.Descriptor.Progression.GetClassLevel(oracle) +
-                            ";known6=" + book.GetKnownSpells(6).Count(value =>
+                            ";known6Recall=" + book.GetKnownSpells(6).Count(value =>
                                 ReferenceEquals(value.Blueprint, recall)) +
                             ";grants=" + grantFacts.Length + ";recallFacts=" + recallFacts.Length +
+                            ";newSixth=" + newSixth.Length + ";ordinaryNew=" + ordinaryNewSixth.Length +
+                            ";allowanceDelta=" + ordinaryAllowanceDelta +
                             ";extra=" + (finalSpells.ExtraSelected == null ? 0 :
                                 finalSpells.ExtraSelected.Length),
                         aasimarUnit.Descriptor.Progression.GetClassLevel(oracle) == 14 &&
                             book.CasterLevel == 14 && successes == 1 &&
                             book.GetKnownSpells(6).Count(value =>
                                 ReferenceEquals(value.Blueprint, recall)) == 1 &&
+                            newSixth.Length == ordinaryAllowanceDelta + 1 &&
+                            newSixth.Count(value => string.Equals(value, recall.AssetGuid,
+                                StringComparison.Ordinal)) == 1 &&
+                            ordinaryNewSixth.Length == ordinaryNewSixth.Distinct(
+                                StringComparer.Ordinal).Count() &&
                             grantFacts.Length == 1 && recallFacts.Length == 1 &&
                             committedPartial.Length == 1 && committedPartial[0].Rank == 1 &&
                             (finalSpells.ExtraSelected == null ||
-                                finalSpells.ExtraSelected.Length == 0) && ordinarySixthNormal);
+                                finalSpells.ExtraSelected.Length == 0) &&
+                            (finalSpells.LevelCount[6] == null ||
+                                finalSpells.LevelCount[6].SpellSelections.All(value => value != null)));
                     // ----- Duplicate control: a further level-up must not re-offer Recall.
                     experienceProperty.SetValue(aasimarUnit.Descriptor.Progression,
                         game.BlueprintRoot.Progression.XPTable.GetBonus(15), null);
