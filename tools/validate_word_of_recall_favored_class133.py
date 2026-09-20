@@ -25,19 +25,20 @@ def validate(root: Path) -> None:
     # module's global into every inherited live Program.cs gate; the
     # superseded 0.0.128/0.0.132 release records stay at their archived
     # 1,657-case snapshots.
-    baseline.baseline.DETERMINISTIC_TEST_COUNT = 1669
+    baseline.baseline.DETERMINISTIC_TEST_COUNT = 1675
     baseline.ARCHIVED_TEST_COUNT = 1657
     baseline.baseline.ARCHIVED_TEST_COUNT = 1657
     baseline.validate(root)
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))["wordOfRecallFavoredClass133"]
     expected = {
-        "deterministicTestCount": 1669,
+        "deterministicTestCount": 1675,
         "publicReleaseAuthorized": False,
         "favoredClassPickGateVariants": True,
         "favoredClassPickGateTransaction": True,
         "favoredClassRuntimeQualified": True,
         "favoredClassPersistenceQualified": True,
+        "favoredClassOwnedSaveCleanupHardened": True,
         "runtimeQualificationPending": False,
         "compatibilityRuntimeQualificationPending": True,
     }

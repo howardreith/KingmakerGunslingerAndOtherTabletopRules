@@ -57,6 +57,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("teleportation.favoredClass.VariantsMergeFailsClosedOnNullEntries", WordOfRecallFavoredClassTests.VariantsMergeFailsClosedOnNullEntries),
             Case("teleportation.favoredClass.ReconcilerFavoredClassContract", WordOfRecallFavoredClassTests.ReconcilerFavoredClassContract),
             Case("teleportation.favoredClass.FavoredClassRouteScenarioContract", WordOfRecallFavoredClassTests.FavoredClassRouteScenarioContract),
+            Case("teleportation.favoredClass.PersistenceDriverCleanupContract", WordOfRecallFavoredClassTests.PersistenceDriverCleanupContract),
             Case("teleportation.favoredClass.FavoredClassObserverContract", WordOfRecallFavoredClassTests.FavoredClassObserverContract),
             Case("teleportation.favoredClass.PublishAppendsOnceAndPreservesForeignEntries", FavoredClassVariantsTransactionTests.PublishAppendsOnceAndPreservesForeignEntries),
             Case("teleportation.favoredClass.SecondPassRetainsExactAssignedArray", FavoredClassVariantsTransactionTests.SecondPassRetainsExactAssignedArray),

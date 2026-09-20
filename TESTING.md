@@ -87,6 +87,7 @@ Run Windows PowerShell 5.1 after deploying the exact committed Build-Local ZIP:
 ```powershell
 .\scripts\Test-TeleportationHardeningPlan.ps1
 .\scripts\Test-TeleportationPersistenceTransaction.ps1
+.\scripts\Test-WordOfRecallFavoredClassPersistence.ps1
 .\scripts\Test-TeleportationSaveProtection.ps1
 .\scripts\Test-RuntimeScenarioPreflight.ps1
 .\scripts\compatibility\Test-FeatureModuleCompatibilityParameters.ps1
