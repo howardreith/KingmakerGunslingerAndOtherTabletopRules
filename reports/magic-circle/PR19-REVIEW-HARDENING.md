@@ -8,8 +8,10 @@ It is not a public release or a new claim about every earlier feature scenario.
 Review base: `11039183780a7815e97024ae99abc3062abd9ef9`.
 Branch: `codex/magic-circle-alignment-spells`.
 [Draft PR 19](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/19).
-The source/publication correspondence is recorded in `PR19-COMMITTED-SOURCE.json`
-after the coherent source commit. No merge or history rewrite is authorized.
+Qualified source commit: `b2172801b0d6523c53f0e539b09483f74533c269`, published
+through the mandatory guarded helper. [Source correspondence](PR19-COMMITTED-SOURCE.json)
+verifies every frozen input against that commit. Later curated handoff changes
+preserve the tested source and binary. No merge or history rewrite occurred.
 
 ## R1: exact preparation before mutation
 
