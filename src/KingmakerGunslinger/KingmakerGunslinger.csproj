@@ -1016,6 +1016,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleLifetime.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleDispel.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCirclePersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmMaintenance.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmRepairWarnings.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmInputNegatives.cs" />

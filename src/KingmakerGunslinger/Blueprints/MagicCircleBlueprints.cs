@@ -146,8 +146,9 @@ namespace KingmakerGunslinger.Blueprints
             emanation.name = "$KMG_MagicCircle_MovingEmanation";
             emanation.AreaEffect = area;
             buff.ComponentsArray = new BlueprintComponent[] { emanation };
+            if (buff.StayOnDeath) throw new InvalidOperationException("Magic Circle carrier must end on bearer death.");
             Configure(buff, alignment, "Carrier", "Magic Circle against " + alignment,
-                "A 10-foot protective emanation follows this creature for the remaining spell duration. " + Benefits(alignment, control), icon);
+                "A 10-foot protective emanation follows this creature for the remaining spell duration. It ends if this creature dies. " + Benefits(alignment, control), icon);
             return buff;
         }
 

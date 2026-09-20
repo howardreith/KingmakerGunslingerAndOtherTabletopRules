@@ -42,5 +42,19 @@ Assert-Throws {
         -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
         -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' }
 } 'magic-circle-native-rejects-baseline'
+foreach ($phase in @('prepare', 'verify', 'cleanup', 'absent', 'scene')) {
+    $request = New-KmgRuntimeRequest -Scenario "working-save-magic-circle-$phase" @workingTimeouts `
+        -ExpectedVersion $version -TimeoutSeconds 180 -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' } `
+        -EvidenceDirectory $synthetic -ExitAfterCompletion:$true
+    if ($request.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
+        $failures.Add("magic-circle-persistence-$phase-exact-save")
+    }
+    Assert-Throws {
+        New-KmgRuntimeRequest -Scenario "working-save-magic-circle-$phase" @workingTimeouts `
+            -ExpectedVersion $version -TimeoutSeconds 180 -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' } `
+            -EvidenceDirectory $synthetic -ExitAfterCompletion:$true
+    } "magic-circle-persistence-$phase-rejects-baseline"
+}
+
 if ($failures.Count -gt 0) { throw ($failures -join ', ') }
 Write-Output 'PASS Magic Circle guarded request tests.'

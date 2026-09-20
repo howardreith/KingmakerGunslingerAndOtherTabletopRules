@@ -131,12 +131,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 carrier.EndTime == deadline && !area.IsEnded && CircleBuffs(recipient, circle.Recipient).Length == 1 &&
                 ReferenceEquals(carrier.Context.MaybeCaster, caster) && carrier.Context.Params.CasterLevel == book.CasterLevel,
                 "actual native lethal damage and life controller; no source substitution or refreshed timer"));
-            carrier.Remove();
-            CircleRefresh(area, actors.Where(unit => !ReferenceEquals(unit, caster)).ToList());
-            assertions.Add(Assertion("circle-dead-caster-carrier-cleanup", "carrier removal still ends its exact area",
-                "ended=" + area.IsEnded + ";recipientCount=" + CircleBuffs(recipient, circle.Recipient).Length,
-                area.IsEnded && CircleBuffs(recipient, circle.Recipient).Length == 0,
-                "native AddAreaEffect deactivation retains ownership after caster death"));
+            bearer.Blueprint.IsCheater = false;
+            bearer.GiveExperienceOnDeath = false;
+            var bearerDamage = Rulebook.Trigger(new RuleDealDamage(bearer, bearer,
+                new DamageBundle(new DirectDamage(new DiceFormula(0, DiceType.Zero), bearer.HPLeft + 100))) {
+                    DisablePrecisionDamage = true, IgnoreDamageReduction = true });
+            CircleLifeTick(bearer);
+            bearer.Buffs.Tick();
+            CircleRefresh(area, actors.Where(unit => !ReferenceEquals(unit, caster) && !ReferenceEquals(unit, bearer)).ToList());
+            assertions.Add(Assertion("circle-bearer-death-owned-cleanup", "bearer death ends its exact carrier, area and contributions",
+                "damage=" + bearerDamage.Damage + ";dead=" + bearer.Descriptor.State.IsDead +
+                    ";finallyDead=" + bearer.Descriptor.State.IsFinallyDead + ";ended=" + area.IsEnded +
+                    ";recipientCount=" + CircleBuffs(recipient, circle.Recipient).Length,
+                bearer.Descriptor.State.IsDead && !bearer.Buffs.Enumerable.Contains(carrier) &&
+                    area.IsEnded && CircleBuffs(recipient, circle.Recipient).Length == 0,
+                "owner-approved bearer-death adaptation; actual lethal damage, native death cleanup and AddAreaEffect deactivation"));
         }
 
         private static AreaEffectEntityData CircleArea(Buff carrier)

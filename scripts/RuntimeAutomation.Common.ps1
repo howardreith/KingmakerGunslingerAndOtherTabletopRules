@@ -802,6 +802,36 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    'working-save-magic-circle-prepare' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'working-save-magic-circle-verify' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'working-save-magic-circle-cleanup' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'working-save-magic-circle-absent' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'working-save-magic-circle-scene' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'disposable-brown-fur-native-cast' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'

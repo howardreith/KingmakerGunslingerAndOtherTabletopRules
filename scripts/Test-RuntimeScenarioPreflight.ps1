@@ -42,6 +42,11 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
 $expected = @(
     'mod-load-smoke',
     'observe-magic-circle-native-contracts', 'disposable-magic-circle-evil',
+    'working-save-magic-circle-prepare',
+    'working-save-magic-circle-verify',
+    'working-save-magic-circle-cleanup',
+    'working-save-magic-circle-absent',
+    'working-save-magic-circle-scene',
     'disposable-firearm-break-interruption',
     'observe-teleportation-native-contracts',
     'observe-teleportation-world-map',

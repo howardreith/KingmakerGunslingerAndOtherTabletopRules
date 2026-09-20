@@ -283,6 +283,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
+                RuntimeTestScenarioCatalog.IsMagicCirclePersistence(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistence ||

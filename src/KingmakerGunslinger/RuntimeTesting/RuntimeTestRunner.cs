@@ -634,6 +634,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleEvil &&
+                    !RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
                     !IsTeleportationCoexistenceFixture &&
@@ -1804,6 +1805,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
+                    RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
@@ -1909,6 +1911,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
+                    RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
@@ -2057,6 +2060,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (_circlePersistenceStarted) { PollMagicCirclePersistence(); return; }
             if (_midgameSaveStarted) { PollWorkingMidgameFirearms(); return; }
             if (_craftMagicItemsPersistenceSaveStarted)
             {
@@ -2515,6 +2519,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     PollTeleportationWorldMapForensics();
                 }
+                else if (RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario))
+                { PollMagicCirclePersistence(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil)
                 {
                     var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
@@ -5310,6 +5316,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
+                    RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 IsTeleportationCoexistenceFixture ||
