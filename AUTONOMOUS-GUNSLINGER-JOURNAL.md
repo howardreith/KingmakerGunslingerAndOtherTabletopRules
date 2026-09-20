@@ -4142,3 +4142,35 @@ remains blocked, so version stays `0.0.88` and no release claim is made.
 # 2026-08-20 Acadamae real-player-path correction
 
 Human evidence superseded the prior synthetic PASS. The exact real trace reached the authoritative three-argument command constructor but failed `not-prepared` because the selected summon variant graph carried no `ParamSpellSlot`. Commits `44836ac47b2161432339641f6b3d6767109c9de3` and `7a38cdcd0f740d1fce1b2460166748fcae593ffd` add exact canonical prepared-slot resolution, command-boundary rebinding, detached real-path qualification, and a complete six-seam Harmony audit. Repository validation, `1162/1162`, clean Release/package gates, and fresh-process runs `20260820T2015089247100Z` and `20260820T2017093646741Z` all pass. Status is runtime-qualified but remains human-gated.
+
+# 2026-09-20 Word of Recall Favored Class selection repaired (0.0.133 candidate)
+
+Branch `codex/z-word-of-recall-favored-class` from master `525625df`.
+Owner report: Word of Recall missing from the Favored Class Oracle
+sixth-level bonus spell choices. Root cause proven by the new save-free
+`observe-word-of-recall-favored-class` observer on the owner profile:
+every structural link of the genuine route is sound (the per-level
+`BlueprintParametrizedFeature` shares the live Oracle class list object,
+Recall present exactly once at level 6, caches clean, prerequisite and DLC
+filter correct), but the native pick gate
+`BlueprintParametrizedFeature.CanSelect` admits only items in
+`get_Items()` rebuilt from `BlueprintParameterVariants` — a load-time
+snapshot (`items=2966;recall=0`) that never contained the reconciled
+spell, so the visible choice could never be picked. Repair:
+`TeleportationFinalLiveReconciler.ReconcileFavoredClass` merges the
+canonical ability into the variants of exactly the structurally validated
+sixth-level feature and clears `m_CachedItems`, idempotently with
+rollback; after: `items=2967;recall=1`. Acceptance:
+`disposable-teleportation-level-up` extended with the genuine
+favored-class phase (Aasimar + Human routes, no-credit, below-prerequisite,
+cancellation, duplicate, serialization-persistence controls, world-map
+cast) passed 66/66 then 67/67 from independent fresh processes
+(`20260920T0129005692756Z`, `20260920T0202092958831Z`); scroll
+compatibility control `20260920T0205257237750Z` passed 65/65. Source
+gates: 1,662/1,662 domain tests, full validator chain via
+`validate_word_of_recall_favored_class133.py`, clean exact-reference
+build, strict package validation; deployed DLL SHA-256
+`973d84f78d5ddd658d3644218571b21934963139f2772605fcfde584e8d23bf1` at
+commit `6b4f1b05`. Candidate pending owner approval; no merge, no public
+release. Boundaries recorded in
+`Z-WORD-OF-RECALL-FAVORED-CLASS-STATE.md`.

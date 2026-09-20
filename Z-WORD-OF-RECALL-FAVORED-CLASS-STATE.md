@@ -116,6 +116,21 @@ duplicate fail-closed behavior unchanged.
 - Clean exact-reference Release build and strict package validation:
   `KingmakerGunslinger-0.0.133-local-runtime.zip`.
 
+## Final qualification record (candidate)
+
+- Commit `6b4f1b0541051ed2dcc1d5f041583b5c539541a8`
+  (0.0.133-word-of-recall-favored-class), loaded version 0.0.133,
+  deployed DLL SHA-256
+  `973d84f78d5ddd658d3644218571b21934963139f2772605fcfde584e8d23bf1`.
+- Consecutive full acceptance runs from independent fresh processes:
+  `20260920T0129005692756Z-disposable-teleportation-level-up` (66/66) and
+  `20260920T0202092958831Z-disposable-teleportation-level-up` (67/67,
+  including the native serialization persistence round-trip).
+- Scroll compatibility control:
+  `20260920T0205257237750Z-disposable-teleportation-scrolls` PASS 65/65
+  with every previously qualified Oracle scroll assertion intact.
+- Owner FeatureModules.json preserved exactly across every deployment.
+
 ## Honest boundaries
 
 - `publicReleaseAuthorized` false pending owner approval; no public
