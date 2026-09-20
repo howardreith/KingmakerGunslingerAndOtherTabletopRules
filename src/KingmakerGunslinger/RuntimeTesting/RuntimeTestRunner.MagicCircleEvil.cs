@@ -240,6 +240,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CircleFamily(caster, bearer, recipient, controller, book, actors, assertions, diagnostics);
                 stage = "native-scroll-acquisition";
                 CircleAcquisition(caster, bearer, recipient, book, actors, prototypes, assertions, diagnostics);
+                stage = "removed-caster-context";
+                CircleRemovedCaster(controller, caster, bearer, recipient, actors, assertions, diagnostics);
                 stage = "lifecycle";
                 CircleLifecycle(caster, bearer, recipient, book, circle, actors, assertions, diagnostics);
                 stage = "complete";

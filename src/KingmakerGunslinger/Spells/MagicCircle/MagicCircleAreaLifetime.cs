@@ -9,6 +9,7 @@ using KingmakerGunslinger.Bootstrap;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
+using Kingmaker.UnitLogic.Mechanics;
 
 namespace KingmakerGunslinger.Spells.MagicCircle
 {
@@ -25,6 +26,7 @@ namespace KingmakerGunslinger.Spells.MagicCircle
         {
             if (AreaInstance == null || AreaInstance.FieldType != typeof(AreaEffectEntityData))
                 throw new MissingFieldException(typeof(AddAreaEffect).FullName, "m_AreaEffectInstance");
+            MagicCircleCastContextPatch.VerifyContract();
         }
 
         internal static MagicCircleAreaLifetime ForOwnedArea(AreaEffectEntityData area)
@@ -44,6 +46,34 @@ namespace KingmakerGunslinger.Spells.MagicCircle
                 ReferenceEquals(buff.Blueprint, Carrier) && ReferenceEquals(buff.Context, parent) &&
                 buff.SelectComponents<AddAreaEffect>().Any(component =>
                     ReferenceEquals(AreaInstance.GetValue(component), area)));
+        }
+    }
+
+    // Native CloneFor resolves MaybeCaster before constructing its child. If
+    // that unit is temporarily unavailable or permanently removed, construction
+    // substitutes the new owner. Circle contexts must retain the ORIGINAL native
+    // UnitReference instead. Owner/position, parent, parameters, ranks and native
+    // serialization remain unchanged; this adds no saved state or tracking.
+    [HarmonyPatch(typeof(MechanicsContext), "CloneFor")]
+    internal static class MagicCircleCastContextPatch
+    {
+        private static readonly FieldInfo CasterReference = typeof(MechanicsContext)
+            .GetField("m_CasterReference", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        internal static void VerifyContract()
+        {
+            if (CasterReference == null || CasterReference.FieldType != typeof(UnitReference))
+                throw new MissingFieldException(typeof(MechanicsContext).FullName, "m_CasterReference");
+        }
+
+        private static void Postfix(MechanicsContext __instance,
+            BlueprintScriptableObject __0, MechanicsContext __result)
+        {
+            var circles = BlueprintBootstrap.MagicCircles;
+            if (__result == null || circles == null || !circles.Any(circle =>
+                ReferenceEquals(__0, circle.Carrier) || ReferenceEquals(__0, circle.Area) ||
+                ReferenceEquals(__0, circle.Recipient))) return;
+            CasterReference.SetValue(__result, CasterReference.GetValue(__instance));
         }
     }
 
