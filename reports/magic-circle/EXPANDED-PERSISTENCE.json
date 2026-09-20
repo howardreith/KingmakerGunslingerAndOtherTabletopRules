@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "scope": "Eight active carriers, pending held touch, finite native merchant purchases and saved scrolls; intermediate checkpoint, not final artifact.",
+  "packageSha256": "e1949cb24a00ac1d3e5c82243d389d4af856a9cbd9daf08e3f23f60202243283",
+  "dllSha256": "48253c7af0071fc64c93bd6da79b6cf8064a93ee782cd61beafee13353989e12",
+  "mvid": "8fa76cb6-d080-4d93-a609-25ef321c2c2b",
+  "runs": [
+    {
+      "run": "20260920T0716530950567Z-working-save-magic-circle-prepare",
+      "status": "PASS",
+      "assertions": 13,
+      "failure": "",
+      "authorizedWorkingSaveWrites": 1,
+      "unexpectedSaveWrite": false,
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "comparison": false
+    },
+    {
+      "run": "20260920T0719394602920Z-working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertions": 10,
+      "failure": "",
+      "authorizedWorkingSaveWrites": 0,
+      "unexpectedSaveWrite": false,
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "comparison": true
+    },
+    {
+      "run": "20260920T0722120100496Z-working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertions": 10,
+      "failure": "",
+      "authorizedWorkingSaveWrites": 0,
+      "unexpectedSaveWrite": false,
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": false
+      },
+      "comparison": true
+    },
+    {
+      "run": "20260920T0724426601920Z-working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertions": 10,
+      "failure": "",
+      "authorizedWorkingSaveWrites": 0,
+      "unexpectedSaveWrite": false,
+      "settings": {
+        "magicCircleSpells": false,
+        "sharedControlEnhancement": true
+      },
+      "comparison": true
+    },
+    {
+      "run": "20260920T0727138623702Z-working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertions": 10,
+      "failure": "",
+      "authorizedWorkingSaveWrites": 0,
+      "unexpectedSaveWrite": false,
+      "settings": {
+        "magicCircleSpells": false,
+        "sharedControlEnhancement": false
+      },
+      "comparison": true
+    },
+    {
+      "run": "20260920T0729445556769Z-working-save-magic-circle-scene",
+      "status": "PASS",
+      "assertions": 14,
+      "failure": "",
+      "authorizedWorkingSaveWrites": 0,
+      "unexpectedSaveWrite": false,
+      "settings": null,
+      "comparison": true
+    },
+    {
+      "run": "20260920T0732548233408Z-working-save-magic-circle-cleanup",
+      "status": "FAIL",
+      "assertions": 10,
+      "failure": "System.InvalidOperationException: Foreign Teleportation grant state changed; cleanup refused.\r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.CleanupCircleSavedMarket (Kingmaker.EntitySystem.Entities.UnitEntityData[] actors) [0x00245] in <8fa76cb6d0804d93a60925ef321c2c2b>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.CleanupCirclePersistence () [0x000dd] in <8fa76cb6d0804d93a60925ef321c2c2b>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PollMagicCirclePersistence () [0x00549] in <8fa76cb6d0804d93a60925ef321c2c2b>:0 ",
+      "authorizedWorkingSaveWrites": 0,
+      "unexpectedSaveWrite": false,
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "comparison": false
+    }
+  ],
+  "cleanupDiagnosis": "Fixture used bare table ID for foreign Teleportation ledger; existing production uses shared:<table-id>. Failed before save, original prepared fixture remains. Correction checks complete ledgers before mutation. No production vendor logic changed.",
+  "boundary": "Steam 640820; only KMG_AUTOMATION_WORKING; settings restored exactly by wrapper; no baseline or campaign writes.",
+  "continuedWith": {
+    "packageSha256": "1ecad6df62ed6372c5c96a123ac9bde846d54caa7402e7f889c6858b6096f844",
+    "dllSha256": "24fde3b2e31509b6323dbef12c719639e5f9fe5e5faf131855076480dc348289",
+    "mvid": "e865f895-c1c8-4a92-a750-0ff4caeecb94",
+    "nativeGameVersion": "2.1.7b",
+    "scene": {
+      "run": "20260920T0748324319536Z-working-save-magic-circle-scene",
+      "status": "PASS",
+      "assertions": 22,
+      "legs": [
+        {
+          "leg": "scene",
+          "events": [
+            "unloaded:UI_Ingame_Scene",
+            "unloaded:JamandisMansion_Mechanics",
+            "unloaded:JamandisMansion_Mechanics_DLC2Mimics",
+            "unloaded:JamandisMansion_Static",
+            "unloaded:JamandisMansion_Audio_Day",
+            "unloaded:JamandisMansion_Light",
+            "scenes-loaded",
+            "activated",
+            "loading-complete"
+          ],
+          "sameSceneReplaced": true,
+          "savingThrows": 0,
+          "loadedArea": "2849fdde28fe50f4d935bf2cf3405051"
+        },
+        {
+          "leg": "world-map",
+          "events": [
+            "unloaded:UI_Ingame_Scene",
+            "unloaded:JamandisMansion_Mechanics",
+            "unloaded:JamandisMansion_Mechanics_DLC2Mimics",
+            "unloaded:JamandisMansion_Static",
+            "unloaded:JamandisMansion_Audio_Day",
+            "unloaded:JamandisMansion_Light",
+            "scenes-loaded",
+            "activated",
+            "loading-complete"
+          ],
+          "sameSceneReplaced": false,
+          "savingThrows": 0,
+          "loadedArea": "76f2987ea128d624490e3dfa56ec8a47"
+        },
+        {
+          "leg": "roundtrip",
+          "events": [
+            "unloaded:UI_Globalmap_Scene",
+            "unloaded:Globalmap",
+            "unloaded:Capital_Mechanics",
+            "unloaded:Capital_Static",
+            "unloaded:Pitax_Mechanics",
+            "unloaded:Pitax_Static",
+            "unloaded:Globalmap_Audio",
+            "unloaded:Globalmap_Light",
+            "scenes-loaded",
+            "activated",
+            "loading-complete"
+          ],
+          "sameSceneReplaced": false,
+          "savingThrows": 0,
+          "loadedArea": "2849fdde28fe50f4d935bf2cf3405051"
+        }
+      ],
+      "authorizedWorkingSaveWrites": 0,
+      "unexpectedSaveWrite": false
+    },
+    "cleanup": {
+      "run": "20260920T0752353053608Z-working-save-magic-circle-cleanup",
+      "status": "PASS",
+      "assertions": 12,
+      "authorizedWorkingSaveWrites": 1,
+      "unexpectedSaveWrite": false,
+      "crossLaunchComparison": "PASS"
+    },
+    "absence": {
+      "run": "20260920T0755194346549Z-working-save-magic-circle-absent",
+      "status": "PASS",
+      "assertions": 3,
+      "authorizedWorkingSaveWrites": 0,
+      "unexpectedSaveWrite": false,
+      "exactOriginalInventoryGoldSupplierComparison": "PASS"
+    }
+  },
+  "finalFixtureState": "Absent after successful native cleanup save and independent fresh-load comparison."
+}

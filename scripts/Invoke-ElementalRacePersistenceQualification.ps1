@@ -37,6 +37,10 @@ if (-not $PSCmdlet.ShouldProcess($SaveName,
     return
 }
 
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Invoke-ElementalRacePersistenceQualification.ps1'
+try {
+Assert-KmgNotRunning
 $ConfirmPreference = 'None'
 $originalExists = Test-Path -LiteralPath $settings -PathType Leaf
 $originalBytes = if ($originalExists) {
@@ -117,7 +121,7 @@ function Preserve-PhaseNativeLog([string]$scenario) {
 
 try {
     Set-ElementalRacesEnabled $true
-    & $invoke -Scenario 'elemental-race-persistence-prepare' `
+    & $invoke -Scenario 'elemental-race-persistence-prepare' -RuntimeLease $sharedRuntimeScope.Lease `
         -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
         -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
         -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach `
@@ -131,7 +135,7 @@ try {
     Preserve-PhaseNativeLog 'elemental-race-persistence-prepare'
 
     Set-ElementalRacesEnabled $false
-    & $invoke -Scenario 'elemental-race-module-disabled-persistence' `
+    & $invoke -Scenario 'elemental-race-module-disabled-persistence' -RuntimeLease $sharedRuntimeScope.Lease `
         -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
         -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
         -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach `
@@ -145,7 +149,7 @@ try {
     Preserve-PhaseNativeLog 'elemental-race-module-disabled-persistence'
 
     Set-ElementalRacesEnabled $true
-    & $invoke -Scenario 'elemental-race-module-restored-persistence' `
+    & $invoke -Scenario 'elemental-race-module-restored-persistence' -RuntimeLease $sharedRuntimeScope.Lease `
         -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
         -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
         -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach `
@@ -178,3 +182,5 @@ finally {
 }
 if ($failure -ne $null) { throw $failure }
 Write-Host "Elemental Races three-launch heritage and feat persistence and cleanup PASS; run elemental-race-persistence-verify-absent next; package=$PackagePath; deployment=$DeploymentManifestPath"
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

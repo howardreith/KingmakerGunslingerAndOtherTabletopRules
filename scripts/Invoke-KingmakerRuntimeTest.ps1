@@ -2,6 +2,7 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$Scenario,
+    $RuntimeLease,
 
     [Parameter(Mandatory = $true)]
     [string]$ExpectedVersion,
@@ -67,7 +68,13 @@ if ($scenarioMetadata.RequiresSaveName) {
     if ([string]::IsNullOrWhiteSpace($SaveName)) {
         throw "$Scenario requires explicit -SaveName $($scenarioMetadata.PermittedSaveName)."
     }
-    if ($Scenario -ceq 'disposable-teleportation-persistence') {
+    if ($Scenario -cin @('working-save-magic-circle-verify','working-save-magic-circle-scene','working-save-magic-circle-cleanup')) {
+        if ($Parameters.Count -ne 1 -or -not $Parameters.ContainsKey('preparationBinding')) {
+            throw 'Magic Circle bound phases require typed SaveName plus exactly preparationBinding.'
+        }
+        $Parameters = $Parameters.Clone()
+        $Parameters.saveName = $SaveName
+    } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {
         if ($Parameters.Count -ne 2 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath')) {
             throw 'Persistence requires typed -SaveName plus exactly phase and planPath.'
         }
@@ -236,6 +243,10 @@ if (-not $PSCmdlet.ShouldProcess(
 # intentionally contained after authorization so trusted nested cmdlets do not
 # fan out into separate prompts. Direct invocation of those scripts retains
 # their own ShouldProcess behavior.
+$runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose ('runtime ' + $Scenario)
+$permitRuntimeHandoff = $false
+try {
+Assert-KmgNotRunning
 $ConfirmPreference = 'None'
 $WhatIfPreference = $false
 if ($qualifiedProducerReuse) {
@@ -259,10 +270,10 @@ elseif ($ReuseInstalledArtifact) {
     if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
         throw "Build-Local did not produce the expected package: $package"
     }
-    & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package `
+    & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $package -RuntimeLease $runtimeScope.Lease `
         -WhatIf -Confirm:$false
     $deploymentManifestPath = & (Join-Path $PSScriptRoot 'Deploy-Local.ps1') `
-        -PackagePath $package -Confirm:$false -PassThru
+        -PackagePath $package -Confirm:$false -PassThru -RuntimeLease $runtimeScope.Lease
 }
 
 $evidence = Join-Path $script:KmgRuntimeEvidenceRoot (
@@ -286,6 +297,7 @@ $request = New-KmgRuntimeRequest -Scenario $Scenario -ExpectedVersion $ExpectedV
 $initialized = Initialize-KmgRuntimeTestEvidence -EvidenceDirectory $evidence `
     -Request $request -DeploymentManifestPath $deploymentManifestPath
 $requestPath = $initialized.requestPath
+Set-KmgGenericRuntimeRequest $runtimeScope $requestPath $deploymentManifestPath
 $resultPath = $initialized.resultPath
 $orchestration = $initialized.orchestration
 $orchestration.stage = 'request-written'
@@ -319,6 +331,7 @@ try {
     $launch = $launchOutput[0]
     Assert-KmgRuntimeLaunchResult -LaunchResult $launch
     $process = $launch.kingmakerProcess
+    Set-KmgGenericRuntimeProcess $runtimeScope $process
     $orchestration.launchBegan = $true
     $orchestration.steamExecutable = $launch.steamExecutable
     $orchestration.steamAppId = $launch.steamAppId
@@ -801,6 +814,8 @@ try {
     Write-Host "Runtime result: $resultPath"
     Write-Host "Status: $($result.status)"
     Write-Host 'Stage: final-result-received'
+    Set-KmgGenericRuntimeOutcome $runtimeScope $resultPath
+    $permitRuntimeHandoff = -not $ExitAfterCompletion -and $result.status -ceq 'PASS'
     if ($result.status -ne 'PASS') { exit 1 }
 }
 catch {
@@ -829,4 +844,13 @@ finally {
             -Record $orchestration)
         Write-Host 'Stage: orchestration-error'
     }
+}
+
+} finally {
+    if ($runtimeScope.Acquired -and $ExitAfterCompletion) {
+        $leaseExitDeadline = [DateTime]::UtcNow.AddSeconds(45)
+        while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
+            [DateTime]::UtcNow -lt $leaseExitDeadline) { Start-Sleep -Milliseconds 250 }
+    }
+    Exit-KmgRuntimeLease $runtimeScope -PermitRuntimeHandoff:$permitRuntimeHandoff
 }

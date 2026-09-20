@@ -5,13 +5,16 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f"
+    "registrySha256": "94fd77450bbfab3a191acd94ed4c8e9541ee10d52af02e285b5e305c57697cf7",
+    "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
+    "registryExtensionAuthorization": "Magic Circle implementation mission: four appended Evil identities; unchanged 1886-entry prefix is checked by tools/validate_magic_circle.py. Original art baseline and approved assignments remain protected."
   },
   "coveragePrefixes": [
     "KMG.ElementalRaces.",
     "KMG.Spells.Teleport.",
     "KMG.Spells.GreaterTeleport.",
-    "KMG.Spells.WordOfRecall."
+    "KMG.Spells.WordOfRecall.",
+    "KMG.Spells.MagicCircle."
   ],
   "additionalRequiredSymbols": [
     "KMG.Feats.FirearmWeaponFocus",
@@ -1123,6 +1126,13 @@
       "evidenceClass": "structured-live-paired-census",
       "liveStatus": "qualified",
       "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
+    },
+    "owned-magic-circle-painting": {
+      "source": "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs",
+      "assignment": "Exact alignment painting intentionally shared by spell, held touch, timed carrier, proximity recipient and scroll item; native frames and casting effects retained.",
+      "nativeDonorGuid": null,
+      "evidenceClass": "source-inspection; owner-approved exported pixels",
+      "liveStatus": "native UI acceptance pending"
     }
   },
   "concepts": [
@@ -3771,6 +3781,102 @@
         "cacheKey": "scroll-of-word-of-recall"
       },
       "technicalEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json"
+    },
+    {
+      "key": "magic-circle-against-evil",
+      "name": "Magic Circle against Evil",
+      "family": "painted-magical",
+      "sharingReason": "Intentional family sharing across one alignment spell, its held touch, timed carrier, proximity recipient and scroll item. Distinct painted group ward and threat geometry for each alignment; native item and spell UI frames remain native.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "magic-circle-against-evil"
+      },
+      "technicalStatus": "final candidate native desktop consumers PASS in both control configurations; reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json",
+      "visualReview": {
+        "status": "approved",
+        "reviewedExportSha256": "c6c8aa108c1beb1d1f37d78a84437d93da2743455cc70d0680862d6322484167",
+        "evidence": "reports/magic-circle/OWNER-DECISIONS.json"
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-evil.json",
+      "reviewGroup": "magic-circle",
+      "runtimeExport": {
+        "path": "assets/game/icons/magic-circle-against-evil.png",
+        "installedPath": "assets/icons/magic-circle-against-evil.png",
+        "cacheKey": "magic-circle-against-evil"
+      }
+    },
+    {
+      "key": "magic-circle-against-good",
+      "name": "Magic Circle against Good",
+      "family": "painted-magical",
+      "sharingReason": "Intentional family sharing across one alignment spell, its held touch, timed carrier, proximity recipient and scroll item. Distinct painted group ward and threat geometry for each alignment; native item and spell UI frames remain native.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "magic-circle-against-good"
+      },
+      "technicalStatus": "final candidate native desktop consumers PASS in both control configurations; reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json",
+      "visualReview": {
+        "status": "approved",
+        "reviewedExportSha256": "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a",
+        "evidence": "reports/magic-circle/OWNER-DECISIONS.json"
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-good.json",
+      "reviewGroup": "magic-circle",
+      "runtimeExport": {
+        "path": "assets/game/icons/magic-circle-against-good.png",
+        "installedPath": "assets/icons/magic-circle-against-good.png",
+        "cacheKey": "magic-circle-against-good"
+      }
+    },
+    {
+      "key": "magic-circle-against-law",
+      "name": "Magic Circle against Law",
+      "family": "painted-magical",
+      "sharingReason": "Intentional family sharing across one alignment spell, its held touch, timed carrier, proximity recipient and scroll item. Distinct painted group ward and threat geometry for each alignment; native item and spell UI frames remain native.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "magic-circle-against-law"
+      },
+      "technicalStatus": "final candidate native desktop consumers PASS in both control configurations; reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json",
+      "visualReview": {
+        "status": "approved",
+        "reviewedExportSha256": "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5",
+        "evidence": "reports/magic-circle/OWNER-DECISIONS.json"
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-law.json",
+      "reviewGroup": "magic-circle",
+      "runtimeExport": {
+        "path": "assets/game/icons/magic-circle-against-law.png",
+        "installedPath": "assets/icons/magic-circle-against-law.png",
+        "cacheKey": "magic-circle-against-law"
+      }
+    },
+    {
+      "key": "magic-circle-against-chaos",
+      "name": "Magic Circle against Chaos",
+      "family": "painted-magical",
+      "sharingReason": "Intentional family sharing across one alignment spell, its held touch, timed carrier, proximity recipient and scroll item. Distinct painted group ward and threat geometry for each alignment; native item and spell UI frames remain native.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "magic-circle-against-chaos"
+      },
+      "technicalStatus": "final candidate native desktop consumers PASS in both control configurations; reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json",
+      "visualReview": {
+        "status": "approved",
+        "reviewedExportSha256": "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f",
+        "evidence": "reports/magic-circle/OWNER-DECISIONS.json"
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-chaos.json",
+      "reviewGroup": "magic-circle",
+      "runtimeExport": {
+        "path": "assets/game/icons/magic-circle-against-chaos.png",
+        "installedPath": "assets/icons/magic-circle-against-chaos.png",
+        "cacheKey": "magic-circle-against-chaos"
+      }
     }
   ],
   "consumers": [
@@ -8464,6 +8570,318 @@
       "concept": "retained-firearms",
       "disposition": "hidden-internal",
       "reason": "Source-audited disposition; live binding/visual acceptance pending."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Ability",
+      "guid": "ec63a7d4606a467f948ba03c19cfa42d",
+      "type": "BlueprintAbility",
+      "name": "Magic Circle against Evil Ability",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "learning / preparation / spellbook / action bar / spell tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-evil",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.TouchDelivery",
+      "guid": "1242a0687d374c1792629384fc716ad5",
+      "type": "BlueprintAbility",
+      "name": "Magic Circle against Evil TouchDelivery",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "held touch / action bar / touch tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-evil",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Carrier",
+      "guid": "40d23af78f45430faf881a9a3259efe0",
+      "type": "BlueprintBuff",
+      "name": "Magic Circle against Evil Carrier",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "carrier buff tooltip and remaining duration",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-evil",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Recipient",
+      "guid": "753de0df0b3c49a0982e37981ddee018",
+      "type": "BlueprintBuff",
+      "name": "Magic Circle against Evil Recipient",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "recipient proximity-dependent buff tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-evil",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Scroll",
+      "guid": "04954b1da0964fc288e00abdcf1f82ae",
+      "type": "BlueprintItemEquipmentUsable",
+      "name": "Magic Circle against Evil Scroll",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "inventory / merchant / item tooltip / scroll casting and scribing",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-evil",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Evil.Area",
+      "guid": "fe3bfffe4e13459587cb11280226d2df",
+      "type": "BlueprintAbilityAreaEffect",
+      "name": "Magic Circle against Evil Area",
+      "module": "Magic Circle spells",
+      "publication": "hidden-internal",
+      "surface": "internal; no independent icon surface",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Native area has no separate icon."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Ability",
+      "guid": "8d9b3a1b06c141518230c6dd8aae95ee",
+      "type": "BlueprintAbility",
+      "name": "Magic Circle against Good Ability",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "learning / preparation / spellbook / action bar / spell tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-good",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.TouchDelivery",
+      "guid": "b05e3a50c1e147c2badb7bbc49ae6e5e",
+      "type": "BlueprintAbility",
+      "name": "Magic Circle against Good TouchDelivery",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "held touch / action bar / touch tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-good",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Carrier",
+      "guid": "b533bfe6409a457d9290dde8b18066ac",
+      "type": "BlueprintBuff",
+      "name": "Magic Circle against Good Carrier",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "carrier buff tooltip and remaining duration",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-good",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Recipient",
+      "guid": "b81680c923aa4ec59b46d12fdb5084fa",
+      "type": "BlueprintBuff",
+      "name": "Magic Circle against Good Recipient",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "recipient proximity-dependent buff tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-good",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Scroll",
+      "guid": "f8ef52b288bc4c369c51a1fa754db605",
+      "type": "BlueprintItemEquipmentUsable",
+      "name": "Magic Circle against Good Scroll",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "inventory / merchant / item tooltip / scroll casting and scribing",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-good",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Good.Area",
+      "guid": "4b6d501574c74186b42e583a6b26a6da",
+      "type": "BlueprintAbilityAreaEffect",
+      "name": "Magic Circle against Good Area",
+      "module": "Magic Circle spells",
+      "publication": "hidden-internal",
+      "surface": "internal; no independent icon surface",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Native area has no separate icon."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Ability",
+      "guid": "d98b1dff1952451989943907617f5b0d",
+      "type": "BlueprintAbility",
+      "name": "Magic Circle against Law Ability",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "learning / preparation / spellbook / action bar / spell tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-law",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.TouchDelivery",
+      "guid": "edcb7eba83cf499a97d8c4ba6d1bfd35",
+      "type": "BlueprintAbility",
+      "name": "Magic Circle against Law TouchDelivery",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "held touch / action bar / touch tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-law",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Carrier",
+      "guid": "ab3b489192dd40e192bc3bac47e816cb",
+      "type": "BlueprintBuff",
+      "name": "Magic Circle against Law Carrier",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "carrier buff tooltip and remaining duration",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-law",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Recipient",
+      "guid": "b17bf64cf088447d87d1258a5c052e38",
+      "type": "BlueprintBuff",
+      "name": "Magic Circle against Law Recipient",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "recipient proximity-dependent buff tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-law",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Scroll",
+      "guid": "c6342ebc91c54c82a43f985aa8e225bd",
+      "type": "BlueprintItemEquipmentUsable",
+      "name": "Magic Circle against Law Scroll",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "inventory / merchant / item tooltip / scroll casting and scribing",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-law",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Law.Area",
+      "guid": "43ec68312894436db1dc0928118e9678",
+      "type": "BlueprintAbilityAreaEffect",
+      "name": "Magic Circle against Law Area",
+      "module": "Magic Circle spells",
+      "publication": "hidden-internal",
+      "surface": "internal; no independent icon surface",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Native area has no separate icon."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Ability",
+      "guid": "cafa8a0681b84b00ad4f0e3ff6393c78",
+      "type": "BlueprintAbility",
+      "name": "Magic Circle against Chaos Ability",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "learning / preparation / spellbook / action bar / spell tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-chaos",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.TouchDelivery",
+      "guid": "e9c92183bd7f4600adab27edbe68d04b",
+      "type": "BlueprintAbility",
+      "name": "Magic Circle against Chaos TouchDelivery",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "held touch / action bar / touch tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-chaos",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Carrier",
+      "guid": "1aae3d67cf06435a959474c4cd0b7796",
+      "type": "BlueprintBuff",
+      "name": "Magic Circle against Chaos Carrier",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "carrier buff tooltip and remaining duration",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-chaos",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Recipient",
+      "guid": "1ee6f15bf4cc42f8ac4c1eb20e30f71f",
+      "type": "BlueprintBuff",
+      "name": "Magic Circle against Chaos Recipient",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "recipient proximity-dependent buff tooltip",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-chaos",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Scroll",
+      "guid": "4c7d27edc91246f5b3557ca480af941c",
+      "type": "BlueprintItemEquipmentUsable",
+      "name": "Magic Circle against Chaos Scroll",
+      "module": "Magic Circle spells",
+      "publication": "stable hydration identity; content publication follows startup setting; native desktop checkpoint PASS",
+      "surface": "inventory / merchant / item tooltip / scroll casting and scribing",
+      "currentArt": "owned-magic-circle-painting",
+      "concept": "magic-circle-against-chaos",
+      "disposition": "original-required",
+      "reason": "Exact owner-approved alignment painting; final candidate native root, held charge, carrier, recipient and scroll placement qualified in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Chaos.Area",
+      "guid": "d4dd789baf954c0e97d2d9da8404696a",
+      "type": "BlueprintAbilityAreaEffect",
+      "name": "Magic Circle against Chaos Area",
+      "module": "Magic Circle spells",
+      "publication": "hidden-internal",
+      "surface": "internal; no independent icon surface",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Native area has no separate icon."
     }
   ],
   "uiEntries": [
@@ -8890,16 +9308,36 @@
       "baselineSha256": "c40afd2fbd1e8059624ba4b83430991f8e425e2d7147eb2b368adbcd2198974e",
       "before": "                return new BlueprintInitializationResult(\n",
       "after": "                RuntimeTesting.IconConsumerCensus.CaptureBeforeOwnedMapping(\n                    context, library, manifest);\n                if (!RuntimeTesting.IconConsumerCensus.IsControlRequest)\n                    OwnedIconAssignments.Apply(library, manifest, teleportation != null);\n                RuntimeTesting.IconConsumerCensus.CaptureAfterOwnedMapping();\n                return new BlueprintInitializationResult(\n",
-      "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline."
+      "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline.",
+      "authorizedFeatureEdits": [
+        {
+          "before": "        internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }\n        internal static TeleportationScrollVendorPublication TeleportationScrollVendors { get { return _teleportationScrollVendors; } }\n        internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }\n        private static ShieldOtherBlueprintSet _shieldOther;\n        private static ShieldOtherSpellListPublication _shieldOtherPublication;\n        private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;\n",
+          "after": "        internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }\n        internal static TeleportationScrollVendorPublication TeleportationScrollVendors { get { return _teleportationScrollVendors; } }\n        internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }\n        private static MagicCircleBlueprintSet[] _magicCircles;\n        private static MagicCircleSpellListPublication _magicCirclePublication;\n        internal static MagicCircleBlueprintSet[] MagicCircles { get { return _magicCircles; } }\n        internal static MagicCircleSpellListPublication MagicCirclePublication { get { return _magicCirclePublication; } }\n        private static Spells.MagicCircle.MagicCircleScrollVendors _magicCircleVendors;\n        internal static void DisableMagicCirclePublication()\n        {\n            _magicCirclePublication?.Rollback(); _magicCirclePublication = null;\n        }\n        private static ShieldOtherBlueprintSet _shieldOther;\n        private static ShieldOtherSpellListPublication _shieldOtherPublication;\n        private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;\n"
+        },
+        {
+          "before": "            FirearmFeatCatalogPublication featPublication = null;\n            AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;\n            BodyguardFeatCatalogPublication bodyguardFeatPublication = null;\n            var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);\n            TeleportationSpellBlueprintSet teleportation = null;\n            TeleportationSpellListPublication teleportationPublication = null;\n",
+          "after": "            FirearmFeatCatalogPublication featPublication = null;\n            AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;\n            BodyguardFeatCatalogPublication bodyguardFeatPublication = null;\n            var magicCircleRegistry = new BlueprintRegistry(library, manifest, context.Logger);\n            var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);\n            TeleportationSpellBlueprintSet teleportation = null;\n            TeleportationSpellListPublication teleportationPublication = null;\n"
+        },
+        {
+          "before": "                        \"publication.failed\",\n                        \"Required protection/control blueprint publication failed and was rolled back; this feature is disabled for the process and other modules will continue.\",\n                        protectionPublicationException);\n                }\n\n                ShieldOtherBlueprintSet shieldOther =\n",
+          "after": "                        \"publication.failed\",\n                        \"Required protection/control blueprint publication failed and was rolled back; this feature is disabled for the process and other modules will continue.\",\n                        protectionPublicationException);\n                }\n\n                try\n                {\n                    bool circleControl = publicationPlan.ProtectionFromAlignmentControlImmunity &&\n                        protectionFromAlignmentPublication != null &&\n                        protectionFromAlignmentPublication.Summary.MissingRequiredAssets.Count == 0;\n                    _magicCircles = MagicCircleBlueprints.Register(library, magicCircleRegistry, circleControl);\n                    // Native shared-table reconciliation needs stable finite\n                    // stock definitions across ON/OFF loads, as for Teleportation.\n                    // Activation, learning and saved-stock migration stay gated.\n                    _magicCircleVendors = Spells.MagicCircle.MagicCircleScrollVendors.Publish(library, _magicCircles);\n                    if (publicationPlan.MagicCircleSpellLists) {\n                        _magicCirclePublication = MagicCircleSpellListPublication.Publish(library, _magicCircles);\n                    }\n                }\n                catch (Exception circleException)\n                {\n                    DisableMagicCirclePublication();\n                    context.Logger.Failure(\"magic-circle\", \"publication.failed\",\n                        \"Magic Circle publication failed; new casts are disabled.\", circleException);\n                }\n\n                ShieldOtherBlueprintSet shieldOther =\n"
+        },
+        {
+          "before": "                    elementalFeats,\n                    elementalFeatPublication,\n                    martialPerformancePublication,\n                    registry.RegisteredCount + teleportationRegistry.RegisteredCount,\n                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount);\n            }\n            catch (Exception initializationException)\n            {\n                try {\n                    if (teleportationPublication != null) teleportationPublication.Rollback();\n                    teleportationRegistry.RollbackAll();\n",
+          "after": "                    elementalFeats,\n                    elementalFeatPublication,\n                    martialPerformancePublication,\n                    registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount,\n                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount);\n            }\n            catch (Exception initializationException)\n            {\n                try {\n                    DisableMagicCirclePublication();\n                    _magicCircleVendors?.Rollback(); _magicCircleVendors = null;\n                    _magicCircles = null;\n                    magicCircleRegistry.RollbackAll();\n                }\n                catch (Exception circleRollbackException) {\n                    context.Logger.Failure(\"magic-circle\", \"bootstrap.rollback-failed\",\n                        \"Core initialization failed; exact Magic Circle rollback was refused.\", circleRollbackException);\n                }\n\n                try {\n                    if (teleportationPublication != null) teleportationPublication.Rollback();\n                    teleportationRegistry.RollbackAll();\n"
+        }
+      ],
+      "featureAuthorization": "Magic Circle implementation mission; exact new module registration, publication, rollback and counts only. Reverse these edits before enforcing the original protected icon-mapping insertion."
     }
   ],
   "artProductionStatus": "complete-main-scope-owner-approved-images",
   "runtimeMapping": {
     "source": "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs",
     "stage": "after existing registration/publication, immediately before BlueprintInitializationResult in InitializeCore",
-    "paintedConceptCount": 92,
-    "paintedConsumerCount": 137,
+    "paintedConceptCount": 96,
+    "paintedConsumerCount": 157,
     "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
-    "technicalStatus": "qualified-paired-census-and-working-save-smoke"
+    "technicalStatus": "qualified-paired-census-and-working-save-smoke",
+    "magicCircleStatus": "twenty final candidate native desktop consumers qualified ON/OFF in reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json; scoped mechanics and profiles in reports/magic-circle/FINAL-CANDIDATE-QUALIFICATION.json"
   }
 }

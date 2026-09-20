@@ -4,7 +4,7 @@ namespace KingmakerGunslinger.FeatureModules
 {
     internal sealed class FeatureModuleConfiguration : IEquatable<FeatureModuleConfiguration>
     {
-        internal const int ModuleCount = 12;
+        internal const int ModuleCount = 13;
         internal const string GunslingerId = "gunslinger";
         internal const string AcadamaeGraduateId = "acadamae-graduate";
         internal const string ShieldOtherId = "shield-other";
@@ -18,13 +18,15 @@ namespace KingmakerGunslinger.FeatureModules
             "protection-from-alignment-control-immunity";
         internal const string ElementalRacesId = "elemental-races";
 
+        internal const string MagicCircleSpellsId = "magic-circle-spells";
+
         internal const string TeleportationSpellsId = "teleportation-spells";
 
         internal FeatureModuleConfiguration(bool gunslinger, bool acadamaeGraduate,
             bool shieldOther, bool expandedSummoning, bool elvenBranchedSpears,
             bool easternWeapons, bool brownFurTransmuter, bool urbanBarbarian,
             bool bodyguardFeats, bool protectionFromAlignmentControlImmunity,
-            bool elementalRaces, bool teleportationSpells)
+            bool elementalRaces, bool teleportationSpells, bool magicCircleSpells = true)
         {
             Gunslinger = gunslinger;
             AcadamaeGraduate = acadamaeGraduate;
@@ -39,6 +41,7 @@ namespace KingmakerGunslinger.FeatureModules
                 protectionFromAlignmentControlImmunity;
             ElementalRaces = elementalRaces;
             TeleportationSpells = teleportationSpells;
+            MagicCircleSpells = magicCircleSpells;
         }
 
         internal bool Gunslinger { get; private set; }
@@ -52,6 +55,7 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool BodyguardFeats { get; private set; }
         internal bool ProtectionFromAlignmentControlImmunity { get; private set; }
         internal bool ElementalRaces { get; private set; }
+        internal bool MagicCircleSpells { get; private set; }
         internal bool TeleportationSpells { get; private set; }
         internal static FeatureModuleConfiguration Defaults
         { get { return new FeatureModuleConfiguration(true, true, true, true, true, true,
@@ -71,7 +75,8 @@ namespace KingmakerGunslinger.FeatureModules
                 ProtectionFromAlignmentControlImmunity ==
                     other.ProtectionFromAlignmentControlImmunity &&
                 ElementalRaces == other.ElementalRaces &&
-                TeleportationSpells == other.TeleportationSpells;
+                TeleportationSpells == other.TeleportationSpells &&
+                MagicCircleSpells == other.MagicCircleSpells;
         }
 
         public override bool Equals(object obj)
@@ -84,7 +89,7 @@ namespace KingmakerGunslinger.FeatureModules
             (BrownFurTransmuter ? 64 : 0) | (UrbanBarbarian ? 128 : 0) |
             (BodyguardFeats ? 256 : 0) |
             (ProtectionFromAlignmentControlImmunity ? 512 : 0) |
-            (ElementalRaces ? 1024 : 0) | (TeleportationSpells ? 2048 : 0); }
+            (ElementalRaces ? 1024 : 0) | (TeleportationSpells ? 2048 : 0) | (MagicCircleSpells ? 4096 : 0); }
 
         public override string ToString()
         { return "gunslinger=" + Gunslinger + ";acadamae-graduate=" +
@@ -98,6 +103,7 @@ namespace KingmakerGunslinger.FeatureModules
             ";protection-from-alignment-control-immunity=" +
             ProtectionFromAlignmentControlImmunity +
             ";elemental-races=" + ElementalRaces +
-            ";teleportation-spells=" + TeleportationSpells; }
+            ";teleportation-spells=" + TeleportationSpells +
+            ";magic-circle-spells=" + MagicCircleSpells; }
     }
 }

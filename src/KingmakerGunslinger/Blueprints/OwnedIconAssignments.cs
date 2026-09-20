@@ -24,7 +24,8 @@ namespace KingmakerGunslinger.Blueprints
             internal string Symbol { get; private set; }
             internal string Key { get; private set; }
             internal Type BlueprintType { get; private set; }
-            internal bool IsStrategic => Symbol.StartsWith("KMG.Spells.", StringComparison.Ordinal);
+            internal bool IsMagicCircle => Symbol.StartsWith("KMG.Spells.MagicCircle.", StringComparison.Ordinal);
+            internal bool IsStrategic => Symbol.StartsWith("KMG.Spells.", StringComparison.Ordinal) && !IsMagicCircle;
 
             internal BlueprintScriptableObject Resolve(LibraryScriptableObject library,
                 BlueprintManifest manifest)
@@ -179,6 +180,26 @@ namespace KingmakerGunslinger.Blueprints
             new Binding("KMG.Spells.Teleport.Scroll", "scroll-of-teleport", typeof(BlueprintItemEquipmentUsable)),
             new Binding("KMG.Spells.GreaterTeleport.Scroll", "scroll-of-greater-teleport", typeof(BlueprintItemEquipmentUsable)),
             new Binding("KMG.Spells.WordOfRecall.Scroll", "scroll-of-word-of-recall", typeof(BlueprintItemEquipmentUsable)),
+            new Binding("KMG.Spells.MagicCircle.Evil.Ability", "magic-circle-against-evil", typeof(BlueprintAbility)),
+            new Binding("KMG.Spells.MagicCircle.Evil.TouchDelivery", "magic-circle-against-evil", typeof(BlueprintAbility)),
+            new Binding("KMG.Spells.MagicCircle.Evil.Carrier", "magic-circle-against-evil", typeof(BlueprintBuff)),
+            new Binding("KMG.Spells.MagicCircle.Evil.Recipient", "magic-circle-against-evil", typeof(BlueprintBuff)),
+            new Binding("KMG.Spells.MagicCircle.Evil.Scroll", "magic-circle-against-evil", typeof(BlueprintItemEquipmentUsable)),
+            new Binding("KMG.Spells.MagicCircle.Good.Ability", "magic-circle-against-good", typeof(BlueprintAbility)),
+            new Binding("KMG.Spells.MagicCircle.Good.TouchDelivery", "magic-circle-against-good", typeof(BlueprintAbility)),
+            new Binding("KMG.Spells.MagicCircle.Good.Carrier", "magic-circle-against-good", typeof(BlueprintBuff)),
+            new Binding("KMG.Spells.MagicCircle.Good.Recipient", "magic-circle-against-good", typeof(BlueprintBuff)),
+            new Binding("KMG.Spells.MagicCircle.Good.Scroll", "magic-circle-against-good", typeof(BlueprintItemEquipmentUsable)),
+            new Binding("KMG.Spells.MagicCircle.Law.Ability", "magic-circle-against-law", typeof(BlueprintAbility)),
+            new Binding("KMG.Spells.MagicCircle.Law.TouchDelivery", "magic-circle-against-law", typeof(BlueprintAbility)),
+            new Binding("KMG.Spells.MagicCircle.Law.Carrier", "magic-circle-against-law", typeof(BlueprintBuff)),
+            new Binding("KMG.Spells.MagicCircle.Law.Recipient", "magic-circle-against-law", typeof(BlueprintBuff)),
+            new Binding("KMG.Spells.MagicCircle.Law.Scroll", "magic-circle-against-law", typeof(BlueprintItemEquipmentUsable)),
+            new Binding("KMG.Spells.MagicCircle.Chaos.Ability", "magic-circle-against-chaos", typeof(BlueprintAbility)),
+            new Binding("KMG.Spells.MagicCircle.Chaos.TouchDelivery", "magic-circle-against-chaos", typeof(BlueprintAbility)),
+            new Binding("KMG.Spells.MagicCircle.Chaos.Carrier", "magic-circle-against-chaos", typeof(BlueprintBuff)),
+            new Binding("KMG.Spells.MagicCircle.Chaos.Recipient", "magic-circle-against-chaos", typeof(BlueprintBuff)),
+            new Binding("KMG.Spells.MagicCircle.Chaos.Scroll", "magic-circle-against-chaos", typeof(BlueprintItemEquipmentUsable)),
         };
 
         internal static IEnumerable<Binding> Bindings => Entries;
@@ -191,7 +212,8 @@ namespace KingmakerGunslinger.Blueprints
             if (library == null || manifest == null) throw new ArgumentNullException("library/manifest");
             // Preserve the existing independent Teleportation registration failure
             // boundary. An OFF module still registers its save-hydration identities.
-            var targets = Entries.Where(value => !value.IsStrategic || strategicIdentitiesRegistered)
+            var targets = Entries.Where(value => (!value.IsStrategic || strategicIdentitiesRegistered) &&
+                    (!value.IsMagicCircle || KingmakerGunslinger.Bootstrap.BlueprintBootstrap.MagicCircles != null))
                 .Select(value => new { Blueprint = value.Resolve(library, manifest),
                     Icon = ProjectAssetIcons.RequireIcon(value.Key) }).ToArray();
             var facts = BlueprintUnitFactAccess.Resolve();

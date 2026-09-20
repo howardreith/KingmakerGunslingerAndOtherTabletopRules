@@ -28,6 +28,10 @@ if (-not $PSCmdlet.ShouldProcess($SaveName,
     return
 }
 
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Test-EasternWeaponsWorkingSavePersistence.ps1'
+try {
+Assert-KmgNotRunning
 $originalExists = Test-Path -LiteralPath $settings -PathType Leaf
 $originalBytes = if ($originalExists) { [IO.File]::ReadAllBytes($settings) } else { $null }
 $failure = $null
@@ -75,7 +79,7 @@ function Wait-ForGuardedKingmakerExit([string]$phase) {
 try {
     if ($StartPhase -ceq 'prepare') {
         Set-EasternFeatureState $true
-        & $invoke -Scenario 'working-save-eastern-weapons-prepare' `
+        & $invoke -Scenario 'working-save-eastern-weapons-prepare' -RuntimeLease $sharedRuntimeScope.Lease `
             -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
             -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
             -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach
@@ -85,7 +89,7 @@ try {
 
     if ($StartPhase -ne 'absent') {
         Set-EasternFeatureState $false
-        & $invoke -Scenario 'working-save-eastern-weapons-verify-cleanup' `
+        & $invoke -Scenario 'working-save-eastern-weapons-verify-cleanup' -RuntimeLease $sharedRuntimeScope.Lease `
             -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
             -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
             -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach
@@ -94,7 +98,7 @@ try {
     }
 
     Restore-OriginalFeatureState
-    & $invoke -Scenario 'working-save-eastern-weapons-verify-absent' `
+    & $invoke -Scenario 'working-save-eastern-weapons-verify-absent' -RuntimeLease $sharedRuntimeScope.Lease `
         -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
         -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
         -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach
@@ -118,3 +122,5 @@ finally {
 }
 if ($failure -ne $null) { throw $failure }
 Write-Host 'Eastern Weapons three-phase working-save persistence PASS.'
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

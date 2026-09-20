@@ -1,0 +1,40 @@
+{
+  "scope": "Magic Circle first release",
+  "bearerDeath": {
+    "ownerInstruction": "End the circle on bearer death",
+    "contract": "Bearer death ends that carrier and only its source-owned area contributions. Original caster death and unconsciousness are separate and do not end a circle on a living bearer.",
+    "nativeQualification": {
+      "status": "PASS",
+      "evidence": "reports/magic-circle/EVIL-PERSISTENCE-AND-DEATH.json",
+      "run": "20260920T0045098565648Z-disposable-magic-circle-evil",
+      "observed": "Native lethal damage: Dead=true, FinallyDead=false; timed carrier removed, area ended, zero source-owned recipient contributions. Original caster death had retained the living bearer circle."
+    }
+  },
+  "artwork": {
+    "ownerInstruction": "Approve all four exports",
+    "reviewedSize": [
+      128,
+      128
+    ],
+    "reviewArtifact": "artifacts/magic-circle/art-preview/review.html",
+    "approvalScope": "Exact reviewed exported pixels. Native UI evidence is separate: reports/magic-circle/NATIVE-UI-AND-LEARNING.json; no additional owner decision is implied.",
+    "exports": [
+      {
+        "key": "magic-circle-against-evil",
+        "sha256": "c6c8aa108c1beb1d1f37d78a84437d93da2743455cc70d0680862d6322484167"
+      },
+      {
+        "key": "magic-circle-against-good",
+        "sha256": "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a"
+      },
+      {
+        "key": "magic-circle-against-law",
+        "sha256": "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5"
+      },
+      {
+        "key": "magic-circle-against-chaos",
+        "sha256": "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f"
+      }
+    ]
+  }
+}

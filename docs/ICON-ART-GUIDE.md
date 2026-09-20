@@ -269,3 +269,24 @@ For the guarded live assignment audit, follow
 Sprite references and graph links without navigating UI or modifying saves.
 
 The firearm Total-list adapter is limited to `CharBNewAbilities.FillData` containing an exact owned firearm fact. If its existing disabled `ContentSizeFitterExtended` uses `PreferredSize`, it temporarily enables that fitter with horizontal fitting unconstrained, so nested feat rows remain scrollable without driving their width. It restores the original enabled state and horizontal mode on creator hide, component disable/destruction or list refill. It never assigns a fixed height, relocates an individual row, or changes another list. Native mode, content extent and cleanup require runtime evidence.
+
+
+Magic Circle gameplay mission extension: the catalog records exact authorized
+non-art bootstrap hunks under `authorizedFeatureEdits`. Validation reverses only
+those hunks before enforcing the original icon-mapping baseline. It still
+rejects changes to protected assignments and unlisted source changes. The
+registry hash advances only for the exact appended identities, with the original
+published prefix checked separately. This does not change an approved art family
+or grant visual approval by itself. The owner approved all four exact 128px
+Magic Circle exports in `reports/magic-circle/OWNER-DECISIONS.json`. Each alignment
+painting is intentionally shared across its spell, held touch, timed carrier,
+proximity recipient and scroll item; native frames, casting effects and sounds
+remain native. The four area identities have no independent icon. These new
+scroll items use the approved alignment paintings directly; the three protected
+strategic scroll composites retain their existing assignments. The final candidate passes all twenty native desktop consumer checks with
+control protection ON and OFF; see
+`reports/magic-circle/FINAL-NATIVE-UI-REVIEW.json`. Direct visual inspection covers
+the complete ON screenshot set and all OFF carrier/recipient tooltips. Exact
+artifact and profile scopes are in
+`reports/magic-circle/FINAL-CANDIDATE-QUALIFICATION.json`. These technical and
+native UI results remain separate from the owner's exact pixel approval.

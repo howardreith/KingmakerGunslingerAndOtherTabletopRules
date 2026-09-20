@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -236,6 +236,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "timeout-invalid";
             if (request.StartupTimeoutSeconds < 5 || request.StartupTimeoutSeconds > 600)
                 return "startup-timeout-invalid";
+            if (request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile && !request.ExitAfterCompletion)
+                return "magic-circle-profile-exit-required";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
@@ -282,6 +284,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.IsSummonSameTurnWorkingSaveScenario(
                     request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
+                RuntimeTestScenarioCatalog.IsMagicCirclePersistence(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistence ||
@@ -386,7 +391,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool treacherousEffect = nereidPersistence && request.Parameters?["qualificationEffect"]?.Type == JTokenType.String &&
                     (string)request.Parameters["qualificationEffect"] == "TreacherousEarth";
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
-                if (request.Parameters == null || request.Parameters.Count != (persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
+                bool circleBound = MagicCirclePreparationBinding.RequiresBinding(request.Scenario);
+                if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
+                    !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
+                    return "magic-circle-preparation-binding-required";
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
@@ -490,7 +499,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.LoadEntryTimeoutSeconds != 0 ||
                     request.FingerprintTimeoutSeconds != 0)
                     return "scenario-timeouts-not-allowed";
-                if (request.Parameters == null || request.Parameters.Count != 12 ||
+                if (request.Parameters == null || request.Parameters.Count != 13 ||
                     request.Parameters.Property("gunslinger") == null ||
                     request.Parameters["gunslinger"].Type != JTokenType.Boolean ||
                     request.Parameters.Property("acadamaeGraduate") == null ||
@@ -522,7 +531,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters["elementalRaces"].Type !=
                         JTokenType.Boolean ||
                     request.Parameters.Property("teleportationSpells") == null ||
-                    request.Parameters["teleportationSpells"].Type != JTokenType.Boolean)
+                    request.Parameters["teleportationSpells"].Type != JTokenType.Boolean ||
+                    request.Parameters.Property("magicCircleSpells") == null ||
+                    request.Parameters["magicCircleSpells"].Type != JTokenType.Boolean)
                     return "module-states-required";
             }
             else if (request.Scenario == RuntimeTestScenarioCatalog

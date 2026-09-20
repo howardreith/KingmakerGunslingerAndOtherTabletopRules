@@ -1,0 +1,916 @@
+{
+  "schemaVersion": 1,
+  "scope": "Evil persistence and owner-approved bearer-death checkpoint; full four-spell feature and final candidate acceptance remain incomplete",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+  "launch": "guarded Steam App ID 640820",
+  "save": "KMG_AUTOMATION_WORKING",
+  "protectedBaseline": "never written or selected",
+  "profile": "Installed optional Call of the Wild profile; optional-absent profiles remain pending. Runtime gameVersion reports UNKNOWN and is not promoted to a version claim.",
+  "nativeAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "checks": {
+    "repositoryValidation": "PASS",
+    "fullCleanDomainSuite": {
+      "passed": 1657,
+      "failed": 0,
+      "settingsCombinations": 8192
+    },
+    "cleanRelease": "PASS",
+    "packageGates": "PASS",
+    "focusedGuardedRequestTests": "PASS",
+    "buildLogs": [
+      "artifacts-magic-circle-persistence-build-second.log",
+      "artifacts-magic-circle-scene-travelers-build.log"
+    ]
+  },
+  "runs": [
+    {
+      "evidenceDirectoryName": "20260920T0045098565648Z-disposable-magic-circle-evil",
+      "status": "PASS",
+      "assertionCount": 29,
+      "artifact": {
+        "semanticVersion": "0.0.132",
+        "informationalVersion": "0.0.132-icon-art-overhaul",
+        "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+        "gitCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+        "moduleVersionId": "34c957dc-bf1a-4913-b7bb-b5adea52080d",
+        "loadedModuleSha256": "39cc87fc415b35132459dd574a2edc753b840f46d45d8844ef9e4f08369353ab"
+      },
+      "packageSha256": "ecd2b1124c98903b46f50531ea5137c5de5b13000e36e343258b077771390e5b",
+      "assertions": [
+        {
+          "name": "circle-native-slot-debit",
+          "status": "PASS",
+          "observed": "7->6",
+          "evidence": "native UnitUseAbility and execution process"
+        },
+        {
+          "name": "circle-original-caster-context",
+          "status": "PASS",
+          "observed": "carrier=37478d64-fee5-4c8b-8e5a-b6ac99f8ac32;area=37478d64-fee5-4c8b-8e5a-b6ac99f8ac32",
+          "evidence": "carrier and area native MechanicsContext; bearer owns the carrier"
+        },
+        {
+          "name": "circle-original-duration",
+          "status": "PASS",
+          "observed": "4800",
+          "evidence": "native ContextActionApplyBuff duration from original caster rank"
+        },
+        {
+          "name": "circle-initial-membership",
+          "status": "PASS",
+          "observed": "1/1",
+          "evidence": "native AbilityAreaEffectBuff entry and exact SourceAreaEffectId"
+        },
+        {
+          "name": "circle-non-ally-membership",
+          "status": "PASS",
+          "observed": "enemy=True",
+          "evidence": "request-local hostile faction; no changes to native factions"
+        },
+        {
+          "name": "circle-native-defensive-outcomes",
+          "status": "PASS",
+          "observed": "ac=10->12;will=0->2",
+          "evidence": "actual RuleAttackWithWeapon/RuleAttackRoll.TargetAC and RuleSavingThrow.StatValue"
+        },
+        {
+          "name": "circle-new-matching-control",
+          "status": "PASS",
+          "observed": "buff=False;canApply=False",
+          "evidence": "real native terminal-buff application, differing caster/bearer/recipient/controller alignments"
+        },
+        {
+          "name": "circle-wrong-alignment-control-positive",
+          "status": "PASS",
+          "observed": "buff=True",
+          "evidence": "same native delivery and recipient; only controller alignment differs"
+        },
+        {
+          "name": "circle-exit",
+          "status": "PASS",
+          "observed": "0",
+          "evidence": "native membership exit"
+        },
+        {
+          "name": "circle-unprotected-control-positive",
+          "status": "PASS",
+          "observed": "buff=True",
+          "evidence": "same evil controller after native area exit"
+        },
+        {
+          "name": "circle-existing-control-retained",
+          "status": "PASS",
+          "observed": "active=True",
+          "evidence": "entry neither removes nor suppresses previously applied domination"
+        },
+        {
+          "name": "circle-native-radius-boundary",
+          "status": "PASS",
+          "observed": "radius=3.048;corpulence=0.5;inside=True;outside=True",
+          "evidence": "ScriptZoneCylinder.Contains actual membership; line of effect remains native"
+        },
+        {
+          "name": "circle-follows-bearer",
+          "status": "PASS",
+          "observed": "followed=True",
+          "evidence": "caster stays stationary; native attached area moves with the touched bearer"
+        },
+        {
+          "name": "circle-same-caster-overlap",
+          "status": "PASS",
+          "observed": "2",
+          "evidence": "second native cast; Stack identities retain exact area ownership"
+        },
+        {
+          "name": "circle-overlap-typed-nonstacking",
+          "status": "PASS",
+          "observed": "ac=12;will=2",
+          "evidence": "native typed-bonus rules with two distinct area contributions"
+        },
+        {
+          "name": "circle-owned-cleanup",
+          "status": "PASS",
+          "observed": "1",
+          "evidence": "removing one carrier ends only its exact native area"
+        },
+        {
+          "name": "circle-independent-protection-survives",
+          "status": "PASS",
+          "observed": "circleCount=0;individual=True",
+          "evidence": "both carriers removed; no blueprint-wide recipient removal"
+        },
+        {
+          "name": "circle-recipient-native-dispel",
+          "status": "PASS",
+          "observed": "rules=0;contributions=2",
+          "evidence": "actual native targeted Dispel Magic cast; native IsNotDispelable gate; one spent slot"
+        },
+        {
+          "name": "circle-native-carrier-dispel-ownership",
+          "status": "PASS",
+          "observed": "attempts=1;successfulRules=1;carriers=1",
+          "evidence": "bounded real native Dispel Magic casts and unmodified RuleDispelMagic dice; exact buff/area ownership"
+        },
+        {
+          "name": "circle-native-area-dispel-carrier-cleanup",
+          "status": "PASS",
+          "observed": "attempts=3;successfulRules=1;carrierActive=False;areaEnded=True",
+          "evidence": "actual native point Dispel Magic; exact parent/area link; carrier cannot reconstruct a dispelled area"
+        },
+        {
+          "name": "circle-extend-native-context-and-cost",
+          "status": "PASS",
+          "observed": "seconds=9600;slots=5->4",
+          "evidence": "native metamagic AbilityData/UnitUseAbility, original caster and different area owner"
+        },
+        {
+          "name": "circle-faction-change-bearer",
+          "status": "PASS",
+          "observed": "changed=True;count=1",
+          "evidence": "native SwitchFactions(resetAttackFactions=true); no faction-sensitive coverage filter"
+        },
+        {
+          "name": "circle-faction-change-recipient",
+          "status": "PASS",
+          "observed": "changed=True;count=1",
+          "evidence": "native SwitchFactions(resetAttackFactions=true); no faction-sensitive coverage filter"
+        },
+        {
+          "name": "circle-unconscious-caster",
+          "status": "PASS",
+          "observed": "conscious=False;dead=False",
+          "evidence": "native UnitLifeController resolves negative HP; no class-aura shutdown component"
+        },
+        {
+          "name": "circle-unconscious-bearer",
+          "status": "PASS",
+          "observed": "conscious=False;dead=False",
+          "evidence": "native UnitLifeController resolves negative HP; no class-aura shutdown component"
+        },
+        {
+          "name": "circle-native-original-expiration",
+          "status": "PASS",
+          "observed": "before=True;after=True",
+          "evidence": "original extended EndTime; native BuffCollection.Tick and area exit/destruction; clock restored"
+        },
+        {
+          "name": "circle-original-caster-death",
+          "status": "PASS",
+          "observed": "damage=10130;dead=True;finallyDead=True;areaEnded=False",
+          "evidence": "actual native lethal damage and life controller; no source substitution or refreshed timer"
+        },
+        {
+          "name": "circle-bearer-death-owned-cleanup",
+          "status": "PASS",
+          "observed": "damage=10100;dead=True;finallyDead=False;ended=True;recipientCount=0",
+          "evidence": "owner-approved bearer-death adaptation; actual lethal damage, native death cleanup and AddAreaEffect deactivation"
+        },
+        {
+          "name": "circle-request-local-cleanup",
+          "status": "PASS",
+          "observed": "stage=complete;writeObserved=False",
+          "evidence": "guarded request owns only disposable actors and areas; no persistence operation"
+        }
+      ]
+    },
+    {
+      "evidenceDirectoryName": "20260920T0048441340119Z-working-save-magic-circle-prepare",
+      "status": "PASS",
+      "assertionCount": 8,
+      "artifact": {
+        "semanticVersion": "0.0.132",
+        "informationalVersion": "0.0.132-icon-art-overhaul",
+        "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+        "gitCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+        "moduleVersionId": "34c957dc-bf1a-4913-b7bb-b5adea52080d",
+        "loadedModuleSha256": "39cc87fc415b35132459dd574a2edc753b840f46d45d8844ef9e4f08369353ab"
+      },
+      "packageSha256": "ecd2b1124c98903b46f50531ea5137c5de5b13000e36e343258b077771390e5b",
+      "assertions": [
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        }
+      ],
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "writeCount": 1,
+      "originalDeadlines": [
+        {
+          "casterLevel": 8,
+          "extend": true,
+          "endTimeTicks": 559807160000
+        },
+        {
+          "casterLevel": 10,
+          "extend": false,
+          "endTimeTicks": 523807160000
+        }
+      ]
+    },
+    {
+      "evidenceDirectoryName": "20260920T0051497536388Z-working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertionCount": 8,
+      "artifact": {
+        "semanticVersion": "0.0.132",
+        "informationalVersion": "0.0.132-icon-art-overhaul",
+        "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+        "gitCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+        "moduleVersionId": "34c957dc-bf1a-4913-b7bb-b5adea52080d",
+        "loadedModuleSha256": "39cc87fc415b35132459dd574a2edc753b840f46d45d8844ef9e4f08369353ab"
+      },
+      "packageSha256": "ecd2b1124c98903b46f50531ea5137c5de5b13000e36e343258b077771390e5b",
+      "assertions": [
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        }
+      ],
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "writeCount": 0,
+      "originalDeadlines": [
+        {
+          "casterLevel": 8,
+          "extend": true,
+          "endTimeTicks": 559807160000
+        },
+        {
+          "casterLevel": 10,
+          "extend": false,
+          "endTimeTicks": 523807160000
+        }
+      ],
+      "crossLaunchComparison": {
+        "status": "PASS",
+        "exactFields": [
+          "area",
+          "actors",
+          "carriers",
+          "control"
+        ]
+      }
+    },
+    {
+      "evidenceDirectoryName": "20260920T0055107643658Z-working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertionCount": 8,
+      "artifact": {
+        "semanticVersion": "0.0.132",
+        "informationalVersion": "0.0.132-icon-art-overhaul",
+        "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+        "gitCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+        "moduleVersionId": "34c957dc-bf1a-4913-b7bb-b5adea52080d",
+        "loadedModuleSha256": "39cc87fc415b35132459dd574a2edc753b840f46d45d8844ef9e4f08369353ab"
+      },
+      "packageSha256": "ecd2b1124c98903b46f50531ea5137c5de5b13000e36e343258b077771390e5b",
+      "assertions": [
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        }
+      ],
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": false
+      },
+      "writeCount": 0,
+      "originalDeadlines": [
+        {
+          "casterLevel": 8,
+          "extend": true,
+          "endTimeTicks": 559807160000
+        },
+        {
+          "casterLevel": 10,
+          "extend": false,
+          "endTimeTicks": 523807160000
+        }
+      ],
+      "crossLaunchComparison": {
+        "status": "PASS",
+        "exactFields": [
+          "area",
+          "actors",
+          "carriers",
+          "control"
+        ]
+      }
+    },
+    {
+      "evidenceDirectoryName": "20260920T0057409246830Z-working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertionCount": 8,
+      "artifact": {
+        "semanticVersion": "0.0.132",
+        "informationalVersion": "0.0.132-icon-art-overhaul",
+        "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+        "gitCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+        "moduleVersionId": "34c957dc-bf1a-4913-b7bb-b5adea52080d",
+        "loadedModuleSha256": "39cc87fc415b35132459dd574a2edc753b840f46d45d8844ef9e4f08369353ab"
+      },
+      "packageSha256": "ecd2b1124c98903b46f50531ea5137c5de5b13000e36e343258b077771390e5b",
+      "assertions": [
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        }
+      ],
+      "settings": {
+        "magicCircleSpells": false,
+        "sharedControlEnhancement": true
+      },
+      "writeCount": 0,
+      "originalDeadlines": [
+        {
+          "casterLevel": 8,
+          "extend": true,
+          "endTimeTicks": 559807160000
+        },
+        {
+          "casterLevel": 10,
+          "extend": false,
+          "endTimeTicks": 523807160000
+        }
+      ],
+      "crossLaunchComparison": {
+        "status": "PASS",
+        "exactFields": [
+          "area",
+          "actors",
+          "carriers",
+          "control"
+        ]
+      }
+    },
+    {
+      "evidenceDirectoryName": "20260920T0100157371917Z-working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertionCount": 8,
+      "artifact": {
+        "semanticVersion": "0.0.132",
+        "informationalVersion": "0.0.132-icon-art-overhaul",
+        "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+        "gitCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+        "moduleVersionId": "34c957dc-bf1a-4913-b7bb-b5adea52080d",
+        "loadedModuleSha256": "39cc87fc415b35132459dd574a2edc753b840f46d45d8844ef9e4f08369353ab"
+      },
+      "packageSha256": "ecd2b1124c98903b46f50531ea5137c5de5b13000e36e343258b077771390e5b",
+      "assertions": [
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        }
+      ],
+      "settings": {
+        "magicCircleSpells": false,
+        "sharedControlEnhancement": false
+      },
+      "writeCount": 0,
+      "originalDeadlines": [
+        {
+          "casterLevel": 8,
+          "extend": true,
+          "endTimeTicks": 559807160000
+        },
+        {
+          "casterLevel": 10,
+          "extend": false,
+          "endTimeTicks": 523807160000
+        }
+      ],
+      "crossLaunchComparison": {
+        "status": "PASS",
+        "exactFields": [
+          "area",
+          "actors",
+          "carriers",
+          "control"
+        ]
+      }
+    },
+    {
+      "evidenceDirectoryName": "20260920T0128268467340Z-working-save-magic-circle-scene",
+      "status": "PASS",
+      "assertionCount": 10,
+      "artifact": {
+        "semanticVersion": "0.0.132",
+        "informationalVersion": "0.0.132-icon-art-overhaul",
+        "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+        "gitCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+        "moduleVersionId": "8bf65efe-0e10-481c-ade6-7535848a9e55",
+        "loadedModuleSha256": "9adabf53e7716e0c12f637b00b620c9ebaae74c8b2202b3e0c6e64603f6676b6"
+      },
+      "packageSha256": "3d9929696a78b32b56370cae74e2b4a6a242d5c4355995578f24ae96914efb41",
+      "assertions": [
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-scene-original-context-and-expiration",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-scene-native-unload-and-reload",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-scene-temporary-party-restored",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        }
+      ],
+      "settings": null,
+      "writeCount": 0,
+      "originalDeadlines": [
+        {
+          "casterLevel": 8,
+          "extend": true,
+          "endTimeTicks": 559807160000
+        },
+        {
+          "casterLevel": 10,
+          "extend": false,
+          "endTimeTicks": 523807160000
+        }
+      ],
+      "scene": {
+        "events": [
+          "unloaded:UI_Ingame_Scene:-435784",
+          "unloaded:JamandisMansion_Mechanics:-436224",
+          "unloaded:JamandisMansion_Mechanics_DLC2Mimics:-436226",
+          "unloaded:JamandisMansion_Static:-436228",
+          "unloaded:JamandisMansion_Audio_Day:-828498",
+          "unloaded:JamandisMansion_Light:-828514",
+          "scenes-loaded",
+          "activated",
+          "loading-complete"
+        ],
+        "savingThrows": 0,
+        "actualReload": true,
+        "areaExcludedFromSave": false,
+        "areaInstancesReconstructed": true,
+        "originalContextsEqual": true
+      },
+      "crossLaunchComparison": {
+        "status": "PASS",
+        "exactFields": [
+          "area",
+          "actors",
+          "carriers",
+          "control"
+        ]
+      }
+    },
+    {
+      "evidenceDirectoryName": "20260920T0131448650687Z-working-save-magic-circle-cleanup",
+      "status": "PASS",
+      "assertionCount": 9,
+      "artifact": {
+        "semanticVersion": "0.0.132",
+        "informationalVersion": "0.0.132-icon-art-overhaul",
+        "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+        "gitCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+        "moduleVersionId": "8bf65efe-0e10-481c-ade6-7535848a9e55",
+        "loadedModuleSha256": "9adabf53e7716e0c12f637b00b620c9ebaae74c8b2202b3e0c6e64603f6676b6"
+      },
+      "packageSha256": "3d9929696a78b32b56370cae74e2b4a6a242d5c4355995578f24ae96914efb41",
+      "assertions": [
+        {
+          "name": "circle-persistence-two-caster-area-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-two-caster-recipient-ownership",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-pre-existing-control-preserved",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-startup-publication-and-known-spell",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-native-defenses",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-shared-control-setting",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-hydrated-wrong-alignment-positive",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-exact-fixture-cleanup",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        }
+      ],
+      "settings": {
+        "magicCircleSpells": true,
+        "sharedControlEnhancement": true
+      },
+      "writeCount": 1,
+      "originalDeadlines": [
+        {
+          "casterLevel": 8,
+          "extend": true,
+          "endTimeTicks": 559807160000
+        },
+        {
+          "casterLevel": 10,
+          "extend": false,
+          "endTimeTicks": 523807160000
+        }
+      ],
+      "crossLaunchComparison": {
+        "status": "PASS",
+        "exactFields": [
+          "area",
+          "actors",
+          "carriers",
+          "control"
+        ]
+      }
+    },
+    {
+      "evidenceDirectoryName": "20260920T0134274210212Z-working-save-magic-circle-absent",
+      "status": "PASS",
+      "assertionCount": 2,
+      "artifact": {
+        "semanticVersion": "0.0.132",
+        "informationalVersion": "0.0.132-icon-art-overhaul",
+        "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+        "gitCommit": "24ff5f6b0e946f0b12131934689d5b952ac6e255",
+        "moduleVersionId": "8bf65efe-0e10-481c-ade6-7535848a9e55",
+        "loadedModuleSha256": "9adabf53e7716e0c12f637b00b620c9ebaae74c8b2202b3e0c6e64603f6676b6"
+      },
+      "packageSha256": "3d9929696a78b32b56370cae74e2b4a6a242d5c4355995578f24ae96914efb41",
+      "assertions": [
+        {
+          "name": "circle-persistence-cleanup-fresh-load-absence",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        },
+        {
+          "name": "circle-persistence-exact-save-boundary",
+          "status": "PASS",
+          "observed": "exact=True",
+          "evidence": "guarded native save/load or area lifecycle"
+        }
+      ],
+      "settings": null,
+      "writeCount": 0
+    }
+  ],
+  "diagnosticFailures": [
+    {
+      "run": "20260920T0104145050892Z-working-save-magic-circle-scene",
+      "status": "FAIL",
+      "reason": "Native reload discarded the four non-party DefaultPlayerCharacter fixture actors; no save write. Not accepted as circle cleanup."
+    },
+    {
+      "run": "20260920T0119458488133Z-working-save-magic-circle-scene",
+      "status": "FAIL",
+      "reason": "Narrow diagnostics confirmed zero fixture actors after actual scene replacement and zero saving throws. Corrected only fixture travel membership using the established Elemental convention; no gameplay lifecycle change."
+    }
+  ],
+  "artifactQualificationLimit": "The first artifact qualified bearer death and all four startup combinations. The later artifact changed only guarded scene-fixture setup/diagnostics and qualified scene reconstruction, cleanup and absence. This is checkpoint evidence, not a claim that every final requirement passed on one artifact.",
+  "remaining": "Other variants, real held touch, scroll/acquisition/specialist/optional adapters, remaining control/ownership/lifecycle cases, final profile matrix and native UI qualification remain required."
+}

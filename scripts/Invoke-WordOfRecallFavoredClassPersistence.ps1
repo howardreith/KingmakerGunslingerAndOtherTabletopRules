@@ -1,6 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [string]$ExpectedVersion = '0.0.133',
+    [string]$ExpectedVersion = '0.0.134',
     [Parameter(Mandatory = $true)][string]$DeploymentManifestPath,
     [Parameter(Mandatory = $true)][string]$PackagePath,
     [switch]$AllowDirtyGit
@@ -35,7 +35,7 @@ $previousTimes = if ($null -ne $previousBytes) {
 } else { $null }
 if ($null -ne $previousBytes) { [IO.File]::WriteAllBytes((Join-Path $transactionDirectory 'FeatureModules.previous.original.bin'), $previousBytes) }
 $settingsOriginal = [Text.Encoding]::UTF8.GetString($settingsBytes) | ConvertFrom-Json
-if ($settingsOriginal.schemaVersion -ne 11 -or $settingsOriginal.'teleportation-spells' -ne $true) {
+if ($settingsOriginal.schemaVersion -ne 12 -or $settingsOriginal.'teleportation-spells' -ne $true) {
     throw 'Favored Class persistence qualification requires the current valid settings with Teleportation enabled.'
 }
 [IO.File]::WriteAllBytes((Join-Path $transactionDirectory 'FeatureModules.original.json'), $settingsBytes)

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "scope": "Pre-commit integration qualification; final public binary requires its own sealing evidence.",
+  "featureBase": "cd5e20bf0f783419769375c6e7800fdb953d3eb8",
+  "integratedMaster": "d7fe028c8fa60f85b5f7c58a38207088f17c7546",
+  "version": "0.0.134",
+  "build": {
+    "commit": "cd5e20bf0f783419769375c6e7800fdb953d3eb8",
+    "sourceStateSha256": "30c536f196c938e2ebacc5f5c0ac51a66d7322b6d94f81885eb5dacd1ed00792",
+    "version": "0.0.134",
+    "packageSha256": "7a999959103822b4455a3ca0a8d6188631277cd16de21e52ba4891b8339c7261",
+    "dllSha256": "d4f2bb696f1fb5789e859fcabd4c95574c30090ff76e3f188d9fa96fe5894f1f",
+    "dllMvid": "723d6b40-96b1-4486-8437-96d2eb9248a2"
+  },
+  "repositoryValidation": "PASS",
+  "domainTests": {
+    "passed": 1678,
+    "failed": 0,
+    "configuration": "clean Release"
+  },
+  "releaseCompilation": "PASS",
+  "packageValidation": "PASS",
+  "scripts": {
+    "integrationRequestChecks": 10,
+    "retainedCircleSettingsCases": 12,
+    "genericLauncherLeaseAssertions": 39,
+    "wordOfRecallFinalizationChecks": 12,
+    "steamLaunchChecks": 47,
+    "runtimeResultChecks": 2,
+    "runtimeRunnerChecks": 26,
+    "exitResultRaceChecks": 21,
+    "compatibilityModuleChecks": 8227
+  },
+  "preExistingFailure": "Test-RuntimeScenarioPreflight.ps1: documented-scenarios-retained (same as accepted PR19 P2 baseline)",
+  "runs": [
+    {
+      "evidenceDirectory": "20260920T1917378613789Z-mod-load-smoke",
+      "scenario": "mod-load-smoke",
+      "status": "PASS",
+      "assertions": 3,
+      "failures": [],
+      "saveWritingApiObserved": null,
+      "loadedDllSha256": "55b16ef4c0b62e358d09c635d889b37efd2736791a1e7221aef92eeef10da824",
+      "mvid": "81d63703-e478-4101-81ab-70c26172122b",
+      "embeddedGit": "cd5e20bf0f783419769375c6e7800fdb953d3eb8",
+      "resultSha256": "59288f82c320cd2ea6b72a2cd6f964953eeed5161955f07b84cfe3d05f956128",
+      "identitySha256": "51f8d2729d8686c9dfba6f1b2693add53e8549c921569d56854e99a30335602f",
+      "pointDispelDiagnostics": []
+    },
+    {
+      "evidenceDirectory": "20260920T1920003125320Z-disposable-magic-circle-evil",
+      "scenario": "disposable-magic-circle-evil",
+      "status": "FAIL",
+      "assertions": 260,
+      "failures": [
+        {
+          "$id": "261",
+          "name": "circle-native-execution",
+          "expected": "no exception",
+          "observed": "lifecycle",
+          "status": "FAIL",
+          "evidence": "lifecycle: System.InvalidOperationException: Point dispel would intersect a foreign area; fixture refused.\r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.CircleDispel (Kingmaker.EntitySystem.Entities.UnitEntityData caster, Kingmaker.EntitySystem.Entities.UnitEntityData bearer, Kingmaker.EntitySystem.Entities.UnitEntityData recipient, Kingmaker.UnitLogic.Spellbook book, KingmakerGunslinger.Blueprints.MagicCircleBlueprintSet circle, System.Collections.Generic.List`1[T] actors, System.Collections.Generic.List`1[T] assertions, System.Collections.Generic.List`1[T] diagnostics) [0x0060e] in <81d63703e478410181ab70c26172122b>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.CircleLifecycle (Kingmaker.EntitySystem.Entities.UnitEntityData caster, Kingmaker.EntitySystem.Entities.UnitEntityData bearer, Kingmaker.EntitySystem.Entities.UnitEntityData recipient, Kingmaker.UnitLogic.Spellbook book, KingmakerGunslinger.Blueprints.MagicCircleBlueprintSet circle, System.Collections.Generic.List`1[T] actors, System.Collections.Generic.List`1[T] assertions, System.Collections.Generic.List`1[T] diagnostics) [0x0001a] in <81d63703e478410181ab70c26172122b>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.RunMagicCircleEvilNative () [0x01625] in <81d63703e478410181ab70c26172122b>:0 "
+        }
+      ],
+      "saveWritingApiObserved": false,
+      "loadedDllSha256": "55b16ef4c0b62e358d09c635d889b37efd2736791a1e7221aef92eeef10da824",
+      "mvid": "81d63703-e478-4101-81ab-70c26172122b",
+      "embeddedGit": "cd5e20bf0f783419769375c6e7800fdb953d3eb8",
+      "resultSha256": "b7f2db4a4e8e09f809458082d44ead46f5451a7656235bc8ac6f1b49e1eda011",
+      "identitySha256": "715f92b413267c7c77cf205904da8d3f5e4644d620e6d4d6dd8fe377bb2eb3ce",
+      "pointDispelDiagnostics": []
+    },
+    {
+      "evidenceDirectory": "20260920T1932288417075Z-disposable-magic-circle-evil",
+      "scenario": "disposable-magic-circle-evil",
+      "status": "PASS",
+      "assertions": 269,
+      "failures": [],
+      "saveWritingApiObserved": false,
+      "loadedDllSha256": "d4f2bb696f1fb5789e859fcabd4c95574c30090ff76e3f188d9fa96fe5894f1f",
+      "mvid": "723d6b40-96b1-4486-8437-96d2eb9248a2",
+      "embeddedGit": "cd5e20bf0f783419769375c6e7800fdb953d3eb8",
+      "resultSha256": "1c08b28748c21b90cad1b3b4658780fd0b2ae3591240b2c2b366d2076b02fd69",
+      "identitySha256": "4469fceb73238a6e94235400eb96ea2a18d4ff012a97cd66a7ecaedae808ebde",
+      "pointDispelDiagnostics": []
+    },
+    {
+      "evidenceDirectory": "20260920T1935201488000Z-disposable-teleportation-level-up",
+      "scenario": "disposable-teleportation-level-up",
+      "status": "PASS",
+      "assertions": 68,
+      "failures": [],
+      "saveWritingApiObserved": false,
+      "loadedDllSha256": "d4f2bb696f1fb5789e859fcabd4c95574c30090ff76e3f188d9fa96fe5894f1f",
+      "mvid": "723d6b40-96b1-4486-8437-96d2eb9248a2",
+      "embeddedGit": "cd5e20bf0f783419769375c6e7800fdb953d3eb8",
+      "resultSha256": "81725dce4ad9816e135fb070d45310d13d6d3e0f072b3f85108e5aeca4c19906",
+      "identitySha256": "704b44f7b92d31558cf3124e439bf0268bd381c48cb2f2d8d730dea18936935c",
+      "pointDispelDiagnostics": []
+    }
+  ],
+  "protectedAssetsAndAuraSource": "unchanged from accepted feature head",
+  "normalPlayBackup": "20260920T1917302636060Z",
+  "finalReleaseSealingPending": true
+}

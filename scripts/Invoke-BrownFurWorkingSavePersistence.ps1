@@ -42,6 +42,10 @@ if (-not $PSCmdlet.ShouldProcess($SaveName,
     return
 }
 
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Invoke-BrownFurWorkingSavePersistence.ps1'
+try {
+Assert-KmgNotRunning
 $ConfirmPreference = 'None'
 $originalExists = Test-Path -LiteralPath $settings -PathType Leaf
 $originalBytes = if ($originalExists) {
@@ -102,13 +106,13 @@ try {
         if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) {
             throw "Build-Local did not produce the expected package: $PackagePath"
         }
-        & $deploy -PackagePath $PackagePath -WhatIf -Confirm:$false
-        $DeploymentManifestPath = & $deploy -PackagePath $PackagePath `
+        & $deploy -RuntimeLease $sharedRuntimeScope.Lease -PackagePath $PackagePath -WhatIf -Confirm:$false
+        $DeploymentManifestPath = & $deploy -RuntimeLease $sharedRuntimeScope.Lease -PackagePath $PackagePath `
             -Confirm:$false -PassThru
     }
 
     if ($StartPhase -ceq 'prepare') {
-        & $invoke -Scenario 'working-save-brown-fur-prepare' `
+        & $invoke -Scenario 'working-save-brown-fur-prepare' -RuntimeLease $sharedRuntimeScope.Lease `
             -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
             -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
             -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach `
@@ -125,7 +129,7 @@ try {
     $verifyScenario = if ($VerifyBrownFurOff) {
         'working-save-brown-fur-off-verify-cleanup'
     } else { 'working-save-brown-fur-verify-cleanup' }
-    & $invoke -Scenario $verifyScenario `
+    & $invoke -Scenario $verifyScenario -RuntimeLease $sharedRuntimeScope.Lease `
         -ExpectedVersion $ExpectedVersion -SaveName $SaveName `
         -TimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
         -AllowDirtyGit:$AllowDirtyGit -Confirm:$ConfirmEach `
@@ -154,3 +158,5 @@ finally {
 }
 if ($failure -ne $null) { throw $failure }
 Write-Host "Brown-Fur two-launch working-save persistence PASS; package=$PackagePath; deployment=$DeploymentManifestPath"
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

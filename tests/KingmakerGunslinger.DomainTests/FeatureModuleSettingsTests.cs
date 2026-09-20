@@ -44,7 +44,7 @@ namespace KingmakerGunslinger.DomainTests
                     migrated.Active.UrbanBarbarian && migrated.Active.BodyguardFeats &&
                     migrated.Active.ProtectionFromAlignmentControlImmunity &&
                     migrated.Active.ElementalRaces &&
-                    migratedJson.Contains("\"schemaVersion\": 11") &&
+                    migratedJson.Contains("\"schemaVersion\": 12") &&
                     migratedJson.Contains("\"shield-other\": true") &&
                     migratedJson.Contains("\"expanded-summoning\": true") &&
                     migratedJson.Contains("\"elven-branched-spears\": true") &&
@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.DomainTests
                     migratedJson.Contains(
                         "\"protection-from-alignment-control-immunity\": true") &&
                     migratedJson.Contains("\"elemental-races\": true"),
-                    "Schema 1 must migrate atomically to schema 11 with Elemental Races ON.");
+                    "Schema 1 must migrate atomically to schema 12 with Elemental Races ON.");
                 File.WriteAllText(Path.Combine(path, FeatureModuleSettingsStore.FileName),
                     "{\"schemaVersion\":2,\"gunslinger\":true," +
                     "\"acadamae-graduate\":false,\"shield-other\":false}");
@@ -142,8 +142,8 @@ namespace KingmakerGunslinger.DomainTests
                         "schema " + schema + " absent elemental-races");
                     JObject migrated = JObject.Parse(
                         File.ReadAllText(settings));
-                    Assertions.Equal(11, (int)migrated["schemaVersion"],
-                        "Legacy settings did not migrate to schema 11.");
+                    Assertions.Equal(12, (int)migrated["schemaVersion"],
+                        "Legacy settings did not migrate to schema 12.");
                     Assertions.True(migrated["elemental-races"].Type ==
                         JTokenType.Boolean &&
                         (bool)migrated["elemental-races"],
@@ -161,7 +161,7 @@ namespace KingmakerGunslinger.DomainTests
             });
         }
 
-        internal static void FourThousandNinetySixCombinationsRoundTrip()
+        internal static void EightThousandOneHundredNinetyTwoCombinationsRoundTrip()
         {
             WithDirectory(path =>
             {
@@ -178,13 +178,14 @@ namespace KingmakerGunslinger.DomainTests
                     new[] { false, true })
                 foreach (bool elementalRaces in new[] { false, true })
                 foreach (bool teleportationSpells in new[] { false, true })
+                foreach (bool magicCircleSpells in new[] { false, true })
                 {
                     FeatureModuleSettingsState state = FeatureModuleSettingsStore.Load(path);
                     state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
                         elvenBranchedSpears, easternWeapons, brownFurTransmuter,
                         urbanBarbarian, bodyguardFeats,
                         protectionFromAlignmentControlImmunity,
-                        elementalRaces, teleportationSpells);
+                        elementalRaces, teleportationSpells, magicCircleSpells);
                     FeatureModuleSettingsStore.Save(state);
                     FeatureModuleSettingsState loaded = FeatureModuleSettingsStore.Load(path);
                     Assertions.True(loaded.Active.Gunslinger == gunslinger &&
@@ -199,7 +200,8 @@ namespace KingmakerGunslinger.DomainTests
                         loaded.Active.ProtectionFromAlignmentControlImmunity ==
                             protectionFromAlignmentControlImmunity &&
                         loaded.Active.ElementalRaces == elementalRaces &&
-                        loaded.Active.TeleportationSpells == teleportationSpells,
+                        loaded.Active.TeleportationSpells == teleportationSpells &&
+                        loaded.Active.MagicCircleSpells == magicCircleSpells,
                         "Module combination did not round-trip.");
                 }
             });
@@ -239,7 +241,7 @@ namespace KingmakerGunslinger.DomainTests
             WithDirectory(path =>
             {
                 string settings = Path.Combine(path, FeatureModuleSettingsStore.FileName);
-                File.WriteAllText(settings, "{\"schemaVersion\":12}");
+                File.WriteAllText(settings, "{\"schemaVersion\":13}");
                 bool rejected = false;
                 try { FeatureModuleSettingsStore.Load(path); }
                 catch (JsonException) { rejected = true; }
@@ -258,7 +260,7 @@ namespace KingmakerGunslinger.DomainTests
                     "\"eastern-weapons\"", "\"brown-fur-transmuter\"",
                     "\"urban-barbarian\"", "\"bodyguard-feats\"",
                     "\"protection-from-alignment-control-immunity\"",
-                    "\"elemental-races\"", "\"teleportation-spells\"" };
+                    "\"elemental-races\"", "\"teleportation-spells\"", "\"magic-circle-spells\"" };
                 int prior = -1;
                 foreach (string key in keys)
                 {
@@ -268,9 +270,9 @@ namespace KingmakerGunslinger.DomainTests
                     prior = current;
                 }
                 JObject roundTrip = JObject.Parse(json);
-                Assertions.True((int)roundTrip["schemaVersion"] == 11 &&
+                Assertions.True((int)roundTrip["schemaVersion"] == 12 &&
                     (bool)roundTrip["elemental-races"],
-                    "A schema-11 Elemental Races value did not round-trip exactly.");
+                    "A schema-12 Elemental Races value did not round-trip exactly.");
             });
         }
 
@@ -384,8 +386,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Protection from Alignment is absent from value semantics or formatting.");
             Assertions.True(!enabled.Equals(elementalOff) &&
                 enabled.GetHashCode() != elementalOff.GetHashCode() &&
-                enabled.GetHashCode() == 4095 &&
-                elementalOff.GetHashCode() == 3071 &&
+                enabled.GetHashCode() == 8191 &&
+                elementalOff.GetHashCode() == 7167 &&
                 enabled.ToString().Contains("elemental-races=True") &&
                 elementalOff.ToString().Contains("elemental-races=False"),
                 "Elemental Races is absent from value semantics, bit 1024, or formatting.");
@@ -393,7 +395,8 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void TeleportationMigrationAndIsolation()
         {
-            Assertions.Equal(12, FeatureModuleConfiguration.ModuleCount, "Module count");
+            MagicCircleMigrationAndIsolation();
+            Assertions.Equal(13, FeatureModuleConfiguration.ModuleCount, "Module count");
             Assertions.Equal("teleportation-spells", FeatureModuleConfiguration.TeleportationSpellsId, "Stable module ID");
             WithDirectory(path => {
                 string settings = Path.Combine(path, FeatureModuleSettingsStore.FileName);
@@ -412,7 +415,7 @@ namespace KingmakerGunslinger.DomainTests
                     Assertions.True(loaded.Active.Equals(reloaded.Active) &&
                         Convert.ToBase64String(prior) == Convert.ToBase64String(File.ReadAllBytes(settings)),
                         "Migration must be idempotent");
-                    Assertions.Equal(11, (int)JObject.Parse(File.ReadAllText(settings))["schemaVersion"], "Persisted schema");
+                    Assertions.Equal(12, (int)JObject.Parse(File.ReadAllText(settings))["schemaVersion"], "Persisted schema");
                 }
                 File.WriteAllText(settings, "{\"schemaVersion\":11,\"teleportation-spells\":\"false\"}");
                 var malformed = FeatureModuleSettingsStore.Load(path);
@@ -421,7 +424,7 @@ namespace KingmakerGunslinger.DomainTests
             });
             var on = FeatureModuleConfiguration.Defaults;
             var off = new FeatureModuleConfiguration(true, true, true, true, true, true, true, true, true, true, true, false);
-            Assertions.True(!on.Equals(off) && on.GetHashCode() == 4095 && off.GetHashCode() == 2047 &&
+            Assertions.True(!on.Equals(off) && on.GetHashCode() == 8191 && off.GetHashCode() == 6143 &&
                 on.ToString().Contains("teleportation-spells=True") && off.ToString().Contains("teleportation-spells=False"),
                 "Teleportation must participate in equality/hash/formatting");
             var state = new FeatureModuleSettingsState(off, "fixture", "fixture", false);
@@ -468,23 +471,23 @@ namespace KingmakerGunslinger.DomainTests
                 "Brown-Fur UMM state presentation is incomplete.");
         }
 
-        internal static void TwelveModuleMatrixCountsAreExact()
+        internal static void ThirteenModuleMatrixCountsAreExact()
         {
-            Assertions.Equal(4096, FeatureModuleMatrixPolicy.ExhaustiveCount(12),
-                "Twelve-module exhaustive count changed.");
-            Assertions.Equal(26, FeatureModuleMatrixPolicy.BoundaryCount(12),
-                "Twelve-module boundary count changed.");
+            Assertions.Equal(8192, FeatureModuleMatrixPolicy.ExhaustiveCount(13),
+                "Thirteen-module exhaustive count changed.");
+            Assertions.Equal(28, FeatureModuleMatrixPolicy.BoundaryCount(13),
+                "Thirteen-module boundary count changed.");
             int observedBoundary = 0;
-            for (int mask = 0; mask < FeatureModuleMatrixPolicy.ExhaustiveCount(12);
+            for (int mask = 0; mask < FeatureModuleMatrixPolicy.ExhaustiveCount(13);
                 mask++)
             {
                 int enabled = 0;
-                for (int bit = 0; bit < 12; bit++)
+                for (int bit = 0; bit < 13; bit++)
                     if ((mask & (1 << bit)) != 0) enabled++;
-                if (FeatureModuleMatrixPolicy.IsBoundaryState(12, enabled))
+                if (FeatureModuleMatrixPolicy.IsBoundaryState(13, enabled))
                     observedBoundary++;
             }
-            Assertions.Equal(FeatureModuleMatrixPolicy.BoundaryCount(12),
+            Assertions.Equal(FeatureModuleMatrixPolicy.BoundaryCount(13),
                 observedBoundary, "Generated boundary states are not 2 + 2N.");
         }
 
@@ -503,13 +506,14 @@ namespace KingmakerGunslinger.DomainTests
                 new[] { false, true })
             foreach (bool elementalRaces in new[] { false, true })
                 foreach (bool teleportationSpells in new[] { false, true })
+                foreach (bool magicCircleSpells in new[] { false, true })
             {
                 var plan = new FeatureModulePublicationPlan(
                     new FeatureModuleConfiguration(gunslinger, acadamae, shieldOther,
                         expandedSummoning, elvenBranchedSpears, easternWeapons,
                         brownFurTransmuter, urbanBarbarian, bodyguardFeats,
                         protectionFromAlignmentControlImmunity,
-                        elementalRaces, teleportationSpells));
+                        elementalRaces, teleportationSpells, magicCircleSpells));
                 Assertions.True(plan.GunslingerClass == gunslinger &&
                     plan.GunslingerFeats == gunslinger &&
                     plan.FirearmParameters == gunslinger &&
@@ -559,7 +563,7 @@ namespace KingmakerGunslinger.DomainTests
             string matrixContract = matrix + Environment.NewLine + catalog;
             foreach (string token in new[] {
                 "FeatureModuleCatalog.ps1", "[switch]$Boundary",
-                "Get-KmgFeatureModuleConfigurations", "schemaVersion = 11",
+                "Get-KmgFeatureModuleConfigurations", "schemaVersion = 12",
                 "BrownFurTransmuter", "brown-fur-transmuter",
                 "brownFurTransmuter", "UrbanBarbarian", "urban-barbarian",
                 "urbanBarbarian", "BodyguardFeats", "bodyguard-feats",
@@ -568,7 +572,7 @@ namespace KingmakerGunslinger.DomainTests
                 "protectionFromAlignmentControlImmunity",
                 "ElementalRaces", "elemental-races", "elementalRaces",
                 "TeleportationSpells", "teleportation-spells", "teleportationSpells",
-                "26 states for twelve modules",
+                "28 states for thirteen modules",
                 "2 + 2 * $moduleCount",
                 "$boundaryRequested = $Combination -ceq 'all'",
                 "Get-KmgFeatureModuleConfigurations -Boundary",
@@ -579,7 +583,7 @@ namespace KingmakerGunslinger.DomainTests
                     "The authoritative boundary runtime matrix contract is missing: " + token);
             string common = File.ReadAllText(Path.Combine(root, "scripts",
                 "RuntimeAutomation.Common.ps1"));
-            Assertions.True(common.Contains("$Parameters.Count -ne 12") &&
+            Assertions.True(common.Contains("$Parameters.Count -ne 13") &&
                 common.Contains("expandedSummoning = [bool]$Parameters.expandedSummoning") &&
                 common.Contains("elvenBranchedSpears = [bool]$Parameters.elvenBranchedSpears") &&
                 common.Contains("easternWeapons = [bool]$Parameters.easternWeapons") &&
@@ -589,7 +593,7 @@ namespace KingmakerGunslinger.DomainTests
                 common.Contains("[bool]$Parameters.protectionFromAlignmentControlImmunity") &&
                 common.Contains("elementalRaces = [bool]$Parameters.elementalRaces") &&
                 common.Contains("teleportationSpells = [bool]$Parameters.teleportationSpells"),
-                "The guarded request writer does not require all twelve module states.");
+                "The guarded request writer does not require all thirteen module states.");
             string runner = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.cs"));
@@ -611,7 +615,7 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRequest.cs")).Replace("\r\n", "\n");
             Assertions.True(request.Contains(
-                "request.Parameters.Count != 12") && request.Contains(
+                "request.Parameters.Count != 13") && request.Contains(
                     "Property(\"elvenBranchedSpears\")") && request.Contains(
                     "request.Parameters[\"elvenBranchedSpears\"]") && request.Contains(
                     "request.Parameters[\"easternWeapons\"]") && request.Contains(
@@ -625,7 +629,44 @@ namespace KingmakerGunslinger.DomainTests
                     request.Contains("[\"elementalRaces\"].Type") &&
                     request.Contains("Property(\"teleportationSpells\")") &&
                     request.Contains("[\"teleportationSpells\"].Type"),
-                "The in-mod request validator does not require all twelve module states.");
+                "The in-mod request validator does not require all thirteen module states.");
+        }
+
+        private static void MagicCircleMigrationAndIsolation()
+        {
+            Assertions.Equal("magic-circle-spells", FeatureModuleConfiguration.MagicCircleSpellsId,
+                "Magic Circle has one independent stable content setting");
+            WithDirectory(path => {
+                string settings = Path.Combine(path, FeatureModuleSettingsStore.FileName);
+                for (int schema = 0; schema <= 12; schema++)
+                foreach (bool? circle in new bool?[] { null, false, true })
+                foreach (bool control in new[] { false, true })
+                {
+                    JObject json = LegacySettings(schema, false);
+                    json[FeatureModuleConfiguration.ProtectionFromAlignmentControlImmunityId] = control;
+                    json[FeatureModuleConfiguration.TeleportationSpellsId] = false;
+                    if (circle.HasValue) json[FeatureModuleConfiguration.MagicCircleSpellsId] = circle.Value;
+                    File.WriteAllText(settings, json.ToString(Formatting.None));
+                    var loaded = FeatureModuleSettingsStore.Load(path);
+                    Assertions.Equal(circle ?? true, loaded.Active.MagicCircleSpells,
+                        "Missing Circle setting defaults ON; explicit choice survives migration");
+                    Assertions.Equal(control, loaded.Active.ProtectionFromAlignmentControlImmunity,
+                        "Circle never replaces the shared Protection authority");
+                    Assertions.True(!loaded.Active.Gunslinger && !loaded.Active.ShieldOther &&
+                        !loaded.Active.TeleportationSpells && !loaded.Active.ElementalRaces,
+                        "Migration preserves unrelated disabled modules");
+                    Assertions.Equal(loaded.Active.MagicCircleSpells, loaded.Pending.MagicCircleSpells,
+                        "Pending snapshot preserves explicit OFF");
+                    var plan = new FeatureModulePublicationPlan(loaded.Active);
+                    Assertions.Equal(loaded.Active.MagicCircleSpells, plan.MagicCircleSpellLists,
+                        "Content publication is independent of enhanced control");
+                    Assertions.Equal(control, plan.ProtectionFromAlignmentControlImmunity,
+                        "Shared control publication follows only its existing setting");
+                    FeatureModuleSettingsStore.Save(loaded);
+                    Assertions.True(loaded.Active.Equals(FeatureModuleSettingsStore.Load(path).Active),
+                        "Every startup combination survives save and reload");
+                }
+            });
         }
 
         private static JObject LegacySettings(int schema, bool? elementalRaces)

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "scope": "Native description and range-preview follow-up to NATIVE-UI-AND-LEARNING.json",
+  "run": "20260920T0711547506739Z-disposable-magic-circle-ui",
+  "status": "PASS",
+  "assertions": 62,
+  "screenshots": 42,
+  "packageSha256": "e1949cb24a00ac1d3e5c82243d389d4af856a9cbd9daf08e3f23f60202243283",
+  "dllSha256": "48253c7af0071fc64c93bd6da79b6cf8064a93ee782cd61beafee13353989e12",
+  "mvid": "8fa76cb6-d080-4d93-a609-25ef321c2c2b",
+  "runtimeResultSha256": "6dd39a0bd42041ce0ba2f671b441e42b1d825222a8fbb45b7e7e20452a15ddff",
+  "previewImages": [
+    {
+      "stage": "native-radius-Evil",
+      "file": "native-ui-010.png",
+      "sha256": "73fe4ca0ecb385fe735970db72788acbb466243d7df9c3506f1e8bcfa3890b37",
+      "nativeState": {
+        "diameter": 6.096,
+        "scaleX": 6.096,
+        "scaleZ": 6.096,
+        "viewport": {
+          "x": 0.5546865,
+          "y": 0.351386636,
+          "z": 36.2971764
+        },
+        "world": {
+          "x": 18.0957317,
+          "y": -6.00000238,
+          "z": -10.5417566
+        },
+        "spell": "ec63a7d4606a467f948ba03c19cfa42d"
+      },
+      "visualInspection": "Native terrain ring visible; native translucent red target-area and yellow touch-range indicators. The cursor is over ground, so red invalid-target presentation is expected; no cursor input was synthesized."
+    },
+    {
+      "stage": "native-radius-Good",
+      "file": "native-ui-016.png",
+      "sha256": "5090dd7685bc1730786f000de07004c7926f19bf7bc8f31c717eafd5d10ccda8",
+      "nativeState": {
+        "diameter": 6.096,
+        "scaleX": 6.096,
+        "scaleZ": 6.096,
+        "viewport": {
+          "x": 0.5546859,
+          "y": 0.351388931,
+          "z": 36.2979622
+        },
+        "world": {
+          "x": 18.0958233,
+          "y": -6.00000238,
+          "z": -10.5418644
+        },
+        "spell": "8d9b3a1b06c141518230c6dd8aae95ee"
+      },
+      "visualInspection": "Native terrain ring visible; native translucent red target-area and yellow touch-range indicators. The cursor is over ground, so red invalid-target presentation is expected; no cursor input was synthesized."
+    },
+    {
+      "stage": "native-radius-Law",
+      "file": "native-ui-022.png",
+      "sha256": "27e8fd6162bd84c5a05a714f0b14bc54a1b46e8b6439e02974cf1258d868737f",
+      "nativeState": {
+        "diameter": 6.096,
+        "scaleX": 6.096,
+        "scaleZ": 6.096,
+        "viewport": {
+          "x": 0.554688632,
+          "y": 0.351387858,
+          "z": 36.29873
+        },
+        "world": {
+          "x": 18.0960026,
+          "y": -6.00000238,
+          "z": -10.5419216
+        },
+        "spell": "d98b1dff1952451989943907617f5b0d"
+      },
+      "visualInspection": "Native terrain ring visible; native translucent red target-area and yellow touch-range indicators. The cursor is over ground, so red invalid-target presentation is expected; no cursor input was synthesized."
+    },
+    {
+      "stage": "native-radius-Chaos",
+      "file": "native-ui-028.png",
+      "sha256": "7e0632cdd80f35596c99513694036371e75480365640182e4ce0ab86475fbc5b",
+      "nativeState": {
+        "diameter": 6.096,
+        "scaleX": 6.096,
+        "scaleZ": 6.096,
+        "viewport": {
+          "x": 0.5546853,
+          "y": 0.3513883,
+          "z": 36.29951
+        },
+        "world": {
+          "x": 18.0960159,
+          "y": -6.00000238,
+          "z": -10.5419922
+        },
+        "spell": "cafa8a0681b84b00ad4f0e3ff6393c78"
+      },
+      "visualInspection": "Native terrain ring visible; native translucent red target-area and yellow touch-range indicators. The cursor is over ground, so red invalid-target presentation is expected; no cursor input was synthesized."
+    }
+  ],
+  "priorAttempt": {
+    "run": "20260920T0651409474613Z-disposable-magic-circle-ui",
+    "assertions": 61,
+    "status": "PASS structured; preview visual acceptance failed",
+    "reason": "Native radius had correct scale and active state, but cursor was over black map space. No visible terrain-ring claim was accepted."
+  },
+  "nativeUiClaims": [
+    "All twenty descriptions match active shared-control startup configuration.",
+    "Native player SetAbility activates installed AbilityAoERange; all four x/z decal scales are 6.096 metres, matching twice the native 3.048m area radius.",
+    "Only native CameraRig.ScrollToImmediately frames the owned caster; original target, position and local-map reference restore exactly.",
+    "All original learning, held touch, buff, scroll and exact cleanup assertions still pass.",
+    "Owner approval covers exact export pixels only and is unchanged. Visual source/art consumers passed the earlier native desktop checkpoint; this follow-up visually inspects all four newly added terrain previews."
+  ],
+  "limitations": [
+    "No permanent aura ring or custom UI is added. Preview is a native targeting aid, not proof of membership through walls. The separate native mechanics scenario proves geometry.",
+    "These checkpoints precede final optional-profile and persistence acceptance."
+  ]
+}

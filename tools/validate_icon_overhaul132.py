@@ -25,7 +25,25 @@ def validate(root: Path) -> None:
         if VERSION == "0.0.132" else PACKAGE)
     baseline.PACKAGE_SUFFIX = ("icon-art-overhaul"
         if VERSION == "0.0.132" else PACKAGE_SUFFIX)
-    baseline.validate(root)
+    # This feature branch appends exact save identities to the published ledger.
+    # The original prefix and every protected-art gate remain authoritative.
+    from validate_magic_circle import validate as validate_magic_circle
+    validate_magic_circle(root)
+    if VERSION == "0.0.132":
+        baseline.DETERMINISTIC_TEST_COUNT = 1660
+    baseline.MANIFEST_TOTAL = 1910
+    baseline.MANIFEST_ACTIVE = 1908
+    # The assigned Magic Circle feature fixes a proven shared source bug.
+    # Its gate validates the two exact edits and retains the original digest
+    # for every other Protection control/publication file.
+    import validate_midgame_firearms116 as protection_baseline
+    from validate_magic_circle import PROTECTION_SOURCE_SHA256
+    old_protection_digest = protection_baseline.PROTECTION_CONTROL_SOURCE_SHA256
+    try:
+        protection_baseline.PROTECTION_CONTROL_SOURCE_SHA256 = PROTECTION_SOURCE_SHA256
+        baseline.validate(root)
+    finally:
+        protection_baseline.PROTECTION_CONTROL_SOURCE_SHA256 = old_protection_digest
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))["iconOverhaul132"]
     expected = {

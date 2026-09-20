@@ -262,6 +262,10 @@ function Enter-KmgCompatibilityTransaction {
     $runRoot = Join-Path $stateRootFull $RunId
     if (Test-Path -LiteralPath $runRoot) { throw "Transaction run directory already exists: $runRoot" }
     $lockPath = Acquire-KmgCompatibilityLock $stateRootFull $RunId
+    try {
+        if ($PSBoundParameters.ContainsKey('KnownKingmakerProcessIds')) { Assert-KmgCompatibilityNoKingmakerProcess -KnownProcessIds $KnownKingmakerProcessIds }
+        else { Assert-KmgCompatibilityNoKingmakerProcess }
+    } catch { Remove-KmgCompatibilityOwnedLock $lockPath $RunId; throw }
     $mods = Join-Path $install 'Mods'
     $backup = Join-Path $install ("Mods.kmg-compat-$RunId.original")
     $quarantine = Join-Path $install ("Mods.kmg-compat-$RunId.staged")
@@ -347,6 +351,12 @@ function Restore-KmgCompatibilityTransaction {
         $parent = Split-Path -Parent $path
         if (-not $parent.Equals($install, [StringComparison]::OrdinalIgnoreCase)) { throw "Transaction path escaped install root: $path" }
     }
+    if ((Get-Content -LiteralPath $state.lockPath -Raw).Trim() -cne $RunId) { throw 'Compatibility restoration does not own the shared lock.' }
+    # Refuse before the first mutation while a runtime child holds this lease.
+    $restoreLease = [IO.File]::Open($state.lockPath, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+    try {
+    if ($PSBoundParameters.ContainsKey('KnownKingmakerProcessIds')) { Assert-KmgCompatibilityNoKingmakerProcess -KnownProcessIds $KnownKingmakerProcessIds }
+    else { Assert-KmgCompatibilityNoKingmakerProcess }
     $state.status = 'Restoring'; Write-KmgCompatibilityJsonAtomic $statePath $state
     try {
         if (Test-Path -LiteralPath $mods -PathType Container) {
@@ -385,6 +395,7 @@ function Restore-KmgCompatibilityTransaction {
         }
         $state.status = 'Restored'; $state.restorationVerified = $true; $state.restoredAtUtc = [DateTime]::UtcNow.ToString('o')
         Write-KmgCompatibilityJsonAtomic $statePath $state
+        $restoreLease.Dispose()
         Remove-KmgCompatibilityOwnedLock $state.lockPath $RunId
         return $state
     } catch {
@@ -392,4 +403,5 @@ function Restore-KmgCompatibilityTransaction {
         Write-KmgCompatibilityJsonAtomic $statePath $state
         throw "Compatibility restoration failed closed. $($state.recoveryInstructions) Cause: $($_.Exception.Message)"
     }
+    } finally { $restoreLease.Dispose() }
 }

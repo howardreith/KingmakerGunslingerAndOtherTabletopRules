@@ -71,6 +71,10 @@ param(
         'working-save-eastern-weapons-prepare',
         'working-save-eastern-weapons-verify-cleanup',
         'working-save-eastern-weapons-verify-absent',
+        'observe-magic-circle-native-contracts',
+        'disposable-magic-circle-profile',
+        'disposable-magic-circle-evil',
+        'disposable-magic-circle-ui',
         'observe-teleportation-native-contracts',
         'observe-teleportation-world-map',
         'disposable-teleportation-familiarity',
@@ -114,6 +118,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
+. (Join-Path (Split-Path $PSScriptRoot) 'RuntimeCoordination.Common.ps1')
 $expectedVersion = [string](Read-KmgCompatibilityJson (Join-Path $root 'Info.json')).Version
 if (-not $PackagePath) { $PackagePath = Get-KmgCompatibilityDefaultPackage $root }
 if ((Get-KmgCompatibilityPackageVersion $PackagePath) -cne $expectedVersion) {
@@ -188,16 +193,18 @@ if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
 }
 if ($moduleScenario) {
     $keys = @($Parameters.Keys | Sort-Object)
-    if ($keys.Count -ne 12 -or $keys[0] -cne 'acadamaeGraduate' -or
+    if ($keys.Count -ne 13 -or $keys[0] -cne 'acadamaeGraduate' -or
         $keys[1] -cne 'bodyguardFeats' -or
         $keys[2] -cne 'brownFurTransmuter' -or
         $keys[3] -cne 'easternWeapons' -or
         $keys[4] -cne 'elementalRaces' -or
         $keys[5] -cne 'elvenBranchedSpears' -or
         $keys[6] -cne 'expandedSummoning' -or $keys[7] -cne 'gunslinger' -or
-        $keys[8] -cne 'protectionFromAlignmentControlImmunity' -or
-        $keys[9] -cne 'shieldOther' -or $keys[10] -cne 'teleportationSpells' -or
-        $keys[11] -cne 'urbanBarbarian' -or
+        $keys[8] -cne 'magicCircleSpells' -or
+        $keys[9] -cne 'protectionFromAlignmentControlImmunity' -or
+        $keys[10] -cne 'shieldOther' -or $keys[11] -cne 'teleportationSpells' -or
+        $keys[12] -cne 'urbanBarbarian' -or
+        $Parameters.magicCircleSpells -isnot [bool] -or
         $Parameters.gunslinger -isnot [bool] -or
         $Parameters.acadamaeGraduate -isnot [bool] -or
         $Parameters.shieldOther -isnot [bool] -or
@@ -210,7 +217,7 @@ if ($moduleScenario) {
         $Parameters.protectionFromAlignmentControlImmunity -isnot [bool] -or
         $Parameters.elementalRaces -isnot [bool] -or
         $Parameters.teleportationSpells -isnot [bool]) {
-        throw 'Feature-module profile observation requires exactly twelve Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, and teleportationSpells.'
+        throw 'Feature-module profile observation requires exactly thirteen Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, and magicCircleSpells.'
     }
 } elseif ($assetAttributionScenario) {
     $keys = @($Parameters.Keys)
@@ -224,6 +231,7 @@ if ($moduleScenario) {
     throw 'Compatibility profile parameters are supported only for feature-module, module-state vendor, or asset-attribution observations.'
 }
 
+$compatRuntimeLease = $null
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
 try {
@@ -231,6 +239,7 @@ try {
         -ProfileId $ProfileId -RunId $runId -KingmakerInstallDir $KingmakerInstallDir `
         -StateRoot $StateRoot -ReferenceRoot $ReferenceRoot -PackagePath $PackagePath -Confirm:$false | Out-Host
     $entered = $true
+    $compatRuntimeLease = Open-KmgCompatibilityRuntimeLease $runId $StateRoot
     if ($CotwProgressionMode -cne 'unchanged') {
         if (-not (Test-Path -LiteralPath $cotwSettingsPath -PathType Leaf)) {
             throw "Staged CotW settings file is missing: $cotwSettingsPath"
@@ -303,7 +312,7 @@ try {
     if ($moduleScenario) {
         $settingsPath = Join-Path $KingmakerInstallDir `
             'Mods\KingmakerGunslinger\FeatureModules.json'
-        $settings = [ordered]@{ schemaVersion = 11
+        $settings = [ordered]@{ schemaVersion = 12
             gunslinger = [bool]$Parameters.gunslinger
             'acadamae-graduate' = [bool]$Parameters.acadamaeGraduate
             'shield-other' = [bool]$Parameters.shieldOther
@@ -316,7 +325,8 @@ try {
             'protection-from-alignment-control-immunity' =
                 [bool]$Parameters.protectionFromAlignmentControlImmunity
             'elemental-races' = [bool]$Parameters.elementalRaces
-            'teleportation-spells' = [bool]$Parameters.teleportationSpells }
+            'teleportation-spells' = [bool]$Parameters.teleportationSpells
+            'magic-circle-spells' = [bool]$Parameters.magicCircleSpells }
         $temporary = $settingsPath + '.kmg-profile.tmp'
         [IO.File]::WriteAllText($temporary,
             ($settings | ConvertTo-Json -Depth 4),
@@ -355,6 +365,7 @@ try {
         }
         if ($name -in @('musket-master-mechanics-and-starter',
             'working-save-smoke', 'disposable-brown-fur-native-cast',
+            'disposable-magic-circle-evil', 'disposable-magic-circle-ui',
             'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
             'disposable-teleportation-resources',
             'disposable-teleportation-context',
@@ -371,6 +382,7 @@ try {
             'summon-same-turn-rtwp-control')) {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
+        $arguments.RuntimeLease = $compatRuntimeLease
         & (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments
         $evidence = Get-ChildItem -LiteralPath 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' `
             -Directory | Where-Object { $_.LastWriteTimeUtc -ge $before.AddSeconds(-2) } |
@@ -412,6 +424,7 @@ catch {
     $primaryError = $_
 }
 finally {
+    if ($null -ne $compatRuntimeLease) { $compatRuntimeLease.Stream.Dispose() }
     if ($entered) {
         $deadline = [DateTime]::UtcNow.AddSeconds(60)
         while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and

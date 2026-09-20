@@ -74,6 +74,15 @@ namespace KingmakerGunslinger.Bootstrap
         internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }
         internal static TeleportationScrollVendorPublication TeleportationScrollVendors { get { return _teleportationScrollVendors; } }
         internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }
+        private static MagicCircleBlueprintSet[] _magicCircles;
+        private static MagicCircleSpellListPublication _magicCirclePublication;
+        internal static MagicCircleBlueprintSet[] MagicCircles { get { return _magicCircles; } }
+        internal static MagicCircleSpellListPublication MagicCirclePublication { get { return _magicCirclePublication; } }
+        private static Spells.MagicCircle.MagicCircleScrollVendors _magicCircleVendors;
+        internal static void DisableMagicCirclePublication()
+        {
+            _magicCirclePublication?.Rollback(); _magicCirclePublication = null;
+        }
         private static ShieldOtherBlueprintSet _shieldOther;
         private static ShieldOtherSpellListPublication _shieldOtherPublication;
         private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;
@@ -723,6 +732,7 @@ namespace KingmakerGunslinger.Bootstrap
             FirearmFeatCatalogPublication featPublication = null;
             AcadamaeFeatCatalogPublication acadamaeFeatPublication = null;
             BodyguardFeatCatalogPublication bodyguardFeatPublication = null;
+            var magicCircleRegistry = new BlueprintRegistry(library, manifest, context.Logger);
             var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);
             TeleportationSpellBlueprintSet teleportation = null;
             TeleportationSpellListPublication teleportationPublication = null;
@@ -807,6 +817,27 @@ namespace KingmakerGunslinger.Bootstrap
                         "publication.failed",
                         "Required protection/control blueprint publication failed and was rolled back; this feature is disabled for the process and other modules will continue.",
                         protectionPublicationException);
+                }
+
+                try
+                {
+                    bool circleControl = publicationPlan.ProtectionFromAlignmentControlImmunity &&
+                        protectionFromAlignmentPublication != null &&
+                        protectionFromAlignmentPublication.Summary.MissingRequiredAssets.Count == 0;
+                    _magicCircles = MagicCircleBlueprints.Register(library, magicCircleRegistry, circleControl);
+                    // Native shared-table reconciliation needs stable finite
+                    // stock definitions across ON/OFF loads, as for Teleportation.
+                    // Activation, learning and saved-stock migration stay gated.
+                    _magicCircleVendors = Spells.MagicCircle.MagicCircleScrollVendors.Publish(library, _magicCircles);
+                    if (publicationPlan.MagicCircleSpellLists) {
+                        _magicCirclePublication = MagicCircleSpellListPublication.Publish(library, _magicCircles);
+                    }
+                }
+                catch (Exception circleException)
+                {
+                    DisableMagicCirclePublication();
+                    context.Logger.Failure("magic-circle", "publication.failed",
+                        "Magic Circle publication failed; new casts are disabled.", circleException);
                 }
 
                 ShieldOtherBlueprintSet shieldOther =
@@ -1193,11 +1224,22 @@ namespace KingmakerGunslinger.Bootstrap
                     elementalFeats,
                     elementalFeatPublication,
                     martialPerformancePublication,
-                    registry.RegisteredCount + teleportationRegistry.RegisteredCount,
-                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount);
+                    registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount,
+                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount);
             }
             catch (Exception initializationException)
             {
+                try {
+                    DisableMagicCirclePublication();
+                    _magicCircleVendors?.Rollback(); _magicCircleVendors = null;
+                    _magicCircles = null;
+                    magicCircleRegistry.RollbackAll();
+                }
+                catch (Exception circleRollbackException) {
+                    context.Logger.Failure("magic-circle", "bootstrap.rollback-failed",
+                        "Core initialization failed; exact Magic Circle rollback was refused.", circleRollbackException);
+                }
+
                 try {
                     if (teleportationPublication != null) teleportationPublication.Rollback();
                     teleportationRegistry.RollbackAll();

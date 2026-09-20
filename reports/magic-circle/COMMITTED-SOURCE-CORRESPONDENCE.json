@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "sourceCommit": "1c3f5acca108408a81a0ea02d9551b2569b1c2b4",
+  "productInputCount": 1387,
+  "canonicalInputSha256": "f7c1f3484230cc119f741df035661575d0d1bda1efd644c8f698553345dbe5d5",
+  "rawInputSha256": "4079737f044b9363213a0fe60c7d14603ebb51faaaca2457a6110c9051fed7db",
+  "method": "Every frozen product path and Git-filtered blob matches git ls-tree -r at sourceCommit; worktree clean.",
+  "publication": {
+    "status": "PASS",
+    "helper": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "publishedSourceCommit": "1c3f5acca108408a81a0ea02d9551b2569b1c2b4",
+    "branch": "codex/magic-circle-alignment-spells",
+    "pr": 19,
+    "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/19",
+    "draft": true,
+    "state": "OPEN",
+    "base": "master",
+    "baseCommitAtVerification": "525625df443d0d2f575e5f984c0091a838889b63",
+    "mergeableAtVerification": "MERGEABLE",
+    "mergeStateAtVerification": "CLEAN",
+    "reportedStatusChecks": [],
+    "noMergeTagOrRelease": true
+  }
+}

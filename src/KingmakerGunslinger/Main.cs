@@ -107,6 +107,8 @@ namespace KingmakerGunslinger
                 Spells.Teleportation.TeleportExplorationGuardPatches.Install(context);
                 Spells.Teleportation.TeleportSpecialistSpellCachePatches.Install(context);
                 Spells.Teleportation.TeleportationScrollVendorMigration.Install(context);
+                Spells.MagicCircle.MagicCircleScrollVendorMigration.Install(context);
+                Spells.MagicCircle.MagicCircleSpecialistSpellCachePatches.Install(context);
                 Spells.Teleportation.WorldMapPointSpellActionPatches.Install(context);
                 Spells.Teleportation.WorldMapPointConsoleSpellActionPatches.Install(context);
                 EasternWeaponArmsArmorCompatibility.Install(context.Harmony);
@@ -142,6 +144,7 @@ namespace KingmakerGunslinger
 
                 ClassCatalogDiagnostics.AttachFirstUpdate(context);
                 ShieldOtherFinalLiveReconciler.AttachFirstUpdate(context);
+                Spells.MagicCircle.MagicCircleFinalLiveReconciler.AttachFirstUpdate(context);
                 Spells.Teleportation.TeleportationFinalLiveReconciler.AttachFirstUpdate(context);
                 EasternWeaponLatePublicationCoordinator.AttachFirstUpdate(
                     context);
