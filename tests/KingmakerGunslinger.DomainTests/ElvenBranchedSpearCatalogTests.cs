@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.132\"") &&
-                props.Contains("<KmgVersion>0.0.132</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.132-icon-art-overhaul</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.132\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.132\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.132-icon-art-overhaul\")"),
-                "Release and assembly identity are not transactionally pinned to the Firearm Maintenance candidate.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.134\"") &&
+                props.Contains("<KmgVersion>0.0.134</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.134-magic-circle-alignment-spells</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.134\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.134\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.134-magic-circle-alignment-spells\")"),
+                "Release and assembly identity are not transactionally pinned to the Magic Circle release.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-icon-art-overhaul.zip") &&
+                "$($info.Id)-$($info.Version)-magic-circle-alignment-spells.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Firearm Maintenance archive.");
-            Assertions.True(runtime.Contains("active version 0.0.132") &&
-                localBuild.Contains("active version 0.0.132") &&
-                localBuild.Contains("local-runtime\\0.0.132"),
+                "Package identity is not pinned to the Magic Circle archive.");
+            Assertions.True(runtime.Contains("active version 0.0.134") &&
+                localBuild.Contains("active version 0.0.134") &&
+                localBuild.Contains("local-runtime\\0.0.134"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

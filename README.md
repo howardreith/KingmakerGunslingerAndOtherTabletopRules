@@ -1,13 +1,22 @@
 # Kingmaker Gunslinger
 
-**0.0.132-icon-art-overhaul** is the owner-authorized full release for the
-complete icon art overhaul: 90 owner-approved images integrated across racial
-actions, feats, heritages, traits, selectors, buffs and scrolls, native P/M/B
-monograms preserved for the firearm feat roots, and guarded runtime
-qualification for the integrated consumers. All 0.0.129 gameplay (Recall,
-automatic scroll readers, Oracle behavior) is preserved unchanged. See the
-[release notes](docs/RELEASE-NOTES-0.0.130.md) and the [0.0.131 notes](docs/RELEASE-NOTES-0.0.131.md) and the [0.0.132 notes](docs/RELEASE-NOTES-0.0.132.md),
-[mission state](planning/ICON-OVERHAUL-STATE.md) and
+**0.0.134-magic-circle-alignment-spells** adds four level-3 Magic Circle spells
+with moving protection for everyone within ten feet, approved original artwork,
+and the existing shared Protection control-immunity setting. It retains the
+Word of Recall Favored Class repair and hardens guarded runtime ownership and
+persistence. See [release notes](docs/RELEASE-NOTES-0.0.134.md) for rules, settings,
+acquisition and qualification limits.
+
+The previous **0.0.133-word-of-recall-favored-class** is the owner-authorized full
+release: the canonical Word of Recall can be picked and learned through
+the genuine Favored Class Oracle bonus-spell route for Aasimar and Human
+Oracles, protected by a transactional pick-gate publication, complete
+target validation and a guarded save-file persistence qualification, with
+ordinary Oracle learning, scroll eligibility and the native Cleric 6 /
+Druid 8 publication unchanged. See the
+[0.0.133 notes](docs/RELEASE-NOTES-0.0.133.md), the
+[0.0.132 notes](docs/RELEASE-NOTES-0.0.132.md), the
+[mission state](Z-WORD-OF-RECALL-FAVORED-CLASS-STATE.md) and the
 [review packet](reports/icon-overhaul/NATIVE-UI-REVIEW-PACKET.md).
 
 The previous **0.0.129-recall-and-smart-scrolls** release qualified Word of

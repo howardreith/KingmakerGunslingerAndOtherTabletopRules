@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -292,6 +292,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistence ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistenceGamepad ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                request.Scenario == FcbPersistenceIdentity.Scenario ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
@@ -371,6 +372,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool persistence = request.Scenario == TeleportPersistenceIdentity.Scenario;
                 if (persistence && (!request.ExitAfterCompletion || !TeleportPersistencePlan.ValidParameters(request.Parameters)))
                     return "persistence-plan-parameters-invalid";
+                bool fcbPersistence = request.Scenario == FcbPersistenceIdentity.Scenario;
+                if (fcbPersistence && (!request.ExitAfterCompletion || !FcbPersistencePlan.ValidParameters(request.Parameters)))
+                    return "fcb-persistence-plan-parameters-invalid";
                 bool deferredMarkers = request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers;
                 if (deferredMarkers && (request.Parameters?["fixtureCase"]?.Type != JTokenType.String ||
                     ((string)request.Parameters["fixtureCase"] != "public117" && (string)request.Parameters["fixtureCase"] != "deferred117") ||
@@ -391,7 +395,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
@@ -432,7 +436,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ? RuntimeTestScenarioCatalog
                                 .InHarmsWayHumanReproSaveName
                         : ManualSaveLoadObservation.WorkingSave;
-                if (!persistence && !string.Equals(saveName, expectedSaveName,
+                if (!persistence && !fcbPersistence && !string.Equals(saveName, expectedSaveName,
                     StringComparison.Ordinal))
                     return string.Equals(saveName, ManualSaveLoadObservation.BaselineSave,
                         StringComparison.Ordinal)

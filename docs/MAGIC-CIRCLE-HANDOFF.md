@@ -1,5 +1,10 @@
 # Magic Circle review candidate
 
+The owner subsequently accepted PR #19 and explicitly authorized integration,
+merge, push and release 0.0.134. See [the release notes](RELEASE-NOTES-0.0.134.md)
+and [release acceptance](../planning/MAGIC-CIRCLE-RELEASE-134.md). The earlier
+review-only authorization and artifact identities below are historical.
+
 The PR 19 review follow-up supersedes the candidate and source identities below.
 See [the current hardening handoff](../reports/magic-circle/PR19-REVIEW-HARDENING.md)
 for R1/R2/C1, current native evidence, package hashes and restoration. The remainder
