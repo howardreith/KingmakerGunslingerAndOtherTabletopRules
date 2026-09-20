@@ -263,6 +263,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Select(value => (string)value).OrderBy(value => value,
                             StringComparer.Ordinal).ToArray();
                     int allowanceFourteenth = (int)plan.Expected["allowanceFourteenth"];
+                    string[] expectedBefore = ((JArray)plan.Expected["knownSixthBefore"])
+                        .Select(value => (string)value).ToArray();
                     FcbPersistenceAssert("reload-unit-present",
                         "the fresh-process reload restores the exact saved Favored Class Oracle",
                         unit.CharacterName == (string)plan.Expected["unitName"] &&
@@ -294,12 +296,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 grantFacts[0].Param.Value.Blueprint == null ? null :
                                     grantFacts[0].Param.Value.Blueprint.AssetGuid,
                             partialRank = partialFacts.Length == 0 ? 0 : partialFacts[0].Rank });
+                    string[] expectedNew = expectedKnown.Except(expectedBefore,
+                        StringComparer.Ordinal).ToArray();
                     FcbPersistenceAssert("reload-award-accounting",
-                        "the reloaded known spells equal the prepare snapshot: installed allowance plus exactly the one favored-class grant",
+                        "the reloaded known spells equal the prepare snapshot: installed at-level allowance plus exactly the one favored-class grant",
                         knownSixth.OrderBy(value => value, StringComparer.Ordinal)
                             .SequenceEqual(expectedKnown, StringComparer.Ordinal) &&
-                            knownSixth.Length == allowanceFourteenth + 1,
-                        new { knownSixth, expectedKnown, allowanceFourteenth });
+                            expectedNew.Length == allowanceFourteenth + 1 &&
+                            expectedNew.Count(value => string.Equals(value, recallId,
+                                StringComparison.Ordinal)) == 1,
+                        new { knownSixth, expectedKnown, expectedNew, allowanceFourteenth });
                     // Strategic cast from the reloaded save: exactly one
                     // sixth-level spontaneous slot, no scroll substitution.
                     game.LoadArea(game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint,
