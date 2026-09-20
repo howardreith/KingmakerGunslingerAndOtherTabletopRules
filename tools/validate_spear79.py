@@ -22,8 +22,9 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("icon-art-overhaul"
-        if VERSION in ("0.0.130", "0.0.131", "0.0.132") else "recall-and-smart-scrolls"
+    effective_suffix = ("word-of-recall-favored-class"
+        if VERSION == "0.0.133" else "icon-art-overhaul"
+        if VERSION in ("0.0.130", "0.0.131", "0.0.132", "0.0.133") else "recall-and-smart-scrolls"
         if VERSION == "0.0.129" else "firearm-postrelease-hotfix"
         if VERSION == "0.0.128" else "firearm-maintenance"
         if VERSION == "0.0.127" else "word-of-recall-oracle"

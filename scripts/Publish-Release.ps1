@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$KingmakerInstallDir,
 
@@ -6,7 +6,7 @@ param(
 
     [string]$ReferenceBundleDir,
 
-    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.132.md',
+    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.133.md',
 
     [string]$ReleaseBranch = 'master',
 
