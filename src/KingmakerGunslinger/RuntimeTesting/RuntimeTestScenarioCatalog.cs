@@ -500,11 +500,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-working-save-selection-load-action";
         internal const string ObserveWorkingSaveReceiverBoundAction =
             "observe-working-save-receiver-bound-action";
+        internal const string ObserveWordOfRecallFavoredClass =
+            "observe-word-of-recall-favored-class";
 
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
             {
                 ModLoadSmoke,
+                ObserveWordOfRecallFavoredClass,
                 DisposableFirearmBreakInterruption,
                 ObserveKmgCompatibilityAssetAttribution,
                 ObserveFeatureModuleSettings,

@@ -1050,6 +1050,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveWordOfRecallFavoredClass)
+                {
+                    Complete(WordOfRecallFavoredClassObserver.Run(
+                        _context, _request));
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveBrownFurCotwAbsentIsolation)
                 {
                     Complete(BrownFurCotwContractObserver.RunAbsent(

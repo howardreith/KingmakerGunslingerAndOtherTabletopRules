@@ -110,6 +110,7 @@ $expected = @(
     'working-save-urban-barbarian-prepare',
     'working-save-urban-barbarian-off-verify-cleanup',
     'observe-brown-fur-cotw-contract',
+    'observe-word-of-recall-favored-class',
     'observe-brown-fur-cotw-absent-isolation',
     'observe-brown-fur-transmutation-inventory',
     'observe-brown-fur-cast-engine-contract',
