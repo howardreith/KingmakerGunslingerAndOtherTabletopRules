@@ -23,6 +23,14 @@ namespace KingmakerGunslinger.Blueprints
             var publication = new MagicCircleSpellListPublication();
             try
             {
+                publication.ReconcileNative(library, circles);
+                return publication;
+            }
+            catch { publication.Rollback(); throw; }
+        }
+
+        internal void ReconcileNative(LibraryScriptableObject library, MagicCircleBlueprintSet[] circles)
+        {
                 foreach (string id in new[] {
                     "8443ce803d2d31347897a3d85cc32f53", // Cleric
                     "ba0401fdeb4062f40a7aa95b6f07fe89", // Sorcerer/Wizard shared list
@@ -33,11 +41,20 @@ namespace KingmakerGunslinger.Blueprints
                     var list = BlueprintLibraryLookup.RequireExact<BlueprintSpellList>(library, id, "Magic Circle class list");
                     foreach (var circle in circles)
                         if (id != "9f5be2f7ea64fe04eb40878347b147bc" || circle.Alignment == "Evil" || circle.Alignment == "Chaos")
-                            publication.Add(list, circle.Spell);
+                            Add(list, circle.Spell);
                 }
-                return publication;
-            }
-            catch { publication.Rollback(); throw; }
+                // Native filtered lists are materialized arrays, not live views
+                // over WizardSpellList. Respect their actual school filters.
+                var wizard = BlueprintLibraryLookup.RequireExact<BlueprintSpellList>(library, "ba0401fdeb4062f40a7aa95b6f07fe89", "Wizard source list");
+                foreach (string id in new[] { "c7a55e475659a944f9229d89c4dc3a8e", "280dd5167ccafe449a33fbe93c7a875e",
+                    "17c0bfe5b7c8ac3449da655cdcaed4e7", "f3a8f76b1d030a64084355ba3eea369a", "c311aed33deb7a346ab715baef4a0572",
+                    "5c08349132cb6b04181797f58ccf38ae", "ac551db78c1baa34eb8edca088be13cb", "5b154578f228c174bac546b6c29886ce" }) {
+                    var filtered = BlueprintLibraryLookup.RequireExact<BlueprintSpellList>(library, id, "native Wizard specialist/Thassilonian list");
+                    if (!ReferenceEquals(filtered.FilteredList, wizard)) throw new InvalidOperationException("Native school list ownership changed: " + id);
+                    bool match = filtered.FilterSchool == SpellSchool.Abjuration || filtered.FilterSchool2 == SpellSchool.Abjuration;
+                    if (filtered.ExcludeFilterSchool ? !match : match)
+                        foreach (var circle in circles) Add(filtered, circle.Spell);
+                }
         }
 
         internal void Add(BlueprintSpellList list, BlueprintAbility spell)
@@ -58,7 +75,8 @@ namespace KingmakerGunslinger.Blueprints
                 component.SpellLevel = 3;
                 spell.ComponentsArray = spell.ComponentsArray.Concat(new BlueprintComponent[] { component }).ToArray();
             }
-            _insertions.Add(new Insertion { Level = level, Spell = spell, AddedEntry = inserted, Component = component });
+            if (inserted || component != null)
+                _insertions.Add(new Insertion { Level = level, Spell = spell, AddedEntry = inserted, Component = component });
             if (inserted) level.Spells = ShieldOtherSpellListMergePolicy.Merge(level.Spells, spell, value => value.AssetGuid);
             FilteredCache.SetValue(level, null);
         }

@@ -92,7 +92,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Scroll consumer is not dedicated original art: " + symbol);
             }
             foreach (string token in new[] {
-                "\"paintedConceptCount\": 92", "\"paintedConsumerCount\": 137",
+                "\"paintedConceptCount\": 96", "\"paintedConsumerCount\": 157",
                 "scroll-of-teleport", "scroll-of-greater-teleport",
                 "scroll-of-word-of-recall" })
                 Assertions.True(catalog.Contains(token),
@@ -113,7 +113,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Guide lacks the corrected native-shell contract token: " + token);
             // Package count carries the three composed icons.
             string package = File.ReadAllText(Path.Combine(root, "scripts", "package.ps1"));
-            Assertions.True(package.Contains("{ 227 } else { 225 }"),
+            Assertions.True(package.Contains("{ 231 } else { 229 }"),
                 "Package file count does not include the three composed scroll icons.");
             // The runtime identity check must verify the composed item icon,
             // not the retired spell-matches-item equality.

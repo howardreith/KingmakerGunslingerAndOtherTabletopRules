@@ -277,6 +277,11 @@ those hunks before enforcing the original icon-mapping baseline. It still
 rejects changes to protected assignments and unlisted source changes. The
 registry hash advances only for the exact appended identities, with the original
 published prefix checked separately. This does not change an approved art family
-or grant visual approval to any Magic Circle candidate. The current Evil trial
-uses provisional Protection imagery while original circle paintings await
-export, assignment, native-UI inspection and owner approval.
+or grant visual approval by itself. The owner approved all four exact 128px
+Magic Circle exports in `reports/magic-circle/OWNER-DECISIONS.json`. Each alignment
+painting is intentionally shared across its spell, held touch, timed carrier,
+proximity recipient and scroll item; native frames, casting effects and sounds
+remain native. The four area identities have no independent icon. These new
+scroll items use the approved alignment paintings directly; the three protected
+strategic scroll composites retain their existing assignments. Native UI
+acceptance for Magic Circle is still pending and separate from pixel approval.

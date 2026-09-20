@@ -236,6 +236,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     recipient.Buffs.Enumerable.Contains(individual) && Math.Abs(individual.TimeLeft.TotalSeconds - 300) < 2,
                     "both carriers removed; no blueprint-wide recipient removal"));
                 if (individual != null) individual.Remove();
+                stage = "four-variant-native-control";
+                CircleFamily(caster, bearer, recipient, controller, book, actors, assertions, diagnostics);
                 stage = "lifecycle";
                 CircleLifecycle(caster, bearer, recipient, book, circle, actors, assertions, diagnostics);
                 stage = "complete";
@@ -339,7 +341,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!data.CanTarget(target) || !data.IsAvailable || !command.CanStart)
                 throw new InvalidOperationException("Native circle cast unavailable.");
             command.IgnoreCooldown(TimeSpan.Zero);
+            var queuedBefore = caster.Commands.Queue.ToArray();
             caster.Commands.Run(command); command.Start();
+            CircleCompleteCommand(command, evidence);
+            var sticky = data.Blueprint.GetComponent<Kingmaker.UnitLogic.Abilities.Components.AbilityEffectStickyTouch>();
+            if (sticky != null && !ReferenceEquals(target.Unit, caster)) {
+                // Observe the actual command created by native StickyTouch.
+                // Never fabricate a replacement delivery or directly run effects.
+                var held = caster.Commands.Queue.Except(queuedBefore).OfType<UnitUseAbility>()
+                    .Single(value => ReferenceEquals(value.Spell.Blueprint, sticky.TouchDeliveryAbility));
+                caster.Commands.RemoveFinishedAndUpdateQueue();
+                if (!caster.Commands.Raw.Contains(held) || !held.CanStart)
+                    throw new InvalidOperationException("Native held touch did not enter the command slot.");
+                held.Start(); CircleCompleteCommand(held, evidence);
+                caster.Commands.RemoveFinishedAndUpdateQueue();
+                evidence.Add("native-held-touch:ability=" + held.Spell.Blueprint.AssetGuid + ";result=" + held.Result);
+            }
+        }
+
+        private static void CircleCompleteCommand(UnitUseAbility command, List<string> evidence)
+        {
             if (command.Animation != null) command.Animation.IsActed = true;
             command.Tick();
             if (command.ExecutionProcess == null) throw new InvalidOperationException("No native spell execution process.");

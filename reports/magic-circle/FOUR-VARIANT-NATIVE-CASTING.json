@@ -1,0 +1,511 @@
+{
+  "schemaVersion": 1,
+  "scope": "Four-variant casting/control checkpoint, not complete feature or release acceptance",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "a94b87e48b7b84bff03d82da0a70153c7944925f",
+  "sourceStateSha256": "9172faff7db58fda7e00e75bec766e65d70b79d7043de55a4922d3cdf5e5d2ad",
+  "sourceWasDirty": true,
+  "artifact": {
+    "semanticVersion": "0.0.132",
+    "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+    "informationalVersion": "0.0.132-icon-art-overhaul",
+    "gitCommit": "a94b87e48b7b84bff03d82da0a70153c7944925f",
+    "moduleVersionId": "ce28b809-e4a0-4aea-b9bf-55cab9b78cb0",
+    "loadedModuleSha256": "39d03c89454052f6612f652f8a610ad5f8811a222f4cb378533287fe1d8d894e"
+  },
+  "packageSha256": "39ef41c1d840f86ddf6faa11abd8cb158418e32e1b277522a0f6a128a2b4fda7",
+  "nativeAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "checks": {
+    "repositoryValidation": "PASS",
+    "fullCleanDomainSuite": {
+      "passed": 1657,
+      "failed": 0,
+      "settingsCombinations": 8192
+    },
+    "cleanRelease": "PASS",
+    "strictPackage": "PASS",
+    "iconCorruptionTests": 24,
+    "focusedGuardedRequestTests": "PASS",
+    "buildLog": "artifacts-magic-circle-family-context-build.log"
+  },
+  "native": {
+    "evidenceDirectoryName": "20260920T0221538969494Z-disposable-magic-circle-evil",
+    "runId": "20260920T0221539236917Z-55a96aaa41604400b953efd37e640d6c",
+    "status": "PASS",
+    "assertionCount": 61,
+    "runtimeResultSha256": "cc25ed321d325856e6673e29d1649df8b9165524f639d7039385cd8caa92f277",
+    "steamAppId": 640820,
+    "save": "KMG_AUTOMATION_WORKING",
+    "baselineUntouched": true,
+    "profile": "Installed Call of the Wild profile; exact verified optional book/list rows logged at first update. Optional-absent qualification pending.",
+    "gameVersion": "UNKNOWN",
+    "saveWriteObserved": false,
+    "settings": "All thirteen content settings ON; shared Protection enhancement ON",
+    "assertions": [
+      {
+        "name": "circle-native-slot-debit",
+        "expected": "one level-3 slot",
+        "observed": "7->6",
+        "status": "PASS",
+        "evidence": "native UnitUseAbility and execution process"
+      },
+      {
+        "name": "circle-original-caster-context",
+        "expected": "caster retained on another bearer",
+        "observed": "carrier=b2df3540-e909-4f4f-a3a7-759429b94702;area=b2df3540-e909-4f4f-a3a7-759429b94702",
+        "status": "PASS",
+        "evidence": "carrier and area native MechanicsContext; bearer owns the carrier"
+      },
+      {
+        "name": "circle-original-duration",
+        "expected": "4800",
+        "observed": "4800",
+        "status": "PASS",
+        "evidence": "native ContextActionApplyBuff duration from original caster rank"
+      },
+      {
+        "name": "circle-initial-membership",
+        "expected": "bearer and nearby recipient each own one area contribution",
+        "observed": "1/1",
+        "status": "PASS",
+        "evidence": "native AbilityAreaEffectBuff entry and exact SourceAreaEffectId"
+      },
+      {
+        "name": "circle-non-ally-membership",
+        "expected": "covered enemy",
+        "observed": "enemy=True",
+        "status": "PASS",
+        "evidence": "request-local hostile faction; no changes to native factions"
+      },
+      {
+        "name": "circle-native-defensive-outcomes",
+        "expected": "+2 matching AC and save; no nonmatching bonus",
+        "observed": "ac=10->12;will=0->2",
+        "status": "PASS",
+        "evidence": "actual RuleAttackWithWeapon/RuleAttackRoll.TargetAC and RuleSavingThrow.StatValue"
+      },
+      {
+        "name": "circle-new-matching-control",
+        "expected": "RuleApplyBuff veto",
+        "observed": "buff=False;canApply=False",
+        "status": "PASS",
+        "evidence": "real native terminal-buff application, differing caster/bearer/recipient/controller alignments"
+      },
+      {
+        "name": "circle-wrong-alignment-control-positive",
+        "expected": "native control buff applies",
+        "observed": "buff=True",
+        "status": "PASS",
+        "evidence": "same native delivery and recipient; only controller alignment differs"
+      },
+      {
+        "name": "circle-exit",
+        "expected": "zero circle contributions",
+        "observed": "0",
+        "status": "PASS",
+        "evidence": "native membership exit"
+      },
+      {
+        "name": "circle-unprotected-control-positive",
+        "expected": "native control buff applies",
+        "observed": "buff=True",
+        "status": "PASS",
+        "evidence": "same evil controller after native area exit"
+      },
+      {
+        "name": "circle-existing-control-retained",
+        "expected": "same control instance remains after entry",
+        "observed": "active=True",
+        "status": "PASS",
+        "evidence": "entry neither removes nor suppresses previously applied domination"
+      },
+      {
+        "name": "circle-native-radius-boundary",
+        "expected": "3.048m radius plus native corpulence; inside/outside",
+        "observed": "radius=3.048;corpulence=0.5;inside=True;outside=True",
+        "status": "PASS",
+        "evidence": "ScriptZoneCylinder.Contains actual membership; line of effect remains native"
+      },
+      {
+        "name": "circle-follows-bearer",
+        "expected": "area follows bearer and re-entry retains original expiry",
+        "observed": "followed=True",
+        "status": "PASS",
+        "evidence": "caster stays stationary; native attached area moves with the touched bearer"
+      },
+      {
+        "name": "circle-same-caster-overlap",
+        "expected": "two distinct source-owned contributions",
+        "observed": "2",
+        "status": "PASS",
+        "evidence": "second native cast; Stack identities retain exact area ownership"
+      },
+      {
+        "name": "circle-overlap-typed-nonstacking",
+        "expected": "same +2 defenses with two circles",
+        "observed": "ac=12;will=2",
+        "status": "PASS",
+        "evidence": "native typed-bonus rules with two distinct area contributions"
+      },
+      {
+        "name": "circle-owned-cleanup",
+        "expected": "only second circle remains",
+        "observed": "1",
+        "status": "PASS",
+        "evidence": "removing one carrier ends only its exact native area"
+      },
+      {
+        "name": "circle-independent-protection-survives",
+        "expected": "standalone Protection retains exact instance and expiry",
+        "observed": "circleCount=0;individual=True",
+        "status": "PASS",
+        "evidence": "both carriers removed; no blueprint-wide recipient removal"
+      },
+      {
+        "name": "circle-family-evil-unprotected-positive",
+        "expected": "native control spell really applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "native Sorcerer casting, failed Will save and RuleApplyBuff; no forced dice or substituted actions"
+      },
+      {
+        "name": "circle-family-evil-native-cast-and-defenses",
+        "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+        "observed": "source=b2df3540-e909-4f4f-a3a7-759429b94702",
+        "status": "PASS",
+        "evidence": "actual independently learned spell, native held-touch command, attached area, attack and saving-throw rules"
+      },
+      {
+        "name": "circle-family-evil-matching-control-cast",
+        "expected": "RuleApplyBuff veto",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "actual incoming Dominate Person cast after a failed native saving throw; controller alignment differs from protected actors"
+      },
+      {
+        "name": "circle-family-evil-nonmatching-ChaoticGood",
+        "expected": "native control applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "same bounded spell path; only incoming controller alignment changes"
+      },
+      {
+        "name": "circle-family-evil-nonmatching-TrueNeutral",
+        "expected": "native control applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "same bounded spell path; only incoming controller alignment changes"
+      },
+      {
+        "name": "circle-family-evil-terminal-only",
+        "expected": "blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "real terminal buff delivery with no source ability; shared catalog terminal classification"
+      },
+      {
+        "name": "circle-family-evil-unresolved-source",
+        "expected": "fail-open",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True",
+        "status": "PASS",
+        "evidence": "native pending terminal context after permanent controller removal; no source ability or trusted metadata; native faction logic cannot find the removed controller"
+      },
+      {
+        "name": "circle-family-evil-exit-cleanup",
+        "expected": "only this cast removed",
+        "observed": "recipient=0",
+        "status": "PASS",
+        "evidence": "native carrier-owned area and derivative ownership"
+      },
+      {
+        "name": "circle-family-good-unprotected-positive",
+        "expected": "native control spell really applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "native Sorcerer casting, failed Will save and RuleApplyBuff; no forced dice or substituted actions"
+      },
+      {
+        "name": "circle-family-good-native-cast-and-defenses",
+        "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+        "observed": "source=b2df3540-e909-4f4f-a3a7-759429b94702",
+        "status": "PASS",
+        "evidence": "actual independently learned spell, native held-touch command, attached area, attack and saving-throw rules"
+      },
+      {
+        "name": "circle-family-good-matching-control-cast",
+        "expected": "RuleApplyBuff veto",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "actual incoming Dominate Person cast after a failed native saving throw; controller alignment differs from protected actors"
+      },
+      {
+        "name": "circle-family-good-nonmatching-LawfulEvil",
+        "expected": "native control applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "same bounded spell path; only incoming controller alignment changes"
+      },
+      {
+        "name": "circle-family-good-nonmatching-TrueNeutral",
+        "expected": "native control applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "same bounded spell path; only incoming controller alignment changes"
+      },
+      {
+        "name": "circle-family-good-terminal-only",
+        "expected": "blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "real terminal buff delivery with no source ability; shared catalog terminal classification"
+      },
+      {
+        "name": "circle-family-good-unresolved-source",
+        "expected": "fail-open",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True",
+        "status": "PASS",
+        "evidence": "native pending terminal context after permanent controller removal; no source ability or trusted metadata; native faction logic cannot find the removed controller"
+      },
+      {
+        "name": "circle-family-good-exit-cleanup",
+        "expected": "only this cast removed",
+        "observed": "recipient=0",
+        "status": "PASS",
+        "evidence": "native carrier-owned area and derivative ownership"
+      },
+      {
+        "name": "circle-family-law-unprotected-positive",
+        "expected": "native control spell really applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "native Sorcerer casting, failed Will save and RuleApplyBuff; no forced dice or substituted actions"
+      },
+      {
+        "name": "circle-family-law-native-cast-and-defenses",
+        "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+        "observed": "source=b2df3540-e909-4f4f-a3a7-759429b94702",
+        "status": "PASS",
+        "evidence": "actual independently learned spell, native held-touch command, attached area, attack and saving-throw rules"
+      },
+      {
+        "name": "circle-family-law-matching-control-cast",
+        "expected": "RuleApplyBuff veto",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "actual incoming Dominate Person cast after a failed native saving throw; controller alignment differs from protected actors"
+      },
+      {
+        "name": "circle-family-law-nonmatching-ChaoticEvil",
+        "expected": "native control applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "same bounded spell path; only incoming controller alignment changes"
+      },
+      {
+        "name": "circle-family-law-nonmatching-TrueNeutral",
+        "expected": "native control applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "same bounded spell path; only incoming controller alignment changes"
+      },
+      {
+        "name": "circle-family-law-terminal-only",
+        "expected": "blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "real terminal buff delivery with no source ability; shared catalog terminal classification"
+      },
+      {
+        "name": "circle-family-law-unresolved-source",
+        "expected": "fail-open",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True",
+        "status": "PASS",
+        "evidence": "native pending terminal context after permanent controller removal; no source ability or trusted metadata; native faction logic cannot find the removed controller"
+      },
+      {
+        "name": "circle-family-law-exit-cleanup",
+        "expected": "only this cast removed",
+        "observed": "recipient=0",
+        "status": "PASS",
+        "evidence": "native carrier-owned area and derivative ownership"
+      },
+      {
+        "name": "circle-family-chaos-unprotected-positive",
+        "expected": "native control spell really applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "native Sorcerer casting, failed Will save and RuleApplyBuff; no forced dice or substituted actions"
+      },
+      {
+        "name": "circle-family-chaos-native-cast-and-defenses",
+        "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+        "observed": "source=b2df3540-e909-4f4f-a3a7-759429b94702",
+        "status": "PASS",
+        "evidence": "actual independently learned spell, native held-touch command, attached area, attack and saving-throw rules"
+      },
+      {
+        "name": "circle-family-chaos-matching-control-cast",
+        "expected": "RuleApplyBuff veto",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "actual incoming Dominate Person cast after a failed native saving throw; controller alignment differs from protected actors"
+      },
+      {
+        "name": "circle-family-chaos-nonmatching-LawfulGood",
+        "expected": "native control applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "same bounded spell path; only incoming controller alignment changes"
+      },
+      {
+        "name": "circle-family-chaos-nonmatching-TrueNeutral",
+        "expected": "native control applies",
+        "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "same bounded spell path; only incoming controller alignment changes"
+      },
+      {
+        "name": "circle-family-chaos-terminal-only",
+        "expected": "blocked",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+        "status": "PASS",
+        "evidence": "real terminal buff delivery with no source ability; shared catalog terminal classification"
+      },
+      {
+        "name": "circle-family-chaos-unresolved-source",
+        "expected": "fail-open",
+        "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True",
+        "status": "PASS",
+        "evidence": "native pending terminal context after permanent controller removal; no source ability or trusted metadata; native faction logic cannot find the removed controller"
+      },
+      {
+        "name": "circle-family-chaos-exit-cleanup",
+        "expected": "only this cast removed",
+        "observed": "recipient=0",
+        "status": "PASS",
+        "evidence": "native carrier-owned area and derivative ownership"
+      },
+      {
+        "name": "circle-recipient-native-dispel",
+        "expected": "derivative protection is not an independent spell",
+        "observed": "rules=0;contributions=2",
+        "status": "PASS",
+        "evidence": "actual native targeted Dispel Magic cast; native IsNotDispelable gate; one spent slot"
+      },
+      {
+        "name": "circle-native-carrier-dispel-ownership",
+        "expected": "one dispelled carrier, one surviving source",
+        "observed": "attempts=1;successfulRules=1;carriers=1",
+        "status": "PASS",
+        "evidence": "bounded real native Dispel Magic casts and unmodified RuleDispelMagic dice; exact buff/area ownership"
+      },
+      {
+        "name": "circle-native-area-dispel-carrier-cleanup",
+        "expected": "successful area dispel ends its original carrier",
+        "observed": "attempts=2;successfulRules=1;carrierActive=False;areaEnded=True",
+        "status": "PASS",
+        "evidence": "actual native point Dispel Magic; exact parent/area link; carrier cannot reconstruct a dispelled area"
+      },
+      {
+        "name": "circle-extend-native-context-and-cost",
+        "expected": "double original duration; one level-4 slot",
+        "observed": "seconds=9600;slots=5->4",
+        "status": "PASS",
+        "evidence": "native metamagic AbilityData/UnitUseAbility, original caster and different area owner"
+      },
+      {
+        "name": "circle-faction-change-bearer",
+        "expected": "same contribution and carrier deadline after native faction change",
+        "observed": "changed=True;count=1",
+        "status": "PASS",
+        "evidence": "native SwitchFactions(resetAttackFactions=true); no faction-sensitive coverage filter"
+      },
+      {
+        "name": "circle-faction-change-recipient",
+        "expected": "same contribution and carrier deadline after native faction change",
+        "observed": "changed=True;count=1",
+        "status": "PASS",
+        "evidence": "native SwitchFactions(resetAttackFactions=true); no faction-sensitive coverage filter"
+      },
+      {
+        "name": "circle-unconscious-caster",
+        "expected": "unconscious living creature; same carrier deadline and protection",
+        "observed": "conscious=False;dead=False",
+        "status": "PASS",
+        "evidence": "native UnitLifeController resolves negative HP; no class-aura shutdown component"
+      },
+      {
+        "name": "circle-unconscious-bearer",
+        "expected": "unconscious living creature; same carrier deadline and protection",
+        "observed": "conscious=False;dead=False",
+        "status": "PASS",
+        "evidence": "native UnitLifeController resolves negative HP; no class-aura shutdown component"
+      },
+      {
+        "name": "circle-native-original-expiration",
+        "expected": "present before deadline; absent after deadline",
+        "observed": "before=True;after=True",
+        "status": "PASS",
+        "evidence": "original extended EndTime; native BuffCollection.Tick and area exit/destruction; clock restored"
+      },
+      {
+        "name": "circle-original-caster-death",
+        "expected": "dead original caster; living bearer retains original timed circle",
+        "observed": "damage=10130;dead=True;finallyDead=True;areaEnded=False",
+        "status": "PASS",
+        "evidence": "actual native lethal damage and life controller; no source substitution or refreshed timer"
+      },
+      {
+        "name": "circle-bearer-death-owned-cleanup",
+        "expected": "bearer death ends its exact carrier, area and contributions",
+        "observed": "damage=10100;dead=True;finallyDead=False;ended=True;recipientCount=0",
+        "status": "PASS",
+        "evidence": "owner-approved bearer-death adaptation; actual lethal damage, native death cleanup and AddAreaEffect deactivation"
+      },
+      {
+        "name": "circle-request-local-cleanup",
+        "expected": "original units/party/areas and no save write",
+        "observed": "stage=complete;writeObserved=False",
+        "status": "PASS",
+        "evidence": "guarded request owns only disposable actors and areas; no persistence operation"
+      }
+    ],
+    "incomingControlObservations": [
+      "incoming-control:LawfulEvil:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:LawfulEvil:failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+      "incoming-control:ChaoticGood:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:TrueNeutral:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:ChaoticGood:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:ChaoticGood:failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+      "incoming-control:LawfulEvil:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:TrueNeutral:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:LawfulNeutral:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:LawfulNeutral:failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+      "incoming-control:ChaoticEvil:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:TrueNeutral:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:ChaoticNeutral:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:ChaoticNeutral:failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False",
+      "incoming-control:LawfulGood:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False",
+      "incoming-control:TrueNeutral:failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False"
+    ]
+  },
+  "artwork": {
+    "exports": "Four exact paintings approved by owner; see OWNER-DECISIONS.json",
+    "technicalMapping": "Four concepts; twenty visible consumers; four nonvisual areas",
+    "nativeUi": "PENDING; no framebuffer or offscreen facsimile is presented as UI qualification"
+  },
+  "knownLimits": [
+    "Unresolved source PASS concerns a genuinely orphaned pending context at native TriggerRuleApplyBuff. Public AddBuff cloning can replace a missing caster with its owner; that upstream path is the next explicit regression test, not covered by this PASS.",
+    "Scroll casting/scribing, native vendor purchase memory, learning/preparation, specialist cache, foreign rollback and optional-absent profiles remain pending.",
+    "Stronger equipment, mixed-alignment overlaps, pet/summon qualification, hostile-touch cases and broader permanent-removal/non-party transition coverage remain pending.",
+    "Earlier Evil persistence/death settings matrix remains separate artifact evidence. Final integrated persistence and module-OFF stock tests are pending.",
+    "This archive is the exact pre-commit tested package. A later rebuild is not qualified by this record."
+  ],
+  "previousDiagnosticFailure": {
+    "evidenceDirectoryName": "20260920T0208080145644Z-disposable-magic-circle-evil",
+    "status": "FAIL",
+    "reason": "Fixture passed a null associated blueprint to MechanicsContext, which native Kingmaker rejects. First 23 assertions and exact cleanup passed; no save writes.",
+    "packageSha256": "97e28a9f2303b357bbc0d637eedc069705c660a739b28a2c48e498288cf38e89",
+    "dllSha256": "29de574790282ca518a6eb4c2c146a5b06468b9c21de9cc5c7692a473ec902eb"
+  }
+}

@@ -348,3 +348,80 @@ compilation, strict package/icon gates and focused request tests pass. Current
 checkpoint archive: `artifacts/magic-circle/checkpoints/persistence/`. The family
 remains incomplete, and none of this evidence grants native UI acceptance or
 uninstall safety.
+
+## Checkpoint D: four-variant integration in progress
+
+The shared factory now registers four independent spells, held-touch deliveries,
+carrier/area/recipient identities and scrolls (24 stable identities). Native
+standard-action sticky touch retains the original caster; no selector bundles
+known spells. Opposing descriptors use Kingmaker enum names Good/Evil/Chaos/Law.
+PF1 recheck confirms no spell resistance for the implemented defensive effect;
+the spell-resistance exception belongs to the deferred summoned-creature barrier.
+A hostile touched bearer receives the native harmless Will-negates check, while
+entry and re-entry cause no saves. Native radius preview is ten feet.
+
+Native Cleric, Wizard/Sorcerer and Inquisitor lists receive all four at level 3;
+Paladin receives Evil/Chaos. Actual filtered specialist lists retain their school
+restrictions. Narrow verified CotW primary-book and Abjuration-implement adapters
+cover entitled installed classes; Medium is absent in the inspected installation.
+No Witch, Bard, Bloodrager, Magus or Psychic entitlement is invented. Publication
+reconciles after optional mods load and rolls back only owned entries/components.
+
+Scrolls retain native level-3/CL5, 375-gp, single-charge economics and independent
+CopyScroll associations. Existing supplier selection and finite five-scroll batch
+conventions are reused, with a separate minimal serialized grant marker so saved
+merchants do not depend on Teleportation being enabled. Native acquisition,
+scribing, consumption and saved-marker qualification are still pending.
+
+All four exact owner-approved exports are installed through the existing icon
+cache/consumer mapping pipeline. Each alignment intentionally shares its painting
+across the spell, held touch, carrier, recipient and scroll; area blueprints have
+no icon surface. Native UI acceptance remains pending. Catalog validation and
+all 24 icon-corruption tests pass; protected assignments remain unchanged.
+
+The installed-reference compile passes. Full validation/build/package and native
+qualification of this integrated candidate are next. The expanded guarded fixture
+requires actual Dominate Person casts, observed failed Will saves and real
+RuleApplyBuff results for protected and equivalent positive controls for all four
+alignments. No native acceptance of the new integrated artifact is claimed yet.
+
+Integrated family candidate 1: clean full 1,657-test/Release/package PASS.
+Native `20260920T0208080145644Z-disposable-magic-circle-evil` FAIL after 23
+passing assertions. Native held touch, original caster/CL/duration, one slot,
+coverage, existing-control preservation and Evil actual Dominate Person
+positive/matching/wrong/neutral outcomes passed. The fixture then incorrectly
+constructed MechanicsContext with a null blueprint, before testing the other
+three variants. No save writes; exact original world cleanup passed.
+Package `97e28a9f2303b357bbc0d637eedc069705c660a739b28a2c48e498288cf38e89`;
+DLL `29de574790282ca518a6eb4c2c146a5b06468b9c21de9cc5c7692a473ec902eb`;
+MVID `dcb582a4-2ede-4a7c-8f5e-ac22aeb5ca4b`.
+
+Installed IL requires a nonnull associated blueprint. Terminal-only contexts
+now use the actual native terminal buff blueprint. A null constructor caster
+also substitutes the owner, so that is not an unresolved-source test. The new
+fixture assembles a pending native terminal context while its request-local
+controller exists, permanently removes that controller, verifies MaybeCaster
+is null, then invokes the native pending RuleApplyBuff boundary. It changes no
+rule result, catalog metadata or shared source policy. The recipient temporarily
+has the matching alignment to catch any accidental target substitution.
+
+Vendor definitions now follow the existing Teleportation hydration contract:
+finite stock definitions remain registered OFF, preserving native purchase
+memory. New casting, learning and saved-vendor migration remain gated; native
+OFF/ON stock persistence qualification remains pending. Existing inert scrolls
+and known spells may remain visible OFF, as in the established module model.
+
+Four-variant casting checkpoint: `20260920T0221538969494Z-disposable-magic-circle-evil`
+PASS 61/61 on the exact context-corrected candidate. See
+[FOUR-VARIANT-NATIVE-CASTING.json](../reports/magic-circle/FOUR-VARIANT-NATIVE-CASTING.json)
+for identities, assertions and limits. Native held touch, one slot, typed defenses,
+actual Dominate Person failed-save/blocked and positive controls, terminal-only
+classification and prior Evil lifecycle checks pass. The unresolved-source test
+currently reaches the native pending RuleApplyBuff boundary after permanent
+controller removal. Public AddBuff performs another CloneFor that can replace a
+missing caster with the owner; explicitly test that upstream path next. This
+checkpoint does not accept every unresolved-source delivery or acquisition/UI.
+
+Full clean 1,657-test suite, all 8,192 settings combinations, Release and strict
+package pass. Exact archive: `artifacts/magic-circle/checkpoints/family-context/`.
+Acquisition, final persistence/profile combinations and native UI remain open.

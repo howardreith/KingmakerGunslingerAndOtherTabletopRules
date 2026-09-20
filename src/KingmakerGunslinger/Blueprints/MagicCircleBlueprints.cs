@@ -6,6 +6,10 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.ElementsSystem;
+using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Designers.EventConditionActionSystem.Actions;
+using Kingmaker.Blueprints.Items.Equipment;
+using Kingmaker.UnitLogic.Mechanics.Conditions;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.ResourceLinks;
@@ -32,10 +36,12 @@ namespace KingmakerGunslinger.Blueprints
     internal sealed class MagicCircleBlueprintSet
     {
         internal MagicCircleBlueprintSet(string alignment, BlueprintAbility spell,
-            BlueprintBuff carrier, BlueprintAbilityAreaEffect area, BlueprintBuff recipient)
-        { Alignment = alignment; Spell = spell; Carrier = carrier; Area = area; Recipient = recipient; }
+            BlueprintAbility delivery, BlueprintBuff carrier, BlueprintAbilityAreaEffect area, BlueprintBuff recipient, BlueprintItemEquipmentUsable scroll)
+        { Alignment = alignment; Spell = spell; Delivery = delivery; Carrier = carrier; Area = area; Recipient = recipient; Scroll = scroll; }
         internal string Alignment { get; private set; }
         internal BlueprintAbility Spell { get; private set; }
+        internal BlueprintAbility Delivery { get; private set; }
+        internal BlueprintItemEquipmentUsable Scroll { get; private set; }
         internal BlueprintBuff Carrier { get; private set; }
         internal BlueprintAbilityAreaEffect Area { get; private set; }
         internal BlueprintBuff Recipient { get; private set; }
@@ -44,16 +50,27 @@ namespace KingmakerGunslinger.Blueprints
     internal static class MagicCircleBlueprints
     {
         internal const string Prefix = "KMG.Spells.MagicCircle.";
-        internal const int IdentityCount = 4;
+        internal const int IdentityCount = 24;
 
-        // Start with the Evil vertical slice. The other alignments use this same
-        // construction contract after native ownership/casting qualification.
+        private sealed class Definition
+        {
+            internal readonly string Name, NativeSpell, NativeBuff;
+            internal readonly AlignmentComponent Against;
+            internal readonly SpellDescriptor Descriptor;
+            internal Definition(string name, AlignmentComponent against, SpellDescriptor descriptor, string spell, string buff)
+            { Name = name; Against = against; Descriptor = descriptor; NativeSpell = spell; NativeBuff = buff; }
+        }
+        private static readonly Definition[] Definitions = {
+            new Definition("Evil", AlignmentComponent.Evil, SpellDescriptor.Good, "eee384c813b6d74498d1b9cc720d61f4", "4a6911969911ce9499bf27dde9bfcedc"),
+            new Definition("Good", AlignmentComponent.Good, SpellDescriptor.Evil, "2ac7637daeb2aa143a3bae860095b63e", "b19e788487556aa4397080ef3dbb3619"),
+            new Definition("Law", AlignmentComponent.Lawful, SpellDescriptor.Chaos, "c3aafbbb6e8fc754fb8c82ede3280051", "744bec63273df53438c6b76aaaa78382"),
+            new Definition("Chaos", AlignmentComponent.Chaotic, SpellDescriptor.Law, "1eaf1020e82028d4db55e6e464269e00", "a4742d7afde0f4f47b380abed025b219")
+        };
         internal static MagicCircleBlueprintSet[] Register(LibraryScriptableObject library,
             BlueprintRegistry registry, bool sharedControlEnabled)
         {
-            return new[] { RegisterOne(library, registry, "Evil", AlignmentComponent.Evil,
-                SpellDescriptor.Good, "eee384c813b6d74498d1b9cc720d61f4",
-                "4a6911969911ce9499bf27dde9bfcedc", sharedControlEnabled) };
+            return Definitions.Select(value => RegisterOne(library, registry, value.Name,
+                value.Against, value.Descriptor, value.NativeSpell, value.NativeBuff, sharedControlEnabled)).ToArray();
         }
 
         private static MagicCircleBlueprintSet RegisterOne(LibraryScriptableObject library,
@@ -65,9 +82,7 @@ namespace KingmakerGunslinger.Blueprints
             var donorBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
                 buffId, "native Protection buff presentation");
             string symbol = Prefix + alignment + ".";
-            // Provisional presentation only; original painted circle art replaces
-            // this donor before the feature can receive visual acceptance.
-            Sprite icon = donor.Icon;
+            Sprite icon = ProjectAssetIcons.RequireIcon("magic-circle-against-" + alignment.ToLowerInvariant());
             var recipient = registry.Register<BlueprintBuff>(symbol + "Recipient",
                 () => CreateRecipient(donorBuff, alignment, opposed, icon, control));
             var area = registry.Register<BlueprintAbilityAreaEffect>(symbol + "Area",
@@ -75,9 +90,16 @@ namespace KingmakerGunslinger.Blueprints
             var carrier = registry.Register<BlueprintBuff>(symbol + "Carrier",
                 () => CreateCarrier(donorBuff, alignment, icon, area, control));
             area.GetComponent<MagicCircleAreaLifetime>().Carrier = carrier;
+            var touchDonor = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                "17451c1327c571641a1345bd31155209", "native held-touch delivery weapon");
+            var delivery = registry.Register<BlueprintAbility>(symbol + "TouchDelivery",
+                () => CreateSpell(donor, alignment, descriptor, icon, carrier, control, null, touchDonor));
             var spell = registry.Register<BlueprintAbility>(symbol + "Ability",
-                () => CreateSpell(donor, alignment, descriptor, icon, carrier, control));
-            return new MagicCircleBlueprintSet(alignment, spell, carrier, area, recipient);
+                () => CreateSpell(donor, alignment, descriptor, icon, carrier, control, delivery, null));
+            delivery.Parent = spell;
+            var scroll = registry.Register<BlueprintItemEquipmentUsable>(symbol + "Scroll",
+                () => MagicCircleScrollBlueprints.Create(library, alignment, spell, icon));
+            return new MagicCircleBlueprintSet(alignment, spell, delivery, carrier, area, recipient, scroll);
         }
 
         private static BlueprintBuff CreateRecipient(BlueprintBuff donor, string alignment,
@@ -107,9 +129,9 @@ namespace KingmakerGunslinger.Blueprints
                 components.Add(immunity);
             }
             buff.ComponentsArray = components.ToArray();
-            Configure(buff, alignment, "Recipient", "Magic Circle against " + alignment + " — Within Circle",
+            Configure(buff, alignment, "Recipient", "Magic Circle against " + alignment + " - Within Circle",
                 "Protection lasts only while within this circle's 10-foot emanation. Leaving removes only this circle's contribution. " +
-                Benefits(alignment, control) + " Dispel the bearer’s timed circle to end its emanation.", icon);
+                Benefits(alignment, control) + " Dispel the bearer's timed circle to end its emanation.", icon);
             return buff;
         }
 
@@ -153,10 +175,12 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static BlueprintAbility CreateSpell(BlueprintAbility donor, string alignment,
-            SpellDescriptor descriptor, Sprite icon, BlueprintBuff carrier, bool control)
+            SpellDescriptor descriptor, Sprite icon, BlueprintBuff carrier, bool control, BlueprintAbility delivery, BlueprintAbility touchDonor)
         {
-            var spell = BlueprintCloneService.Clone(donor, "KMG_MagicCircle_" + alignment + "_Ability");
-            Configure(spell, alignment, "Ability", "Magic Circle against " + alignment,
+            bool heldTouch = touchDonor != null;
+            string role = heldTouch ? "TouchDelivery" : "Ability";
+            var spell = BlueprintCloneService.Clone(donor, "KMG_MagicCircle_" + alignment + "_" + role);
+            Configure(spell, alignment, role, "Magic Circle against " + alignment,
                 "Touch a creature to create a moving 10-foot emanation for 10 minutes per caster level. " +
                 "Every covered creature, including the bearer and enemies, receives its protection. " +
                 Benefits(alignment, control) + " This spell does not remove or suppress existing control, exclude summoned creatures, or create a binding circle.", icon);
@@ -166,13 +190,13 @@ namespace KingmakerGunslinger.Blueprints
             spell.CanTargetPoint = false;
             spell.CanTargetFriends = true;
             spell.CanTargetSelf = true;
-            spell.CanTargetEnemies = false;
+            spell.CanTargetEnemies = true;
             spell.SpellResistance = false;
             spell.ActionType = UnitCommand.CommandType.Standard;
             spell.Hidden = false;
-            spell.ActionBarAutoFillIgnored = false;
+            spell.ActionBarAutoFillIgnored = heldTouch;
             spell.EffectOnAlly = AbilityEffectOnUnit.Helpful;
-            spell.EffectOnEnemy = AbilityEffectOnUnit.None;
+            spell.EffectOnEnemy = AbilityEffectOnUnit.Helpful;
             spell.MaterialComponent = new BlueprintAbility.MaterialComponentData();
             spell.LocalizedDuration = LocalizationService.Create("KMG.MagicCircle.Duration", "10 minutes/level");
             spell.LocalizedSavingThrow = LocalizationService.Create("KMG.MagicCircle.Save", "Will negates (harmless)");
@@ -190,7 +214,20 @@ namespace KingmakerGunslinger.Blueprints
                         ValueType = ContextValueType.Rank, ValueRank = AbilityRankType.Default } } };
             var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
             effect.name = "$KMG_MagicCircle_ApplyCarrier";
-            effect.Actions = new ActionList { Actions = new GameAction[] { apply } };
+            // Kingmaker's native ally predicate supplies the willing-target
+            // convention. This save occurs only on the touched hostile bearer;
+            // entry/exit/re-entry never causes a saving throw.
+            var willing = ScriptableObject.CreateInstance<ContextConditionIsAlly>();
+            var saved = new ContextActionConditionalSaved {
+                Succeed = new ActionList { Actions = Array.Empty<GameAction>() },
+                Failed = new ActionList { Actions = new GameAction[] { apply } } };
+            var savingThrow = new ContextActionSavingThrow { Type = SavingThrowType.Will,
+                Actions = new ActionList { Actions = new GameAction[] { saved } } };
+            var consent = new Conditional {
+                ConditionsChecker = new ConditionsChecker { Conditions = new Condition[] { willing } },
+                IfTrue = new ActionList { Actions = new GameAction[] { apply } },
+                IfFalse = new ActionList { Actions = new GameAction[] { savingThrow } } };
+            effect.Actions = new ActionList { Actions = new GameAction[] { consent } };
             var school = ScriptableObject.CreateInstance<SpellComponent>();
             school.name = "$KMG_MagicCircle_Abjuration";
             school.School = SpellSchool.Abjuration;
@@ -199,7 +236,23 @@ namespace KingmakerGunslinger.Blueprints
             descriptors.Descriptor = descriptor;
             var checker = ScriptableObject.CreateInstance<MagicCircleCasterChecker>();
             checker.name = "$KMG_MagicCircle_StartupSetting";
-            var components = new List<BlueprintComponent> { school, descriptors, rank, effect, checker };
+            var radius = ScriptableObject.CreateInstance<AbilityAoERadius>();
+            radius.name = "$KMG_MagicCircle_NativeRadiusPreview";
+            SetPrivate(radius, "m_Radius", 10.Feet());
+            SetPrivate(radius, "m_TargetType", TargetType.Any);
+            var components = new List<BlueprintComponent> { school, descriptors, checker, radius };
+            if (heldTouch) {
+                var touch = ScriptableObject.CreateInstance<AbilityDeliverTouch>();
+                touch.name = "$KMG_MagicCircle_NativeTouch";
+                touch.TouchWeapon = touchDonor.GetComponent<AbilityDeliverTouch>().TouchWeapon;
+                components.Add(touch); components.Add(rank); components.Add(effect);
+            }
+            else {
+                var sticky = ScriptableObject.CreateInstance<AbilityEffectStickyTouch>();
+                sticky.name = "$KMG_MagicCircle_HeldTouch";
+                sticky.TouchDeliveryAbility = delivery;
+                components.Add(sticky);
+            }
             // Only native cast presentation is inherited. No list, selector,
             // delivery, resource, immunity, faction, or expiration components.
             components.AddRange(donor.ComponentsArray.OfType<AbilitySpawnFx>());
@@ -209,10 +262,12 @@ namespace KingmakerGunslinger.Blueprints
 
         private static string Benefits(string alignment, bool control)
         {
-            return "A +2 deflection bonus to AC and a +2 resistance bonus on saves against " +
-                alignment.ToLowerInvariant() + " attacks and effects, using native alignment conditions. " +
-                (control ? "It also prevents new qualifying attempts to possess or exercise ongoing mental control from a matching-alignment controller, as Protection from Alignment does. Existing control remains active." :
-                    "Expanded control immunity is disabled in the current startup configuration.");
+            string adjective = alignment == "Law" ? "lawful" : alignment == "Chaos" ? "chaotic" : alignment.ToLowerInvariant();
+            return "Each covered creature gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by " +
+                adjective + " creatures. " +
+                (control ? "While within the circle, it prevents new charm, domination, and similar effects that would place a covered creature under the control of a creature of that alignment. " +
+                    ProtectionFromAlignmentDescriptions.ExistingControlLimitation :
+                    "This circle provides no added protection against mental control in the current startup configuration.");
         }
 
         private static void Configure(Kingmaker.Blueprints.Facts.BlueprintUnitFact fact,
