@@ -1,6 +1,6 @@
 # Magic Circle implementation and acceptance
 
-Status: implementation in progress. Evil core and lifetime/dispel native checkpoints pass; full feature and visual acceptance remain incomplete.
+Status: implementation in progress. Evil core, lifetime/dispel, bearer death, fresh save/load in all four settings combinations, and native scene reconstruction pass. Full family and native UI acceptance remain incomplete.
 
 ## Baseline and boundaries
 
@@ -49,10 +49,10 @@ from these rules after inspecting the installed contracts.
 | --- | --- | --- |
 | A baseline/shared contract | installed RuleApplyBuff/area IL, donor inventory, Protection regressions, clean baseline checks | PASS baseline and guarded donor inventory; gameplay pending |
 | B Evil vertical slice | native cast on another bearer, area membership, typed outcomes, actual control positive/negative, resource debit | core PASS; hostile touch/full control-spell coverage pending |
-| C ownership/lifecycle | overlaps, movement/teleport, dispel/expiry, unconscious/dead/unload, transition/save/load, OFF hydration | same-caster overlap, native dispels, Extend, faction changes, unconsciousness, expiry, caster death PASS; persistence/remaining cases pending |
+| C ownership/lifecycle | overlaps, movement/teleport, dispel/expiry, unconscious/dead/unload, transition/save/load, OFF hydration | same-caster overlap, native dispels, Extend, faction changes, unconsciousness, expiry, caster and bearer death, four settings persistence, scene reconstruction and cleanup PASS; remaining cases pending |
 | D complete family | four variants, verified lists/optional entitlements, scrolls/vendors/scribing, configuration text, icon graph | pending |
 | E final candidate | validation, complete clean domain suite, Release build, package gates, exact-artifact native matrix | pending |
-| Art acceptance | original sources/exports/catalog mappings, protected assignments, native UI, exact owner approvals | pending |
+| Art acceptance | original sources/exports/catalog mappings, protected assignments, native UI, exact owner approvals | four exact exports owner-approved; integration and native UI pending |
 | Publication | coherent qualified commits, guarded helper, owner-review branch/PR | audit/core commits published through helper; lifecycle checkpoint ready; no PR yet |
 
 ## Acceptance matrix
@@ -72,12 +72,16 @@ idempotence/foreign-safe rollback; module-OFF hydration; every visible icon/text
 
 ## Resume
 
-Continue with guarded persistence/module-OFF hydration and scene reconstruction,
-then complete the family, touch delivery, lists, scrolls and remaining acceptance
-matrix. The latest source-qualified native checkpoint is recorded below and in
+Persistence/module-OFF hydration and native scene reconstruction are qualified
+for the Evil checkpoint. Continue with all four variants, native held touch,
+verified class/implement lists, scrolls, approved artwork integration and the
+remaining acceptance matrix. Prepared implementation drafts are retained under
+ignored `artifacts/magic-circle/next`; they are not yet active source. The latest source-qualified native checkpoint is recorded below and in
 `reports/magic-circle/EVIL-LIFETIME-AND-DISPEL.json`. Preserve raw artifacts locally
-under `artifacts` or the guarded evidence root. Owner decisions remain pending for
-bearer death and the four original icon exports; independent work continues.
+under `artifacts` or the guarded evidence root. Owner decisions are resolved:
+end the circle on bearer death; all four reviewed 128px icon exports are approved.
+Native UI acceptance remains pending. Exact approval hashes are recorded in
+`reports/magic-circle/OWNER-DECISIONS.json`.
 
 ## Checkpoint A: observed native contract
 
@@ -320,3 +324,27 @@ Persistence, temporary unload/scene reload, permanent despawn, stronger equipmen
 other casters and alignment combinations, learning/acquisition and remaining
 control deliveries still need their own qualification. Bearer death remains an
 owner rules-adaptation decision; artwork remains unapproved. No release claim.
+
+## Checkpoint C: persistence and bearer death
+
+See [curated evidence](../reports/magic-circle/EVIL-PERSISTENCE-AND-DEATH.json)
+for exact per-run package/DLL identities. Native casts saved two independent
+casters on one bearer (CL8 Extended and CL10 normal), exact spent slots/known
+spell IDs and a pre-existing domination. Four fresh startup combinations kept
+original deadlines and ordinary defenses; only the shared enhancement controlled
+new control protection. Content OFF hydrated known spells and active circles
+without publishing or allowing new casts.
+
+A native scene reload passed using four temporary traveling references, removed
+without saving; exact original contexts survived while native area IDs rebuilt.
+The initial non-party scene fixture disappeared during native reload and was
+reported FAIL, diagnosed and corrected only in fixture setup. This does not
+qualify every non-party unload/transition case. Native cleanup then wrote one
+exact working save; another fresh load passed absence. The working fixture is
+now clean. Original settings bytes were restored after every phase.
+
+Clean validation, 1,657 domain tests (all 8,192 settings combinations), Release
+compilation, strict package/icon gates and focused request tests pass. Current
+checkpoint archive: `artifacts/magic-circle/checkpoints/persistence/`. The family
+remains incomplete, and none of this evidence grants native UI acceptance or
+uninstall safety.

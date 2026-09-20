@@ -7,6 +7,17 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         internal const string ModLoadSmoke = "mod-load-smoke";
         internal const string DisposableMagicCircleEvil = "disposable-magic-circle-evil";
+        internal const string WorkingSaveMagicCirclePrepare = "working-save-magic-circle-prepare";
+        internal const string WorkingSaveMagicCircleVerify = "working-save-magic-circle-verify";
+        internal const string WorkingSaveMagicCircleCleanup = "working-save-magic-circle-cleanup";
+        internal const string WorkingSaveMagicCircleAbsent = "working-save-magic-circle-absent";
+        internal const string WorkingSaveMagicCircleScene = "working-save-magic-circle-scene";
+        internal static bool IsMagicCirclePersistence(string scenario)
+        { return scenario == WorkingSaveMagicCirclePrepare ||
+            scenario == WorkingSaveMagicCircleVerify ||
+            scenario == WorkingSaveMagicCircleCleanup ||
+            scenario == WorkingSaveMagicCircleAbsent ||
+            scenario == WorkingSaveMagicCircleScene; }
         internal const string ObserveMagicCircleNativeContracts = "observe-magic-circle-native-contracts";
         internal const string DisposableFirearmBreakInterruption =
             "disposable-firearm-break-interruption";
@@ -537,6 +548,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveShieldOtherInventory,
                 ObserveMagicCircleNativeContracts,
                 DisposableMagicCircleEvil,
+                WorkingSaveMagicCirclePrepare,
+                WorkingSaveMagicCircleVerify,
+                WorkingSaveMagicCircleCleanup,
+                WorkingSaveMagicCircleAbsent,
+                WorkingSaveMagicCircleScene,
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
