@@ -3,7 +3,7 @@
 Branch: `codex/z-word-of-recall-favored-class`
 Base: master `525625df` (release 0.0.132)
 Version: 0.0.133-word-of-recall-favored-class (candidate; corrective pass applied)
-Final artifact commit: `2e78313c407dc7680d2532e2280cf65620170514`
+Final artifact commit: `6e8d62d274d2b20b509986377c41d07ac7851765` (second corrective pass applied; see Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md)
 
 ## Owner request
 
@@ -136,7 +136,7 @@ Corrective-pass red demonstration, the persistence transaction names
 (KMG_FCB_PERSISTENCE_ saves) and the guarded rejection evidence
 (fcb-persistence-plan-parameters-invalid) are recorded in
 Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md and the run directories.
-See Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md for the owner-review
+The SECOND owner-review corrective pass (publication failure contract, selection-side target validation, matched-control ordinary accounting with the verified native cumulative-delta semantics, hardened owned-save destructive cleanup) is recorded with its own per-run mapping in Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md. The first pass is summarized below. See Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md for the owner-review
 corrective pass (R1 transaction, R2 target validation, R3 behavioral
 tests and the at-level allowance invariant, R4 real save-file persistence
 with the per-run qualification mapping of the final binary).

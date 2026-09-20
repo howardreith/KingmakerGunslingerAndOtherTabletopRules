@@ -83,7 +83,18 @@ grant, and a real authorized disposable save-file persistence acceptance
 now proves the learned spell, granting feature and parameter, award
 accounting and one strategic cast through a fresh-process reload. Every
 qualification scenario was re-run on the final binary; see the per-run
-mapping in Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md.
+mapping in Z-WORD-OF-RECALL-FAVORED-CLASS-CORRECTIVE-PASS.md. A second
+review pass additionally placed publication itself inside the failure
+contract (cache-writer and write-then-throw failures roll back; restoration
+failures preserve both exceptions), validated the per-level child's
+selection-side contract (specific level, zero penalty, class-spell-level
+prerequisite) separately from the grant component, replaced the allowance
+assumption with a matched native control after verifying from the native
+reader that the installed table is cumulative (the 0.0.129 zero-choice
+record was correct; the observed extras are mystery bonus spells), and
+hardened the owned-save destructive cleanup with receipt-hash
+revalidation, preservation of changed or replaced output, and filesystem
+regressions.
 
 ## Boundaries
 
