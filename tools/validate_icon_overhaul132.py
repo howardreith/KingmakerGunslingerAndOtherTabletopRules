@@ -14,18 +14,23 @@ import validate_firearm_postrelease128 as baseline
 
 VERSION = "0.0.132"
 INFORMATIONAL_VERSION = "0.0.132-icon-art-overhaul"
+PACKAGE = "KingmakerGunslinger-0.0.132-local-runtime.zip"
+PACKAGE_SUFFIX = "icon-art-overhaul"
 
 
 def validate(root: Path) -> None:
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
-    baseline.PACKAGE = "KingmakerGunslinger-0.0.132-local-runtime.zip"
-    baseline.PACKAGE_SUFFIX = "icon-art-overhaul"
+    baseline.PACKAGE = ("KingmakerGunslinger-0.0.132-local-runtime.zip"
+        if VERSION == "0.0.132" else PACKAGE)
+    baseline.PACKAGE_SUFFIX = ("icon-art-overhaul"
+        if VERSION == "0.0.132" else PACKAGE_SUFFIX)
     # This feature branch appends exact save identities to the published ledger.
     # The original prefix and every protected-art gate remain authoritative.
     from validate_magic_circle import validate as validate_magic_circle
     validate_magic_circle(root)
-    baseline.DETERMINISTIC_TEST_COUNT = 1660
+    if VERSION == "0.0.132":
+        baseline.DETERMINISTIC_TEST_COUNT = 1660
     baseline.MANIFEST_TOTAL = 1910
     baseline.MANIFEST_ACTIVE = 1908
     # The assigned Magic Circle feature fixes a proven shared source bug.
@@ -53,7 +58,8 @@ def validate(root: Path) -> None:
         if state.get(key) != value:
             raise AssertionError(f"Native scroll shell release metadata mismatch: {key}")
     baseline.require_tokens(root / "docs/RELEASE-NOTES-0.0.132.md",
-        INFORMATIONAL_VERSION, "full release", "owner",
+        "0.0.132-icon-art-overhaul" if VERSION != "0.0.132" else INFORMATIONAL_VERSION,
+        "full release", "owner",
         "native", "composites", "NOT RUN")
     baseline.require_tokens(root /
         "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",

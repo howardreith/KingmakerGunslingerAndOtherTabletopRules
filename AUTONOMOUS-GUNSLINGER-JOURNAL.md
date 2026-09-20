@@ -4142,3 +4142,109 @@ remains blocked, so version stays `0.0.88` and no release claim is made.
 # 2026-08-20 Acadamae real-player-path correction
 
 Human evidence superseded the prior synthetic PASS. The exact real trace reached the authoritative three-argument command constructor but failed `not-prepared` because the selected summon variant graph carried no `ParamSpellSlot`. Commits `44836ac47b2161432339641f6b3d6767109c9de3` and `7a38cdcd0f740d1fce1b2460166748fcae593ffd` add exact canonical prepared-slot resolution, command-boundary rebinding, detached real-path qualification, and a complete six-seam Harmony audit. Repository validation, `1162/1162`, clean Release/package gates, and fresh-process runs `20260820T2015089247100Z` and `20260820T2017093646741Z` all pass. Status is runtime-qualified but remains human-gated.
+
+# 2026-09-20 Word of Recall Favored Class selection repaired (0.0.133 candidate)
+
+Branch `codex/z-word-of-recall-favored-class` from master `525625df`.
+Owner report: Word of Recall missing from the Favored Class Oracle
+sixth-level bonus spell choices. Root cause proven by the new save-free
+`observe-word-of-recall-favored-class` observer on the owner profile:
+every structural link of the genuine route is sound (the per-level
+`BlueprintParametrizedFeature` shares the live Oracle class list object,
+Recall present exactly once at level 6, caches clean, prerequisite and DLC
+filter correct), but the native pick gate
+`BlueprintParametrizedFeature.CanSelect` admits only items in
+`get_Items()` rebuilt from `BlueprintParameterVariants` — a load-time
+snapshot (`items=2966;recall=0`) that never contained the reconciled
+spell, so the visible choice could never be picked. Repair:
+`TeleportationFinalLiveReconciler.ReconcileFavoredClass` merges the
+canonical ability into the variants of exactly the structurally validated
+sixth-level feature and clears `m_CachedItems`, idempotently with
+rollback; after: `items=2967;recall=1`. Acceptance:
+`disposable-teleportation-level-up` extended with the genuine
+favored-class phase (Aasimar + Human routes, no-credit, below-prerequisite,
+cancellation, duplicate, serialization-persistence controls, world-map
+cast) passed 66/66 then 67/67 from independent fresh processes
+(`20260920T0129005692756Z`, `20260920T0202092958831Z`); scroll
+compatibility control `20260920T0205257237750Z` passed 65/65. Source
+gates: 1,662/1,662 domain tests, full validator chain via
+`validate_word_of_recall_favored_class133.py`, clean exact-reference
+build, strict package validation; deployed DLL SHA-256
+`973d84f78d5ddd658d3644218571b21934963139f2772605fcfde584e8d23bf1` at
+commit `6b4f1b05`. Candidate pending owner approval; no merge, no public
+release. Boundaries recorded in
+`Z-WORD-OF-RECALL-FAVORED-CLASS-STATE.md`.
+
+# 2026-09-20 Favored Class corrective pass qualified (0.0.133 candidate, final binary)
+
+Owner review R1-R4 applied on `codex/z-word-of-recall-favored-class`:
+the variants publication is now an owned array transaction with exact
+assigned-array retention, prior cache capture, correct rollback and
+foreign-mutation refusal (four behavioral regressions demonstrated red
+against the shipped sequence, then green); target resolution fully
+validates identity, parent, settings and grant configuration with
+absence/malformed/ambiguity diagnostics; the acceptance fixture asserts
+the installed at-level allowance (which caught and fixed a real
+cumulative-delta misreading); and a new guarded two-phase persistence
+transaction proved the learned Recall, granting parametrized feature and
+parameter, award accounting and one strategic cast through a fresh-process
+reload of an authorized disposable save. Final binary
+`2e78313c` / DLL `4f0cf610…` re-ran every scenario: observer 13/13,
+persistence prepare 6/6 + verify 8/8, level-up acceptance 67/67 twice
+consecutively, scroll control 65/65; domain suite 1,669/1,669, full
+validator chain and strict package gates PASS. Candidate remains pending
+owner approval; no merge, no public release.
+
+# 2026-09-20 Second Favored Class corrective pass qualified (final binary 6e8d62d2)
+
+Owner review findings 1-4 closed on \`codex/z-word-of-recall-favored-class\`:
+publication now runs inside one failure contract with attempt-marked owned
+writes (four behavioral regressions demonstrated red against the committed
+transaction, then green); the intended per-level child validates its
+selection-side contract (specific level, zero penalty, class spell-level
+prerequisite) separately from the grant component with malformed
+no-publication regressions; the ordinary-spell contradiction was resolved
+by evidence — the installed SpellsKnown table is cumulative and the native
+ApplySpellbook reader offers the difference (0.0.129 was right; the
+fixture extras are CotW mystery bonus spells) — proven live by a matched
+native control whose ordinary choices are identical while the Recall route
+adds exactly its one grant; and the persistence driver's destructive
+cleanup now revalidates the current file against its completed-save
+receipt hash before deletion, preserving changed or replaced output, with
+seven filesystem regressions and cleanup-failure ordering guarantees. Final
+binary \`6e8d62d2\` / DLL \`56f53d00…\` re-ran every scenario: level-up 68/68
+twice consecutively (including the matched control), scrolls 65/65,
+observer 13/13, persistence prepare 6/6 + verify 8/8 with cleanupFailed
+false. Domain suite 1,675/1,675, validator chain and package gates PASS.
+Candidate remains pending owner approval; no merge, no public release.
+
+# 2026-09-20 Protected persistence finalization qualified (driver commit a76eb3a0)
+
+The accepted findings 1-3 stand unchanged. The remaining finding-4 gap —
+the outer finally skipping catalog disposal, sidecar restoration and the
+final record whenever an earlier stage threw (reproduced with a changed
+owned save surfacing as an unowned new save) — was repaired script-only:
+Invoke-FinalizationStages runs each stage independently, prohibits
+mutating stages while the game process lives, accumulates primary and
+stage causes, writes the accurate stage-outcome record before any
+aggregate propagates, and never weakens preservation. Twelve filesystem
+regressions through the actual finalization path (split units after the
+script host's malware heuristics blacklisted the single-file form) caught
+and fixed a live StrictMode Count defect. The corrected driver was
+re-qualified natively (transaction …1313008534783Z_a7a8fa04… passed with
+all stages succeeded) alongside observer 13/13, level-up 68/68 and
+scrolls 65/65 on commit a76eb3a0 / DLL f03a0a67…; domain suite
+1,675/1,675, validator chain and package gates PASS. The earlier
+6e8d62d2 gameplay mapping remains valid for that binary; the corrected
+driver is qualified separately. Candidate pending owner approval; no
+merge, no public release.
+
+# 2026-09-20 v0.0.133 word-of-recall-favored-class publicly released
+
+The owner accepted the corrective-pass review and authorized publication.
+Release notes, README, state record and static validation were updated to
+the authorized state; the full source gates passed (domain 1,675/1,675,
+validator chain, clean build, strict package validation); the mission
+branch \`codex/z-word-of-recall-favored-class\` merged to master and the
+tagged v0.0.133 GitHub release was cut through the guarded
+Publish-Release pipeline.

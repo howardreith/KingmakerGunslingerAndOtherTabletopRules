@@ -72,7 +72,18 @@ dependency-free test suite, production compilation, strict build-output
 validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
-## Current 0.0.132 publication authorization
+## Current 0.0.134 publication authorization
+
+The owner accepted Magic Circle PR #19, including the shared lease follow-up,
+and explicitly requested finalization, merge to master, push and a new release.
+Integrate master 0.0.133 without dropping its Word of Recall Favored Class repair.
+Use the existing exact-reference publisher from clean pushed master after the
+0.0.134 candidate passes required gates and focused guarded native checks.
+Retain exact artifact attribution, prior artwork approval and honest qualification
+limits; verify downloaded public assets and restore the normal-play installation.
+See `planning/MAGIC-CIRCLE-RELEASE-134.md` and `docs/RELEASE-NOTES-0.0.134.md`.
+
+## Historical 0.0.132 publication authorization
 
 The owner explicitly requested merge to master, push and a public release of
 the icon art overhaul on 2026-09-18 ("Please merge to master, push to remote,

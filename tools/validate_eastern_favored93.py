@@ -141,8 +141,8 @@ def validate(root: Path) -> None:
         .read_text(encoding="utf-8"))
     contract = static.get(STATIC_KEY, {})
     historical_runtime_pending = RUNTIME_QUALIFICATION_PENDING
-    if VERSION in {"0.0.114", "0.0.115", "0.0.116", "0.0.117", "0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127", "0.0.128", "0.0.129", "0.0.130", "0.0.131", "0.0.132"}:
-        release_key = ("iconOverhaul132" if VERSION == "0.0.132"
+    if VERSION in {"0.0.114", "0.0.115", "0.0.116", "0.0.117", "0.0.118", "0.0.119", "0.0.120", "0.0.121", "0.0.122", "0.0.123", "0.0.124", "0.0.125", "0.0.126", "0.0.127", "0.0.128", "0.0.129", "0.0.130", "0.0.131", "0.0.132", "0.0.133", "0.0.134"}:
+        release_key = ("magicCircle134" if VERSION == "0.0.134" else "wordOfRecallFavoredClass133" if VERSION == "0.0.133" else "iconOverhaul132" if VERSION == "0.0.132"
             else "iconOverhaul131" if VERSION == "0.0.131"
             else "iconOverhaul130" if VERSION == "0.0.130"
             else "recallSmartScroll129" if VERSION == "0.0.129"

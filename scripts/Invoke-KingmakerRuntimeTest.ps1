@@ -80,6 +80,12 @@ if ($scenarioMetadata.RequiresSaveName) {
         }
         $Parameters = $Parameters.Clone()
         $Parameters.saveName = $SaveName
+    } elseif ($Scenario -ceq 'disposable-word-of-recall-favored-class-persistence') {
+        if ($Parameters.Count -ne 2 -or -not $Parameters.ContainsKey('phase') -or -not $Parameters.ContainsKey('planPath')) {
+            throw 'Favored Class persistence requires typed -SaveName plus exactly phase and planPath.'
+        }
+        $Parameters = $Parameters.Clone()
+        $Parameters.saveName = $SaveName
     } elseif ($Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec', 'working-save-creator-visual-lifecycle')) {
         $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
             $Parameters.ContainsKey('nativeActionCase')
