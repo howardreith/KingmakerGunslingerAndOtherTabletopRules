@@ -319,6 +319,8 @@
     <Compile Include="Blueprints\MagicCircleBlueprints.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleFamily.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleDeliveries.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleCoexistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleTouch.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleAcquisition.cs" />
     <Compile Include="Spells\MagicCircle\MagicCircleSpecialistSpellCachePatches.cs" />
     <Compile Include="Spells\MagicCircle\MagicCircleScrollVendors.cs" />
