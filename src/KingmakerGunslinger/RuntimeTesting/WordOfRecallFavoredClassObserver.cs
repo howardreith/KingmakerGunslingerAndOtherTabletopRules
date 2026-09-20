@@ -221,6 +221,50 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "unlocked=" + unlockNotDlc,
                 unlockNotDlc,
                 "the exact native per-spell filter applied while rebuilding the filtered cache");
+
+            var fullItems = GetItemsSnapshot(level6, recall);
+            var variants = level6.BlueprintParameterVariants;
+            Add(assertions, "fcb-level6-full-items-recall",
+                "the native get_Items/CanSelect source contains canonical Word of Recall",
+                "items=" + fullItems.Count + ";recall=" + fullItems.RecallRefs +
+                    ";variants=" + (variants == null ? -1 : variants.Length) +
+                    ";variantRecall=" + (variants == null ? -1 : variants.Count(value =>
+                        ReferenceEquals(value, recall))),
+                fullItems.RecallRefs == 1,
+                "BlueprintParametrizedFeature.CanSelect admits only items present in get_Items(); this is the pick gate behind the visible extraction");
+            diagnostics.Add("fcb-level6-items=" + string.Join("|", fullItems.Names.ToArray()));
+            diagnostics.Add("fcb-level6-variants=" + (variants == null ? "null" :
+                string.Join("|", variants.Take(60).Select(value =>
+                    value == null ? "null" : value.AssetGuid + ":" + value.name).ToArray())));
+        }
+
+        private sealed class ItemsSnapshot
+        {
+            internal int Count;
+            internal int RecallRefs;
+            internal List<string> Names;
+        }
+
+        private static ItemsSnapshot GetItemsSnapshot(
+            BlueprintParametrizedFeature feature,
+            BlueprintAbility recall)
+        {
+            var items = feature.Items == null ? new object[0] : feature.Items.Cast<object>().ToArray();
+            var snapshot = new ItemsSnapshot { Names = new List<string>() };
+            foreach (var item in items)
+            {
+                var param = item.GetType().GetProperty("Param") == null ? null :
+                    item.GetType().GetProperty("Param").GetValue(item, null);
+                var value = param == null ? null : param.GetType().GetProperty("Value").GetValue(param, null);
+                var blueprint = value == null ? null : value.GetType().GetField("Blueprint").GetValue(value)
+                    as BlueprintScriptableObject;
+                snapshot.Names.Add(blueprint == null ? "null" :
+                    blueprint.AssetGuid + ":" + blueprint.name);
+                if (blueprint is BlueprintAbility ability &&
+                    ReferenceEquals(ability, recall)) snapshot.RecallRefs++;
+            }
+            snapshot.Count = items.Length;
+            return snapshot;
         }
 
         private static BlueprintScriptableObject Lookup(
