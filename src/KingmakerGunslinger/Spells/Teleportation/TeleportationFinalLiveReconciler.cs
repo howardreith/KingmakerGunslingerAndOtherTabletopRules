@@ -5,6 +5,7 @@ using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Stats;
@@ -259,6 +260,8 @@ namespace KingmakerGunslinger.Spells.Teleportation
                     IsLearnSpellParameter =
                         level.ParameterType == FeatureParameterType.LearnSpell,
                     SpellLevel = level.SpellLevel,
+                    HasValidSelectionContract =
+                        HasValidSelectionContract(level, candidate),
                     HasValidGrantConfiguration =
                         HasValidGrantConfiguration(level, candidate, classList)
                 };
@@ -272,6 +275,22 @@ namespace KingmakerGunslinger.Spells.Teleportation
             return FavoredClassTargetResolution.Resolved(
                 (BlueprintParametrizedFeature)selection.AllFeatures[decision.Index],
                 decision.Detail);
+        }
+
+        // The selection-side contract of the intended per-level child: the
+        // feature grants at one specific spell level with no spell-level
+        // penalty, and carries the installed class-spell-level prerequisite
+        // (one level above the granted spell) for the resolved class. The
+        // prerequisite is only validated, never modified.
+        private static bool HasValidSelectionContract(
+            BlueprintParametrizedFeature level, BlueprintCharacterClass candidate)
+        {
+            if (!level.SpecificSpellLevel || level.SpellLevelPenalty != 0)
+                return false;
+            return level.ComponentsArray != null && level.ComponentsArray
+                .OfType<PrerequisiteClassSpellLevel>().Any(prerequisite =>
+                    ReferenceEquals(prerequisite.CharacterClass, candidate) &&
+                    prerequisite.RequiredSpellLevel == level.SpellLevel + 1);
         }
 
         // The actual grant configuration of the per-level feature: exactly one

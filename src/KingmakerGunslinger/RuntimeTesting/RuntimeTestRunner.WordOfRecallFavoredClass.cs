@@ -324,6 +324,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var book = aasimarUnit.Descriptor.GetSpellbook(oracle.Spellbook);
                 string[] knownSixthBefore = book.GetKnownSpells(6).Select(value =>
                     value.Blueprint.AssetGuid).ToArray();
+                string[] knownSixthAfter = null;
+                string[] ordinaryNewSixth = null;
                 int allowanceThirteenth = book.Blueprint.SpellsKnown.GetCount(13, 6) ?? 0;
                 int allowanceFourteenth = book.Blueprint.SpellsKnown.GetCount(14, 6) ?? 0;
                 var partialFact = aasimarUnit.Descriptor.Progression.Features.Enumerable
@@ -439,15 +441,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(value.Param.Value.Blueprint, recall)).ToArray();
                     var committedPartial = aasimarUnit.Descriptor.Progression.Features.Enumerable
                         .Where(value => ReferenceEquals(value.Blueprint, partialFeature)).ToArray();
-                    string[] knownSixthAfter = book.GetKnownSpells(6).Select(value =>
+                    knownSixthAfter = book.GetKnownSpells(6).Select(value =>
                         value.Blueprint.AssetGuid).ToArray();
                     string[] newSixth = knownSixthAfter.Except(knownSixthBefore,
                         StringComparer.Ordinal).ToArray();
-                    // The installed spontaneous SpellsKnown table grants
-                    // GetCount(level, spellLevel) new picks AT each class
-                    // level; the cumulative difference is not the allowance.
+                    // The installed SpellsKnown table is cumulative and the
+                    // native ApplySpellbook reader offers the DIFFERENCE
+                    // between the new and old caster level; the table values
+                    // are captured as evidence, while the ordinary allowance
+                    // is proven by the matched native control below.
                     int ordinaryAllowance = allowanceFourteenth;
-                    string[] ordinaryNewSixth = newSixth.Where(value =>
+                    ordinaryNewSixth = newSixth.Where(value =>
                         !string.Equals(value, recall.AssetGuid,
                             StringComparison.Ordinal)).ToArray();
                     CaptureTeleportSpellbookUi("fcb-aasimar-committed", new {
@@ -462,7 +466,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         extraSelected = finalSpells.ExtraSelected == null ? 0 :
                             finalSpells.ExtraSelected.Length });
                     TeleportSpellbookUiAssert("fcb-aasimar-committed",
-                        "native completion teaches canonical Recall once at Oracle 6 through one favored-class award; the ordinary known-spell change equals the installed at-level allowance with no extra choice",
+                        "native completion teaches canonical Recall once at Oracle 6 through one favored-class award with no fabricated extra choice",
                         "level=" + aasimarUnit.Descriptor.Progression.GetClassLevel(oracle) +
                             ";known6Recall=" + book.GetKnownSpells(6).Count(value =>
                                 ReferenceEquals(value.Blueprint, recall)) +
@@ -475,11 +479,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             book.CasterLevel == 14 && successes == 1 &&
                             book.GetKnownSpells(6).Count(value =>
                                 ReferenceEquals(value.Blueprint, recall)) == 1 &&
-                            newSixth.Length == ordinaryAllowance + 1 &&
                             newSixth.Count(value => string.Equals(value, recall.AssetGuid,
                                 StringComparison.Ordinal)) == 1 &&
                             ordinaryNewSixth.Length == ordinaryNewSixth.Distinct(
                                 StringComparer.Ordinal).Count() &&
+                            knownSixthBefore.All(value => knownSixthAfter.Contains(value)) &&
                             grantFacts.Length == 1 && recallFacts.Length == 1 &&
                             committedPartial.Length == 1 && committedPartial[0].Rank == 1 &&
                             (finalSpells.ExtraSelected == null ||
@@ -556,6 +560,81 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int tick in CastNewlyLearnedOracleRecall(aasimarUnit,
                         aasimarUnit.Descriptor.GetSpellbook(oracle.Spellbook))) yield return tick;
                 }
+                // ----- Matched native control: an identically seeded Aasimar
+                // Oracle takes a NON-spell favored-class award at the same
+                // 13 -> 14 level-up. The ordinary choices must agree and the
+                // Recall route must add exactly its one legitimate grant.
+                var controlTrace = new List<object>();
+                var controlUnit = SpawnFcbOracleFixture(oracle, aasimar,
+                    "KMG FCB Control Oracle", anchor, player, out backend, 13, controlTrace);
+                var controlBook = controlUnit.Descriptor.GetSpellbook(oracle.Spellbook);
+                string[] controlBefore = controlBook.GetKnownSpells(6).Select(value =>
+                    value.Blueprint.AssetGuid).ToArray();
+                experienceProperty.SetValue(controlUnit.Descriptor.Progression,
+                    game.BlueprintRoot.Progression.XPTable.GetBonus(14), null);
+                presenter.HandleLevelUpStart(controlUnit.Descriptor, null, () => successes++);
+                backend = presenter.LevelUpController;
+                for (int frame = 0; frame < 15; frame++) yield return 0;
+                presenter.SetClass(oracle);
+                FillFcbOracleChoices(backend, oracle, controlTrace);
+                foreach (int tick in WaitTeleportLevelUpUi(() => backend.State.IsComplete(),
+                    "control level-up choices complete")) yield return tick;
+                var controlSelections = FcbSelectionSnapshot(backend);
+                presenter.Next();
+                foreach (int tick in WaitTeleportLevelUpUi(() =>
+                    presenter.CurrentPhase == CharBPhase.Type.Total,
+                    "control summary")) yield return tick;
+                var controlFinish = (UnityEngine.UI.Button)typeof(CharacterBuildController)
+                    .GetField("m_CompleteButton", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetValue(presenter);
+                controlFinish.onClick.Invoke(); backend = null;
+                foreach (int tick in WaitTeleportLevelUpUi(() => !presenter.IsShow,
+                    "control committed level-up")) yield return tick;
+                ui.LevelUpController = priorBackend;
+                controlBook = controlUnit.Descriptor.GetSpellbook(oracle.Spellbook);
+                string[] controlAfter = controlBook.GetKnownSpells(6).Select(value =>
+                    value.Blueprint.AssetGuid).ToArray();
+                string[] controlNew = controlAfter.Except(controlBefore,
+                    StringComparer.Ordinal).ToArray();
+                string[] controlFcbPicks = controlTrace.Where(value => {
+                    var policy = value.GetType().GetProperty("policy").GetValue(value, null) as string;
+                    return policy == "fcb-partial-first";
+                }).Select(value => (string)value.GetType().GetProperty("picked")
+                    .GetValue(value, null)).ToArray();
+                var controlGrants = controlUnit.Descriptor.Progression.Features.Enumerable
+                    .Where(value => ReferenceEquals(value.Blueprint, level6Feature)).ToArray();
+                CaptureTeleportSpellbookUi("fcb-matched-control", new {
+                    controlBefore, controlAfter, controlNew, controlFcbPicks,
+                    controlGrants = controlGrants.Length,
+                    controlKnowsRecall = controlBook.IsKnown(recall),
+                    fcbKnownSixthAfter = knownSixthAfter, ordinaryNewSixth,
+                    selections = controlSelections });
+                TeleportSpellbookUiAssert("fcb-matched-control",
+                    "an identically seeded control taking a non-spell favored-class award agrees on every ordinary sixth-level choice, and the Recall route adds exactly its one legitimate grant",
+                    "seedIdentical=" + controlBefore.SequenceEqual(knownSixthBefore) +
+                        ";controlNew=" + string.Join("|", controlNew.OrderBy(value => value,
+                            StringComparer.Ordinal).ToArray()) +
+                        ";fcbOrdinaryNew=" + string.Join("|", ordinaryNewSixth.OrderBy(value => value,
+                            StringComparer.Ordinal).ToArray()) +
+                        ";fcbMinusControl=" + string.Join("|", knownSixthAfter.Except(controlAfter,
+                            StringComparer.Ordinal).ToArray()),
+                    controlBefore.SequenceEqual(knownSixthBefore) &&
+                        controlNew.OrderBy(value => value, StringComparer.Ordinal)
+                            .SequenceEqual(ordinaryNewSixth.OrderBy(value => value,
+                                StringComparer.Ordinal), StringComparer.Ordinal) &&
+                        knownSixthAfter.Except(controlAfter, StringComparer.Ordinal)
+                            .SequenceEqual(new[] { recall.AssetGuid },
+                                StringComparer.Ordinal) &&
+                        controlBefore.All(value => controlAfter.Contains(value)) &&
+                        !controlBook.IsKnown(recall) && controlGrants.Length == 0 &&
+                        controlFcbPicks.Any() && controlFcbPicks.All(value =>
+                            value != null && !value.StartsWith(FcbOracleBonusSpellSelectionId) &&
+                            !value.StartsWith(FcbOraclePartialFeatureId)));
+                player.PartyCharacters.RemoveAll(value => value.UniqueId == controlUnit.UniqueId);
+                if (controlUnit.HoldingState != null &&
+                    controlUnit.HoldingState.AllEntityData.Contains(controlUnit))
+                    controlUnit.HoldingState.RemoveEntityData(controlUnit);
+                controlUnit.Dispose();
                 // ----- Human route with the below-prerequisite control.
                 humanUnit = SpawnFcbOracleFixture(oracle, human,
                     "KMG FCB Human Oracle", anchor, player, out backend, 12, humanTrace);

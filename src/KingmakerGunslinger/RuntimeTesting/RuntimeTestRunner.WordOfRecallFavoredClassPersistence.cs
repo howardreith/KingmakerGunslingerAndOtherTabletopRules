@@ -200,6 +200,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Where(value => ReferenceEquals(value.Blueprint, partialFeature)).ToArray();
                     string[] knownSixth = book.GetKnownSpells(6).Select(value =>
                         value.Blueprint.AssetGuid).ToArray();
+                    string[] ordinaryNew = knownSixth.Except(knownSixthBefore,
+                        StringComparer.Ordinal).Where(value =>
+                        !string.Equals(value, recall.AssetGuid,
+                            StringComparison.Ordinal)).ToArray();
                     FcbPersistenceAssert("prepare-committed",
                         "the genuine favored-class award commits canonical Recall once at Oracle 6 before saving",
                         unit.Descriptor.Progression.GetClassLevel(oracle) == 14 &&
@@ -234,7 +238,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["partialRank"] = partialFacts.Length == 0 ? 0 : partialFacts[0].Rank,
                         ["allowanceThirteenth"] = allowanceThirteenth,
                         ["allowanceFourteenth"] = allowanceFourteenth,
-                        ["knownSixthBefore"] = new JArray(knownSixthBefore) };
+                        ["knownSixthBefore"] = new JArray(knownSixthBefore),
+                        ["ordinaryNew"] = new JArray(ordinaryNew) };
                     foreach (int tick in SaveFcbPersistence(game, plan)) yield return tick;
                     // The disposable save is the artifact; the live process
                     // restores its request-owned membership and disposes the
@@ -278,8 +283,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string[] expectedKnown = ((JArray)plan.Expected["knownSixth"])
                         .Select(value => (string)value).OrderBy(value => value,
                             StringComparer.Ordinal).ToArray();
-                    int allowanceFourteenth = (int)plan.Expected["allowanceFourteenth"];
                     string[] expectedBefore = ((JArray)plan.Expected["knownSixthBefore"])
+                        .Select(value => (string)value).ToArray();
+                    string[] expectedOrdinaryNew = ((JArray)plan.Expected["ordinaryNew"])
                         .Select(value => (string)value).ToArray();
                     FcbPersistenceAssert("reload-unit-present",
                         "the fresh-process reload restores the exact saved Favored Class Oracle",
@@ -315,13 +321,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string[] expectedNew = expectedKnown.Except(expectedBefore,
                         StringComparer.Ordinal).ToArray();
                     FcbPersistenceAssert("reload-award-accounting",
-                        "the reloaded known spells equal the prepare snapshot: installed at-level allowance plus exactly the one favored-class grant",
+                        "the reloaded known spells equal the prepare snapshot: its stored ordinary new set plus exactly the one favored-class grant",
                         knownSixth.OrderBy(value => value, StringComparer.Ordinal)
                             .SequenceEqual(expectedKnown, StringComparer.Ordinal) &&
-                            expectedNew.Length == allowanceFourteenth + 1 &&
+                            expectedNew.Except(new[] { recallId },
+                                StringComparer.Ordinal)
+                                .OrderBy(value => value, StringComparer.Ordinal)
+                            .SequenceEqual(expectedOrdinaryNew.OrderBy(value => value,
+                                StringComparer.Ordinal), StringComparer.Ordinal) &&
                             expectedNew.Count(value => string.Equals(value, recallId,
                                 StringComparison.Ordinal)) == 1,
-                        new { knownSixth, expectedKnown, expectedNew, allowanceFourteenth });
+                        new { knownSixth, expectedKnown, expectedNew, expectedOrdinaryNew });
                     // Strategic cast from the reloaded save: exactly one
                     // sixth-level spontaneous slot, no scroll substitution.
                     game.LoadArea(game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint,

@@ -61,9 +61,14 @@ namespace KingmakerGunslinger.Spells.Teleportation
     // Executes one publication against a target field plus its item cache.
     // The exact assigned array is retained so rollback can prove ownership;
     // the prior variants array and the prior cache value are captured before
-    // any mutation so a failed validation restores exactly the owned state.
-    // A field that no longer references either the prior array or the exact
-    // assigned array is a foreign mutation and is never overwritten.
+    // any mutation so a failed publication or validation restores exactly
+    // the owned state. Each owned write is marked as attempted BEFORE its
+    // delegate runs, because a writer may change its target and then throw;
+    // the rollback decision therefore reads the live field instead of
+    // trusting completion flags. A field that no longer references either
+    // the prior array or the exact assigned array is a foreign mutation and
+    // is never overwritten; a restoration whose own writes fail rethrows
+    // with the original failure preserved inside an AggregateException.
     internal sealed class FavoredClassVariantsTransaction<TSpell>
         where TSpell : class
     {
@@ -74,6 +79,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
         private TSpell[] _before;
         private object _beforeCache;
         private TSpell[] _assigned;
+        private bool _fieldWriteAttempted;
         private bool _mutated;
 
         internal FavoredClassVariantsTransaction(Func<TSpell[]> read,
@@ -89,13 +95,21 @@ namespace KingmakerGunslinger.Spells.Teleportation
 
         internal bool Mutated { get { return _mutated; } }
 
-        // Publishes and then runs the caller's validation; any validation
-        // failure rolls back the owned mutation and rethrows the original
-        // exception with its information intact.
+        // Publishes and then runs the caller's validation under one failure
+        // contract: a failure during publication (including a writer that
+        // writes and then throws, or a cache writer that throws after the
+        // array write) or during validation rolls the owned writes back and
+        // rethrows the original exception with its information intact.
         internal TSpell[] PublishAndValidate(TSpell spell,
             Func<TSpell, string> guid, Action validate)
         {
-            TSpell[] published = Publish(spell, guid);
+            TSpell[] published;
+            try { published = Publish(spell, guid); }
+            catch (Exception exception)
+            {
+                RollbackOwnedWrites(exception);
+                throw;
+            }
             Validate(validate);
             return published;
         }
@@ -109,7 +123,7 @@ namespace KingmakerGunslinger.Spells.Teleportation
             try { validate(); }
             catch (Exception exception)
             {
-                Rollback(exception);
+                RollbackOwnedWrites(exception);
                 throw;
             }
         }
@@ -122,6 +136,9 @@ namespace KingmakerGunslinger.Spells.Teleportation
                 _before, spell, guid);
             if (ReferenceEquals(published, _before)) return published;
             _assigned = published;
+            // Attempted-marks precede the delegates: a writer may change
+            // its target and then throw, leaving an owned write installed.
+            _fieldWriteAttempted = true;
             _write(published);
             _writeCache(null);
             _mutated = true;
@@ -129,16 +146,28 @@ namespace KingmakerGunslinger.Spells.Teleportation
         }
 
         internal void Rollback(Exception cause)
+        { RollbackOwnedWrites(cause); }
+
+        private void RollbackOwnedWrites(Exception cause)
         {
-            if (!_mutated) return;
+            if (!_fieldWriteAttempted) return;
             TSpell[] field = _read();
             if (ReferenceEquals(field, _before)) return;
             if (!ReferenceEquals(field, _assigned))
                 throw new InvalidOperationException(
                     "Favored Class variants changed during rollback; restoration refused.",
                     cause);
-            _write(_before);
-            _writeCache(_beforeCache);
+            try
+            {
+                _write(_before);
+                _writeCache(_beforeCache);
+            }
+            catch (Exception restorationFailure)
+            {
+                throw new InvalidOperationException(
+                    "Favored Class variants restoration failed; owned state may remain partially published.",
+                    new AggregateException(cause, restorationFailure));
+            }
         }
     }
 }
