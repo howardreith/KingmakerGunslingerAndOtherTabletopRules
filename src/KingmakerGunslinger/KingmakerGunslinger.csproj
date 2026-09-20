@@ -1202,6 +1202,9 @@
     <Compile Include="RuntimeTesting\ElementalFeatPersistenceScenario.cs" />
     <Compile Include="RuntimeTesting\BrownFurCotwContractObserver.cs" />
     <Compile Include="RuntimeTesting\WordOfRecallFavoredClassObserver.cs" />
+    <Compile Include="RuntimeTesting\FcbPersistenceIdentity.cs" />
+    <Compile Include="RuntimeTesting\FcbPersistencePlan.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WordOfRecallFavoredClassPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.WordOfRecallFavoredClass.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianRageInventoryObserver.cs" />
     <Compile Include="RuntimeTesting\UrbanBarbarianFocusedScenario.cs" />
