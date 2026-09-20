@@ -634,6 +634,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleEvil &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleUi &&
                     !RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
@@ -1805,6 +1806,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
@@ -1911,6 +1913,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
@@ -2521,6 +2524,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario))
                 { PollMagicCirclePersistence(); }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi)
+                { PollMagicCircleUi(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil)
                 {
                     var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
@@ -5316,6 +5321,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
@@ -30523,6 +30529,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopTeleportPersistence(result);
             StopTeleportationInteraction(result);
             StopTeleportationSpellbookUi(result);
+            StopMagicCircleUi(result);
             StopTeleportationLoadDiagnostics(result);
             if (_saveLoadObservation != null && result.SaveLoadObservation == null)
                 result.SaveLoadObservation = _saveLoadObservation.Stop();

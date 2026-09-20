@@ -10,6 +10,19 @@ typed combat/save rules, control applications, movement, overlaps, dispelling,
 Extend, expiration, unconsciousness, original caster death and bearer death.
 Its actors and cloned blueprints are request-local and never saved.
 
+`disposable-magic-circle-ui` uses the same exact working-save load and mandatory
+exit. It stages a native Sorcerer 5, selects one Circle in the real level-up
+presenter, cancels once, then commits the ordinary level-6 choice. It verifies
+that only the selected variant is learned and casts that learned spell. A
+request-owned native Wizard book then exposes all four separate prepared spells,
+held touch, timed carrier/proximity buff rows and scroll inventory rows. Native
+framebuffer captures support visual inspection; structured native state proves
+learning, preparation, resource use, identity and cleanup. It restores the
+original party, selection, UI settings, inventory, money, entities and clock.
+There are no save writes, campaign level-ups, synthetic UI rows or new settings.
+The original owner-approved export pixels are unchanged. Native UI acceptance
+remains pending until this scenario and visual inspection have passed.
+
 The following narrowly scoped persistence scenarios use four named non-party
 actors (`KMG_RUNTIME_MAGIC_CIRCLE_SAVED_CasterA`, `CasterB`, `Bearer`, `Recipient`)
 of the registered native DefaultPlayerCharacter blueprint. No shared blueprint

@@ -1,0 +1,563 @@
+{
+  "schemaVersion": 1,
+  "scope": "Native learning and all twenty visible Magic Circle consumers; checkpoint, not final feature acceptance",
+  "baseCommit": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "embeddedCommit": "51604412a0ed3646c0370f5196b07ab84034736e",
+  "sourceWasDirty": true,
+  "sourceStateSha256": "8df89e4eb7d4c25abab0280caa584772bf3a3d7426120036a358f9621688d8e8",
+  "artifact": {
+    "schemaVersion": 1,
+    "semanticVersion": "0.0.132",
+    "runtimeIdentity": "KingmakerGunslinger, Version=0.0.132.0, Culture=neutral, PublicKeyToken=null",
+    "informationalVersion": "0.0.132-icon-art-overhaul",
+    "gitCommit": "51604412a0ed3646c0370f5196b07ab84034736e",
+    "moduleVersionId": "0b8fa6c6-2f10-48c6-b2b7-acffed3e51bd",
+    "loadedModuleSha256": "baa7fd4e45d3e446ee5e4c3979b6e805c2909542eafb81fb3bcfa8b25d0e56ca"
+  },
+  "packageSha256": "6e0a9b74f628fb1e5ea53d9b37940a8c9817f9a6990d4b5df81c355f6b9ff24f",
+  "checks": {
+    "repositoryValidation": "PASS",
+    "fullCleanDomainSuite": {
+      "passed": 1657,
+      "failed": 0,
+      "settingsCombinations": 8192
+    },
+    "cleanRelease": "PASS",
+    "strictPackage": "PASS",
+    "focusedRequestGuards": "PASS",
+    "buildLog": "artifacts-magic-circle-ui-scroll-build.log"
+  },
+  "fixtureFailures": [
+    {
+      "evidenceDirectoryName": "20260920T0516376415702Z-disposable-magic-circle-ui",
+      "status": "ERROR",
+      "passingAssertions": 23,
+      "failedAssertions": 3,
+      "cause": "Fixture treated ActionBarSlot.GetData as AbilityData; native contract returns a mechanic slot. It also missed newly spawned starter-item ownership during party registration. World cleanup was ambiguous in this first attempt.",
+      "runtimeResultSha256": "f508efaf8ba587935da14784813c0d8d37867499030cb76c59aca0de693210d2",
+      "dllSha256": "48668c35c63387861e9809057ba7836858e8130647eb077d6a986578b7e9a113",
+      "dllMvid": "c0df6e59-a135-4095-904d-b398841416ca",
+      "saveWriteObserved": false
+    },
+    {
+      "evidenceDirectoryName": "20260920T0526138376780Z-disposable-magic-circle-ui",
+      "status": "ERROR",
+      "passingAssertions": 27,
+      "failedAssertions": 1,
+      "cause": "Fixture searched the inventory mini sheet instead of the full native character sheet. Exact inventory/world cleanup passed except selection, because group selection ran after multi-selection.",
+      "runtimeResultSha256": "b248bf6863e69fe3bba95027fc56af2a10cf48b203cf4787b28d79545f63f01c",
+      "dllSha256": "661d917748e48a59411983ad69eb4677249cc7e82f519316d726c8e1cb416ff3",
+      "dllMvid": "93086e8f-c9f7-4dff-9305-c0497761bfcc",
+      "saveWriteObserved": false
+    },
+    {
+      "evidenceDirectoryName": "20260920T0536407720793Z-disposable-magic-circle-ui",
+      "status": "ERROR",
+      "passingAssertions": 32,
+      "failedAssertions": 1,
+      "cause": "Evil carrier/recipient UI passed; the fixture assumed every prepared Circle root was pinned to the visible shortcut bar. Good root was not visible. Exact cleanup passed.",
+      "runtimeResultSha256": "00b1d96956cdffcc4a5c99822e795dbc4d93f070ce4ea0e87a422886647aea32",
+      "dllSha256": "d9fbdf93bca634e2131e5918d51e3d277196aea6846054fcbb6044cb17791e84",
+      "dllMvid": "2c1bb5af-9690-40f5-826a-a0689cd45e7e",
+      "saveWriteObserved": false
+    },
+    {
+      "evidenceDirectoryName": "20260920T0549321289450Z-disposable-magic-circle-ui",
+      "status": "ERROR",
+      "passingAssertions": 32,
+      "failedAssertions": 1,
+      "cause": "Added group-owner diagnostics proved the selected caster was correct. Good existed in the collapsed native spells group but was not pinned; changed the observation to the actual native held-delivery abilities popup.",
+      "runtimeResultSha256": "38d0f6103a570d28839e42a3783d81419c446da91eec21998161d7c46d8aed86",
+      "dllSha256": "f27ba3580916f8e55fac49502aa2d269fb6a0d301c33f762f46f948a13923cfa",
+      "dllMvid": "460a2799-b4d2-456d-b139-e31e5726c431",
+      "saveWriteObserved": false
+    },
+    {
+      "evidenceDirectoryName": "20260920T0559144663359Z-disposable-magic-circle-ui",
+      "status": "ERROR",
+      "passingAssertions": 47,
+      "failedAssertions": 2,
+      "cause": "All held charges and buff rows passed. Reused Teleportation-only scroll-key inspector rejected the correct Magic Circle icon; fixed exact family mapping. Inventory cleanup also needed the normal native subwindow close API after parent tabs closed.",
+      "runtimeResultSha256": "5a4bcbc478c5157c6773dd7b056d9d2ef64b179f93427f656f79f8ae843df81d",
+      "dllSha256": "abbb45ecdd045f2440f4f14984609d6312fc37a826cab7365d8f9559b9ccae60",
+      "dllMvid": "884b8c0f-7e40-401c-9946-d3e97ed32801",
+      "saveWriteObserved": false
+    }
+  ],
+  "native": {
+    "evidenceDirectoryName": "20260920T0610338063870Z-disposable-magic-circle-ui",
+    "runId": "20260920T0610338532112Z-6117cc60c0424b72807fc2c91016e089",
+    "status": "PASS",
+    "assertionCount": 56,
+    "steamAppId": 640820,
+    "saveName": "KMG_AUTOMATION_WORKING",
+    "saveWriteObserved": false,
+    "runtimeResultSha256": "27aa84c24b3f2adbc15f84ea973063631630f10ea8f694dceda07e7a1fc93e05",
+    "structuredUiSha256": "589cec25b7cfb2f5ec01988d5d316eff99060ca19889de196845994398432bcf",
+    "nativeScreenManifestSha256": "03454f1e7c2394b4b67ccfe251e48062c775ca3accd14f5b77b1de92c2025711",
+    "assertions": [
+      {
+        "name": "circle-ui-sorcerer-real-candidate-0",
+        "expected": "Sorcerer 5 to 6 displays one enabled canonical Circle candidate at level 3 in the native selector",
+        "observed": "rows=1;level=3;label=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-sorcerer-candidate-icon-0",
+        "expected": "native learning row uses the approved canonical painting",
+        "observed": "icon=KMG_Icon_magic-circle-against-evil",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-sorcerer-real-cancel",
+        "expected": "cancel learns nothing, spends nothing and leaves Sorcerer 5",
+        "observed": "known=False",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-sorcerer-real-candidate-1",
+        "expected": "Sorcerer 5 to 6 displays one enabled canonical Circle candidate at level 3 in the native selector",
+        "observed": "rows=1;level=3;label=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-sorcerer-candidate-icon-1",
+        "expected": "native learning row uses the approved canonical painting",
+        "observed": "icon=KMG_Icon_magic-circle-against-evil",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-sorcerer-real-commit",
+        "expected": "native completion learns the canonical spell in Sorcerer 6 using one normal third-level choice",
+        "observed": "level=6;known=1;callbacks=1",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-newly-learned-cast",
+        "expected": "committed native known spell casts on another bearer for one normal slot",
+        "observed": "slots=4->3",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-row-ec63a7d4606a467f948ba03c19cfa42d",
+        "expected": "native row selects the exact spell, book, level and icon",
+        "observed": "selected=ec63a7d4606a467f948ba03c19cfa42d",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-description-ec63a7d4606a467f948ba03c19cfa42d",
+        "expected": "native description renders the complete active-configuration Circle instructions",
+        "observed": "labels=17",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-prepare-ec63a7d4606a467f948ba03c19cfa42d",
+        "expected": "native row preparation allocates one real preparation and displays its unready slot",
+        "observed": "before=0;after=1;shown=1",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-available-ec63a7d4606a467f948ba03c19cfa42d",
+        "expected": "rested Circle is available and accepts native metamagic",
+        "observed": "available=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-row-8d9b3a1b06c141518230c6dd8aae95ee",
+        "expected": "native row selects the exact spell, book, level and icon",
+        "observed": "selected=8d9b3a1b06c141518230c6dd8aae95ee",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-description-8d9b3a1b06c141518230c6dd8aae95ee",
+        "expected": "native description renders the complete active-configuration Circle instructions",
+        "observed": "labels=17",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-prepare-8d9b3a1b06c141518230c6dd8aae95ee",
+        "expected": "native row preparation allocates one real preparation and displays its unready slot",
+        "observed": "before=0;after=1;shown=1",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-available-8d9b3a1b06c141518230c6dd8aae95ee",
+        "expected": "rested Circle is available and accepts native metamagic",
+        "observed": "available=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-row-d98b1dff1952451989943907617f5b0d",
+        "expected": "native row selects the exact spell, book, level and icon",
+        "observed": "selected=d98b1dff1952451989943907617f5b0d",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-description-d98b1dff1952451989943907617f5b0d",
+        "expected": "native description renders the complete active-configuration Circle instructions",
+        "observed": "labels=17",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-prepare-d98b1dff1952451989943907617f5b0d",
+        "expected": "native row preparation allocates one real preparation and displays its unready slot",
+        "observed": "before=0;after=1;shown=1",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-available-d98b1dff1952451989943907617f5b0d",
+        "expected": "rested Circle is available and accepts native metamagic",
+        "observed": "available=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-row-cafa8a0681b84b00ad4f0e3ff6393c78",
+        "expected": "native row selects the exact spell, book, level and icon",
+        "observed": "selected=cafa8a0681b84b00ad4f0e3ff6393c78",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-description-cafa8a0681b84b00ad4f0e3ff6393c78",
+        "expected": "native description renders the complete active-configuration Circle instructions",
+        "observed": "labels=17",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-prepare-cafa8a0681b84b00ad4f0e3ff6393c78",
+        "expected": "native row preparation allocates one real preparation and displays its unready slot",
+        "observed": "before=0;after=1;shown=1",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-available-cafa8a0681b84b00ad4f0e3ff6393c78",
+        "expected": "rested Circle is available and accepts native metamagic",
+        "observed": "available=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-held-touch-Evil",
+        "expected": "actual held delivery retains original spell and approved icon in the native abilities popup",
+        "observed": "rows=1",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-40d23af78f45430faf881a9a3259efe0",
+        "expected": "native active row shows exact painting, name, description and carrier timer or proximity text",
+        "observed": "{\r\n  \"surface\": \"native-active-circle-buff\",\r\n  \"targetRow\": {\r\n    \"guid\": \"40d23af78f45430faf881a9a3259efe0\",\r\n    \"name\": \"Magic Circle against Evil\",\r\n    \"icon\": \"KMG_Icon_magic-circle-against-evil\",\r\n    \"expectedIcon\": \"KMG_Icon_magic-circle-against-evil\",\r\n    \"timer\": \"1h 20m\",\r\n    \"remainingSeconds\": 4800.0,\r\n    \"description\": \"A 10-foot protective emanation follows this creature for the remaining spell duration. It ends if this creature dies. Each covered creature gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by evil creatures. While within the circle, it prevents new charm, domination, and similar effects that would place a covered creature under the control of a creature of that alignment. It does not remove or suppress a control effect that was already active when the protection was applied.\",\r\n    \"nativeAlpha\": 1.0,\r\n    \"truncated\": false,\r\n    \"owner\": \"d727114d-f3d7-4db6-9771-ade0709cfd6c\",\r\n    \"area\": \"d1f81e23-150e-4e15-a53d-19ee0597191d\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-description-40d23af78f45430faf881a9a3259efe0",
+        "expected": "native tooltip renders configuration-accurate full description",
+        "observed": "shown=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-753de0df0b3c49a0982e37981ddee018",
+        "expected": "native active row shows exact painting, name, description and carrier timer or proximity text",
+        "observed": "{\r\n  \"surface\": \"native-active-circle-buff\",\r\n  \"targetRow\": {\r\n    \"guid\": \"753de0df0b3c49a0982e37981ddee018\",\r\n    \"name\": \"Magic Circle against Evil - Within Circle\",\r\n    \"icon\": \"KMG_Icon_magic-circle-against-evil\",\r\n    \"expectedIcon\": \"KMG_Icon_magic-circle-against-evil\",\r\n    \"timer\": \"Permanent\",\r\n    \"remainingSeconds\": 922337203685.47754,\r\n    \"description\": \"Protection lasts only while within this circle's 10-foot emanation. Leaving removes only this circle's contribution. Each covered creature gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by evil creatures. While within the circle, it prevents new charm, domination, and similar effects that would place a covered creature under the control of a creature of that alignment. It does not remove or suppress a control effect that was already active when the protection was applied. Dispel the bearer's timed circle to end its emanation.\",\r\n    \"nativeAlpha\": 1.0,\r\n    \"truncated\": false,\r\n    \"owner\": \"d727114d-f3d7-4db6-9771-ade0709cfd6c\",\r\n    \"area\": \"d1f81e23-150e-4e15-a53d-19ee0597191d\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-description-753de0df0b3c49a0982e37981ddee018",
+        "expected": "native tooltip renders configuration-accurate full description",
+        "observed": "shown=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-held-touch-Good",
+        "expected": "actual held delivery retains original spell and approved icon in the native abilities popup",
+        "observed": "rows=1",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-b533bfe6409a457d9290dde8b18066ac",
+        "expected": "native active row shows exact painting, name, description and carrier timer or proximity text",
+        "observed": "{\r\n  \"surface\": \"native-active-circle-buff\",\r\n  \"targetRow\": {\r\n    \"guid\": \"b533bfe6409a457d9290dde8b18066ac\",\r\n    \"name\": \"Magic Circle against Good\",\r\n    \"icon\": \"KMG_Icon_magic-circle-against-good\",\r\n    \"expectedIcon\": \"KMG_Icon_magic-circle-against-good\",\r\n    \"timer\": \"1h 20m\",\r\n    \"remainingSeconds\": 4800.0,\r\n    \"description\": \"A 10-foot protective emanation follows this creature for the remaining spell duration. It ends if this creature dies. Each covered creature gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by good creatures. While within the circle, it prevents new charm, domination, and similar effects that would place a covered creature under the control of a creature of that alignment. It does not remove or suppress a control effect that was already active when the protection was applied.\",\r\n    \"nativeAlpha\": 1.0,\r\n    \"truncated\": false,\r\n    \"owner\": \"d727114d-f3d7-4db6-9771-ade0709cfd6c\",\r\n    \"area\": \"b60bc5b0-cabb-48a1-bfc4-59f2c2692e1d\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-description-b533bfe6409a457d9290dde8b18066ac",
+        "expected": "native tooltip renders configuration-accurate full description",
+        "observed": "shown=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-b81680c923aa4ec59b46d12fdb5084fa",
+        "expected": "native active row shows exact painting, name, description and carrier timer or proximity text",
+        "observed": "{\r\n  \"surface\": \"native-active-circle-buff\",\r\n  \"targetRow\": {\r\n    \"guid\": \"b81680c923aa4ec59b46d12fdb5084fa\",\r\n    \"name\": \"Magic Circle against Good - Within Circle\",\r\n    \"icon\": \"KMG_Icon_magic-circle-against-good\",\r\n    \"expectedIcon\": \"KMG_Icon_magic-circle-against-good\",\r\n    \"timer\": \"Permanent\",\r\n    \"remainingSeconds\": 922337203685.47754,\r\n    \"description\": \"Protection lasts only while within this circle's 10-foot emanation. Leaving removes only this circle's contribution. Each covered creature gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by good creatures. While within the circle, it prevents new charm, domination, and similar effects that would place a covered creature under the control of a creature of that alignment. It does not remove or suppress a control effect that was already active when the protection was applied. Dispel the bearer's timed circle to end its emanation.\",\r\n    \"nativeAlpha\": 1.0,\r\n    \"truncated\": false,\r\n    \"owner\": \"d727114d-f3d7-4db6-9771-ade0709cfd6c\",\r\n    \"area\": \"b60bc5b0-cabb-48a1-bfc4-59f2c2692e1d\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-description-b81680c923aa4ec59b46d12fdb5084fa",
+        "expected": "native tooltip renders configuration-accurate full description",
+        "observed": "shown=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-held-touch-Law",
+        "expected": "actual held delivery retains original spell and approved icon in the native abilities popup",
+        "observed": "rows=1",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-ab3b489192dd40e192bc3bac47e816cb",
+        "expected": "native active row shows exact painting, name, description and carrier timer or proximity text",
+        "observed": "{\r\n  \"surface\": \"native-active-circle-buff\",\r\n  \"targetRow\": {\r\n    \"guid\": \"ab3b489192dd40e192bc3bac47e816cb\",\r\n    \"name\": \"Magic Circle against Law\",\r\n    \"icon\": \"KMG_Icon_magic-circle-against-law\",\r\n    \"expectedIcon\": \"KMG_Icon_magic-circle-against-law\",\r\n    \"timer\": \"1h 20m\",\r\n    \"remainingSeconds\": 4800.0,\r\n    \"description\": \"A 10-foot protective emanation follows this creature for the remaining spell duration. It ends if this creature dies. Each covered creature gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by lawful creatures. While within the circle, it prevents new charm, domination, and similar effects that would place a covered creature under the control of a creature of that alignment. It does not remove or suppress a control effect that was already active when the protection was applied.\",\r\n    \"nativeAlpha\": 1.0,\r\n    \"truncated\": false,\r\n    \"owner\": \"d727114d-f3d7-4db6-9771-ade0709cfd6c\",\r\n    \"area\": \"0ea9be31-a2b2-4ef1-945e-e11e40b60d5c\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-description-ab3b489192dd40e192bc3bac47e816cb",
+        "expected": "native tooltip renders configuration-accurate full description",
+        "observed": "shown=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-b17bf64cf088447d87d1258a5c052e38",
+        "expected": "native active row shows exact painting, name, description and carrier timer or proximity text",
+        "observed": "{\r\n  \"surface\": \"native-active-circle-buff\",\r\n  \"targetRow\": {\r\n    \"guid\": \"b17bf64cf088447d87d1258a5c052e38\",\r\n    \"name\": \"Magic Circle against Law - Within Circle\",\r\n    \"icon\": \"KMG_Icon_magic-circle-against-law\",\r\n    \"expectedIcon\": \"KMG_Icon_magic-circle-against-law\",\r\n    \"timer\": \"Permanent\",\r\n    \"remainingSeconds\": 922337203685.47754,\r\n    \"description\": \"Protection lasts only while within this circle's 10-foot emanation. Leaving removes only this circle's contribution. Each covered creature gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by lawful creatures. While within the circle, it prevents new charm, domination, and similar effects that would place a covered creature under the control of a creature of that alignment. It does not remove or suppress a control effect that was already active when the protection was applied. Dispel the bearer's timed circle to end its emanation.\",\r\n    \"nativeAlpha\": 1.0,\r\n    \"truncated\": false,\r\n    \"owner\": \"d727114d-f3d7-4db6-9771-ade0709cfd6c\",\r\n    \"area\": \"0ea9be31-a2b2-4ef1-945e-e11e40b60d5c\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-description-b17bf64cf088447d87d1258a5c052e38",
+        "expected": "native tooltip renders configuration-accurate full description",
+        "observed": "shown=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-held-touch-Chaos",
+        "expected": "actual held delivery retains original spell and approved icon in the native abilities popup",
+        "observed": "rows=1",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-1aae3d67cf06435a959474c4cd0b7796",
+        "expected": "native active row shows exact painting, name, description and carrier timer or proximity text",
+        "observed": "{\r\n  \"surface\": \"native-active-circle-buff\",\r\n  \"targetRow\": {\r\n    \"guid\": \"1aae3d67cf06435a959474c4cd0b7796\",\r\n    \"name\": \"Magic Circle against Chaos\",\r\n    \"icon\": \"KMG_Icon_magic-circle-against-chaos\",\r\n    \"expectedIcon\": \"KMG_Icon_magic-circle-against-chaos\",\r\n    \"timer\": \"1h 20m\",\r\n    \"remainingSeconds\": 4800.0,\r\n    \"description\": \"A 10-foot protective emanation follows this creature for the remaining spell duration. It ends if this creature dies. Each covered creature gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by chaotic creatures. While within the circle, it prevents new charm, domination, and similar effects that would place a covered creature under the control of a creature of that alignment. It does not remove or suppress a control effect that was already active when the protection was applied.\",\r\n    \"nativeAlpha\": 1.0,\r\n    \"truncated\": false,\r\n    \"owner\": \"d727114d-f3d7-4db6-9771-ade0709cfd6c\",\r\n    \"area\": \"15bc570e-3d1f-4492-a364-c62e286f3fbf\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-description-1aae3d67cf06435a959474c4cd0b7796",
+        "expected": "native tooltip renders configuration-accurate full description",
+        "observed": "shown=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-1ee6f15bf4cc42f8ac4c1eb20e30f71f",
+        "expected": "native active row shows exact painting, name, description and carrier timer or proximity text",
+        "observed": "{\r\n  \"surface\": \"native-active-circle-buff\",\r\n  \"targetRow\": {\r\n    \"guid\": \"1ee6f15bf4cc42f8ac4c1eb20e30f71f\",\r\n    \"name\": \"Magic Circle against Chaos - Within Circle\",\r\n    \"icon\": \"KMG_Icon_magic-circle-against-chaos\",\r\n    \"expectedIcon\": \"KMG_Icon_magic-circle-against-chaos\",\r\n    \"timer\": \"Permanent\",\r\n    \"remainingSeconds\": 922337203685.47754,\r\n    \"description\": \"Protection lasts only while within this circle's 10-foot emanation. Leaving removes only this circle's contribution. Each covered creature gains a +2 deflection bonus to Armor Class and a +2 resistance bonus on saving throws against attacks and effects created by chaotic creatures. While within the circle, it prevents new charm, domination, and similar effects that would place a covered creature under the control of a creature of that alignment. It does not remove or suppress a control effect that was already active when the protection was applied. Dispel the bearer's timed circle to end its emanation.\",\r\n    \"nativeAlpha\": 1.0,\r\n    \"truncated\": false,\r\n    \"owner\": \"d727114d-f3d7-4db6-9771-ade0709cfd6c\",\r\n    \"area\": \"15bc570e-3d1f-4492-a364-c62e286f3fbf\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-buff-description-1ee6f15bf4cc42f8ac4c1eb20e30f71f",
+        "expected": "native tooltip renders configuration-accurate full description",
+        "observed": "shown=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-sorcerer-real-cleanup",
+        "expected": "owned Sorcerer removed; exact original party, inventory, money and settings; no save write",
+        "observed": "restored=True",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-sorcerer-real-exceptions",
+        "expected": "no native or mod exception from Sorcerer seed through learned casting and cleanup",
+        "observed": "count=0",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-inventory-icon-04954b1da0964fc288e00abdcf1f82ae",
+        "expected": "real native item slot intentionally shares its alignment-family painting with the associated spell and preserves existing controls",
+        "observed": "{\r\n  \"surface\": \"native-scroll-inventory\",\r\n  \"targetRow\": {\r\n    \"name\": \"Scroll of Magic Circle against Evil\",\r\n    \"itemGuid\": \"04954b1da0964fc288e00abdcf1f82ae\",\r\n    \"spellGuid\": \"ec63a7d4606a467f948ba03c19cfa42d\",\r\n    \"iconName\": \"KMG_Icon_magic-circle-against-evil\",\r\n    \"expectedIconKey\": \"magic-circle-against-evil\",\r\n    \"renderedIconExact\": true,\r\n    \"scrollIconExact\": true,\r\n    \"spellIconDistinctFromItem\": false,\r\n    \"itemReferenceRetained\": true,\r\n    \"itemCount\": 1,\r\n    \"charges\": 1,\r\n    \"identified\": true,\r\n    \"otherItemRows\": 17,\r\n    \"otherItemIconsExact\": true,\r\n    \"familySharing\": \"same approved alignment painting on native spell, held touch, carrier, recipient and scroll\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-inventory-description-04954b1da0964fc288e00abdcf1f82ae",
+        "expected": "actual native item description displays the exact scroll name and matching icon",
+        "observed": "{\r\n  \"surface\": \"native-scroll-description\",\r\n  \"targetRow\": {\r\n    \"name\": \"Scroll of Magic Circle against Evil\",\r\n    \"itemGuid\": \"04954b1da0964fc288e00abdcf1f82ae\",\r\n    \"spellGuid\": \"ec63a7d4606a467f948ba03c19cfa42d\",\r\n    \"iconName\": \"KMG_Icon_magic-circle-against-evil\",\r\n    \"expectedIconKey\": \"magic-circle-against-evil\",\r\n    \"renderedIconExact\": true,\r\n    \"scrollIconExact\": true,\r\n    \"spellIconDistinctFromItem\": false,\r\n    \"itemReferenceRetained\": true,\r\n    \"itemCount\": 1,\r\n    \"charges\": 1,\r\n    \"identified\": true,\r\n    \"otherItemRows\": 17,\r\n    \"otherItemIconsExact\": true,\r\n    \"familySharing\": \"same approved alignment painting on native spell, held touch, carrier, recipient and scroll\"\r\n  },\r\n  \"description\": {\r\n    \"nameExact\": true,\r\n    \"matchingIcons\": 1,\r\n    \"tooltipItemExact\": true,\r\n    \"tooltipDataItemExact\": true,\r\n    \"shown\": true\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-inventory-icon-f8ef52b288bc4c369c51a1fa754db605",
+        "expected": "real native item slot intentionally shares its alignment-family painting with the associated spell and preserves existing controls",
+        "observed": "{\r\n  \"surface\": \"native-scroll-inventory\",\r\n  \"targetRow\": {\r\n    \"name\": \"Scroll of Magic Circle against Good\",\r\n    \"itemGuid\": \"f8ef52b288bc4c369c51a1fa754db605\",\r\n    \"spellGuid\": \"8d9b3a1b06c141518230c6dd8aae95ee\",\r\n    \"iconName\": \"KMG_Icon_magic-circle-against-good\",\r\n    \"expectedIconKey\": \"magic-circle-against-good\",\r\n    \"renderedIconExact\": true,\r\n    \"scrollIconExact\": true,\r\n    \"spellIconDistinctFromItem\": false,\r\n    \"itemReferenceRetained\": true,\r\n    \"itemCount\": 1,\r\n    \"charges\": 1,\r\n    \"identified\": true,\r\n    \"otherItemRows\": 17,\r\n    \"otherItemIconsExact\": true,\r\n    \"familySharing\": \"same approved alignment painting on native spell, held touch, carrier, recipient and scroll\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-inventory-description-f8ef52b288bc4c369c51a1fa754db605",
+        "expected": "actual native item description displays the exact scroll name and matching icon",
+        "observed": "{\r\n  \"surface\": \"native-scroll-description\",\r\n  \"targetRow\": {\r\n    \"name\": \"Scroll of Magic Circle against Good\",\r\n    \"itemGuid\": \"f8ef52b288bc4c369c51a1fa754db605\",\r\n    \"spellGuid\": \"8d9b3a1b06c141518230c6dd8aae95ee\",\r\n    \"iconName\": \"KMG_Icon_magic-circle-against-good\",\r\n    \"expectedIconKey\": \"magic-circle-against-good\",\r\n    \"renderedIconExact\": true,\r\n    \"scrollIconExact\": true,\r\n    \"spellIconDistinctFromItem\": false,\r\n    \"itemReferenceRetained\": true,\r\n    \"itemCount\": 1,\r\n    \"charges\": 1,\r\n    \"identified\": true,\r\n    \"otherItemRows\": 17,\r\n    \"otherItemIconsExact\": true,\r\n    \"familySharing\": \"same approved alignment painting on native spell, held touch, carrier, recipient and scroll\"\r\n  },\r\n  \"description\": {\r\n    \"nameExact\": true,\r\n    \"matchingIcons\": 1,\r\n    \"tooltipItemExact\": true,\r\n    \"tooltipDataItemExact\": true,\r\n    \"shown\": true\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-inventory-icon-c6342ebc91c54c82a43f985aa8e225bd",
+        "expected": "real native item slot intentionally shares its alignment-family painting with the associated spell and preserves existing controls",
+        "observed": "{\r\n  \"surface\": \"native-scroll-inventory\",\r\n  \"targetRow\": {\r\n    \"name\": \"Scroll of Magic Circle against Law\",\r\n    \"itemGuid\": \"c6342ebc91c54c82a43f985aa8e225bd\",\r\n    \"spellGuid\": \"d98b1dff1952451989943907617f5b0d\",\r\n    \"iconName\": \"KMG_Icon_magic-circle-against-law\",\r\n    \"expectedIconKey\": \"magic-circle-against-law\",\r\n    \"renderedIconExact\": true,\r\n    \"scrollIconExact\": true,\r\n    \"spellIconDistinctFromItem\": false,\r\n    \"itemReferenceRetained\": true,\r\n    \"itemCount\": 1,\r\n    \"charges\": 1,\r\n    \"identified\": true,\r\n    \"otherItemRows\": 17,\r\n    \"otherItemIconsExact\": true,\r\n    \"familySharing\": \"same approved alignment painting on native spell, held touch, carrier, recipient and scroll\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-inventory-description-c6342ebc91c54c82a43f985aa8e225bd",
+        "expected": "actual native item description displays the exact scroll name and matching icon",
+        "observed": "{\r\n  \"surface\": \"native-scroll-description\",\r\n  \"targetRow\": {\r\n    \"name\": \"Scroll of Magic Circle against Law\",\r\n    \"itemGuid\": \"c6342ebc91c54c82a43f985aa8e225bd\",\r\n    \"spellGuid\": \"d98b1dff1952451989943907617f5b0d\",\r\n    \"iconName\": \"KMG_Icon_magic-circle-against-law\",\r\n    \"expectedIconKey\": \"magic-circle-against-law\",\r\n    \"renderedIconExact\": true,\r\n    \"scrollIconExact\": true,\r\n    \"spellIconDistinctFromItem\": false,\r\n    \"itemReferenceRetained\": true,\r\n    \"itemCount\": 1,\r\n    \"charges\": 1,\r\n    \"identified\": true,\r\n    \"otherItemRows\": 17,\r\n    \"otherItemIconsExact\": true,\r\n    \"familySharing\": \"same approved alignment painting on native spell, held touch, carrier, recipient and scroll\"\r\n  },\r\n  \"description\": {\r\n    \"nameExact\": true,\r\n    \"matchingIcons\": 1,\r\n    \"tooltipItemExact\": true,\r\n    \"tooltipDataItemExact\": true,\r\n    \"shown\": true\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-inventory-icon-4c7d27edc91246f5b3557ca480af941c",
+        "expected": "real native item slot intentionally shares its alignment-family painting with the associated spell and preserves existing controls",
+        "observed": "{\r\n  \"surface\": \"native-scroll-inventory\",\r\n  \"targetRow\": {\r\n    \"name\": \"Scroll of Magic Circle against Chaos\",\r\n    \"itemGuid\": \"4c7d27edc91246f5b3557ca480af941c\",\r\n    \"spellGuid\": \"cafa8a0681b84b00ad4f0e3ff6393c78\",\r\n    \"iconName\": \"KMG_Icon_magic-circle-against-chaos\",\r\n    \"expectedIconKey\": \"magic-circle-against-chaos\",\r\n    \"renderedIconExact\": true,\r\n    \"scrollIconExact\": true,\r\n    \"spellIconDistinctFromItem\": false,\r\n    \"itemReferenceRetained\": true,\r\n    \"itemCount\": 1,\r\n    \"charges\": 1,\r\n    \"identified\": true,\r\n    \"otherItemRows\": 17,\r\n    \"otherItemIconsExact\": true,\r\n    \"familySharing\": \"same approved alignment painting on native spell, held touch, carrier, recipient and scroll\"\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-inventory-description-4c7d27edc91246f5b3557ca480af941c",
+        "expected": "actual native item description displays the exact scroll name and matching icon",
+        "observed": "{\r\n  \"surface\": \"native-scroll-description\",\r\n  \"targetRow\": {\r\n    \"name\": \"Scroll of Magic Circle against Chaos\",\r\n    \"itemGuid\": \"4c7d27edc91246f5b3557ca480af941c\",\r\n    \"spellGuid\": \"cafa8a0681b84b00ad4f0e3ff6393c78\",\r\n    \"iconName\": \"KMG_Icon_magic-circle-against-chaos\",\r\n    \"expectedIconKey\": \"magic-circle-against-chaos\",\r\n    \"renderedIconExact\": true,\r\n    \"scrollIconExact\": true,\r\n    \"spellIconDistinctFromItem\": false,\r\n    \"itemReferenceRetained\": true,\r\n    \"itemCount\": 1,\r\n    \"charges\": 1,\r\n    \"identified\": true,\r\n    \"otherItemRows\": 17,\r\n    \"otherItemIconsExact\": true,\r\n    \"familySharing\": \"same approved alignment painting on native spell, held touch, carrier, recipient and scroll\"\r\n  },\r\n  \"description\": {\r\n    \"nameExact\": true,\r\n    \"matchingIcons\": 1,\r\n    \"tooltipItemExact\": true,\r\n    \"tooltipDataItemExact\": true,\r\n    \"shown\": true\r\n  }\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-inventory-icon-cleanup",
+        "expected": "exact original item references/order/counts/indices/identification/charges/icons, gold, filters, group and closed windows; zero writes",
+        "observed": "{\r\n  \"surface\": \"native-scroll-inventory\",\r\n  \"status\": \"four-native-scroll-slots-and-descriptions-captured\",\r\n  \"checks\": {\r\n    \"itemReferencesAndOrder\": true,\r\n    \"itemScalarsAndIcons\": true,\r\n    \"money\": true,\r\n    \"tabsClosed\": true,\r\n    \"inventoryClosed\": true,\r\n    \"descriptionClosed\": true,\r\n    \"filter\": true,\r\n    \"sorter\": true,\r\n    \"filterSave\": true,\r\n    \"savedFilter\": true,\r\n    \"savedSorter\": true,\r\n    \"sheetCharacter\": true,\r\n    \"sheetSection\": true,\r\n    \"group\": true,\r\n    \"zeroSaveWrites\": true\r\n  },\r\n  \"restored\": true,\r\n  \"originalItemCount\": 29,\r\n  \"temporaryItemCount\": 4\r\n}",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-exceptions",
+        "expected": "no native or mod exception through UI cleanup",
+        "observed": "count=0",
+        "status": "PASS"
+      },
+      {
+        "name": "circle-ui-world-cleanup",
+        "expected": "original units, party, areas, buff instances, positions, UI, time and zero save writes",
+        "observed": "units=622",
+        "status": "PASS"
+      }
+    ]
+  },
+  "visualInspection": {
+    "status": "Native desktop checkpoint inspected; exact owner export approval remains separate",
+    "resolution": [
+      1280,
+      720
+    ],
+    "visibleConsumers": 20,
+    "familySharing": "Five roles per alignment share its exact approved painting: root, held delivery, carrier, proximity recipient, scroll. Four area blueprints have no icon surface.",
+    "findings": [
+      "Four distinct approved silhouettes render in native spellbook, held-charge popup, buff rows and scroll slots/tooltips. Native borders/counters remain native.",
+      "Carrier rows display 1h 20m at CL8. Recipient title includes Within Circle and its full tooltip explicitly describes source-owned proximity. Native engine labels untimed derivative rows Permanent.",
+      "Native generated target summary says burst; authored description correctly says moving emanation. No global tooltip patch was added.",
+      "Long spell/scroll descriptions use the native scrollable description view; native text is not truncated.",
+      "Blank portraits and long fixture names belong only to disposable actors; no player portrait assets changed."
+    ],
+    "inspectedScreens": [
+      {
+        "stage": "spell-description-ec63a7d4606a467f948ba03c19cfa42d",
+        "file": "native-ui-002.png",
+        "sha256": "f7e5f5445ec6d19b8b5f5841d7339d49123fc5164b97a9909c5a8b222f701e05"
+      },
+      {
+        "stage": "spell-description-8d9b3a1b06c141518230c6dd8aae95ee",
+        "file": "native-ui-004.png",
+        "sha256": "3c8f36fd8765347a71d643b95eb45e0adc8de9538485a1d7cb58c7a0786454a2"
+      },
+      {
+        "stage": "spell-description-d98b1dff1952451989943907617f5b0d",
+        "file": "native-ui-006.png",
+        "sha256": "06b0c582d742a52c9b39b6f273315364b6a8c225ee0eced5d09b73e8048028d6"
+      },
+      {
+        "stage": "spell-description-cafa8a0681b84b00ad4f0e3ff6393c78",
+        "file": "native-ui-008.png",
+        "sha256": "0a23a9ef481f5d39e3a7ecb2cc0d641ebd1967e6e8918b4a5e86884ff610396c"
+      },
+      {
+        "stage": "held-touch-Evil",
+        "file": "native-ui-010.png",
+        "sha256": "582355454ec9197edd567aabe8d508d03f9658f45be2cc8572cdd58627b55c21"
+      },
+      {
+        "stage": "buff-40d23af78f45430faf881a9a3259efe0",
+        "file": "native-ui-011.png",
+        "sha256": "e1bceaa02181af9141450888fe881528e2b91b3565eeee93544a8da3e7f02c00"
+      },
+      {
+        "stage": "buff-description-753de0df0b3c49a0982e37981ddee018",
+        "file": "native-ui-014.png",
+        "sha256": "ca5766df90405565e9993a72a8af959ffa6a6105de4f0d6ae0866907764acf9b"
+      },
+      {
+        "stage": "held-touch-Good",
+        "file": "native-ui-015.png",
+        "sha256": "5d5754912707152fc1956ba413dea97f366561d300353560b8051d16d5452eed"
+      },
+      {
+        "stage": "buff-b533bfe6409a457d9290dde8b18066ac",
+        "file": "native-ui-016.png",
+        "sha256": "6e0f8e7a7b879bde3cfcef25b843e42b70062d46dd2510271ead53d6b6be858e"
+      },
+      {
+        "stage": "buff-description-b533bfe6409a457d9290dde8b18066ac",
+        "file": "native-ui-017.png",
+        "sha256": "3595997f359f1b87a3605a58dc21dec0440de30a04915538eb97f6bdcf01758f"
+      },
+      {
+        "stage": "held-touch-Law",
+        "file": "native-ui-020.png",
+        "sha256": "c429efb3cbf0af2a06f789a0af02d86f912542a534241334f1a198d24883e790"
+      },
+      {
+        "stage": "buff-ab3b489192dd40e192bc3bac47e816cb",
+        "file": "native-ui-021.png",
+        "sha256": "a98911d272fb5c23eef625694faf389806a2a1261fc9a2f2b5156b51fbe1dc0e"
+      },
+      {
+        "stage": "buff-description-b17bf64cf088447d87d1258a5c052e38",
+        "file": "native-ui-024.png",
+        "sha256": "397692c151c27bffb9a65624c7a5cdfe75526f94ac8ef6b3485ff0759eaa346d"
+      },
+      {
+        "stage": "held-touch-Chaos",
+        "file": "native-ui-025.png",
+        "sha256": "edb088f1053b4c43bfb7c2ab92828c58806397d4960af0a93cbd5407ee21c91b"
+      },
+      {
+        "stage": "buff-1aae3d67cf06435a959474c4cd0b7796",
+        "file": "native-ui-026.png",
+        "sha256": "0d2134ece92db6e4e18dd1782571fba5ae7ac2e073b0d927317d9e4646856030"
+      },
+      {
+        "stage": "buff-description-1aae3d67cf06435a959474c4cd0b7796",
+        "file": "native-ui-027.png",
+        "sha256": "ed1ad01618034ebbac897feb56ad66712c274fa07c7e98a4586e5d99d2e8b9ae"
+      },
+      {
+        "stage": "native-scroll-description:04954b1da0964fc288e00abdcf1f82ae",
+        "file": "native-ui-031.png",
+        "sha256": "0d4ae6beaa4100eeb580f18cbba23016b79261ae2d6c8aa9d2160e03aa7a7fd1"
+      },
+      {
+        "stage": "native-scroll-description:f8ef52b288bc4c369c51a1fa754db605",
+        "file": "native-ui-033.png",
+        "sha256": "e2b0191c0e4ab701ea69d3ca8a1746952ad03df6d4435f3cd9da931e4fcf256f"
+      },
+      {
+        "stage": "native-scroll-description:c6342ebc91c54c82a43f985aa8e225bd",
+        "file": "native-ui-035.png",
+        "sha256": "9d5d36a8870f9a3d7000aaa92b94c43608c8f8f2c27de92ea2090ecebc6b3c05"
+      },
+      {
+        "stage": "native-scroll-description:4c7d27edc91246f5b3557ca480af941c",
+        "file": "native-ui-037.png",
+        "sha256": "0be63d7b9c7e201958328a7ee13bad1658499247d0f8ce379b701d5447909eb5"
+      }
+    ],
+    "ownerExportApproval": "reports/magic-circle/OWNER-DECISIONS.json",
+    "ownerNativeUiApproval": "Not claimed; no new pixel approval inferred from tests."
+  },
+  "limits": [
+    "Startup content/control were ON; OFF descriptions and final frozen artifact/profile checks remain.",
+    "This run proves real Sorcerer cancellation/commit and single-variant learning, then a request-owned Wizard book for prepared presentation; it does not claim Wizard level-up learning.",
+    "Screenshots support visual inspection only; rule outcomes come from structured production-path assertions.",
+    "No campaign or baseline save writes, uninstall-safety claim, or full feature release acceptance."
+  ]
+}
