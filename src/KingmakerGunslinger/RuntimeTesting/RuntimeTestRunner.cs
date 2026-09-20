@@ -1122,6 +1122,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _context, _request));
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile)
+                {
+                    Complete(RunMagicCircleProfileNative());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveMagicCircleNativeContracts)
                 {
                     Complete(RunMagicCircleNativeAudit());

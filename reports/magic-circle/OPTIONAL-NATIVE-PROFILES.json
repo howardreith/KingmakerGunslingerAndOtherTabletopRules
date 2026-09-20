@@ -1,0 +1,1008 @@
+{
+  "schemaVersion": 1,
+  "scope": "Final candidate native save-free present/absent profiles. Real cast/control/typed-rule/list evidence; no terrain, native UI, navigation, travel or disk hydration claim.",
+  "packageSha256": "fc440dbfb38d5496f6afeaa8cc97fd61fc85d27b928fc85a5c5b181707781d75",
+  "runs": [
+    {
+      "evidenceDirectoryName": "20260920T0902289993018Z-disposable-magic-circle-profile",
+      "runId": "20260920T0902290236586Z-37265c714962484da057f66084fcf047",
+      "scenario": "disposable-magic-circle-profile",
+      "status": "PASS",
+      "assertionCounts": {
+        "PASS": 67
+      },
+      "runtimeResultSha256": "1f4a5533c84a8c9c830f50ebf50436200957fb1bc73d7e68ab24d3bd2bd2c6da",
+      "loadedIdentitySha256": "8151731b727d0a96b1a31ff68cd8c587f6d792840b4baab8bd40213ed92b7136",
+      "dllSha256": "a5f8f6a759c672d367ae00a794dd013bb8075b1595e4dd9c3c2519209cac6057",
+      "mvid": "ea9ac240-4984-421b-b2e1-4336fa5770c6",
+      "automaticExitRequested": true,
+      "automaticExitInitiated": true,
+      "assertions": [
+        {
+          "name": "circle-family-evil-unprotected-positive",
+          "status": "PASS",
+          "expected": "native control spell really applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-native-cast-and-defenses",
+          "status": "PASS",
+          "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+          "observed": "source=b950c1c7-d036-432e-865d-2b965c066537"
+        },
+        {
+          "name": "circle-family-evil-matching-control-cast",
+          "status": "PASS",
+          "expected": "RuleApplyBuff veto",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-nonmatching-ChaoticGood",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-nonmatching-TrueNeutral",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-terminal-only",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-public-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open through public AddBuff cloning",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-evil-exit-cleanup",
+          "status": "PASS",
+          "expected": "only this cast removed",
+          "observed": "recipient=0"
+        },
+        {
+          "name": "circle-family-evil-individual-native-cast",
+          "status": "PASS",
+          "expected": "one first-level slot and original individual duration",
+          "observed": "seconds=480"
+        },
+        {
+          "name": "circle-family-evil-individual-matching-control",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-individual-public-unresolved",
+          "status": "PASS",
+          "expected": "fail-open in the shared Protection family",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-good-unprotected-positive",
+          "status": "PASS",
+          "expected": "native control spell really applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-native-cast-and-defenses",
+          "status": "PASS",
+          "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+          "observed": "source=b950c1c7-d036-432e-865d-2b965c066537"
+        },
+        {
+          "name": "circle-family-good-matching-control-cast",
+          "status": "PASS",
+          "expected": "RuleApplyBuff veto",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-nonmatching-LawfulEvil",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-nonmatching-TrueNeutral",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-terminal-only",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-public-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open through public AddBuff cloning",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-good-exit-cleanup",
+          "status": "PASS",
+          "expected": "only this cast removed",
+          "observed": "recipient=0"
+        },
+        {
+          "name": "circle-family-good-individual-native-cast",
+          "status": "PASS",
+          "expected": "one first-level slot and original individual duration",
+          "observed": "seconds=480"
+        },
+        {
+          "name": "circle-family-good-individual-matching-control",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-individual-public-unresolved",
+          "status": "PASS",
+          "expected": "fail-open in the shared Protection family",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-law-unprotected-positive",
+          "status": "PASS",
+          "expected": "native control spell really applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-native-cast-and-defenses",
+          "status": "PASS",
+          "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+          "observed": "source=b950c1c7-d036-432e-865d-2b965c066537"
+        },
+        {
+          "name": "circle-family-law-matching-control-cast",
+          "status": "PASS",
+          "expected": "RuleApplyBuff veto",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-nonmatching-ChaoticEvil",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-nonmatching-TrueNeutral",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-terminal-only",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-public-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open through public AddBuff cloning",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-law-exit-cleanup",
+          "status": "PASS",
+          "expected": "only this cast removed",
+          "observed": "recipient=0"
+        },
+        {
+          "name": "circle-family-law-individual-native-cast",
+          "status": "PASS",
+          "expected": "one first-level slot and original individual duration",
+          "observed": "seconds=480"
+        },
+        {
+          "name": "circle-family-law-individual-matching-control",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-individual-public-unresolved",
+          "status": "PASS",
+          "expected": "fail-open in the shared Protection family",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-chaos-unprotected-positive",
+          "status": "PASS",
+          "expected": "native control spell really applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-native-cast-and-defenses",
+          "status": "PASS",
+          "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+          "observed": "source=b950c1c7-d036-432e-865d-2b965c066537"
+        },
+        {
+          "name": "circle-family-chaos-matching-control-cast",
+          "status": "PASS",
+          "expected": "RuleApplyBuff veto",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-nonmatching-LawfulGood",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-nonmatching-TrueNeutral",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-terminal-only",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-public-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open through public AddBuff cloning",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-chaos-exit-cleanup",
+          "status": "PASS",
+          "expected": "only this cast removed",
+          "observed": "recipient=0"
+        },
+        {
+          "name": "circle-family-chaos-individual-native-cast",
+          "status": "PASS",
+          "expected": "one first-level slot and original individual duration",
+          "observed": "seconds=480"
+        },
+        {
+          "name": "circle-family-chaos-individual-matching-control",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-individual-public-unresolved",
+          "status": "PASS",
+          "expected": "fail-open in the shared Protection family",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-publication-ClericSpellList",
+          "status": "PASS",
+          "expected": "exact legitimate level-three variants after repeated publication and rollback",
+          "observed": "ClericSpellList"
+        },
+        {
+          "name": "circle-publication-WizardSpellList",
+          "status": "PASS",
+          "expected": "exact legitimate level-three variants after repeated publication and rollback",
+          "observed": "WizardSpellList"
+        },
+        {
+          "name": "circle-publication-InquisitorSpellList",
+          "status": "PASS",
+          "expected": "exact legitimate level-three variants after repeated publication and rollback",
+          "observed": "InquisitorSpellList"
+        },
+        {
+          "name": "circle-publication-PaladinSpellList",
+          "status": "PASS",
+          "expected": "exact legitimate level-three variants after repeated publication and rollback",
+          "observed": "PaladinSpellList"
+        },
+        {
+          "name": "circle-optional-class-Oracle",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-class-Warpriest",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-class-Summoner",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-class-Shaman",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-class-Spiritualist",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-class-Occultist",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-class-Antipaladin",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-inherited-ArcanistPrepared",
+          "status": "PASS",
+          "expected": "actual inherited list exposes only entitled variants",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-inherited-ArcanistSpontaneous",
+          "status": "PASS",
+          "expected": "actual inherited list exposes only entitled variants",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-inherited-UnletteredPrepared",
+          "status": "PASS",
+          "expected": "actual inherited list exposes only entitled variants",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-inherited-UnletteredSpontaneous",
+          "status": "PASS",
+          "expected": "actual inherited list exposes only entitled variants",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-implement-Occultist",
+          "status": "PASS",
+          "expected": "Abjuration choices retain actual class/list/level ownership",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-optional-implement-RelicHunter",
+          "status": "PASS",
+          "expected": "Abjuration choices retain actual class/list/level ownership",
+          "observed": "present=False"
+        },
+        {
+          "name": "circle-publication-native-ownership",
+          "status": "PASS",
+          "expected": "cache invalidation/idempotence; foreign replacement and component survive rollback",
+          "observed": "cache=True;once=True"
+        },
+        {
+          "name": "circle-profile-native-scope-restored",
+          "status": "PASS",
+          "expected": "original empty player/world/menu/inventory/services restored; no save load/write attempted",
+          "observed": "restored=True;blockedAttempts=0"
+        }
+      ],
+      "featureEvidenceSha256": {
+        "magic-circle-native-profile.json": "84a7f795ea8983b4002b9c6e29692e56c393eb1aad7541f799b0c6b0d08c4736"
+      },
+      "installedProfile": {
+        "evidenceFile": "compatibility-attribution-log-gunslinger-only-disposable-magic-circle-profile.json",
+        "evidenceSha256": "f82afff5bbb343d8549320b935ca1d04a50fc031bc2f97ae86d44b21c95e318b",
+        "settingsSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+        "settings": {
+          "schemaVersion": 12,
+          "gunslinger": true,
+          "acadamae-graduate": true,
+          "shield-other": true,
+          "expanded-summoning": true,
+          "elven-branched-spears": true,
+          "eastern-weapons": true,
+          "brown-fur-transmuter": true,
+          "urban-barbarian": true,
+          "bodyguard-feats": true,
+          "protection-from-alignment-control-immunity": true,
+          "elemental-races": true,
+          "teleportation-spells": true,
+          "magic-circle-spells": true
+        },
+        "mods": [
+          {
+            "directory": "KingmakerGunslinger",
+            "ummId": "KingmakerGunslinger",
+            "version": "0.0.132",
+            "infoSha256": "3150D46026DD9ACA3C83B8EAF845511D5EABC40B9AEEF57D954F14795F658178",
+            "assemblies": [
+              {
+                "name": "KingmakerGunslinger.dll",
+                "sha256": "A5F8F6A759C672D367AE00A794DD013BB8075B1595E4DD9C3C2519209CAC6057",
+                "mvid": "ea9ac240-4984-421b-b2e1-4336fa5770c6"
+              }
+            ]
+          }
+        ],
+        "startupLogSha256": "85a801e46137924811423c5263a43d853eb2c78ba98d29c8102fa60a5f8199b3"
+      },
+      "profileId": "gunslinger-only",
+      "nativeGameVersion": "2.1.7b",
+      "blockedSaveOrLoadAttempts": 0,
+      "saveGuardsRemoved": true,
+      "hostRestored": true,
+      "nativeModeRestored": true,
+      "profileTransaction": {
+        "runId": "compat-20260920T090142Z-d69fca26be9b",
+        "profileId": "gunslinger-only",
+        "status": "Restored",
+        "restorationVerified": true,
+        "restoredAtUtc": "2026-09-20T09:03:51.7952491Z"
+      }
+    },
+    {
+      "evidenceDirectoryName": "20260920T0906496941164Z-disposable-magic-circle-profile",
+      "runId": "20260920T0906496941164Z-0ea64f32344e471288e3b19fe5923962",
+      "scenario": "disposable-magic-circle-profile",
+      "status": "PASS",
+      "assertionCounts": {
+        "PASS": 67
+      },
+      "runtimeResultSha256": "a519b7760914cf984fcaeb5f48d87a40d6b8c07f5376596abd8f069bd834fdbe",
+      "loadedIdentitySha256": "52cea1d4fd1187f3f40b9118bff01fa25cba7d2e866d7be0f26ad167a5d96ff9",
+      "dllSha256": "a5f8f6a759c672d367ae00a794dd013bb8075b1595e4dd9c3c2519209cac6057",
+      "mvid": "ea9ac240-4984-421b-b2e1-4336fa5770c6",
+      "automaticExitRequested": true,
+      "automaticExitInitiated": true,
+      "assertions": [
+        {
+          "name": "circle-family-evil-unprotected-positive",
+          "status": "PASS",
+          "expected": "native control spell really applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-native-cast-and-defenses",
+          "status": "PASS",
+          "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+          "observed": "source=863666e9-5735-40a8-b1a7-ca07ee250171"
+        },
+        {
+          "name": "circle-family-evil-matching-control-cast",
+          "status": "PASS",
+          "expected": "RuleApplyBuff veto",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-nonmatching-ChaoticGood",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-nonmatching-TrueNeutral",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-terminal-only",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-public-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open through public AddBuff cloning",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-evil-exit-cleanup",
+          "status": "PASS",
+          "expected": "only this cast removed",
+          "observed": "recipient=0"
+        },
+        {
+          "name": "circle-family-evil-individual-native-cast",
+          "status": "PASS",
+          "expected": "one first-level slot and original individual duration",
+          "observed": "seconds=480"
+        },
+        {
+          "name": "circle-family-evil-individual-matching-control",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-evil-individual-public-unresolved",
+          "status": "PASS",
+          "expected": "fail-open in the shared Protection family",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-good-unprotected-positive",
+          "status": "PASS",
+          "expected": "native control spell really applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-native-cast-and-defenses",
+          "status": "PASS",
+          "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+          "observed": "source=863666e9-5735-40a8-b1a7-ca07ee250171"
+        },
+        {
+          "name": "circle-family-good-matching-control-cast",
+          "status": "PASS",
+          "expected": "RuleApplyBuff veto",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-nonmatching-LawfulEvil",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-nonmatching-TrueNeutral",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-terminal-only",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-public-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open through public AddBuff cloning",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-good-exit-cleanup",
+          "status": "PASS",
+          "expected": "only this cast removed",
+          "observed": "recipient=0"
+        },
+        {
+          "name": "circle-family-good-individual-native-cast",
+          "status": "PASS",
+          "expected": "one first-level slot and original individual duration",
+          "observed": "seconds=480"
+        },
+        {
+          "name": "circle-family-good-individual-matching-control",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-good-individual-public-unresolved",
+          "status": "PASS",
+          "expected": "fail-open in the shared Protection family",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-law-unprotected-positive",
+          "status": "PASS",
+          "expected": "native control spell really applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-native-cast-and-defenses",
+          "status": "PASS",
+          "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+          "observed": "source=863666e9-5735-40a8-b1a7-ca07ee250171"
+        },
+        {
+          "name": "circle-family-law-matching-control-cast",
+          "status": "PASS",
+          "expected": "RuleApplyBuff veto",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-nonmatching-ChaoticEvil",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-nonmatching-TrueNeutral",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-terminal-only",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-public-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open through public AddBuff cloning",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-law-exit-cleanup",
+          "status": "PASS",
+          "expected": "only this cast removed",
+          "observed": "recipient=0"
+        },
+        {
+          "name": "circle-family-law-individual-native-cast",
+          "status": "PASS",
+          "expected": "one first-level slot and original individual duration",
+          "observed": "seconds=480"
+        },
+        {
+          "name": "circle-family-law-individual-matching-control",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-law-individual-public-unresolved",
+          "status": "PASS",
+          "expected": "fail-open in the shared Protection family",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-chaos-unprotected-positive",
+          "status": "PASS",
+          "expected": "native control spell really applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-native-cast-and-defenses",
+          "status": "PASS",
+          "expected": "correct descriptor, one slot, caster/bearer context, +2 typed defenses",
+          "observed": "source=863666e9-5735-40a8-b1a7-ca07ee250171"
+        },
+        {
+          "name": "circle-family-chaos-matching-control-cast",
+          "status": "PASS",
+          "expected": "RuleApplyBuff veto",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-nonmatching-LawfulGood",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-nonmatching-TrueNeutral",
+          "status": "PASS",
+          "expected": "native control applies",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-terminal-only",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=True;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-public-unresolved-source",
+          "status": "PASS",
+          "expected": "fail-open through public AddBuff cloning",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-family-chaos-exit-cleanup",
+          "status": "PASS",
+          "expected": "only this cast removed",
+          "observed": "recipient=0"
+        },
+        {
+          "name": "circle-family-chaos-individual-native-cast",
+          "status": "PASS",
+          "expected": "one first-level slot and original individual duration",
+          "observed": "seconds=480"
+        },
+        {
+          "name": "circle-family-chaos-individual-matching-control",
+          "status": "PASS",
+          "expected": "blocked",
+          "observed": "failedSaves=1;passedSaves=0;applications=1;canApply=False;sourceMissing=False;nativeOwnerFallback=False"
+        },
+        {
+          "name": "circle-family-chaos-individual-public-unresolved",
+          "status": "PASS",
+          "expected": "fail-open in the shared Protection family",
+          "observed": "failedSaves=0;passedSaves=0;applications=1;canApply=True;sourceMissing=False;nativeOwnerFallback=True"
+        },
+        {
+          "name": "circle-publication-ClericSpellList",
+          "status": "PASS",
+          "expected": "exact legitimate level-three variants after repeated publication and rollback",
+          "observed": "ClericSpellList"
+        },
+        {
+          "name": "circle-publication-WizardSpellList",
+          "status": "PASS",
+          "expected": "exact legitimate level-three variants after repeated publication and rollback",
+          "observed": "WizardSpellList"
+        },
+        {
+          "name": "circle-publication-InquisitorSpellList",
+          "status": "PASS",
+          "expected": "exact legitimate level-three variants after repeated publication and rollback",
+          "observed": "InquisitorSpellList"
+        },
+        {
+          "name": "circle-publication-PaladinSpellList",
+          "status": "PASS",
+          "expected": "exact legitimate level-three variants after repeated publication and rollback",
+          "observed": "PaladinSpellList"
+        },
+        {
+          "name": "circle-optional-class-Oracle",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-class-Warpriest",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-class-Summoner",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-class-Shaman",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-class-Spiritualist",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-class-Occultist",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-class-Antipaladin",
+          "status": "PASS",
+          "expected": "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-inherited-ArcanistPrepared",
+          "status": "PASS",
+          "expected": "actual inherited list exposes only entitled variants",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-inherited-ArcanistSpontaneous",
+          "status": "PASS",
+          "expected": "actual inherited list exposes only entitled variants",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-inherited-UnletteredPrepared",
+          "status": "PASS",
+          "expected": "actual inherited list exposes only entitled variants",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-inherited-UnletteredSpontaneous",
+          "status": "PASS",
+          "expected": "actual inherited list exposes only entitled variants",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-implement-Occultist",
+          "status": "PASS",
+          "expected": "Abjuration choices retain actual class/list/level ownership",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-optional-implement-RelicHunter",
+          "status": "PASS",
+          "expected": "Abjuration choices retain actual class/list/level ownership",
+          "observed": "present=True"
+        },
+        {
+          "name": "circle-publication-native-ownership",
+          "status": "PASS",
+          "expected": "cache invalidation/idempotence; foreign replacement and component survive rollback",
+          "observed": "cache=True;once=True"
+        },
+        {
+          "name": "circle-profile-native-scope-restored",
+          "status": "PASS",
+          "expected": "original empty player/world/menu/inventory/services restored; no save load/write attempted",
+          "observed": "restored=True;blockedAttempts=0"
+        }
+      ],
+      "featureEvidenceSha256": {
+        "magic-circle-native-profile.json": "3586e9dd7095ed84ed3557f7292a926346242794acb12132160db6affca0c645"
+      },
+      "installedProfile": {
+        "evidenceFile": "compatibility-attribution-log-gunslinger-call-of-the-wild-disposable-magic-circle-profile.json",
+        "evidenceSha256": "e2778f28f8dcbeb1085a980e1ec229dc20ba1ed182c9161b629d6e4a209b90b1",
+        "settingsSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+        "settings": {
+          "schemaVersion": 12,
+          "gunslinger": true,
+          "acadamae-graduate": true,
+          "shield-other": true,
+          "expanded-summoning": true,
+          "elven-branched-spears": true,
+          "eastern-weapons": true,
+          "brown-fur-transmuter": true,
+          "urban-barbarian": true,
+          "bodyguard-feats": true,
+          "protection-from-alignment-control-immunity": true,
+          "elemental-races": true,
+          "teleportation-spells": true,
+          "magic-circle-spells": true
+        },
+        "mods": [
+          {
+            "directory": "CallOfTheWild",
+            "ummId": "CallOfTheWild",
+            "version": "1.14.4c-2.1",
+            "infoSha256": "32C0BC48C26EB22787E99FB1EB86D074DF2CD7DCFE4804CE8EB381A3A589D44D",
+            "assemblies": [
+              {
+                "name": "CallOfTheWild.dll",
+                "sha256": "4EBF8E1ED3E66FFED72EA33EA325595629423DACD5BFFA23E3C9109144B26915",
+                "mvid": "8caab254-aacf-4811-8093-44b9184e6e53"
+              }
+            ]
+          },
+          {
+            "directory": "KingmakerGunslinger",
+            "ummId": "KingmakerGunslinger",
+            "version": "0.0.132",
+            "infoSha256": "3150D46026DD9ACA3C83B8EAF845511D5EABC40B9AEEF57D954F14795F658178",
+            "assemblies": [
+              {
+                "name": "KingmakerGunslinger.dll",
+                "sha256": "A5F8F6A759C672D367AE00A794DD013BB8075B1595E4DD9C3C2519209CAC6057",
+                "mvid": "ea9ac240-4984-421b-b2e1-4336fa5770c6"
+              }
+            ]
+          }
+        ],
+        "startupLogSha256": "dbc838430fb0efd2401024d834556ba06cd9b71ccbbbb6241c489ea5046b3222"
+      },
+      "profileId": "gunslinger-call-of-the-wild",
+      "nativeGameVersion": "2.1.7b",
+      "blockedSaveOrLoadAttempts": 0,
+      "saveGuardsRemoved": true,
+      "hostRestored": true,
+      "nativeModeRestored": true,
+      "profileTransaction": {
+        "runId": "compat-20260920T090351Z-d44c65a82f9b",
+        "profileId": "gunslinger-call-of-the-wild",
+        "status": "Restored",
+        "restorationVerified": true,
+        "restoredAtUtc": "2026-09-20T09:08:53.5639857Z"
+      }
+    }
+  ],
+  "fixtureFailures": [
+    {
+      "run": "20260920T0837411036901Z-disposable-magic-circle-profile",
+      "status": "FAIL",
+      "packageSha256": "def4ce174ac8e51c111a1698af273655c7d83b2996b9ba94d0afe2dfd629d76a",
+      "dllSha256": "0cf5981ecd59a6716a52489a132adb95b2792eb8e15243c07c146ede7d09486f",
+      "mvid": "84cb823f-fabf-46a5-81d7-390545be44dc",
+      "assertions": {
+        "PASS": 2,
+        "FAIL": 1
+      },
+      "blockedSaveOrLoadAttempts": 0,
+      "hostRestored": true,
+      "diagnosis": "Native pause request rejected without active Default gameplay mode; real Dominate and touch casts ran; exact host cleanup passed."
+    },
+    {
+      "run": "20260920T0845212754843Z-disposable-magic-circle-profile",
+      "status": "FAIL",
+      "packageSha256": "ab35b5371ff832af4c7cbfd54615406dacff066b12c44041f81bd99471e54931",
+      "dllSha256": "3f6a8a055896abe19ba383271abb8b44a32e02c1973ba46adf24cc73f83e2b84",
+      "mvid": "3e72514f-4965-4ed1-abed-04ea708a693e",
+      "assertions": {
+        "PASS": 0,
+        "FAIL": 2
+      },
+      "blockedSaveOrLoadAttempts": 0,
+      "hostRestored": true,
+      "diagnosis": "First pause scope omitted native m_ModesCount registration; guard stopped before casting, scope constructor restored its token and outer host restored."
+    },
+    {
+      "run": "20260920T0852060319274Z-disposable-magic-circle-profile",
+      "status": "FAIL",
+      "packageSha256": "1bba48f38dd9dc0088bac429f80b9cf5e4d34afce200ba994f4931113318848f",
+      "dllSha256": "6e0e5df0e577f39c23db5d0d97915fa7128854628dbc479c5506c80f2fac85f0",
+      "mvid": "ab9f37dd-5222-4d02-a2ed-2fe19e7868e6",
+      "assertions": {
+        "PASS": 4,
+        "FAIL": 4
+      },
+      "blockedSaveOrLoadAttempts": 0,
+      "hostRestored": true,
+      "diagnosis": "Pause fixed; no navigation graph means native UnitMoveController skips spatial-grid registration, and native destruction does not traverse private host scene. Native cross-scene registration plus initial static native-grid registration now required; no production changes."
+    }
+  ]
+}

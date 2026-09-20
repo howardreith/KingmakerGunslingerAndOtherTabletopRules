@@ -236,6 +236,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "timeout-invalid";
             if (request.StartupTimeoutSeconds < 5 || request.StartupTimeoutSeconds > 600)
                 return "startup-timeout-invalid";
+            if (request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile && !request.ExitAfterCompletion)
+                return "magic-circle-profile-exit-required";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||

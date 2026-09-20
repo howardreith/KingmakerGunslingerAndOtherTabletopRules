@@ -84,7 +84,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private void WriteCircleUi(string error)
         {
-            WriteTeleportationForensicJson(CircleUiPath, new { schemaVersion = 1, runId = _request.RunId,
+            WriteTeleportationForensicJson(CircleUiPath, new { schemaVersion = 1, runId = _request.RunId, nativeGameVersion = GameVersion.Cached,
                 claims = "Native Sorcerer level-up cancellation and committed single known-spell selection; native spellbook, held-touch, active buff and scroll UI. Actual framebuffer screenshots require separate visual inspection. No save writes or uninstall-safety claim.",
                 captures = _circleUiCaptures, exceptions = _circleUiExceptions, assertions = _circleUiAssertions,
                 diagnostics = _circleUiDiagnostics, saveWriteObserved = _workingSaveSmoke.WriteObserved, error });
@@ -112,11 +112,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             var game = Game.Instance; var ui = game.UI;
             var backend = ui.LevelUpController;
             if (!_context.FeatureModules.Active.MagicCircleSpells || game.IsControllerGamepad || game.CurrentMode != GameModeType.Default ||
-                ui.CharacterBuildController == null || ui.CharacterBuildController.IsShow || ui.CharacterBuildController.LevelUpController != null ||
+                game.SelectedAbilityHandler.Ability != null || ui.CharacterBuildController == null || ui.CharacterBuildController.IsShow || ui.CharacterBuildController.LevelUpController != null ||
                 backend != null && (!backend.AutoCommit || !ReferenceEquals(backend.Unit, backend.Preview)) ||
                 ui.ServiceWindow == null || ui.ServiceWindow.WindowTabs.IsShow || ui.DescriptionController.DescWindow.gameObject.activeInHierarchy ||
                 DialogMessageBox.Instance == null || DialogMessageBox.Instance.IsShown || SettingsRoot.Instance.AutoLevelup.CurrentValue != AutolevelupState.Off)
                 throw new InvalidOperationException("Circle UI requires idle native desktop local-area UI with no active level-up preview, modal or service window.");
+            bool enhanced = _context.FeatureModules.Active.ProtectionFromAlignmentControlImmunity;
+            CircleUiAssert("startup-descriptions", "all twenty descriptions retain ordinary defenses and include added control protection only when enabled",
+                "sharedControlEnhancement=" + enhanced, BlueprintBootstrap.MagicCircles.All(circle =>
+                    new[] { circle.Spell.Description, circle.Delivery.Description, circle.Carrier.Description, circle.Recipient.Description, circle.Scroll.Description }
+                    .All(description => description.Contains("prevents new charm") == enhanced && description.Contains("+2 deflection") && description.Contains("+2 resistance"))));
             var units = game.State.Units.All.ToArray(); var areas = game.State.AreaEffects.All.ToArray();
             var buffs = units.Select(unit => unit.Buffs.Enumerable.ToArray()).ToArray();
             var positions = units.Select(unit => unit.Position).ToArray();
@@ -125,6 +130,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var selectedGroup = GroupController.Instance.GetCurrentCharacter();
             var actionGroups = ActionBarManager.Instance.Group.GroupElements.ToArray();
             var groupToggles = actionGroups.Select(value => value.ToggleState).ToArray();
+            var cameraRig = TeleportationCastingCamera();
+            var cameraPosition = cameraRig.transform.position; var cameraTarget = cameraRig.GetPosition();
+            var localMapField = typeof(Kingmaker.View.CameraRig).GetField("m_LocalMapArea", BindingFlags.Instance | BindingFlags.NonPublic);
+            var originalLocalMap = localMapField.GetValue(cameraRig);
             var time = game.Player.GameTime; bool paused = game.IsPaused;
             _circleUiScreens = new NativeIconScreenEvidence(_request);
             Application.logMessageReceived += ObserveCircleUiException;
@@ -142,6 +151,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ui.SelectionManagerPC.MultiSelect(selection.Select(unit => unit.View).ToArray(), false);
                 foreach (var snapshot in settings) snapshot.Restore();
                 for (int index = 0; index < actionGroups.Length; index++) actionGroups[index].Toggle(groupToggles[index], true);
+                cameraRig.ScrollToImmediately(cameraTarget); cameraRig.transform.position = cameraPosition;
+                localMapField.SetValue(cameraRig, originalLocalMap);
+                CircleUiAssert("camera-cleanup", "native camera framing and target restored exactly", "position=" + cameraRig.transform.position,
+                    cameraRig.transform.position == cameraPosition && cameraRig.GetPosition() == cameraTarget && ReferenceEquals(localMapField.GetValue(cameraRig), originalLocalMap));
                 game.IsPaused = paused; _circleUiScreens.Dispose();
                 Application.logMessageReceived -= ObserveCircleUiException;
                 CircleUiAssert("exceptions", "no native or mod exception through UI cleanup", "count=" + _circleUiExceptions.Count, _circleUiExceptions.Count == 0);
@@ -213,6 +226,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 12; frame++) yield return 0;
                     book.Rest();
                     var data = book.GetMemorizedSpells(3).First(value => value.Available && value.Spell.Blueprint == circle.Spell).Spell;
+                    // Native player ability selection publishes the same event used
+                    // by the installed AoE preview. Never draw our own circle.
+                    TeleportationCastingCamera().ScrollToImmediately(unit.Position);
+                    for (int frame = 0; frame < 12; frame++) yield return 0;
+                    game.SelectedAbilityHandler.SetAbility(data);
+                    try {
+                        for (int frame = 0; frame < 12; frame++) yield return 0;
+                        var preview = UnityEngine.Object.FindObjectsOfType<Kingmaker.UI.AbilityTarget.AbilityAoERange>()
+                            .Single(value => value.isActiveAndEnabled && value.Range.activeInHierarchy);
+                        var scale = preview.Range.transform.localScale;
+                        var viewport = TeleportationCastingCamera().Camera.WorldToViewportPoint(preview.Range.transform.position);
+                        float diameter = circle.Area.Size.Meters * 2;
+                        CircleUiCapture("native-radius-" + circle.Alignment, new { x = scale.x, z = scale.z, diameter, viewport, world = preview.Range.transform.position,
+                            spell = data.Blueprint.AssetGuid, selected = game.SelectedAbilityHandler.Ability.Blueprint.AssetGuid });
+                        CircleUiAssert("native-radius-" + circle.Alignment, "native selection displays the same ten-foot mechanical radius", "scale=" + scale,
+                            ReferenceEquals(game.SelectedAbilityHandler.Ability, data) && Math.Abs(scale.x - diameter) < .001f && Math.Abs(scale.z - diameter) < .001f);
+                        foreach (int frame in _circleUiScreens.Capture("native-radius-" + circle.Alignment,
+                            CircleUiState(new { diameter, scaleX = scale.x, scaleZ = scale.z, viewport, world = preview.Range.transform.position, spell = circle.Spell.AssetGuid }),
+                            () => preview.Range.activeInHierarchy && ReferenceEquals(game.SelectedAbilityHandler.Ability, data) && !_workingSaveSmoke.WriteObserved)) yield return frame;
+                    }
+                    finally { game.ClickEventsController.ClearPointerMode(); game.SelectedAbilityHandler.DropAbility(); }
+                    for (int frame = 0; frame < 6; frame++) yield return 0;
                     var root = new UnitUseAbility(data, new TargetWrapper(bearer));
                     var queueBefore = unit.Commands.Queue.ToArray();
                     if (!data.IsAvailable || !root.CanStart) throw new InvalidOperationException("Prepared Circle UI cast unavailable.");

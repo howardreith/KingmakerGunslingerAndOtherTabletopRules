@@ -1024,6 +1024,10 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleUi.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleSavedMarket.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleProfile.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleClassAccess.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCirclePetGeometry.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleLifetime.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleDispel.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCirclePersistence.cs" />

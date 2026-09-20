@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "scope": "Reduced-profile saved-world prerequisite failure; no Circle scenario executed. Not a feature PASS.",
+  "run": "20260920T0806418034054Z-disposable-magic-circle-evil",
+  "status": "TIMEOUT",
+  "packageSha256": "007c848ce8b686b052436d500243ac7fb97d78279b5c91b63290c7b8cc2dceca",
+  "dllSha256": "b29f27b51d950a09ec520b231e9caab67e88085c4dfbc35edfeed85cd8a2277a",
+  "mvid": "94ef12c2-4b22-4d8d-8081-226be1387681",
+  "nativeFailure": "InvalidOperationException: Sequence contains no matching element; Kingmaker.Player.PostLoad at main-character UniqueId lookup in CrossSceneState, before Circle fixture.",
+  "priorEvidence": "docs/ELEMENTAL-RACES-CHARACTER-CREATION-STABILIZATION-HANDOFF.md, prior reduced-stack runs A05 and final-matrix A; same native failure documented before this feature.",
+  "saveWritesObserved": false,
+  "nativeAutomaticExit": true,
+  "profileRestoration": "Verified True by existing wrapper for compat-20260920T080415Z-451e9634c6ff after native timeout exit. No process killed.",
+  "nextStrategy": "Completed: bounded native save-free present/absent profiles passed 67 assertions each on the frozen candidate. Saved-world tests use the original eleven-mod installed stack. No save repaired, no guard relaxed, and no saved-world PASS claimed for reduced stacks.",
+  "additionalFailures": [
+    {
+      "run": "20260920T0911048131468Z-disposable-magic-circle-evil",
+      "status": "TIMEOUT",
+      "profileId": "gunslinger-qualified-combined",
+      "profileComposition": [
+        "KingmakerGunslinger",
+        "ArmsArmor",
+        "ToggleCustomSoundpacks"
+      ],
+      "packageSha256": "fc440dbfb38d5496f6afeaa8cc97fd61fc85d27b928fc85a5c5b181707781d75",
+      "dllSha256": "a5f8f6a759c672d367ae00a794dd013bb8075b1595e4dd9c3c2519209cac6057",
+      "mvid": "ea9ac240-4984-421b-b2e1-4336fa5770c6",
+      "runtimeResultSha256": "ed6bfad34d3be87e39ec40e0c2b281a56e5fd8354d20b63598f390c1b40f37aa",
+      "nativeFailure": "The same Player.PostLoad main-character lookup exception was inspected in the live game output log before automatic exit. That live log was not separately retained before the next launch; durable result evidence independently proves missing load completion/fingerprint before Circle execution.",
+      "failedAssertions": [
+        {
+          "name": "load-completion-and-fingerprint",
+          "status": "FAIL",
+          "observed": "callback=False;fingerprint="
+        },
+        {
+          "name": "strict-receiver-bound-order",
+          "status": "FAIL",
+          "observed": "22<24<26<0<0"
+        }
+      ],
+      "saveWritesObserved": false,
+      "nativeAutomaticExit": true,
+      "transaction": {
+        "runId": "compat-20260920T090853Z-39cf28acc2a8",
+        "status": "Restored",
+        "restorationVerified": true,
+        "restoredAtUtc": "2026-09-20T09:22:21.9640203Z"
+      }
+    }
+  ]
+}

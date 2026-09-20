@@ -81,6 +81,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 prepared.UpdateAllSlotsSize(false);
                 if (circles.Any(circle => prepared.IsKnown(circle.Spell)))
                     throw new InvalidOperationException("Fresh native scribing book already knows a circle.");
+                var school = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, "30f20e6f850519b48aa59e8c0ff66ae9", "native Abjuration specialization");
+                scribe.Descriptor.AddFact(school); prepared.UpdateAllSlotsSize(false);
+                prepared.PostLoad(); prepared.PostLoad();
+                assertions.Add(Assertion("circle-specialist-unknown-negative", "attached Abjuration list grants no unknown spell or favorite-slot entry",
+                    "known=" + circles.Count(c => prepared.IsKnown(c.Spell)), circles.All(c => !prepared.IsKnown(c.Spell) &&
+                        !prepared.GetSpecialSpells(3).Any(value => ReferenceEquals(value.Blueprint, c.Spell))),
+                    "real native specialist with no circles learned; repeated production PostLoad must not teach spells"));
                 var supplier = TeleportationScrollVendorPublication.DecideSupplier(library);
                 vendor = bearer.Descriptor.Ensure<UnitPartVendor>();
                 vendor.SetSharedInventory(supplier.Arcane);
@@ -156,8 +163,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     carrier.Remove(); CircleRefresh(area, actors); prepared.ForgetMemorized(slot);
                 }
 
-                var school = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, "30f20e6f850519b48aa59e8c0ff66ae9", "native Abjuration specialization");
-                scribe.Descriptor.AddFact(school); prepared.UpdateAllSlotsSize(false);
+                var special = (List<AbilityData>[])typeof(Spellbook).GetField("m_SpecialSpells", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(prepared);
+                var stale = special[3].Single(value => ReferenceEquals(value.Blueprint, circles.Single(c => c.Alignment == "Evil").Spell));
+                var knownBeforeRepair = prepared.GetAllKnownSpells().ToArray();
+                if (!special[3].Remove(stale)) throw new InvalidOperationException("Could not stage exact owned stale specialist cache.");
+                prepared.PostLoad(); prepared.PostLoad();
+                assertions.Add(Assertion("circle-specialist-stale-cache", "known spell repaired once without changing any learned spell or owner",
+                    "special=" + special[3].Count, circles.All(c => prepared.GetSpecialSpells(3).Count(value => ReferenceEquals(value.Blueprint, c.Spell)) == 1) &&
+                        prepared.GetAllKnownSpells().SequenceEqual(knownBeforeRepair) && ReferenceEquals(prepared.Owner, scribe.Descriptor),
+                    "removed only one exact cache entry on the request-owned native book; real PostLoad callback; fresh disk load remains separately tested"));
                 var favorite = RawSlots(prepared, 3).Single(value => value.Type == SpellSlotType.Favorite);
                 var fireball = wizard.Spellbook.SpellList.GetSpells(3).Single(value => value.name == "Fireball" &&
                     value.GetComponent<SpellComponent>()?.School == SpellSchool.Evocation);
@@ -213,6 +227,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (id == "9f5be2f7ea64fe04eb40878347b147bc" && c.Alignment != "Evil" && c.Alignment != "Chaos" ? 0 : 1)),
                     "actual final native class list; duplicate-safe secondary publisher owns no existing entries"));
             }
+            CircleOptionalPublicationContracts(assertions);
             var repeatedStock = MagicCircleScrollVendors.Publish(library, circles); repeatedStock.Rollback();
             var listFixture = ScriptableObject.CreateInstance<BlueprintSpellList>();
             var spellFixture = UnityEngine.Object.Instantiate(circles[0].Spell);

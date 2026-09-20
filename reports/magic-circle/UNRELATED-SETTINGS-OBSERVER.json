@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "status": "FAIL",
+  "evidenceDirectoryName": "20260920T0923007496454Z-observe-feature-module-settings",
+  "passingAssertions": 44,
+  "failedAssertions": 3,
+  "runtimeResultSha256": "1a4dd08e69a016e5a86add0879acbfc107b8f6195e075685e6c87f1f6b668516",
+  "dllSha256": "a5f8f6a759c672d367ae00a794dd013bb8075b1595e4dd9c3c2519209cac6057",
+  "diagnosis": "The unchanged Teleportation template observer requires ReferenceEquals(scroll.Icon, donor.Icon). The protected pre-existing art pipeline intentionally assigns three owned native-shell composites, so that predicate is false. These are not Magic Circle scrolls. Other conjuncts are not separately exposed by this observer; no broader Teleportation mechanical claim is made.",
+  "baseline": "21a1c4b25a61f481f76b8fb0d57bd7fc4a5698dc",
+  "unchangedSources": [
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.TeleportationPublication.cs",
+      "gitBlob": "d6b746d3ec1d7072c60411cc0221159eff3aa413",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "src/KingmakerGunslinger/Blueprints/TeleportationScrollBlueprints.cs",
+      "gitBlob": "41a6c7b72d050cbb4691952a4bf84ee01b61cbe5",
+      "unchangedFromBase": true
+    }
+  ],
+  "unchangedProtectedConsumers": [
+    {
+      "symbol": "KMG.Spells.Teleport.Scroll",
+      "guid": "2c283c993b233df53b487fc7eeac2ba3",
+      "concept": "scroll-of-teleport",
+      "unchangedFromBase": true
+    },
+    {
+      "symbol": "KMG.Spells.GreaterTeleport.Scroll",
+      "guid": "2a2b0185be1d2dba5aa1b5a24774e17d",
+      "concept": "scroll-of-greater-teleport",
+      "unchangedFromBase": true
+    },
+    {
+      "symbol": "KMG.Spells.WordOfRecall.Scroll",
+      "guid": "42d3daeb7d503687df8953b47727372b",
+      "concept": "scroll-of-word-of-recall",
+      "unchangedFromBase": true
+    }
+  ],
+  "priorArtEvidence": "reports/icon-overhaul/SCROLL-ITEM-ICON-QUALIFICATION.json",
+  "failures": [
+    {
+      "name": "teleportation-scroll-template-2c283c993b233df53b487fc7eeac2ba3",
+      "status": "FAIL",
+      "expected": "real canonical scroll keeps native economics/consumption, isolated teaching and independent present or fallback template teaching",
+      "observed": "template=02086fbbda266ed4b8e9124abe5abd75;primaryPresent=True;scroll=2c283c993b233df53b487fc7eeac2ba3;donorAbility=eb1c0caa357dc6c43a406813639c6e55;donorTeaching=237427308e48c3341b3d532b9d3a001f"
+    },
+    {
+      "name": "teleportation-scroll-template-2a2b0185be1d2dba5aa1b5a24774e17d",
+      "status": "FAIL",
+      "expected": "real canonical scroll keeps native economics/consumption, isolated teaching and independent present or fallback template teaching",
+      "observed": "template=0033529da3b90bd226232e1962ca34ba;primaryPresent=True;scroll=2a2b0185be1d2dba5aa1b5a24774e17d;donorAbility=603e6473ae8f4aeaa93c0e0469ff3125;donorTeaching=<item ability>"
+    },
+    {
+      "name": "teleportation-scroll-template-42d3daeb7d503687df8953b47727372b",
+      "status": "FAIL",
+      "expected": "real canonical scroll keeps native economics/consumption, isolated teaching and independent present or fallback template teaching",
+      "observed": "template=00843bddf42908953a0d77e7155c20f0;primaryPresent=True;scroll=42d3daeb7d503687df8953b47727372b;donorAbility=60890d33f91f49adb51257fa1e69256f;donorTeaching=<item ability>"
+    }
+  ],
+  "disposition": "Retained as FAIL; no repeat of unchanged observer, no production fix outside assignment, no weakened validator. Independent feature-specific native settings/outcome checks remain mandatory.",
+  "saveWritesObserved": false,
+  "settingsRestorationSha256": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0"
+}

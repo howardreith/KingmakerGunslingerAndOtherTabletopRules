@@ -32,7 +32,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private RuntimeTestResult RunMagicCircleEvilNative()
         {
             var assertions = new List<RuntimeTestAssertion>();
-            var diagnostics = new List<string>();
+            var diagnostics = new List<string> { "native-game-version=" + GameVersion.Cached };
             var actors = new List<UnitEntityData>();
             var prototypes = new List<BlueprintUnit>();
             var ownedAreas = new List<AreaEffectEntityData>();
@@ -244,6 +244,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CircleCommunalAndPaladin(caster, bearer, recipient, controller, book, actors, assertions, diagnostics);
                 stage = "hostile-touch-and-metamagic";
                 CircleTouchAndMetamagic(caster, bearer, recipient, book, actors, prototypes, assertions, diagnostics);
+                stage = "native-pet-and-wall";
+                CirclePetAndOcclusion(caster, bearer, recipient, book, actors, assertions, diagnostics);
+                stage = "native-paladin-class-access";
+                CirclePaladinClassAccess(caster, bearer, actors, prototypes, assertions, diagnostics);
                 stage = "native-scroll-acquisition";
                 CircleAcquisition(caster, bearer, recipient, book, actors, prototypes, assertions, diagnostics);
                 stage = "removed-caster-context";
@@ -317,7 +321,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var game = Game.Instance;
             if (!game.IsPaused || actors.Any(unit => !unit.IsInGame || unit.View?.MovementAgent == null ||
                 unit.View.MovementAgent.IsReallyMoving))
-                throw new InvalidOperationException("Circle fixture requires active standing native actors.");
+                throw new InvalidOperationException("Circle fixture requires active standing native actors: paused=" + game.IsPaused +
+                    ";actors=" + string.Join("|", actors.Select(unit => unit.Descriptor.CustomName + ":inGame=" + unit.IsInGame +
+                        ":agent=" + (unit.View?.MovementAgent != null) + ":moving=" + unit.View?.MovementAgent?.IsReallyMoving)));
             var awake = game.State.AwakeUnits.ToArray();
             var foreign = game.State.Units.All.Except(actors).ToArray();
             var positions = foreign.Select(unit => unit.Position).ToArray();
@@ -424,7 +430,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 game.TimeController.SetDeltaTime(0);
                 try {
                     foreach (var projectile in created) projectile.Cleared = true;
-                    game.ProjectileController.Tick(); game.ProjectileController.Tick();
+                    if (game.ProjectileController.Projectiles.All(created.Contains)) {
+                        game.ProjectileController.Tick(); game.ProjectileController.Tick();
+                    } else evidence.Add("reach-cleanup:foreign-projectile-present;global-controller-not-ticked");
                 }
                 finally { game.TimeController.SetDeltaTime(delta); }
             }
