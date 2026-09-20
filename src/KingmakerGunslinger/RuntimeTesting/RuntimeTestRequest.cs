@@ -287,6 +287,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistence ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCoexistenceGamepad ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
+                request.Scenario == FcbPersistenceIdentity.Scenario ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
