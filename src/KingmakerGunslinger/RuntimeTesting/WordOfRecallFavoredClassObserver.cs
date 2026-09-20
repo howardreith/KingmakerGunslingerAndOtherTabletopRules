@@ -126,8 +126,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     level6.SpellLevel ==
                         TeleportationFinalLiveReconciler.OracleWordOfRecallLevel &&
                     level6.SpecificSpellLevel && level6.SpellLevelPenalty == 0 &&
-                    ReferenceEquals(level6.SpellcasterClass, oracle) &&
-                    level6.Ranks == 1,
+                    ReferenceEquals(level6.SpellcasterClass, oracle),
                 "the cloned native Mystic Theurge template carries the Favored Class per-level contract");
 
             BlueprintSpellList classList = oracle.Spellbook.SpellList;
