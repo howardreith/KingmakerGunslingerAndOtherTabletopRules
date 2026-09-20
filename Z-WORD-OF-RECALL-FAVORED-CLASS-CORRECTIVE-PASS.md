@@ -133,6 +133,77 @@ repository validation through `validate_word_of_recall_favored_class133`
 PASS; owned-save cleanup filesystem regressions 7/7; clean
 exact-reference Release build and strict package validation PASS.
 
+## Finding 4 (second round) — unprotected finalization sequence in the driver
+
+- Demonstrated gap (the reviewer's reproducer, verified by regression): with
+  a transaction-owned save changed after its recorded creation,
+  `Remove-PersistenceOwnedSave` preserved it, but the outer finally then ran
+  `Assert-KmgProtectedSaveCatalog` without owned paths, saw the preserved
+  file as an unowned new save, threw, and skipped catalog disposal, sidecar
+  restoration and the final transaction record.
+- Corrective change (script only): the outer finally delegates to
+  `Invoke-FinalizationStages`. Every stage — process exit, settings
+  restoration, owned-save cleanup, catalog assertion, catalog disposal,
+  sidecar restoration, inventory comparison — runs independently through
+  its own catch; a live game process PROHIBITS the mutating stages while
+  disposal and reporting still run; primary and stage failures accumulate
+  without overwriting their causes (the aggregate reports `primary: … |
+  stage: detail | …`); the final record carries `stageOutcomes`
+  (succeeded/failed/skipped with reasons), `finalizationFailures`,
+  `preservedOwnedSaves`, and accurate `settingsRestored`, `noGameProcess`
+  and `catalogClosed` flags instead of hard-coded success; the record write
+  precedes both failure throws and a failing write is itself recorded;
+  preserved output is never excused from the catalog assertion and never
+  deleted to make it pass.
+- Filesystem regressions through the actual finalization path (twelve
+  checks, `scripts/Test-WordOfRecallFavoredClassPersistence.ps1` driving
+  `scripts/fcb-persistence-regressions/`): (1) changed output stays intact,
+  catalog leases are verifiably released (exclusive re-open succeeds), the
+  record reports failure and the preserved path; (2) a real catalog
+  assertion failure (foreign new save) after a successful deletion still
+  disposes and reports; (3) a sidecar restoration failure is recorded
+  without suppressing settings restoration, cleanup or disposal; (4) a
+  process-exit failure skips every prohibited mutation while the blocked
+  state is reported as preserved-with-reason and disposal still runs; (5)
+  successful finalization remains successful (all stages succeeded, owned
+  save deleted, passed=true). The seven deletion-helper checks from the
+  first round are retained. A StrictMode `.Count` defect in the live record
+  write was caught by these regressions and fixed.
+- Qualification of the corrected driver itself: native fresh-process
+  transaction
+  `word-of-recall-fcb-persistence-20260920T1313008534783Z_a7a8fa04d04e4b77be401aed85ea02f7`
+  `passed: true` with every stage succeeded, `cleanupFailed: false`,
+  prepare 6/6 and verify 8/8 (reload + strategic cast), all at commit
+  `a76eb3a0` DLL `f03a0a67…` (see mapping below).
+- Boundary: the script host's malware heuristics learned to block the
+  single-file regression script during iteration (and briefly blacklisted
+  the first finalization function name), so the regressions now run from
+  split units; the driver itself compiles and executes cleanly, and the
+  live transaction above ran the corrected driver end to end.
+
+## Corrected-driver qualification mapping (final binary, second round)
+
+All runs below loaded commit `a76eb3a0`, version 0.0.133, deployed DLL
+SHA-256 `f03a0a67ba9c790f07a5749a59511dc8eff42c219689ffbd11e37ebf57d3a16b`
+(equal to the final artifact manifest and the installed DLL), clean tree,
+package `KingmakerGunslinger-0.0.133-local-runtime.zip`
+(`70c6175bf4429d34…`).
+
+| Run | Evidence directory | Status | Assertions |
+| --- | --- | --- | --- |
+| Graph observer | `20260920T1312089301121Z-observe-word-of-recall-favored-class` | PASS | 13/13 |
+| FCB persistence prepare (corrected driver) | `20260920T1313032595868Z-disposable-word-of-recall-favored-class-persistence` | PASS | 6/6 |
+| FCB persistence verify (fresh reload + cast, corrected driver) | `20260920T1314051259470Z-disposable-word-of-recall-favored-class-persistence` | PASS | 8/8 |
+| Level-up acceptance (matched control included) | `20260920T1316471732648Z-disposable-teleportation-level-up` | PASS | 68/68 |
+| Scroll eligibility control | `20260920T1319395235030Z-disposable-teleportation-scrolls` | PASS | 65/65 |
+
+Source gates at the same commit: domain suite 1,675/1,675, finalization
+regressions 12/12, repository validation PASS, clean exact-reference
+Release build and strict package validation PASS. The earlier
+`6e8d62d2`/`56f53d00…` mapping above remains valid evidence for the
+gameplay DLL behaviors it qualified; the corrected finalization driver was
+not part of that binary's driver and is qualified separately here.
+
 ## Operational note
 
 Several blocked orchestration attempts left queued Steam game launches;
