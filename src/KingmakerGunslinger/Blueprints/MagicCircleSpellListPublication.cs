@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Spells.ShieldOther;
@@ -14,7 +15,10 @@ namespace KingmakerGunslinger.Blueprints
     {
         private static readonly FieldInfo FilteredCache = typeof(SpellLevelList)
             .GetField("m_SpellsFiltered", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo ParameterCache = typeof(BlueprintParametrizedFeature)
+            .GetField("m_CachedItems", BindingFlags.Instance | BindingFlags.NonPublic);
         private readonly List<Insertion> _insertions = new List<Insertion>();
+        private readonly List<ParameterInsertion> _parameterInsertions = new List<ParameterInsertion>();
 
         internal static MagicCircleSpellListPublication Publish(LibraryScriptableObject library,
             MagicCircleBlueprintSet[] circles)
@@ -81,8 +85,36 @@ namespace KingmakerGunslinger.Blueprints
             FilteredCache.SetValue(level, null);
         }
 
+        internal void AddFavoredParameter(BlueprintParametrizedFeature feature, BlueprintAbility spell)
+        {
+            if (ParameterCache == null) throw new MissingFieldException(typeof(BlueprintParametrizedFeature).FullName, "m_CachedItems");
+            var variants = feature.BlueprintParameterVariants;
+            if (variants == null) throw new InvalidOperationException("Null Favored Class parameters: " + feature.AssetGuid);
+            var matches = variants.Where(value => value != null && value.AssetGuid == spell.AssetGuid).ToArray();
+            if (matches.Length > 1 || (matches.Length == 1 && !ReferenceEquals(matches[0], spell)))
+                throw new InvalidOperationException("Conflicting Magic Circle parameter identity: " + feature.AssetGuid);
+            if (matches.Length == 0) {
+                _parameterInsertions.Add(new ParameterInsertion { Feature = feature, Spell = spell });
+                feature.BlueprintParameterVariants = variants.Concat(new BlueprintScriptableObject[] { spell }).ToArray();
+            }
+            // Kingmaker CanSelect checks Items, which is cached separately from
+            // the live spell-list extraction. Invalidate only this exact selector.
+            ParameterCache.SetValue(feature, null);
+        }
+
         internal void Rollback()
         {
+            for (int i = _parameterInsertions.Count - 1; i >= 0; i--) {
+                var insertion = _parameterInsertions[i];
+                if (insertion.Feature.BlueprintParameterVariants == null) continue;
+                var current = insertion.Feature.BlueprintParameterVariants.ToList();
+                int owned = current.FindIndex(value => ReferenceEquals(value, insertion.Spell));
+                if (owned < 0) continue;
+                current.RemoveAt(owned);
+                insertion.Feature.BlueprintParameterVariants = current.ToArray();
+                ParameterCache.SetValue(insertion.Feature, null);
+            }
+            _parameterInsertions.Clear();
             for (int i = _insertions.Count - 1; i >= 0; i--)
             {
                 var insertion = _insertions[i];
@@ -109,6 +141,12 @@ namespace KingmakerGunslinger.Blueprints
             internal BlueprintAbility Spell;
             internal bool AddedEntry;
             internal SpellListComponent Component;
+        }
+
+        private sealed class ParameterInsertion
+        {
+            internal BlueprintParametrizedFeature Feature;
+            internal BlueprintAbility Spell;
         }
     }
 }

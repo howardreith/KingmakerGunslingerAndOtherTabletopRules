@@ -3,7 +3,10 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Prerequisites;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -87,9 +90,33 @@ namespace KingmakerGunslinger.Spells.MagicCircle
             }
             PublishImplement(library, "e88366e9f64b44ac92d0f3a52074fb0a", "95d408f6c23d4ec2ad9049228b60cca6", "1b76f3c73aa84f91a1c65513fb23aa01");
             PublishImplement(library, "c32ade60841f47469575484576d6c0e0", "dac110582eff44159734a79314f13daa", "f1a70d9e1b0b41e49874e1fa9052a1ce");
+            PublishFavoredOracle(library);
             // Arcanist's casting and memorization books already use the actual
             // Wizard list; Unlettered Arcanist's Witch list receives no grant.
         }
+        private static void PublishFavoredOracle(LibraryScriptableObject library)
+        {
+            const string featureId = "bab7a67de47e4b6690c03fd5b744c482";
+            if (!library.BlueprintsByAssetId.ContainsKey(featureId)) return;
+            var feature = BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(library, featureId, "Oracle third-level Favored Class choice");
+            var oracle = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library, Optional[0][1], "Favored Oracle class");
+            var book = BlueprintLibraryLookup.RequireExact<BlueprintSpellbook>(library, Optional[0][2], "Favored Oracle book");
+            var list = BlueprintLibraryLookup.RequireExact<BlueprintSpellList>(library, Optional[0][3], "Favored Oracle list");
+            var learning = feature.ComponentsArray.OfType<LearnSpellParametrized>().SingleOrDefault();
+            var prerequisite = feature.ComponentsArray.OfType<PrerequisiteClassSpellLevel>().SingleOrDefault();
+            if (oracle.Spellbook != book || book.CharacterClass != oracle || book.SpellList != list ||
+                feature.name != "FavoredOracleOracleSpellList3ParametrizedFeature" || feature.ParameterType != FeatureParameterType.LearnSpell ||
+                feature.SpellcasterClass != oracle || feature.SpellList != list || !feature.SpecificSpellLevel ||
+                feature.SpellLevel != 3 || feature.SpellLevelPenalty != 0 || feature.DisallowSpellsInSpellList ||
+                learning == null || learning.SpellcasterClass != oracle || learning.SpellList != list ||
+                !learning.SpecificSpellLevel || learning.SpellLevel != 3 || learning.SpellLevelPenalty != 0 ||
+                prerequisite == null || prerequisite.CharacterClass != oracle || prerequisite.RequiredSpellLevel != 4)
+                throw new InvalidOperationException("Oracle Favored Class third-level selection contract changed: " + featureId);
+            foreach (var circle in BlueprintBootstrap.MagicCircles)
+                BlueprintBootstrap.MagicCirclePublication.AddFavoredParameter(feature, circle.Spell);
+            _context.Logger.Info("magic-circle", "favored-oracle", "feature=" + featureId + ";level=3;parameters=4;native-prerequisites-preserved");
+        }
+
         private static void PublishImplement(LibraryScriptableObject library, string featureId, string listId, string classId)
         {
             if (!library.BlueprintsByAssetId.ContainsKey(featureId)) return;

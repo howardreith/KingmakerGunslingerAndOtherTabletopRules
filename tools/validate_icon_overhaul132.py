@@ -25,6 +25,7 @@ def validate(root: Path) -> None:
     # The original prefix and every protected-art gate remain authoritative.
     from validate_magic_circle import validate as validate_magic_circle
     validate_magic_circle(root)
+    baseline.DETERMINISTIC_TEST_COUNT = 1660
     baseline.MANIFEST_TOTAL = 1910
     baseline.MANIFEST_ACTIVE = 1908
     # The assigned Magic Circle feature fixes a proven shared source bug.

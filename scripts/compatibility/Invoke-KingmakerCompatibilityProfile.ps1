@@ -118,6 +118,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
+. (Join-Path (Split-Path $PSScriptRoot) 'RuntimeCoordination.Common.ps1')
 $expectedVersion = [string](Read-KmgCompatibilityJson (Join-Path $root 'Info.json')).Version
 if (-not $PackagePath) { $PackagePath = Get-KmgCompatibilityDefaultPackage $root }
 if ((Get-KmgCompatibilityPackageVersion $PackagePath) -cne $expectedVersion) {
@@ -230,6 +231,7 @@ if ($moduleScenario) {
     throw 'Compatibility profile parameters are supported only for feature-module, module-state vendor, or asset-attribution observations.'
 }
 
+$compatRuntimeLease = $null
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
 try {
@@ -237,6 +239,7 @@ try {
         -ProfileId $ProfileId -RunId $runId -KingmakerInstallDir $KingmakerInstallDir `
         -StateRoot $StateRoot -ReferenceRoot $ReferenceRoot -PackagePath $PackagePath -Confirm:$false | Out-Host
     $entered = $true
+    $compatRuntimeLease = Open-KmgCompatibilityRuntimeLease $runId $StateRoot
     if ($CotwProgressionMode -cne 'unchanged') {
         if (-not (Test-Path -LiteralPath $cotwSettingsPath -PathType Leaf)) {
             throw "Staged CotW settings file is missing: $cotwSettingsPath"
@@ -379,6 +382,7 @@ try {
             'summon-same-turn-rtwp-control')) {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
+        $arguments.RuntimeLease = $compatRuntimeLease
         & (Join-Path $root 'scripts\Invoke-KingmakerRuntimeTest.ps1') @arguments
         $evidence = Get-ChildItem -LiteralPath 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' `
             -Directory | Where-Object { $_.LastWriteTimeUtc -ge $before.AddSeconds(-2) } |
@@ -420,6 +424,7 @@ catch {
     $primaryError = $_
 }
 finally {
+    if ($null -ne $compatRuntimeLease) { $compatRuntimeLease.Stream.Dispose() }
     if ($entered) {
         $deadline = [DateTime]::UtcNow.AddSeconds(60)
         while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and

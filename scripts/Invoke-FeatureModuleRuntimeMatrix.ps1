@@ -28,6 +28,11 @@ if (Get-Process -Name Kingmaker -ErrorAction SilentlyContinue) {
     throw 'Pathfinder: Kingmaker must not be running before a settings transaction.'
 }
 
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+if (-not $PSCmdlet.ShouldProcess($settings, 'run guarded settings matrix with shared runtime ownership')) { return }
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Invoke-FeatureModuleRuntimeMatrix.ps1'
+try {
+Assert-KmgNotRunning
 $originalExists = Test-Path -LiteralPath $settings -PathType Leaf
 $originalBytes = if ($originalExists) { [IO.File]::ReadAllBytes($settings) } else { $null }
 $sha = [Security.Cryptography.SHA256]::Create()
@@ -102,7 +107,7 @@ try {
             $invokeArguments.DeploymentManifestPath = $DeploymentManifestPath
             $invokeArguments.PackagePath = $PackagePath
         }
-        & $invoke @invokeArguments
+        & $invoke @invokeArguments -RuntimeLease $sharedRuntimeScope.Lease
         if ($LASTEXITCODE -ne 0) {
             throw "Feature-module runtime combination $($entry.Name) failed."
         }
@@ -140,3 +145,5 @@ try {
 }
 if ($failure -ne $null) { throw $failure }
 Write-Host "Feature-module runtime matrix PASS: $($combinations.Name -join ', ')"
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

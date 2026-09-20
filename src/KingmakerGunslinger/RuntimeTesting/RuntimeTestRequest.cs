@@ -387,7 +387,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool treacherousEffect = nereidPersistence && request.Parameters?["qualificationEffect"]?.Type == JTokenType.String &&
                     (string)request.Parameters["qualificationEffect"] == "TreacherousEarth";
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
-                if (request.Parameters == null || request.Parameters.Count != (persistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
+                bool circleBound = MagicCirclePreparationBinding.RequiresBinding(request.Scenario);
+                if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
+                    !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
+                    return "magic-circle-preparation-binding-required";
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

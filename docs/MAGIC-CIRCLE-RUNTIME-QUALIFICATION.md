@@ -155,3 +155,82 @@ all four content/control persistence combinations. Exactly two Working writes
 prepared and removed the fixture; a final fresh load proved absence.
 [The handoff](MAGIC-CIRCLE-HANDOFF.md) records the scoped profile limitations and
 verified restoration of the original normal-play installation.
+
+
+## PR 19 preparation authorization and settings ownership
+
+The prepare phase writes a schema-2 persistence record with its run ID, loaded
+DLL SHA-256/MVID/embedded commit, exact Working descriptor and read-only fixture
+identity. Verify, scene and cleanup require `parameters.preparationBinding`:
+a schema-2 envelope containing the exact preparation record and successful
+runtime-result and producer loaded-build-identity bytes as Base64, each with its
+SHA-256, plus the separately pinned consuming artifact (binding envelope version
+2). Producer and consumer must use the expected semantic version, but a corrected
+runner need not pretend to be the original producer binary. The native gate
+checks the actual consumer hash/MVID/commit, and the immutable producer record
+must match its corroborating loaded-module identity. The wrapper validates the
+fixed evidence paths, result, write guards and current artifact before embedding
+those immutable bytes. Native request validation rejects absent or malformed
+bindings. In the loaded session, native code compares the exact descriptor,
+loaded artifact and fixture identities synchronously before area refresh, rules,
+merchant operations, scene staging, cleanup or arming the save-write guard.
+The later cross-launch comparison remains an audit, not authorization. A stale
+valid preparation A must never authorize any mutation or write of fixture B.
+The complete observed fixture is normalized through its JSON representation
+before comparison: installed Newtonsoft uses different token types for an
+in-memory null string and a parsed JSON null. No identity or field is omitted,
+and integer deadlines retain their exact values.
+
+The wrapper holds the existing shared `compatibility-state/compatibility.lock`
+lease from settings capture through override, inherited guarded launch, game
+exit and restoration. Ordinary deployment, restoration, compatibility profiles
+and other settings-writing qualification wrappers participate in the same lock.
+An in-process held handle and explicit inherited lease avoid nested acquisition.
+Game/deployment identities are checked again under ownership before writing.
+The override and exact original backup use flushed atomic file replacement.
+Only bytes matching this transaction's override (or already-restored original)
+may be restored. Foreign bytes are preserved, and a live game prevents restore.
+Overrides use the native flat-schema serialization so the mod's exit-time save
+does not change their bytes. Recovery of an earlier override additionally permits
+only the exact native serialization of its hash-verified owned `.previous` file;
+the proof is archived. Arbitrary semantically equivalent or foreign edits remain
+rejected. No current file is normalized to manufacture ownership.
+
+An interrupted transaction retains its lock, exact backup and runtime-lease.json.
+After the original owner and Kingmaker exit, the fixed-path recovery entry point
+is `scripts/Restore-MagicCircleSettingsTransaction.ps1 -RunId <recorded-run-id>`.
+It repeats ownership, game, artifact, backup and current-byte checks; it cannot
+steal a living owner or overwrite a foreign edit. Both normal and recovery
+WhatIf paths perform no file mutation or launch. This is scoped settings recovery,
+not save repair or permission to kill a session.
+
+Run `scripts/Test-MagicCircleRuntimeRequest.ps1` and
+`scripts/Test-MagicCircleSettingsTransaction.ps1` before real persistence runs.
+The latter uses production lease/atomic-write/restore logic with disposable files;
+only external process/launch boundaries are replaced. It covers busy ownership,
+the game-start race, foreign changes, nested ownership, exact bytes, exceptions,
+interruption, safe recovery and mutation-free WhatIf. Twelve cases now include
+the actual compiled settings store's native save, proven predecessor recovery,
+competing recovery writers and rejection of unproven foreign formatting.
+
+The installed Oracle Favored Class third-level parameter feature is exactly
+`bab7a67de47e4b6690c03fd5b744c482`. The preparation probe earns its selection
+through native Oracle progression, inspects actual Items/extraction/CanSelect,
+commits one Circle through LevelUpController and records the parameter and
+known spell in the persisted fixture binding. Ordinary spell selections exclude
+Circle to distinguish this route. Probe failures are evidence, not an assumption
+that production compatibility is broken; qualification results are recorded in
+the review follow-up report separately from the earlier feature acceptance.
+The installed Oracle level-three selector has a separate native parameter cache.
+After reproducing its native rejection, the exact-ID adapter now publishes only
+the four Circle parameters through the existing ownership transaction and
+invalidates that selector's cache. Prerequisites, native selection and ordinary
+known-spell limits remain authoritative. Recovery also excludes competing
+recovery writers while allowing the existing exact ownership reads.
+
+The [PR 19 hardening report](../reports/magic-circle/PR19-REVIEW-HARDENING.md)
+and [curated review evidence](../reports/magic-circle/PR19-REVIEW-QUALIFICATION.json)
+identify the new tested candidate, final affected native sequence, intentional
+stale-receipt rejection, Favored Class commit/persistence and exact normal-play
+restoration. Earlier feature-wide qualification records above remain historical
+evidence for their own artifact identities.

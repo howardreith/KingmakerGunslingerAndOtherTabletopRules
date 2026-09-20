@@ -13,6 +13,10 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'FeatureModuleCatalog.ps1')
 if (Get-Process Kingmaker -ErrorAction SilentlyContinue) { throw 'Hardening qualification requires no existing game process.' }
 if (-not $PSCmdlet.ShouldProcess('KMG_AUTOMATION_WORKING, read only', 'Run guarded fresh Steam processes with protected saves and exact restoration of the selected qualification settings')) { return }
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+$sharedRuntimeScope = Enter-KmgRuntimeLease -Purpose 'Invoke-TeleportationHardeningQualification.ps1'
+try {
+Assert-KmgNotRunning
 $ConfirmPreference = 'None'
 $evidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
 $transactionDirectory = Join-Path $evidenceRoot ('teleportation-hardening-' + $Scope.ToLowerInvariant() + '-' + [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ'))
@@ -87,7 +91,7 @@ try {
                 DeploymentManifestPath = $DeploymentManifestPath; PackagePath = $PackagePath }
             if ($Scope -ceq 'Boundary') { $invokeArguments.Parameters = $step.parameters }
             else { $invokeArguments.SaveName = 'KMG_AUTOMATION_WORKING' }
-            & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') @invokeArguments
+            & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -RuntimeLease $sharedRuntimeScope.Lease @invokeArguments
             if ($LASTEXITCODE -ne 0) { throw 'Native hardening scenario failed.' }
         } catch { $runFailure = $_ }
         finally {
@@ -123,7 +127,7 @@ finally {
         $beforeRestoration = @(Get-ChildItem -LiteralPath $evidenceRoot -Directory | ForEach-Object FullName)
         try {
             $originalParameters = Get-KmgOriginalModuleRuntimeParameters -Settings $settingsOriginal
-            & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario observe-feature-module-settings `
+            & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -RuntimeLease $sharedRuntimeScope.Lease -Scenario observe-feature-module-settings `
                 -ExpectedVersion $ExpectedVersion -Parameters $originalParameters -TimeoutSeconds 420 -ExitAfterCompletion:$true `
                 -AllowDirtyGit:$AllowDirtyGit -Confirm:$false -ReuseInstalledArtifact -DeploymentManifestPath $DeploymentManifestPath -PackagePath $PackagePath
             Wait-PersistenceExit
@@ -156,3 +160,5 @@ finally {
 }
 if ($null -ne $failure) { throw $failure }
 Write-Host "PASS $Scope hardening qualification; evidence=$transactionDirectory"
+
+} finally { Exit-KmgRuntimeLease $sharedRuntimeScope }

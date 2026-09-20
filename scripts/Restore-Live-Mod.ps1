@@ -1,6 +1,7 @@
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [Parameter(Mandatory = $true)][string]$BackupDirectory,
+    $RuntimeLease,
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger'
 )
 
@@ -58,6 +59,9 @@ if (-not $PSCmdlet.ShouldProcess($live, "Restore explicit backup $backup")) {
     Write-Host 'Dry run only; backup and target were validated.'
     return
 }
+$runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose 'restore explicit live-mod backup'
+try {
+Assert-KmgNotRunning
 foreach ($child in Get-ChildItem -LiteralPath $live -Force) {
     $target = Assert-KmgPathWithin -Path $child.FullName -Root $live
     Remove-Item -LiteralPath $target -Recurse -Force
@@ -81,3 +85,5 @@ else {
     }
 }
 Write-Host "Restore verified for only: $live"
+
+} finally { Exit-KmgRuntimeLease $runtimeScope }

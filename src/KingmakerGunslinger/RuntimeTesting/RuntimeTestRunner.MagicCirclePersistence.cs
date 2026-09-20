@@ -123,60 +123,75 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _circlePersistenceRecord["nativeGameVersion"] = GameVersion.Cached;
                 if (game.Player.Party.Count != WorkingSaveSmokeScenario.ExpectedPartyCount)
                     throw new InvalidOperationException("The original working-save party boundary changed.");
-                bool prepare = _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCirclePrepare;
-                bool absent = _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCircleAbsent;
-                if (prepare || absent) {
-                    if (CircleSavedCandidates().Length != 0) throw new InvalidOperationException("Saved Circle fixture already exists.");
-                    if (absent) {
-                        var circles = BlueprintBootstrap.MagicCircles;
-                        CirclePersistenceCheck("cleanup-fresh-load-absence", !game.State.AreaEffects.All.Any(area => circles.Any(c => ReferenceEquals(c.Area, area.Blueprint))) &&
-                            !game.State.Units.All.SelectMany(unit => unit.Buffs.Enumerable).Any(buff => circles.Any(c => ReferenceEquals(c.Carrier, buff.Blueprint) || ReferenceEquals(c.Recipient, buff.Blueprint))),
-                            "no saved fixture actor, circle area, carrier or derivative benefit after native cleanup save");
-                        CaptureCircleSavedMarketAbsence();
-                        FinishMagicCirclePersistence(null); return;
-                    }
-                    PrepareCirclePersistence();
-                }
-                _circlePersistenceRecord["snapshot"] = CaptureCirclePersistence();
-                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCircleScene) {
-                    var sceneActors = CircleSavedActors();
-                    _circleSceneParty = game.Player.PartyCharacters.Select(value => value.UniqueId).ToArray();
-                    _circleSceneRemote = game.Player.RemoteCompanions.Select(value => value.UniqueId).ToArray();
-                    _circleSceneActorIds = sceneActors.Select(value => value.UniqueId).ToArray();
-                    // Same request-local promotion as ElementalRacePersistenceScenario:
-                    // native reload preserves traveling characters. These four
-                    // temporary party references are never saved.
-                    foreach (var actor in sceneActors) game.Player.PartyCharacters.Add(actor);
-                    game.Player.InvalidateCharacterLists(); game.Player.UpdateCharacterLists();
-                    _circlePersistenceRecord["sceneFixture"] = new JObject {
-                        ["temporaryTravelers"] = new JArray(_circleSceneActorIds),
-                        ["areaExcludedFromSave"] = game.CurrentlyLoadedArea.ExcludeFromSave,
-                        ["holdingStates"] = new JArray(sceneActors.Select(actor => actor.HoldingState?.GetType().FullName)) };
-                    _circleSceneOrigin = game.CurrentlyLoadedArea;
-                    _circleScenePositions = sceneActors.ToDictionary(unit => unit.UniqueId, unit => unit.Position);
-                    _circleSceneStage = 1;
-                    _circleScene = new CircleSceneObservation();
-                    _circleScene.Start();
-                    game.ReloadArea();
-                    return;
-                }
-                VerifyCirclePersistenceMechanics();
-                if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCircleCleanup) CleanupCirclePersistence();
-                if (prepare || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCircleCleanup) {
-                    if (_circlePersistenceChecks.Any(check => check.Status != RuntimeTestStatuses.Pass))
-                        throw new InvalidOperationException("Persistence assertions failed before an authorized write.");
-                    _workingSaveSmoke.ArmExactWorkingSaveWrite();
-                    var save = typeof(Game).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                        .Single(method => method.Name == "SaveGame" && method.ReturnType == typeof(void) &&
-                            method.GetParameters().Length == 2 && method.GetParameters()[0].ParameterType.FullName == "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
-                            method.GetParameters()[1].ParameterType == typeof(Action));
-                    _circleSaveRequested = true;
-                    save.Invoke(game, new object[] { _workingSaveSmoke.WorkingDescriptor, new Action(() => _circleSaveComplete = true) });
-                    return;
-                }
-                FinishMagicCirclePersistence(null);
+                if (MagicCirclePreparationBinding.RequiresBinding(_request.Scenario))
+                    AuthorizeCirclePreparedPhase(BeginMagicCirclePersistencePhase);
+                else BeginMagicCirclePersistencePhase();
             }
             catch (Exception exception) { FinishMagicCirclePersistence(exception.ToString()); }
+        }
+
+        private void BeginMagicCirclePersistencePhase()
+        {
+            var game = Game.Instance;
+            _circlePersistenceRecord["schemaVersion"] = 2;
+            _circlePersistenceRecord["runId"] = _request.RunId;
+            _circlePersistenceRecord["phase"] = _request.Scenario.Substring("working-save-magic-circle-".Length);
+            _circlePersistenceRecord["artifact"] = CirclePreparationArtifact();
+            _circlePersistenceRecord["workingSave"] = CirclePreparationSave();
+            bool prepare = _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCirclePrepare;
+            bool absent = _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCircleAbsent;
+            if (prepare || absent) {
+                if (CircleSavedCandidates().Length != 0) throw new InvalidOperationException("Saved Circle fixture already exists.");
+                if (absent) {
+                    var circles = BlueprintBootstrap.MagicCircles;
+                    CirclePersistenceCheck("cleanup-fresh-load-absence", !game.State.AreaEffects.All.Any(area => circles.Any(c => ReferenceEquals(c.Area, area.Blueprint))) &&
+                        !game.State.Units.All.SelectMany(unit => unit.Buffs.Enumerable).Any(buff => circles.Any(c => ReferenceEquals(c.Carrier, buff.Blueprint) || ReferenceEquals(c.Recipient, buff.Blueprint))),
+                        "no saved fixture actor, circle area, carrier or derivative benefit after native cleanup save");
+                    CaptureCircleSavedMarketAbsence();
+                    FinishMagicCirclePersistence(null); return;
+                }
+                PrepareCirclePersistence();
+            }
+            _circlePersistenceRecord["snapshot"] = CaptureCirclePersistence();
+            if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCircleScene) {
+                var sceneActors = CircleSavedActors();
+                _circleSceneParty = game.Player.PartyCharacters.Select(value => value.UniqueId).ToArray();
+                _circleSceneRemote = game.Player.RemoteCompanions.Select(value => value.UniqueId).ToArray();
+                _circleSceneActorIds = sceneActors.Select(value => value.UniqueId).ToArray();
+                // Same request-local promotion as ElementalRacePersistenceScenario:
+                // native reload preserves traveling characters. These four
+                // temporary party references are never saved.
+                foreach (var actor in sceneActors) game.Player.PartyCharacters.Add(actor);
+                game.Player.InvalidateCharacterLists(); game.Player.UpdateCharacterLists();
+                _circlePersistenceRecord["sceneFixture"] = new JObject {
+                    ["temporaryTravelers"] = new JArray(_circleSceneActorIds),
+                    ["areaExcludedFromSave"] = game.CurrentlyLoadedArea.ExcludeFromSave,
+                    ["holdingStates"] = new JArray(sceneActors.Select(actor => actor.HoldingState?.GetType().FullName)) };
+                _circleSceneOrigin = game.CurrentlyLoadedArea;
+                _circleScenePositions = sceneActors.ToDictionary(unit => unit.UniqueId, unit => unit.Position);
+                _circleSceneStage = 1;
+                _circleScene = new CircleSceneObservation();
+                _circleScene.Start();
+                game.ReloadArea();
+                return;
+            }
+            VerifyCirclePersistenceMechanics();
+            VerifyCircleFavoredOracle(CircleSavedActors()[2]);
+            if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCircleCleanup) CleanupCirclePersistence();
+            if (prepare) _circlePersistenceRecord["fixtureIdentity"] = ReadCirclePreparedFixture();
+            if (prepare || _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveMagicCircleCleanup) {
+                if (_circlePersistenceChecks.Any(check => check.Status != RuntimeTestStatuses.Pass))
+                    throw new InvalidOperationException("Persistence assertions failed before an authorized write.");
+                _workingSaveSmoke.ArmExactWorkingSaveWrite();
+                var save = typeof(Game).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Single(method => method.Name == "SaveGame" && method.ReturnType == typeof(void) &&
+                        method.GetParameters().Length == 2 && method.GetParameters()[0].ParameterType.FullName == "Kingmaker.EntitySystem.Persistence.SaveInfo" &&
+                        method.GetParameters()[1].ParameterType == typeof(Action));
+                _circleSaveRequested = true;
+                save.Invoke(game, new object[] { _workingSaveSmoke.WorkingDescriptor, new Action(() => _circleSaveComplete = true) });
+                return;
+            }
+            FinishMagicCirclePersistence(null);
         }
 
         private static UnitEntityData[] CircleSavedCandidates()
@@ -220,6 +235,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CircleSavedItems(game.Player.Inventory).SequenceEqual(originalInventory),
                 "exact spawned starter items removed; original inventory instances, slots, counts and charges retained before persistence");
             var actors = CircleSavedActors();
+            PrepareCircleFavoredOracle(actors[2]);
+            foreach (var item in game.Player.Inventory.Except(originalItems).ToArray()) game.Player.Inventory.Remove(item).Dispose();
+            CirclePersistenceCheck("favored-inventory-isolation", CircleSavedItems(game.Player.Inventory).SequenceEqual(originalInventory),
+                "native Oracle level-up starter equipment cleaned before the prepared fixture save");
             var circles = BlueprintBootstrap.MagicCircles;
             var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
                 "b3a505fb61437dc4097f43c3f8f9a4cf", "native Sorcerer persistence spellbook");
@@ -361,6 +380,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void CleanupCirclePersistence()
         {
+            if (!_circlePreparedMutationAuthorized) throw new InvalidOperationException("Cleanup has no matched preparation authorization.");
             var game = Game.Instance; var actors = CircleSavedActors();
             var circles = BlueprintBootstrap.MagicCircles;
             var foreignUnits = game.State.Units.All.Except(actors).ToArray(); var party = game.Player.Party.ToArray();

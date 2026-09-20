@@ -523,6 +523,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="MagicCirclePreparationBindingTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\MagicCirclePreparationBinding.cs"><Link>RuntimeTesting\MagicCirclePreparationBinding.cs</Link></Compile>
     <Compile Include="Assertions.cs" />
     <Compile Include="Sprint30Tests.cs" />
     <Compile Include="Sprint31Tests.cs" />
