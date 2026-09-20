@@ -443,7 +443,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Blueprint.AssetGuid).ToArray();
                     string[] newSixth = knownSixthAfter.Except(knownSixthBefore,
                         StringComparer.Ordinal).ToArray();
-                    int ordinaryAllowanceDelta = allowanceFourteenth - allowanceThirteenth;
+                    // The installed spontaneous SpellsKnown table grants
+                    // GetCount(level, spellLevel) new picks AT each class
+                    // level; the cumulative difference is not the allowance.
+                    int ordinaryAllowance = allowanceFourteenth;
                     string[] ordinaryNewSixth = newSixth.Where(value =>
                         !string.Equals(value, recall.AssetGuid,
                             StringComparison.Ordinal)).ToArray();
@@ -451,7 +454,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         classLevel = aasimarUnit.Descriptor.Progression.GetClassLevel(oracle),
                         casterLevel = book.CasterLevel, callbacks = successes,
                         knownSixthBefore, knownSixthAfter, newSixth, ordinaryNewSixth,
-                        allowanceThirteenth, allowanceFourteenth, ordinaryAllowanceDelta,
+                        allowanceThirteenth, allowanceFourteenth, ordinaryAllowance,
                         grantFacts = grantFacts.Length, recallFacts = recallFacts.Length,
                         partialRank = committedPartial.Length == 0 ? 0 : committedPartial[0].Rank,
                         unfilledOrdinarySlots = finalSpells.LevelCount[6] == null ? -1 :
@@ -459,20 +462,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         extraSelected = finalSpells.ExtraSelected == null ? 0 :
                             finalSpells.ExtraSelected.Length });
                     TeleportSpellbookUiAssert("fcb-aasimar-committed",
-                        "native completion teaches canonical Recall once at Oracle 6 through one favored-class award; the ordinary known-spell change equals the installed allowance delta with no extra choice",
+                        "native completion teaches canonical Recall once at Oracle 6 through one favored-class award; the ordinary known-spell change equals the installed at-level allowance with no extra choice",
                         "level=" + aasimarUnit.Descriptor.Progression.GetClassLevel(oracle) +
                             ";known6Recall=" + book.GetKnownSpells(6).Count(value =>
                                 ReferenceEquals(value.Blueprint, recall)) +
                             ";grants=" + grantFacts.Length + ";recallFacts=" + recallFacts.Length +
                             ";newSixth=" + newSixth.Length + ";ordinaryNew=" + ordinaryNewSixth.Length +
-                            ";allowanceDelta=" + ordinaryAllowanceDelta +
+                            ";allowanceAtFourteenth=" + ordinaryAllowance +
                             ";extra=" + (finalSpells.ExtraSelected == null ? 0 :
                                 finalSpells.ExtraSelected.Length),
                         aasimarUnit.Descriptor.Progression.GetClassLevel(oracle) == 14 &&
                             book.CasterLevel == 14 && successes == 1 &&
                             book.GetKnownSpells(6).Count(value =>
                                 ReferenceEquals(value.Blueprint, recall)) == 1 &&
-                            newSixth.Length == ordinaryAllowanceDelta + 1 &&
+                            newSixth.Length == ordinaryAllowance + 1 &&
                             newSixth.Count(value => string.Equals(value, recall.AssetGuid,
                                 StringComparison.Ordinal)) == 1 &&
                             ordinaryNewSixth.Length == ordinaryNewSixth.Distinct(
