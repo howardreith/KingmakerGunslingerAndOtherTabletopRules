@@ -130,33 +130,62 @@ namespace KingmakerGunslinger.DomainTests
                 "Invoke-WordOfRecallFavoredClassPersistence.ps1"));
             string selfTest = File.ReadAllText(Path.Combine(root, "scripts",
                 "Test-WordOfRecallFavoredClassPersistence.ps1"));
+            string common = File.ReadAllText(Path.Combine(root, "scripts",
+                "fcb-persistence-regressions", "Common.ps1"));
             foreach (string token in new[] {
                 "function Remove-PersistenceOwnedSave",
+                "function Invoke-FinalizationStages",
                 "completedSha256",
                 "createdSha256",
                 "changed or replaced output",
                 "preserved = $true",
                 "cleanupFailed",
                 "preservedOwnedSaves",
+                "stageOutcomes",
+                "catalog-assertion",
+                "process-exit",
+                "prohibited while the game process is alive",
                 "Close-KmgProtectedSaveCatalog" })
                 Assertions.True(driver.Contains(token),
                     "Persistence driver cleanup contract is missing: " + token);
             foreach (string token in new[] {
-                "Remove-PersistenceOwnedSave",
-                "completed-save receipt",
-                "missing authoritative owned-save proof",
-                "owned save file is absent",
-                "escaped its proven transaction",
-                "checks=$checks" })
+                "fcb-persistence-regressions",
+                "Scenario1ChangedOutput.ps1",
+                "Scenario2CatalogAssertion.ps1",
+                "Scenario3SidecarFailure.ps1",
+                "Scenario4ProcessExit.ps1",
+                "Scenario5Success.ps1",
+                "checks=$script:checks" })
                 Assertions.True(selfTest.Contains(token),
-                    "Persistence cleanup filesystem regression lacks: " + token);
+                    "Persistence finalization regression runner lacks: " + token);
+            foreach (string token in new[] {
+                "Assert-KmgProtectedSaveCatalog",
+                "Close-KmgProtectedSaveCatalog",
+                "Invoke-FinalizationStages",
+                "Remove-PersistenceOwnedSave" })
+                Assertions.True(common.Contains(token),
+                    "Persistence finalization regression prologue lacks: " + token);
             // Cleanup failures must be recorded before any throw and cannot
             // skip catalog disposal.
-            int cleanupIndex = driver.IndexOf("foreach ($save in $owned)", StringComparison.Ordinal);
+            int cleanupIndex = driver.IndexOf("foreach ($save in $Owned)", StringComparison.Ordinal);
             int catalogIndex = driver.IndexOf("Close-KmgProtectedSaveCatalog", StringComparison.Ordinal);
-            int resultIndex = driver.IndexOf("'transaction-result.json'", StringComparison.Ordinal);
-            Assertions.True(cleanupIndex >= 0 && catalogIndex > cleanupIndex && resultIndex > catalogIndex,
-                "Cleanup, catalog disposal and the failure record must run in that order.");
+            int stageWrite = driver.IndexOf("'mods-after.json'", StringComparison.Ordinal);
+            Assertions.True(cleanupIndex >= 0 && catalogIndex > cleanupIndex && stageWrite > catalogIndex,
+                "Cleanup, catalog disposal and the inventory evidence must run in that order.");
+            // Every finalization stage runs independently through its own
+            // try/catch; the record write precedes both failure throws.
+            int recordWrite = driver.IndexOf("'transaction-result.json'", StringComparison.Ordinal);
+            int reportFailure = driver.IndexOf(
+                "Persistence finalization failed before its record", StringComparison.Ordinal);
+            int finalFailure = driver.IndexOf(
+                "Persistence finalization failed: ", StringComparison.Ordinal);
+            int stageTry = driver.IndexOf("try {", driver.IndexOf(
+                "Assert-KmgProtectedSaveCatalog", StringComparison.Ordinal));
+            int stageCatch = driver.IndexOf("catch", stageTry);
+            Assertions.True(recordWrite >= 0 && reportFailure > recordWrite && finalFailure > recordWrite,
+                "The final record write must precede the propagated aggregate failures.");
+            Assertions.True(stageTry >= 0 && stageCatch > stageTry,
+                "Each finalization stage must own an independent catch.");
         }
 
         internal static void FavoredClassObserverContract()
