@@ -2288,7 +2288,9 @@
     "embeddedCommit": "11039183780a7815e97024ae99abc3062abd9ef9",
     "builtFromDirtyValidatedTree": true,
     "explanation": "The tested DLL was built before committing. All 1883 frozen product, orchestration, test and validation inputs must match the committed-source verification; documentation changes do not create a new binary.",
-    "record": "PR19-COMMITTED-SOURCE.json"
+    "record": "PR19-COMMITTED-SOURCE.json",
+    "committedSource": "b2172801b0d6523c53f0e539b09483f74533c269",
+    "verificationStatus": "PASS"
   },
   "unchangedScope": {
     "approvedArtworkAndAssignments": true,

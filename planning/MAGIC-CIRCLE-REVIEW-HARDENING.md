@@ -15,7 +15,7 @@ Current AGENTS.md was read. Other worktrees, approved art and rules scope remain
 | Final native sequence | Ten PASS runs / 145 passing assertions, plus one intentional native FAIL with PASS zero-mutation/write safety audit. All four settings combinations and both scene profiles passed. |
 | Save cleanup | A and B removed through exact receipts; fresh absence/inventory/gold/vendor audit PASS. Four total guarded Working writes (one earlier A producer, three final candidate). |
 | Normal play | Explicit 20260920T1225444445857Z backup restored; all 136 files exact, original settings and global bank verified, game closed, lock absent. |
-| Publication | Coherent source/evidence commits and mandated guarded helper publication are the remaining handoff steps. No merge or public release. |
+| Publication | Qualified source b2172801b0d6523c53f0e539b09483f74533c269 published through the mandated guarded helper. Correspondence verified; draft PR 19 handoff updated. No merge or public release. |
 
 Current candidate: version 0.0.132;
 package `5c21b73a7e715717dee7bf39c60c845735e96b44a2ae5dfe6518435b02bf9e5e`;

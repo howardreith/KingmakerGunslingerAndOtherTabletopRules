@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "reviewedHead": "11039183780a7815e97024ae99abc3062abd9ef9",
+  "sourceCommit": "b2172801b0d6523c53f0e539b09483f74533c269",
+  "inputCount": 1883,
+  "canonicalInputSha256": "ca92b73dc8009e37c954c6bc33cfc8f3e680dfb96978e9d4183ab5af1ad75011",
+  "rawInputSha256": "9e9b21694e75722fe237cfced0598a53b1b7ed0b337059f98aebf2f95c9c749c",
+  "scope": [
+    "src/",
+    "assets/",
+    "blueprints/",
+    "Info.json",
+    "Directory.Build.props",
+    "Directory.Build.targets",
+    "scripts/",
+    "tests/",
+    "tools/",
+    "validation/"
+  ],
+  "method": "Every frozen path and Git-filtered blob matches git ls-tree -r at sourceCommit; exact path set and raw working-file hashes also match.",
+  "artifact": {
+    "commit": "11039183780a7815e97024ae99abc3062abd9ef9",
+    "version": "0.0.132",
+    "packageSha256": "5c21b73a7e715717dee7bf39c60c845735e96b44a2ae5dfe6518435b02bf9e5e",
+    "dllSha256": "01971d6aab3bfcce14d4858ad9921e56a2a0266d0aa49ff01d50489e4d604c3e",
+    "dllMvid": "17245bc9-32b9-4330-83fd-352aaa010e0b",
+    "sourceStateSha256": "8ab2141a7c119f16e0b161b3413bfa26eaf0533cc7cb7248c11cc32f3c8aece9"
+  },
+  "embeddedCommitIsNotFinalSourceCommit": true,
+  "publication": {
+    "status": "PASS",
+    "helper": "C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1",
+    "publishedSourceCommit": "b2172801b0d6523c53f0e539b09483f74533c269",
+    "branch": "codex/magic-circle-alignment-spells",
+    "pr": 19,
+    "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/19",
+    "draft": true,
+    "noMergeTagOrRelease": true
+  }
+}
