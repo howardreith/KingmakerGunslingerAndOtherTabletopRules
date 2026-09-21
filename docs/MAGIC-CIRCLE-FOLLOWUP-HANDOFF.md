@@ -1,4 +1,9 @@
-# Magic Circle follow-up handoff
+# Magic Circle initial follow-up handoff (historical)
+
+The later [terrain and grouped-metamagic review](MAGIC-CIRCLE-TERRAIN-METAMAGIC-REVIEW.md)
+replaces the flat boundary described below and adds native grouped Extend
+coverage. Its exact artifacts and qualification supersede this initial
+polish checkpoint for those changes. Artwork approval remains pending.
 
 Branch: `codex/magic-circle-followup-polish`, based on accepted Magic Circle
 `c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca`. Version remains 0.0.134. No merge,

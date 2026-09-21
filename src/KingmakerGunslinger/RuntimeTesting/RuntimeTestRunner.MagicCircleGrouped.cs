@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker;
 using Kingmaker.UI.ActionBar;
+using Kingmaker.Visual.Decals;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UI.UnitSettings;
@@ -52,37 +53,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (area?.View == null || area.IsEnded) return false;
             var rings = area.View.GetComponentsInChildren<MagicCircleRadiusVisual>(true);
             if (rings.Length != 1) return false;
-            var ring = rings[0]; var line = ring.Boundary;
+            var ring = rings[0]; var decal = ring.Boundary; var material = decal.SharedMaterial;
             var circle = BlueprintBootstrap.MagicCircles.Single(value => ReferenceEquals(value.Area, area.Blueprint));
-            var color = line == null ? Color.clear : line.startColor;
-            bool familyColor = circle.Alignment == "Evil" ? color.b > .9f && color.r < .3f :
-                circle.Alignment == "Chaos" ? color.r > .9f && color.g < .3f && color.b < .3f :
-                circle.Alignment == "Good" ? color.r > .9f && color.g > .6f && color.b < .3f :
-                color.r > .6f && color.b > .9f && color.g < .6f;
-            // Native LineRenderer gradients round to RGBA8 (observed in the
-            // guarded renderer audit). Compare exact stored bytes, not the
-            // unquantized input floats; geometry tolerances remain unchanged.
             var expectedColor = circle.Alignment == "Evil" ? new Color32(41, 158, 255, 224) :
                 circle.Alignment == "Good" ? new Color32(255, 199, 46, 224) :
                 circle.Alignment == "Chaos" ? new Color32(255, 46, 31, 224) : new Color32(196, 125, 255, 224);
-            if (line == null || !line.enabled || !line.gameObject.activeInHierarchy || line.useWorldSpace || !line.loop ||
-                line.positionCount != MagicCircleRadiusVisual.Segments || line.sharedMaterial == null ||
-                !line.sharedMaterial.shader.isSupported || ring.Alignment != circle.Alignment || !familyColor ||
-                !CircleRenderedColor(line.startColor).Equals(expectedColor) || !CircleRenderedColor(line.endColor).Equals(expectedColor) ||
-                Math.Abs(ring.Radius - area.Blueprint.Size.Meters) > .001f) return false;
-            for (int i = 0; i < line.positionCount; i++) {
-                var point = line.transform.TransformPoint(line.GetPosition(i)) - area.Position;
-                if (Math.Abs(new Vector2(point.x, point.z).magnitude - area.Blueprint.Size.Meters) > .005f ||
-                    Math.Abs(point.y - MagicCircleRadiusVisual.GroundOffset) > .005f) return false;
-            }
-            return true;
+            var scale = decal.transform.lossyScale;
+            return ReferenceEquals(decal, ring) && decal.isActiveAndEnabled && ScreenSpaceDecal.All.Contains(decal) &&
+                decal.Type == ScreenSpaceDecal.DecalType.GUI && material != null && material.shader.isSupported &&
+                material.shader.name == "PF/Decals/GUIDecal" && material.mainTexture?.name == "Sector" && material.IsKeywordEnabled("CIRCLE_ON") &&
+                material.GetFloat("_ZTest") == 7 && material.GetFloat("_CullMode") == 1 &&
+                material.GetFloat("_GradientMode") == 1 && material.GetFloat("_ExpGradient") == 0 &&
+                ring.AreaId == area.UniqueId && ring.Alignment == circle.Alignment &&
+                CircleRenderedColor(decal.MaterialProperties.GetColor("_Color")).Equals(expectedColor) &&
+                Math.Abs(ring.Radius - area.Blueprint.Size.Meters) < .001f &&
+                Math.Abs(scale.x - 2 * area.Blueprint.Size.Meters) < .005f &&
+                Math.Abs(scale.z - 2 * area.Blueprint.Size.Meters) < .005f &&
+                Math.Abs(scale.y - MagicCircleRadiusVisual.ProjectionHeight) < .005f &&
+                Vector3.Dot(decal.transform.up, Vector3.up) > .9999f &&
+                (decal.transform.position - area.Position).sqrMagnitude < .001f;
         }
 
         private static Color32 CircleRenderedColor(Color color)
         {
-            // This installed Unity version's Color -> Color32 operator truncates,
-            // unlike its native LineRenderer gradient. Decode the observed RGBA8
-            // channels with nearest-byte rounding, then demand exact equality.
+            // Compare the same four family colors as the accepted renderer,
+            // using nearest-byte rounding for Unity's floating color storage.
             return new Color32((byte)Mathf.RoundToInt(color.r * 255), (byte)Mathf.RoundToInt(color.g * 255),
                 (byte)Mathf.RoundToInt(color.b * 255), (byte)Mathf.RoundToInt(color.a * 255));
         }
@@ -90,25 +85,22 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool CircleBoundaryGone(AreaEffectEntityData area)
         {
             return !Resources.FindObjectsOfTypeAll<MagicCircleRadiusVisual>().Any(ring => ring != null &&
-                ring.AreaId == area.UniqueId && ring.Boundary != null && ring.Boundary.enabled && ring.gameObject.activeInHierarchy);
+                ring.AreaId == area.UniqueId && ring.isActiveAndEnabled) &&
+                !ScreenSpaceDecal.All.OfType<MagicCircleRadiusVisual>().Any(ring => ring.AreaId == area.UniqueId);
         }
 
         private static string CircleBoundaryState(AreaEffectEntityData area)
         {
             var rings = area?.View?.GetComponentsInChildren<MagicCircleRadiusVisual>(true);
-            var ring = rings?.FirstOrDefault(); var line = ring?.Boundary;
-            if (line == null) return "rings=" + (rings == null ? -1 : rings.Length) + ";line=absent";
-            var points = Enumerable.Range(0, line.positionCount).Select(index =>
-                line.transform.TransformPoint(line.GetPosition(index)) - area.Position).ToArray();
-            return CircleUiState(new {
-                rings = rings.Length, area.IsEnded, line.enabled, line.gameObject.activeInHierarchy,
-                line.useWorldSpace, line.loop, line.positionCount, ring.Radius, ring.Alignment,
-                expectedRadius = area.Blueprint.Size.Meters, scale = line.transform.lossyScale.ToString("F6"),
-                color = new[] { line.startColor.r, line.startColor.g, line.startColor.b, line.startColor.a },
-                endColor = new[] { line.endColor.r, line.endColor.g, line.endColor.b, line.endColor.a },
-                shader = line.sharedMaterial?.shader?.name, supported = line.sharedMaterial?.shader?.isSupported,
-                radiusError = points.Max(point => Math.Abs(new Vector2(point.x, point.z).magnitude - area.Blueprint.Size.Meters)),
-                heightError = points.Max(point => Math.Abs(point.y - MagicCircleRadiusVisual.GroundOffset)) })
+            var ring = rings?.FirstOrDefault();
+            if (ring == null) return "rings=" + (rings == null ? -1 : rings.Length) + ";decal=absent";
+            var material = ring.SharedMaterial; var color = ring.MaterialProperties.GetColor("_Color");
+            return CircleUiState(new { rings = rings.Length, area.IsEnded, ring.enabled, ring.gameObject.activeInHierarchy,
+                registered = ScreenSpaceDecal.All.Contains(ring), renderer = ring.GetInstanceID(), material = material?.GetInstanceID(),
+                ring.Radius, ring.Alignment, expectedRadius = area.Blueprint.Size.Meters,
+                scale = ring.transform.lossyScale, position = ring.transform.position, type = ring.Type.ToString(),
+                color = new[] { color.r, color.g, color.b, color.a }, shader = material?.shader?.name,
+                texture = material?.mainTexture?.name, zTest = material?.GetFloat("_ZTest"), cull = material?.GetFloat("_CullMode") })
                 .ToString(Newtonsoft.Json.Formatting.None);
         }
 
@@ -189,7 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "one colored 10-foot boundary follows the native area without recreation", "renderer=" + id +
                     ";appeared=" + appeared + ";moved=" + moved + ";initial=" + initial + ";final=" + CircleBoundaryState(area),
                 appeared && moved && CircleBoundaryMatches(area),
-                "actual Unity LineRenderer vertices/material/color/ownership before and after bearer movement; screenshot is supporting visual evidence only"));
+                "actual native ScreenSpaceDecal volume/material/color/registration/ownership before and after bearer movement; framebuffer inspection is separate visual evidence"));
         }
     }
 }

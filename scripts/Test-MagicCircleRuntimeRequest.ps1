@@ -58,6 +58,22 @@ Assert-Throws {
         -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
         -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_BASELINE' }
 } 'magic-circle-ui-rejects-baseline'
+$terrain = New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-terrain' @workingTimeouts `
+    -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
+    -EvidenceDirectory $synthetic -Parameters @{ saveName = 'KMG_AUTOMATION_WORKING' }
+if ($terrain.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') { $failures.Add('terrain-exact-working-save') }
+foreach ($invalid in @(@{ saveName='KMG_AUTOMATION_BASELINE' }, @{ saveName='KMG_AUTOMATION_WORKING'; area='arbitrary' })) {
+    Assert-Throws {
+        New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-terrain' @workingTimeouts `
+            -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $true `
+            -EvidenceDirectory $synthetic -Parameters $invalid
+    } 'terrain-rejects-unowned-save-or-area'
+}
+Assert-Throws {
+    New-KmgRuntimeRequest -Scenario 'disposable-magic-circle-terrain' @workingTimeouts `
+        -ExpectedVersion $version -TimeoutSeconds 180 -ExitAfterCompletion $false `
+        -EvidenceDirectory $synthetic -Parameters @{ saveName='KMG_AUTOMATION_WORKING' }
+} 'terrain-requires-exit'
 $save = [ordered]@{ Name='KMG_AUTOMATION_WORKING'; FileName='Working.zks'; FolderName='Working.zks'; GameName='fixture'; GameId='fixture'; Area='fixture' }
 $fixtureActors=@(1..4 | ForEach-Object { @{ id=[Guid]::NewGuid().ToString('D');role="role$_";blueprint=('a'*32);books=@() } })
 $record = [ordered]@{ schemaVersion=2; phase='prepare'; runId='prepare-fixture-A'; exception=$null; workingSave=$save

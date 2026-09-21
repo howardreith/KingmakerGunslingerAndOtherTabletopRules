@@ -8,6 +8,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ModLoadSmoke = "mod-load-smoke";
         internal const string DisposableMagicCircleProfile = "disposable-magic-circle-profile";
         internal const string DisposableMagicCircleUi = "disposable-magic-circle-ui";
+        internal const string DisposableMagicCircleTerrain = "disposable-magic-circle-terrain";
         internal const string DisposableMagicCircleEvil = "disposable-magic-circle-evil";
         internal const string WorkingSaveMagicCirclePrepare = "working-save-magic-circle-prepare";
         internal const string WorkingSaveMagicCircleVerify = "working-save-magic-circle-verify";
@@ -558,6 +559,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableMagicCircleProfile,
                 DisposableMagicCircleEvil,
                 DisposableMagicCircleUi,
+                DisposableMagicCircleTerrain,
                 WorkingSaveMagicCirclePrepare,
                 WorkingSaveMagicCircleVerify,
                 WorkingSaveMagicCircleCleanup,
