@@ -31,7 +31,8 @@ namespace KingmakerGunslinger.Spells.MagicCircle
                 var library = BlueprintBootstrap.Library;
                 var circles = BlueprintBootstrap.MagicCircles;
                 if (library == null || circles == null) return;
-                var owned = circles.SelectMany(circle => new[] { circle.Spell, circle.Delivery }).ToArray();
+                var owned = circles.SelectMany(circle => new[] { circle.Spell, circle.Delivery })
+                    .Concat(MagicCircleBlueprints.Families).ToArray();
                 var foreign = library.BlueprintsByAssetId.Values.OfType<BlueprintAbility>().Where(ability =>
                     !owned.Contains(ability) && IsCircle(ability)).ToArray();
                 if (foreign.Length != 0) {
@@ -84,8 +85,8 @@ namespace KingmakerGunslinger.Spells.MagicCircle
                 if (!ReferenceEquals(characterClass.Spellbook, book) || !ReferenceEquals(book.CharacterClass, characterClass) ||
                     !ReferenceEquals(book.SpellList, list) || list.MaxLevel < 3)
                     throw new InvalidOperationException("Optional primary book/list contract changed: " + spec[0]);
-                foreach (var circle in BlueprintBootstrap.MagicCircles)
-                    if (spec[0] != "Antipaladin" || circle.Alignment == "Good" || circle.Alignment == "Law") publication.Add(list, circle.Spell);
+                publication.Add(list, spec[0] == "Antipaladin" ?
+                    MagicCircleBlueprints.AntipaladinFamily : MagicCircleBlueprints.Family);
                 _context.Logger.Info("magic-circle", "optional-list", "class=" + characterClass.AssetGuid + ";book=" + book.AssetGuid + ";list=" + list.AssetGuid + ";level=3");
             }
             PublishImplement(library, "e88366e9f64b44ac92d0f3a52074fb0a", "95d408f6c23d4ec2ad9049228b60cca6", "1b76f3c73aa84f91a1c65513fb23aa01");
@@ -112,9 +113,8 @@ namespace KingmakerGunslinger.Spells.MagicCircle
                 !learning.SpecificSpellLevel || learning.SpellLevel != 3 || learning.SpellLevelPenalty != 0 ||
                 prerequisite == null || prerequisite.CharacterClass != oracle || prerequisite.RequiredSpellLevel != 4)
                 throw new InvalidOperationException("Oracle Favored Class third-level selection contract changed: " + featureId);
-            foreach (var circle in BlueprintBootstrap.MagicCircles)
-                BlueprintBootstrap.MagicCirclePublication.AddFavoredParameter(feature, circle.Spell);
-            _context.Logger.Info("magic-circle", "favored-oracle", "feature=" + featureId + ";level=3;parameters=4;native-prerequisites-preserved");
+            BlueprintBootstrap.MagicCirclePublication.AddFavoredParameter(feature, MagicCircleBlueprints.Family);
+            _context.Logger.Info("magic-circle", "favored-oracle", "feature=" + featureId + ";level=3;parameters=1;native-prerequisites-preserved");
         }
 
         private static void PublishImplement(LibraryScriptableObject library, string featureId, string listId, string classId)
@@ -132,7 +132,7 @@ namespace KingmakerGunslinger.Spells.MagicCircle
                     ReferenceEquals(spells.GetValue(component), list) && (owner.GetValue(component) as BlueprintCharacterClass)?.AssetGuid == classId;
             });
             if (!linked) throw new InvalidOperationException("Optional implement list ownership changed: " + featureId);
-            foreach (var circle in BlueprintBootstrap.MagicCircles) BlueprintBootstrap.MagicCirclePublication.Add(list, circle.Spell);
+            BlueprintBootstrap.MagicCirclePublication.Add(list, MagicCircleBlueprints.Family);
         }
     }
 }

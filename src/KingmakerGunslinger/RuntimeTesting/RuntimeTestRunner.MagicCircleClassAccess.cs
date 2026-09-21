@@ -40,9 +40,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var book = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellbook>(library, row[2], row[0]);
                     var list = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellList>(library, row[3], row[0]);
                     pass = ReferenceEquals(owner.Spellbook, book) && ReferenceEquals(book.CharacterClass, owner) &&
-                        ReferenceEquals(book.SpellList, list) && circles.All(circle =>
-                            list.SpellsByLevel.Single(level => level.SpellLevel == 3).Spells.Count(spell => spell.AssetGuid == circle.Spell.AssetGuid) ==
-                            (row[0] == "Antipaladin" && circle.Alignment != "Good" && circle.Alignment != "Law" ? 0 : 1));
+                        ReferenceEquals(book.SpellList, list) && CirclePublishedFamily(list, row[0] == "Antipaladin" ? MagicCircleBlueprints.AntipaladinFamily : MagicCircleBlueprints.Family);
                 }
                 assertions.Add(Assertion("circle-optional-class-" + row[0],
                     "present class retains its native book and exact legitimate level-three entries; absent class creates no book/list",
@@ -58,8 +56,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (present) {
                     var book = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.Spells.BlueprintSpellbook>(library, row[1], row[0]);
                     pass = book.CharacterClass.AssetGuid == "19c3cf3d51cf4cbf9a136a600c26585a" && book.SpellList.AssetGuid == row[2] &&
-                        circles.All(circle => book.SpellList.SpellsByLevel.Single(level => level.SpellLevel == 3).Spells.Count(spell => spell.AssetGuid == circle.Spell.AssetGuid) ==
-                            (row[3] == "yes" ? 1 : 0));
+                        CirclePublishedFamily(book.SpellList, row[3] == "yes" ? MagicCircleBlueprints.Family : null);
                 }
                 assertions.Add(Assertion("circle-optional-inherited-" + row[0], "actual inherited list exposes only entitled variants",
                     "present=" + present, pass, "loaded prepared/spontaneous books; Wizard positive and Witch negative"));
@@ -77,7 +74,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         return (int)type.GetField("spell_level").GetValue(component) == 3 &&
                             ReferenceEquals(type.GetField("spell_list").GetValue(component), list) &&
                             (type.GetField("character_class").GetValue(component) as BlueprintCharacterClass)?.AssetGuid == row[3];
-                    }) && circles.All(circle => list.SpellsByLevel.Single(level => level.SpellLevel == 3).Spells.Count(spell => spell.AssetGuid == circle.Spell.AssetGuid) == 1);
+                    }) && CirclePublishedFamily(list, MagicCircleBlueprints.Family);
                 }
                 assertions.Add(Assertion("circle-optional-implement-" + row[0], "Abjuration choices retain actual class/list/level ownership",
                     "present=" + present, pass, "installed foreign feature components and their actual selection list"));
@@ -126,13 +123,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 book.UpdateAllSlotsSize(false); book.Rest();
                 if (!paladin.IsPlayerFaction || !paladin.Descriptor.HasFact(restriction))
                     throw new InvalidOperationException("Native Paladin progression did not supply its player alignment restriction.");
-                assertions.Add(Assertion("circle-paladin-class-entitlements", "native prepared book knows exactly Evil/Chaos, with its original owner and restriction",
+                assertions.Add(Assertion("circle-paladin-class-entitlements", "native prepared book knows one restricted family exposing exactly Evil/Chaos, with its original owner and restriction",
                     "known=" + string.Join(",", circles.Where(c => book.IsKnown(c.Spell)).Select(c => c.Alignment)),
-                    circles.All(c => book.IsKnown(c.Spell) == (c.Alignment == "Evil" || c.Alignment == "Chaos")) &&
+                    book.IsKnown(MagicCircleBlueprints.PaladinFamily) && !book.IsKnown(MagicCircleBlueprints.Family) &&
+                    circles.All(c => !book.IsKnown(c.Spell)) && MagicCircleBlueprints.PaladinFamily.Variants.Length == 2 &&
+                    MagicCircleBlueprints.PaladinFamily.Variants.All(variant => circles.Any(c => c.Spell == variant && (c.Alignment == "Evil" || c.Alignment == "Chaos"))) &&
                     ReferenceEquals(book.Owner, paladin.Descriptor), "actual native Paladin level progression and published list; no AddKnown bypass"));
                 foreach (var circle in circles.Where(c => c.Alignment == "Evil" || c.Alignment == "Chaos")) {
                     var slot = RawSlots(book, 3).First(value => value.Type == SpellSlotType.Common && value.Spell == null);
-                    if (!book.Memorize(new AbilityData(circle.Spell, book), slot)) throw new InvalidOperationException("Legal Paladin Circle cannot be prepared.");
+                    if (!book.Memorize(new AbilityData(MagicCircleBlueprints.PaladinFamily, book), slot)) throw new InvalidOperationException("Legal Paladin Circle cannot be prepared.");
                     book.Rest();
                     bool allowed = slot.Spell.IsAvailable && !(paladin.Get<UnitPartForbiddenSpellbooks>()?.IsForbidden(book.Blueprint) ?? false);
                     paladin.Descriptor.Alignment.Set(Alignment.ChaoticEvil);
@@ -142,7 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     assertions.Add(Assertion("circle-paladin-alignment-gate-" + circle.Alignment, "native lawful-good book availability disables on deviation and restores on return",
                         "allowed=" + allowed + ";forbidden=" + forbidden + ";restored=" + restored, allowed && forbidden && restored,
                         "native ForbidSpellbookOnAlignmentDeviation; no new alignment policy or forced resource result"));
-                    CircleCast(paladin, bearer, slot.Spell, diagnostics);
+                    CircleCast(paladin, bearer, CirclePreparedVariant(slot, circle.Spell), diagnostics);
                     var carrier = CircleBuffs(bearer, circle.Carrier).Single(); var area = CircleArea(carrier);
                     CircleRefresh(area, actors);
                     assertions.Add(Assertion("circle-paladin-prepared-cast-" + circle.Alignment, "one legitimate level-three Paladin preparation creates the native bearer circle",

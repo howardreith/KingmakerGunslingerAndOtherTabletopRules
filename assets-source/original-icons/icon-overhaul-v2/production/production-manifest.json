@@ -861,6 +861,82 @@
                         "approvedHash":  "bdfcf3147cbbf53d76912d696d3f3497c6002125428c302316c301a155348826"
                     },
                     {
+                        "key":  "magic-circle-against-chaos",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-chaos.png",
+                        "sourceSha256":  "56050aa5adb9e388fa1cd4cc6830d78e0dbb3860cf1b612a9311da236b436d33",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-chaos.png",
+                        "exportSha256":  "ccb4146826e29a0fb6bf6620fe56167091f0a962474d2b6b8b902893764d3971",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-chaos.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "magic-circle-against-evil",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-evil.png",
+                        "sourceSha256":  "8f4bca91de6282819a2b0a74706bbf475d79e6a5c81473316eb9f3bd5c45354a",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-evil.png",
+                        "exportSha256":  "991f1cbaebfa87d21630f9ad0fbea8bf51be48521a53e185addb7ac021c837cb",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-evil.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "magic-circle-against-good",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-good.png",
+                        "sourceSha256":  "16e25df5c1ea3eb3cdb9132ac9acf5fd850c8db4deb49dd300d14d6e0a8943a7",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-good.png",
+                        "exportSha256":  "e44b0d5e6000dcad22c8ec5a31e1d9624cd566c700c63bc9cdd88f351b5ff65d",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-good.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "magic-circle-against-law",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-law.png",
+                        "sourceSha256":  "3bb20006ee222cc291f8c38cf3220eb952bc7e8915f45c19d0c3c7152ba21cb7",
+                        "sourceSize":  [
+                                           1254,
+                                           1254
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-law.png",
+                        "exportSha256":  "8e65876bbe86b70a3a24d4ca1218f1ebb5f8007f83e52e4ccc19a49cf870bbe8",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-law.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
                         "key":  "magma-affinity",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magma-affinity.png",
                         "sourceSha256":  "269cf7ee1098caf61333c547c8c55467a0f6f4a44ea54a2442c1c1b3014c29d2",
@@ -1087,6 +1163,139 @@
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "approved",
                         "approvedHash":  "46d1eb3300b3c4b0dcaa1871c5d0517f0a8361df0071813926f716d7de112ea4"
+                    },
+                    {
+                        "key":  "scroll-of-greater-teleport",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-greater-teleport.png",
+                        "sourceSha256":  "413c935aa139daec845250d696f0a862062f84ba84a3ff80d6a6dd2e61df0c6b",
+                        "sourceSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-greater-teleport.png",
+                        "exportSha256":  "413c935aa139daec845250d696f0a862062f84ba84a3ff80d6a6dd2e61df0c6b",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-greater-teleport.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "candidate-awaiting-owner-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "scroll-of-magic-circle-against-chaos",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-magic-circle-against-chaos.png",
+                        "sourceSha256":  "1cf4b4571ed98b0e200c79fc6b2ac629c51594b0b3b7cd22cbfeacc978c8cfcb",
+                        "sourceSize":  [
+                                           512,
+                                           512
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-magic-circle-against-chaos.png",
+                        "exportSha256":  "8af48a956130b5245d9c403911903c9566caa0f894b7ff7ff12febffb62dded2",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-magic-circle-against-chaos.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "scroll-of-magic-circle-against-evil",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-magic-circle-against-evil.png",
+                        "sourceSha256":  "89c612373a4979d371cf732d68ebe57e2c64862e9ebd222469be8722c204aa15",
+                        "sourceSize":  [
+                                           512,
+                                           512
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-magic-circle-against-evil.png",
+                        "exportSha256":  "ba6e1ebda8c151f01e77d034ba6d0178d7eb1515d784e375f240f8972809c433",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-magic-circle-against-evil.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "scroll-of-magic-circle-against-good",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-magic-circle-against-good.png",
+                        "sourceSha256":  "12273664bd03bcd31c9a4cc330fb9103d3256d3b4b9af7d00c2a0f598db7c45d",
+                        "sourceSize":  [
+                                           512,
+                                           512
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-magic-circle-against-good.png",
+                        "exportSha256":  "8c0729adc5c1c972b9a8cf57aaf6bac0b622a1d3a4065b59ce0e5105d59a9724",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-magic-circle-against-good.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "scroll-of-magic-circle-against-law",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-magic-circle-against-law.png",
+                        "sourceSha256":  "173e865b2cede0baf8ad507faf92d75cb2b92016a584995b43f7bf8c891a7332",
+                        "sourceSize":  [
+                                           512,
+                                           512
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-magic-circle-against-law.png",
+                        "exportSha256":  "46a14efc1ef1ac8f21ee856ce0505ccfefec254c600e11d27477ca8b77dc076b",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-magic-circle-against-law.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "scroll-of-teleport",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-teleport.png",
+                        "sourceSha256":  "10cf212631bbc4e319c6e71afab466f86eadc2051fe2ffdd16ceacee6047975d",
+                        "sourceSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-teleport.png",
+                        "exportSha256":  "10cf212631bbc4e319c6e71afab466f86eadc2051fe2ffdd16ceacee6047975d",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-teleport.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "candidate-awaiting-owner-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "scroll-of-word-of-recall",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-word-of-recall.png",
+                        "sourceSha256":  "512c572bb55d6c9b182f4ede08041dd15c8c0c4aaa8617e26766853d832bec90",
+                        "sourceSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-word-of-recall.png",
+                        "exportSha256":  "512c572bb55d6c9b182f4ede08041dd15c8c0c4aaa8617e26766853d832bec90",
+                        "exportSize":  [
+                                           128,
+                                           128
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-word-of-recall.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "candidate-awaiting-owner-review",
+                        "approvedHash":  null
                     },
                     {
                         "key":  "secretive",
@@ -1524,147 +1733,6 @@
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "approved",
                         "approvedHash":  "bd351a85618aa50e00348587610184ce0d4db4d65ca95672728d651f24caa1e6"
-                    },
-                    {
-                        "key":  "scroll-of-teleport",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-teleport.png",
-                        "sourceSha256":  "10cf212631bbc4e319c6e71afab466f86eadc2051fe2ffdd16ceacee6047975d",
-                        "sourceSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-teleport.png",
-                        "exportSha256":  "10cf212631bbc4e319c6e71afab466f86eadc2051fe2ffdd16ceacee6047975d",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-teleport.json",
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "candidate-awaiting-owner-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "scroll-of-greater-teleport",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-greater-teleport.png",
-                        "sourceSha256":  "413c935aa139daec845250d696f0a862062f84ba84a3ff80d6a6dd2e61df0c6b",
-                        "sourceSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-greater-teleport.png",
-                        "exportSha256":  "413c935aa139daec845250d696f0a862062f84ba84a3ff80d6a6dd2e61df0c6b",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-greater-teleport.json",
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "candidate-awaiting-owner-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "scroll-of-word-of-recall",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-word-of-recall.png",
-                        "sourceSha256":  "512c572bb55d6c9b182f4ede08041dd15c8c0c4aaa8617e26766853d832bec90",
-                        "sourceSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/scroll-of-word-of-recall.png",
-                        "exportSha256":  "512c572bb55d6c9b182f4ede08041dd15c8c0c4aaa8617e26766853d832bec90",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/scroll-of-word-of-recall.json",
-                        "technicalStatus":  "candidate-export",
-                        "visualStatus":  "candidate-awaiting-owner-review",
-                        "approvedHash":  null
-                    },
-                    {
-                        "key":  "magic-circle-against-evil",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-evil.png",
-                        "sourceSha256":  "010c38f0abda7ff297f03cd83aedc56468b59daa9a5750130ab32f35e52cac20",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-evil.png",
-                        "exportSha256":  "c6c8aa108c1beb1d1f37d78a84437d93da2743455cc70d0680862d6322484167",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-evil.json",
-                        "technicalStatus":  "approved-export; native UI pending",
-                        "visualStatus":  "approved",
-                        "approvedHash":  "c6c8aa108c1beb1d1f37d78a84437d93da2743455cc70d0680862d6322484167",
-                        "ownerApprovalEvidence":  "reports/magic-circle/OWNER-DECISIONS.json",
-                        "nativeUiAcceptance":  "pending"
-                    },
-                    {
-                        "key":  "magic-circle-against-good",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-good.png",
-                        "sourceSha256":  "cab87cc56607f5c0294d44b126fe652b54d51f6213819511d39e3acd15a34229",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-good.png",
-                        "exportSha256":  "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-good.json",
-                        "technicalStatus":  "approved-export; native UI pending",
-                        "visualStatus":  "approved",
-                        "approvedHash":  "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a",
-                        "ownerApprovalEvidence":  "reports/magic-circle/OWNER-DECISIONS.json",
-                        "nativeUiAcceptance":  "pending"
-                    },
-                    {
-                        "key":  "magic-circle-against-law",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-law.png",
-                        "sourceSha256":  "8ebc0379269525df5789f21f6ff7efe305c4d5d0e98bfcc2ce159e0da904cc78",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-law.png",
-                        "exportSha256":  "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-law.json",
-                        "technicalStatus":  "approved-export; native UI pending",
-                        "visualStatus":  "approved",
-                        "approvedHash":  "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5",
-                        "ownerApprovalEvidence":  "reports/magic-circle/OWNER-DECISIONS.json",
-                        "nativeUiAcceptance":  "pending"
-                    },
-                    {
-                        "key":  "magic-circle-against-chaos",
-                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-chaos.png",
-                        "sourceSha256":  "783987de3ebd02da1b30eb5f014cc6e49342221d112114e30a0631a5d76e5974",
-                        "sourceSize":  [
-                                           1254,
-                                           1254
-                                       ],
-                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-chaos.png",
-                        "exportSha256":  "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f",
-                        "exportSize":  [
-                                           128,
-                                           128
-                                       ],
-                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-chaos.json",
-                        "technicalStatus":  "approved-export; native UI pending",
-                        "visualStatus":  "approved",
-                        "approvedHash":  "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f",
-                        "ownerApprovalEvidence":  "reports/magic-circle/OWNER-DECISIONS.json",
-                        "nativeUiAcceptance":  "pending"
                     }
                 ]
 }

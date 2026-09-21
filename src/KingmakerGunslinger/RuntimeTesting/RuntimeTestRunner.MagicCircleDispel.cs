@@ -75,6 +75,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "attempts=" + attempts + ";successfulRules=" + successes.Length +
                         ";carriers=" + CircleBuffs(bearer, circle.Carrier).Length,
                     debits && successes.Length == 1 && carriers.Contains(successes[0].Buff) &&
+                    areas.All(value => value.IsEnded ? CircleBoundaryGone(value) : CircleBoundaryMatches(value)) &&
                     CircleBuffs(bearer, circle.Carrier).Length == 1 &&
                     CircleBuffs(recipient, circle.Recipient).Length == 1 &&
                     CircleBuffs(recipient, circle.Recipient).Single().SourceAreaEffectId ==
@@ -108,7 +109,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "attempts=" + attempts + ";successfulRules=" + successes.Length +
                         ";carrierActive=" + remaining.Active + ";areaEnded=" + remainingArea.IsEnded,
                     debits && successes.Length == 1 && capture.Rules.All(value => ReferenceEquals(value.AreaEffect, remainingArea)) &&
-                    remainingArea.IsEnded && !bearer.Buffs.Enumerable.Contains(remaining) &&
+                    remainingArea.IsEnded && CircleBoundaryGone(remainingArea) && !bearer.Buffs.Enumerable.Contains(remaining) &&
                     CircleBuffs(recipient, circle.Recipient).Length == 0,
                     "actual native point Dispel Magic; exact parent/area link; carrier cannot reconstruct a dispelled area"));
                 diagnostics.AddRange(capture.Rules.Select(value => "area-dispel:success=" + value.Success +

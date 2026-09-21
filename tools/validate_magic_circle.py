@@ -51,3 +51,6 @@ def validate_protection_source(root):
         raise AssertionError("Unchanged Protection catalog/policy/publication source drifted")
     if complete.hexdigest() != PROTECTION_SOURCE_SHA256:
         raise AssertionError("Shared Protection source digest differs from the exact correction")
+
+# Follow-up adds only these three grouped learning identities.
+IDS.update({'KMG.Spells.MagicCircle.Family': '30201ad172e243c9b13fef377dcc6ce6', 'KMG.Spells.MagicCircle.PaladinFamily': 'bec9d1f0d3de453cb9733a614a64cfca', 'KMG.Spells.MagicCircle.AntipaladinFamily': '2c16f86ef5cd4b81aee6eff208a71579'})

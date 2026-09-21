@@ -1,0 +1,175 @@
+{
+    "schemaVersion":  1,
+    "evidenceRole":  "Read-only native art/prefab inspection, not UI or gameplay proof",
+    "run":  "20260920T2133354008476Z-observe-magic-circle-native-contracts",
+    "artifact":  {
+                     "version":  "0.0.134",
+                     "commit":  "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+                     "dllSha256":  "9be1659a3e7e5a0a7c28ea4ca06bb59de76472264fd477a733a9502365d6415b",
+                     "mvid":  "0d54f117-8934-47c8-a127-14c17c8c013a"
+                 },
+    "protection":  [
+                       {
+                           "guid":  "eee384c813b6d74498d1b9cc720d61f4",
+                           "name":  "ProtectionFromEvil",
+                           "sha256":  "819c8bd34b2a16c46d1e5f2e0cb6f39749ba9d641791d16e6fa6da52c2996966",
+                           "width":  64,
+                           "height":  64
+                       },
+                       {
+                           "guid":  "2ac7637daeb2aa143a3bae860095b63e",
+                           "name":  "ProtectionFromGood",
+                           "sha256":  "115ed1417a201ce5fc3cdde0a153a54f9a503fcdea4c363a98d10edc662b7567",
+                           "width":  64,
+                           "height":  64
+                       },
+                       {
+                           "guid":  "c3aafbbb6e8fc754fb8c82ede3280051",
+                           "name":  "ProtectionFromLaw",
+                           "sha256":  "b8576c11973c6a409e734d28bf600c0ea3195f116d6c5a2ebe9035b2c6894b47",
+                           "width":  64,
+                           "height":  64
+                       },
+                       {
+                           "guid":  "1eaf1020e82028d4db55e6e464269e00",
+                           "name":  "ProtectionFromChaos",
+                           "sha256":  "56ad0aaa6ea44a2741d7cb433d1904ec6131c75a7fd5bcc942e0b76adf259e8e",
+                           "width":  64,
+                           "height":  64
+                       },
+                       {
+                           "guid":  "93f391b0c5a99e04e83bbfbe3bb6db64",
+                           "name":  "ProtectionFromEvilCommunal",
+                           "sha256":  "c61122cad05f1b729230cc6d7ee84e5bf819f137950153d8ffa92551617e3acb",
+                           "width":  64,
+                           "height":  64
+                       },
+                       {
+                           "guid":  "5bfd4cce1557d5744914f8f6d85959a4",
+                           "name":  "ProtectionFromGoodCommunal",
+                           "sha256":  "d622ce3f2263f86782137b264c44a1f8cdb9ddb19080a2609955ddd48dcd7da8",
+                           "width":  64,
+                           "height":  64
+                       },
+                       {
+                           "guid":  "8b8ccc9763e3cc74bbf5acc9c98557b9",
+                           "name":  "ProtectionFromLawCommunal",
+                           "sha256":  "5ca74568826f2535d9643f446fa843e2945781aadadc92783fa1394dae3a7f08",
+                           "width":  64,
+                           "height":  64
+                       },
+                       {
+                           "guid":  "0ec75ec95d9e39d47a23610123ba1bad",
+                           "name":  "ProtectionFromChaosCommunal",
+                           "sha256":  "3115389bdaca000dc450fa45e5c324e9f4b30f21a5cdf2af27680c3675d619cf",
+                           "width":  64,
+                           "height":  64
+                       },
+                       {
+                           "guid":  "433b1faf4d02cc34abb0ade5ceda47c4",
+                           "name":  "ProtectionFromAlignment",
+                           "sha256":  "56ad0aaa6ea44a2741d7cb433d1904ec6131c75a7fd5bcc942e0b76adf259e8e",
+                           "width":  64,
+                           "height":  64
+                       },
+                       {
+                           "guid":  "2cadf6c6350e4684baa109d067277a45",
+                           "name":  "ProtectionFromAlignmentCommunal",
+                           "sha256":  "454a3cb812b0eb52c5a85bf79247efbe4f90f05d6588899ff350ade863805cb1",
+                           "width":  64,
+                           "height":  64
+                       }
+                   ],
+    "arcaneConcordance":  {
+                              "prefabGuid":  "cda35ba5c34a61b499f5858eabcedec7",
+                              "name":  "Abjuration00_Alignment_Aoe_13Feet",
+                              "componentTypes":  [
+                                                     "UnityEngine.Transform",
+                                                     "Kingmaker.Utility.ApplyPrefabAtRuntime",
+                                                     "Kingmaker.Visual.Particles.PooledFx",
+                                                     "AkGameObj",
+                                                     "Kingmaker.Visual.Sound.SoundFx",
+                                                     "Kingmaker.Visual.Particles.FxFadeOut",
+                                                     "Kingmaker.Visual.Billboard",
+                                                     "Kingmaker.Visual.Fluid.FxFluidFogInteraction",
+                                                     "Kingmaker.Visual.Particles.SnapToLocator",
+                                                     "UnityEngine.ParticleSystem",
+                                                     "UnityEngine.ParticleSystemRenderer"
+                                                 ],
+                              "particles":  [
+                                                {
+                                                    "name":  "Border_Rays",
+                                                    "loop":  "False",
+                                                    "duration":  "3",
+                                                    "shape":  "Mesh",
+                                                    "radius":  "1",
+                                                    "color":  "RGBA(0.188, 0.298, 0.792, 1.000)"
+                                                },
+                                                {
+                                                    "name":  "Border_RaysLoop",
+                                                    "loop":  "True",
+                                                    "duration":  "3",
+                                                    "shape":  "Mesh",
+                                                    "radius":  "1",
+                                                    "color":  "RGBA(0.188, 0.298, 0.792, 1.000)"
+                                                },
+                                                {
+                                                    "name":  "sparks",
+                                                    "loop":  "True",
+                                                    "duration":  "10000",
+                                                    "shape":  "Circle",
+                                                    "radius":  "14.8",
+                                                    "color":  "RGBA(0.506, 0.639, 0.992, 1.000)"
+                                                },
+                                                {
+                                                    "name":  "Border_Loop",
+                                                    "loop":  "False",
+                                                    "duration":  "1",
+                                                    "shape":  "Mesh",
+                                                    "radius":  "1",
+                                                    "color":  "RGBA(0.314, 0.455, 0.937, 1.000)"
+                                                },
+                                                {
+                                                    "name":  "Border_Loop (1)",
+                                                    "loop":  "False",
+                                                    "duration":  "1",
+                                                    "shape":  "Mesh",
+                                                    "radius":  "1",
+                                                    "color":  "RGBA(0.314, 0.455, 0.937, 1.000)"
+                                                },
+                                                {
+                                                    "name":  "Bottom_Glow",
+                                                    "loop":  "False",
+                                                    "duration":  "1",
+                                                    "shape":  "Box",
+                                                    "radius":  "0.01",
+                                                    "color":  "RGBA(0.314, 0.455, 0.937, 1.000)"
+                                                },
+                                                {
+                                                    "name":  "EnergyWave (1)",
+                                                    "loop":  "False",
+                                                    "duration":  "3",
+                                                    "shape":  "Mesh",
+                                                    "radius":  "1",
+                                                    "color":  "RGBA(0.314, 0.455, 0.937, 1.000)"
+                                                },
+                                                {
+                                                    "name":  "BigWave (1)",
+                                                    "loop":  "False",
+                                                    "duration":  "3",
+                                                    "shape":  "Mesh",
+                                                    "radius":  "1",
+                                                    "color":  "RGBA(0.314, 0.455, 0.937, 1.000)"
+                                                },
+                                                {
+                                                    "name":  "Bottom_dark",
+                                                    "loop":  "False",
+                                                    "duration":  "1",
+                                                    "shape":  "Box",
+                                                    "radius":  "0.01",
+                                                    "color":  "RGBA(0.029, 0.079, 0.245, 0.553)"
+                                                }
+                                            ]
+                          },
+    "ownerApproval":  "New pixels pending; prior approvals retained in production/archive/magic-circle-pr19/approval-records.json"
+}

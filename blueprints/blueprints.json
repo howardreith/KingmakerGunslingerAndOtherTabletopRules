@@ -15287,6 +15287,30 @@
       "status": "active",
       "milestone": "Magic Circle alignment spell family",
       "notes": "Stable independent spell, touch, scroll or source-owned aura identity; registered even with content disabled."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.Family",
+      "guid": "30201ad172e243c9b13fef377dcc6ce6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle grouped family follow-up",
+      "notes": "One native AbilityVariants learning identity; restricted roots expose only their class-legal children. Original 24 saved identities preserved."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.PaladinFamily",
+      "guid": "bec9d1f0d3de453cb9733a614a64cfca",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle grouped family follow-up",
+      "notes": "One native AbilityVariants learning identity; restricted roots expose only their class-legal children. Original 24 saved identities preserved."
+    },
+    {
+      "symbol": "KMG.Spells.MagicCircle.AntipaladinFamily",
+      "guid": "2c16f86ef5cd4b81aee6eff208a71579",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Magic Circle grouped family follow-up",
+      "notes": "One native AbilityVariants learning identity; restricted roots expose only their class-legal children. Original 24 saved identities preserved."
     }
   ]
 }

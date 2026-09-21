@@ -50,7 +50,12 @@ namespace KingmakerGunslinger.Blueprints
     internal static class MagicCircleBlueprints
     {
         internal const string Prefix = "KMG.Spells.MagicCircle.";
-        internal const int IdentityCount = 24;
+        internal const int IdentityCount = 27;
+        internal static BlueprintAbility Family { get; private set; }
+        internal static BlueprintAbility PaladinFamily { get; private set; }
+        internal static BlueprintAbility AntipaladinFamily { get; private set; }
+        internal static BlueprintAbility[] Families
+        { get { return new[] { Family, PaladinFamily, AntipaladinFamily }; } }
 
         private sealed class Definition
         {
@@ -69,8 +74,39 @@ namespace KingmakerGunslinger.Blueprints
         internal static MagicCircleBlueprintSet[] Register(LibraryScriptableObject library,
             BlueprintRegistry registry, bool sharedControlEnabled)
         {
-            return Definitions.Select(value => RegisterOne(library, registry, value.Name,
+            var circles = Definitions.Select(value => RegisterOne(library, registry, value.Name,
                 value.Against, value.Descriptor, value.NativeSpell, value.NativeBuff, sharedControlEnabled)).ToArray();
+            Family = registry.Register<BlueprintAbility>(Prefix + "Family",
+                () => CreateFamily("Family", circles));
+            PaladinFamily = registry.Register<BlueprintAbility>(Prefix + "PaladinFamily",
+                () => CreateFamily("PaladinFamily", circles.Where(circle => circle.Alignment == "Evil" || circle.Alignment == "Chaos").ToArray()));
+            AntipaladinFamily = registry.Register<BlueprintAbility>(Prefix + "AntipaladinFamily",
+                () => CreateFamily("AntipaladinFamily", circles.Where(circle => circle.Alignment == "Good" || circle.Alignment == "Law").ToArray()));
+            // Native scroll copying resolves Ability.Parent. The native variant
+            // action bar uses ConvertedFrom, so restricted books spend their own
+            // family's slot without gaining the other family's choices.
+            foreach (var circle in circles) circle.Spell.Parent = Family;
+            return circles;
+        }
+
+        private static BlueprintAbility CreateFamily(string role, MagicCircleBlueprintSet[] circles)
+        {
+            var spell = BlueprintCloneService.Clone(circles[0].Spell, "KMG_MagicCircle_" + role);
+            Configure(spell, "Alignment", role, "Magic Circle against Alignment",
+                "Choose protection against " + string.Join(", ", circles.Select(circle => circle.Alignment)) +
+                " when casting. Touch a creature to create a moving 10-foot emanation for 10 minutes per caster level. " +
+                "Every covered creature, including enemies, receives the chosen Protection from Alignment benefits. " +
+                "See each variant for its effects. This spell does not remove or suppress existing control, exclude summoned creatures, or create a binding circle.",
+                circles[0].Spell.Icon);
+            var variants = ScriptableObject.CreateInstance<AbilityVariants>();
+            variants.name = "$KMG_MagicCircle_AlignmentChoices";
+            variants.Variants = circles.Select(circle => circle.Spell).ToArray();
+            // A selector has no execution or alignment descriptor of its own.
+            // All effects and descriptors stay on the unchanged child spells.
+            spell.ComponentsArray = spell.ComponentsArray.Where(component => component is SpellComponent ||
+                component is MagicCircleCasterChecker || component is AbilityAoERadius)
+                .Concat(new BlueprintComponent[] { variants }).ToArray();
+            return spell;
         }
 
         private static MagicCircleBlueprintSet RegisterOne(LibraryScriptableObject library,
@@ -98,7 +134,8 @@ namespace KingmakerGunslinger.Blueprints
                 () => CreateSpell(donor, alignment, descriptor, icon, carrier, control, delivery, null));
             delivery.Parent = spell;
             var scroll = registry.Register<BlueprintItemEquipmentUsable>(symbol + "Scroll",
-                () => MagicCircleScrollBlueprints.Create(library, alignment, spell, icon));
+                () => MagicCircleScrollBlueprints.Create(library, alignment, spell,
+                    ProjectAssetIcons.RequireIcon("scroll-of-magic-circle-against-" + alignment.ToLowerInvariant())));
             return new MagicCircleBlueprintSet(alignment, spell, delivery, carrier, area, recipient, scroll);
         }
 

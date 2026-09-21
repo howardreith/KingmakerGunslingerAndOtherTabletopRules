@@ -74,7 +74,7 @@ param(
         'observe-magic-circle-native-contracts',
         'disposable-magic-circle-profile',
         'disposable-magic-circle-evil',
-        'disposable-magic-circle-ui',
+        'disposable-magic-circle-ui', 'disposable-magic-circle-terrain',
         'observe-teleportation-native-contracts',
         'observe-teleportation-world-map',
         'disposable-teleportation-familiarity',
@@ -365,7 +365,7 @@ try {
         }
         if ($name -in @('musket-master-mechanics-and-starter',
             'working-save-smoke', 'disposable-brown-fur-native-cast',
-            'disposable-magic-circle-evil', 'disposable-magic-circle-ui',
+            'disposable-magic-circle-evil', 'disposable-magic-circle-ui', 'disposable-magic-circle-terrain',
             'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
             'disposable-teleportation-resources',
             'disposable-teleportation-context',
