@@ -322,6 +322,8 @@
     <Compile Include="Blueprints\MagicCircleBlueprints.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleFamily.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleGrouped.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleTerrain.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleGroupedMetamagic.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleDeliveries.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleCoexistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleTouch.cs" />

@@ -41,7 +41,9 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
 
 $expected = @(
     'mod-load-smoke',
-    'observe-magic-circle-native-contracts', 'disposable-magic-circle-evil', 'disposable-magic-circle-ui',
+    'observe-magic-circle-native-contracts', 'disposable-magic-circle-evil', 'disposable-magic-circle-ui', 'disposable-magic-circle-terrain',
+    'disposable-magic-circle-profile',
+    'disposable-firearm-higher-feat-roots',
     'working-save-magic-circle-prepare',
     'working-save-magic-circle-verify',
     'working-save-magic-circle-cleanup',

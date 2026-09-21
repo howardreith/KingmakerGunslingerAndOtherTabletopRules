@@ -53,14 +53,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string CircleUiPath { get { return Path.Combine(_request.EvidenceDirectory, "magic-circle-native-ui.json"); } }
         private void PollMagicCircleUi()
         {
-            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleUi || !_request.ExitAfterCompletion ||
+            if ((_request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleUi &&
+                _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain) || !_request.ExitAfterCompletion ||
                 _workingSaveSmoke == null || !_workingSaveSmoke.Complete || _workingSaveSmoke.WriteObserved)
                 throw new InvalidOperationException("Circle UI requires the exact guarded read-only working save and mandatory exit.");
             if (_circleUiWatch == null) _circleUiWatch = Stopwatch.StartNew();
             if (_circleUiWatch.Elapsed.TotalSeconds > _request.CompletionTimeoutSeconds)
                 throw new InvalidOperationException("Circle UI qualification timed out.");
             if (LoadingProcess.Instance.IsLoadingInProcess || LoadingProcess.Instance.IsLoadingScreenActive) return;
-            if (_circleUiSteps == null) _circleUiSteps = RunCircleUi().GetEnumerator();
+            if (_circleUiSteps == null) _circleUiSteps = (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ?
+                RunCircleTerrainScene() : RunCircleUi()).GetEnumerator();
             Exception failure = null;
             try { if (_circleUiSteps.MoveNext()) return; }
             catch (Exception error) { failure = error; }
@@ -87,7 +89,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void WriteCircleUi(string error)
         {
             WriteTeleportationForensicJson(CircleUiPath, new { schemaVersion = 1, runId = _request.RunId, nativeGameVersion = GameVersion.Cached,
-                claims = "Native Sorcerer level-up cancellation and committed single known-spell selection; native spellbook, held-touch, active buff and scroll UI. Actual framebuffer screenshots require separate visual inspection. No save writes or uninstall-safety claim.",
+                claims = _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ?
+                    "Native authored-terrain qualification, moving depth-projected boundary and independent surface samples. Framebuffer captures require separate visual inspection. No save writes or owner visual-approval claim." :
+                    "Native Sorcerer learning, spellbook, held-touch, active buff and scroll UI; native grouped Extend authoring, selection and casting. Framebuffer captures require separate visual inspection. No save writes or owner visual-approval claim.",
                 captures = _circleUiCaptures, exceptions = _circleUiExceptions,
                 nativeProtectionPopupBaselineExceptions = _circleUiNativePopupExceptions, assertions = _circleUiAssertions,
                 diagnostics = _circleUiDiagnostics, saveWriteObserved = _workingSaveSmoke.WriteObserved, error });
@@ -167,6 +171,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int index = 0; index < actionGroups.Length; index++) actionGroups[index].Toggle(groupToggles[index], true);
                 cameraRig.ScrollToImmediately(cameraTarget); cameraRig.transform.position = cameraPosition;
                 localMapField.SetValue(cameraRig, originalLocalMap);
+                CircleUiCapture("camera-restoration-projection", new { expectedPosition = cameraPosition,
+                    actualPosition = cameraRig.transform.position, expectedTarget = cameraTarget,
+                    reprojectedTarget = cameraRig.GetPosition(), localMapRestored = ReferenceEquals(localMapField.GetValue(cameraRig), originalLocalMap) });
+                // ScrollToImmediately projects its argument onto native ground;
+                // it does not restore an earlier target byte-for-byte. Restore
+                // the exact captured target, as in the terrain fixture, without
+                // relaxing the existing camera cleanup assertion.
+                typeof(Kingmaker.View.CameraRig).GetField("m_TargetPosition", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(cameraRig, cameraTarget);
                 CircleUiAssert("camera-cleanup", "native camera framing and target restored exactly", "position=" + cameraRig.transform.position,
                     cameraRig.transform.position == cameraPosition && cameraRig.GetPosition() == cameraTarget && ReferenceEquals(localMapField.GetValue(cameraRig), originalLocalMap));
                 game.IsPaused = paused; _circleUiScreens.Dispose();
@@ -335,6 +348,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "area=" + area.UniqueId + ";" + CircleBoundaryState(area), CircleBoundaryMatches(area));
                     TeleportationCastingCamera().ScrollToImmediately(bearer.Position);
                     for (int frame = 0; frame < 12; frame++) yield return 0;
+                    string groundEvidence;
+                    bool grounded = CircleProjectedBoundary(area, out groundEvidence, true);
+                    CircleUiAssert("level-ground-boundary-" + circle.Alignment,
+                        "native radius decal is submitted over independently measured level ground at the actual horizontal radius",
+                        groundEvidence, grounded);
                     foreach (int frame in _circleUiScreens.Capture("active-moving-boundary-" + circle.Alignment,
                         CircleUiState(new { area = area.UniqueId, bearer = bearer.UniqueId, radius = circle.Area.Size.Meters,
                             alignment = circle.Alignment, role = "supporting native battlefield visual; renderer state is asserted separately" }),
@@ -379,6 +397,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 30; frame++) yield return 0;
                     carrier.Remove(); CircleRefresh(area, actors);
                 }
+                CircleNativeProjectionAudit();
+                foreach (int frame in CircleGroupedMetamagicUi(unit, bearer, book, actors)) yield return frame;
             }
             finally {
                 ui.DescriptionController.HandleCloseDescriptionWindow(ui.DescriptionController.DescWindow);

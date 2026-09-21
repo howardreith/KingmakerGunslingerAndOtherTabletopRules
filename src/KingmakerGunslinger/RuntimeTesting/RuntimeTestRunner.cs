@@ -635,6 +635,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleEvil &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleUi &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain &&
                     !RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
@@ -1820,6 +1821,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
@@ -1928,6 +1930,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
@@ -2546,7 +2549,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario))
                 { PollMagicCirclePersistence(); }
-                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi)
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain)
                 { PollMagicCircleUi(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil)
                 {
@@ -5344,6 +5348,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||

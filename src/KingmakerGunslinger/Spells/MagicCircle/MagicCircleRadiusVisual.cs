@@ -2,24 +2,28 @@ using System;
 using System.Linq;
 using Harmony12;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker;
+using Kingmaker.UI.AbilityTarget;
+using Kingmaker.Visual.Decals;
 using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace KingmakerGunslinger.Spells.MagicCircle
 {
-    // Presentation owned by the native moving area view, never by the caster or
-    // a saved registry. No Update loop, particles, shared material mutation, or
-    // gameplay changes. A recreated native view gets exactly one fresh ring.
-    internal sealed class MagicCircleRadiusVisual : MonoBehaviour
+    // Use the game's depth-projected AoE boundary: collision meshes can be
+    // ramps beneath visibly stepped meshes. Native decals follow the rendered
+    // surface and its occlusion, without vertex raycasts or a custom update loop.
+    internal sealed class MagicCircleRadiusVisual : ScreenSpaceDecal
     {
-        internal const int Segments = 96;
-        internal const float GroundOffset = 0.055f;
-        internal LineRenderer Boundary { get; private set; }
+        // The extra vertical reach keeps the native middle-opacity gradient
+        // readable across the measured staircase. This is an invisible volume,
+        // not a dome; X/Z remain exactly the gameplay area's diameter.
+        internal const float ProjectionHeight = 12f;
+        internal ScreenSpaceDecal Boundary => this;
         internal float Radius { get; private set; }
         internal string Alignment { get; private set; }
         internal string AreaId { get; private set; }
-        private Material _material;
+        public override DecalType Type => DecalType.GUI;
 
         internal static Color ColorFor(string alignment)
         {
@@ -42,34 +46,32 @@ namespace KingmakerGunslinger.Spells.MagicCircle
             var existing = area.View.GetComponentInChildren<MagicCircleRadiusVisual>(true);
             if (existing != null) { existing.Boundary.enabled = true; return; }
             var root = new GameObject("KMG_MagicCircle_Radius_" + circle.Alignment);
+            root.SetActive(false);
             root.transform.SetParent(area.View.transform, false);
             var visual = root.AddComponent<MagicCircleRadiusVisual>();
             visual.AreaId = area.UniqueId;
-            try { visual.Initialize(circle.Alignment, area.Blueprint.Size.Meters); }
+            try { visual.Initialize(circle.Alignment, area.Blueprint.Size.Meters); root.SetActive(true); }
             catch { UnityEngine.Object.Destroy(root); throw; }
         }
 
         private void Initialize(string alignment, float radius)
         {
-            var shader = Shader.Find("Sprites/Default");
-            if (shader == null || !shader.isSupported) throw new InvalidOperationException("Magic Circle boundary shader unavailable.");
+            // This exact native reference was inspected and compared on the
+            // authored slope/stairs. No global search or native asset mutation.
+            var range = Game.Instance?.UI?.AbilityTargetSelection?.GetComponent<AbilityAoERange>();
+            var template = range?.Range?.GetComponent<GUIDecal>();
+            var source = template?.SharedMaterial;
+            if (source == null || source.shader.name != "PF/Decals/GUIDecal" ||
+                !source.shader.isSupported || source.mainTexture?.name != "Sector" || !source.IsKeywordEnabled("CIRCLE_ON"))
+                throw new InvalidOperationException("Native circular AoE decal material unavailable.");
             Alignment = alignment; Radius = radius;
-            _material = new Material(shader) { name = "KMG_MagicCircle_Radius_Material_" + alignment };
-            Boundary = gameObject.AddComponent<LineRenderer>();
-            Boundary.sharedMaterial = _material;
-            Boundary.useWorldSpace = false;
-            Boundary.loop = true;
-            Boundary.positionCount = Segments;
-            Boundary.startWidth = Boundary.endWidth = 0.07f;
-            Boundary.startColor = Boundary.endColor = ColorFor(alignment);
-            Boundary.shadowCastingMode = ShadowCastingMode.Off;
-            Boundary.receiveShadows = false;
-            var points = new Vector3[Segments];
-            for (int i = 0; i < points.Length; i++) {
-                float angle = i * Mathf.PI * 2f / Segments;
-                points[i] = new Vector3(Mathf.Cos(angle) * radius, GroundOffset, Mathf.Sin(angle) * radius);
-            }
-            Boundary.SetPositions(points);
+            m_Material = new Material(source) { name = "KMG_MagicCircle_Radius_Material_" + alignment };
+            Layer = template.Layer;
+            MaterialProperties.SetColor("_Color", ColorFor(alignment));
+            SetValidateHeight(false); // Native depth projection; no collision-ramp height correction.
+            transform.localScale = new Vector3(radius * 2, ProjectionHeight, radius * 2);
+            // Native OnEnable/OnDisable own registration and depth/culling
+            // state. Native Update refreshes bounds only after transform changes.
         }
 
         internal static void Hide(AreaEffectEntityData area)
@@ -81,7 +83,7 @@ namespace KingmakerGunslinger.Spells.MagicCircle
 
         private void OnDestroy()
         {
-            if (_material != null) UnityEngine.Object.Destroy(_material);
+            if (m_Material != null) UnityEngine.Object.Destroy(m_Material);
         }
     }
 
