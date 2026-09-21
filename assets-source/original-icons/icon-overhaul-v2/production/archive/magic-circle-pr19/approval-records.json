@@ -1,0 +1,129 @@
+{
+  "status": "superseded-by-owner-requested-follow-up; original exact approvals preserved here",
+  "originalOwnerDecisions": {
+    "scope": "Magic Circle first release",
+    "bearerDeath": {
+      "ownerInstruction": "End the circle on bearer death",
+      "contract": "Bearer death ends that carrier and only its source-owned area contributions. Original caster death and unconsciousness are separate and do not end a circle on a living bearer.",
+      "nativeQualification": {
+        "status": "PASS",
+        "evidence": "reports/magic-circle/EVIL-PERSISTENCE-AND-DEATH.json",
+        "run": "20260920T0045098565648Z-disposable-magic-circle-evil",
+        "observed": "Native lethal damage: Dead=true, FinallyDead=false; timed carrier removed, area ended, zero source-owned recipient contributions. Original caster death had retained the living bearer circle."
+      }
+    },
+    "artwork": {
+      "ownerInstruction": "Approve all four exports",
+      "reviewedSize": [
+        128,
+        128
+      ],
+      "reviewArtifact": "artifacts/magic-circle/art-preview/review.html",
+      "approvalScope": "Exact reviewed exported pixels. Native UI evidence is separate: reports/magic-circle/NATIVE-UI-AND-LEARNING.json; no additional owner decision is implied.",
+      "exports": [
+        {
+          "key": "magic-circle-against-evil",
+          "sha256": "c6c8aa108c1beb1d1f37d78a84437d93da2743455cc70d0680862d6322484167"
+        },
+        {
+          "key": "magic-circle-against-good",
+          "sha256": "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a"
+        },
+        {
+          "key": "magic-circle-against-law",
+          "sha256": "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5"
+        },
+        {
+          "key": "magic-circle-against-chaos",
+          "sha256": "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f"
+        }
+      ]
+    }
+  },
+  "records": [
+    {
+      "key": "magic-circle-against-evil",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-evil.png",
+      "sourceSha256": "010c38f0abda7ff297f03cd83aedc56468b59daa9a5750130ab32f35e52cac20",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-evil.png",
+      "exportSha256": "c6c8aa108c1beb1d1f37d78a84437d93da2743455cc70d0680862d6322484167",
+      "exportSize": [
+        128,
+        128
+      ],
+      "brief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-evil.json",
+      "technicalStatus": "approved-export; native UI pending",
+      "visualStatus": "approved",
+      "approvedHash": "c6c8aa108c1beb1d1f37d78a84437d93da2743455cc70d0680862d6322484167",
+      "ownerApprovalEvidence": "reports/magic-circle/OWNER-DECISIONS.json",
+      "nativeUiAcceptance": "pending"
+    },
+    {
+      "key": "magic-circle-against-good",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-good.png",
+      "sourceSha256": "cab87cc56607f5c0294d44b126fe652b54d51f6213819511d39e3acd15a34229",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-good.png",
+      "exportSha256": "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a",
+      "exportSize": [
+        128,
+        128
+      ],
+      "brief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-good.json",
+      "technicalStatus": "approved-export; native UI pending",
+      "visualStatus": "approved",
+      "approvedHash": "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a",
+      "ownerApprovalEvidence": "reports/magic-circle/OWNER-DECISIONS.json",
+      "nativeUiAcceptance": "pending"
+    },
+    {
+      "key": "magic-circle-against-law",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-law.png",
+      "sourceSha256": "8ebc0379269525df5789f21f6ff7efe305c4d5d0e98bfcc2ce159e0da904cc78",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-law.png",
+      "exportSha256": "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5",
+      "exportSize": [
+        128,
+        128
+      ],
+      "brief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-law.json",
+      "technicalStatus": "approved-export; native UI pending",
+      "visualStatus": "approved",
+      "approvedHash": "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5",
+      "ownerApprovalEvidence": "reports/magic-circle/OWNER-DECISIONS.json",
+      "nativeUiAcceptance": "pending"
+    },
+    {
+      "key": "magic-circle-against-chaos",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-chaos.png",
+      "sourceSha256": "783987de3ebd02da1b30eb5f014cc6e49342221d112114e30a0631a5d76e5974",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/magic-circle-against-chaos.png",
+      "exportSha256": "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f",
+      "exportSize": [
+        128,
+        128
+      ],
+      "brief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/magic-circle-against-chaos.json",
+      "technicalStatus": "approved-export; native UI pending",
+      "visualStatus": "approved",
+      "approvedHash": "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f",
+      "ownerApprovalEvidence": "reports/magic-circle/OWNER-DECISIONS.json",
+      "nativeUiAcceptance": "pending"
+    }
+  ]
+}

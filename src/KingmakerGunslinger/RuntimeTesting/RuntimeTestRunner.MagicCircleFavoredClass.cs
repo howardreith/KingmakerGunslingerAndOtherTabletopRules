@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var oracle = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, CircleOracleClassId, "installed Oracle");
             var third = BlueprintLibraryLookup.RequireExact<BlueprintParametrizedFeature>(BlueprintBootstrap.Library, CircleFavoredThirdId, "installed Oracle third-level favored spell choice");
             var human = BlueprintLibraryLookup.RequireExact<BlueprintRace>(BlueprintBootstrap.Library, "0a5d473ead98b0646b94495af250fdc4", "native Human");
-            var chosen = BlueprintBootstrap.MagicCircles.Single(circle => circle.Alignment == "Evil").Spell;
+            var chosen = MagicCircleBlueprints.Family;
             var audit = new JObject { ["feature"] = CircleAuditIdentity(third), ["fields"] = CircleAuditFields(third, 0),
                 ["components"] = new JArray(third.ComponentsArray.Select(component => CircleAuditValue(component, 0))),
                 ["route"] = new JArray(), ["status"] = "probing" };
@@ -62,24 +62,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var items = selection.Selection.ExtractSelectionItems(backend.Unit, backend.Preview).ToArray();
                             if (ReferenceEquals(selection.Selection, third)) {
                                 var circles = BlueprintBootstrap.MagicCircles;
-                                var rows = new JArray(circles.Select(circle => new JObject { ["spell"] = circle.Spell.AssetGuid,
-                                    ["extracted"] = items.Count(item => item.Param?.Blueprint == circle.Spell),
-                                    ["items"] = third.Items.Count(item => item.Param?.Blueprint == circle.Spell),
-                                    ["canSelect"] = items.Any(item => item.Param?.Blueprint == circle.Spell && third.CanSelect(backend.Preview, backend.State, selection, item)) }));
+                                var rows = new JArray(new JObject { ["spell"] = chosen.AssetGuid,
+                                    ["extracted"] = items.Count(item => item.Param?.Blueprint == chosen),
+                                    ["items"] = third.Items.Count(item => item.Param?.Blueprint == chosen),
+                                    ["canSelect"] = items.Any(item => item.Param?.Blueprint == chosen && third.CanSelect(backend.Preview, backend.State, selection, item)) });
                                 audit["enumeration"] = rows;
                                 var circleItem = items.SingleOrDefault(value => value.Param?.Blueprint == chosen);
                                 bool allowed = circleItem != null && third.CanSelect(backend.Preview, backend.State, selection, circleItem);
                                 int knownBefore = backend.Preview.GetSpellbook(oracle.Spellbook).GetKnownSpells(3).Count();
-                                CirclePersistenceCheck("favored-native-enumeration", rows.All(row => (int)row["extracted"] == 1 && (int)row["items"] == 1 && (bool)row["canSelect"]),
-                                    "exact installed Oracle third-level feature enumerates all four distinct parameters through native Items, extraction and CanSelect");
+                                CirclePersistenceCheck("favored-native-enumeration", rows.All(row => (int)row["extracted"] == 1 && (int)row["items"] == 1 && (bool)row["canSelect"]) &&
+                                    !items.Any(item => circles.Any(circle => item.Param?.Blueprint == circle.Spell)) &&
+                                    !third.Items.Any(item => circles.Any(circle => item.Param?.Blueprint == circle.Spell)),
+                                    "exact installed Oracle third-level feature exposes one family and no separate children through native Items, extraction and CanSelect");
                                 if (level != 8 || selectedCircle || !allowed || !backend.SelectFeature(selection, circleItem))
                                     throw new InvalidOperationException("Native Favored Class Magic Circle selection rejected; see real enumeration evidence.");
                                 selectedCircle = true;
                                 int knownAfter = backend.Preview.GetSpellbook(oracle.Spellbook).GetKnownSpells(3).Count();
                                 audit["favoredKnownBefore"] = knownBefore; audit["favoredKnownAfter"] = knownAfter;
                                 CirclePersistenceCheck("favored-one-known-choice", knownAfter == knownBefore + 1 &&
-                                    BlueprintBootstrap.MagicCircles.Count(circle => backend.Preview.GetSpellbook(oracle.Spellbook).IsKnown(circle.Spell)) == 1,
-                                    "one real parametrized selection adds exactly one known spell and one alignment variant");
+                                    backend.Preview.GetSpellbook(oracle.Spellbook).IsKnown(chosen) &&
+                                    BlueprintBootstrap.MagicCircles.All(circle => !backend.Preview.GetSpellbook(oracle.Spellbook).IsKnown(circle.Spell)),
+                                    "one real parametrized selection adds exactly one known family, no independently known children");
                                 ((JArray)audit["route"]).Add(new JObject { ["level"] = level, ["selection"] = CircleFavoredThirdId, ["parameter"] = chosen.AssetGuid });
                                 continue;
                             }
@@ -109,7 +112,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 var slots = spells.LevelCount[spellLevel]; if (slots == null) continue;
                                 int slot = Array.FindIndex(slots.SpellSelections, value => value == null); if (slot < 0) continue;
                                 var spell = spells.SpellList.GetSpells(spellLevel).Where(value => !book.IsKnown(value) &&
-                                    !BlueprintBootstrap.MagicCircles.Any(circle => ReferenceEquals(circle.Spell, value)))
+                                    !BlueprintBootstrap.MagicCircles.Any(circle => ReferenceEquals(circle.Spell, value)) && !MagicCircleBlueprints.Families.Contains(value))
                                     .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
                                 if (spell != null) filled = backend.SelectSpell(spells.Spellbook, spells.SpellList, spellLevel, spell, slot);
                             }
@@ -145,21 +148,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var fixture = UnityEngine.ScriptableObject.CreateInstance<BlueprintParametrizedFeature>();
             var circles = BlueprintBootstrap.MagicCircles;
-            var replacement = UnityEngine.Object.Instantiate(circles[0].Spell);
+            var replacement = UnityEngine.Object.Instantiate(MagicCircleBlueprints.Family);
             var transaction = new MagicCircleSpellListPublication();
             try {
                 fixture.ParameterType = FeatureParameterType.LearnSpell;
                 fixture.BlueprintParameterVariants = Array.Empty<BlueprintScriptableObject>();
                 var before = fixture.Items.ToArray(); // Warm the real native cache.
-                foreach (var circle in circles) transaction.AddFavoredParameter(fixture, circle.Spell);
-                foreach (var circle in circles) transaction.AddFavoredParameter(fixture, circle.Spell);
-                bool once = fixture.Items.Count() == 4 && circles.All(circle =>
-                    fixture.Items.Count(item => ReferenceEquals(item.Param?.Blueprint, circle.Spell)) == 1);
+                transaction.AddFavoredParameter(fixture, MagicCircleBlueprints.Family);
+                transaction.AddFavoredParameter(fixture, MagicCircleBlueprints.Family);
+                bool once = fixture.Items.Count() == 1 &&
+                    fixture.Items.Count(item => ReferenceEquals(item.Param?.Blueprint, MagicCircleBlueprints.Family)) == 1;
                 transaction.Rollback();
                 bool removed = !fixture.Items.Any() && fixture.BlueprintParameterVariants.Length == 0;
-                foreach (var circle in circles) transaction.AddFavoredParameter(fixture, circle.Spell);
+                transaction.AddFavoredParameter(fixture, MagicCircleBlueprints.Family);
                 fixture.BlueprintParameterVariants = fixture.BlueprintParameterVariants
-                    .Select(value => ReferenceEquals(value, circles[0].Spell) ? replacement : value)
+                    .Select(value => ReferenceEquals(value, MagicCircleBlueprints.Family) ? replacement : value)
                     .Concat(new BlueprintScriptableObject[] { circles[0].Delivery }).ToArray();
                 transaction.Rollback();
                 CirclePersistenceCheck("favored-publication-ownership", before.Length == 0 && once && removed &&
@@ -186,12 +189,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (!BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(CircleFavoredThirdId)) return;
             var state = CircleFavoredOracleState(unit); var known = (JArray)state["known3"]; var selections = (JArray)state["selections"];
-            var chosen = BlueprintBootstrap.MagicCircles.Single(circle => circle.Alignment == "Evil").Spell;
+            var chosen = MagicCircleBlueprints.Family;
             CirclePersistenceCheck("favored-known-and-parameter", (int?)state["level"] == 8 && selections.Count == 1 &&
                 (string)selections[0]["parameter"] == chosen.AssetGuid && (int)selections[0]["rank"] == 1 &&
                 known.Count(value => (string)value == chosen.AssetGuid) == 1 &&
-                BlueprintBootstrap.MagicCircles.Count(circle => known.Any(value => (string)value == circle.Spell.AssetGuid)) == 1,
-                "native Favored Class parameter and exactly one Circle variant persist; no direct AddKnown used for this route");
+                BlueprintBootstrap.MagicCircles.All(circle => !known.Any(value => (string)value == circle.Spell.AssetGuid)),
+                "native Favored Class parameter and exactly one Circle family persist, with no separately learned children; no direct AddKnown used for this route");
             _circlePersistenceRecord["favoredClassObserved"] = state;
         }
     }

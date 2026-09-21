@@ -6,21 +6,17 @@
     "src/KingmakerGunslinger/Blueprints/MagicCircleBlueprints.cs"
   ],
   "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-good.png",
-  "sourceSha256": "cab87cc56607f5c0294d44b126fe652b54d51f6213819511d39e3acd15a34229",
+  "sourceSha256": "16e25df5c1ea3eb3cdb9132ac9acf5fd850c8db4deb49dd300d14d6e0a8943a7",
   "tool": "built-in image_gen",
   "referenceImages": [
     {
-      "path": "assets/game/icons/fire-resistance.png",
-      "role": "inspected approved painted-magical reference; not supplied as editing input"
-    },
-    {
-      "path": "assets/game/icons/shield-other.png",
-      "role": "inspected existing paired-protection identity; preserve it and distinguish the new group circle"
+      "path": "docs/art/ICON-REFERENCE-INDEX.md",
+      "role": "Native single-target and Communal Protection references; exact local sprite identities and hashes recorded in the follow-up reference section."
     }
   ],
-  "prompt": "Use case: stylized-concept. One original square painted fantasy RPG spell icon, Magic Circle against Good, belonging to an established painterly magical protection family. Three small distinct creature/adventurer silhouettes stand together in an outward ward. The dominant form is a great dark amethyst crescent sheltering the group, its two curved tips anchored on a complete broad glowing oval circle on the ground. The crescent has heavy obsidian-metal substance and a restrained silver-violet rim light. A few distant ivory light rays are turned outward at its rim to communicate warding against benevolent/celestial power. Broad silhouettes, muted rich burgundy shadows, textured oil/gouache paint, dramatic controlled light on a near-black full-bleed background. Three sheltered figures readable at 32px, meaningful subjects inset 15% from square edges. Distinct in form from a sunburst shield: crescent canopy is the single strongest shape. This is protection for every creature inside, never a trap or summon. No text, letters, square border, UI, chains, silver-dust diagrams, pentagrams, prisoners, monsters being summoned, skull portrait, red prohibition slash, or attack beam. Not a recolor of another icon, no grid or contact sheet.",
-  "visualStatus": "owner-approved-export; native UI pending",
-  "subjectAndSilhouette": "Obsidian crescent shelter surrounds a group against incoming ivory rays.",
+  "prompt": "Use case: stylized-concept. Asset type: one square 1024x1024 fantasy CRPG spell icon, Magic Circle against Good. Input image 1 is the native single-target Protection from Good visual identity reference. Input image 2 is its Communal sibling, a distinction reference. Create an original painted icon recognizably belonging to THIS exact native Protection family. Preserve the identity of the central emblem: a bright gold-white sunburst with strong long tapering rays, like the attached Protection from Good central emblem. The new distinguishing motif is a complete broad circular enclosing boundary around that central emblem: two clean concentric luminous magical rings, visibly separated by a dark gap, suggesting a radius. Make the emblem large and readable in the center, rings at roughly 73% and 88% of image width, all fully visible with clear padding. The single-target icon has one enclosing rim; Communal has flaring streaks; this Magic Circle has two calm, unbroken concentric protective boundaries. Palette gold and warm amber, on the same deep blue-black/violet atmospheric background as the references. Luminous hand-painted game art with broad silhouettes and controlled highlights, not flat vector shapes. Strong legibility at 32, 48 and 64 pixels. Do not reproduce the source pixels; repaint the identity faithfully. No people, scenic buildings, dome, chain, prisoner, binding runes, text, letters, numbers, watermarks, UI frame, decorative square border or multiple panels. One finished icon only.",
+  "visualStatus": "awaiting-owner-production-review",
+  "subjectAndSilhouette": "Native Protection identity enclosed by two complete luminous boundaries: good.",
   "artFamily": "painted-magical",
   "reviewGroup": "magic-circle",
   "confusedWith": [
@@ -31,16 +27,22 @@
   ],
   "uiSurfaces": [
     "carrier buff tooltip and remaining duration",
+    "cast variant / action bar / spell tooltip; legacy learned identity retained",
     "held touch / action bar / touch tooltip",
-    "inventory / merchant / item tooltip / scroll casting and scribing",
     "learning / preparation / spellbook / action bar / spell tooltip",
     "recipient proximity-dependent buff tooltip"
   ],
   "exportProfile": "project-painted-128",
   "forbiddenInterpretations": [
-    "Binding diagram or inward trap",
-    "Single-creature Protection icon",
-    "Immunity to every mind-affecting effect",
-    "Only a recolored alignment sibling"
+    "Not an inward binding or summoned-creature barrier.",
+    "Not four recolors of an unrelated painting.",
+    "Not the unchanged single-target or Communal icon."
+  ],
+  "revisions": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/archive/magic-circle-pr19/exports/magic-circle-against-good.png",
+      "sha256": "08337ecdff8420f884f833caa3d6a7b696dc5bb91f97f0ac2297de9e1fbff89a",
+      "role": "Superseded PR19 owner-approved art; approval does not apply to the new pixels."
+    }
   ]
 }

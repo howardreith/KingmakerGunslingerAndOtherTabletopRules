@@ -13,6 +13,7 @@ using Kingmaker.UI.LevelUp;
 using Kingmaker.UI.ServiceWindow;
 using Kingmaker.UI.Vendor;
 using Kingmaker.UnitLogic.Parts;
+using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -26,7 +27,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemEquipmentUsable[] blueprints, ItemEntity[] playerControls, Func<bool> inventoryExact)
         {
             var game = Game.Instance; var ui = game.UI; var vendor = game.Vendor;
-            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
+            bool circle = _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi;
+            if (circle && (blueprints.Length != 4 || BlueprintBootstrap.MagicCircles == null ||
+                !blueprints.SequenceEqual(BlueprintBootstrap.MagicCircles.Select(value => value.Scroll))))
+                throw new InvalidOperationException("Magic Circle merchant capture requires its four exact owned scroll identities.");
+            if ((!circle && _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi) ||
                 !_request.ExitAfterCompletion || _workingSaveSmoke == null || !_workingSaveSmoke.Complete ||
                 _workingSaveSmoke.WriteObserved || !game.IsPaused || !inventoryExact() || vendor == null ||
                 vendor.IsTrading || vendor.IsChanged || vendor.ItemsForBuy.Items.Count != 0 || vendor.ItemsForSell.Items.Count != 0 ||
@@ -64,7 +69,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Func<bool> ownsShop = () => opened && shop.IsShow && shop.gameObject.activeInHierarchy &&
                 vendor.IsTrading && ReferenceEquals(vendor.VendorUnit, merchant) &&
                 ReferenceEquals(shop.Store.Collection, stock) && ReferenceEquals(vendor.StoreItems, stock) &&
-                stock.Items.Count == 4 && ownedItems.All(item => ReferenceEquals(item.Collection, stock) && item.Count == 1) &&
+                stock.Items.Count == blueprints.Length + 1 && ownedItems.All(item => ReferenceEquals(item.Collection, stock) && item.Count == 1) &&
                 !merchant.Get<UnitPartVendor>().AutoIdentifyPlayersInventory && idleTransfers() &&
                 inventoryExact() && game.IsPaused && !_workingSaveSmoke.WriteObserved &&
                 !game.State.Units.All.Contains(merchant) && ReferenceEquals(controlBlueprint.Icon, controlIcon);
@@ -97,7 +102,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.gameObject.activeInHierarchy && ReferenceEquals(value.Item, item));
                     Func<bool> retained = () => ownsShop() && slot != null && ReferenceEquals(slot.Item, item);
                     Func<JObject> describe = () => {
-                        var state = DescribeNativeScrollSlot(slot, item, itemBlueprint, new[] { control }, retained());
+                        var state = circle ? DescribeCircleScrollSlot(slot, item, itemBlueprint, new[] { control }, retained()) :
+                            DescribeNativeScrollSlot(slot, item, itemBlueprint, new[] { control }, retained());
                         state["surface"] = "native-scroll-merchant";
                         state["merchant"] = new JObject { ["nativeVendorBound"] = ReferenceEquals(vendor.VendorUnit, merchant),
                             ["nativeStoreBound"] = ReferenceEquals(shop.Store.Collection, stock),
@@ -107,13 +113,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["controlBlueprintRetained"] = ReferenceEquals(controlBlueprint.Icon, controlIcon) };
                         return state;
                     };
-                    foreach (int frame in _teleportationNativeIconScreens.CaptureRow("native-scroll-merchant-row:" + itemBlueprint.AssetGuid,
+                    foreach (int frame in (circle ? _circleUiScreens : _teleportationNativeIconScreens).CaptureRow("native-scroll-merchant-row:" + itemBlueprint.AssetGuid,
                         (RectTransform)slot.transform, describe, retained)) yield return frame;
                     var stateAfter = describe(); var target = (JObject)stateAfter["targetRow"];
                     bool exact = retained() && (bool)target["renderedIconExact"] && (bool)target["scrollIconExact"] &&
                         (bool)target["spellIconDistinctFromItem"] &&
                         (bool)target["identified"] && (int)target["otherItemRows"] > 0 && (bool)target["otherItemIconsExact"];
-                    TeleportSpellbookUiAssert("merchant-icon-" + itemBlueprint.AssetGuid,
+                    Action<string, string, string, bool> assertRow = circle ? (Action<string, string, string, bool>)CircleUiAssert : TeleportSpellbookUiAssert;
+                    assertRow("merchant-icon-" + itemBlueprint.AssetGuid,
                         "actual native merchant row retains the composed scroll identity with the approved spell symbol inside, private stock, ordinary control and empty trade collections", stateAfter.ToString(), exact);
                     if (!exact) throw new InvalidOperationException("Native merchant scroll icon identity differs.");
                 }
@@ -169,8 +176,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["group"] = ReferenceEquals(group.GetCurrentCharacter(), originalGroup) && groupAction.GetValue(group) == null,
                     ["zeroSaveWrites"] = !_workingSaveSmoke.WriteObserved };
                 bool restored = cleanup.Properties().All(value => (bool)value.Value);
-                CaptureTeleportSpellbookUi("native-scroll-merchant-cleanup", new JObject { ["restored"] = restored, ["checks"] = cleanup });
-                TeleportSpellbookUiAssert("merchant-icon-cleanup", "only private merchant stock disposed; player inventory, trade state, filters, group and registry retained; zero writes", cleanup.ToString(), restored);
+                if (circle) {
+                    CircleUiCapture("native-scroll-merchant-cleanup", new JObject { ["restored"] = restored, ["checks"] = cleanup });
+                    CircleUiAssert("merchant-icon-cleanup", "only private merchant stock disposed; player inventory, trade state, filters, group and registry retained; zero writes", cleanup.ToString(), restored);
+                } else {
+                    CaptureTeleportSpellbookUi("native-scroll-merchant-cleanup", new JObject { ["restored"] = restored, ["checks"] = cleanup });
+                    TeleportSpellbookUiAssert("merchant-icon-cleanup", "only private merchant stock disposed; player inventory, trade state, filters, group and registry retained; zero writes", cleanup.ToString(), restored);
+                }
             }
         }
     }

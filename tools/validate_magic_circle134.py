@@ -17,10 +17,13 @@ def validate(root: Path) -> None:
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     baseline.PACKAGE = "KingmakerGunslinger-0.0.134-local-runtime.zip"
     baseline.PACKAGE_SUFFIX = "magic-circle-alignment-spells"
-    baseline.DETERMINISTIC_TEST_COUNT = 1678
+    baseline.DETERMINISTIC_TEST_COUNT = 1683
     baseline.validate(root)
-    state = json.loads((root / "validation/static-validation.json").read_text(
-        encoding="utf-8"))["magicCircle134"]
+    metadata = json.loads((root / "validation/static-validation.json").read_text(encoding="utf-8"))
+    state = metadata["magicCircle134"]  # Historical acceptance; never transferred to new pixels.
+    followup = metadata["magicCircleFollowup"]
+    if followup.get("publicReleaseAuthorized") is not False or followup.get("deterministicTestCount") != 1683:
+        raise AssertionError("Follow-up candidate must retain its own test count and no public release authorization")
     for key, value in {
         "deterministicTestCount": 1678,
         "publicReleaseAuthorized": True,

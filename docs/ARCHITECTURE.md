@@ -811,13 +811,22 @@ command, scene and persistence qualification remain required.
 
 ### Magic Circle candidate
 
-The four Magic Circle variants append 24 identities, bringing the candidate ledger
-to 1910 stable IDs: 1908 active and 2 reserved. A timed carrier uses native
+The four Magic Circle variants retain their 24 accepted identities; the follow-up
+adds three native variant-family parents, bringing the candidate ledger
+to 1913 stable IDs: 1911 active and 2 reserved. A timed carrier uses native
 AddAreaEffect to retain the original spell context while attaching the area to
 the touched bearer. A distinct, stacking recipient identity uses native
 SourceAreaEffectId ownership. The existing Protection from Alignment control
 component remains the only control policy. The separate magic-circle-spells
 module controls publication and new casts; identities remain registered for
-save hydration. Native Evil lifecycle qualification and owner approval of the
-four original paintings are recorded in reports/magic-circle. Native UI and
-complete four-variant acceptance remain pending; there is no release approval.
+save hydration. The general family is learned once. Paladin and Antipaladin
+lists receive separate parents exposing only Evil/Chaos and Good/Law respectively.
+Native action-bar conversion retains the actual parent's spellbook/slot identity.
+Scrolls still cast the original alignment child; native CopyScroll follows its
+Parent to learn the general family. A narrowly scoped native IsInSpellList postfix
+recognizes an owned child only through a published owned parent containing it.
+Original learned child identities still hydrate; there is no automatic respec or
+known-choice refund. A view-owned LineRenderer marks the area's actual radius;
+the native moving area owns movement, persistence reconstruction and destruction.
+The accepted PR19 records remain in reports/magic-circle; follow-up status and
+qualification are tracked separately in planning/MAGIC-CIRCLE-FOLLOWUP.md.

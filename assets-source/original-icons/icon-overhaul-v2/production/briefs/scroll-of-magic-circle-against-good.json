@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "key": "scroll-of-magic-circle-against-good",
+  "behavior": "Native CL5 third-level single-use alignment scroll; scribing learns the grouped Magic Circle family.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/Blueprints/MagicCircleScrollBlueprints.cs",
+    "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-magic-circle-against-good.png",
+  "sourceSha256": "12273664bd03bcd31c9a4cc330fb9103d3256d3b4b9af7d00c2a0f598db7c45d",
+  "tool": "deterministic asset compositing: tools/icon-art/Compose-MagicCircleScrollIcons.ps1",
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/sources/scroll-of-word-of-recall.png",
+      "role": "Unchanged native parchment shell, verified pixel-identical to both Teleport sources outside the 62x62 emblem window."
+    },
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-good.png",
+      "role": "New Protection-derived alignment emblem; owner review pending."
+    }
+  ],
+  "prompt": "Reuse the exact existing strategic scroll shell. Replace only its measured 62x62 emblem window at (32,31) with the corresponding Magic Circle painting. Remove the complete prior emblem behind transparent pixels. Preserve parchment silhouette, rollers, caps, shading and alpha. No scroll repainting or new shell design.",
+  "visualStatus": "awaiting-owner-production-review",
+  "subjectAndSilhouette": "Native rolled parchment enclosing the matching Protection-derived Magic Circle emblem.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "magic-circle",
+  "confusedWith": [
+    "magic-circle-against-good",
+    "scroll-of-word-of-recall",
+    "scroll-of-teleport"
+  ],
+  "uiSurfaces": [
+    "inventory / merchant / item tooltip / scroll casting and scribing"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "Not the bare spell icon on an item.",
+    "No residual Recall or Teleport emblem.",
+    "No changes to spell, item, vendor or scribing identities."
+  ]
+}

@@ -31,8 +31,8 @@ def validate(root: Path) -> None:
     validate_magic_circle(root)
     if VERSION == "0.0.132":
         baseline.DETERMINISTIC_TEST_COUNT = 1660
-    baseline.MANIFEST_TOTAL = 1910
-    baseline.MANIFEST_ACTIVE = 1908
+    baseline.MANIFEST_TOTAL = 1913
+    baseline.MANIFEST_ACTIVE = 1911
     # The assigned Magic Circle feature fixes a proven shared source bug.
     # Its gate validates the two exact edits and retains the original digest
     # for every other Protection control/publication file.

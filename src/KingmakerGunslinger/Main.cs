@@ -109,6 +109,7 @@ namespace KingmakerGunslinger
                 Spells.Teleportation.TeleportationScrollVendorMigration.Install(context);
                 Spells.MagicCircle.MagicCircleScrollVendorMigration.Install(context);
                 Spells.MagicCircle.MagicCircleSpecialistSpellCachePatches.Install(context);
+                Spells.MagicCircle.MagicCircleFamilySpellListPatch.Install(context);
                 Spells.Teleportation.WorldMapPointSpellActionPatches.Install(context);
                 Spells.Teleportation.WorldMapPointConsoleSpellActionPatches.Install(context);
                 EasternWeaponArmsArmorCompatibility.Install(context.Harmony);

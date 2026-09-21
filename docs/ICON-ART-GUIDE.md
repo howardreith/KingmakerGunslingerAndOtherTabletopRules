@@ -290,3 +290,30 @@ the complete ON screenshot set and all OFF carrier/recipient tooltips. Exact
 artifact and profile scopes are in
 `reports/magic-circle/FINAL-CANDIDATE-QUALIFICATION.json`. These technical and
 native UI results remain separate from the owner's exact pixel approval.
+
+### Magic Circle follow-up revision (2026-09-20)
+
+The owner requested Protection-derived spell emblems and the existing strategic
+scroll treatment. This supersedes the preceding Magic Circle assignments for the
+new candidate only. The original approved sources, exports, briefs and approval
+records remain under `production/archive/magic-circle-pr19/`; their approval
+does not transfer to replacement pixels.
+
+Use each native Protection identity as the anchor: Evil's cyan curling sigil,
+Good's gold sunburst, Chaos's red fractured stone, and Law's gold geometric star
+with a violet rim. Two complete enclosing rings distinguish Magic Circle from
+the single-target rim and the Communal flares. General and Paladin family parents
+share the Evil emblem; the Antipaladin parent shares Good. Each child, delivery,
+carrier and recipient uses its alignment emblem. Four independent scroll concepts
+use the matching painting inside the existing strategic parchment shell.
+
+`tools/icon-art/Compose-MagicCircleScrollIcons.ps1` preserves the Recall shell,
+verifies both Teleport sources match outside the measured 62x62 emblem window,
+and replaces that complete window. It repaints no parchment and cannot retain
+the old emblem behind transparent pixels. The normal production exporter owns
+the final 128px RGBA output. Its optional `-ConceptKeys` scope preserves every
+unselected recorded source/export byte-for-byte and refuses unrecorded changes;
+the complete catalog/protection/package gates still apply afterward.
+
+Every follow-up consumer is recorded in the canonical catalog. New spell and
+scroll pixels await owner review, independently of technical/native checks.

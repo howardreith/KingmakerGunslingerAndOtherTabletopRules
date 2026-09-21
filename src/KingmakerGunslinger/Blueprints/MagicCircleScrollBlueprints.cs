@@ -34,15 +34,16 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException("Native protective scroll components changed.");
             var copy = ScriptableObject.CreateInstance<CopyScroll>();
             copy.name = "$KMG_MagicCircle_CopyCanonicalSpell";
-            copy.CustomSpell = spell;
+            // Native CopyScroll follows Ability.Parent to the learnable family.
+            // A CustomSpell override would also change native scroll-use class
+            // eligibility, incorrectly admitting forbidden restricted variants.
+            copy.CustomSpell = null;
             scroll.ComponentsArray = new BlueprintComponent[] { copy };
             var access = BlueprintItemAccess.Resolve();
             string key = "KMG.MagicCircle." + alignment + ".Scroll";
             access.Configure(scroll, LocalizationService.Create(key + ".Name", "Scroll of Magic Circle against " + alignment),
                 LocalizationService.Create(key + ".Description", spell.Description), LocalizationService.Create(key + ".Flavor", string.Empty), donor.Cost, donor.Weight);
-            // Intentional family sharing: the actual item uses the approved
-            // alignment painting. No unrelated donor glyph or proprietary shell
-            // is copied into a distributed bitmap. Native item frames stay native.
+            // Separate parchment-shell composite, matching Recall/Teleport.
             access.SetIcon(scroll, icon);
             return scroll;
         }

@@ -5,6 +5,13 @@ This feature uses the existing `-kmgRuntimeTestRequest` launcher through Steam
 written. Never modify `KMG_AUTOMATION_BASELINE`. Current version comes from
 `Info.json`; package, deployment, loaded DLL hash/MVID and profile must correlate.
 
+The UX/art follow-up is recorded separately in
+[its handoff](MAGIC-CIRCLE-FOLLOWUP-HANDOFF.md) and
+[candidate-11 evidence](../reports/magic-circle/FOLLOWUP-QUALIFICATION.json).
+That candidate passed seven native scenarios and 428 assertions on the original
+installed stack. New pixels still await owner approval. Historical PR19 profile
+qualification below is not transferred to this follow-up.
+
 `disposable-magic-circle-evil` exercises real cast commands and native areas,
 typed combat/save rules, control applications, movement, overlaps, dispelling,
 Extend, expiration, unconsciousness, original caster death and bearer death.
@@ -13,16 +20,34 @@ Its actors and cloned blueprints are request-local and never saved.
 `disposable-magic-circle-ui` uses the same exact working-save load and mandatory
 exit. It stages a native Sorcerer 5, selects one Circle in the real level-up
 presenter, cancels once, then commits the ordinary level-6 choice. It verifies
-that only the selected variant is learned and casts that learned spell. A
-request-owned native Wizard book then exposes all four separate prepared spells,
-held touch, timed carrier/proximity buff rows and scroll inventory rows. Native
+that exactly one family is learned with no separately known children and casts
+through a native converted child. A request-owned native Wizard book prepares
+the one family and opens its actual variant popup to select each alignment,
+then checks held touch, timed carrier/proximity buffs and scroll inventory rows. Native
 framebuffer captures support visual inspection; structured native state proves
 learning, preparation, resource use, identity and cleanup. It restores the
 original party, selection, UI settings, inventory, money, entities and clock.
 There are no save writes, campaign level-ups, synthetic UI rows or new settings.
-The original owner-approved export pixels are unchanged. The first native desktop checkpoint passed 56 assertions and visual inspection
+The follow-up replaces the four paintings and adds four parchment composites;
+the old approved pixels are archived and new pixels await owner review. The
+historical first native desktop checkpoint passed 56 assertions and visual inspection
 (see `reports/magic-circle/NATIVE-UI-AND-LEARNING.json`); later candidates still
 require impacted checks, including startup-description accuracy.
+
+The follow-up checks actual LineRenderer vertices, material, color, unique view
+ownership and movement at the native area's radius. Expiration, native dispel
+and bearer death must leave no active boundary for the ended area. Persistence
+and scene reconstruction must yield exactly one boundary per saved area, even
+with eight overlapping circles. Native battlefield captures support visual
+review but do not substitute for these structured mechanical/lifecycle checks.
+
+The real Oracle Favored Class route must enumerate and select one family through
+both extraction and the native cached `Items`/`CanSelect` route, debit one known
+choice, retain the ordinary allowance, and persist the exact parent parameter.
+Native list checks require no learnable child rows and preserve restricted
+Paladin Evil/Chaos and Antipaladin Good/Law parents. Every alignment scroll still
+casts its exact child; native scribing follows `Parent` to the one family and
+rejects subsequent copies from the other alignment scrolls.
 
 The following narrowly scoped persistence scenarios use four named non-party
 actors (`KMG_RUNTIME_MAGIC_CIRCLE_SAVED_CasterA`, `CasterB`, `Bearer`, `Recipient`)
@@ -79,7 +104,7 @@ living bearer. Recipient contributions are derivative and not independently
 dispellable; targeted carrier or successful native area dispel ends that cast.
 Scene unloading is temporary and does not authorize deleting the timed carrier.
 
-These scenarios do not prove uninstall safety, learning/scroll acquisition,
+These persistence scenarios alone do not prove uninstall safety, learning/scroll acquisition,
 all optional profiles, art placement, or any untested row in the feature matrix.
 
 Scene-fixture diagnostic: the starting-area native reload discarded all four
@@ -148,8 +173,8 @@ removal), and their initial static positions are registered once in the native
 InteractiveObjectGrid. Area membership, control and typed rules are untouched.
 This fixture does not claim movement, navigation or terrain qualification.
 
-The completed final sequence, exact candidate hashes and assertion mapping are
-in [the final qualification record](../reports/magic-circle/FINAL-CANDIDATE-QUALIFICATION.json).
+The accepted PR19 sequence, exact candidate hashes and assertion mapping are
+in [its historical qualification record](../reports/magic-circle/FINAL-CANDIDATE-QUALIFICATION.json).
 Twelve saved-world runs passed, including both enhancement configurations and
 all four content/control persistence combinations. Exactly two Working writes
 prepared and removed the fixture; a final fresh load proved absence.

@@ -1,0 +1,803 @@
+{
+  "schemaVersion": 1,
+  "scope": "Magic Circle grouped learning/casting, family art, scroll composites and moving radius",
+  "nativeGameVersion": "2.1.7b",
+  "baselineCommit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+  "branch": "codex/magic-circle-followup-polish",
+  "finalCandidate": {
+    "candidate": 11,
+    "version": "0.0.134",
+    "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+    "sourceStateSha256": "2a2c52867c3fae720efa95352ea01026b47f4b588a17179cca06684979e06a57",
+    "packageSha256": "dd00912a5b93f3bfe888d0c59aae2c7156a6eb884ef3acfcfce70c0c9fb5384a",
+    "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+    "dllMvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be"
+  },
+  "candidateIdentities": [
+    {
+      "candidate": 3,
+      "version": "0.0.134",
+      "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+      "sourceStateSha256": "ef81c07ba08c91c8780581a1eba1dcaace3dad1611485e9d3ad02e94861998ef",
+      "packageSha256": "7a8974d5b98abdbd0acdf20b0806cffdf90326c7e74f3ffae3b99d4bd4a4ba42",
+      "dllSha256": "9750a77e3ac38717cf5bed0ca3d6acd690cce8606bddd94b8c7a1cbc2582b85c",
+      "dllMvid": "9fc896df-3c47-490a-83b3-0fd94dc585b7"
+    },
+    {
+      "candidate": 4,
+      "version": "0.0.134",
+      "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+      "sourceStateSha256": "18eb26563934378b8c7e43b3d86cd019b8178e3025f16bbe4af07a957a887200",
+      "packageSha256": "8dff49a444890875ee9e543d1140d15401282cff8c3eb8b7edaf63a8bf00c9cb",
+      "dllSha256": "27b14b9dcf98aee7b180b50fbbc6b03a2af04a811ec82e7bc136686eba43ceb4",
+      "dllMvid": "0ef3a5a4-85ba-4611-9222-ed701669d16d"
+    },
+    {
+      "candidate": 6,
+      "version": "0.0.134",
+      "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+      "sourceStateSha256": "3a88dc89a96c0a9a2b9b89ae1242fdd915828d0be9c1e5d00bd6e144310f614c",
+      "packageSha256": "6eb38e0d7d807652ffeb2bfe03006817e576f03e4462ac108cf83ba3d8c919f7",
+      "dllSha256": "66ce87b6a1426a1556577f8c8793735404b34a23d3279e958a17f1aaae2b6166",
+      "dllMvid": "f982fb9f-c223-4a37-bffe-2312c3a5ea2c"
+    },
+    {
+      "candidate": 7,
+      "version": "0.0.134",
+      "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+      "sourceStateSha256": "ee6d4a4ab378f415bd9cb3b476db2c341a53e6cefa3d6de0c76e01c174690add",
+      "packageSha256": "709e1ba483abcc7f1683e2b8b964f6b85e9d17c7892fff47584eba5ea436a059",
+      "dllSha256": "f3597a3e59f535cab65891d64c48f88b0942a57ba1a2e5c185f02fd8f625deb9",
+      "dllMvid": "9969d8b3-d9a3-4146-82a6-2e81cfaf8827"
+    },
+    {
+      "candidate": 8,
+      "version": "0.0.134",
+      "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+      "sourceStateSha256": "b60d598d222bd093cc8fea81c66ce4ab20f612869c2820ea3a54f5a8cec081d1",
+      "packageSha256": "6194cdbfe38367f3fd273e44746612f877665ea276de3c35a1c4f0d7e3e5afaf",
+      "dllSha256": "80b760c11e7f557d9dcfbbeefd7bddaa0e8e925a031e09ff4b3ffa709a48ffc5",
+      "dllMvid": "902870c5-bb5d-4a05-b1c1-13bf7fad778e"
+    },
+    {
+      "candidate": 9,
+      "version": "0.0.134",
+      "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+      "sourceStateSha256": "01712d4fd15458648af54629e737670b4dc8b8a61ae1c1efe7311af4442cb99c",
+      "packageSha256": "e38a9c77b43225d031869d7877a6a2f31d460aef624ae6007b2cbeed5896cb8d",
+      "dllSha256": "713ef45137150baa81805a38362bf99fad3fdb913fb48f3a4a523e6e8dd5e18f",
+      "dllMvid": "41ea69f2-1d37-4658-bcda-d60b9c035c6e"
+    },
+    {
+      "candidate": 10,
+      "version": "0.0.134",
+      "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+      "sourceStateSha256": "68537588c250bc5147e4e6636055a2fa4257ff232c4bf809b013ee082d037e54",
+      "packageSha256": "170e18d99de9fc24adf84bb8705242c6a16a9e335845a53ba9665b2469cdaf54",
+      "dllSha256": "82a6949957af262c25b76d4c11795cdd641673765f3456ccdd3ae0e644a33719",
+      "dllMvid": "b959da7c-9781-490a-9373-a38bcfc179da"
+    },
+    {
+      "candidate": 11,
+      "version": "0.0.134",
+      "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+      "sourceStateSha256": "2a2c52867c3fae720efa95352ea01026b47f4b588a17179cca06684979e06a57",
+      "packageSha256": "dd00912a5b93f3bfe888d0c59aae2c7156a6eb884ef3acfcfce70c0c9fb5384a",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "dllMvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be"
+    }
+  ],
+  "referenceAuditCandidate": {
+    "version": "0.0.134",
+    "commit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+    "sourceStateSha256": "7769d8b90b2acba4fcf7da0cf40d54f511f4a5233b9f4d87e85f86fdbbaf2327",
+    "packageSha256": "ba33f42b7018164536662dea9086169a5dfd4289703ba32abf4643632ba4f5ee",
+    "dllSha256": "9be1659a3e7e5a0a7c28ea4ca06bb59de76472264fd477a733a9502365d6415b",
+    "dllMvid": "0d54f117-8934-47c8-a127-14c17c8c013a"
+  },
+  "compileOnlyArtifacts": [
+    {
+      "path": "artifacts/magic-circle-followup/compile-check/bin/KingmakerGunslinger.dll",
+      "sha256": "d9c5edf4beef9ebfe94d96d0f666ef97b7f7fd1f7b8ad8792f27a0f61dc4ba82",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check/KingmakerGunslinger/KingmakerGunslinger.dll",
+      "sha256": "d9c5edf4beef9ebfe94d96d0f666ef97b7f7fd1f7b8ad8792f27a0f61dc4ba82",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check/KingmakerGunslinger-0.0.134-compile-candidate.zip",
+      "sha256": "8365b832487c4624d6a48dbe3a29063e4a2243e8e169ca34967e31962c2c605c",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check-7/bin/KingmakerGunslinger.dll",
+      "sha256": "c2491a5277785f23f60d12eca33925bb9d328accd10c5b06e5f7efd23775a244",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check-7/KingmakerGunslinger/KingmakerGunslinger.dll",
+      "sha256": "c2491a5277785f23f60d12eca33925bb9d328accd10c5b06e5f7efd23775a244",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check-7/KingmakerGunslinger-0.0.134-compile-candidate.zip",
+      "sha256": "4a275590ea057b0dc09db60bc1eab646ad02e8c5f5755444281f7e13608d6d84",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check-8/bin/KingmakerGunslinger.dll",
+      "sha256": "b55414cfa3f2a6655937c863ac8da1efabef241739d49176101e20fa65b8816b",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check-8/KingmakerGunslinger/KingmakerGunslinger.dll",
+      "sha256": "b55414cfa3f2a6655937c863ac8da1efabef241739d49176101e20fa65b8816b",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check-8/KingmakerGunslinger-0.0.134-compile-candidate.zip",
+      "sha256": "e677396c1cf9f8ae6656c73b6560f21ba030a4f9420e3551c6fe7e45ba867c1c",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check-9/bin/KingmakerGunslinger.dll",
+      "sha256": "e2b132aa4687800126c40be921e09dd76adab0d9fbe1345be2765f50077f89ae",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check-9/KingmakerGunslinger/KingmakerGunslinger.dll",
+      "sha256": "e2b132aa4687800126c40be921e09dd76adab0d9fbe1345be2765f50077f89ae",
+      "nativeQualification": "none; scratch compile only"
+    },
+    {
+      "path": "artifacts/magic-circle-followup/compile-check-9/KingmakerGunslinger-0.0.134-compile-candidate.zip",
+      "sha256": "26fe36b8c36764194c07520e67a0dabbaa8bd5b1a7bd02789fdfdd6e44279bf4",
+      "nativeQualification": "none; scratch compile only"
+    }
+  ],
+  "buildAttemptsWithoutInstallableCandidate": [
+    1,
+    2,
+    5
+  ],
+  "candidate10FirstCompileAttempt": "Diagnostic referenced a private property; corrected to public Spellbook.CanSpend before successful build 10b.",
+  "automated": {
+    "repositoryValidation": "PASS",
+    "domainTests": 1683,
+    "domainFailures": 0,
+    "cleanReleaseBuild": "PASS",
+    "strictInstallablePackage": "PASS",
+    "packageFiles": 235,
+    "guardedPreparationRequestR1": "PASS",
+    "settingsOwnershipR2Cases": 12,
+    "protectedProtectionSourceAndIconAssignments": "PASS"
+  },
+  "nativeRuns": [
+    {
+      "directory": "20260920T2359370251152Z-disposable-magic-circle-evil",
+      "scenario": "disposable-magic-circle-evil",
+      "status": "FAIL",
+      "assertions": {
+        "PASS": 272,
+        "FAIL": 6
+      },
+      "resultSha256": "5b5bdfce3a210f73f87385e511ca364d4b82dfd3a0d6173303f6426dba6ca865",
+      "dllSha256": "9750a77e3ac38717cf5bed0ca3d6acd690cce8606bddd94b8c7a1cbc2582b85c",
+      "mvid": "9fc896df-3c47-490a-83b3-0fd94dc585b7",
+      "orchestrationStatus": "FAIL",
+      "failedAssertions": [
+        "circle-visible-boundary-fe3bfffe4e13459587cb11280226d2df",
+        "circle-visible-boundary-4b6d501574c74186b42e583a6b26a6da",
+        "circle-visible-boundary-43ec68312894436db1dc0928118e9678",
+        "circle-visible-boundary-d4dd789baf954c0e97d2d9da8404696a",
+        "circle-native-carrier-dispel-ownership",
+        "circle-native-original-expiration"
+      ]
+    },
+    {
+      "directory": "20260921T0011563126335Z-disposable-magic-circle-evil",
+      "scenario": "disposable-magic-circle-evil",
+      "status": "FAIL",
+      "assertions": {
+        "PASS": 272,
+        "FAIL": 6
+      },
+      "resultSha256": "39c221d02587fe9fcd4148933bf0950651c52ac977377398819588a1f363adad",
+      "dllSha256": "27b14b9dcf98aee7b180b50fbbc6b03a2af04a811ec82e7bc136686eba43ceb4",
+      "mvid": "0ef3a5a4-85ba-4611-9222-ed701669d16d",
+      "orchestrationStatus": "FAIL",
+      "failedAssertions": [
+        "circle-visible-boundary-fe3bfffe4e13459587cb11280226d2df",
+        "circle-visible-boundary-4b6d501574c74186b42e583a6b26a6da",
+        "circle-visible-boundary-43ec68312894436db1dc0928118e9678",
+        "circle-visible-boundary-d4dd789baf954c0e97d2d9da8404696a",
+        "circle-native-carrier-dispel-ownership",
+        "circle-native-original-expiration"
+      ]
+    },
+    {
+      "directory": "20260921T0015482399465Z-disposable-magic-circle-ui",
+      "scenario": "disposable-magic-circle-ui",
+      "status": "ERROR",
+      "assertions": {
+        "PASS": 12
+      },
+      "resultSha256": "00c24155f9354b92585a042e530ecdd6820467d9e702c038752e7ad78925dc65",
+      "dllSha256": "27b14b9dcf98aee7b180b50fbbc6b03a2af04a811ec82e7bc136686eba43ceb4",
+      "mvid": "0ef3a5a4-85ba-4611-9222-ed701669d16d",
+      "orchestrationStatus": "ERROR",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-native-ui.json": "cc744602d46b4f78f0fd6009822a8d66fc280ff8b98fd759b17c5f17f2d3832e",
+        "native-ui-screens.json": "c866a45fd9fd39cfaa571c9503c06311fd6e5b1533c95d0e3c24f2dccc6aaa5b"
+      },
+      "circleUiExceptionCount": 0,
+      "nativeProtectionControlExceptionCount": 0
+    },
+    {
+      "directory": "20260921T0029166989283Z-disposable-magic-circle-evil",
+      "scenario": "disposable-magic-circle-evil",
+      "status": "FAIL",
+      "assertions": {
+        "PASS": 272,
+        "FAIL": 6
+      },
+      "resultSha256": "a94e7856dae7ff9a18a876802684303f6905ad0763154da3f4614b0c07dd789c",
+      "dllSha256": "66ce87b6a1426a1556577f8c8793735404b34a23d3279e958a17f1aaae2b6166",
+      "mvid": "f982fb9f-c223-4a37-bffe-2312c3a5ea2c",
+      "orchestrationStatus": "FAIL",
+      "failedAssertions": [
+        "circle-visible-boundary-fe3bfffe4e13459587cb11280226d2df",
+        "circle-visible-boundary-4b6d501574c74186b42e583a6b26a6da",
+        "circle-visible-boundary-43ec68312894436db1dc0928118e9678",
+        "circle-visible-boundary-d4dd789baf954c0e97d2d9da8404696a",
+        "circle-native-carrier-dispel-ownership",
+        "circle-native-original-expiration"
+      ]
+    },
+    {
+      "directory": "20260921T0033133206888Z-disposable-magic-circle-ui",
+      "scenario": "disposable-magic-circle-ui",
+      "status": "ERROR",
+      "assertions": {
+        "PASS": 19,
+        "FAIL": 2
+      },
+      "resultSha256": "f431f0e0c5e0471cc8ca844bb501e4dbd51382e4598573dc1d0022a5ee288977",
+      "dllSha256": "66ce87b6a1426a1556577f8c8793735404b34a23d3279e958a17f1aaae2b6166",
+      "mvid": "f982fb9f-c223-4a37-bffe-2312c3a5ea2c",
+      "orchestrationStatus": "ERROR",
+      "failedAssertions": [
+        "circle-ui-sorcerer-real-exceptions",
+        "circle-ui-exceptions"
+      ],
+      "evidenceSha256": {
+        "magic-circle-native-ui.json": "031150d39931495f7f068f1d62a672c45ebd1e5afd5028cd18a6dcf4bef8b9b1",
+        "native-ui-screens.json": "c454e763e8c50d025c9994257eb09c2a1ce381d9e38e8d024e262e5ec301064b"
+      },
+      "circleUiExceptionCount": 4,
+      "nativeProtectionControlExceptionCount": 0
+    },
+    {
+      "directory": "20260921T0045264626393Z-disposable-magic-circle-ui",
+      "scenario": "disposable-magic-circle-ui",
+      "status": "ERROR",
+      "assertions": {
+        "PASS": 12
+      },
+      "resultSha256": "4716e6095f0d7d106b23b1f5d46b9ffcb5a48ab55e0fbd02af905039ae0aefb5",
+      "dllSha256": "f3597a3e59f535cab65891d64c48f88b0942a57ba1a2e5c185f02fd8f625deb9",
+      "mvid": "9969d8b3-d9a3-4146-82a6-2e81cfaf8827",
+      "orchestrationStatus": "ERROR",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-native-ui.json": "181cb6510411f5a61dc44e3c81d0f1394eaf3a854e1c556f121225ae6db041d8",
+        "native-ui-screens.json": "ba5805ddef5898352b80024d4a4413f1d4a5f489b3dc1ed70b90a6683c342d42"
+      },
+      "circleUiExceptionCount": 0,
+      "nativeProtectionControlExceptionCount": 0
+    },
+    {
+      "directory": "20260921T0049386739949Z-disposable-magic-circle-evil",
+      "scenario": "disposable-magic-circle-evil",
+      "status": "FAIL",
+      "assertions": {
+        "PASS": 272,
+        "FAIL": 6
+      },
+      "resultSha256": "9d9bebadb7f67f890802058dd12bcee302053f31dff6556c4d8235cc575b6a67",
+      "dllSha256": "f3597a3e59f535cab65891d64c48f88b0942a57ba1a2e5c185f02fd8f625deb9",
+      "mvid": "9969d8b3-d9a3-4146-82a6-2e81cfaf8827",
+      "orchestrationStatus": "FAIL",
+      "failedAssertions": [
+        "circle-visible-boundary-fe3bfffe4e13459587cb11280226d2df",
+        "circle-visible-boundary-4b6d501574c74186b42e583a6b26a6da",
+        "circle-visible-boundary-43ec68312894436db1dc0928118e9678",
+        "circle-visible-boundary-d4dd789baf954c0e97d2d9da8404696a",
+        "circle-native-carrier-dispel-ownership",
+        "circle-native-original-expiration"
+      ]
+    },
+    {
+      "directory": "20260921T0058317331708Z-disposable-magic-circle-ui",
+      "scenario": "disposable-magic-circle-ui",
+      "status": "ERROR",
+      "assertions": {
+        "PASS": 12
+      },
+      "resultSha256": "2c373de1e1dccc3f5aa3c5a03edaef0122134a093eecb8e06959938a22726e20",
+      "dllSha256": "80b760c11e7f557d9dcfbbeefd7bddaa0e8e925a031e09ff4b3ffa709a48ffc5",
+      "mvid": "902870c5-bb5d-4a05-b1c1-13bf7fad778e",
+      "orchestrationStatus": "ERROR",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-native-ui.json": "e134b856475d3a1e6cc84e613dff444e25fc19e70210fffec3c299601cf1ab2a",
+        "native-ui-screens.json": "45f9c1d17f3d7e1dd9c7d6b2cc6017a4945ddf2ff455c10ede5dd801f166284b"
+      },
+      "circleUiExceptionCount": 0,
+      "nativeProtectionControlExceptionCount": 0
+    },
+    {
+      "directory": "20260921T0104136234602Z-disposable-magic-circle-evil",
+      "scenario": "disposable-magic-circle-evil",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 278
+      },
+      "resultSha256": "25a6d7ed0dadb1cc72827695bade33b3f36d191771aec62306c06139dc054d01",
+      "dllSha256": "80b760c11e7f557d9dcfbbeefd7bddaa0e8e925a031e09ff4b3ffa709a48ffc5",
+      "mvid": "902870c5-bb5d-4a05-b1c1-13bf7fad778e",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": []
+    },
+    {
+      "directory": "20260921T0113009799649Z-disposable-magic-circle-ui",
+      "scenario": "disposable-magic-circle-ui",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 72
+      },
+      "resultSha256": "1580e8682d39991d2b27bd76c428e4cd18a59209e776e06b6bd6bcc61f9ebc09",
+      "dllSha256": "713ef45137150baa81805a38362bf99fad3fdb913fb48f3a4a523e6e8dd5e18f",
+      "mvid": "41ea69f2-1d37-4658-bcda-d60b9c035c6e",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-native-ui.json": "33c54c3c6319c32558db3c7aa889ea3632f0e2e8cb3bee5b05f48ed45c4f81b8",
+        "native-ui-screens.json": "8f5d85e7f4aa85bac190e2765c5ffe9dbf9903307ba7d65550799e40301fef79"
+      },
+      "circleUiExceptionCount": 0,
+      "nativeProtectionControlExceptionCount": 4
+    },
+    {
+      "directory": "20260921T0127523280895Z-working-save-magic-circle-prepare",
+      "scenario": "working-save-magic-circle-prepare",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 21
+      },
+      "resultSha256": "aae46e682706e8c2bc8089c657d56ccf789d3424ab8e66daf4ff3c2be375cd15",
+      "dllSha256": "713ef45137150baa81805a38362bf99fad3fdb913fb48f3a4a523e6e8dd5e18f",
+      "mvid": "41ea69f2-1d37-4658-bcda-d60b9c035c6e",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "bcddba7d00136b03dd15812b5215e66025d83dd322098576e122d6cf53210e05"
+      }
+    },
+    {
+      "directory": "20260921T0132365726070Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "status": "FAIL",
+      "assertions": {
+        "PASS": 12,
+        "FAIL": 1
+      },
+      "resultSha256": "94d6f84be328ad1b3400d4387ef85f84b0917485546c88d73f1ff42343155258",
+      "dllSha256": "713ef45137150baa81805a38362bf99fad3fdb913fb48f3a4a523e6e8dd5e18f",
+      "mvid": "41ea69f2-1d37-4658-bcda-d60b9c035c6e",
+      "orchestrationStatus": "FAIL",
+      "failedAssertions": [
+        "circle-persistence-startup-publication-and-known-spell"
+      ],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "f1c6c8ca5d20c9a6cc2efc0011df8c6d7134b7f40442472da1e901a873abb3c0"
+      }
+    },
+    {
+      "directory": "20260921T0135258839124Z-working-save-magic-circle-cleanup",
+      "scenario": "working-save-magic-circle-cleanup",
+      "status": "FAIL",
+      "assertions": {
+        "PASS": 13,
+        "FAIL": 2
+      },
+      "resultSha256": "b350c8de6283a03527da0bd692c0c2ffa7bfdeae171668c881b8a803d93517e6",
+      "dllSha256": "713ef45137150baa81805a38362bf99fad3fdb913fb48f3a4a523e6e8dd5e18f",
+      "mvid": "41ea69f2-1d37-4658-bcda-d60b9c035c6e",
+      "orchestrationStatus": "FAIL",
+      "failedAssertions": [
+        "circle-persistence-startup-publication-and-known-spell",
+        "circle-persistence-exact-save-boundary"
+      ],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "ca0784267e54a78744433885565516c586c54a90f32595e50d6e7dcd34420e35"
+      }
+    },
+    {
+      "directory": "20260921T0147441714047Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "status": "FAIL",
+      "assertions": {
+        "PASS": 12,
+        "FAIL": 1
+      },
+      "resultSha256": "bd2942f2cdca262c4ce634e3abe3175af309c96746115e5419e4abdc920bc4c5",
+      "dllSha256": "82a6949957af262c25b76d4c11795cdd641673765f3456ccdd3ae0e644a33719",
+      "mvid": "b959da7c-9781-490a-9373-a38bcfc179da",
+      "orchestrationStatus": "FAIL",
+      "failedAssertions": [
+        "circle-persistence-startup-publication-and-known-spell"
+      ],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "9c18fe0e0fc18c64284b2d2d7703f104cd4dfcc0a4c2704af2c4ec932a5b6626"
+      }
+    },
+    {
+      "directory": "20260921T0154589014268Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 13
+      },
+      "resultSha256": "0924c9e59871760a1e1b5f0c4f01ba05fd123c94582857555af30306c7356e53",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "b377a72187f261d1354097c8624c72fd18aa109af71396a459da4a09821bfb97",
+        "magic-circle-cross-launch-comparison.json": "7e3a6695878a0e55933198562b21bfd97eb561bf800ca2f19e671eafdad128d4"
+      }
+    },
+    {
+      "directory": "20260921T0157522916640Z-working-save-magic-circle-scene",
+      "scenario": "working-save-magic-circle-scene",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 26
+      },
+      "resultSha256": "8063377dea4c0d2a0909bec3937331ff4b00058b5af8fc1f0f257f460b00bde5",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "ERROR",
+      "orchestrationException": "Runtime result timed out; Kingmaker was left running. PID=2616",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "077e5150ca87a999395505232edadfb7ffd828a599f1d267e1c2d6f8bfa24745"
+      }
+    },
+    {
+      "directory": "20260921T0203037203210Z-working-save-magic-circle-cleanup",
+      "scenario": "working-save-magic-circle-cleanup",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 15
+      },
+      "resultSha256": "7de812ee311676522c61f13575c3b32e653ab26711cacd23502bfde713af9bd3",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "aa018397dff3ae8c2fe6d78e6091cd7ecf66585d0c42b5e9b7607fef09b3d579",
+        "magic-circle-cross-launch-comparison.json": "1a3eefbce761a3ebe704a23abde7bc7eaeb105211a628a3b9fe9d618bdb3630e"
+      }
+    },
+    {
+      "directory": "20260921T0206384862483Z-working-save-magic-circle-absent",
+      "scenario": "working-save-magic-circle-absent",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 3
+      },
+      "resultSha256": "8d73d25ad261264aa77d560979534fcb07282fc6a3b342b0471c5765af02dbe4",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "1211b10735e6ab45b218cf3d09ddd7f614647ee9f5bec439a262337777adaa49",
+        "magic-circle-cross-launch-comparison.json": "befb4795be905587522d56a67b3308f55cf6a8fa96c0bb66f216730523f7277d"
+      }
+    },
+    {
+      "directory": "20260921T0210429232142Z-disposable-magic-circle-evil",
+      "scenario": "disposable-magic-circle-evil",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 278
+      },
+      "resultSha256": "ea7a1ac1faa11ef2066ace25d1ed96a5dfb47f611732230beecce8adfc6df448",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": []
+    },
+    {
+      "directory": "20260921T0213509009846Z-disposable-magic-circle-ui",
+      "scenario": "disposable-magic-circle-ui",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 72
+      },
+      "resultSha256": "139f7b221026f107b35b44ebf464d14c5a8729adf6ca7ac85f24801f623a416e",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-native-ui.json": "ea37624520c80e332ba848213893658aa202e29171ebcbaeda19771ebd336742",
+        "native-ui-screens.json": "5a934eb9fb7422e8812c822755cc59e3dcc6736ff69a5c94ab92c435ec89b4ec"
+      },
+      "circleUiExceptionCount": 0,
+      "nativeProtectionControlExceptionCount": 4
+    },
+    {
+      "directory": "20260921T0219091794245Z-working-save-magic-circle-prepare",
+      "scenario": "working-save-magic-circle-prepare",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 21
+      },
+      "resultSha256": "3933b7689d22fc73e29f7d3abc116bec0bd641197a0b93ad63d9b8faf74a7744",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "e00f6712412ce8754971fbee119943ddcc78bc560dd826e72bc1c015cf08ed06"
+      }
+    },
+    {
+      "directory": "20260921T0222204181754Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 13
+      },
+      "resultSha256": "1655cb82a099b50b306c8c928cee9c992fb776989033759aa695cca7c2164f28",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "1c4f43f61d5525be1385933684a485ceb0b7638fea3e441acf9f25108f9b8dcf",
+        "magic-circle-cross-launch-comparison.json": "dab9dec0847712ff81d3feddd1ebe393af1c6defe7e51fbb00168433a209e661"
+      }
+    },
+    {
+      "directory": "20260921T0225127319904Z-working-save-magic-circle-scene",
+      "scenario": "working-save-magic-circle-scene",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 26
+      },
+      "resultSha256": "8c4cb8c76ed52fd693a53188e73f8e383260cd165dbed51ad6758002b5d16efe",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "fb9da63726808d371a7333178d88e8aa0dc65706c19fd91cb13ba10b886f6466",
+        "magic-circle-cross-launch-comparison.json": "8ed6706b0a8d080da49c5d735cc69c9e3dd0b2fd6f99b8207b85a61cdc701d5b"
+      }
+    },
+    {
+      "directory": "20260921T0229393113049Z-working-save-magic-circle-cleanup",
+      "scenario": "working-save-magic-circle-cleanup",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 15
+      },
+      "resultSha256": "b69c7870bf20ad41cb6f33de0691894c39afe286717641b1ed223d1867cc601c",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "455011ec6ae2f204ec984285ae5a651e4da0c199ae3da7ee2e4464e04bf024ab",
+        "magic-circle-cross-launch-comparison.json": "af3fcf56ed1e8d64ff689c8beb9b62d0537af2b2be0176571e4a9f1eaba31299"
+      }
+    },
+    {
+      "directory": "20260921T0232449588777Z-working-save-magic-circle-absent",
+      "scenario": "working-save-magic-circle-absent",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 3
+      },
+      "resultSha256": "769e9970ca7275fed236cf7b894f2034082424cf0d908344c8ac38758a46e9cd",
+      "dllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+      "mvid": "f74654c0-ea2f-4c5b-8d25-9ee07dbd31be",
+      "orchestrationStatus": "PASS",
+      "failedAssertions": [],
+      "evidenceSha256": {
+        "magic-circle-persistence.json": "8f55d702a1f77d6e651acd717997f4e01ff610de471544ff8456efa35cbb96aa",
+        "magic-circle-cross-launch-comparison.json": "dba916f5177a6643498cebc6256e7282a5ed77680d7d0fe50761955e1b71d5ca"
+      }
+    }
+  ],
+  "finalNativeRuns": [
+    {
+      "directory": "20260921T0219091794245Z-working-save-magic-circle-prepare",
+      "scenario": "working-save-magic-circle-prepare",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 21
+      },
+      "orchestrationStatus": "PASS"
+    },
+    {
+      "directory": "20260921T0222204181754Z-working-save-magic-circle-verify",
+      "scenario": "working-save-magic-circle-verify",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 13
+      },
+      "orchestrationStatus": "PASS"
+    },
+    {
+      "directory": "20260921T0225127319904Z-working-save-magic-circle-scene",
+      "scenario": "working-save-magic-circle-scene",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 26
+      },
+      "orchestrationStatus": "PASS"
+    },
+    {
+      "directory": "20260921T0229393113049Z-working-save-magic-circle-cleanup",
+      "scenario": "working-save-magic-circle-cleanup",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 15
+      },
+      "orchestrationStatus": "PASS"
+    },
+    {
+      "directory": "20260921T0232449588777Z-working-save-magic-circle-absent",
+      "scenario": "working-save-magic-circle-absent",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 3
+      },
+      "orchestrationStatus": "PASS"
+    },
+    {
+      "directory": "20260921T0210429232142Z-disposable-magic-circle-evil",
+      "scenario": "disposable-magic-circle-evil",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 278
+      },
+      "orchestrationStatus": "PASS"
+    },
+    {
+      "directory": "20260921T0213509009846Z-disposable-magic-circle-ui",
+      "scenario": "disposable-magic-circle-ui",
+      "status": "PASS",
+      "assertions": {
+        "PASS": 72
+      },
+      "orchestrationStatus": "PASS"
+    }
+  ],
+  "finalNativeAssertions": 428,
+  "normalPlayRestoration": {
+    "status": "PASS",
+    "version": "0.0.117",
+    "backup": "20260921T0210300793116Z",
+    "independentlyComparedSha256": {
+      "Info.json": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+      "FeatureModules.json": "a06601c52f1b98ac54eed309f7415677a3c55fe4c51daa2556dde5206c687f17",
+      "KingmakerGunslinger.dll": "fd2fc61c250b13857d81acc197a896450f5b242ee392fa7192b01201e908f35f"
+    },
+    "fullRestoreVerification": "Restore-Live-Mod verified the complete backed-up installation; final-qualification-11.log retained locally."
+  },
+  "preparation": {
+    "directory": "20260921T0219091794245Z-working-save-magic-circle-prepare",
+    "producerCandidate": 11,
+    "consumerCandidate": 11,
+    "binding": "Existing R1 schema-2 immutable successful producer record and separate exact consumer artifact; no guard bypass.",
+    "oracleKnownBefore": 2,
+    "oracleKnownAfter": 3,
+    "ordinaryKnownAllowance": 2,
+    "writes": "Two fixture cycles, each with one successful prepare and cleanup write to KMG_AUTOMATION_WORKING. Failed cleanup attempt never armed a write.",
+    "earlierCycle": "20260921T0127523280895Z-working-save-magic-circle-prepare produced by candidate 9; candidate 11 consumed its exact binding and cleaned it."
+  },
+  "visualInspection": {
+    "ownerApproval": "pending; technical/native PASS does not transfer superseded approval",
+    "reviewSheet": "reports/icon-overhaul/production-magic-circle-followup.png",
+    "reviewSheetSha256": "b682dfa9d27b3857059f17e56bc85e9683b958dfb70998ea4fd00e82a95f66a6",
+    "nativeScreensDirectory": "20260921T0213509009846Z-disposable-magic-circle-ui",
+    "screensInspectedByAgent": [
+      {
+        "stage": "grouped-variants-KMG_MagicCircle_Evil_Ability",
+        "file": "native-ui-003.png",
+        "sha256": "2181abb5a1e85abe0773dd43a37cb435f83711d97c986d86d9106c46d118a75d",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "spell-description-30201ad172e243c9b13fef377dcc6ce6",
+        "file": "native-ui-004.png",
+        "sha256": "62dc8d05ec3943cc7b93cc255de06c1de7546131faf3119da16b90593ae05262",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "active-moving-boundary-Evil",
+        "file": "native-ui-009.png",
+        "sha256": "ddace4ebaab96874e207963147c6d053fafcdaa01552c6444597c3f6c575a3e1",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "buff-40d23af78f45430faf881a9a3259efe0",
+        "file": "native-ui-010.png",
+        "sha256": "3dcc191c368d5d051b6deb4a5f53ea8f55a281dc118e4cf67e213c5019d3a60b",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "active-moving-boundary-Good",
+        "file": "native-ui-017.png",
+        "sha256": "2f101136ea9803eee454fbf2b09e332a4115c1e04363f9284e8f9dd64aa54150",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "active-moving-boundary-Law",
+        "file": "native-ui-025.png",
+        "sha256": "9ed5ded4930ec11264fc42c4c84bf07f01146720fb0e16d69d1b94437e17e7f8",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "active-moving-boundary-Chaos",
+        "file": "native-ui-033.png",
+        "sha256": "004b84d2586e80c232395728f750de16d0c7a36e4842ba0e587f5306bb5cc6ee",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "stage": "native-scroll-merchant-row:04954b1da0964fc288e00abdcf1f82ae",
+        "file": "native-ui-046.png",
+        "sha256": "9f3a07eab511cd23c7e32330d68b39a4e92cd0ba91c459a790ba16e6e7dcf61e",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "observations": "Readable family emblems and parchment scrolls; thin blue/gold/red/violet floor boundaries; foreground walls occlude naturally; no dome."
+  },
+  "limitations": [
+    "Original installed eleven-mod stack only; no new reduced/off-profile qualification.",
+    "Antipaladin final native list and two-variant identity verified; no full Antipaladin character progression/casting UI claim.",
+    "Cold native Protection popup reproduced four Races Unleashed slot-initialization exceptions before Circle checks; recorded separately, no unrelated UI repair.",
+    "Legacy learned child spells remain valid; no automatic respec, refund or migration of old known-spell choices.",
+    "New bitmap assets await owner visual approval."
+  ],
+  "resolvedQualificationIssues": [
+    "LineRenderer rounds channels to RGBA8; direct floats and Unity truncating Color32 conversion were incorrect test oracles. Exact rounded bytes and geometry checks now pass.",
+    "Native popup uses the selected spell-level tab; test navigates the actual tab and exact spellbook row. Preview is reselected after popup closure.",
+    "Direct CotW spontaneous-slot conversion helper has a mismatched memorized-slot prefix. Mechanical fixtures use native selected-variant data; actual player popup tested separately.",
+    "Post-load IsKnown lookup recognizes children without separate learned rows. Diagnostic candidate 10 proved all four casts available and one raw known family; candidate 11 checks actual learned entries.",
+    "Local wrapper import/path mistakes failed before dependent mutation; resumed from the immutable successful preparation record.",
+    "First candidate-11 scene run passed all 26 native assertions after the launcher deadline. Final local phase wrapper retains all guards and native timeouts, increasing only the supported outer launcher deadline from 240 to 600 seconds.",
+    "First disposable wrapper restore raced ordinary game exit; exact owned recovery restored original installation and lease. Later wrappers wait for normal exit."
+  ],
+  "publicReleaseAuthorized": false
+}

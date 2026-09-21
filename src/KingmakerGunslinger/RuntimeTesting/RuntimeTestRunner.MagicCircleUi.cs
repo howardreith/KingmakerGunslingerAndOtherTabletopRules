@@ -47,6 +47,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<RuntimeTestAssertion> _circleUiAssertions = new List<RuntimeTestAssertion>();
         private readonly List<object> _circleUiCaptures = new List<object>();
         private readonly List<object> _circleUiExceptions = new List<object>();
+        private readonly List<object> _circleUiNativePopupExceptions = new List<object>();
+        private bool _circleUiNativePopupBaseline;
         private readonly List<string> _circleUiDiagnostics = new List<string>();
         private string CircleUiPath { get { return Path.Combine(_request.EvidenceDirectory, "magic-circle-native-ui.json"); } }
         private void PollMagicCircleUi()
@@ -86,7 +88,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             WriteTeleportationForensicJson(CircleUiPath, new { schemaVersion = 1, runId = _request.RunId, nativeGameVersion = GameVersion.Cached,
                 claims = "Native Sorcerer level-up cancellation and committed single known-spell selection; native spellbook, held-touch, active buff and scroll UI. Actual framebuffer screenshots require separate visual inspection. No save writes or uninstall-safety claim.",
-                captures = _circleUiCaptures, exceptions = _circleUiExceptions, assertions = _circleUiAssertions,
+                captures = _circleUiCaptures, exceptions = _circleUiExceptions,
+                nativeProtectionPopupBaselineExceptions = _circleUiNativePopupExceptions, assertions = _circleUiAssertions,
                 diagnostics = _circleUiDiagnostics, saveWriteObserved = _workingSaveSmoke.WriteObserved, error });
         }
         private static JObject CircleUiState(object value)
@@ -104,8 +107,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         { _circleUiCaptures.Add(new { stage, frame = Time.frameCount, state }); WriteCircleUi(null); }
         private void ObserveCircleUiException(string message, string stack, LogType type)
         {
-            if (type == LogType.Exception || type == LogType.Error && message.Contains("Exception"))
-                _circleUiExceptions.Add(new { message, stack, type = type.ToString(), frame = Time.frameCount });
+            if (type != LogType.Exception && !(type == LogType.Error && message.Contains("Exception"))) return;
+            var observed = new { message, stack, type = type.ToString(), frame = Time.frameCount };
+            // A native Protection popup is the control for the first-use widget
+            // pool. Preserve this exact native/foreign initialization exception
+            // as separate evidence; Circle popups never receive this exception
+            // allowance and no patch, widget, or exception is silently repaired.
+            if (_circleUiNativePopupBaseline && type == LogType.Exception &&
+                message.StartsWith("NullReferenceException:", StringComparison.Ordinal) &&
+                stack.StartsWith("Kingmaker.UI.ActionBar.ActionBarSlot.Hover ", StringComparison.Ordinal) &&
+                stack.Contains("UnityEngine.Transform:SetParent") &&
+                stack.Contains("RacesUnleashed.ActionBarSpellsGroup_FillSlots_Patch:Prefix"))
+                _circleUiNativePopupExceptions.Add(observed);
+            else _circleUiExceptions.Add(observed);
         }
         private IEnumerable<int> RunCircleUi()
         {
@@ -197,16 +211,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CircleSynchronize(actors);
                 var evil = BlueprintBootstrap.MagicCircles.Single(value => value.Alignment == "Evil");
                 learnedBook.Rest(); int slots = learnedBook.GetSpontaneousSlots(3);
-                CircleCast(unit, bearer, new AbilityData(evil.Spell, learnedBook), _circleUiDiagnostics);
+                ui.SelectionManagerPC.SelectUnit(unit.View, true, true, false);
+                for (int frame = 0; frame < 12; frame++) yield return 0;
+                var nativeProtection = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
+                    BlueprintBootstrap.Library, "433b1faf4d02cc34abb0ade5ceda47c4", "native Protection popup control");
+                var nativeEvil = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
+                    BlueprintBootstrap.Library, "eee384c813b6d74498d1b9cc720d61f4", "native Protection variant control");
+                if (!nativeProtection.HasVariant(nativeEvil) || nativeProtection.Variants.Length != 4)
+                    throw new InvalidOperationException("Native Protection popup control changed.");
+                if (!learnedBook.IsKnown(nativeProtection)) learnedBook.AddKnown(1, nativeProtection, true);
+                // AddKnown is mechanical; this menu caches rows for its current
+                // selected unit. Use ordinary character selection to refresh it.
+                ui.SelectionManagerPC.SelectUnit(bearer.View, true, true, false);
+                for (int frame = 0; frame < 12; frame++) yield return 0;
+                ui.SelectionManagerPC.SelectUnit(unit.View, true, true, false);
+                for (int frame = 0; frame < 12; frame++) yield return 0;
+                _circleUiNativePopupBaseline = true;
+                try {
+                    foreach (int frame in CircleChooseGroupedUi(new AbilityData(nativeProtection, learnedBook), nativeEvil, selected => { })) yield return frame;
+                } finally { _circleUiNativePopupBaseline = false; }
+                game.ClickEventsController.ClearPointerMode(); game.SelectedAbilityHandler.DropAbility();
+                CircleUiAssert("native-protection-popup-control", "native four-variant Protection popup; first-use hover exceptions separately attributed and retained",
+                    "nativeInitializationExceptions=" + _circleUiNativePopupExceptions.Count,
+                    _circleUiNativePopupExceptions.Count <= nativeProtection.Variants.Length);
+                AbilityData learnedChoice = null;
+                foreach (int frame in CircleChooseGroupedUi(new AbilityData(MagicCircleBlueprints.Family, learnedBook),
+                    evil.Spell, selected => learnedChoice = selected)) yield return frame;
+                game.ClickEventsController.ClearPointerMode(); game.SelectedAbilityHandler.DropAbility();
+                CircleCast(unit, bearer, learnedChoice, _circleUiDiagnostics);
                 var learnedCarrier = CircleBuffs(bearer, evil.Carrier).Single(); var learnedArea = CircleArea(learnedCarrier);
                 CircleRefresh(learnedArea, actors);
                 CircleUiAssert("newly-learned-cast", "committed native known spell casts on another bearer for one normal slot", "slots=" + slots + "->" + learnedBook.GetSpontaneousSlots(3),
                     learnedBook.GetSpontaneousSlots(3) == slots - 1 && ReferenceEquals(learnedCarrier.Context.MaybeCaster, unit) &&
-                    learnedCarrier.Context.Params.CasterLevel == learnedBook.CasterLevel && BlueprintBootstrap.MagicCircles.Count(value => learnedBook.IsKnown(value.Spell)) == 1);
+                    learnedCarrier.Context.Params.CasterLevel == learnedBook.CasterLevel && learnedBook.IsKnown(MagicCircleBlueprints.Family) && BlueprintBootstrap.MagicCircles.All(value => !learnedBook.IsKnown(value.Spell)));
                 learnedCarrier.Remove(); CircleRefresh(learnedArea, actors);
                 var wizard = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, "ba34257984f4c41408ce1dc2004e342e", "native Wizard UI book");
                 var book = fixture.AddBook(wizard.Spellbook, 8);
-                foreach (var circle in BlueprintBootstrap.MagicCircles) book.AddKnown(3, circle.Spell, true);
+                book.AddKnown(3, MagicCircleBlueprints.Family, true);
                 book.Rest();
                 ui.SelectionManagerPC.SelectUnit(unit.View, true, true, false);
                 for (int frame = 0; frame < 12; frame++) yield return 0;
@@ -214,8 +255,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 60; frame++) yield return 0;
                 GroupController.Instance.SelectUnit(unit);
                 for (int frame = 0; frame < 12; frame++) yield return 0;
-                foreach (var circle in BlueprintBootstrap.MagicCircles)
-                    foreach (int frame in CircleBookUiEntry(ui.SpellBookController, new TeleportUiSpellEntry(book, circle.Spell, 3))) yield return frame;
+                foreach (int frame in CircleBookUiEntry(ui.SpellBookController, new TeleportUiSpellEntry(book, MagicCircleBlueprints.Family, 3))) yield return frame;
                 ui.ServiceWindow.HandleOpenSpellbook();
                 for (int frame = 0; frame < 30; frame++) yield return 0;
                 foreach (var circle in BlueprintBootstrap.MagicCircles) {
@@ -225,7 +265,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ui.SelectionManagerPC.SelectUnit(unit.View, true, true, false);
                     for (int frame = 0; frame < 12; frame++) yield return 0;
                     book.Rest();
-                    var data = book.GetMemorizedSpells(3).First(value => value.Available && value.Spell.Blueprint == circle.Spell).Spell;
+                    var prepared = book.GetMemorizedSpells(3).First(value => value.Available && value.Spell.Blueprint == MagicCircleBlueprints.Family);
+                    AbilityData data = null;
+                    foreach (int frame in CircleChooseGroupedUi(prepared.Spell, circle.Spell, selected => data = selected)) yield return frame;
+                    // The popup hide event dismisses the targeting overlay. Start
+                    // a fresh native selection event for the independent preview
+                    // check instead of reassigning an already selected instance.
+                    game.ClickEventsController.ClearPointerMode(); game.SelectedAbilityHandler.DropAbility();
                     // Native player ability selection publishes the same event used
                     // by the installed AoE preview. Never draw our own circle.
                     TeleportationCastingCamera().ScrollToImmediately(unit.Position);
@@ -272,7 +318,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             guid = (value.MechanicSlot?.GetContentData() as AbilityData)?.Blueprint.AssetGuid, sprite = value.Icon?.sprite?.name }).ToArray(), delivery = touch?.Ability.Data.Blueprint.AssetGuid, root = data.Blueprint.AssetGuid,
                         rows = rows.Select(row => new { sprite = row.Icon.sprite?.name, exact = ReferenceEquals(row.Icon.sprite, circle.Delivery.Icon) }).ToArray(),
                         originalSource = touch?.Ability.Data.StickyTouch?.Blueprint.AssetGuid, context = "actual native abilities popup renders the held-delivery identity while preserving its originating prepared spell" });
-                    CircleUiAssert("held-touch-" + circle.Alignment, "actual held delivery retains original spell and approved icon in the native abilities popup", "rows=" + rows.Length,
+                    CircleUiAssert("held-touch-" + circle.Alignment, "actual held delivery retains original spell and canonical icon in the native abilities popup", "rows=" + rows.Length,
                         touch != null && touch.Ability.Data.Blueprint == circle.Delivery && ReferenceEquals(touch.Ability.Data.StickyTouch, data) && rows.Length > 0 &&
                         rows.All(row => ReferenceEquals(row.Icon.sprite, circle.Delivery.Icon)));
                     if (rows.Length == 0) throw new InvalidOperationException("Native abilities popup has no visible held Circle charge.");
@@ -285,6 +331,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     held.Start(); CircleCompleteCommand(held, _circleUiDiagnostics); unit.Commands.RemoveFinishedAndUpdateQueue();
                     var carrier = CircleBuffs(bearer, circle.Carrier).Single(); var area = CircleArea(carrier);
                     CircleRefresh(area, actors); CircleRefresh(area, actors);
+                    CircleUiAssert("moving-boundary-" + circle.Alignment, "active spell has one correctly colored renderer at the actual radius",
+                        "area=" + area.UniqueId + ";" + CircleBoundaryState(area), CircleBoundaryMatches(area));
+                    TeleportationCastingCamera().ScrollToImmediately(bearer.Position);
+                    for (int frame = 0; frame < 12; frame++) yield return 0;
+                    foreach (int frame in _circleUiScreens.Capture("active-moving-boundary-" + circle.Alignment,
+                        CircleUiState(new { area = area.UniqueId, bearer = bearer.UniqueId, radius = circle.Area.Size.Meters,
+                            alignment = circle.Alignment, role = "supporting native battlefield visual; renderer state is asserted separately" }),
+                        () => carrier.Active && !area.IsEnded && area.View != null && !_workingSaveSmoke.WriteObserved)) yield return frame;
                     ui.ServiceWindow.HandleOpenCharScreen();
                     for (int frame = 0; frame < 60; frame++) yield return 0;
                     GroupController.Instance.SelectUnit(bearer); sheet.SetCharacter(bearer.Descriptor);
@@ -417,7 +471,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException("Native Sorcerer seed progression did not advance exactly once.");
                 }
                 captureStarterItems("sorcerer-seed-starter-items");
-                var learned = BlueprintBootstrap.MagicCircles.Single(value => value.Alignment == "Evil").Spell;
+                var learned = MagicCircleBlueprints.Family;
                 var book = unit.Descriptor.GetSpellbook(sorcerer.Spellbook);
                 var table = sorcerer.Spellbook.SpellsKnown;
                 CircleUiCapture("sorcerer-native-progression", new {
@@ -466,8 +520,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CircleUiAssert("sorcerer-real-candidate-" + attempt,
                         "Sorcerer 5 to 6 displays one enabled canonical Circle candidate at level 3 in the native selector",
                         "rows=" + rows().Length + ";level=" + row.SpellLevel + ";label=" + label,
-                        label && row.SpellLevel == 3 && !book.IsKnown(learned));
-                    CircleUiAssert("sorcerer-candidate-icon-" + attempt, "native learning row uses the approved canonical painting", "icon=" + learned.Icon.name,
+                        label && row.SpellLevel == 3 && !book.IsKnown(learned) &&
+                        !presenter.GetComponentsInChildren<CharBuildSelectorItem>(true).Any(value => value.gameObject.activeInHierarchy &&
+                            BlueprintBootstrap.MagicCircles.Any(circle => value.BlueprintAbility == circle.Spell)));
+                    CircleUiAssert("sorcerer-candidate-icon-" + attempt, "native learning row uses the canonical candidate painting", "icon=" + learned.Icon.name,
                         row.GetComponentsInChildren<Image>(true).Any(value => value.isActiveAndEnabled && ReferenceEquals(value.sprite, learned.Icon)));
                     foreach (int frame in _circleUiScreens.CaptureRow("learning-candidate-" + attempt, (RectTransform)row.transform,
                         () => CircleUiState(new { spell = learned.AssetGuid, icon = learned.Icon.name, level = row.SpellLevel, role = "real Sorcerer level-up candidate" }),
@@ -513,7 +569,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             unit.Descriptor.Progression.GetClassLevel(sorcerer) == 6 && book.CasterLevel == 6 && successes == 1 &&
                             oneNormalChoice && book.GetKnownSpells(3).Count(value => ReferenceEquals(value.Blueprint, learned)) == 1 &&
                             book.Blueprint.SpellsKnown.GetCount(book.CasterLevel, 3) == 1 &&
-                            BlueprintBootstrap.MagicCircles.Count(value => book.IsKnown(value.Spell)) == 1);
+                            BlueprintBootstrap.MagicCircles.All(value => !book.IsKnown(value.Spell)));
                     }
                 }
                 player.PartyCharacters.Add(unit);
@@ -652,12 +708,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var state = DescribeNativeScrollSlot(slot, item, blueprint, controls, retained);
             var circle = BlueprintBootstrap.MagicCircles.Single(value => ReferenceEquals(value.Scroll, blueprint));
-            string key = "magic-circle-against-" + circle.Alignment.ToLowerInvariant();
+            string key = "scroll-of-magic-circle-against-" + circle.Alignment.ToLowerInvariant();
             var target = (JObject)state["targetRow"];
             target["expectedIconKey"] = key;
             target["scrollIconExact"] = ReferenceEquals(blueprint.Icon, ProjectAssetIcons.RequireIcon(key)) &&
                 ReferenceEquals(blueprint.Ability, circle.Spell);
-            target["familySharing"] = "same approved alignment painting on native spell, held touch, carrier, recipient and scroll";
+            target["familySharing"] = "matching alignment painting inside the unchanged strategic scroll shell; distinct item sprite";
             return state;
         }
 
@@ -749,10 +805,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var state = describe();
                     var target = (JObject)state["targetRow"];
                     bool exact = (bool)target["renderedIconExact"] && (bool)target["scrollIconExact"] &&
-                        !(bool)target["spellIconDistinctFromItem"] &&
+                        (bool)target["spellIconDistinctFromItem"] &&
                         (bool)target["itemReferenceRetained"] && (int)target["otherItemRows"] > 0 && (bool)target["otherItemIconsExact"];
                     CircleUiAssert("inventory-icon-" + blueprint.AssetGuid,
-                        "real native item slot intentionally shares its alignment-family painting with the associated spell and preserves existing controls", state.ToString(), exact);
+                        "real native item slot displays the matching parchment composite, distinct from its spell painting, and preserves existing controls", state.ToString(), exact);
                     if (!exact) throw new InvalidOperationException("Native scroll inventory icon identity differs.");
                     var tooltip = slot.Tooltip;
                     var tipObject = typeof(TooltipTrigger).GetField("m_Obj", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -796,6 +852,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Native inventory did not finish its normal close.");
                 opened = false;
 
+                foreach (int frame in CaptureNativeStrategicScrollMerchant(blueprints, before, inventoryExact)) yield return frame;
             }
             finally
             {

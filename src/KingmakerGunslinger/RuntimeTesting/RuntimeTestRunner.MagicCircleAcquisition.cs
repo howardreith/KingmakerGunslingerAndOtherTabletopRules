@@ -79,7 +79,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var prepared = scribe.Descriptor.Spellbooks.Single(value => ReferenceEquals(value.Blueprint, wizard.Spellbook));
                 while (prepared.CasterLevel < 5) prepared.AddCasterLevel();
                 prepared.UpdateAllSlotsSize(false);
-                if (circles.Any(circle => prepared.IsKnown(circle.Spell)))
+                if (prepared.IsKnown(MagicCircleBlueprints.Family) || circles.Any(circle => prepared.IsKnown(circle.Spell)))
                     throw new InvalidOperationException("Fresh native scribing book already knows a circle.");
                 var school = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, "30f20e6f850519b48aa59e8c0ff66ae9", "native Abjuration specialization");
                 scribe.Descriptor.AddFact(school); prepared.UpdateAllSlotsSize(false);
@@ -114,18 +114,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var circle in circles) {
                     var purchased = inventory.Single(item => ReferenceEquals(item.Blueprint, circle.Scroll));
                     var copy = circle.Scroll.GetComponent<CopyScroll>();
-                    int known = circles.Count(c => prepared.IsKnown(c.Spell));
+                    int known = prepared.GetKnownSpells(3).Count();
                     bool eligible = copy.CanCopy(purchased, scribe), spontaneousRejected = !copy.CanCopy(purchased, caster);
                     if (!eligible || doCopy == null) throw new InvalidOperationException("Native purchased-scroll scribing is unavailable: " + circle.Alignment);
                     doCopy.Invoke(copy, new object[] { purchased, scribe });
                     copy.RemoveItem(purchased, scribe);
-                    assertions.Add(Assertion("circle-scribe-" + circle.Alignment, "one exact level-three spell learned; one scroll consumed; no spontaneous copying",
-                        "known=" + known + "->" + circles.Count(c => prepared.IsKnown(c.Spell)),
-                        eligible && spontaneousRejected && prepared.GetKnownSpells(3).Count(value => ReferenceEquals(value.Blueprint, circle.Spell)) == 1 &&
-                        circles.Count(c => prepared.IsKnown(c.Spell)) == known + 1 && CircleItemCount(inventory, circle.Scroll) == 1 &&
+                    assertions.Add(Assertion("circle-scribe-" + circle.Alignment, "one level-three family learned; one scroll consumed; no spontaneous copying",
+                        "known=" + known + "->" + prepared.GetKnownSpells(3).Count(),
+                        eligible && spontaneousRejected && prepared.GetKnownSpells(3).Count(value => ReferenceEquals(value.Blueprint, MagicCircleBlueprints.Family)) == 1 &&
+                        prepared.GetKnownSpells(3).Count() == known + 1 && circles.All(c => !prepared.IsKnown(c.Spell)) && CircleItemCount(inventory, circle.Scroll) == 1 &&
                         !copy.CanCopy(inventory.Single(item => ReferenceEquals(item.Blueprint, circle.Scroll)), scribe),
-                        "native CanCopy/DoCopy/RemoveItem inventory action boundaries and canonical CopyScroll association"));
+                        "native CanCopy/DoCopy/RemoveItem follow the child Parent to one family; exact scroll still casts its alignment"));
 
+                    assertions.Add(Assertion("circle-scribe-family-duplicate-" + circle.Alignment, "all other alignment scrolls reject duplicate family learning", "family=" + MagicCircleBlueprints.Family.AssetGuid,
+                        inventory.Where(item => circles.Any(c => ReferenceEquals(c.Scroll, item.Blueprint)))
+                            .All(item => !item.Blueprint.GetComponent<CopyScroll>().CanCopy(item, scribe)),
+                        "native copying sees one known family, not four separate spell identities"));
                     var scroll = inventory.Single(item => ReferenceEquals(item.Blueprint, circle.Scroll));
                     string resources = TeleportResourceFingerprint(book);
                     bool used = scroll.TryUseFromInventory(caster, new TargetWrapper(bearer));
@@ -150,26 +154,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     carrier.Remove(); CircleRefresh(area, actors);
 
                     var slot = RawSlots(prepared, 3).First(value => value.Type == SpellSlotType.Common && value.Spell == null);
-                    bool memorized = prepared.Memorize(new AbilityData(circle.Spell, prepared), slot);
+                    bool memorized = prepared.Memorize(new AbilityData(MagicCircleBlueprints.Family, prepared), slot);
                     prepared.Rest();
                     int ready = RawSlots(prepared, 3).Count(value => value.Available && value.Spell != null);
                     if (!memorized || !slot.Available) throw new InvalidOperationException("Copied circle did not become a prepared spell.");
-                    CircleCast(scribe, bearer, slot.Spell, diagnostics);
+                    CircleCast(scribe, bearer, CirclePreparedVariant(slot, circle.Spell), diagnostics);
                     carrier = CircleBuffs(bearer, circle.Carrier).Single(); area = CircleArea(carrier); CircleRefresh(area, actors);
                     assertions.Add(Assertion("circle-prepared-cast-" + circle.Alignment, "copied spell casts from one ordinary preparation", "ready=" + ready + "->" + RawSlots(prepared, 3).Count(value => value.Available && value.Spell != null),
                         !slot.Available && RawSlots(prepared, 3).Count(value => value.Available && value.Spell != null) == ready - 1 &&
                         ReferenceEquals(carrier.Context.MaybeCaster, scribe) && carrier.Context.Params.CasterLevel == prepared.CasterLevel,
                         "native Memorize/Rest/UnitUseAbility; purchased, copied, prepared and cast without granting the spell directly"));
                     carrier.Remove(); CircleRefresh(area, actors); prepared.ForgetMemorized(slot);
+                    // Reset only this disposable book between independent scribe cases.
+                    // The final case leaves one learned family for specialist checks.
+                    if (!ReferenceEquals(circle, circles.Last())) prepared.RemoveSpell(MagicCircleBlueprints.Family);
                 }
 
                 var special = (List<AbilityData>[])typeof(Spellbook).GetField("m_SpecialSpells", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(prepared);
-                var stale = special[3].Single(value => ReferenceEquals(value.Blueprint, circles.Single(c => c.Alignment == "Evil").Spell));
+                var stale = special[3].Single(value => ReferenceEquals(value.Blueprint, MagicCircleBlueprints.Family));
                 var knownBeforeRepair = prepared.GetAllKnownSpells().ToArray();
                 if (!special[3].Remove(stale)) throw new InvalidOperationException("Could not stage exact owned stale specialist cache.");
                 prepared.PostLoad(); prepared.PostLoad();
                 assertions.Add(Assertion("circle-specialist-stale-cache", "known spell repaired once without changing any learned spell or owner",
-                    "special=" + special[3].Count, circles.All(c => prepared.GetSpecialSpells(3).Count(value => ReferenceEquals(value.Blueprint, c.Spell)) == 1) &&
+                    "special=" + special[3].Count, prepared.GetSpecialSpells(3).Count(value => ReferenceEquals(value.Blueprint, MagicCircleBlueprints.Family)) == 1 &&
                         prepared.GetAllKnownSpells().SequenceEqual(knownBeforeRepair) && ReferenceEquals(prepared.Owner, scribe.Descriptor),
                     "removed only one exact cache entry on the request-owned native book; real PostLoad callback; fresh disk load remains separately tested"));
                 var favorite = RawSlots(prepared, 3).Single(value => value.Type == SpellSlotType.Favorite);
@@ -178,9 +185,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 diagnostics.Add("native-school-negative:Fireball=" + fireball.AssetGuid);
                 prepared.AddKnown(3, fireball, true);
                 prepared.PostLoad(); prepared.PostLoad();
-                assertions.Add(Assertion("circle-specialist-native-eligibility", "four known circles once each in Abjuration favorite; Evocation refused", "special=" + circles.Count(c => prepared.IsSpellSpecial(new AbilityData(c.Spell, prepared))),
-                    circles.All(c => prepared.GetSpecialSpells(3).Count(value => ReferenceEquals(value.Blueprint, c.Spell)) == 1 &&
-                        prepared.PosibleMemorize(new AbilityData(c.Spell, prepared), favorite)) &&
+                assertions.Add(Assertion("circle-specialist-native-eligibility", "one known family in Abjuration favorite; Evocation refused", "special=" + prepared.IsSpellSpecial(new AbilityData(MagicCircleBlueprints.Family, prepared)),
+                    prepared.GetSpecialSpells(3).Count(value => ReferenceEquals(value.Blueprint, MagicCircleBlueprints.Family)) == 1 &&
+                        prepared.PosibleMemorize(new AbilityData(MagicCircleBlueprints.Family, prepared), favorite) &&
                     !prepared.PosibleMemorize(new AbilityData(fireball, prepared), favorite),
                     "actual native specialization feature, spellbook PostLoad callback and slot eligibility; fresh-load stale-cache case remains separate"));
 
@@ -218,13 +225,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void CirclePublicationContracts(List<RuntimeTestAssertion> assertions)
         {
             var library = BlueprintBootstrap.Library; var circles = BlueprintBootstrap.MagicCircles;
+            assertions.Add(Assertion("circle-family-exact-variants", "one full family and two restricted native variant parents", "parents=" + MagicCircleBlueprints.Families.Length,
+                MagicCircleBlueprints.Family.Variants.Length == 4 && circles.All(circle => MagicCircleBlueprints.Family.Variants.Contains(circle.Spell) && circle.Spell.Parent == MagicCircleBlueprints.Family) &&
+                MagicCircleBlueprints.PaladinFamily.Variants.Length == 2 && circles.All(circle => MagicCircleBlueprints.PaladinFamily.Variants.Contains(circle.Spell) == (circle.Alignment == "Evil" || circle.Alignment == "Chaos")) &&
+                MagicCircleBlueprints.AntipaladinFamily.Variants.Length == 2 && circles.All(circle => MagicCircleBlueprints.AntipaladinFamily.Variants.Contains(circle.Spell) == (circle.Alignment == "Good" || circle.Alignment == "Law")),
+                "independent alignment expectations on the final registered blueprints, including negative restricted children"));
             var repeat = MagicCircleSpellListPublication.Publish(library, circles);
             repeat.ReconcileNative(library, circles); repeat.Rollback();
             foreach (string id in new[] { "8443ce803d2d31347897a3d85cc32f53", "ba0401fdeb4062f40a7aa95b6f07fe89", "57c894665b7895c499b3dce058c284b3", "9f5be2f7ea64fe04eb40878347b147bc" }) {
                 var list = BlueprintLibraryLookup.RequireExact<BlueprintSpellList>(library, id, "native published list");
                 assertions.Add(Assertion("circle-publication-" + list.name, "exact legitimate level-three variants after repeated publication and rollback", list.name,
-                    circles.All(c => list.SpellsByLevel.Single(level => level.SpellLevel == 3).Spells.Count(spell => spell.AssetGuid == c.Spell.AssetGuid) ==
-                        (id == "9f5be2f7ea64fe04eb40878347b147bc" && c.Alignment != "Evil" && c.Alignment != "Chaos" ? 0 : 1)),
+                    CirclePublishedFamily(list, id == "9f5be2f7ea64fe04eb40878347b147bc" ? MagicCircleBlueprints.PaladinFamily : MagicCircleBlueprints.Family),
                     "actual final native class list; duplicate-safe secondary publisher owns no existing entries"));
             }
             CircleOptionalPublicationContracts(assertions);
