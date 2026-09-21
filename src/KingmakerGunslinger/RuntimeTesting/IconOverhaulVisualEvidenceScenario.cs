@@ -1012,6 +1012,68 @@ namespace KingmakerGunslinger.RuntimeTesting
             return results;
         }
 
+        // Read-only art/VFX references for the authorized Circle follow-up.
+        // These native pixels stay in the guarded machine-local evidence folder.
+        internal static void DumpMagicCircleReferences(ModContext context, RuntimeTestRequest request)
+        {
+            var ids = new[] { "eee384c813b6d74498d1b9cc720d61f4", "2ac7637daeb2aa143a3bae860095b63e",
+                "c3aafbbb6e8fc754fb8c82ede3280051", "1eaf1020e82028d4db55e6e464269e00",
+                "93f391b0c5a99e04e83bbfbe3bb6db64", "5bfd4cce1557d5744914f8f6d85959a4",
+                "8b8ccc9763e3cc74bbf5acc9c98557b9", "0ec75ec95d9e39d47a23610123ba1bad",
+                "433b1faf4d02cc34abb0ade5ceda47c4", "2cadf6c6350e4684baa109d067277a45" };
+            var records = new JArray();
+            foreach (string id in ids)
+            {
+                var spell = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
+                    BlueprintBootstrap.Library, id, "native Protection family art reference");
+                Sprite sprite = spell.Icon;
+                if (sprite == null) throw new InvalidOperationException("Missing native Protection reference " + id);
+                Rect rect = sprite.textureRect;
+                var previous = RenderTexture.active;
+                var target = RenderTexture.GetTemporary(sprite.texture.width, sprite.texture.height, 0, RenderTextureFormat.ARGB32);
+                Texture2D copy = null;
+                try
+                {
+                    Graphics.Blit(sprite.texture, target);
+                    RenderTexture.active = target;
+                    copy = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.RGBA32, false);
+                    copy.ReadPixels(rect, 0, 0); copy.Apply();
+                    string path = Path.Combine(request.EvidenceDirectory, "reference-" + spell.name + ".png");
+                    File.WriteAllBytes(path, EncodePng(copy));
+                    records.Add(new JObject { ["guid"] = id, ["name"] = spell.name, ["path"] = path,
+                        ["sha256"] = Sha256(path), ["width"] = copy.width, ["height"] = copy.height });
+                }
+                finally
+                {
+                    RenderTexture.active = previous;
+                    RenderTexture.ReleaseTemporary(target);
+                    if (copy != null) UnityEngine.Object.DestroyImmediate(copy);
+                }
+            }
+            var prefab = new Kingmaker.ResourceLinks.PrefabLink { AssetId = "cda35ba5c34a61b499f5858eabcedec7" }.Load();
+            if (prefab == null) throw new InvalidOperationException("Native abjuration radius prefab is absent.");
+            var fx = new JObject { ["name"] = prefab.name,
+                ["transforms"] = new JArray(prefab.GetComponentsInChildren<Transform>(true).Select(value => new JObject {
+                    ["name"] = value.name, ["position"] = value.localPosition.ToString(), ["scale"] = value.localScale.ToString(),
+                    ["components"] = new JArray(value.GetComponents<Component>().Where(component => component != null).Select(component => component.GetType().FullName)) })),
+                ["particles"] = new JArray(prefab.GetComponentsInChildren<Component>(true)
+                    .Where(value => value != null && value.GetType().FullName == "UnityEngine.ParticleSystem")
+                    .Select(value => new JObject { ["name"] = value.name,
+                        ["loop"] = ReferenceProperty(value, "main", "loop"), ["duration"] = ReferenceProperty(value, "main", "duration"),
+                        ["shape"] = ReferenceProperty(value, "shape", "shapeType"), ["radius"] = ReferenceProperty(value, "shape", "radius"),
+                        ["color"] = ReferenceProperty(value, "main", "startColor", "color") })) };
+            RuntimeTestResultWriter.WriteAtomic(Path.Combine(request.EvidenceDirectory, "magic-circle-art-references.json"),
+                new JObject { ["evidenceRole"] = "read-only source art and prefab inspection; not native UI or gameplay proof",
+                    ["runtimeIdentity"] = JObject.FromObject(RuntimeBuildIdentity.Capture(context.Assembly, context.ModEntry.Info.Version)),
+                    ["protection"] = records, ["scrolls"] = DumpNativeScrollReferences(context, request), ["arcaneConcordancePrefab"] = fx }.ToString(Formatting.Indented));
+        }
+
+        private static string ReferenceProperty(object value, params string[] names)
+        {
+            foreach (string name in names) value = value.GetType().GetProperty(name).GetValue(value, null);
+            return value.ToString();
+        }
+
         private static byte[] EncodePng(Texture2D texture)
         {
             if (texture == null || texture.width <= 0 || texture.height <= 0)

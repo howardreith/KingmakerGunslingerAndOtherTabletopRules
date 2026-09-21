@@ -51,7 +51,8 @@ namespace KingmakerGunslinger.Spells.MagicCircle
                 if (!Installed || __instance == null || __instance.Blueprint == null || __instance.Blueprint.AllSpellsKnown) return;
                 var spells = BlueprintBootstrap.MagicCircles;
                 if (spells == null || BlueprintBootstrap.MagicCirclePublication == null) return;
-                foreach (BlueprintAbility spell in spells.Select(circle => circle.Spell))
+                foreach (BlueprintAbility spell in spells.Select(circle => circle.Spell)
+                    .Concat(KingmakerGunslinger.Blueprints.MagicCircleBlueprints.Families))
                 {
                     if (spell == null) continue;
                     int level = __instance.GetSpellLevel(spell);

@@ -6,21 +6,17 @@
     "src/KingmakerGunslinger/Blueprints/MagicCircleBlueprints.cs"
   ],
   "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-law.png",
-  "sourceSha256": "8ebc0379269525df5789f21f6ff7efe305c4d5d0e98bfcc2ce159e0da904cc78",
+  "sourceSha256": "3bb20006ee222cc291f8c38cf3220eb952bc7e8915f45c19d0c3c7152ba21cb7",
   "tool": "built-in image_gen",
   "referenceImages": [
     {
-      "path": "assets/game/icons/fire-resistance.png",
-      "role": "inspected approved painted-magical reference; not supplied as editing input"
-    },
-    {
-      "path": "assets/game/icons/shield-other.png",
-      "role": "inspected existing paired-protection identity; preserve it and distinguish the new group circle"
+      "path": "docs/art/ICON-REFERENCE-INDEX.md",
+      "role": "Native single-target and Communal Protection references; exact local sprite identities and hashes recorded in the follow-up reference section."
     }
   ],
-  "prompt": "Use case: stylized-concept. Paint one original square fantasy RPG spell icon for Magic Circle against Law in the established painted magical ward family. Three small adventurer silhouettes together inside a complete broad oval ring on the ground, sheltered by two broad flowing S-curved ribbons of turquoise-and-copper magical light. The ribbons twist freely into a single asymmetrical spiral canopy around and above the group, clearly protecting them from rigid straight arrow-like rays outside. Dominant silhouette: organic wind-swept double spiral, unmistakably different from a sunburst shield, a crescent shell, or four orderly pillars. Outward group protection, not a creature summon, binding or trapping circle. Rich textured oil/gouache fantasy painting, broad forms and restrained high-contrast focal lighting, dark teal-black full-bleed background, figures and ring legible at 32px, meaningful shapes inset from the edges. No lettering, runes as text, square frame, UI badges, diagrams, pentagrams, chained captives, attacking spellcaster, monster, grid, or contact sheet. Color is secondary to the freely curling organic silhouette.",
-  "visualStatus": "owner-approved-export; native UI pending",
-  "subjectAndSilhouette": "Organic interwoven spiral canopy protects a group from rigid straight rays.",
+  "prompt": "Use case: stylized-concept. Asset type: one square 1024x1024 fantasy CRPG spell icon, Magic Circle against Law. Input image 1 is the native single-target Protection from Law visual identity reference. Input image 2 is its Communal sibling, a distinction reference. Create an original painted icon recognizably belonging to THIS exact native Protection family. Preserve the identity of the central emblem: a precise interlaced gold six-point geometric star, like the attached Protection from Law central emblem. The new distinguishing motif is a complete broad circular enclosing boundary around that central emblem: two clean concentric luminous magical rings, visibly separated by a dark gap, suggesting a radius. Make the emblem large and readable in the center, rings at roughly 73% and 88% of image width, all fully visible with clear padding. The single-target icon has one enclosing rim; Communal has flaring streaks; this Magic Circle has two calm, unbroken concentric protective boundaries. Palette pale gold star with luminous violet/lavender circle, on the same deep blue-black/violet atmospheric background as the references. Luminous hand-painted game art with broad silhouettes and controlled highlights, not flat vector shapes. Strong legibility at 32, 48 and 64 pixels. Do not reproduce the source pixels; repaint the identity faithfully. No people, scenic buildings, dome, chain, prisoner, binding runes, text, letters, numbers, watermarks, UI frame, decorative square border or multiple panels. One finished icon only.",
+  "visualStatus": "awaiting-owner-production-review",
+  "subjectAndSilhouette": "Native Protection identity enclosed by two complete luminous boundaries: law.",
   "artFamily": "painted-magical",
   "reviewGroup": "magic-circle",
   "confusedWith": [
@@ -31,16 +27,21 @@
   ],
   "uiSurfaces": [
     "carrier buff tooltip and remaining duration",
+    "cast variant / action bar / spell tooltip; legacy learned identity retained",
     "held touch / action bar / touch tooltip",
-    "inventory / merchant / item tooltip / scroll casting and scribing",
-    "learning / preparation / spellbook / action bar / spell tooltip",
     "recipient proximity-dependent buff tooltip"
   ],
   "exportProfile": "project-painted-128",
   "forbiddenInterpretations": [
-    "Binding diagram or inward trap",
-    "Single-creature Protection icon",
-    "Immunity to every mind-affecting effect",
-    "Only a recolored alignment sibling"
+    "Not an inward binding or summoned-creature barrier.",
+    "Not four recolors of an unrelated painting.",
+    "Not the unchanged single-target or Communal icon."
+  ],
+  "revisions": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/archive/magic-circle-pr19/exports/magic-circle-against-law.png",
+      "sha256": "d0a202ea1fa731de8b23a61f492508198f4b3705e0694624438f816abd01e6a5",
+      "role": "Superseded PR19 owner-approved art; approval does not apply to the new pixels."
+    }
   ]
 }

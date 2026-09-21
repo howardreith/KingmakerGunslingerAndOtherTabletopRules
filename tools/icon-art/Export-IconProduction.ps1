@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$RepositoryRoot)
+param([string]$RepositoryRoot, [string[]]$ConceptKeys)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 if (-not $RepositoryRoot) { $RepositoryRoot = Split-Path (Split-Path $PSScriptRoot) }
@@ -21,6 +21,9 @@ $briefs = @(Get-ChildItem -LiteralPath (Join-Path $productionRoot 'briefs') -Fil
     $brief
 })
 if (-not $briefs.Count) { throw 'No individually preserved production sources.' }
+foreach ($requestedKey in $ConceptKeys) {
+    if ($requestedKey -notin @($briefs | ForEach-Object { $_.key })) { throw "Unknown production concept: $requestedKey" }
+}
 Add-Type -AssemblyName System.Drawing
 New-Item -ItemType Directory -Path (Join-Path $productionRoot 'exports') -Force | Out-Null
 $records = @()
@@ -29,6 +32,19 @@ foreach ($brief in $briefs) {
     $relativeExport = $relativeRoot+'exports/'+$key+'.png'
     $exportPath = Join-Path $RepositoryRoot $relativeExport
     $prior = $previous[$key]
+    # A scoped revision preserves every other recorded source/export exactly,
+    # including the existing native-resolution strategic scroll composites.
+    # Full catalog validation still checks every record after export.
+    if ($ConceptKeys -and $key -notin $ConceptKeys) {
+        if (-not $prior -or $prior.sourceSha256 -ne $brief.sourceSha256 -or
+            $prior.export -cne $relativeExport -or
+            (Get-FileHash -LiteralPath (Join-Path $RepositoryRoot $brief.source) -Algorithm SHA256).Hash.ToLowerInvariant() -ne $prior.sourceSha256 -or
+            (Get-FileHash -LiteralPath $exportPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $prior.exportSha256) {
+            throw "Unselected production record changed: $key. Include it explicitly or restore its recorded bytes."
+        }
+        $records += $prior
+        continue
+    }
     if ($prior -and $prior.visualStatus -eq 'approved') {
         if ($prior.sourceSha256 -ne $brief.sourceSha256 -or
             $prior.export -cne $relativeExport -or

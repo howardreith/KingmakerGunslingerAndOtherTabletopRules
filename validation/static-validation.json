@@ -1637,5 +1637,22 @@
     "rootCause": "Call of the Wild keeps the Oracle on its own OracleSpellList, so the Cleric 6 base publication never reached it and the native IsInSpellListOfUnit class-list check refused a zero-UMD Oracle",
     "runtimeQualificationPending": false,
     "scrollAndSpellGuidsUnchanged": true
+  },
+  "magicCircleFollowup": {
+    "baselineCommit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
+    "branch": "codex/magic-circle-followup-polish",
+    "deterministicTestCount": 1683,
+    "publicReleaseAuthorized": false,
+    "nativeQualification": "PASS: candidate 11; seven guarded scenarios, 428 assertions; exact fixture cleanup and fresh absence; normal-play restoration verified",
+    "nativeEvidence": "reports/magic-circle/FOLLOWUP-QUALIFICATION.json",
+    "qualifiedPackageSha256": "dd00912a5b93f3bfe888d0c59aae2c7156a6eb884ef3acfcfce70c0c9fb5384a",
+    "qualifiedDllSha256": "48850e819cf3e2d3e3a7a92f31ebdbe4cdde0b578dd19c8ac17c35f02c4d92eb",
+    "ownerVisualApproval": "pending new pixels; superseded approvals archived",
+    "scope": [
+      "grouped learning and casting",
+      "Protection-derived spell emblems",
+      "native-shell scroll composites",
+      "view-owned moving radius"
+    ]
   }
 }

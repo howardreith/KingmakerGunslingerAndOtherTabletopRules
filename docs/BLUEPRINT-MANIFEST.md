@@ -439,4 +439,4 @@ contract are unchanged. The current validator checks the full manifest as well
 as the retained 0.0.117 prefix. Historical qualification statements above retain
 their original scope; current evidence is in TELEPORTATION-HARDENING-REPORT.md.
 
-The four-variant Magic Circle candidate appends 24 distinct spell/held-touch/carrier/area/recipient/scroll identities, for 1910 stable identifiers: 1908 active and 2 reserved. All pre-existing GUIDs remain unchanged; these identities remain registered when content publication is disabled.
+The Magic Circle follow-up preserves all 24 spell/held-touch/carrier/area/recipient/scroll identities and appends three grouped family parents, for 1913 stable identifiers: 1911 active and 2 reserved. All pre-existing GUIDs remain unchanged; these identities remain registered when content publication is disabled. The full, Paladin and Antipaladin parents expose four, two and two existing children respectively.

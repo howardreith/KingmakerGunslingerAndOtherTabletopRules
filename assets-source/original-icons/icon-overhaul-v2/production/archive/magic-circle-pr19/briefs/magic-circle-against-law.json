@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "key": "magic-circle-against-law",
+  "behavior": "A moving outward-facing protective emanation covering every creature inside, including enemies.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/Blueprints/MagicCircleBlueprints.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-law.png",
+  "sourceSha256": "8ebc0379269525df5789f21f6ff7efe305c4d5d0e98bfcc2ce159e0da904cc78",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets/game/icons/fire-resistance.png",
+      "role": "inspected approved painted-magical reference; not supplied as editing input"
+    },
+    {
+      "path": "assets/game/icons/shield-other.png",
+      "role": "inspected existing paired-protection identity; preserve it and distinguish the new group circle"
+    }
+  ],
+  "prompt": "Use case: stylized-concept. Paint one original square fantasy RPG spell icon for Magic Circle against Law in the established painted magical ward family. Three small adventurer silhouettes together inside a complete broad oval ring on the ground, sheltered by two broad flowing S-curved ribbons of turquoise-and-copper magical light. The ribbons twist freely into a single asymmetrical spiral canopy around and above the group, clearly protecting them from rigid straight arrow-like rays outside. Dominant silhouette: organic wind-swept double spiral, unmistakably different from a sunburst shield, a crescent shell, or four orderly pillars. Outward group protection, not a creature summon, binding or trapping circle. Rich textured oil/gouache fantasy painting, broad forms and restrained high-contrast focal lighting, dark teal-black full-bleed background, figures and ring legible at 32px, meaningful shapes inset from the edges. No lettering, runes as text, square frame, UI badges, diagrams, pentagrams, chained captives, attacking spellcaster, monster, grid, or contact sheet. Color is secondary to the freely curling organic silhouette.",
+  "visualStatus": "owner-approved-export; native UI pending",
+  "subjectAndSilhouette": "Organic interwoven spiral canopy protects a group from rigid straight rays.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "magic-circle",
+  "confusedWith": [
+    "fire-resistance",
+    "magic-circle-against-evil",
+    "magic-circle-against-good",
+    "magic-circle-against-chaos"
+  ],
+  "uiSurfaces": [
+    "carrier buff tooltip and remaining duration",
+    "held touch / action bar / touch tooltip",
+    "inventory / merchant / item tooltip / scroll casting and scribing",
+    "learning / preparation / spellbook / action bar / spell tooltip",
+    "recipient proximity-dependent buff tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "Binding diagram or inward trap",
+    "Single-creature Protection icon",
+    "Immunity to every mind-affecting effect",
+    "Only a recolored alignment sibling"
+  ]
+}

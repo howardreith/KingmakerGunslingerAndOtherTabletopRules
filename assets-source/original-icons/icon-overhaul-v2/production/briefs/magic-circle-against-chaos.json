@@ -6,21 +6,17 @@
     "src/KingmakerGunslinger/Blueprints/MagicCircleBlueprints.cs"
   ],
   "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-chaos.png",
-  "sourceSha256": "783987de3ebd02da1b30eb5f014cc6e49342221d112114e30a0631a5d76e5974",
+  "sourceSha256": "56050aa5adb9e388fa1cd4cc6830d78e0dbb3860cf1b612a9311da236b436d33",
   "tool": "built-in image_gen",
   "referenceImages": [
     {
-      "path": "assets/game/icons/fire-resistance.png",
-      "role": "inspected approved painted-magical reference; not supplied as editing input"
-    },
-    {
-      "path": "assets/game/icons/shield-other.png",
-      "role": "inspected existing paired-protection identity; preserve it and distinguish the new group circle"
+      "path": "docs/art/ICON-REFERENCE-INDEX.md",
+      "role": "Native single-target and Communal Protection references; exact local sprite identities and hashes recorded in the follow-up reference section."
     }
   ],
-  "prompt": "Create one original square full-bleed painted fantasy RPG spell icon for Magic Circle against Chaos, intended to be legible at 128 pixels. Approved family: painted-magical; broad brushwork, dark atmospheric edges, luminous spell center, no graphic badge border or UI frame. Concept is outward protection for a group: three small medieval adventurers stand inside a visible circular ring of warm light on the ground; four stout ivory-gold geometric buttresses rise evenly around them and join into a clear symmetrical protective vault. The four straight pillars and vault are the dominant silhouette, representing orderly lawful stability against chaotic swirling shards outside. The ring is an emanation around the group, never a trap or binding diagram. Make this silhouette recognizably different from a single shield, sunburst dome, crescent shell, or organic spiraling ribbons. Brushed stone, pale amber gold and deep slate-blue atmosphere, a few readable jagged red sparks deflected outside. Figures are simplified small silhouettes; no finely detailed faces. Composition fills most of image with one coherent protective group motif. No lettering, runes, writing, logos, monograms, checkers, parchment, decorative frame, photographic realism, or flat vector outlines. Original visual identity, not existing game art. Output a single square 1024x1024 painted image.",
-  "visualStatus": "owner-approved-export; native UI pending",
-  "subjectAndSilhouette": "Four orderly buttresses form a stable circular vault around a group amid chaotic fragments.",
+  "prompt": "Use case: stylized-concept. Asset type: one square 1024x1024 fantasy CRPG spell icon, Magic Circle against Chaos. Input image 1 is the native single-target Protection from Chaos visual identity reference. Input image 2 is its Communal sibling, a distinction reference. Create an original painted icon recognizably belonging to THIS exact native Protection family. Preserve the identity of the central emblem: a single floating red cracked stone disc with large distinct irregular dark fissures, like the attached Protection from Chaos central emblem. The new distinguishing motif is a complete broad circular enclosing boundary around that central emblem: two clean concentric luminous magical rings, visibly separated by a dark gap, suggesting a radius. Make the emblem large and readable in the center, rings at roughly 73% and 88% of image width, all fully visible with clear padding. The single-target icon has one enclosing rim; Communal has flaring streaks; this Magic Circle has two calm, unbroken concentric protective boundaries. Palette vermilion red and ember orange, on the same deep blue-black/violet atmospheric background as the references. Luminous hand-painted game art with broad silhouettes and controlled highlights, not flat vector shapes. Strong legibility at 32, 48 and 64 pixels. Do not reproduce the source pixels; repaint the identity faithfully. No people, scenic buildings, dome, chain, prisoner, binding runes, text, letters, numbers, watermarks, UI frame, decorative square border or multiple panels. One finished icon only.",
+  "visualStatus": "awaiting-owner-production-review",
+  "subjectAndSilhouette": "Native Protection identity enclosed by two complete luminous boundaries: chaos.",
   "artFamily": "painted-magical",
   "reviewGroup": "magic-circle",
   "confusedWith": [
@@ -31,16 +27,21 @@
   ],
   "uiSurfaces": [
     "carrier buff tooltip and remaining duration",
+    "cast variant / action bar / spell tooltip; legacy learned identity retained",
     "held touch / action bar / touch tooltip",
-    "inventory / merchant / item tooltip / scroll casting and scribing",
-    "learning / preparation / spellbook / action bar / spell tooltip",
     "recipient proximity-dependent buff tooltip"
   ],
   "exportProfile": "project-painted-128",
   "forbiddenInterpretations": [
-    "Binding diagram or inward trap",
-    "Single-creature Protection icon",
-    "Immunity to every mind-affecting effect",
-    "Only a recolored alignment sibling"
+    "Not an inward binding or summoned-creature barrier.",
+    "Not four recolors of an unrelated painting.",
+    "Not the unchanged single-target or Communal icon."
+  ],
+  "revisions": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/production/archive/magic-circle-pr19/exports/magic-circle-against-chaos.png",
+      "sha256": "71f0e6a9e0959e77360a3cc365071efefac51d2083186c57f5e14f127535728f",
+      "role": "Superseded PR19 owner-approved art; approval does not apply to the new pixels."
+    }
   ]
 }

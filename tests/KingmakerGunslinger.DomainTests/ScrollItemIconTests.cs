@@ -15,7 +15,8 @@ namespace KingmakerGunslinger.DomainTests
             string root = Environment.CurrentDirectory;
             string assignment = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Blueprints", "OwnedIconAssignments.cs"));
-            string[] spellKeys = { "teleport", "greater-teleport", "word-of-recall" };
+            string[] spellKeys = { "teleport", "greater-teleport", "word-of-recall",
+                "magic-circle-against-evil", "magic-circle-against-good", "magic-circle-against-chaos", "magic-circle-against-law" };
             foreach (string spell in spellKeys)
             {
                 Assertions.True(assignment.Contains(
@@ -44,7 +45,8 @@ namespace KingmakerGunslinger.DomainTests
         {
             string root = Environment.CurrentDirectory;
             string[] keys = { "scroll-of-teleport",
-                "scroll-of-greater-teleport", "scroll-of-word-of-recall" };
+                "scroll-of-greater-teleport", "scroll-of-word-of-recall", "scroll-of-magic-circle-against-evil",
+                "scroll-of-magic-circle-against-good", "scroll-of-magic-circle-against-chaos", "scroll-of-magic-circle-against-law" };
             foreach (string key in keys)
             {
                 string asset = Path.Combine(root, "assets", "game", "icons",
@@ -92,7 +94,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Scroll consumer is not dedicated original art: " + symbol);
             }
             foreach (string token in new[] {
-                "\"paintedConceptCount\": 96", "\"paintedConsumerCount\": 157",
+                "\"paintedConceptCount\": 100", "\"paintedConsumerCount\": 160",
                 "scroll-of-teleport", "scroll-of-greater-teleport",
                 "scroll-of-word-of-recall" })
                 Assertions.True(catalog.Contains(token),
@@ -113,7 +115,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Guide lacks the corrected native-shell contract token: " + token);
             // Package count carries the three composed icons.
             string package = File.ReadAllText(Path.Combine(root, "scripts", "package.ps1"));
-            Assertions.True(package.Contains("{ 231 } else { 229 }"),
+            Assertions.True(package.Contains("{ 235 } else { 233 }"),
                 "Package file count does not include the three composed scroll icons.");
             // The runtime identity check must verify the composed item icon,
             // not the retired spell-matches-item equality.
@@ -158,6 +160,10 @@ namespace KingmakerGunslinger.DomainTests
 
         private static string PascalSpell(string key)
         {
+            if (key.StartsWith("magic-circle-against-", StringComparison.Ordinal)) {
+                string alignment = key.Substring("magic-circle-against-".Length);
+                return "MagicCircle." + char.ToUpperInvariant(alignment[0]) + alignment.Substring(1);
+            }
             return string.Concat(key.Split('-').Select(
                 part => char.ToUpperInvariant(part[0]) + part.Substring(1)));
         }

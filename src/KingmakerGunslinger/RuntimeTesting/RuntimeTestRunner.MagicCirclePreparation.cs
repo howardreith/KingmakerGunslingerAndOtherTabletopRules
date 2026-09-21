@@ -1,4 +1,5 @@
 using System;
+using KingmakerGunslinger.Blueprints;
 using System.Linq;
 using System.Reflection;
 using Kingmaker;
@@ -51,7 +52,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["books"] = new JArray(unit.Descriptor.Spellbooks.OrderBy(book => book.Blueprint.AssetGuid, StringComparer.Ordinal).Select(book => new JObject {
                         ["blueprint"] = book.Blueprint.AssetGuid, ["level"] = book.CasterLevel,
                         ["slots3"] = book.GetSpontaneousSlots(3), ["slots4"] = book.GetSpontaneousSlots(4),
-                        ["knownCircles"] = new JArray(book.GetKnownSpells(3).Where(data => circles.Any(circle => ReferenceEquals(data.Blueprint, circle.Spell)))
+                        ["knownCircles"] = new JArray(book.GetKnownSpells(3).Where(data => (MagicCircleBlueprints.Families.Contains(data.Blueprint) || circles.Any(circle => ReferenceEquals(data.Blueprint, circle.Spell))))
                             .Select(data => data.Blueprint.AssetGuid).OrderBy(id => id, StringComparer.Ordinal)) })) })),
                 ["carriers"] = CirclePersistedCarriers(actors[2], carriers),
                 ["control"] = new JArray(control.Select(buff => new JObject { ["source"] = buff.Context.MaybeCaster?.UniqueId, ["endTimeTicks"] = buff.EndTime.Ticks })),
