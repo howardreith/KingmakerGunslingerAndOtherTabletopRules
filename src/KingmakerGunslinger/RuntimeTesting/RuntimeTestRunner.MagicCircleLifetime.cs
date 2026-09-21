@@ -188,10 +188,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             try {
                 game.Player.GameTime = deadline - TimeSpan.FromSeconds(.1);
                 bearer.Buffs.Tick(); CircleRefresh(area, actors);
-                beforeExpiry = carrier.Active && !area.IsEnded && CircleBuffs(recipient, circle.Recipient).Length == 1;
+                beforeExpiry = carrier.Active && !area.IsEnded && CircleBuffs(recipient, circle.Recipient).Length == 1 && CircleBoundaryMatches(area);
                 game.Player.GameTime = deadline + TimeSpan.FromSeconds(.1);
                 bearer.Buffs.Tick(); CircleRefresh(area, actors);
-                afterExpiry = !bearer.Buffs.Enumerable.Contains(carrier) && area.IsEnded &&
+                afterExpiry = !bearer.Buffs.Enumerable.Contains(carrier) && area.IsEnded && CircleBoundaryGone(area) &&
                     CircleBuffs(recipient, circle.Recipient).Length == 0;
             }
             finally { game.Player.GameTime = clock; }
@@ -243,7 +243,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";finallyDead=" + bearer.Descriptor.State.IsFinallyDead + ";ended=" + area.IsEnded +
                     ";recipientCount=" + CircleBuffs(recipient, circle.Recipient).Length,
                 bearer.Descriptor.State.IsDead && !bearer.Buffs.Enumerable.Contains(carrier) &&
-                    area.IsEnded && CircleBuffs(recipient, circle.Recipient).Length == 0,
+                    area.IsEnded && CircleBoundaryGone(area) && CircleBuffs(recipient, circle.Recipient).Length == 0,
                 "owner-approved bearer-death adaptation; actual lethal damage, native death cleanup and AddAreaEffect deactivation"));
         }
 

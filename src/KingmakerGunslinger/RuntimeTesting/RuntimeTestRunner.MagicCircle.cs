@@ -21,6 +21,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // claim gameplay correctness. The guarded request is its only entry.
         private RuntimeTestResult RunMagicCircleNativeAudit()
         {
+            IconOverhaulVisualEvidenceScenario.DumpMagicCircleReferences(_context, _request);
             var all = BlueprintBootstrap.Library.GetAllBlueprints()
                 .Where(value => value != null).ToArray();
             var records = new List<string>();

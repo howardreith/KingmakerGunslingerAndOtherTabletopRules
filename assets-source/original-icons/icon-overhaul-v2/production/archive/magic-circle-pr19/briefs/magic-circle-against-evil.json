@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "key": "magic-circle-against-evil",
+  "behavior": "A moving outward-facing protective emanation covering every creature inside, including enemies.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/Blueprints/MagicCircleBlueprints.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-evil.png",
+  "sourceSha256": "010c38f0abda7ff297f03cd83aedc56468b59daa9a5750130ab32f35e52cac20",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets/game/icons/fire-resistance.png",
+      "role": "inspected approved painted-magical reference; not supplied as editing input"
+    },
+    {
+      "path": "assets/game/icons/shield-other.png",
+      "role": "inspected existing paired-protection identity; preserve it and distinguish the new group circle"
+    }
+  ],
+  "prompt": "Use case: stylized-concept. Generate one original square painted fantasy RPG spell icon for Magic Circle against Evil. This is an outward protective ward shared by every nearby creature, not a trap or summoning circle. Subject: three clearly separated small adventurer silhouettes sheltered together inside a broad luminous circular golden ward, viewed obliquely; an upright radiant sunburst shield of light rises on the outer rim as the dominant focal form. Show group protection with one complete oval circle and a sheltering arc of light. Painterly oil/gouache treatment, broad readable shapes, convincing warm metal and luminous material, dark blue-black full-bleed atmospheric background, controlled gold-white light, tiny silhouettes remain legible at 32 pixels. Match the project's approved magical family in spirit: strong subject, broad silhouette, textured material and dramatic directional glow like a painted shield resisting fire. Composition is clearly a larger group ward, unlike an ordinary single-person Protection shield. No text, letters, UI frame, decorative square border, silver-dust ritual, binding diagram, chained prisoner, summoned monster, attack, or red prohibition slash. Important: this is one original standalone icon, not a grid, sprite sheet, screenshot, or a finished game UI. Fill a square image and keep all meaningful forms within the middle 85 percent.",
+  "visualStatus": "owner-approved-export; native UI pending",
+  "subjectAndSilhouette": "Radiant sun vault shelters a group; shadowy demonic forms outside.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "magic-circle",
+  "confusedWith": [
+    "fire-resistance",
+    "magic-circle-against-good",
+    "magic-circle-against-law",
+    "magic-circle-against-chaos"
+  ],
+  "uiSurfaces": [
+    "carrier buff tooltip and remaining duration",
+    "held touch / action bar / touch tooltip",
+    "inventory / merchant / item tooltip / scroll casting and scribing",
+    "learning / preparation / spellbook / action bar / spell tooltip",
+    "recipient proximity-dependent buff tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "Binding diagram or inward trap",
+    "Single-creature Protection icon",
+    "Immunity to every mind-affecting effect",
+    "Only a recolored alignment sibling"
+  ]
+}

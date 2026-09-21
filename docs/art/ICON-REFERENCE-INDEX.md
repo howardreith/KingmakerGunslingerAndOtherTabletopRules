@@ -1,5 +1,22 @@
 # Icon reference index
 
+Magic Circle follow-up references (2026-09-20): the guarded Steam audit
+`20260920T2133354008476Z-observe-magic-circle-native-contracts` exported the
+actual native Protection single/Communal sprites for art inspection only.
+The eight PNGs and the native prefab inventory remain lab-local. Their exact
+GUIDs and hashes are recorded in `reports/magic-circle/FOLLOWUP-ART-REFERENCES.json`.
+The chat-referenced screenshots were not present as attachments in this session.
+
+Evil uses the cyan curling sigil, Good the gold sunburst, Chaos the red fractured
+disc, and Law the gold geometric star with violet perimeter. The new paintings
+retain those identities with two calm enclosing rings. The runtime boundary
+uses blue, gold, red and violet respectively. Arcane Concordance uses native
+`Abjuration00_Alignment_Aoe_13Feet` (`cda35ba5c34a61b499f5858eabcedec7`), including
+particles, ground fluid interaction and sound; the follow-up instead attaches a
+thin renderer to the native Magic Circle area at its actual 10-foot radius.
+This source inspection establishes references, not native gameplay correctness
+or owner visual approval.
+
 Read [the guide](../ICON-ART-GUIDE.md) and [catalog](../../assets-source/original-icons/icon-catalog.json). Hashes below identify the inspected files, not a new aesthetic approval. Machine-readable reference records live in [icon-reference-records.json](icon-reference-records.json).
 
 ## Project-owned anchors

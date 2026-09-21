@@ -251,7 +251,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var book = actors[index].Descriptor.Spellbooks.Single(value => ReferenceEquals(value.Blueprint, sorcerer.Spellbook));
                     while (book.CasterLevel < 8 + index * 2) book.AddCasterLevel();
                     book.UpdateAllSlotsSize(false); book.Rest();
-                    foreach (var circle in circles) book.AddKnown(3, circle.Spell, true);
+                    book.AddKnown(3, MagicCircleBlueprints.Family, true);
                 }
                 finally { (controller as IDisposable)?.Dispose(); }
             }
@@ -262,8 +262,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             for (int index = 0; index < 2; index++) {
                 var book = actors[index].Descriptor.Spellbooks.Single(value => ReferenceEquals(value.Blueprint, sorcerer.Spellbook));
                 foreach (var circle in circles) {
-                var data = new AbilityData(circle.Spell, book);
-                if (index == 0) { var meta = new MetamagicData { SpellLevelCost = Metamagic.Extend.DefaultCost() }; meta.Add(Metamagic.Extend); data.MetamagicData = meta; }
+                var parent = new AbilityData(MagicCircleBlueprints.Family, book);
+                if (index == 0) { var meta = new MetamagicData { SpellLevelCost = Metamagic.Extend.DefaultCost() }; meta.Add(Metamagic.Extend); parent.MetamagicData = meta; }
+                var data = CircleGroupedVariant(parent, circle.Spell);
                 CircleCast(actors[index], actors[2], data, _circlePersistenceDiagnostics);
                 }
             }
@@ -273,7 +274,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // delivery intact. No direct UnitPartTouch construction.
             var heldCircle = circles.Single(value => value.Alignment == "Evil");
             var heldBook = actors[1].Descriptor.Spellbooks.Single(value => ReferenceEquals(value.Blueprint, sorcerer.Spellbook));
-            var heldData = new AbilityData(heldCircle.Spell, heldBook);
+            var heldData = CircleGroupedVariant(new AbilityData(MagicCircleBlueprints.Family, heldBook), heldCircle.Spell);
             int heldSlots = heldBook.GetSpontaneousSlots(3);
             var command = new UnitUseAbility(heldData, new TargetWrapper(actors[2]));
             if (!heldData.IsAvailable || !command.CanStart) throw new InvalidOperationException("Saved held-touch root is unavailable.");
@@ -308,6 +309,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             CirclePersistenceCheck("two-caster-recipient-ownership", actors.All(unit => circles.All(circle => CircleBuffs(unit, circle.Recipient).Length == 2 &&
                 CircleBuffs(unit, circle.Recipient).Select(buff => buff.SourceAreaEffectId).OrderBy(id => id).SequenceEqual(areas.Where(area => ReferenceEquals(area.Blueprint, circle.Area)).Select(area => area.UniqueId).OrderBy(id => id)))),
                 "each covered actor retains exactly two contributions per alignment, eight total");
+            CirclePersistenceCheck("one-native-boundary-per-area", areas.All(CircleBoundaryMatches) &&
+                areas.Select(area => area.View.GetComponentInChildren<KingmakerGunslinger.Spells.MagicCircle.MagicCircleRadiusVisual>(true).GetInstanceID()).Distinct().Count() == 8,
+                "eight overlapping saved auras have exactly one correctly colored radius renderer each after native view reconstruction");
             var controls = actors[3].Buffs.Enumerable.Where(buff => buff.Blueprint.AssetGuid == "c0f4e1c24c9cd334ca988ed1bd9d201f").ToArray();
             CirclePersistenceCheck("pre-existing-control-preserved", controls.Length == 1 && controls[0].Active && ReferenceEquals(controls[0].Context.MaybeCaster, actors[0]),
                 "original domination remains active after entry/load/reconstruction");
@@ -319,7 +323,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["heldDelivery"] = unit.Get<UnitPartTouch>()?.Ability.Data.Blueprint.AssetGuid,
                     ["heldRoot"] = unit.Get<UnitPartTouch>()?.Ability.Data.StickyTouch?.Blueprint.AssetGuid, ["books"] = new JArray(unit.Descriptor.Spellbooks.Select(book => new JObject {
                         ["blueprint"] = book.Blueprint.AssetGuid, ["level"] = book.CasterLevel, ["slots3"] = book.GetSpontaneousSlots(3), ["slots4"] = book.GetSpontaneousSlots(4),
-                        ["known"] = new JArray(book.GetKnownSpells(3).Where(data => circles.Any(circle => ReferenceEquals(data.Blueprint, circle.Spell))).Select(data => data.Blueprint.AssetGuid).OrderBy(value => value, StringComparer.Ordinal)) })) })),
+                        ["known"] = new JArray(book.GetKnownSpells(3).Where(data => (MagicCircleBlueprints.Families.Contains(data.Blueprint) || circles.Any(circle => ReferenceEquals(data.Blueprint, circle.Spell)))).Select(data => data.Blueprint.AssetGuid).OrderBy(value => value, StringComparer.Ordinal)) })) })),
                 ["carriers"] = CirclePersistedCarriers(actors[2], carriers),
                 ["areas"] = new JArray(areas.Select(area => new JObject { ["id"] = area.UniqueId, ["caster"] = area.Context.MaybeCaster.UniqueId, ["owner"] = area.Context.MaybeOwner.UniqueId })),
                 ["control"] = new JArray(controls.Select(buff => new JObject { ["source"] = buff.Context.MaybeCaster.UniqueId, ["endTimeTicks"] = buff.EndTime.Ticks }))
@@ -346,12 +350,34 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var actors = CircleSavedActors(); var caster = actors[0]; var target = actors[2];
             var circles = BlueprintBootstrap.MagicCircles;
-            var book = caster.Descriptor.Spellbooks.Single(value => value.GetKnownSpells(3).Any(data => circles.Any(circle => ReferenceEquals(data.Blueprint, circle.Spell))));
+            var book = caster.Descriptor.Spellbooks.Single(value => value.GetKnownSpells(3).Any(data => (MagicCircleBlueprints.Families.Contains(data.Blueprint) || circles.Any(circle => ReferenceEquals(data.Blueprint, circle.Spell)))));
             bool content = _context.FeatureModules.Active.MagicCircleSpells;
             bool enhancement = _context.FeatureModules.Active.ProtectionFromAlignmentControlImmunity;
+            _circlePersistenceRecord["groupedAvailability"] = new JObject {
+                ["published"] = BlueprintBootstrap.MagicCirclePublication != null,
+                ["contentEnabled"] = content,
+                ["known"] = new JArray(book.GetKnownSpells(3).Select(data => new JObject {
+                    ["spell"] = data.Blueprint.AssetGuid, ["level"] = data.SpellLevel,
+                    ["metamagic"] = data.MetamagicData?.MetamagicMask.ToString(),
+                    ["metamagicCost"] = data.MetamagicData?.SpellLevelCost })),
+                ["variants"] = new JArray(circles.Select(circle => {
+                    var parent = new AbilityData(MagicCircleBlueprints.Family, book);
+                    var data = CircleGroupedVariant(parent, circle.Spell);
+                    return new JObject { ["alignment"] = circle.Alignment, ["lookupKnown"] = book.IsKnown(circle.Spell),
+                        ["learnedEntries"] = book.GetKnownSpells(3).Count(known => ReferenceEquals(known.Blueprint, circle.Spell)),
+                        ["level"] = data.SpellLevel, ["parentLevel"] = parent.SpellLevel,
+                        ["available"] = data.IsAvailable, ["parentCanSpend"] = book.CanSpend(parent),
+                        ["forCast"] = data.IsAvailableForCast, ["slots3"] = book.GetSpontaneousSlots(3),
+                        ["slots4"] = book.GetSpontaneousSlots(4) };
+                })) };
+            // The native post-load lookup can recognize usable variants even
+            // when its learned-spell array contains only the parent. Count the
+            // actual learned entries; IsKnown is not known-choice accounting.
             CirclePersistenceCheck("startup-publication-and-known-spell", (BlueprintBootstrap.MagicCirclePublication != null) == content &&
-                circles.All(circle => new AbilityData(circle.Spell, book).IsAvailable == content && book.GetKnownSpells(3).Count(data => ReferenceEquals(data.Blueprint, circle.Spell)) == 1),
-                "known GUID hydrates; new cast availability follows content startup setting");
+                book.GetKnownSpells(3).Count(data => ReferenceEquals(data.Blueprint, MagicCircleBlueprints.Family)) == 1 &&
+                circles.All(circle => CircleGroupedVariant(new AbilityData(MagicCircleBlueprints.Family, book), circle.Spell).IsAvailable == content &&
+                    !book.GetKnownSpells(3).Any(data => ReferenceEquals(data.Blueprint, circle.Spell))),
+                "exactly one learned family and no separately learned children hydrate; each variant's cast availability follows content startup setting");
             var ability = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, "d7cbd2004ce66a042aeab2e95a3c5c61", "control source");
             var buff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library, "c0f4e1c24c9cd334ca988ed1bd9d201f", "control terminal");
             var alignment = caster.Descriptor.Alignment.Value;

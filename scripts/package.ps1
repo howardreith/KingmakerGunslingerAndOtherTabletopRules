@@ -88,7 +88,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Existing 135-file package plus 89 original elemental/strategic paintings and
 # the 3 composed strategic scroll item icons.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 231 } else { 229 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 235 } else { 233 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

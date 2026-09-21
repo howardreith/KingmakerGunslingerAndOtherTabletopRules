@@ -65,6 +65,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CircleCast(caster, bearer, new AbilityData(circle.Spell, book), diagnostics);
                     var carrier = CircleBuffs(bearer, circle.Carrier).Single(); var area = CircleArea(carrier);
                     CircleRefresh(area, actors); CircleRefresh(area, actors);
+                    CircleBoundaryLifecycle(area, bearer, actors, assertions);
                     diagnostics.Add(label + "native-membership:recipient=" + CircleBuffs(recipient, circle.Recipient).Length +
                         ";areaRegistered=" + Game.Instance.State.AreaEffects.All.Contains(area) + ";areaInGame=" + area.IsInGame +
                         ";recipientPosition=" + recipient.Position + ";areaPosition=" + area.Position +

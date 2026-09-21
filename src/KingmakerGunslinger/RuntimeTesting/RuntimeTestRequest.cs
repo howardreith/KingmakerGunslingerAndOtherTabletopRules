@@ -236,7 +236,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "timeout-invalid";
             if (request.StartupTimeoutSeconds < 5 || request.StartupTimeoutSeconds > 600)
                 return "startup-timeout-invalid";
-            if (request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile && !request.ExitAfterCompletion)
+            if ((request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain) && !request.ExitAfterCompletion)
                 return "magic-circle-profile-exit-required";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
@@ -286,6 +287,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                 RuntimeTestScenarioCatalog.IsMagicCirclePersistence(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||

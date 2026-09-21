@@ -106,7 +106,7 @@ $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Existing 135-file package plus 89 original elemental/strategic paintings and
 # the 3 composed strategic scroll item icons.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 231 } else { 229 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 235 } else { 233 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `

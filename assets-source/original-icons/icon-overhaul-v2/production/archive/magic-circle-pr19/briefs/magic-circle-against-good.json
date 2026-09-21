@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "key": "magic-circle-against-good",
+  "behavior": "A moving outward-facing protective emanation covering every creature inside, including enemies.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/Blueprints/MagicCircleBlueprints.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/magic-circle-against-good.png",
+  "sourceSha256": "cab87cc56607f5c0294d44b126fe652b54d51f6213819511d39e3acd15a34229",
+  "tool": "built-in image_gen",
+  "referenceImages": [
+    {
+      "path": "assets/game/icons/fire-resistance.png",
+      "role": "inspected approved painted-magical reference; not supplied as editing input"
+    },
+    {
+      "path": "assets/game/icons/shield-other.png",
+      "role": "inspected existing paired-protection identity; preserve it and distinguish the new group circle"
+    }
+  ],
+  "prompt": "Use case: stylized-concept. One original square painted fantasy RPG spell icon, Magic Circle against Good, belonging to an established painterly magical protection family. Three small distinct creature/adventurer silhouettes stand together in an outward ward. The dominant form is a great dark amethyst crescent sheltering the group, its two curved tips anchored on a complete broad glowing oval circle on the ground. The crescent has heavy obsidian-metal substance and a restrained silver-violet rim light. A few distant ivory light rays are turned outward at its rim to communicate warding against benevolent/celestial power. Broad silhouettes, muted rich burgundy shadows, textured oil/gouache paint, dramatic controlled light on a near-black full-bleed background. Three sheltered figures readable at 32px, meaningful subjects inset 15% from square edges. Distinct in form from a sunburst shield: crescent canopy is the single strongest shape. This is protection for every creature inside, never a trap or summon. No text, letters, square border, UI, chains, silver-dust diagrams, pentagrams, prisoners, monsters being summoned, skull portrait, red prohibition slash, or attack beam. Not a recolor of another icon, no grid or contact sheet.",
+  "visualStatus": "owner-approved-export; native UI pending",
+  "subjectAndSilhouette": "Obsidian crescent shelter surrounds a group against incoming ivory rays.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "magic-circle",
+  "confusedWith": [
+    "fire-resistance",
+    "magic-circle-against-evil",
+    "magic-circle-against-law",
+    "magic-circle-against-chaos"
+  ],
+  "uiSurfaces": [
+    "carrier buff tooltip and remaining duration",
+    "held touch / action bar / touch tooltip",
+    "inventory / merchant / item tooltip / scroll casting and scribing",
+    "learning / preparation / spellbook / action bar / spell tooltip",
+    "recipient proximity-dependent buff tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "Binding diagram or inward trap",
+    "Single-creature Protection icon",
+    "Immunity to every mind-affecting effect",
+    "Only a recolored alignment sibling"
+  ]
+}

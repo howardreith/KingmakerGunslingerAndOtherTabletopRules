@@ -43,9 +43,8 @@ namespace KingmakerGunslinger.Blueprints
                 })
                 {
                     var list = BlueprintLibraryLookup.RequireExact<BlueprintSpellList>(library, id, "Magic Circle class list");
-                    foreach (var circle in circles)
-                        if (id != "9f5be2f7ea64fe04eb40878347b147bc" || circle.Alignment == "Evil" || circle.Alignment == "Chaos")
-                            Add(list, circle.Spell);
+                    Add(list, id == "9f5be2f7ea64fe04eb40878347b147bc" ?
+                        MagicCircleBlueprints.PaladinFamily : MagicCircleBlueprints.Family);
                 }
                 // Native filtered lists are materialized arrays, not live views
                 // over WizardSpellList. Respect their actual school filters.
@@ -57,7 +56,7 @@ namespace KingmakerGunslinger.Blueprints
                     if (!ReferenceEquals(filtered.FilteredList, wizard)) throw new InvalidOperationException("Native school list ownership changed: " + id);
                     bool match = filtered.FilterSchool == SpellSchool.Abjuration || filtered.FilterSchool2 == SpellSchool.Abjuration;
                     if (filtered.ExcludeFilterSchool ? !match : match)
-                        foreach (var circle in circles) Add(filtered, circle.Spell);
+                        Add(filtered, MagicCircleBlueprints.Family);
                 }
         }
 
