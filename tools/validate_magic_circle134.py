@@ -15,7 +15,7 @@ INFORMATIONAL_VERSION = "0.0.134-magic-circle-alignment-spells"
 def validate(root: Path) -> None:
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
-    baseline.PACKAGE = "KingmakerGunslinger-0.0.134-local-runtime.zip"
+    baseline.PACKAGE = f"KingmakerGunslinger-{VERSION}-local-runtime.zip"
     baseline.PACKAGE_SUFFIX = "magic-circle-alignment-spells"
     baseline.DETERMINISTIC_TEST_COUNT = 1683
     baseline.validate(root)
@@ -37,7 +37,7 @@ def validate(root: Path) -> None:
         if state.get(key) != value:
             raise AssertionError(f"Magic Circle release metadata mismatch: {key}")
     baseline.baseline.baseline.require_tokens(root / "docs/RELEASE-NOTES-0.0.134.md",
-        INFORMATIONAL_VERSION, "owner authorized", "new qualifying control",
+        "0.0.134-magic-circle-alignment-spells", "owner authorized", "new qualifying control",
         "KMG_AUTOMATION_WORKING", "Gamepad", "inward", "uninstall")
 
 

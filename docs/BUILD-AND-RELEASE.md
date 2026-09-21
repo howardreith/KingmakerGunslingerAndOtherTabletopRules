@@ -72,7 +72,26 @@ dependency-free test suite, production compilation, strict build-output
 validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
-## Current 0.0.134 publication authorization
+## Current 0.0.135 publication authorization
+
+On 2026-09-21 the owner approved the Magic Circle polish, confirmed PR #20 was
+merged to master, and explicitly instructed: "Do not run any additional tests"
+and "cut the next release." This supersedes the ordinary release test runs for
+this publication. Release 0.0.135 starts from merged master `0e62a78e` with only
+version metadata and release documentation changes. No gameplay or art changes.
+
+Compile once using the existing exact-reference compiler and assemble the same
+235-file UMM payload with the deterministic ZIP writer. Do not invoke the normal
+publisher/build wrappers: they unconditionally rerun tests and claim new test
+passes in generated notes. Publish the annotated version tag, UMM ZIP, checksum
+and truthful release manifest through the same GitHub CLI operations, from the
+clean, pushed `codex/magic-circle-followup-polish` release commit. No master merge
+or direct master commit is needed. Preserve prior candidate qualification,
+record the owner's approval separately from native visual evidence, and check
+published asset identities without launching the game or modifying the install.
+See [release notes](RELEASE-NOTES-0.0.135.md).
+
+## Historical 0.0.134 publication authorization
 
 The owner accepted Magic Circle PR #19, including the shared lease follow-up,
 and explicitly requested finalization, merge to master, push and a new release.
