@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.0.135-magic-circle-alignment-spells
+
+- Learn Magic Circle against Alignment as one spell family and choose the
+  alignment when casting, including through Oracle favored class selection.
+  Paladin retains Evil/Chaos; Antipaladin retains Good/Law.
+- Use Protection-family spell emblems and matching native-shell scroll icons
+  throughout the spell, variant, buff and scroll presentation.
+- Display a moving ten-foot boundary using native terrain projection, keeping
+  the ring readable on slopes and stairs with alignment colors and normal
+  occlusion. Aura mechanics and lifecycle ownership remain unchanged.
+- Retain the qualified grouped Extend casting route, stable legacy identities,
+  Oracle selector repair, scroll mechanics and shared Protection behavior.
+- Owner-approved release of merged PR #20. Additional tests were explicitly
+  waived for release preparation; earlier evidence retains its original
+  candidate identities in docs/MAGIC-CIRCLE-TERRAIN-METAMAGIC-REVIEW.md.
+
 ## 0.0.134-magic-circle-alignment-spells
 
 - Add Magic Circle against Evil, Good, Law and Chaos: level-3 touch spells with

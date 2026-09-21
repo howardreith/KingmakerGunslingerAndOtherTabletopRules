@@ -1,9 +1,9 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.134-magic-circle-alignment-spells` (UMM version `0.0.134`).
-The installable archive is `KingmakerGunslinger-0.0.134-magic-circle-alignment-spells.zip`.
+Full release: `0.0.135-magic-circle-alignment-spells` (UMM version `0.0.135`).
+The installable archive is `KingmakerGunslinger-0.0.135-magic-circle-alignment-spells.zip`.
 Magic Circle settings, acquisition, save hydration and qualification limits are
-recorded in [its release notes](docs/RELEASE-NOTES-0.0.134.md).
+recorded in [its release notes](docs/RELEASE-NOTES-0.0.135.md).
 Icon overhaul qualification, the owner review checklist and exact NOT RUN
 limits are recorded in [the mission evidence](planning/ICON-OVERHAUL-STATE.md).
 The previous full release was `0.0.129-recall-and-smart-scrolls`

@@ -1,11 +1,12 @@
 # Kingmaker Gunslinger
 
-**0.0.134-magic-circle-alignment-spells** adds four level-3 Magic Circle spells
-with moving protection for everyone within ten feet, approved original artwork,
-and the existing shared Protection control-immunity setting. It retains the
-Word of Recall Favored Class repair and hardens guarded runtime ownership and
-persistence. See [release notes](docs/RELEASE-NOTES-0.0.134.md) for rules, settings,
-acquisition and qualification limits.
+**0.0.135-magic-circle-alignment-spells** groups Magic Circle into one learned
+spell family with alignment variants, preserves restricted class access, and
+adds Protection-family spell icons, native-style scroll icons and a moving
+terrain-projected ten-foot boundary. It preserves the shared Protection rules,
+Oracle selector repair and existing save identities. The owner approved the
+merged polish and requested release without additional tests. See
+[release notes](docs/RELEASE-NOTES-0.0.135.md) for details and prior qualification.
 
 The previous **0.0.133-word-of-recall-favored-class** is the owner-authorized full
 release: the canonical Word of Recall can be picked and learned through

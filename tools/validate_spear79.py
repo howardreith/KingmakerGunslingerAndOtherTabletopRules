@@ -22,7 +22,7 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("magic-circle-alignment-spells" if VERSION == "0.0.134" else "word-of-recall-favored-class"
+    effective_suffix = ("magic-circle-alignment-spells" if VERSION in {"0.0.134", "0.0.135"} else "word-of-recall-favored-class"
         if VERSION == "0.0.133" else "icon-art-overhaul"
         if VERSION in ("0.0.130", "0.0.131", "0.0.132", "0.0.133") else "recall-and-smart-scrolls"
         if VERSION == "0.0.129" else "firearm-postrelease-hotfix"

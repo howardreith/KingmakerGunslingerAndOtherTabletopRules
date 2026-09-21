@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.134-magic-circle-alignment-spells",
+  "milestone": "0.0.135-magic-circle-alignment-spells",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.134",
+  "version": "0.0.135",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -1654,5 +1654,15 @@
       "native-shell scroll composites",
       "view-owned moving radius"
     ]
+  },
+  "magicCircle135": {
+    "publicReleaseAuthorized": true,
+    "ownerApproval": "Owner approved the merged Magic Circle polish and requested the next release on 2026-09-21.",
+    "additionalTests": "NOT RUN: explicitly prohibited by the owner for release preparation.",
+    "historicalQualification": "reports/magic-circle/TERRAIN-METAMAGIC-REVIEW.json",
+    "historicalQualificationCommit": "d1119dfbbbcf4ba0d7a301a187ced255860ee07f",
+    "mergedMasterCommit": "0e62a78e1238a2d46e447bb307ee1e83f93ed178",
+    "gameplayChangesAfterApproval": false,
+    "compatibilityRuntimeQualificationPending": true
   }
 }
