@@ -47,7 +47,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// Cycles per projected size. One open proves it renders; three prove it
         /// does not accumulate.
         /// </summary>
-        private const int Cycles = 3;
+        internal const int Cycles = 3;
 
         /// <summary>Frames allowed for the layout to settle before measuring.</summary>
         private const int SettleFrames = 3;

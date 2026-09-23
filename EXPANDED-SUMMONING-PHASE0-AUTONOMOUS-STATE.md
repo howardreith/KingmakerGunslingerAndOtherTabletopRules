@@ -24,22 +24,22 @@ action`. Do not restart the project or rerun completed work.
 
 | ID | Item | State |
 |---|---|---|
-| A1 | Orchestration: result isolation + recovery bounded tests | TODO |
+| A1 | Orchestration: result isolation + recovery bounded tests | DONE - 41 assertions in the repo gate |
 | A2 | Restoration wrapper hardened (exit race, stale lock, teardown fault) | DONE |
 | B1 | Sprint 0 structural baseline at 0.0.136 | DONE - PASS 38/38 |
 | B2 | Sprint 0 mechanical (`disposable-expanded-summoning`) | DONE - PASS 13/13 |
 | B3 | Sprint 0 player-path | DONE - PASS 10/10 |
 | B4 | Sprint 0 persistence trio | DONE - PASS 9/9 x3 |
 | B5 | Sprint 0 visual contracts | DONE - PASS 13/13 |
-| B6 | Compatibility / feature-boundary profiles | TODO |
+| B6 | Compatibility / feature-boundary profiles | DONE except two owed mechanical runs |
 | C1 | Sprint 1 corrections verified in current code | DONE |
 | C2 | Dev-only projected-menu fixture, real UI, unattended | TODO |
 | C3 | Menu measurements vs baseline + rubric | TODO |
 | D1 | Rig contract: attached animation ActionSet/clips/events | DONE |
 | D2 | Rig contract: per-bone rest transforms + bind matrices | DONE |
-| E1 | Membrane test mesh deformation proof | TODO |
-| E2 | Finished Pteranodon mesh + textures | TODO |
-| E3 | Bundle + instance-local loader + fallback | TODO |
+| E1 | Deformation proof | DONE - drift 0.00000, control unmoved |
+| E2 | Finished Pteranodon mesh + textures | Body done; crest polish, UVs and texture remain |
+| E3 | Mesh data + instance-local loader + fallback | Loader DONE; fallback paths not yet exercised live |
 | F1-F7 | Seven live acceptance groups | TODO |
 | G | Reports, PR update, internal review closure | TODO |
 
@@ -118,8 +118,77 @@ action`. Do not restart the project or rerun completed work.
 | B4 | `...1622143172370Z-prepare`, `...1625047870309Z-verify-cleanup`, `...1627525088084Z-verify-absent` 9/9 each |
 | B5 | `20260923T1606571122538Z-disposable-expanded-summoning-visual-contracts` 13/13 |
 
+## B6 results
+
+Feature boundary, `gunslinger-only`, assertion PASS in both directions:
+
+| module | publishedParents | placements | nativeOptions | preservation | unclassified | placementsExact | nativeVariants |
+|---|---|---|---|---|---|---|---|
+| enabled | 18 | 667 | 26 | 0 | 0 | True | 0 |
+| disabled | 0 | 0 | 0 | 0 | 0 | True | 46 |
+
+The module substitutes for the native summon menu rather than adding to it: all
+46 native variants across the eighteen parents are replaced, and turning it off
+leaves them untouched. Both runs' overall status is FAIL for two reasons that
+are not this mission's - brown fur cannot pass in a profile without Call of the
+Wild in either module state, and three teleportation-scroll assertions fail
+identically on master's lineage at 0.0.132.
+
+Compatibility, every scenario that ran PASS, inventory 38/38 in each:
+
+| Profile | mods confirmed loaded |
+|---|---|
+| `gunslinger-only` | none |
+| `gunslinger-call-of-the-wild` | CallOfTheWild 1.14.4c-2.1 |
+| `gunslinger-arms-armor` | ArmsArmor |
+| `gunslinger-toggle-custom-soundpacks` | ToggleCustomSoundpacks |
+| `gunslinger-high-risk-combined` | ArmsArmor + CallOfTheWild + ToggleCustomSoundpacks |
+
+`gunslinger-high-risk-combined` carried `CONFLICT-OBSERVED` for historically
+timing out before readiness; with a 600s budget it reached readiness and passed.
+That is evidence the timeout was a budget problem, not that the older conflict
+never existed.
+
+Live tree identical before and after the whole matrix, every step machine-clean.
+
+Still owed: `disposable-expanded-summoning` under `gunslinger-only` and
+`gunslinger-high-risk-combined`. The driver scheduled the supervised
+`observe-expanded-summoning-variant-menu`, which aborted each profile before the
+mechanical scenario; the driver now refuses supervised scenarios and a domain
+test enforces it.
+
+## The Unity licence is unusable; the asset ships as mesh data instead
+
+The 2018.4.10f1 editor that built every previous AssetBundle here stopped
+accepting its licence between 2026-08-21 and 2026-09-23. Same install, same
+project, same batch command: success then, and now `BatchMode: Unity has not
+been activated with a valid License` / `Missing or bad username and password`.
+Only 2018.4.10f1 and a Hub 6000.5.6f1 are installed, and a 6000.x bundle will
+not load in a 2018.4 game.
+
+Rather than stop, the Pteranodon ships as ~70 KB of mesh data the runtime builds
+a `Mesh` from. It carries strictly less than a bundle would - our geometry plus
+the donor's bone names, no bind poses, no material, no import settings - has no
+editor dependency, and is less code. The bundle builder is retained but is not
+on the shipping path. **Re-activating the licence remains the owner's to do if a
+bundle is ever wanted again; nothing here depends on it.**
+
+## Deformation proof
+
+`20260923T1951220917229Z-observe-summon-pteranodon-view-contracts`, 12/12 PASS:
+
+    bone=L_Feather_3;degrees=25;ownedMoved=2;ownedStill=0;ownedDrifted=0;
+    worstDrift=0.00000;controlMoved=0;controlStill=100;
+    worstControlMotion=0.00000;largestMotion=0.1446;bakeDisagreement=0.00000
+
+Vertices the rotated bone owns moved and held station in its frame exactly; 100
+vertices on the opposite wing did not move; Unity's own `BakeMesh` agrees with
+the evaluated skinning to zero. `ownedMoved=2` is small because the membrane
+blends across bones and few vertices exceed the 0.8 dominance threshold - the
+proof holds, but the owned population is thin and worth widening if the mesh
+changes.
+
 ## Next executable action
 
-Close B6: strengthen the feature-module boundary assertion so it measures the
-live publication surface rather than only echoing the settings flag, wire the
-summoning scenarios into the five compatibility profiles, then run the matrix.
+Wire and run `disposable-expanded-summoning-projected-menu` (C2/C3), then the
+two owed compatibility mechanical runs, then acceptance groups 4, 6 and 7.
