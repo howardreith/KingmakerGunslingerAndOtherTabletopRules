@@ -196,10 +196,22 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
         internal int Replenished { get; set; }
         internal int Copies { get; set; }
         internal int Partial { get; set; }
+
+        /// <summary>
+        /// Grants confirmed to have changed nothing (or never attempted); an
+        /// initial grant among them stays eligible for a later trigger.
+        /// </summary>
         internal int Failed { get; set; }
 
-        /// <summary>Initial grants whose stock changed but whose record failed.</summary>
-        internal int Unrecorded { get; set; }
+        /// <summary>
+        /// Grants whose stock outcome could not be established. An initial
+        /// grant among them keeps its ledger claim, so it is never repeated
+        /// automatically.
+        /// </summary>
+        internal int Uncertain { get; set; }
+
+        /// <summary>Initial grants skipped because the ledger already held them.</summary>
+        internal int Skipped { get; set; }
 
         internal List<string> Recorded { get; private set; }
         internal List<Exception> Errors { get; private set; }
@@ -213,35 +225,71 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
         public override string ToString()
         {
             return string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                "granted={0};replenished={1};copies={2};partial={3};failed={4};unrecorded={5}",
-                Granted, Replenished, Copies, Partial, Failed, Unrecorded);
+                "granted={0};replenished={1};copies={2};partial={3};failed={4};uncertain={5};skipped={6}",
+                Granted, Replenished, Copies, Partial, Failed, Uncertain, Skipped);
         }
     }
 
     /// <summary>
-    /// Applies planned grants through supplied stock operations. An initial
-    /// grant is recorded only after its mutation is observed: an addition that
-    /// changed nothing stays unrecorded (a later trigger retries it), while one
-    /// that changed stock only partially is recorded and never topped up, so a
-    /// failure is never answered by blindly repeating an applied addition. The
-    /// ledger and the merchant stock live in the same save, so they persist or
-    /// are discarded together; the game offers no stronger transaction.
+    /// Applies planned grants through supplied stock operations.
+    ///
+    /// An initial grant is claimed in the ledger BEFORE its stock is added
+    /// (write-ahead), so no failure after the stock changes can make the
+    /// entry look ungranted. The claim is released only when the addition is
+    /// positively confirmed to have changed nothing; that grant stays eligible
+    /// for a later trigger. Every other outcome keeps the claim: a complete
+    /// or partial addition (never topped up), an addition whose result cannot
+    /// be observed, and a claim that cannot be released. So a stock change
+    /// with failed or uncertain bookkeeping is never repeated automatically.
+    /// The ledger and the merchant stock live in the same save, so they
+    /// persist or are discarded together; the game offers no stronger
+    /// transaction.
     /// </summary>
     internal static class BetterVendorsGrantApplier
     {
         internal static BetterVendorsGrantOutcome Apply(
             IEnumerable<BetterVendorsGrant> grants,
             Func<ProgressionWeaponSpec, int> count,
-            Action<ProgressionWeaponSpec, int> add, Func<string, bool> record)
+            Action<ProgressionWeaponSpec, int> add, Func<string, bool> record,
+            Func<string, bool> withdraw)
         {
             if (grants == null) throw new ArgumentNullException("grants");
             if (count == null) throw new ArgumentNullException("count");
             if (add == null) throw new ArgumentNullException("add");
             if (record == null) throw new ArgumentNullException("record");
+            if (withdraw == null) throw new ArgumentNullException("withdraw");
             var outcome = new BetterVendorsGrantOutcome();
             foreach (BetterVendorsGrant grant in grants)
             {
-                int before = count(grant.Spec);
+                bool initial = grant.Reason == BetterVendorsGrantReason.InitialGrant;
+                int before;
+                if (!TryCount(count, grant.Spec, outcome, out before))
+                {
+                    // Nothing was claimed or changed; the grant stays eligible.
+                    outcome.Failed++;
+                    continue;
+                }
+                if (initial)
+                {
+                    bool claimed;
+                    try
+                    {
+                        claimed = record(grant.Spec.Guid);
+                    }
+                    catch (Exception exception)
+                    {
+                        // The claim failed before any stock changed.
+                        outcome.Errors.Add(exception);
+                        outcome.Failed++;
+                        continue;
+                    }
+                    if (!claimed)
+                    {
+                        // Already granted: never add a second initial grant.
+                        outcome.Skipped++;
+                        continue;
+                    }
+                }
                 try
                 {
                     add(grant.Spec, grant.Quantity);
@@ -250,29 +298,33 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
                 {
                     outcome.Errors.Add(exception);
                 }
-                int added = count(grant.Spec) - before;
-                if (added <= 0)
+                int after;
+                if (!TryCount(count, grant.Spec, outcome, out after) ||
+                    after < before)
                 {
-                    outcome.Failed++;
+                    // The result cannot be established; an initial grant keeps
+                    // its claim so it is never repeated automatically.
+                    outcome.Uncertain++;
+                    continue;
+                }
+                int added = after - before;
+                if (added == 0)
+                {
+                    // Positively confirmed that nothing was added: release the
+                    // claim so a later trigger retries this grant. A claim
+                    // that cannot be released keeps the grant ineligible.
+                    if (initial && !TryWithdraw(withdraw, grant.Spec.Guid, outcome))
+                        outcome.Uncertain++;
+                    else
+                        outcome.Failed++;
                     continue;
                 }
                 outcome.Copies += added;
                 if (added != grant.Quantity) outcome.Partial++;
-                if (grant.Reason == BetterVendorsGrantReason.InitialGrant)
+                if (initial)
                 {
                     outcome.Granted++;
-                    try
-                    {
-                        if (record(grant.Spec.Guid))
-                            outcome.Recorded.Add(grant.Spec.Guid);
-                    }
-                    catch (Exception exception)
-                    {
-                        // The stock change stands. Report the bookkeeping
-                        // failure and keep applying the independent grants.
-                        outcome.Unrecorded++;
-                        outcome.Errors.Add(exception);
-                    }
+                    outcome.Recorded.Add(grant.Spec.Guid);
                 }
                 else
                 {
@@ -280,6 +332,38 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
                 }
             }
             return outcome;
+        }
+
+        private static bool TryCount(Func<ProgressionWeaponSpec, int> count,
+            ProgressionWeaponSpec spec, BetterVendorsGrantOutcome outcome,
+            out int value)
+        {
+            try
+            {
+                value = count(spec);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                outcome.Errors.Add(exception);
+                value = 0;
+                return false;
+            }
+        }
+
+        private static bool TryWithdraw(Func<string, bool> withdraw, string guid,
+            BetterVendorsGrantOutcome outcome)
+        {
+            try
+            {
+                withdraw(guid);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                outcome.Errors.Add(exception);
+                return false;
+            }
         }
     }
 
@@ -318,6 +402,22 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
             _entries.Add(guid);
             _entries.Sort(StringComparer.Ordinal);
             return true;
+        }
+
+        /// <summary>
+        /// Releases a write-ahead claim. Only the grant applier calls this,
+        /// for a claim it made moments earlier, after positively confirming
+        /// that the grant added nothing. It never touches merchant stock.
+        /// Returns true when the identity was present.
+        /// </summary>
+        internal bool Withdraw(string guid)
+        {
+            ProgressionWeaponSpec spec;
+            if (!ProgressionWeaponCatalog.TryGetByGuid(guid, out spec))
+                throw new ArgumentException(
+                    "Only authorized progression identities can be withdrawn.",
+                    "guid");
+            return _entries.Remove(guid);
         }
 
         internal string[] Snapshot()

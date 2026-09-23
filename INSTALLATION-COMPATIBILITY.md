@@ -5,8 +5,8 @@ Unreleased candidate: `0.0.138-better-vendors-progression` (UMM version
 `KingmakerGunslinger-0.0.138-better-vendors-progression.zip`, which is not a
 published release. It adds the optional Better Vendors progression integration
 described [below](#optional-better-vendors-integration). In-game stock
-behaviour and save/load compatibility are not yet qualified. See
-[its candidate notes](docs/RELEASE-NOTES-0.0.138.md).
+behaviour and save/load compatibility are not yet qualified, which blocks its
+release. See [its candidate notes](docs/RELEASE-NOTES-0.0.138.md).
 
 Full release: `0.0.137-rapid-reload-combat-feat` (UMM version `0.0.137`).
 The installable archive is `KingmakerGunslinger-0.0.137-rapid-reload-combat-feat.zip`.
@@ -626,12 +626,13 @@ release. It activates only when all of the following hold:
 - the Unity Mod Manager entry `BetterVendors` is installed, loaded, active and
   enabled;
 - its vendor progression toggle is on;
-- its method-body fingerprints match the verified 2.0.8 binary (MVID
-  `04fc03cf-853f-46c8-b6d5-1404180451fb`).
+- it is the exact approved 2.0.8 binary: file SHA-256
+  `8843509852964d9016d2996a3050bfbe6f068360c4f2f6b8ff7f6440ca712009` and
+  MVID `04fc03cf-853f-46c8-b6d5-1404180451fb`.
 
 There is no assembly or UMM requirement. When Better Vendors is absent, only
-this integration stays inactive. A different or rebuilt Better Vendors disables
-only this integration, with one warning in the UMM log (phase
+this integration stays inactive. Any other or rebuilt Better Vendors binary
+disables only this integration, with one warning in the UMM log (phase
 `better-vendors`). Better Vendors itself is never modified.
 
 While it is active, the capital blacksmith's shared table (`SmithVendorTable`)
@@ -639,11 +640,15 @@ receives this mod's 50 generic progression weapons. They arrive at Better
 Vendors' Military ranks and quantities, restock only when Better Vendors
 restocks its current tier, and follow the Gunslinger, Eastern Weapons and
 Elven Branched Spear module settings. Existing campaigns get a one-time
-catch-up the first time that merchant opens trade. A save-local ledger
-prevents duplicate grants.
+catch-up the first time that merchant opens trade. A save-local ledger claims
+each first grant before stock changes, so a grant is never repeated
+automatically.
 
-Disabling Better Vendors, its progression or a module stops future additions
-and deletes nothing. Removing *this* mod still removes every weapon it owns,
+Disabling Better Vendors, its progression or a module stops this
+integration's future additions, and the integration itself never removes
+merchandise. Separately, turning a content module off can still reduce a
+reused +1 weapon's merchant stock by one through the existing vendor-row
+reconciliation. Removing *this* mod still removes every weapon it owns,
 including stocked ones; see [Removal warning](#removal-warning). To roll back
 to 0.0.137, use a save made before 0.0.138 was installed.
 
@@ -653,8 +658,8 @@ changed a native enhancement enchantment, the weapons stay registered and only
 merchant progression is disabled. The failure is logged once as
 `progression-catalog.degraded`.
 
-The contract, catalog, stock rules, verification limits and open design
-questions are in
+The contract, catalog, stock rules, verification limits, known limitations and
+the acceptance requirements that still block release are in
 [docs/BETTER-VENDORS-COMPATIBILITY.md](docs/BETTER-VENDORS-COMPATIBILITY.md).
 
 # Custom firearm SoundBank

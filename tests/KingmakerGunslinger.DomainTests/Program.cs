@@ -244,6 +244,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("better-vendors.ledger", BetterVendorsProgressionTests.LedgerIsSortedIdempotentAndSaveLocal),
             Case("better-vendors.applier-partial-failure", BetterVendorsProgressionTests.ApplierRecordsOnlyObservedMutations),
             Case("better-vendors.catalog-degrades-closed", BetterVendorsProgressionTests.ProgressionContractFailuresDisableOnlyMerchantStock),
+            Case("better-vendors.applier-uncertain-never-repeated", BetterVendorsProgressionTests.UncertainGrantsAreNeverRepeated),
+            Case("better-vendors.reused-fixed-row-reconciliation", BetterVendorsProgressionTests.ModuleOffReconciliationTouchesOnlyReusedFixedRows),
             Case("better-vendors.lifecycle-fresh", BetterVendorsProgressionTests.FreshCampaignFollowsBetterVendorsEvents),
             Case("better-vendors.lifecycle-existing", BetterVendorsProgressionTests.ExistingCampaignCatchesUpExactlyOnce),
             Case("better-vendors.lifecycle-ordering", BetterVendorsProgressionTests.StockEventThenCatchUpAndCatchUpThenStockEvent),

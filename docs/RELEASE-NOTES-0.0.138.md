@@ -4,7 +4,9 @@ Release: `0.0.138-better-vendors-progression`
 Package: `KingmakerGunslinger-0.0.138-better-vendors-progression.zip`
 Build label: Kingmaker Gunslinger 0.0.138.
 Publication status: **candidate, not released.** It has no owner
-authorization, no tag and no public package.
+authorization, no tag and no public package. Merge and release are blocked
+until the merchant and persistence acceptance areas below have evidence from
+an owner-authorized disposable kingdom-stage save.
 
 The qualified firearm SoundBank is unchanged, SHA-256
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
@@ -38,9 +40,15 @@ Optional **Better Vendors** compatibility for magic-weapon progression.
   restocking.
 - Existing campaigns get a one-time **catch-up** the first time the capital
   blacksmith opens trade. A kingdom at Military V receives the +1, +2 and +3
-  tiers, and one at Military VII also +4. A save-local ledger records each
-  entry's first grant, so nothing is granted twice. Better Vendors' own save
+  tiers, and one at Military VII also +4.
+- A save-local ledger claims each entry's first grant *before* adding its
+  stock. The claim is released only when the addition is positively confirmed
+  to have changed nothing. A stock change whose bookkeeping failed or is
+  uncertain is therefore never repeated automatically. Better Vendors' own save
   flag is never read or changed.
+- The integration works only with the **exact approved Better Vendors
+  binary**: its whole-file SHA-256 and module identity must match. Any other
+  build, including a rebuilt 2.0.8, leaves only this integration inactive.
 - The Gunslinger, Eastern Weapons and Elven Branched Spear module settings
   apply independently. A disabled module's weapons are not added.
 - The new weapons are always registered, so saved items resolve. If a check
@@ -51,7 +59,7 @@ Optional **Better Vendors** compatibility for magic-weapon progression.
 
 ## What deliberately did not change
 
-- Better Vendors is **optional**. Without it, or with a different build, only
+- Better Vendors is **optional**. Without it, or with any other build, only
   this integration stays inactive and the log says why.
 - Better Vendors' own stock, queries and other features are not modified. None
   of these weapons join its corrosive or elemental queries.
@@ -68,24 +76,30 @@ Optional **Better Vendors** compatibility for magic-weapon progression.
 | Gate | Result |
 | --- | --- |
 | Version-aware repository validation | PASS |
-| Complete domain suite | PASS, 1,740 of 1,740 |
+| Complete domain suite | PASS, 1,742 of 1,742 |
 | Clean Release build and build-output validation | PASS, no warnings |
 | Strict standalone UMM package validation | PASS |
-| Better Vendors contract fingerprints vs installed 2.0.8 binary | PASS (static) |
-| Guarded `working-save-smoke` on final code commit `cca27056` | PASS, 11 of 11 assertions |
-| Adapter resolution against the live Better Vendors 2.0.8 assembly | PASS (`compatibility.ready`) |
+| Exact Better Vendors 2.0.8 binary identity and contract vs the installed binary | PASS (static) |
+| Guarded `working-save-smoke` on `cca27056`, before the exact-binary gate and write-ahead ledger | PASS, 11 of 11 assertions (see below) |
+| Adapter accepted the live Better Vendors 2.0.8 assembly | PASS (`compatibility.ready`) |
 | All 50 progression entries registered and every contract check passed in game | PASS (`progression-catalog.ready`, not `degraded`) |
-| Merchant stock in a kingdom-stage campaign | NOT RUN |
-| Save/load compatibility workflow | NOT RUN |
+| Actual stocking and purchase at a known Military rank | NOT RUN, blocks release |
+| Persistence and bought-out stock across a full restart | NOT RUN, blocks release |
+| Native event coordination (real stat improvement, both orderings) | NOT RUN, blocks release |
+| Progression and module settings, shared outdoor/throne-room stock | NOT RUN, blocks release |
+| Purchased Reliable firearm mechanics after save and load | NOT RUN, blocks release |
+| Craft Magic Items handling of the new variants | NOT TESTED |
 
 Historical domain checkpoints of 1,251, 1,288 and 1,325 cases remain archived
-under their original releases. The live suite for this candidate has 1,740
+under their original releases. The live suite for this candidate has 1,742
 cases.
 
 The guarded run `20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1`
-loaded `KMG_AUTOMATION_WORKING` through Steam App ID 640820, with Better
-Vendors 2.0.8 among the 16 loaded mods, and made no save-writing call. The
-deployed artifact was:
+on `cca27056` loaded `KMG_AUTOMATION_WORKING` through Steam App ID 640820,
+with Better Vendors 2.0.8 among the 16 loaded mods, and made no save-writing
+call. Its UMM log showed the live assembly's file SHA-256 and MVID matching the
+approved values. The later exact-binary gate relies on exactly those two
+values. The deployed artifact was:
 
 - package `d9ba82339c52490406273f56b05824a63b9013a60b3e8a21bedaa5a973fa84e7`;
 - DLL `34fe16ad05527cba5caad37a4d7ce7727d0b1553ec38511675017c6d2776d4fe`;
@@ -95,27 +109,34 @@ deployed artifact was:
 An earlier run on `060df1d4` also passed. After each run, the prior
 installation was restored byte-for-byte.
 
-The only authorized disposable save predates kingdom creation, so Better
-Vendors' Military progression cannot occur in it. No kingdom-stage fixture is
-authorized. The details and the exact verified identity are in
+The domain suite models scheduling, planning and bookkeeping with a
+dictionary shop and an in-memory ledger. It does not serialize saves, drive the
+real trading hook or buy anything. The only authorized disposable save
+predates kingdom creation, so Better Vendors' Military progression cannot occur
+in it. No kingdom-stage save is authorized, and none was fabricated. The
+acceptance requirements and the exact verified identity are in
 [BETTER-VENDORS-COMPATIBILITY.md](BETTER-VENDORS-COMPATIBILITY.md).
 
 ## Compatibility
 
-Better Vendors support is claimed only for the exact installed 2.0.8 binary:
-MVID `04fc03cf-853f-46c8-b6d5-1404180451fb`, file SHA-256
+Better Vendors support is limited to, and enforced for, the exact installed
+2.0.8 binary: MVID `04fc03cf-853f-46c8-b6d5-1404180451fb`, file SHA-256
 `8843509852964d9016d2996a3050bfbe6f068360c4f2f6b8ff7f6440ca712009`.
 Other optional-mod compatibility is unchanged and was not re-tested. Craft
 Magic Items compatibility is unchanged. There is no static
 `CraftMagicItems.dll` dependency, and its compatibility profile keeps its
-existing NOT-TESTED disposition.
+existing NOT-TESTED disposition. Whether Craft Magic Items handles the new
+variants correctly was not tested.
 
 ## Existing characters and saves
 
 No existing item, feat or identity changes. The ledger is created only just
-before a campaign's first recorded grant. Turning off vendor progression,
-disabling Better Vendors or turning off a module stops future additions
-without deleting stock, items or the ledger.
+before a campaign's first initial grant. Turning off vendor progression,
+disabling Better Vendors or turning off a module stops this integration's
+future additions. The integration itself never removes merchandise, items or
+ledger entries. Separately, when a content module is turned off, the existing
+vendor-row reconciliation can still reduce a reused +1 weapon's merchant stock
+by one.
 
 ## Install and uninstall
 

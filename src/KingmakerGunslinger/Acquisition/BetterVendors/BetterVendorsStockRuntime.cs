@@ -249,8 +249,8 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
 
         /// <summary>
         /// Access to the loaded campaign's ledger. The persisted part is
-        /// created only just before the first stock addition that must be
-        /// recorded, so campaigns that never receive a grant carry no new save
+        /// created only just before the first batch that claims an initial
+        /// grant, so campaigns that never receive a grant carry no new save
         /// data.
         /// </summary>
         internal sealed class LedgerAccess
@@ -283,9 +283,8 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
 
             /// <summary>
             /// Creates the persisted part if it does not exist yet. Called
-            /// before any stock mutation that will need recording, so a
-            /// failure here leaves the merchant untouched instead of leaving
-            /// added copies unrecorded.
+            /// before any batch that will claim initial grants, so a failure
+            /// here leaves the merchant untouched.
             /// </summary>
             internal void EnsureWritable()
             {
@@ -298,6 +297,12 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
             {
                 EnsureWritable();
                 return _ledger.Record(guid);
+            }
+
+            /// <summary>Releases a write-ahead claim (see the grant applier).</summary>
+            internal bool Withdraw(string guid)
+            {
+                return _ledger != null && _ledger.Withdraw(guid);
             }
 
             internal string[] Snapshot()
@@ -324,9 +329,10 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
         }
 
         /// <summary>
-        /// Adds each planned grant with the native shared-table operation and
-        /// records an initial grant only after its stock mutation is observed
-        /// (see <see cref="BetterVendorsGrantApplier"/>).
+        /// Adds each planned grant with the native shared-table operation.
+        /// Initial grants are claimed in the ledger before their stock changes
+        /// and released only when nothing was added (see
+        /// <see cref="BetterVendorsGrantApplier"/>).
         /// </summary>
         private static BetterVendorsGrantOutcome ApplyGrants(
             BetterVendorsGrant[] grants, ProgressionWeaponBlueprintCatalog catalog,
@@ -340,7 +346,7 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
                 spec => inventory.Count(catalog.Require(spec.Guid).Item),
                 (spec, quantity) => inventory.Add(catalog.Require(spec.Guid).Item,
                     quantity),
-                ledger.Record);
+                ledger.Record, ledger.Withdraw);
             foreach (Exception failure in outcome.Errors)
                 ReportFailure("grant", failure);
             return outcome;
