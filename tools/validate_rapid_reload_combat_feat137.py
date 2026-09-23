@@ -32,7 +32,7 @@ def validate(root: Path) -> None:
         encoding="utf-8"))
     state = metadata["rapidReloadCombatFeat137"]
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": 1704,
         "publicReleaseAuthorized": True,
         "parentGroups": ["Feat", "CombatFeat"],
         "genericSelectionHelperChanged": False,
@@ -54,7 +54,7 @@ def validate(root: Path) -> None:
         raise AssertionError("The three harness corrections must stay recorded")
     baseline.baseline.baseline.baseline.baseline.require_tokens(
         root / "docs/RELEASE-NOTES-0.0.137.md",
-        INFORMATIONAL_VERSION, "owner authorized", "Rapid Reload",
+        "0.0.137-rapid-reload-combat-feat", "owner authorized", "Rapid Reload",
         "combat feat", "Fighter", "PASS", "uninstall")
 
 

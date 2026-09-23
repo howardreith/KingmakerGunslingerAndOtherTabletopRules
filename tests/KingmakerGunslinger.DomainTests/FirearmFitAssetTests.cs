@@ -121,7 +121,9 @@ namespace KingmakerGunslinger.DomainTests
                     value.Key.StartsWith("KMG.Firearms.",
                         StringComparison.Ordinal) ||
                     value.Key == "KMG.Test.TestMusketItem").ToArray();
-            Assertions.Equal(16, firearms.Length,
+            // 16 authored firearm items plus the 27 Better Vendors progression
+            // variants, which reuse their family's existing Service visual.
+            Assertions.Equal(16 + 27, firearms.Length,
                 "Every equipped firearm item must have one exact runtime mapping.");
             Assertions.Equal(7, firearms.Select(value => value.Value)
                 .Distinct(StringComparer.Ordinal).Count(),

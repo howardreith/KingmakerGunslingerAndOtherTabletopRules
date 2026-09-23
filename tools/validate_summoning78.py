@@ -118,19 +118,25 @@ def validate(root: Path) -> None:
         "KMG.Spells.GreaterTeleport.Scroll", "KMG.Spells.WordOfRecall.Scroll"}]
     circle_entries = [entry for entry in manifest["entries"]
         if entry.get("symbol", "").startswith("KMG.Spells.MagicCircle.")]
+    # Better Vendors progression firearm variants (its spear and Eastern
+    # variants are already counted by their family prefixes).
+    progression_firearm_entries = [entry for entry in manifest["entries"]
+        if entry.get("milestone") == "Better Vendors progression" and
+        entry.get("symbol", "").startswith("KMG.Firearms.")]
     if (len(manifest["entries"]) != 1439 + len(midgame_entries) + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
             len(martial_performance_entries) + len(brown_fur_entries) +
             len(urban_barbarian_entries) + len(bodyguard_entries) +
             len(helpful_entries) + len(heirloom_entries) +
-            len(elemental_races_entries) + len(teleportation_entries) + len(circle_entries)
+            len(elemental_races_entries) + len(teleportation_entries) + len(circle_entries) +
+            len(progression_firearm_entries)
             or len(active) != 1438 + len(midgame_active) + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
             len(martial_performance_active) +
             len(brown_fur_active) + len(urban_barbarian_active) +
             len(bodyguard_active) + len(helpful_active) + len(heirloom_active) +
-            len(elemental_races_active) + sum(1 for entry in teleportation_entries + circle_entries
-                if entry.get("status") == "active")
+            len(elemental_races_active) + sum(1 for entry in teleportation_entries + circle_entries +
+                progression_firearm_entries if entry.get("status") == "active")
             or len(reserved) != 1 + len(martial_performance_reserved) +
             len(brown_fur_reserved) +
             len(urban_barbarian_reserved) + len(bodyguard_reserved) +
@@ -168,6 +174,15 @@ def validate(root: Path) -> None:
         "KMG.ElvenBranchedSpear.FirstBranchRoundMarker": ("1bb02c32918071bfa8333a12de4d7e94", "BlueprintBuff"),
         "KMG.ElvenBranchedSpear.FirstBranchSpeedPenaltyBuff": ("27d76fe829cc0234b7e120b19462848b", "BlueprintBuff"),
     }
+    # The Better Vendors progression candidate appends exactly these generic
+    # +2..+5 spear variants; once any is present, all four are required.
+    if any(entry.get("milestone") == "Better Vendors progression" for entry in spear_entries):
+        expected_spear_entries.update({
+            "KMG.ElvenBranchedSpear.Plus2Item": ("59c1cc59146a42b0bcecd080bf418f2b", "BlueprintItemWeapon"),
+            "KMG.ElvenBranchedSpear.Plus3Item": ("5ee1cb27471943cea19b3e76b3e06e46", "BlueprintItemWeapon"),
+            "KMG.ElvenBranchedSpear.Plus4Item": ("a15696e9747d47598c0149e7f5bad740", "BlueprintItemWeapon"),
+            "KMG.ElvenBranchedSpear.Plus5Item": ("972a58902b9148bbbc176750a0e0b867", "BlueprintItemWeapon"),
+        })
     by_symbol = {entry["symbol"]: entry for entry in spear_entries}
     for symbol, (guid, planned_type) in expected_spear_entries.items():
         entry = by_symbol.get(symbol)
