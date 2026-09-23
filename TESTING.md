@@ -80,6 +80,24 @@ pairs after live view attachment rather than inferring scale from blueprint
 metadata.
 
 
+## Rapid Reload proficiency gate
+
+`disposable-rapid-reload-proficiency-gate` is the guarded scenario for the
+Rapid Reload firearm-proficiency requirement. It reads the registered parent
+and child blueprints, then drives the real `LevelUpController` on disposable
+units through the ordinary and Fighter combat-feat slots: absent proficiency
+(including a Fighter that already has native crossbow proficiency), full,
+one-handed, two-handed, an independent test-only proficiency source on a
+non-Gunslinger, Gunslinger class identity with no proficiency facts, the
+preserved legacy compatibility wrapper, a fresh level-one Gunslinger, pending
+class changes in both directions, and the Musket Master duplicate-ownership
+case. Eligibility answers come from native `MeetsPrerequisites` and `CanSelect`
+through `SelectFeature`; nothing is mocked and no prerequisite is bypassed.
+
+As of this branch the scenario has **not** been run. The guarded orchestrator
+refuses administrator elevation by design; runtime qualification for this
+change is blocked, not passed.
+
 ## Current teleportation hardening qualification
 
 Run Windows PowerShell 5.1 after deploying the exact committed Build-Local ZIP:
