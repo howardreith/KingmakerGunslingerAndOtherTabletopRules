@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -9,7 +11,8 @@ namespace KingmakerGunslinger.DomainTests
     /// The charter's 1,232 figure is an aggregate over eighteen parent spells,
     /// never a single list. The real question is whether the shipped bounded
     /// presentation still behaves when the worst single parent spell grows from
-    /// today's 69 visible choices to the projected 124.
+    /// today's 69 visible choices to the projected 120 - the deduplicated plan,
+    /// not 120 plus wrappers that the plan already contains.
     ///
     /// Acceptance rubric, fixed before measuring, relative to the baseline:
     ///   R1 the menu never escapes the canvas-safe rectangle;
@@ -27,37 +30,164 @@ namespace KingmakerGunslinger.DomainTests
         // Worst observed parent today: Summon Monster VIII and IX, 69 choices.
         private const int BaselineWorstParent = 69;
 
-        // Projected worst parent: 120 generated Summon Monster IX placements
-        // plus the four native wrappers already preserved at that tier.
-        private const int ProjectedWorstParent = 124;
+        // Projected worst parent: the deduplicated Summon Monster IX plan.
+        //
+        // An earlier revision computed this as 120 plus the four native
+        // wrappers preserved at that tier, giving 124. That double-counted:
+        // Bogeyman, Frost Giant, Movanic Deva and Thanadaemon are creatures of
+        // the ideal roster and are already inside the 120. One creature is one
+        // option, whichever catalog supplies its unit.
+        private const int ProjectedWorstParent = 120;
+        private const int ProjectedWorstAllyParent = 110;
 
-        // Stretch probe only. Adding the five variant elemental families to the
-        // ninth-level parent is a capacity question, not authorisation to build
-        // them; Sprints 42-44 own that work.
-        private const int StretchProbeWorstParent = 154;
+        // Stress sample, not a target roster. A count above the plan only
+        // probes headroom; it authorises no later-sprint content.
+        private const int StressSampleWorstParent = 154;
 
         private const float RowHeight = 34f;
         private const float MenuWidth = 320f;
 
-        internal static void ProjectedScaleMatchesTheMeasuredBaseline()
+        /// <summary>
+        /// The projection must be a semantic union - one option per creature,
+        /// family, parent tier and multiplicity - not a sum of overlapping
+        /// catalogs. This is the regression for the 124/112 double-count.
+        /// </summary>
+        internal static void ProjectedScaleIsDeduplicated()
         {
             Assertions.Equal(69, BaselineWorstParent,
                 "The baseline worst parent must match the Sprint 0 census.");
-            Assertions.Equal(124, ProjectedWorstParent,
-                "The projected worst parent must match the ideal manifest.");
 
-            // Tie the projection to the manifest rather than a typed constant.
-            int projectedGenerated = ExpandedSummoningIdealRosterCatalog
-                .Placements(SummonFamily.Monster, 9).Count;
-            int nativeWrappers = SummonNativeExpansionCatalog
-                .For(SummonFamily.Monster, 9).Count;
-            Assertions.Equal(ProjectedWorstParent,
-                projectedGenerated + nativeWrappers,
-                "Projected Summon Monster IX choices drifted from the manifest.");
+            foreach (SummonFamily family in new[] {
+                SummonFamily.Monster, SummonFamily.NaturesAlly })
+            {
+                int expected = family == SummonFamily.Monster
+                    ? ProjectedWorstParent : ProjectedWorstAllyParent;
+                int planned = ExpandedSummoningIdealRosterCatalog
+                    .Placements(family, 9).Count;
+                Assertions.Equal(expected, planned,
+                    "Projected ninth-level choices drifted from the manifest for " + family);
 
-            // Growth is under 2x on the only axis that matters to the player.
+                // Every wrapper creature at this tier is already a roster
+                // creature, so adding wrappers would count it twice.
+                foreach (SummonNativeExpansionSpec wrapper in
+                    SummonNativeExpansionCatalog.For(family, 9))
+                {
+                    string key = ExpandedSummoningCoveragePolicy
+                        .CanonicalKey(wrapper.CreatureKey);
+                    Assertions.True(ExpandedSummoningIdealRosterCatalog
+                        .Placements(family, 9)
+                        .Any(value => string.Equals(value.Key, key,
+                            StringComparison.Ordinal)),
+                        "A native wrapper at tier 9 is missing from the plan: " + key);
+                }
+            }
+
+            // Growth is well under 2x on the only axis a player experiences.
             Assertions.True(ProjectedWorstParent < BaselineWorstParent * 2,
                 "The worst single menu must not double against the baseline.");
+        }
+
+        /// <summary>
+        /// Every tier of the forecast, and the core aggregate, derive from the
+        /// same deduplicated plan rather than from separate arithmetic.
+        /// </summary>
+        internal static void EveryTierDerivesFromOneDeduplicatedPlan()
+        {
+            int monster = 0;
+            int allies = 0;
+            for (int parent = 1; parent <= 9; parent++)
+            {
+                var monsterKeys = ExpandedSummoningIdealRosterCatalog
+                    .Placements(SummonFamily.Monster, parent)
+                    .Select(value => value.Key).ToArray();
+                var allyKeys = ExpandedSummoningIdealRosterCatalog
+                    .Placements(SummonFamily.NaturesAlly, parent)
+                    .Select(value => value.Key).ToArray();
+
+                Assertions.Equal(monsterKeys.Length,
+                    monsterKeys.Distinct(StringComparer.Ordinal).Count(),
+                    "Summon Monster " + parent + " repeated a creature.");
+                Assertions.Equal(allyKeys.Length,
+                    allyKeys.Distinct(StringComparer.Ordinal).Count(),
+                    "Summon Nature's Ally " + parent + " repeated a creature.");
+
+                monster += monsterKeys.Length;
+                allies += allyKeys.Length;
+            }
+
+            Assertions.Equal(624, monster, "Summon Monster forecast changed.");
+            Assertions.Equal(608, allies, "Summon Nature's Ally forecast changed.");
+            Assertions.Equal(1232, monster + allies,
+                "The core aggregate must stay 624 + 608 = 1,232.");
+        }
+
+        /// <summary>
+        /// Production-compatible ordering, proved through the shipped
+        /// SummonDisplayOrderPolicy rather than asserted about a planning list.
+        /// The alphabetical order the manifest returns is a stable enumeration,
+        /// not the menu contract; the menu contract is singles, then 1d3, then
+        /// 1d4+1, with unrelated foreign children preserved at the end.
+        /// </summary>
+        internal static void ProjectedOrderMatchesTheShippedContract()
+        {
+            foreach (SummonFamily family in new[] {
+                SummonFamily.Monster, SummonFamily.NaturesAlly })
+            {
+                for (int parent = 1; parent <= 9; parent++)
+                {
+                    int scopedParent = parent;
+                    SummonFamily scopedFamily = family;
+
+                    // Two unrelated third-party children that must survive in
+                    // place: the policy identifies them by having no quantity.
+                    string[] foreign = { "third-party-alpha", "third-party-omega" };
+
+                    IReadOnlyList<string> ordered = SummonDisplayOrderPolicy.Order(
+                        foreign,
+                        ExpandedSummoningIdealRosterCatalog
+                            .Placements(scopedFamily, scopedParent)
+                            .Select(value => value.Key).ToArray(),
+                        value => (SummonMultiplicity?)null,
+                        value => ExpandedSummoningIdealRosterCatalog.Multiplicity(
+                            ExpandedSummoningIdealRosterCatalog.Find(value)
+                                .Tier(scopedFamily).Value, scopedParent));
+
+                    int[] rank = ordered
+                        .Where(value => !foreign.Contains(value, StringComparer.Ordinal))
+                        .Select(value => ExpandedSummoningIdealRosterCatalog.Multiplicity(
+                            ExpandedSummoningIdealRosterCatalog.Find(value)
+                                .Tier(scopedFamily).Value, scopedParent))
+                        .Select(value => value == SummonMultiplicity.One ? 0
+                            : value == SummonMultiplicity.OneD3 ? 1 : 2)
+                        .ToArray();
+                    Assertions.True(rank.SequenceEqual(rank.OrderBy(value => value)),
+                        "Quantity groups are out of shipped order for " +
+                        scopedFamily + " " + scopedParent + ".");
+
+                    // Unrelated children are preserved, and left at the end.
+                    Assertions.Equal(foreign.Length,
+                        ordered.Count(value => foreign.Contains(value, StringComparer.Ordinal)),
+                        "Unrelated third-party children were dropped at " +
+                        scopedFamily + " " + scopedParent + ".");
+                    Assertions.True(
+                        foreign.SequenceEqual(ordered.Skip(ordered.Count - foreign.Length)),
+                        "Unrelated third-party children moved or reordered at " +
+                        scopedFamily + " " + scopedParent + ".");
+
+                    // Ordering is stable: same input, same output.
+                    Assertions.True(ordered.SequenceEqual(
+                        SummonDisplayOrderPolicy.Order(foreign,
+                            ExpandedSummoningIdealRosterCatalog
+                                .Placements(scopedFamily, scopedParent)
+                                .Select(value => value.Key).ToArray(),
+                            value => (SummonMultiplicity?)null,
+                            value => ExpandedSummoningIdealRosterCatalog.Multiplicity(
+                                ExpandedSummoningIdealRosterCatalog.Find(value)
+                                    .Tier(scopedFamily).Value, scopedParent))),
+                        "Projected ordering is not stable for " +
+                        scopedFamily + " " + scopedParent + ".");
+                }
+            }
         }
 
         internal static void BaselineAndProjectedScalesSatisfyTheRubric()
@@ -66,6 +196,8 @@ namespace KingmakerGunslinger.DomainTests
             {
                 Outcome baseline = Evaluate(viewport, BaselineWorstParent);
                 Outcome projected = Evaluate(viewport, ProjectedWorstParent);
+                Outcome projectedAlly = Evaluate(viewport, ProjectedWorstAllyParent);
+                AssertRubric(projectedAlly, viewport, "projected Nature's Ally");
 
                 // R1 / R2 / R3 hold independently at both scales.
                 AssertRubric(baseline, viewport, "baseline");
@@ -88,31 +220,44 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Capacity probe for the full charter surface. It is evidence about
-        /// headroom only and authorises no later-sprint content.
+        /// Headroom probe using a deliberately oversized stress sample. It is
+        /// not the target roster and authorises no later-sprint content.
         /// </summary>
-        internal static void StretchProbeStaysBounded()
+        internal static void StressSampleStaysBounded()
         {
+            Assertions.True(StressSampleWorstParent > ProjectedWorstParent,
+                "A stress sample must exceed the planned roster to probe headroom.");
             foreach (Viewport viewport in Viewports())
             {
-                AssertRubric(Evaluate(viewport, StretchProbeWorstParent),
-                    viewport, "stretch probe");
+                AssertRubric(Evaluate(viewport, StressSampleWorstParent),
+                    viewport, "stress sample");
             }
         }
 
         /// <summary>
         /// The presentation must stay option-count agnostic. A list one row
         /// longer may never flip a clamped menu outside the safe rectangle or
-        /// strand a row, at any count from empty to well past the projection.
+        /// strand a row, at any count from one to well past the projection.
+        ///
+        /// An earlier revision ran this loop against a single viewport while the
+        /// evidence claimed the whole resolution grid. It now executes every
+        /// count against every viewport, so the claim and the run agree.
         /// </summary>
         internal static void EveryOptionCountRemainsBounded()
         {
-            Viewport viewport = Viewports()[0];
-            for (int options = 1; options <= 200; options++)
+            int executed = 0;
+            foreach (Viewport viewport in Viewports())
             {
-                Outcome outcome = Evaluate(viewport, options);
-                AssertRubric(outcome, viewport, "option count " + options);
+                for (int options = 1; options <= 200; options++)
+                {
+                    AssertRubric(Evaluate(viewport, options), viewport,
+                        "option count " + options);
+                    executed++;
+                }
             }
+
+            Assertions.Equal(Viewports().Length * 200, executed,
+                "The claimed resolution-by-option-count grid was not fully executed.");
         }
 
         private static void AssertRubric(Outcome outcome, Viewport viewport,
