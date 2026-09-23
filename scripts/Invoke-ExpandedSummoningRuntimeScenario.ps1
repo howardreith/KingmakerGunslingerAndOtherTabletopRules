@@ -150,9 +150,32 @@ try {
         # The harness can write a complete result and still throw during
         # teardown. Read what the scenario actually recorded so a teardown fault
         # is not reported as a scenario failure, and vice versa.
+        #
+        # The evidence MUST come from this run. Taking the newest directory that
+        # merely matches the scenario name once adopted an August result for a
+        # scenario that never ran, and reported it as a pass. Evidence
+        # directories are named with a UTC stamp, so require that stamp to be at
+        # or after the moment this scenario started.
+        $startedStamp = ([DateTime]$run.startedAtUtc).ToUniversalTime()
         $evidence = Get-ChildItem 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' -Directory `
                 -Filter ('*-' + $name) -ErrorAction SilentlyContinue |
+            Where-Object {
+                $stamp = $null
+                if ($_.Name -match '^(?<t>[0-9]{8}T[0-9]{6})') {
+                    $stamp = [DateTime]::ParseExact($Matches['t'], 'yyyyMMddTHHmmss',
+                        [Globalization.CultureInfo]::InvariantCulture,
+                        [Globalization.DateTimeStyles]::AssumeUniversal -bor
+                        [Globalization.DateTimeStyles]::AdjustToUniversal)
+                }
+                $stamp -ne $null -and $stamp -ge $startedStamp.AddSeconds(-90)
+            } |
             Sort-Object Name -Descending | Select-Object -First 1
+        if (-not $evidence) {
+            # No evidence from this run: say so rather than inheriting an old
+            # result. An outcome already set by the catch block stands.
+            $run.scenarioStatus = 'NO-EVIDENCE-FROM-THIS-RUN'
+            if ($run.outcome -eq 'PASS') { $run.outcome = 'NO-EVIDENCE' }
+        }
         if ($evidence) {
             $resultPath = Join-Path $evidence.FullName 'runtime-result.json'
             if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
