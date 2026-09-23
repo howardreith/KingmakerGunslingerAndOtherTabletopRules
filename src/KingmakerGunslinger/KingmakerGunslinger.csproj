@@ -105,6 +105,7 @@
     <Compile Include="Blueprints\ElvenBranchedSpearNamedBlueprints.cs" />
     <Compile Include="Blueprints\ElvenBranchedSpearCampaignBlueprints.cs" />
     <Compile Include="Summoning\SummonFamily.cs" />
+    <Compile Include="Summoning\ExpandedSummoningBaselineInventory.cs" />
     <Compile Include="Summoning\SummonMultiplicity.cs" />
     <Compile Include="Summoning\SummonTemplatePolicy.cs" />
     <Compile Include="Summoning\SummonCreatureSpec.cs" />

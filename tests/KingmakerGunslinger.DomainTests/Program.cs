@@ -409,6 +409,11 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.quantity-same-kind", ExpandedSummoningCatalogTests.QuantityRulesAreExactAndSameKind),
             Case("expanded-summoning.alignment-policies", ExpandedSummoningCatalogTests.AlignmentPoliciesAreFamilyScoped),
             Case("expanded-summoning.catalog-guards", ExpandedSummoningCatalogTests.CatalogGuardsInvalidSpecs),
+            Case("expanded-summoning.baseline-frozen-surface", ExpandedSummoningBaselineInventoryTests.ShippedSurfaceMatchesFrozenBaseline),
+            Case("expanded-summoning.baseline-visible-decomposition", ExpandedSummoningBaselineInventoryTests.VisibleChoicesDecomposeExactly),
+            Case("expanded-summoning.baseline-parent-census", ExpandedSummoningBaselineInventoryTests.PerParentCensusReconciles),
+            Case("expanded-summoning.baseline-hidden-and-proxies", ExpandedSummoningBaselineInventoryTests.HiddenAndProxyCreaturesAreRecorded),
+            Case("expanded-summoning.baseline-observer-inert", ExpandedSummoningBaselineInventoryTests.ObserverIsInertAndDeterministic),
             Case("expanded-summoning.merge-idempotent", SummonPublicationPolicyTests.MergePreservesOrderAndIsIdempotent),
             Case("expanded-summoning.merge-conflicts", SummonPublicationPolicyTests.MergeDeduplicatesExistingAndRejectsConflicts),
             Case("expanded-summoning.native-reconciliation", SummonPublicationPolicyTests.NativeDuplicateCatalogIsExact),
@@ -1780,6 +1785,31 @@ namespace KingmakerGunslinger.DomainTests
                 {
                     Console.Error.WriteLine(
                         "FAIL production firearm manifest and SoundBank artifact validation: " +
+                        exception);
+                    return 1;
+                }
+            }
+
+            if (args.Length == 2 && string.Equals(
+                args[0],
+                "--emit-summoning-baseline",
+                StringComparison.Ordinal))
+            {
+                try
+                {
+                    // Sprint 0 evidence: write the frozen structural census the
+                    // charter measures every later summoning sprint against.
+                    File.WriteAllText(args[1],
+                        Summoning.ExpandedSummoningBaselineInventory.Emit());
+                    Console.WriteLine(
+                        "PASS emitted the Expanded Summoning baseline census to " +
+                        args[1] + ".");
+                    return 0;
+                }
+                catch (Exception exception)
+                {
+                    Console.Error.WriteLine(
+                        "FAIL Expanded Summoning baseline census emission: " +
                         exception);
                     return 1;
                 }
