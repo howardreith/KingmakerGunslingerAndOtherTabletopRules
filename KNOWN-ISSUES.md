@@ -11,11 +11,16 @@
   and would need its own design pass when independent proficiency sources are
   introduced.
 - The guarded `disposable-rapid-reload-proficiency-gate` runtime scenario is
-  registered, compiled and catalog-synchronised, but has not been executed. The
-  runtime orchestrator refuses administrator elevation by design and the
-  authoring session was elevated, so runtime qualification for the Rapid Reload
-  proficiency gate is recorded as blocked rather than passed. A clean Release
-  build and the complete domain suite are not runtime evidence.
+  registered, compiled and catalog-synchronised, and its review findings
+  (a real pending class/archetype change instead of separate cancelled visits,
+  refusal observed before any test cleanup, a natively built Musket Master, and
+  a class-identity control with real Gunslinger levels) are implemented. It has
+  still not been executed: the runtime orchestrator refuses administrator
+  elevation by design and the authoring sessions were elevated, so runtime
+  qualification for the Rapid Reload proficiency gate is recorded as blocked
+  rather than passed. The `rapid-reload-evidence.*` domain cases only prove that
+  incomplete or repaired evidence cannot score a pass; neither they nor a clean
+  Release build are runtime evidence.
 - RESOLVED (Z-FIREARM-MAINTENANCE, 0.0.127): the unified repair combat
   question is closed. Repair Firearm is now an out-of-combat, Broken-only
   full-round maintenance action gated by the native party-level combat
