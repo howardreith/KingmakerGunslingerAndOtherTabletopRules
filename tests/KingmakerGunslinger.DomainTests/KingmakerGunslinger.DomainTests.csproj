@@ -127,6 +127,7 @@
     <Compile Include="ExpandedSummoningBaselineInventoryTests.cs" />
     <Compile Include="ExpandedSummoningIdealRosterTests.cs" />
     <Compile Include="ExpandedSummoningMenuScalabilityTests.cs" />
+    <Compile Include="ExpandedSummoningCoverageTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplatePolicy.cs"><Link>Summoning\SummonTemplatePolicy.cs</Link></Compile>
@@ -141,6 +142,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVisibilityCatalog.cs"><Link>Summoning\SummonVisibilityCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningBaselineInventory.cs"><Link>Summoning\ExpandedSummoningBaselineInventory.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningIdealRosterCatalog.cs"><Link>Summoning\ExpandedSummoningIdealRosterCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCoveragePolicy.cs"><Link>Summoning\ExpandedSummoningCoveragePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonViewScaleCatalog.cs"><Link>Summoning\SummonViewScaleCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonIconCatalog.cs"><Link>Summoning\SummonIconCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPublicationTransaction.cs"><Link>Summoning\SummonPublicationTransaction.cs</Link></Compile>

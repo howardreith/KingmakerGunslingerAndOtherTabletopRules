@@ -36,6 +36,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             UnitEntityView prefab = donor.Prefab == null ? null : donor.Prefab.Load();
             UnitEntityView instance = null;
+            GameObject holder = null;
+            bool activeInHierarchy = true;
             string report = "<unobserved>";
             bool hasSkinnedMesh = false;
             bool characterAvatarAbsent = false;
@@ -43,6 +45,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool boundToNamedBones = false;
             bool cleaned = false;
             string animationBinding = "<unobserved>";
+            string skinningReport = "<unobserved>";
+            bool animationDriverProven = false;
+            int clipCount = 0;
 
             try
             {
@@ -50,11 +55,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "The donor unit exposes no loadable view prefab.");
 
-                // Instantiate inactive and far from play so nothing ticks,
-                // renders, or registers while it is measured.
+                // Instantiate INTO an already-inactive holder. Unity inherits
+                // the source object's active state, so instantiating first and
+                // deactivating afterwards would let Awake and OnEnable run
+                // before the deactivation - a clone parented to an inactive
+                // object is never active in the hierarchy, so those callbacks
+                // never fire at all. Distance from the play area is not a
+                // substitute for this; it stops nothing.
+                holder = new GameObject("KMG Expanded Summoning Donor Probe");
+                holder.SetActive(false);
                 instance = UnityEngine.Object.Instantiate(prefab,
-                    new Vector3(0f, -10000f, 0f), Quaternion.identity);
-                instance.gameObject.SetActive(false);
+                    holder.transform);
+
+                activeInHierarchy = instance.gameObject.activeInHierarchy;
+                if (activeInHierarchy)
+                    throw new InvalidOperationException(
+                        "The donor probe clone became active in the hierarchy.");
 
                 Observation observed = Describe(instance);
                 report = observed.Text;
@@ -65,15 +81,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed.RootBoneNamed && observed.BindPoseCount ==
                         observed.BoundBoneCount;
                 animationBinding = observed.AnimationBinding;
+                skinningReport = observed.SkinningReport;
+                clipCount = observed.ClipCount;
+                // Discriminating: a real Animator, a real controller, and real
+                // clips. Recording that some string existed proved nothing.
+                animationDriverProven = observed.DrivingAnimator != null &&
+                    !string.IsNullOrEmpty(observed.ControllerName) &&
+                    observed.ClipCount > 0;
             }
             finally
             {
                 if (instance != null)
-                {
                     UnityEngine.Object.DestroyImmediate(instance.gameObject);
-                }
+                if (holder != null)
+                    UnityEngine.Object.DestroyImmediate(holder);
 
-                cleaned = instance == null || instance.Equals(null);
+                // Destroying is necessary but not sufficient on its own; the
+                // probe also never became active, so nothing registered.
+                cleaned = (instance == null || instance.Equals(null)) &&
+                    (holder == null || holder.Equals(null)) && !activeInHierarchy;
             }
 
             // The shipped identity must be untouched by an observation.
@@ -106,10 +132,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // attaches to a unit. Recording where animation actually comes
                 // from is the finding; demanding it on a detached prefab was
                 // exactly the assumption the charter warns against.
-                Assertion("pteranodon-donor-animation-binding-recorded",
-                    "the animation source on a detached donor prefab is recorded, not assumed",
-                    animationBinding, animationBinding != "<unobserved>",
-                    "Animator on the view, Animators in children, and UnitAnimationManager"),
+                Assertion("pteranodon-donor-animation-driver-identified",
+                    "a real driving Animator with a named controller and at least one clip",
+                    animationBinding, animationDriverProven,
+                    "the child Animator actually present, its runtimeAnimatorController and clips"),
+                Assertion("pteranodon-donor-clip-events-recorded",
+                    "clip timing is observed so a replacement bite can land on the native frames",
+                    "clips=" + clipCount, clipCount > 0,
+                    "AnimationClip.events across the driving controller"),
+                Assertion("pteranodon-donor-skinning-inputs-recorded",
+                    "parent-relative bone paths, bone indices, bind-pose shape and renderer space",
+                    skinningReport, skinningReport != "<unobserved>",
+                    "SkinnedMeshRenderer bones, bindposes and transform hierarchy"),
                 Assertion("pteranodon-donor-bone-binding-is-consistent",
                     "named root bone with bindposes matching the bound bone count",
                     "boundToNamedBones=" + boundToNamedBones, boundToNamedBones,
@@ -118,10 +152,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "pteranodon remains SM 4 / SNA 4 and alignment-templated",
                     "identityIntact=" + identityIntact, identityIntact,
                     "ExpandedSummoningCatalog after observation"),
+                Assertion("pteranodon-probe-never-activated",
+                    "the clone is inactive from creation, so Awake and OnEnable never run",
+                    "activeInHierarchy=" + activeInHierarchy, !activeInHierarchy,
+                    "instantiated into an already-inactive holder, checked before use"),
                 Assertion("pteranodon-view-observation-cleanup",
-                    "transient donor instance destroyed; no blueprint, unit, inventory or save mutation",
+                    "clone and holder destroyed and never activated; no blueprint, unit, inventory or save mutation",
                     "cleaned=" + cleaned, cleaned,
-                    "finally cleanup of the single transient view instance"),
+                    "finally cleanup plus the never-activated invariant"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -143,6 +181,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool CharacterAvatarAbsent;
             internal bool HasAnimator;
             internal string AnimationBinding;
+            internal Animator DrivingAnimator;
+            internal string ControllerName;
+            internal int ClipCount;
+            internal int ClipsWithEvents;
+            internal int EventCount;
+            internal string SkinningReport;
         }
 
         private static Observation Describe(UnitEntityView view)
@@ -158,11 +202,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             text.Append(";characterAvatar=")
                 .Append(result.CharacterAvatarAbsent ? "<null>" : "present");
 
-            // Where animation actually comes from. A detached prefab may carry
-            // none of these; that is a fact about attach-time binding, not a
-            // defect, and Sprint 2 has to reuse whatever does drive the bones.
+            // Where animation actually comes from. UnitEntityView.Animator is
+            // null on a detached prefab, so inspecting only that property would
+            // report nothing and prove nothing. The driving Animator lives in a
+            // child, and Sprint 2 must reuse whatever really moves the bones.
             Animator[] childAnimators = view.GetComponentsInChildren<Animator>(true);
             object animationManager = ReadField(view, "m_AnimatorManager");
+            Animator driving = animator != null ? animator
+                : childAnimators.FirstOrDefault(value => value != null);
+            result.DrivingAnimator = driving;
+
             var binding = new StringBuilder();
             binding.Append("animatorOnView=")
                 .Append(animator == null ? "<null>" : animator.name)
@@ -177,6 +226,55 @@ namespace KingmakerGunslinger.RuntimeTesting
             binding.Append(";animationManagerField=")
                 .Append(animationManager == null || animationManager.Equals(null)
                     ? "<null>" : animationManager.GetType().Name);
+
+            // Inspect the Animator that actually exists, not the null property.
+            if (driving != null)
+            {
+                RuntimeAnimatorController controller = driving.runtimeAnimatorController;
+                result.ControllerName = controller == null ? null : controller.name;
+                AnimationClip[] clips = controller == null ||
+                        controller.animationClips == null
+                    ? new AnimationClip[0]
+                    : controller.animationClips.Where(value => value != null).ToArray();
+                result.ClipCount = clips.Length;
+
+                binding.Append(";drivingAnimator=").Append(driving.name)
+                    .Append(";controller=")
+                    .Append(controller == null ? "<null>" : controller.name)
+                    .Append(";clips=").Append(Count(clips.Length))
+                    .Append(";avatar=").Append(driving.avatar == null ? "<null>"
+                        : driving.avatar.name + (driving.avatar.isHuman
+                            ? "/human" : "/generic"))
+                    .Append(";applyRootMotion=").Append(driving.applyRootMotion)
+                    .Append(";cullingMode=").Append(driving.cullingMode);
+
+                string[] clipNames = clips.Select(value => value.name)
+                    .Distinct(StringComparer.Ordinal)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                binding.Append(";clipNames=")
+                    .Append(string.Join(",", clipNames));
+
+                // Attack and impact timing lives in clip events; Sprint 2's bite
+                // has to land on the same frames the native routine expects.
+                var events = new List<string>();
+                foreach (AnimationClip clip in clips)
+                {
+                    AnimationEvent[] clipEvents = clip.events;
+                    if (clipEvents == null || clipEvents.Length == 0) continue;
+                    result.ClipsWithEvents++;
+                    foreach (AnimationEvent clipEvent in clipEvents.Take(4))
+                    {
+                        events.Add(clip.name + "@" +
+                            clipEvent.time.ToString("0.###", CultureInfo.InvariantCulture) +
+                            ":" + clipEvent.functionName);
+                    }
+                }
+
+                result.EventCount = events.Count;
+                binding.Append(";clipsWithEvents=").Append(Count(result.ClipsWithEvents))
+                    .Append(";events=").Append(string.Join(",", events.Take(40).ToArray()));
+            }
+
             result.AnimationBinding = binding.ToString();
             text.Append(';').Append(result.AnimationBinding);
 
@@ -244,6 +342,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 text.Append(";boneCount=").Append(Count(boneNames.Length));
                 text.Append(";boneNames=")
                     .Append(string.Join(",", boneNames));
+
+                // Names and counts alone cannot drive an export. The modeller
+                // also needs the parent-relative hierarchy, the bone order the
+                // mesh indexes against, and the space the renderer works in.
+                result.SkinningReport = DescribeSkinning(view, renderer, root, bones, mesh);
+                text.Append(';').Append(result.SkinningReport);
             }
 
             MeshRenderer[] plain = view.GetComponentsInChildren<MeshRenderer>(true);
@@ -296,6 +400,91 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             result.Text = text.ToString();
             return result;
+        }
+
+        /// <summary>
+        /// Authoring inputs for an original skinned mesh: the parent-relative
+        /// bone hierarchy, the bone order the mesh indexes against, the shape of
+        /// the bind poses, and the renderer's working space.
+        ///
+        /// Bind poses are summarised structurally - uniform scale, handedness,
+        /// whether the root pose is identity - rather than dumped as matrices.
+        /// The structure is what an exporter must match; the matrix values are
+        /// native asset data and stay on the machine.
+        /// </summary>
+        private static string DescribeSkinning(UnitEntityView view,
+            SkinnedMeshRenderer renderer, Transform root, Transform[] bones,
+            Mesh mesh)
+        {
+            var text = new StringBuilder();
+            text.Append("skinning=[");
+
+            // Parent-relative path of every bone, so the hierarchy can be
+            // rebuilt exactly rather than guessed from a flat name list.
+            text.Append("bonePaths=");
+            text.Append(string.Join(",", bones.Select((bone, index) =>
+                Count(index) + ":" + RelativePath(view.transform, bone)).ToArray()));
+
+            text.Append(";rootBonePath=")
+                .Append(RelativePath(view.transform, root));
+            text.Append(";rendererPath=")
+                .Append(RelativePath(view.transform, renderer.transform));
+
+            // Renderer space: what the mesh vertices are expressed relative to.
+            text.Append(";rendererLocalBounds=")
+                .Append(Number(renderer.localBounds.size.x)).Append('x')
+                .Append(Number(renderer.localBounds.size.y)).Append('x')
+                .Append(Number(renderer.localBounds.size.z));
+            text.Append(";rendererLocalScale=")
+                .Append(Number(renderer.transform.localScale.x)).Append(',')
+                .Append(Number(renderer.transform.localScale.y)).Append(',')
+                .Append(Number(renderer.transform.localScale.z));
+            text.Append(";updateWhenOffscreen=").Append(renderer.updateWhenOffscreen);
+            text.Append(";quality=").Append(renderer.quality);
+
+            if (mesh != null)
+            {
+                text.Append(";meshVertices=").Append(Count(mesh.vertexCount));
+                text.Append(";meshSubMeshes=").Append(Count(mesh.subMeshCount));
+                text.Append(";meshBoneWeights=")
+                    .Append(Count(mesh.boneWeights == null ? 0 : mesh.boneWeights.Length));
+
+                Matrix4x4[] poses = mesh.bindposes;
+                if (poses != null && poses.Length > 0)
+                {
+                    // Structural summary only.
+                    bool rootIsIdentity = poses[0].isIdentity;
+                    int mirrored = poses.Count(pose => pose.determinant < 0f);
+                    bool uniform = poses.All(pose =>
+                    {
+                        Vector3 scale = pose.lossyScale;
+                        return Math.Abs(scale.x - scale.y) < 0.001f &&
+                            Math.Abs(scale.y - scale.z) < 0.001f;
+                    });
+                    text.Append(";bindPoseCount=").Append(Count(poses.Length))
+                        .Append(";bindPoseRootIsIdentity=").Append(rootIsIdentity)
+                        .Append(";bindPoseUniformScale=").Append(uniform)
+                        .Append(";bindPoseMirrored=").Append(Count(mirrored));
+                }
+            }
+
+            text.Append(']');
+            return text.ToString();
+        }
+
+        /// <summary>Slash-separated path from an ancestor to a descendant.</summary>
+        private static string RelativePath(Transform ancestor, Transform node)
+        {
+            if (node == null) return "<null>";
+            var parts = new List<string>();
+            for (Transform cursor = node; cursor != null && cursor != ancestor;
+                cursor = cursor.parent)
+            {
+                parts.Add(cursor.name);
+            }
+
+            parts.Reverse();
+            return string.Join("/", parts.ToArray());
         }
 
         private static string Count(int value)
