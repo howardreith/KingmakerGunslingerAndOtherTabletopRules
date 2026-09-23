@@ -67,9 +67,13 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
     /// rather than Zarcie, and lacks the swallow-all try/catch in AddStock. The
     /// Military weapon schedule is identical in both.
     ///
-    /// The method-body fingerprints make the gate behavioral: any build whose
-    /// stock schedule, weapon query or lifecycle triggers differ fails closed
-    /// until it is inspected and verified, even under the same version label.
+    /// Support is limited to that exact inspected binary. The whole-file
+    /// SHA-256 of the loaded assembly's file and the loaded module's MVID must
+    /// both match, so an unknown, rebuilt or unreadable binary leaves only this
+    /// integration inactive. The structural checks then resolve the members
+    /// the hooks need. The method-body fingerprints are kept as a consistency
+    /// check only: instruction bytes alone cover neither called helpers nor
+    /// exception-handling clauses, so they cannot establish equivalence.
     /// </summary>
     internal static class BetterVendorsContract
     {
@@ -162,9 +166,10 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
         }
 
         /// <summary>
-        /// Structure, destination, enhancement tiers, lifecycle targets and
-        /// every behavioral fingerprint must match. Version, MVID and file hash
-        /// are recorded for diagnostics only; the fingerprints are the gate.
+        /// The exact approved binary (whole-file SHA-256 and loaded-module
+        /// MVID) is the gate. Structure, destination, enhancement tiers,
+        /// lifecycle targets and the method-body fingerprints must also match.
+        /// The UMM version label is recorded for diagnostics only.
         /// </summary>
         internal static BetterVendorsContractDecision Evaluate(
             BetterVendorsContractObservation observed)
@@ -176,6 +181,14 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
                     StringComparison.Ordinal))
                 return BetterVendorsContractDecision.Incompatible(
                     "assembly-name", observed.AssemblyName);
+            if (!string.Equals(observed.FileSha256, VerifiedFileSha256,
+                    StringComparison.OrdinalIgnoreCase))
+                return BetterVendorsContractDecision.Incompatible(
+                    "binary-sha256", observed.FileSha256 ?? "<absent>");
+            if (!string.Equals(observed.ModuleVersionId, VerifiedModuleVersionId,
+                    StringComparison.OrdinalIgnoreCase))
+                return BetterVendorsContractDecision.Incompatible(
+                    "binary-mvid", observed.ModuleVersionId ?? "<absent>");
             if (!string.IsNullOrEmpty(observed.MissingMember))
                 return BetterVendorsContractDecision.Incompatible(
                     "required-member", observed.MissingMember);

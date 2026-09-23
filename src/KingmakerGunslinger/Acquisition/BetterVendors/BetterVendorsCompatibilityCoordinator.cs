@@ -19,9 +19,10 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
 {
     /// <summary>
     /// Optional Better Vendors adapter. It never adds a compile-time or UMM
-    /// dependency: the live UMM entry is discovered by id, the progression
-    /// contract is verified by reflection and method-body fingerprints, and
-    /// only then are four narrow hooks installed:
+    /// dependency: the live UMM entry is discovered by id, the loaded assembly
+    /// must be the exact approved binary (file SHA-256 and MVID), the
+    /// progression contract is verified by reflection and method-body
+    /// fingerprints, and only then are the Better Vendors hooks installed:
     ///
     ///   ProgressionLogic.AddStock          postfix  closes the pass scope
     ///   ProgressionLogic.AddMilitaryStock  prefix/postfix  classifies the
@@ -30,11 +31,14 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
     ///                                      Better Vendors' own selection
     ///   VendorLogic.BeginTrading           postfix  one-time catch-up for the
     ///                                      shared Military destination
+    ///                                      (own owner; installed once the
+    ///                                      entry exists, inert until verified)
     ///
-    /// Absent, disabled, progression-off or structurally different Better
-    /// Vendors leaves the rest of this mod untouched. Resolution is retried at
-    /// package load, on the first UMM update and lazily at trading, so an early
-    /// check never permanently disables the integration.
+    /// Absent, disabled, progression-off, unapproved or structurally different
+    /// Better Vendors leaves the rest of this mod untouched. Resolution is
+    /// retried at package load, on the first UMM update and lazily when the
+    /// capital blacksmith opens trade, so an early check never permanently
+    /// disables the integration.
     /// </summary>
     internal static class BetterVendorsCompatibilityCoordinator
     {

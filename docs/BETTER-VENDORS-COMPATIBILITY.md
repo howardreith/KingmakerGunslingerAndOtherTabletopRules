@@ -1,8 +1,10 @@
 # Better Vendors progression compatibility (0.0.138 candidate)
 
-Status: **candidate, not released**. Static contract verification and the
-complete domain suite pass. In-game qualification of the stock behaviour has
-**not** been observed (see [Verification status](#verification-status)).
+Status: **candidate, not released; merge and release are blocked.** Static
+contract verification, the complete domain suite and a guarded load smoke run
+pass. The real merchant and persistence paths are **not** qualified. They
+need an owner-authorized disposable kingdom-stage save; see
+[Acceptance requirements](#acceptance-requirements-before-merge-or-release).
 
 When the optional Better Vendors mod is installed and enabled, and its vendor
 progression is switched on, this mod's generic magic weapons now progress at
@@ -48,8 +50,9 @@ GitHub source (`thehambeard/BetterVendors`, tag 1.0.7, commit `3cb12966`) is
 - the source stocks arcane items at Arsinoe, the binary at Zarcie;
 - the source's `AddStock` has no swallow-all `try/catch`, the binary's does.
 
-The Military weapon schedule is identical in both. Support is claimed only for
-the verified 2.0.8 binary, not for anything the source alone suggests.
+The Military weapon schedule is identical in both. Support is limited to the
+verified 2.0.8 binary, not anything the source alone suggests, and the
+adapter enforces this (see below).
 
 ### Enablement and lifecycle (as implemented by 2.0.8)
 
@@ -88,23 +91,29 @@ redistributed Better Vendors code. The adapter:
 2. as soon as that entry exists, installs its `VendorLogic.BeginTrading`
    postfix, under its own Harmony owner
    `KingmakerGunslinger.better-vendors-progression.trading`. This postfix does
-   nothing until step 5 has succeeded. Its only other job is to retry
+   nothing until step 6 has succeeded. Its only other job is to retry
    resolution lazily, and only when the capital blacksmith (or its throne-room
    clone) opens trade. That covers a Better Vendors assembly that loaded late;
-3. reflects the required types and members, the `Verdel` destination, the
-   five native enhancement GUIDs and both Harmony patch targets;
-4. hashes the IL bodies of `AddStock`, `AddMilitaryStock`, `GetFilterWeapons`
-   and both lifecycle postfixes with SHA-256. All five must match the verified
-   2.0.8 bodies. The version label, MVID and file hash are logged for
-   diagnosis, but the fingerprints decide;
-5. only then installs its three Better Vendors hooks under Harmony owner
+3. requires the **exact approved binary**. The whole-file SHA-256 of the
+   loaded assembly's file and the loaded module's MVID must both equal the
+   values above. An unknown, rebuilt or unreadable binary leaves only this
+   integration inactive. The UMM version label is only logged;
+4. reflects the required types and members, the `Verdel` destination, the
+   five native enhancement GUIDs and both Harmony patch targets, which
+   resolves the members the hooks need;
+5. hashes the IL bodies of `AddStock`, `AddMilitaryStock`, `GetFilterWeapons`
+   and both lifecycle postfixes with SHA-256, as a consistency check. These
+   fingerprints are not relied on to prove behavioural equivalence:
+   instruction bytes cover neither the helper methods they call nor their
+   exception-handling clauses. That is why the binary identity is the gate;
+6. only then installs its three Better Vendors hooks under Harmony owner
    `KingmakerGunslinger.better-vendors-progression`.
 
-If Better Vendors is absent, only this integration stays inactive. An
-installed build that does not match, including a rebuilt 2.0.8, disables only
-this integration with one actionable warning naming the failed check. An
-unexpected exception fails closed with one error. Better Vendors, its other
-features and the rest of this mod keep working in every case.
+If Better Vendors is absent, only this integration stays inactive. Any other
+binary, including a rebuilt 2.0.8, disables only this integration with one
+actionable warning naming the failed check. An unexpected exception fails
+closed with one error. Better Vendors, its other features and the rest of this
+mod keep working in every case.
 
 Every stock event reads Better Vendors' enabled state and progression toggle
 live. Turning either off stops future additions at once.
@@ -216,21 +225,31 @@ table are *additions*:
 
 **Bookkeeping.** A save-local ledger (`UnitPartBetterVendorsProgressionGrants`
 on the main character, schema 1) records which entries have received their
-one-time *initial grant*. The part is created just before the first stock
-addition that must be recorded. If it cannot be created, nothing is added.
-Campaigns that never receive a grant carry no new data. The ledger is sorted,
-has no duplicates, accepts only authorized catalog GUIDs and keeps unknown
-entries.
+one-time *initial grant*. The part is created just before the first batch that
+claims an initial grant. If it cannot be created, nothing is added. Campaigns
+that never receive a grant carry no new data. The ledger is sorted, has no
+duplicates, accepts only authorized catalog GUIDs and keeps unknown entries.
 
-An entry this integration adds is recorded only after its stock change is
-observed:
+Initial grants are **claimed before stock changes** (write-ahead). For each
+entry, the integration first reads the stack's current count, then writes the
+entry's claim to the ledger, then adds the copies, then reads the count again:
 
-- an addition that changed nothing stays unrecorded and is retried later;
-- a partial addition is recorded and never topped up;
-- a failed record is logged, and the rest of the batch still applies.
+- if either the first count or the claim fails, nothing was changed, so the
+  entry stays eligible and a later trigger grants it;
+- if the second count shows that nothing was added, the claim is released
+  and a later trigger retries the entry;
+- if copies were added, fully or partly, the claim stays. A partial addition
+  is never topped up;
+- if the result cannot be established, the claim stays. That happens when the
+  second count fails or goes down, or when a claim that should be released
+  cannot be.
 
-The ledger and the stock live in the same save, so they persist or are
-discarded together.
+So a stock change with failed or uncertain bookkeeping is never repeated
+automatically. The cost of an unknowable outcome is at most one missed
+grant, never a duplicate. Each outcome is counted in the log as `failed`,
+`uncertain` or `skipped`, and the rest of the batch still applies. The ledger
+and the stock live in the same save, so they persist or are discarded
+together.
 
 One exception is defensive. If Better Vendors' *own* query ever selects a
 catalog entry, that entry is recorded as delivered by Better Vendors, without
@@ -247,8 +266,8 @@ classified:
   entry receives its initial grant, or a **replenish**ment if its initial grant
   was already recorded. In a campaign whose ranks rise through normal kingdom
   actions, this matches Better Vendors' own restocking event for event. The
-  exceptions are listed under
-  [Open design questions](#open-design-questions-for-owner-review).
+  exceptions are described under
+  [Known limitations and intentional differences](#known-limitations-and-intentional-differences).
 - **Catch-up.** Any lower-rank or later call inside Better Vendors' first-time
   pass. Only entries without a recorded initial grant are added. Better
   Vendors' own first pass therefore never duplicates this mod's grants.
@@ -291,10 +310,10 @@ the capital vendor rows, the BTSL vendor support, the campaign loot and vendor
 publications or the retired-stock cleanup. None of those paths change. The
 existing +1 vendor stock stays as it was.
 
-Additions made by this integration and by Better Vendors are ordinary table
-entries, not `LootItemsPackFixed` rows. The 43 new variants never appear in
-any fixed row, so the native reconciliation in `SharedVendorTables.GetTable`
-never touches them.
+This integration itself never removes merchandise. Its additions and Better
+Vendors' are ordinary table entries, not `LootItemsPackFixed` rows. The 43 new
+variants never appear in any fixed row, so the native reconciliation in
+`SharedVendorTables.GetTable` never touches them.
 
 The seven reused +1 items are different. This mod already publishes fixed
 `SmithVendorTable` rows for them, one copy each while their module is on: the
@@ -302,15 +321,19 @@ Pistol, Musket and Blunderbuss +1 through the capital publication, the
 Eastern +1 items through the Eastern campaign publication, and the +1 Elven
 Branched Spear through the spear campaign publication. The native
 reconciliation adjusts an item's combined stack by the change in its fixed
-rows. So if such a module is later turned off and the game reloaded, that
-item's stack loses one copy, which is a progression copy if the fixed copy was
-already sold. Turning the module back on adds it back. This is existing
-capital-publication behaviour.
+rows. So when such a module is turned off and the game reloaded, that item's
+merchant stack drops by exactly one copy. If the fixed copy had already been
+sold, that copy is a progression copy. Turning the module back on adds it back.
+This is existing baseline vendor-row behaviour, not an action of this
+integration. The `better-vendors.reused-fixed-row-reconciliation` domain case
+pins it.
 
 Craft Magic Items is not required. The new entries are not added to this mod's
-Craft Magic Items registration catalog and gain no crafting privileges. Craft
-Magic Items' own library indexing is its own behaviour and was not tested with
-these entries.
+Craft Magic Items registration catalog and gain no crafting privileges.
+Whether Craft Magic Items handles the new variants correctly is **not
+tested**. This stays an open verification item until a representative
+purchased variant has gone through Craft Magic Items' crafting and upgrade
+path.
 
 Better Vendors' manual, player-driven item-injection search lists every
 library item. It already listed this mod's items and is unchanged.
@@ -318,8 +341,12 @@ library item. It already listed this mod's items and is unchanged.
 ## Disabling and uninstall
 
 Turning off vendor progression, disabling or removing Better Vendors, or
-turning off a content module only stops future additions. No item, ledger
-entry or stock is deleted, and every blueprint stays registered.
+turning off a content module stops this integration's future additions. The
+integration itself never removes merchandise, ledger entries or items, and
+every blueprint stays registered. One baseline effect is separate: when a
+content module is turned off, the existing vendor-row reconciliation can still
+reduce a reused +1 weapon's merchant stock by one (see
+[Other acquisition paths](#other-acquisition-paths)).
 
 **Uninstall** of *this* mod is not made safe by this candidate. As before,
 removing the mod removes every blueprint it owns. That includes weapons
@@ -340,40 +367,62 @@ UMM log lines use phase `better-vendors`:
 - `progression-catalog.ready` at bootstrap, or `progression-catalog.degraded`
   with the failed checks when merchant progression is disabled;
 - `stock-call.applied` and `catch-up.applied`, with counts: granted,
-  replenished, copies, partial, failed, unrecorded, suppressed by module, and
-  ledger size;
+  replenished, copies, partial, failed, uncertain, skipped, suppressed by
+  module, and ledger size;
 - `*.failed`, logged once per distinct failure, then `*.repeated` warnings.
 
-## Open design questions for owner review
+## Known limitations and intentional differences
 
-These behaviours follow the requested catch-up rules. In a few edge cases they
-can give this mod's weapons more stock than Better Vendors gives its own. They
-are recorded for a decision rather than changed unilaterally:
-
-1. **Rank changed outside a kingdom action.** Suppose the Military rank rises
-   without `KingdomActionImproveStat`, for example through a console or
-   cheat-menu command. Better Vendors does not react. This integration's
+1. **Limitation: Military rank changed outside a kingdom action.** Suppose the
+   rank rises without `KingdomActionImproveStat`, for example through a console
+   or cheat-menu command. Better Vendors does not react. This integration's
    catch-up grants the tier once when the blacksmith opens trade. At the next
    stat improvement, Better Vendors adds its own copies for the first time and
-   this integration replenishes. This mod's entries end up with twice Better
-   Vendors' quantity for that tier.
-2. **Progression toggled off while ranks rise.** If vendor progression is off
-   while ranks rise and then switched back on, Better Vendors never back-fills
-   the skipped tiers, because its flag is already `1`. This integration's
-   catch-up does back-fill them, as the existing-save rule requires.
+   this integration replenishes. This mod's entries then have twice Better
+   Vendors' quantity for that tier. No compensation is attempted for
+   out-of-band rank edits. Normal kingdom progression and existing-save
+   migration are the supported baseline.
+2. **Intentional difference: progression off while ranks rise.** If vendor
+   progression is off while ranks rise and is then switched back on, Better
+   Vendors never back-fills its own skipped tiers, because its flag is already
+   `1`. This integration's catch-up does back-fill its entries, as requested:
+   weapons that are already unlocked become available once the integration is
+   active.
+3. **Baseline effect: module off.** Turning a content module off can reduce a
+   reused +1 weapon's merchant stock by one through the existing vendor-row
+   reconciliation (see [Other acquisition paths](#other-acquisition-paths)).
+4. **Not tested: Craft Magic Items** handling of the new variants.
+
+## Acceptance requirements before merge or release
+
+The domain suite models the scheduling, planning and bookkeeping rules with a
+dictionary shop and an in-memory ledger. It does not serialize a save,
+reconstruct the ledger part, drive the real trading hook or buy anything. The
+guarded smoke run proves loading and contract resolution only. So these
+acceptance areas remain **NOT RUN** and block merge and release. They need an
+explicitly owner-authorized, disposable kingdom-stage save. That save must
+not be fabricated, and a real campaign must not be used:
+
+| Acceptance area | Evidence needed |
+| --- | --- |
+| Actual stocking and purchase | At a known Military rank, the correct ordinary and Reliable variants appear with the correct added quantities, and future tiers are absent. Representative firearm and melee variants can be bought. The existing fixed +1 stock is accounted for separately. |
+| Persistence and bought-out stock | After grants and purchases: save, exit completely, restart and reload. The ledger survives, and opening trade does not restore purchased copies. |
+| Native event coordination | A genuine kingdom stat-improvement event, and both orderings: Better Vendors' own stocking before catch-up, and catch-up before later native stocking. Unrelated merchandise is compared against a baseline. |
+| Settings and shared inventory | Vendor progression and each content module disabled and re-enabled. The outdoor and throne-room blacksmiths show the same stock where both are reachable. |
+| Purchased-item behaviour | A purchased Reliable firearm uses the real Reliable mechanics and keeps its properties after save and load, not merely the expected name. |
 
 ## Verification status
 
 | Layer | Status |
 | --- | --- |
 | Contract identity and IL fingerprints vs installed 2.0.8 binary | PASS (static, read-only) |
-| Domain suite (36 `better-vendors.*` cases: catalog, schedule, classification, planning, ledger, lifecycle, modules, fail-closed contract, degrade-closed registration, hooks, acquisition isolation) | PASS |
+| Domain suite (38 `better-vendors.*` cases: catalog, schedule, classification, planning, write-ahead ledger and uncertain outcomes, lifecycle, modules, exact-binary gate, degrade-closed registration, fixed-row reconciliation, hooks, acquisition isolation) | PASS |
 | Repository validation, clean Release build, package validation | recorded in the release notes |
-| Guarded `working-save-smoke`, final code commit `cca27056` | PASS, 11 of 11 assertions (see below) |
+| Guarded `working-save-smoke`, commit `cca27056` (before the exact-binary gate and write-ahead ledger) | PASS, 11 of 11 assertions (see below) |
 | Adapter resolution and hook installation in game | PASS: `compatibility.ready` at package load against the live 2.0.8 assembly |
 | Registration and all progression contract checks in game | PASS: `progression-catalog.ready`, not `degraded` |
-| Merchant stock in a kingdom-stage campaign | NOT RUN: the only authorized disposable fixture predates kingdom creation, and no kingdom-stage fixture is authorized |
-| Save/load of the ledger | NOT RUN |
+| All five [acceptance areas](#acceptance-requirements-before-merge-or-release): stocking and purchase, persistence, native event coordination, settings, purchased-item behaviour | NOT RUN, **blocks merge and release**. The only authorized disposable save predates kingdom creation, and no kingdom-stage save is authorized. |
+| Craft Magic Items handling of the new variants | NOT TESTED |
 
 The guarded run `20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1`
 launched through Steam App ID 640820. It loaded `KMG_AUTOMATION_WORKING`
@@ -405,9 +454,9 @@ installation was restored from its pre-deployment backup. The final tree is
 byte-identical to the state before the first run: 238 files, 0.0.136-labelled
 DLL `c6cccdac…465c`.
 
-Unverified combinations:
+Any Better Vendors build other than the exact 2.0.8 binary is rejected by the
+gate, leaving only this integration inactive. Unverified combinations:
 
-- any Better Vendors build other than the exact 2.0.8 binary;
 - other mods that patch the same Better Vendors methods or `SmithVendorTable`;
 - Call of the Wild or Tweak or Treat weapon additions to the same queries;
 - external save editing of the ledger or of `SmithVendorTable`.
