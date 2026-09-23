@@ -20,7 +20,7 @@ VERSION = "0.0.138"
 INFORMATIONAL_VERSION = "0.0.138-better-vendors-progression"
 PACKAGE = "KingmakerGunslinger-0.0.138-local-runtime.zip"
 PACKAGE_SUFFIX = "better-vendors-progression"
-DETERMINISTIC_TEST_COUNT = 1740
+DETERMINISTIC_TEST_COUNT = 1742
 STATIC_KEY = "betterVendorsProgression138"
 PRESERVED_MANIFEST_ENTRIES = 1913
 CATALOG = "docs/better-vendors-progression-catalog.json"
@@ -150,7 +150,12 @@ def validate(root: Path) -> None:
         "stockUpToDate", "FreeformData", "using BetterVendors")
     require_tokens(root / "src/KingmakerGunslinger/Acquisition/BetterVendors/BetterVendorsContract.cs",
         "04fc03cf-853f-46c8-b6d5-1404180451fb", "7de959347266092448d8a72089ef9778",
-        "232246b356d95af5fc57e7a72c8e9cc43349414c2e1250ad37c91ad31bfc25d4")
+        "232246b356d95af5fc57e7a72c8e9cc43349414c2e1250ad37c91ad31bfc25d4",
+        # The exact approved binary is the gate, not the fingerprints.
+        '"binary-sha256"', '"binary-mvid"')
+    require_tokens(root / "src/KingmakerGunslinger/Acquisition/BetterVendors/BetterVendorsGrantPlanner.cs",
+        # Initial grants are claimed before stock changes.
+        "claimed = record(grant.Spec.Guid);", "internal bool Withdraw(string guid)")
     require_tokens(root / "src/KingmakerGunslinger/Main.cs",
         "BetterVendorsCompatibilityCoordinator")
 
@@ -168,6 +173,8 @@ def validate(root: Path) -> None:
         "betterVendorsRequired": False,
         "saveLocalLedger": "UnitPartBetterVendorsProgressionGrants",
         "ordinaryVendorPublicationChanged": False,
+        "betterVendorsVerifiedFileSha256":
+            "8843509852964d9016d2996a3050bfbe6f068360c4f2f6b8ff7f6440ca712009",
     }
     for key, value in expected.items():
         if state.get(key) != value:
@@ -176,6 +183,15 @@ def validate(root: Path) -> None:
         raise AssertionError("Native runtime qualification must be recorded explicitly")
     if state.get("nativeRuntimeQualified") and not state.get("nativeRuntimeEvidence"):
         raise AssertionError("A native qualification claim needs recorded evidence")
+    # Until merchant and persistence acceptance has real evidence, the five
+    # acceptance areas stay listed and the candidate stays merge-blocked.
+    if not state.get("nativeRuntimeQualified"):
+        if state.get("mergeBlocked") is not True or \
+                len(state.get("pendingAcceptance") or []) != 5:
+            raise AssertionError(
+                "An unqualified candidate must stay merge-blocked with its five acceptance areas")
+    if not isinstance(state.get("craftMagicItemsInteractionTested"), bool):
+        raise AssertionError("The Craft Magic Items interaction status must be recorded")
 
     require_tokens(root / "docs/RELEASE-NOTES-0.0.138.md",
         INFORMATIONAL_VERSION, "Better Vendors", "candidate", "not released",
@@ -185,7 +201,11 @@ def validate(root: Path) -> None:
         "8843509852964d9016d2996a3050bfbe6f068360c4f2f6b8ff7f6440ca712009",
         "7de959347266092448d8a72089ef9778", "stockUpToDate",
         "UnitPartBetterVendorsProgressionGrants", "Reliable", "catch-up",
-        "replenish", "corrosive", "Military VII", "uninstall")
+        "replenish", "corrosive", "Military VII", "uninstall",
+        "exact approved binary", "write-ahead",
+        "## Acceptance requirements before merge or release",
+        "## Known limitations and intentional differences",
+        "This integration itself never removes merchandise")
 
 
 def main() -> int:

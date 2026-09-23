@@ -82,7 +82,7 @@ metadata.
 
 ## Better Vendors progression (0.0.138 candidate)
 
-The optional Better Vendors integration is covered by 36 dependency-free
+The optional Better Vendors integration is covered by 38 dependency-free
 `better-vendors.*` domain cases in
 `tests/KingmakerGunslinger.DomainTests/BetterVendorsProgressionTests.cs`. They
 cover:
@@ -94,13 +94,24 @@ cover:
 - ordinary-query recognition;
 - grant planning for current-tier, catch-up, native-selection, module,
   milestone and catalog-expansion cases;
-- the ledger and partial-failure recording;
+- the write-ahead ledger. Claims are written before stock changes and released
+  only on a confirmed no-op. A grant whose outcome is uncertain is never
+  granted again by a later catch-up, and a failed claim or count leaves the
+  grant eligible;
+- a model of the native fixed-row reconciliation, which pins the one-copy
+  module-off effect on reused +1 stacks;
 - a simulated campaign lifecycle: fresh, existing, both event orders, Better
   Vendors' own first pass, disabling and campaign switching;
-- the fail-closed contract gate and one-time status reporting;
-- source checks that the hooks stay narrow and read-only, that other
-  acquisition paths exclude the variants, and that bootstrap registration is
-  unconditional.
+- the exact-binary contract gate (file SHA-256 and MVID) and one-time status
+  reporting;
+- source checks that the hooks stay narrow and read-only, that the only
+  removal is the ledger's claim release, that other acquisition paths exclude
+  the variants, and that bootstrap registration is unconditional.
+
+These cases model the rules with a dictionary shop and an in-memory ledger.
+They do not serialize a save, reconstruct the ledger part, drive the real
+trading hook or buy anything, so they are not merchant or persistence
+evidence.
 
 The machine-readable catalog must match the code. After building the domain
 tests, regenerate it with:
@@ -110,16 +121,17 @@ tests, regenerate it with:
   --write-better-vendors-catalog docs\better-vendors-progression-catalog.json
 ```
 
-The in-game stock behaviour is not yet qualified. It needs a save whose kingdom
-has reached Military I or higher. The only authorized disposable fixture,
-`KMG_AUTOMATION_WORKING`, predates kingdom creation, so Better Vendors'
-progression never runs in it. Qualifying the adapter's merchant behaviour
-needs an owner-authorized, disposable kingdom-stage fixture. Never fabricate
-one or reuse a real campaign save. The canonical `working-save-smoke`
-scenario can still show that the candidate loads, registers the 43 new
-blueprints and resolves the installed Better Vendors contract. Read the
-`better-vendors` lines in the UMM log for that. See
-[docs/BETTER-VENDORS-COMPATIBILITY.md](docs/BETTER-VENDORS-COMPATIBILITY.md).
+The in-game stock behaviour is not yet qualified, and this blocks merge and
+release. It needs a save whose kingdom has reached Military I or higher. The
+only authorized disposable fixture, `KMG_AUTOMATION_WORKING`, predates kingdom
+creation, so Better Vendors' progression never runs in it. Qualifying the
+merchant, purchase, event-coordination, settings and persistence paths needs
+an owner-authorized, disposable kingdom-stage fixture. Never fabricate one or
+reuse a real campaign save. The acceptance areas are listed in
+[docs/BETTER-VENDORS-COMPATIBILITY.md](docs/BETTER-VENDORS-COMPATIBILITY.md#acceptance-requirements-before-merge-or-release).
+The canonical `working-save-smoke` scenario can still show that the candidate
+loads, registers the 43 new blueprints and accepts the installed Better
+Vendors binary. Read the `better-vendors` lines in the UMM log for that.
 
 
 ## Rapid Reload proficiency gate
