@@ -431,6 +431,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.coverage-frost-giant-split", ExpandedSummoningCoverageTests.FrostGiantSplitsAcrossFamilies),
             Case("expanded-summoning.coverage-per-family", ExpandedSummoningCoverageTests.PerFamilyCoverageAgreesWithTheCatalogs),
             Case("expanded-summoning.coverage-identities-untouched", ExpandedSummoningCoverageTests.ExistingIdentitiesAreUntouched),
+            Case("expanded-summoning.scenario-timeout-wiring", ExpandedSummoningScenarioWiringTests.WorkingSaveScenariosAreAllowedTheirTimeouts),
+            Case("expanded-summoning.scenario-pteranodon-wiring", ExpandedSummoningScenarioWiringTests.PteranodonAttachedViewIsFullyWired),
             Case("expanded-summoning.merge-idempotent", SummonPublicationPolicyTests.MergePreservesOrderAndIsIdempotent),
             Case("expanded-summoning.merge-conflicts", SummonPublicationPolicyTests.MergeDeduplicatesExistingAndRejectsConflicts),
             Case("expanded-summoning.native-reconciliation", SummonPublicationPolicyTests.NativeDuplicateCatalogIsExact),
