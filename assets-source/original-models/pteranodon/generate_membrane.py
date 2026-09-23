@@ -342,7 +342,11 @@ def main():
     if report["maxInfluencesPerVertex"] > 4:
         raise SystemExit("Unity allows at most four bone influences per vertex")
     if args.report:
-        with open(args.report, "w", encoding="utf-8") as handle:
+        # .gitattributes mandates LF for .json; text mode on Windows
+        # would emit CRLF and the repository validator rejects it.
+        with open(args.report, "w", encoding="utf-8",
+                  newline="
+") as handle:
             json.dump(report, handle, indent=1)
 
     bpy.ops.object.select_all(action="DESELECT")
