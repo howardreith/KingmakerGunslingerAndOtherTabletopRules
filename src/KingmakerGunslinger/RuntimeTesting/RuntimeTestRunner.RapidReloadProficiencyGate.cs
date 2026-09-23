@@ -185,24 +185,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     descriptor => GrantFixtureFact(descriptor, ctx.LegacyWrapper));
 
                 // --- A/B: refusal through both real feat catalogs -----------
+                // Each case states the proficiency scope its fixture was set up
+                // with next to the fact it grants; the evaluator checks the
+                // measured ranks against that declaration.
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadRefusedParent(ctx, "A.ordinary-feat-no-proficiency",
-                        ctx.Basic, null),
+                        ctx.Basic),
+                    RapidReloadExpectedScope.NoProficiency,
                     RapidReloadGateEvidenceRules.EvaluateRefusedParent, flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadRefusedParent(ctx, "A.combat-feat-no-proficiency",
-                        ctx.FighterFeats, null),
+                        ctx.FighterFeats),
+                    RapidReloadExpectedScope.NoProficiency,
                     RapidReloadGateEvidenceRules.EvaluateRefusedParent, flowFailures));
 
                 // --- B: an out-of-scope firearm refused after a legal parent -
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadScopedChildRefusal(ctx,
                         "B.one-handed-refuses-musket", ctx.OneHanded, 1, 0),
+                    RapidReloadExpectedScope.OneHandedOnly,
                     RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal,
                     flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadScopedChildRefusal(ctx,
                         "B.two-handed-refuses-pistol", ctx.TwoHanded, 0, 1),
+                    RapidReloadExpectedScope.TwoHandedOnly,
                     RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal,
                     flowFailures));
 
@@ -210,44 +217,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadEmptySelection(ctx, "B.empty-selection-blocked",
                         ctx.Full),
+                    RapidReloadExpectedScope.AnyFirearm,
                     RapidReloadGateEvidenceRules.EvaluateEmptySelection, flowFailures));
 
                 // --- C/D/E/F/H/I: legal acquisition routes ------------------
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadAcquisition(ctx, "C.ordinary-feat-full-proficiency",
                         ctx.Fighter, null, ctx.Basic, 0, ctx.Full),
+                    RapidReloadExpectedScope.AnyFirearm,
                     RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadAcquisition(ctx, "C.combat-feat-full-proficiency",
                         ctx.Fighter, null, ctx.FighterFeats, 0, ctx.Full),
+                    RapidReloadExpectedScope.AnyFirearm,
                     RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadAcquisition(ctx, "D.one-handed-pistol", ctx.Fighter,
                         null, ctx.Basic, 0, ctx.OneHanded),
+                    RapidReloadExpectedScope.OneHandedOnly,
                     RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadAcquisition(ctx, "E.two-handed-musket", ctx.Fighter,
                         null, ctx.Basic, 1, ctx.TwoHanded),
+                    RapidReloadExpectedScope.TwoHandedOnly,
                     RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadAcquisition(ctx, "E.two-handed-blunderbuss",
                         ctx.Fighter, null, ctx.Basic, 2, ctx.TwoHanded),
+                    RapidReloadExpectedScope.TwoHandedOnly,
                     RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadAcquisition(ctx, "F.independent-source-full",
                         ctx.Fighter, null, ctx.Basic, 0, independentFull),
+                    RapidReloadExpectedScope.AnyFirearm,
                     RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadAcquisition(ctx, "F.independent-source-two-handed",
                         ctx.Fighter, null, ctx.Basic, 1, independentTwoHanded),
+                    RapidReloadExpectedScope.TwoHandedOnly,
                     RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadAcquisition(ctx, "H.legacy-wrapper-owner",
                         ctx.Fighter, null, ctx.Basic, 0, ctx.LegacyWrapper),
+                    RapidReloadExpectedScope.AnyFirearm,
                     RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
                 flow.Add(ScoreRapidReloadRow(
                     RunRapidReloadAcquisition(ctx, "I.fresh-level-one-gunslinger",
                         ctx.Gunslinger, null, ctx.Basic, 0, null),
+                    RapidReloadExpectedScope.AnyFirearm,
                     RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
 
                 pendingClass = RunRapidReloadPendingClassChange(ctx, pendingFailures);
@@ -342,10 +359,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";failures=" + string.Join("|", failures.ToArray()));
         }
 
+        // The declared scope travels with the case to the same evaluator entry
+        // point the scoring uses, so a silently different fixture cannot pass.
         private static JObject ScoreRapidReloadRow(JObject row,
-            Func<JObject, IList<string>, bool> evaluator, IList<string> failures)
+            RapidReloadExpectedScope scope,
+            Func<JObject, RapidReloadExpectedScope, IList<string>, bool> evaluator,
+            IList<string> failures)
         {
-            evaluator(row, failures);
+            evaluator(row, scope, failures);
             return row ?? new JObject { ["case"] = "<missing>" };
         }
 
@@ -428,14 +449,92 @@ namespace KingmakerGunslinger.RuntimeTesting
             return controller;
         }
 
+        // R1: an explicit reservation of one native feat slot. The engine
+        // identifies a selection state by its selection blueprint plus the
+        // occurrence index LevelUpState.AddSelection assigns (the same pair
+        // SelectFeature.GetSelectionState matches on), so the reservation
+        // survives the preview rebuilds that attribute, skill, class and
+        // archetype actions trigger. Holding a stale FeatureSelectionState
+        // reference would not.
+        private sealed class RapidReloadSlotReservation
+        {
+            internal BlueprintFeatureSelection Selection;
+            internal int Index;
+            internal int Level;
+            internal bool Released;
+        }
+
+        private static RapidReloadSlotReservation ReserveRapidReloadSlot(
+            LevelUpController controller,
+            params BlueprintFeatureSelection[] preferred)
+        {
+            foreach (BlueprintFeatureSelection selection in preferred)
+            {
+                FeatureSelectionState state = controller.State.Selections
+                    .FirstOrDefault(value => !value.Selected &&
+                        ReferenceEquals(value.Selection, selection));
+                if (state == null) continue;
+                return new RapidReloadSlotReservation {
+                    Selection = selection, Index = state.Index, Level = state.Level };
+            }
+            return null;
+        }
+
+        private static FeatureSelectionState ResolveReservedRapidReloadSlot(
+            LevelUpController controller, RapidReloadSlotReservation reservation)
+        {
+            if (reservation == null) return null;
+            return controller.State.Selections.FirstOrDefault(value =>
+                ReferenceEquals(value.Selection, reservation.Selection) &&
+                value.Index == reservation.Index);
+        }
+
+        // Proves the reserved slot is a real, still-open slot of the expected
+        // native selection. A filler feat sitting in it is a setup failure, not
+        // evidence that an invalid feat was refused.
+        private static JObject DescribeRapidReloadReservation(
+            LevelUpController controller, RapidReloadSlotReservation reservation)
+        {
+            FeatureSelectionState state = ResolveReservedRapidReloadSlot(controller,
+                reservation);
+            return new JObject {
+                ["reservedSelection"] = reservation == null ? "<none>" :
+                    reservation.Selection.name,
+                ["reservedIndex"] = reservation == null ? -1 : reservation.Index,
+                ["reservedLevel"] = reservation == null ? -1 : reservation.Level,
+                ["reservedSlotResolved"] = state != null,
+                ["reservedSlotUnselected"] = state != null && !state.Selected,
+                ["reservedSlotSelectionMatches"] = state != null && reservation != null &&
+                    ReferenceEquals(state.Selection, reservation.Selection),
+                ["released"] = reservation != null && reservation.Released };
+        }
+
+        private static bool RapidReloadReservationHolds(JObject reservation)
+        {
+            return reservation != null && (bool)reservation["reservedSlotResolved"] &&
+                (bool)reservation["reservedSlotUnselected"] &&
+                (bool)reservation["reservedSlotSelectionMatches"];
+        }
+
+        // Releasing the reservation only makes the slot available to the filler
+        // pass; it never repairs a stale Rapid Reload selection, because the
+        // resolver always skips nested ctx.Parent states and never offers the
+        // Rapid Reload parent as a filler item.
+        private static void ReleaseRapidReloadReservation(
+            RapidReloadSlotReservation reservation)
+        {
+            if (reservation != null) reservation.Released = true;
+        }
+
         // Legally satisfies everything the native completion check needs except
-        // the Rapid Reload selection under test, so a blocked completion can be
-        // attributed to the target rather than to an unfinished character.
-        // Skill and attribute points are resolved first because their actions
-        // outrank feature selections and would otherwise force a preview rebuild
-        // after the target choice was made.
+        // the reserved slot and the Rapid Reload selection under test, so a
+        // blocked completion can be attributed to the target rather than to an
+        // unfinished character. Skill and attribute points are resolved first
+        // because their actions outrank feature selections and would otherwise
+        // force a preview rebuild after the target choice was made.
         private static JObject ResolveRapidReloadNonTargetRequirements(
-            RapidReloadGateContext ctx, LevelUpController controller)
+            RapidReloadGateContext ctx, LevelUpController controller,
+            RapidReloadSlotReservation reservation)
         {
             // Character-build fields the native completion check also demands.
             // Each is only touched when the engine says it is still open, so
@@ -476,6 +575,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FeatureSelectionState pending = levelUpState.Selections.FirstOrDefault(
                     value => !value.Selected && value.Selection != null &&
                         !ReferenceEquals(value.Selection, ctx.Parent) &&
+                        !IsReservedRapidReloadSlot(value, reservation) &&
                         value.CanSelectAnything(levelUpState, preview));
                 if (pending == null) break;
                 IFeatureSelectionItem choice = pending.Selection
@@ -502,14 +602,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["canSelectPortrait"] = controller.State.CanSelectPortrait,
                 ["canSelectGender"] = controller.State.CanSelectGender,
                 ["canSelectVoice"] = controller.State.CanSelectVoice,
+                ["reservationHeld"] = reservation != null && !reservation.Released,
                 ["resolvedOtherSelections"] = resolved };
         }
 
-        private static FeatureSelectionState FindRapidReloadSlot(
-            LevelUpController controller, BlueprintFeatureSelection slotSelection)
+        private static bool IsReservedRapidReloadSlot(FeatureSelectionState state,
+            RapidReloadSlotReservation reservation)
         {
-            return controller.State.Selections.FirstOrDefault(value =>
-                !value.Selected && ReferenceEquals(value.Selection, slotSelection));
+            return reservation != null && !reservation.Released &&
+                ReferenceEquals(state.Selection, reservation.Selection) &&
+                state.Index == reservation.Index;
         }
 
         // The nested Rapid Reload choice state that SelectFeature.Apply creates
@@ -521,13 +623,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(value.Selection, ctx.Parent));
         }
 
-        private static bool RapidReloadChoiceHeld(LevelUpController controller,
-            RapidReloadGateContext ctx)
+        // R2: the parent and the exact child are recorded separately. A valid
+        // parent may legitimately survive a pending-build change that only
+        // invalidates its child, so "Rapid Reload exists somewhere" is never
+        // used as the verdict.
+        private static JObject DescribeRapidReloadHold(RapidReloadGateContext ctx,
+            LevelUpController controller, BlueprintFeature trackedChild)
         {
-            return controller.State.Selections.Any(value =>
-                ReferenceEquals(value.Selection, ctx.Parent) ||
-                value.SelectedItem != null &&
-                ReferenceEquals(value.SelectedItem.Feature, ctx.Parent));
+            FeatureSelectionState[] parentHolders = controller.State.Selections
+                .Where(value => value.SelectedItem != null &&
+                    ReferenceEquals(value.SelectedItem.Feature, ctx.Parent)).ToArray();
+            FeatureSelectionState nested = FindRapidReloadChildState(controller, ctx);
+            BlueprintFeature selectedChild = nested == null ||
+                nested.SelectedItem == null ? null : nested.SelectedItem.Feature;
+            return new JObject {
+                ["parentHeld"] = parentHolders.Length > 0,
+                ["parentHoldCount"] = parentHolders.Length,
+                ["nestedStatePresent"] = nested != null,
+                ["selectedChildName"] = selectedChild == null ? "<none>" :
+                    selectedChild.name,
+                ["trackedChild"] = trackedChild.name,
+                ["trackedChildStillSelected"] = selectedChild != null &&
+                    ReferenceEquals(selectedChild, trackedChild),
+                ["trackedChildRank"] =
+                    controller.Preview.Progression.Features.GetRank(trackedChild) };
         }
 
         // LevelUpState.IsComplete is the exact gate CharacterBuildController.Next
@@ -553,6 +672,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["attributePoints"] = levelUpState.AttributePoints };
         }
 
+        // R4: the native completion boundary. CharacterBuildController.Next
+        // calls LevelUpController.Commit only when LevelUpState.IsComplete() is
+        // true, and Commit then applies the level through ApplyLevelup. The
+        // detached harness cannot run Commit itself (it disposes the preview and
+        // touches the unit view), so it enforces the same gate and then calls
+        // the exact method Commit calls. An incomplete build is never applied
+        // through this path, so a successful confirmation can never be inferred
+        // from the resulting facts alone.
+        private bool ConfirmRapidReloadLevel(RapidReloadGateContext ctx,
+            LevelUpController controller, UnitDescriptor descriptor, JObject row,
+            string completeKey, string appliedKey)
+        {
+            JObject completion = DescribeRapidReloadCompletion(ctx, controller);
+            row[completeKey + "Detail"] = completion;
+            row[completeKey] = (bool)completion["isComplete"];
+            row["confirmationRoute"] = "LevelUpState.IsComplete gate, then " +
+                "LevelUpController.ApplyLevelup (the call Commit makes)";
+            if (!(bool)completion["isComplete"])
+            {
+                row[appliedKey] = false;
+                return false;
+            }
+            ctx.Apply.Invoke(controller, new object[] { descriptor });
+            row[appliedKey] = true;
+            return true;
+        }
+
         private static JArray DescribeRapidReloadChildEligibility(
             RapidReloadGateContext ctx, UnitDescriptor descriptor, LevelUpState levelUpState)
         {
@@ -572,8 +718,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Case A/B: no firearm proficiency, both feat catalogs
         // ------------------------------------------------------------------
         private JObject RunRapidReloadRefusedParent(RapidReloadGateContext ctx,
-            string label, BlueprintFeatureSelection slotSelection,
-            Action<UnitDescriptor> prepare)
+            string label, BlueprintFeatureSelection slotSelection)
         {
             UnitEntityData unit = CreateDisposableUnit();
             LevelUpController controller = null;
@@ -581,18 +726,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 UnitDescriptor descriptor = unit.Descriptor;
-                if (prepare != null) prepare(descriptor);
                 controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Fighter, null);
-                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                RapidReloadSlotReservation reservation = ReserveRapidReloadSlot(
+                    controller, slotSelection);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx,
+                    controller, reservation);
+                JObject reserved = DescribeRapidReloadReservation(controller, reservation);
+                row["reservation"] = reserved;
+                row["slotPresent"] = RapidReloadReservationHolds(reserved);
                 row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
                 // A Fighter already carries native martial proficiency, so the
                 // crossbow control is satisfied by the same fixture.
                 row["previewCrossbowProficiency"] =
                     controller.Preview.Proficiencies.Contains(WeaponCategory.LightCrossbow) ||
                     controller.Preview.Proficiencies.Contains(WeaponCategory.HeavyCrossbow);
-                FeatureSelectionState slot = FindRapidReloadSlot(controller, slotSelection);
-                row["slotPresent"] = slot != null;
-                if (slot == null) return row;
+                FeatureSelectionState slot = ResolveReservedRapidReloadSlot(controller,
+                    reservation);
+                if (!RapidReloadReservationHolds(reserved) || slot == null) return row;
                 IFeatureSelectionItem parentItem = FindItem(slotSelection,
                     controller.Preview, ctx.Parent);
                 row["parentOffered"] = parentItem != null;
@@ -600,11 +750,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["parentCanSelect"] = slotSelection.CanSelect(controller.Preview,
                     controller.State, slot, parentItem);
                 row["parentSelected"] = controller.SelectFeature(slot, parentItem);
-                row["parentChoiceHeld"] = RapidReloadChoiceHeld(controller, ctx);
+                row["hold"] = DescribeRapidReloadHold(ctx, controller, ctx.Children[0]);
                 row["childEligibility"] = DescribeRapidReloadChildEligibility(ctx,
                     controller.Preview, controller.State);
-                row["completion"] = DescribeRapidReloadCompletion(ctx, controller);
-                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                row["completionWhileReserved"] =
+                    DescribeRapidReloadCompletion(ctx, controller);
+                // The reservation is no longer needed: release it, fill the
+                // remaining choices legally and finish the level through the
+                // native completion gate. Releasing never repairs a Rapid Reload
+                // state, because the resolver skips nested parent selections and
+                // never offers the parent as a filler item.
+                ReleaseRapidReloadReservation(reservation);
+                row["reservationReleasedBeforeConfirmation"] = true;
+                row["requirementsAfterRelease"] =
+                    ResolveRapidReloadNonTargetRequirements(ctx, controller, reservation);
+                ConfirmRapidReloadLevel(ctx, controller, descriptor, row,
+                    "completeBeforeConfirmation", "confirmationApplied");
                 controller.Cancel();
                 controller = null;
                 row["acquiredParent"] =
@@ -636,11 +797,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitDescriptor descriptor = unit.Descriptor;
                 GrantFixtureFact(descriptor, proficiency);
                 controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Fighter, null);
-                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                RapidReloadSlotReservation reservation = ReserveRapidReloadSlot(
+                    controller, ctx.Basic);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx,
+                    controller, reservation);
+                JObject reserved = DescribeRapidReloadReservation(controller, reservation);
+                row["reservation"] = reserved;
+                row["slotPresent"] = RapidReloadReservationHolds(reserved);
                 row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
-                FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
-                row["slotPresent"] = slot != null;
-                if (slot == null) return row;
+                FeatureSelectionState slot = ResolveReservedRapidReloadSlot(controller,
+                    reservation);
+                if (!RapidReloadReservationHolds(reserved) || slot == null) return row;
                 IFeatureSelectionItem parentItem = FindItem(ctx.Basic,
                     controller.Preview, ctx.Parent);
                 row["parentCanSelect"] = parentItem != null && ctx.Basic.CanSelect(
@@ -679,9 +846,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     controller.SelectFeature(childState, legal);
                 JObject afterLegal = DescribeRapidReloadCompletion(ctx, controller);
                 row["completionAfterLegalChoice"] = afterLegal;
-                row["completeAfterLegalChoice"] = (bool)afterLegal["isComplete"];
                 row["targetBlocksCompletionAfterLegalChoice"] = (bool)afterLegal["targetBlocks"];
-                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                ConfirmRapidReloadLevel(ctx, controller, descriptor, row,
+                    "completeBeforeConfirmation", "confirmationApplied");
                 controller.Cancel();
                 controller = null;
                 row["acquiredLegalChild"] = descriptor.Progression.Features
@@ -698,7 +865,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         // ------------------------------------------------------------------
-        // Case B: a held parent with no firearm chosen
+        // Case B: a held parent with no firearm chosen. This is a defensive
+        // probe: it deliberately applies a build the native completion gate
+        // refuses, to prove the empty choice banks nothing. It is never a claim
+        // that normal confirmation was permitted.
         // ------------------------------------------------------------------
         private JObject RunRapidReloadEmptySelection(RapidReloadGateContext ctx,
             string label, BlueprintFeature proficiency)
@@ -711,11 +881,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitDescriptor descriptor = unit.Descriptor;
                 GrantFixtureFact(descriptor, proficiency);
                 controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Fighter, null);
-                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                RapidReloadSlotReservation reservation = ReserveRapidReloadSlot(
+                    controller, ctx.Basic);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx,
+                    controller, reservation);
+                JObject reserved = DescribeRapidReloadReservation(controller, reservation);
+                row["reservation"] = reserved;
+                row["slotPresent"] = RapidReloadReservationHolds(reserved);
                 row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
-                FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
-                row["slotPresent"] = slot != null;
-                if (slot == null) return row;
+                FeatureSelectionState slot = ResolveReservedRapidReloadSlot(controller,
+                    reservation);
+                if (!RapidReloadReservationHolds(reserved) || slot == null) return row;
                 IFeatureSelectionItem parentItem = FindItem(ctx.Basic,
                     controller.Preview, ctx.Parent);
                 row["parentSelected"] = parentItem != null &&
@@ -729,6 +905,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["completion"] = completion;
                 row["completeWhileEmpty"] = (bool)completion["isComplete"];
                 row["targetBlocksCompletion"] = (bool)completion["targetBlocks"];
+                row["appliedWithoutNativeCompletion"] = true;
+                row["confirmationRoute"] = "defensive probe: ApplyLevelup on a build " +
+                    "LevelUpState.IsComplete refuses; never a native confirmation";
                 ctx.Apply.Invoke(controller, new object[] { descriptor });
                 controller.Cancel();
                 controller = null;
@@ -762,11 +941,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitDescriptor descriptor = unit.Descriptor;
                 if (proficiency != null) GrantFixtureFact(descriptor, proficiency);
                 controller = OpenRapidReloadVisit(ctx, descriptor, characterClass, archetype);
-                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                RapidReloadSlotReservation reservation = ReserveRapidReloadSlot(
+                    controller, slotSelection);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx,
+                    controller, reservation);
+                JObject reserved = DescribeRapidReloadReservation(controller, reservation);
+                row["reservation"] = reserved;
+                row["slotPresent"] = RapidReloadReservationHolds(reserved);
                 row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
-                FeatureSelectionState slot = FindRapidReloadSlot(controller, slotSelection);
-                row["slotPresent"] = slot != null;
-                if (slot == null) return row;
+                FeatureSelectionState slot = ResolveReservedRapidReloadSlot(controller,
+                    reservation);
+                if (!RapidReloadReservationHolds(reserved) || slot == null) return row;
                 IFeatureSelectionItem parentItem = FindItem(slotSelection,
                     controller.Preview, ctx.Parent);
                 row["parentOffered"] = parentItem != null;
@@ -785,10 +970,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         childState, childItem);
                 row["childSelected"] = childItem != null &&
                     controller.SelectFeature(childState, childItem);
-                JObject completion = DescribeRapidReloadCompletion(ctx, controller);
-                row["completion"] = completion;
-                row["completeAfterLegalChoice"] = (bool)completion["isComplete"];
-                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                ConfirmRapidReloadLevel(ctx, controller, descriptor, row,
+                    "completeBeforeConfirmation", "confirmationApplied");
                 controller.Cancel();
                 controller = null;
                 row["acquiredChild"] = descriptor.Progression.Features
@@ -805,7 +988,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         // ------------------------------------------------------------------
-        // F1: a genuine pending class change inside one live transaction
+        // F1/R1: a genuine pending class change inside one live transaction
         // ------------------------------------------------------------------
         private JObject RunRapidReloadPendingClassChange(RapidReloadGateContext ctx,
             IList<string> failures)
@@ -819,11 +1002,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitDescriptor descriptor = unit.Descriptor;
                 controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Gunslinger, null);
                 controllerInstances++;
-                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                RapidReloadSlotReservation reservation = ReserveRapidReloadSlot(
+                    controller, ctx.Basic);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx,
+                    controller, reservation);
+                JObject reserved = DescribeRapidReloadReservation(controller, reservation);
+                row["reservation"] = reserved;
+                row["slotPresent"] = RapidReloadReservationHolds(reserved);
                 row["gunslingerFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
                 row["gunslingerLevel"] =
                     controller.Preview.Progression.GetClassLevel(ctx.Gunslinger);
-                if (!HoldRapidReloadChoice(ctx, controller, ctx.Basic, 0, row, "held"))
+                if (!HoldRapidReloadChoice(ctx, controller, reservation, 0, row, "held"))
                     failures.Add("pending-class-change:initial-hold-failed");
                 row["heldBeforeChange"] = (bool)row["held"];
                 FeatureSelectionState heldState = FindRapidReloadChildState(controller, ctx);
@@ -847,7 +1036,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     controller.Preview, controller.State);
                 row["childEligibilityAfterChange"] = DescribeRapidReloadChildEligibility(
                     ctx, controller.Preview, controller.State);
-                row["choiceSurvivedChange"] = RapidReloadChoiceHeld(controller, ctx);
+                // The parent itself stops qualifying as a Fighter, so both the
+                // parent hold and the exact child must be gone.
+                row["holdAfterChange"] = DescribeRapidReloadHold(ctx, controller,
+                    ctx.Children[0]);
 
                 // Change back through the same native route.
                 if (!controller.SelectClass(ctx.Gunslinger, true))
@@ -858,23 +1050,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     controller.Preview, controller.State);
                 row["childEligibilityAfterRestore"] = DescribeRapidReloadChildEligibility(
                     ctx, controller.Preview, controller.State);
-                row["choiceRestoredByEngine"] = RapidReloadChoiceHeld(controller, ctx);
+                row["holdAfterRestore"] = DescribeRapidReloadHold(ctx, controller,
+                    ctx.Children[0]);
 
-                row["requirementsAfterRestore"] =
-                    ResolveRapidReloadNonTargetRequirements(ctx, controller);
-                if (!HoldRapidReloadChoice(ctx, controller, ctx.Basic, 0, row, "rehold"))
+                row["requirementsAfterRestore"] = ResolveRapidReloadNonTargetRequirements(
+                    ctx, controller, reservation);
+                row["reservationAfterRestore"] =
+                    DescribeRapidReloadReservation(controller, reservation);
+                if (!HoldRapidReloadChoice(ctx, controller, reservation, 0, row, "rehold"))
                     failures.Add("pending-class-change:rehold-failed");
                 row["reheldBeforeSecondChange"] = (bool)row["rehold"];
 
                 if (!controller.SelectClass(ctx.Fighter, true))
                     throw new InvalidOperationException(
                         "Native second class change to Fighter was rejected.");
-                row["choiceSurvivedSecondChange"] = RapidReloadChoiceHeld(controller, ctx);
+                row["holdAfterSecondChange"] = DescribeRapidReloadHold(ctx, controller,
+                    ctx.Children[0]);
+                // Native invalidation is observed above; only then is the test
+                // reservation released so the unrelated Fighter level can be
+                // finished legally.
+                ReleaseRapidReloadReservation(reservation);
+                row["reservationReleasedBeforeConfirmation"] = true;
                 row["requirementsBeforeConfirmation"] =
-                    ResolveRapidReloadNonTargetRequirements(ctx, controller);
-                row["completionBeforeConfirmation"] =
-                    DescribeRapidReloadCompletion(ctx, controller);
-                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                    ResolveRapidReloadNonTargetRequirements(ctx, controller, reservation);
+                ConfirmRapidReloadLevel(ctx, controller, descriptor, row,
+                    "completeBeforeConfirmation", "confirmationApplied");
                 controller.Cancel();
                 controller = null;
                 row["confirmedFighterLevel"] =
@@ -896,7 +1096,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         // ------------------------------------------------------------------
-        // F1: a genuine pending archetype (proficiency-scope) change
+        // F1/R2: a genuine pending archetype (proficiency-scope) change.
+        // Musket Master still qualifies for the Rapid Reload parent through
+        // two-handed proficiency, so the engine may legitimately keep the
+        // parent while clearing the now-invalid Pistol child. Both outcomes are
+        // accepted; what is checked is the exact child.
         // ------------------------------------------------------------------
         private JObject RunRapidReloadPendingArchetypeChange(RapidReloadGateContext ctx,
             IList<string> failures)
@@ -910,11 +1114,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitDescriptor descriptor = unit.Descriptor;
                 controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Gunslinger, null);
                 controllerInstances++;
-                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                RapidReloadSlotReservation reservation = ReserveRapidReloadSlot(
+                    controller, ctx.Basic);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx,
+                    controller, reservation);
+                JObject reserved = DescribeRapidReloadReservation(controller, reservation);
+                row["reservation"] = reserved;
+                row["slotPresent"] = RapidReloadReservationHolds(reserved);
                 row["baseFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
                 // Pistol: legal for the base Gunslinger, illegal for a Musket
                 // Master.
-                if (!HoldRapidReloadChoice(ctx, controller, ctx.Basic, 0, row, "held"))
+                if (!HoldRapidReloadChoice(ctx, controller, reservation, 0, row, "held"))
                     failures.Add("pending-archetype-change:initial-hold-failed");
                 row["heldBeforeChange"] = (bool)row["held"];
 
@@ -929,9 +1139,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     controller.Preview, controller.State);
                 row["childEligibilityAfterChange"] = DescribeRapidReloadChildEligibility(
                     ctx, controller.Preview, controller.State);
-                row["choiceSurvivedChange"] = RapidReloadChoiceHeld(controller, ctx);
-                row["childSelectableAfterChange"] = DescribeRapidReloadChildSelectability(
-                    ctx, controller, failures, "pending-archetype-change");
+                row["holdAfterChange"] = DescribeRapidReloadHold(ctx, controller,
+                    ctx.Children[0]);
+                row["invalidChildRankAfterChange"] =
+                    controller.Preview.Progression.Features.GetRank(ctx.Children[0]);
+                JObject selectability = DescribeRapidReloadChildSelectability(ctx,
+                    controller, reservation, failures, "pending-archetype-change");
+                row["childSelectableAfterChange"] = selectability["selectable"];
+                row["childSelectabilitySource"] = selectability["source"];
+                row["selectabilityProbeCreatedSelection"] =
+                    selectability["probeCreatedSelection"];
 
                 controller.RemoveArchetype(ctx.MusketMaster);
                 row["archetypeRemoved"] =
@@ -953,31 +1170,45 @@ namespace KingmakerGunslinger.RuntimeTesting
             return row;
         }
 
-        // Opens Rapid Reload in a real feat slot and reports which firearms the
-        // native child selection would actually accept, then withdraws the probe
-        // so the caller's transaction is left as it was.
-        private static JArray DescribeRapidReloadChildSelectability(
+        // Reports which firearms the native child selection would actually
+        // accept. If the engine legitimately retained the Rapid Reload parent,
+        // that retained nested state is used directly and nothing is created or
+        // withdrawn. Only when the transition removed the parent does this open
+        // a probe in the reserved slot, and only that probe-created selection is
+        // withdrawn afterwards.
+        private static JObject DescribeRapidReloadChildSelectability(
             RapidReloadGateContext ctx, LevelUpController controller,
-            IList<string> failures, string label)
+            RapidReloadSlotReservation reservation, IList<string> failures, string label)
         {
-            FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
-            if (slot == null)
-            {
-                failures.Add(label + ":selectability-slot-absent");
-                return new JArray();
-            }
-            IFeatureSelectionItem parentItem = FindItem(ctx.Basic, controller.Preview,
-                ctx.Parent);
-            if (parentItem == null || !controller.SelectFeature(slot, parentItem))
-            {
-                failures.Add(label + ":selectability-parent-refused");
-                return new JArray();
-            }
+            bool probeCreated = false;
             FeatureSelectionState childState = FindRapidReloadChildState(controller, ctx);
             if (childState == null)
             {
-                failures.Add(label + ":selectability-child-state-absent");
-                return new JArray();
+                FeatureSelectionState slot = ResolveReservedRapidReloadSlot(controller,
+                    reservation);
+                if (slot == null || slot.Selected)
+                {
+                    failures.Add(label + ":selectability-reserved-slot-unavailable");
+                    return new JObject { ["source"] = "<reserved-slot-unavailable>",
+                        ["probeCreatedSelection"] = false, ["selectable"] = new JArray() };
+                }
+                IFeatureSelectionItem parentItem = FindItem(reservation.Selection,
+                    controller.Preview, ctx.Parent);
+                if (parentItem == null || !controller.SelectFeature(slot, parentItem))
+                {
+                    failures.Add(label + ":selectability-parent-refused");
+                    return new JObject { ["source"] = "<parent-refused>",
+                        ["probeCreatedSelection"] = false, ["selectable"] = new JArray() };
+                }
+                probeCreated = true;
+                childState = FindRapidReloadChildState(controller, ctx);
+                if (childState == null)
+                {
+                    failures.Add(label + ":selectability-child-state-absent");
+                    WithdrawRapidReloadProbe(controller, reservation);
+                    return new JObject { ["source"] = "<child-state-absent>",
+                        ["probeCreatedSelection"] = true, ["selectable"] = new JArray() };
+                }
             }
             var selectable = new JArray(ctx.Children.Select(child =>
             {
@@ -986,17 +1217,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return item != null && childState.Selection.CanSelect(controller.Preview,
                     controller.State, childState, item);
             }));
-            controller.UnselectFeature(slot);
-            return selectable;
+            if (probeCreated) WithdrawRapidReloadProbe(controller, reservation);
+            return new JObject {
+                ["source"] = probeCreated ? "probe" : "retained-nested-state",
+                ["probeCreatedSelection"] = probeCreated,
+                ["selectable"] = selectable };
+        }
+
+        private static void WithdrawRapidReloadProbe(LevelUpController controller,
+            RapidReloadSlotReservation reservation)
+        {
+            FeatureSelectionState slot = ResolveReservedRapidReloadSlot(controller,
+                reservation);
+            if (slot != null && slot.Selected) controller.UnselectFeature(slot);
         }
 
         private static bool HoldRapidReloadChoice(RapidReloadGateContext ctx,
-            LevelUpController controller, BlueprintFeatureSelection slotSelection,
+            LevelUpController controller, RapidReloadSlotReservation reservation,
             int childIndex, JObject row, string key)
         {
-            FeatureSelectionState slot = FindRapidReloadSlot(controller, slotSelection);
-            if (slot == null) { row[key] = false; return false; }
-            IFeatureSelectionItem parentItem = FindItem(slotSelection,
+            FeatureSelectionState slot = ResolveReservedRapidReloadSlot(controller,
+                reservation);
+            if (slot == null || slot.Selected) { row[key] = false; return false; }
+            IFeatureSelectionItem parentItem = FindItem(reservation.Selection,
                 controller.Preview, ctx.Parent);
             if (parentItem == null || !controller.SelectFeature(slot, parentItem))
             { row[key] = false; return false; }
@@ -1040,7 +1283,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // automatic Rapid Reload (Musket) grant.
                 controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Gunslinger,
                     ctx.MusketMaster);
-                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                RapidReloadSlotReservation reservation = ReserveRapidReloadSlot(
+                    controller, ctx.Basic);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx,
+                    controller, reservation);
+                JObject reserved = DescribeRapidReloadReservation(controller, reservation);
+                row["reservation"] = reserved;
+                row["slotPresent"] = RapidReloadReservationHolds(reserved);
                 row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
                 row["gunslingerLevel"] =
                     controller.Preview.Progression.GetClassLevel(ctx.Gunslinger);
@@ -1048,9 +1297,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     controller.Preview.Progression.IsArchetype(ctx.MusketMaster);
                 row["automaticMusketRank"] =
                     controller.Preview.Progression.Features.GetRank(ctx.Children[1]);
-                FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
-                row["slotPresent"] = slot != null;
-                if (slot == null) return row;
+                FeatureSelectionState slot = ResolveReservedRapidReloadSlot(controller,
+                    reservation);
+                if (!RapidReloadReservationHolds(reserved) || slot == null) return row;
                 IFeatureSelectionItem parentItem = FindItem(ctx.Basic,
                     controller.Preview, ctx.Parent);
                 row["parentCanSelect"] = parentItem != null && ctx.Basic.CanSelect(
@@ -1082,11 +1331,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         childState, legal);
                 row["legalChildSelected"] = legal != null && childState != null &&
                     controller.SelectFeature(childState, legal);
-                row["completion"] = DescribeRapidReloadCompletion(ctx, controller);
                 row["featSlotsConsumed"] = controller.State.Selections.Count(value =>
                     value.SelectedItem != null &&
                     ReferenceEquals(value.SelectedItem.Feature, ctx.Parent));
-                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                ConfirmRapidReloadLevel(ctx, controller, descriptor, row,
+                    "completeBeforeConfirmation", "confirmationApplied");
                 controller.Cancel();
                 controller = null;
                 row["acquiredLegalChild"] =
@@ -1116,11 +1365,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 UnitDescriptor descriptor = unit.Descriptor;
-                // A genuine Gunslinger committed through native class mechanics.
+                // A genuine Gunslinger, confirmed through the native completion
+                // gate. Nothing is reserved here: this visit has no target
+                // operation, so every requirement including the feat slot is
+                // settled legally.
                 controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Gunslinger, null);
-                row["buildRequirements"] =
-                    ResolveRapidReloadNonTargetRequirements(ctx, controller);
-                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                row["buildRequirements"] = ResolveRapidReloadNonTargetRequirements(ctx,
+                    controller, null);
+                ConfirmRapidReloadLevel(ctx, controller, descriptor, row,
+                    "buildCompleteBeforeConfirmation", "buildConfirmationApplied");
                 controller.Cancel();
                 controller = null;
                 row["builtGunslingerLevel"] =
@@ -1145,24 +1398,31 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 // Exercise selection on a live preview. The next level is taken
                 // as a Fighter so the Gunslinger progression is not re-applied;
-                // Gunslinger class identity is preserved and re-proved below. If
-                // the preview restored any proficiency the control is invalid and
-                // the fixture assertion fails rather than scoring a pass.
+                // Gunslinger class identity is preserved and re-proved below. A
+                // second character level offers no new ordinary feat, so the
+                // Fighter bonus combat feat is the realistic slot and the
+                // ordinary catalog is only the fallback.
                 controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Fighter, null);
-                row["previewRequirements"] =
-                    ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                RapidReloadSlotReservation reservation = ReserveRapidReloadSlot(
+                    controller, ctx.FighterFeats, ctx.Basic);
+                row["previewRequirements"] = ResolveRapidReloadNonTargetRequirements(ctx,
+                    controller, reservation);
+                JObject reserved = DescribeRapidReloadReservation(controller, reservation);
+                row["reservation"] = reserved;
+                row["slotPresent"] = RapidReloadReservationHolds(reserved);
                 row["previewGunslingerLevel"] =
                     controller.Preview.Progression.GetClassLevel(ctx.Gunslinger);
                 row["previewFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
-                FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
-                row["slotPresent"] = slot != null;
-                if (slot != null)
+                FeatureSelectionState slot = ResolveReservedRapidReloadSlot(controller,
+                    reservation);
+                if (RapidReloadReservationHolds(reserved) && slot != null)
                 {
-                    IFeatureSelectionItem parentItem = FindItem(ctx.Basic,
+                    IFeatureSelectionItem parentItem = FindItem(reservation.Selection,
                         controller.Preview, ctx.Parent);
                     row["parentOffered"] = parentItem != null;
-                    row["parentCanSelect"] = parentItem != null && ctx.Basic.CanSelect(
-                        controller.Preview, controller.State, slot, parentItem);
+                    row["parentCanSelect"] = parentItem != null &&
+                        reservation.Selection.CanSelect(controller.Preview,
+                            controller.State, slot, parentItem);
                     row["parentSelected"] = parentItem != null &&
                         controller.SelectFeature(slot, parentItem);
                 }

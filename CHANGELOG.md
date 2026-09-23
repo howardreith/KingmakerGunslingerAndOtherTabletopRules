@@ -37,6 +37,16 @@
 - Added `RapidReloadGateEvidenceRules` plus `rapid-reload-evidence.*` domain
   coverage so a scenario run that skipped a native operation, lost a
   precondition or repaired an invalid state cannot be scored as a pass.
+- Corrected the scenario again after a second review: each case now reserves the
+  exact native feat slot it exercises (selection blueprint plus occurrence
+  index, so it survives preview rebuilds) instead of letting the filler pass
+  consume it; the pending archetype change tracks the exact invalid child rather
+  than "Rapid Reload exists somewhere", accepting that a Musket Master may
+  legitimately keep the still-qualifying parent; every case declares its
+  proficiency scope to the evaluator that scores it, so a silently different
+  fixture is rejected; and every claimed successful confirmation must observe
+  `LevelUpState.IsComplete` as true immediately before the level is applied,
+  with the one deliberate lower-level application labelled a defensive probe.
 - The scenario has not been executed; runtime qualification is blocked because
   the authoring sessions are elevated and the runtime orchestrator correctly
   refuses administrator elevation.

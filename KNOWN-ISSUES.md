@@ -11,16 +11,26 @@
   and would need its own design pass when independent proficiency sources are
   introduced.
 - The guarded `disposable-rapid-reload-proficiency-gate` runtime scenario is
-  registered, compiled and catalog-synchronised, and its review findings
-  (a real pending class/archetype change instead of separate cancelled visits,
-  refusal observed before any test cleanup, a natively built Musket Master, and
-  a class-identity control with real Gunslinger levels) are implemented. It has
-  still not been executed: the runtime orchestrator refuses administrator
+  registered, compiled and catalog-synchronised, and both rounds of review
+  findings are implemented: a real pending class/archetype change inside one
+  live transaction, refusal observed before any test cleanup, a natively built
+  Musket Master, a class-identity control with real Gunslinger levels, an
+  explicit rebuild-tolerant reservation of the feat slot each case exercises,
+  exact-child tracking across an archetype change, declared proficiency scopes
+  validated by the evaluators that score each case, and the native
+  `LevelUpState.IsComplete` gate required before every claimed confirmation. It
+  has still not been executed: the runtime orchestrator refuses administrator
   elevation by design and the authoring sessions were elevated, so runtime
   qualification for the Rapid Reload proficiency gate is recorded as blocked
   rather than passed. The `rapid-reload-evidence.*` domain cases only prove that
-  incomplete or repaired evidence cannot score a pass; neither they nor a clean
-  Release build are runtime evidence.
+  incomplete, unreserved, mis-fixtured or ungated evidence cannot score a pass;
+  neither they nor a clean Release build are runtime evidence.
+- A Musket Master still qualifies for the Rapid Reload parent through
+  two-handed firearm proficiency, so a pending archetype change may
+  legitimately leave the parent selection in place while clearing the
+  now-invalid one-handed child. Both that outcome and the engine removing the
+  whole selection are accepted; what is required is that the invalid child is
+  neither selected, granted, eligible nor selectable.
 - RESOLVED (Z-FIREARM-MAINTENANCE, 0.0.127): the unified repair combat
   question is closed. Repair Firearm is now an out-of-combat, Broken-only
   full-round maintenance action gated by the native party-level combat
