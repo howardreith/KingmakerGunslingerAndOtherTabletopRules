@@ -99,6 +99,11 @@ namespace KingmakerGunslinger
                     logger.Info("compatibility-attribution",
                         "asset-family.suppressed",
                         "family=eastern-weapons;nativeFallback=true;saveState=false");
+                // The Pteranodon's original visual is optional and fail-soft:
+                // a missing or invalid bundle leaves the donor body attached,
+                // which is a cosmetic shortfall rather than a defect. It gates
+                // itself on the Expanded Summoning module.
+                Assets.PteranodonAssetRuntime.Configure(context);
                 // Native firearm audio is an optional, fail-soft capability.
                 // A missing/invalid bank must never disable firearm mechanics.
                 Audio.FirearmSoundRuntime.Configure(context);
