@@ -1809,19 +1809,27 @@
     "nativeRuntimeEvidence": null,
     "nativeRuntimeScopeNote": "Merchant stock needs a kingdom-stage save; the only authorized disposable fixture predates kingdom creation.",
     "workingSaveSmoke": {
-      "runId": "20260923T2036170490182Z-e8ae7b5631174645a40db7ccb7b89a38",
+      "runId": "20260923T2118072933978Z-e4a9ec9367e44db2a380826b98f42488",
       "status": "PASS",
       "assertions": 11,
-      "commit": "c9427faa5eb772d7744fbcce6dc71f1e64e3b636",
-      "packageSha256": "20132261467f0d93ec501fda9ca0d495917ac8ce60ca99744935f59d5e72820f",
-      "dllSha256": "461183e8f4f193dbdba96068ab97a502ea7846dc2191f88b33ceb8861b81adca",
-      "dllMvid": "2d98ffc8-6c2b-4c06-bd3e-31d81f820211",
+      "commit": "a0cae195c7627b2e067c7d295b08904b51de232e",
+      "packageSha256": "b9910f845d9a0a851dc7037abed70ca5babfda6050fa1dd812d768686dde2b63",
+      "dllSha256": "bef123dbffd0b00a3808b3bd1e04a5b292fca42203a59f68585d4c8f7eb8f27b",
+      "dllMvid": "40edc1e4-8691-424d-9cf1-650a3fd2aaba",
+      "artifactNote": "Built from the release commit in the feature worktree; the published build of the same commit was compiled in the main checkout, so its bytes and MVID differ.",
       "betterVendorsAdapterStatus": "Ready",
       "exactBinaryGateAccepted": true,
       "progressionCatalogReady": "entries=50;reused=7;registered=43;firearms=30;melee=20;publishedToVendors=false",
       "progressionCatalogDegraded": false,
       "liveInstallationRestored": true,
       "earlierRuns": [
+        {
+          "runId": "20260923T2036170490182Z-e8ae7b5631174645a40db7ccb7b89a38",
+          "status": "PASS",
+          "commit": "c9427faa5eb772d7744fbcce6dc71f1e64e3b636",
+          "dllSha256": "461183e8f4f193dbdba96068ab97a502ea7846dc2191f88b33ceb8861b81adca",
+          "dllMvid": "2d98ffc8-6c2b-4c06-bd3e-31d81f820211"
+        },
         {
           "runId": "20260923T1810242389403Z-1bf61c4530d14e879a16919b182a9602",
           "status": "PASS",
@@ -1839,6 +1847,14 @@
       ]
     },
     "compatibilityRuntimeQualificationPending": true,
-    "saveLoadCompatibilityVerified": false
+    "saveLoadCompatibilityVerified": false,
+    "publishedTag": "v0.0.138",
+    "publishedAtUtc": "2026-09-23T21:24:56Z",
+    "publishedCommit": "a0cae195c7627b2e067c7d295b08904b51de232e",
+    "publishedPackage": "KingmakerGunslinger-0.0.138-better-vendors-progression.zip",
+    "publishedPackageSha256": "2b4d9415668c497fd970601c84e602702df18b7050c7ed12409e6a0bf3df05de",
+    "publishedDllSha256": "1fa29d08ceb09552a07c4dd7c5a79500d1c5809d7989b85ca549d38a0301dede",
+    "publishedDllMvid": "ffaada2b-a792-4045-804b-b5dafe4a3713",
+    "publishedArtifactNote": "Publish-Release.ps1 produced two identical deterministic exact-reference builds from master at a0cae195. The downloaded public asset matches packageSha256 and passes strict package validation. The guarded smoke ran on the same commit built in the feature worktree, so it exercised identical source, not these exact bytes."
   }
 }
