@@ -33,8 +33,8 @@ action`. Do not restart the project or rerun completed work.
 | B5 | Sprint 0 visual contracts | DONE - PASS 13/13 |
 | B6 | Compatibility / feature-boundary profiles | DONE except two owed mechanical runs |
 | C1 | Sprint 1 corrections verified in current code | DONE |
-| C2 | Dev-only projected-menu fixture, real UI, unattended | TODO |
-| C3 | Menu measurements vs baseline + rubric | TODO |
+| C2 | Dev-only projected-menu fixture | BUILT; live measurement NOT OBTAINED |
+| C3 | Menu rubric + measurements | Rubric written and enforced; live claim narrowed |
 | D1 | Rig contract: attached animation ActionSet/clips/events | DONE |
 | D2 | Rig contract: per-bone rest transforms + bind matrices | DONE |
 | E1 | Deformation proof | DONE - drift 0.00000, control unmoved |
@@ -188,7 +188,23 @@ blends across bones and few vertices exceed the 0.8 dominance threshold - the
 proof holds, but the owned population is thin and worth widening if the mesh
 changes.
 
+## C2/C3: the live projected-menu measurement was not obtained
+
+Seven guarded runs. Two real defects were found and fixed along the way - the
+runner's working-save chains, and the compatibility-lock ownership rule - and
+both now have tests. The measurement itself is blocked by the fixture: no
+`ActionBarGroupSlot` is active in `KMG_AUTOMATION_WORKING`'s hierarchy, and the
+shipped layout anchors the popup to a clicked slot, so there is nothing to
+measure against. Creating a save whose caster has a summon parent on the action
+bar is a change to a shared disposable fixture and is recorded rather than done.
+
+The claim is narrowed accordingly and stated in
+`docs/EXPANDED-SUMMONING-PROJECTED-MENU-RUBRIC.md`: the layout policy is
+measured exhaustively at domain level (four viewports x 200 counts), the real
+menu is measured supervised, and no live measurement at 120/110 entries is
+claimed.
+
 ## Next executable action
 
-Wire and run `disposable-expanded-summoning-projected-menu` (C2/C3), then the
-two owed compatibility mechanical runs, then acceptance groups 4, 6 and 7.
+Run the two owed compatibility mechanical scenarios, then write the reports,
+journal, evidence index and PR #21 update.
