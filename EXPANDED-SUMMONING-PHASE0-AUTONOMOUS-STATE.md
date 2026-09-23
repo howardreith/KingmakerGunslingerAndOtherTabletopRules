@@ -41,7 +41,7 @@ action`. Do not restart the project or rerun completed work.
 | E2 | Finished Pteranodon mesh + textures | Body done; crest polish, UVs and texture remain |
 | E3 | Mesh data + instance-local loader + fallback | Loader DONE; fallback paths not yet exercised live |
 | F1-F7 | Seven live acceptance groups | TODO |
-| G | Reports, PR update, internal review closure | TODO |
+| G | Reports, PR update, internal review closure | DONE |
 
 ## Verified facts (do not re-derive)
 
@@ -204,7 +204,17 @@ measured exhaustively at domain level (four viewports x 200 counts), the real
 menu is measured supervised, and no live measurement at 120/110 entries is
 claimed.
 
+## Two hard limits reached and reported
+
+1. **Unity licence.** Two refreshes and a fresh Hub install of the same pinned
+   2018.4.10f1 did not change the batchmode refusal. Both installs read the
+   refreshed ULF and both then report not-activated. Blocks nothing: the asset
+   ships as mesh data.
+2. **Projected-menu anchor.** Installing an action-bar slot to anchor the popup
+   hung the game - frames stopped, so even the frame-budget guard could not
+   fire. Disabled. The live 120/110 measurement is marked not run.
+
 ## Next executable action
 
-Run the two owed compatibility mechanical scenarios, then write the reports,
-journal, evidence index and PR #21 update.
+Finish E2: a crest that reads at silhouette scale, then UVs and a texture.
+Acceptance groups 1 and 2 depend on it; groups 4, 6 and 7 need new scenarios.
