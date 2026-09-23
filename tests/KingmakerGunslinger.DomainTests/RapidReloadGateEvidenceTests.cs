@@ -12,9 +12,12 @@ namespace KingmakerGunslinger.DomainTests
     /// runtime scenario scores its own evidence. These tests do not prove the
     /// registered blueprints or the native selection flow — only the guarded
     /// scenario run can do that. They prove that a run which skipped a native
-    /// operation, lost a precondition, repaired an invalid state, or
-    /// substituted separate cancelled visits for a real pending-build change
-    /// cannot be scored as a pass.
+    /// operation, lost a precondition, never really held the feat slot it
+    /// claims, silently used a different proficiency fixture, repaired an
+    /// invalid state, substituted cancelled visits for a real pending-build
+    /// change, or applied a build the native completion gate refused cannot be
+    /// scored as a pass. Every mutation is scored through the same evaluator
+    /// entry point the runtime scenario calls.
     /// </summary>
     internal static class RapidReloadGateEvidenceTests
     {
@@ -26,6 +29,32 @@ namespace KingmakerGunslinger.DomainTests
                 ["twoHandedProficiencyRank"] = two };
         }
 
+        private static JObject Reservation(string selection)
+        {
+            return new JObject {
+                ["reservedSelection"] = selection,
+                ["reservedIndex"] = 0,
+                ["reservedLevel"] = 1,
+                ["reservedSlotResolved"] = true,
+                ["reservedSlotUnselected"] = true,
+                ["reservedSlotSelectionMatches"] = true,
+                ["released"] = false };
+        }
+
+        private static JObject Hold(bool parentHeld, bool trackedChildSelected,
+            int trackedChildRank)
+        {
+            return new JObject {
+                ["parentHeld"] = parentHeld,
+                ["parentHoldCount"] = parentHeld ? 1 : 0,
+                ["nestedStatePresent"] = parentHeld,
+                ["selectedChildName"] = trackedChildSelected ?
+                    "KMG_RapidReload_Pistol" : "<none>",
+                ["trackedChild"] = "KMG_RapidReload_Pistol",
+                ["trackedChildStillSelected"] = trackedChildSelected,
+                ["trackedChildRank"] = trackedChildRank };
+        }
+
         private static JArray Bools(params bool[] values)
         {
             return new JArray(values.Select(value => (object)value));
@@ -35,13 +64,17 @@ namespace KingmakerGunslinger.DomainTests
         {
             return new JObject {
                 ["case"] = "A.ordinary-feat-no-proficiency",
+                ["reservation"] = Reservation("BasicFeatSelection"),
                 ["slotPresent"] = true,
                 ["fixture"] = Fixture(0, 0, 0),
                 ["parentOffered"] = true,
                 ["parentCanSelect"] = false,
                 ["parentSelected"] = false,
-                ["parentChoiceHeld"] = false,
+                ["hold"] = Hold(false, false, 0),
                 ["childEligibility"] = Bools(false, false, false),
+                ["reservationReleasedBeforeConfirmation"] = true,
+                ["completeBeforeConfirmation"] = true,
+                ["confirmationApplied"] = true,
                 ["acquiredParent"] = false,
                 ["acquiredChild"] = false };
         }
@@ -50,6 +83,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             return new JObject {
                 ["case"] = "B.one-handed-refuses-musket",
+                ["reservation"] = Reservation("BasicFeatSelection"),
                 ["slotPresent"] = true,
                 ["fixture"] = Fixture(0, 1, 0),
                 ["parentCanSelect"] = true,
@@ -65,7 +99,8 @@ namespace KingmakerGunslinger.DomainTests
                 ["refusedChildRankWhileEmpty"] = 0,
                 ["legalChildSelected"] = true,
                 ["targetBlocksCompletionAfterLegalChoice"] = false,
-                ["completeAfterLegalChoice"] = true,
+                ["completeBeforeConfirmation"] = true,
+                ["confirmationApplied"] = true,
                 ["acquiredLegalChild"] = true,
                 ["acquiredRefusedChild"] = false };
         }
@@ -74,6 +109,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             return new JObject {
                 ["case"] = "B.empty-selection-blocked",
+                ["reservation"] = Reservation("BasicFeatSelection"),
                 ["slotPresent"] = true,
                 ["fixture"] = Fixture(1, 0, 0),
                 ["parentSelected"] = true,
@@ -81,6 +117,7 @@ namespace KingmakerGunslinger.DomainTests
                 ["childStateSelected"] = false,
                 ["completeWhileEmpty"] = false,
                 ["targetBlocksCompletion"] = true,
+                ["appliedWithoutNativeCompletion"] = true,
                 ["acquiredParent"] = false,
                 ["acquiredAnyChild"] = false };
         }
@@ -89,13 +126,15 @@ namespace KingmakerGunslinger.DomainTests
         {
             return new JObject {
                 ["case"] = "C.ordinary-feat-full-proficiency",
+                ["reservation"] = Reservation("BasicFeatSelection"),
                 ["slotPresent"] = true,
                 ["fixture"] = Fixture(1, 0, 0),
                 ["parentCanSelect"] = true,
                 ["parentSelected"] = true,
                 ["childCanSelect"] = true,
                 ["childSelected"] = true,
-                ["completeAfterLegalChoice"] = true,
+                ["completeBeforeConfirmation"] = true,
+                ["confirmationApplied"] = true,
                 ["acquiredChild"] = true };
         }
 
@@ -103,6 +142,8 @@ namespace KingmakerGunslinger.DomainTests
         {
             return new JObject {
                 ["controllerInstances"] = 1,
+                ["reservation"] = Reservation("BasicFeatSelection"),
+                ["slotPresent"] = true,
                 ["gunslingerFixture"] = Fixture(1, 0, 0),
                 ["heldBeforeChange"] = true,
                 ["heldChildName"] = "KMG_RapidReload_Pistol",
@@ -110,23 +151,33 @@ namespace KingmakerGunslinger.DomainTests
                 ["fighterGunslingerLevel"] = 0,
                 ["parentEligibleAfterChange"] = false,
                 ["childEligibilityAfterChange"] = Bools(false, false, false),
-                ["choiceSurvivedChange"] = false,
+                ["holdAfterChange"] = Hold(false, false, 0),
                 ["restoredFixture"] = Fixture(1, 0, 0),
                 ["parentEligibleAfterRestore"] = true,
                 ["childEligibilityAfterRestore"] = Bools(true, true, true),
-                ["choiceRestoredByEngine"] = false,
+                ["holdAfterRestore"] = Hold(false, false, 0),
                 ["reheldBeforeSecondChange"] = true,
-                ["choiceSurvivedSecondChange"] = false,
+                ["holdAfterSecondChange"] = Hold(false, false, 0),
+                ["reservationReleasedBeforeConfirmation"] = true,
+                ["completeBeforeConfirmation"] = true,
+                ["confirmationApplied"] = true,
                 ["confirmedFighterLevel"] = 1,
                 ["confirmedGunslingerLevel"] = 0,
                 ["acquiredParentAfterConfirmation"] = false,
                 ["acquiredAnyChildAfterConfirmation"] = false };
         }
 
+        /// <summary>
+        /// The accepted Musket Master transition: the parent still qualifies
+        /// through two-handed proficiency and the engine keeps it, while the
+        /// now-invalid Pistol child is cleared.
+        /// </summary>
         internal static JObject ArchetypeScopeChange()
         {
             return new JObject {
                 ["controllerInstances"] = 1,
+                ["reservation"] = Reservation("BasicFeatSelection"),
+                ["slotPresent"] = true,
                 ["baseFixture"] = Fixture(1, 0, 0),
                 ["heldBeforeChange"] = true,
                 ["archetypeApplied"] = true,
@@ -134,8 +185,10 @@ namespace KingmakerGunslinger.DomainTests
                 ["automaticMusketRankAfterChange"] = 1,
                 ["parentEligibleAfterChange"] = true,
                 ["childEligibilityAfterChange"] = Bools(false, false, true),
+                ["holdAfterChange"] = Hold(true, false, 0),
+                ["invalidChildRankAfterChange"] = 0,
                 ["childSelectableAfterChange"] = Bools(false, false, true),
-                ["choiceSurvivedChange"] = false,
+                ["childSelectabilitySource"] = "retained-nested-state",
                 ["archetypeRemoved"] = true,
                 ["restoredFixture"] = Fixture(1, 0, 0),
                 ["automaticMusketRankAfterRemoval"] = 0,
@@ -146,11 +199,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             return new JObject {
                 ["levelOneGrantsRapidReloadMusket"] = true,
+                ["reservation"] = Reservation("BasicFeatSelection"),
+                ["slotPresent"] = true,
                 ["fixture"] = Fixture(0, 0, 1),
                 ["gunslingerLevel"] = 1,
                 ["isMusketMasterArchetype"] = true,
                 ["automaticMusketRank"] = 1,
-                ["slotPresent"] = true,
                 ["parentCanSelect"] = true,
                 ["parentSelected"] = true,
                 ["childStatePresent"] = true,
@@ -160,6 +214,8 @@ namespace KingmakerGunslinger.DomainTests
                 ["incompatibleChildCanSelect"] = false,
                 ["legalChildCanSelect"] = true,
                 ["legalChildSelected"] = true,
+                ["completeBeforeConfirmation"] = true,
+                ["confirmationApplied"] = true,
                 ["acquiredLegalChild"] = true,
                 ["acquiredOwnedChildRank"] = 1,
                 ["acquiredIncompatibleChildRank"] = 0,
@@ -169,371 +225,565 @@ namespace KingmakerGunslinger.DomainTests
         internal static JObject ClassIdentityControl()
         {
             return new JObject {
+                ["buildCompleteBeforeConfirmation"] = true,
+                ["buildConfirmationApplied"] = true,
                 ["committedGunslingerLevel"] = 1,
                 ["committedFixture"] = Fixture(0, 0, 0),
                 ["previewGunslingerLevel"] = 1,
                 ["previewFixture"] = Fixture(0, 0, 0),
                 ["parentEligible"] = false,
                 ["childEligibility"] = Bools(false, false, false),
+                ["reservation"] = Reservation("FighterFeatSelection"),
                 ["slotPresent"] = true,
                 ["parentOffered"] = true,
                 ["parentCanSelect"] = false,
                 ["parentSelected"] = false };
         }
 
-        private static readonly Tuple<string, Func<JObject>, string[],
-            Func<JObject, IList<string>, bool>>[] Evaluators = {
-            Tuple.Create<string, Func<JObject>, string[], Func<JObject, IList<string>, bool>>(
-                "refused-parent", RefusedParent,
+        private sealed class EvidenceCase
+        {
+            internal EvidenceCase(string name, Func<JObject> build, string[] keys,
+                Func<JObject, IList<string>, bool> evaluate)
+            {
+                Name = name;
+                Build = build;
+                Keys = keys;
+                Evaluate = evaluate;
+            }
+
+            internal string Name { get; private set; }
+            internal Func<JObject> Build { get; private set; }
+            internal string[] Keys { get; private set; }
+            internal Func<JObject, IList<string>, bool> Evaluate { get; private set; }
+        }
+
+        // The scope each case declares is the same one the runtime scenario
+        // passes for that case; it is never derived from the measured ranks.
+        private static readonly EvidenceCase[] Cases = {
+            new EvidenceCase("refused-parent", RefusedParent,
                 RapidReloadGateEvidenceRules.RefusedParentKeys,
-                RapidReloadGateEvidenceRules.EvaluateRefusedParent),
-            Tuple.Create<string, Func<JObject>, string[], Func<JObject, IList<string>, bool>>(
-                "scoped-child-refusal", ScopedChildRefusal,
+                (row, failures) => RapidReloadGateEvidenceRules.EvaluateRefusedParent(
+                    row, RapidReloadExpectedScope.NoProficiency, failures)),
+            new EvidenceCase("scoped-child-refusal", ScopedChildRefusal,
                 RapidReloadGateEvidenceRules.ScopedChildRefusalKeys,
-                RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal),
-            Tuple.Create<string, Func<JObject>, string[], Func<JObject, IList<string>, bool>>(
-                "empty-selection", EmptySelection,
+                (row, failures) => RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal(
+                    row, RapidReloadExpectedScope.OneHandedOnly, failures)),
+            new EvidenceCase("empty-selection", EmptySelection,
                 RapidReloadGateEvidenceRules.EmptySelectionKeys,
-                RapidReloadGateEvidenceRules.EvaluateEmptySelection),
-            Tuple.Create<string, Func<JObject>, string[], Func<JObject, IList<string>, bool>>(
-                "acquisition", Acquisition,
+                (row, failures) => RapidReloadGateEvidenceRules.EvaluateEmptySelection(
+                    row, RapidReloadExpectedScope.AnyFirearm, failures)),
+            new EvidenceCase("acquisition", Acquisition,
                 RapidReloadGateEvidenceRules.AcquisitionKeys,
-                RapidReloadGateEvidenceRules.EvaluateAcquisition),
-            Tuple.Create<string, Func<JObject>, string[], Func<JObject, IList<string>, bool>>(
-                "pending-class-change", PendingClassChange,
+                (row, failures) => RapidReloadGateEvidenceRules.EvaluateAcquisition(
+                    row, RapidReloadExpectedScope.AnyFirearm, failures)),
+            new EvidenceCase("pending-class-change", PendingClassChange,
                 RapidReloadGateEvidenceRules.PendingClassChangeKeys,
                 RapidReloadGateEvidenceRules.EvaluatePendingClassChange),
-            Tuple.Create<string, Func<JObject>, string[], Func<JObject, IList<string>, bool>>(
-                "pending-archetype-change", ArchetypeScopeChange,
+            new EvidenceCase("pending-archetype-change", ArchetypeScopeChange,
                 RapidReloadGateEvidenceRules.ArchetypeScopeChangeKeys,
                 RapidReloadGateEvidenceRules.EvaluateArchetypeScopeChange),
-            Tuple.Create<string, Func<JObject>, string[], Func<JObject, IList<string>, bool>>(
-                "musket-master", MusketMaster,
+            new EvidenceCase("musket-master", MusketMaster,
                 RapidReloadGateEvidenceRules.MusketMasterKeys,
                 RapidReloadGateEvidenceRules.EvaluateMusketMaster),
-            Tuple.Create<string, Func<JObject>, string[], Func<JObject, IList<string>, bool>>(
-                "class-identity-control", ClassIdentityControl,
+            new EvidenceCase("class-identity-control", ClassIdentityControl,
                 RapidReloadGateEvidenceRules.ClassIdentityControlKeys,
                 RapidReloadGateEvidenceRules.EvaluateClassIdentityControl) };
 
+        private static void Reject(EvidenceCase evidence, JObject row, string message,
+            string expectedFailureFragment)
+        {
+            var failures = new List<string>();
+            Assertions.False(evidence.Evaluate(row, failures), message);
+            Assertions.True(failures.Count > 0,
+                evidence.Name + " rejected evidence without a diagnostic: " + message);
+            if (expectedFailureFragment != null)
+                Assertions.True(
+                    failures.Any(value => value.Contains(expectedFailureFragment)),
+                    evidence.Name + " did not name " + expectedFailureFragment + ": " +
+                    string.Join("|", failures.ToArray()));
+        }
+
+        private static EvidenceCase Find(string name)
+        {
+            return Cases.Single(value => value.Name == name);
+        }
+
         internal static void CompleteEvidenceIsAccepted()
         {
-            foreach (var evaluator in Evaluators)
+            foreach (EvidenceCase evidence in Cases)
             {
                 var failures = new List<string>();
-                Assertions.True(evaluator.Item4(evaluator.Item2(), failures),
-                    "Complete " + evaluator.Item1 + " evidence was rejected: " +
+                Assertions.True(evidence.Evaluate(evidence.Build(), failures),
+                    "Complete " + evidence.Name + " evidence was rejected: " +
                     string.Join("|", failures.ToArray()));
                 Assertions.Equal(0, failures.Count,
-                    "Complete " + evaluator.Item1 + " evidence reported failures: " +
+                    "Complete " + evidence.Name + " evidence reported failures: " +
                     string.Join("|", failures.ToArray()));
             }
         }
 
         internal static void MissingObservationsCannotScorePass()
         {
-            foreach (var evaluator in Evaluators)
+            foreach (EvidenceCase evidence in Cases)
             {
-                Assertions.True(evaluator.Item3.Length > 0,
-                    evaluator.Item1 + " declares no required observations.");
-                foreach (string key in evaluator.Item3)
+                Assertions.True(evidence.Keys.Length > 0,
+                    evidence.Name + " declares no required observations.");
+                foreach (string key in evidence.Keys)
                 {
-                    JObject row = evaluator.Item2();
+                    JObject row = evidence.Build();
                     row.Remove(key);
-                    var failures = new List<string>();
-                    Assertions.False(evaluator.Item4(row, failures),
-                        evaluator.Item1 + " accepted evidence with a missing " +
-                        key + " observation.");
-                    Assertions.True(failures.Any(value =>
-                            value.EndsWith(":missing-observation:" + key,
-                                StringComparison.Ordinal)),
-                        evaluator.Item1 + " did not name the missing observation " + key +
-                        ": " + string.Join("|", failures.ToArray()));
+                    Reject(evidence, row,
+                        evidence.Name + " accepted evidence with a missing " + key +
+                        " observation.", ":missing-observation:" + key);
                 }
             }
         }
 
         internal static void NullObservationsCannotScorePass()
         {
-            foreach (var evaluator in Evaluators)
+            foreach (EvidenceCase evidence in Cases)
             {
-                JObject row = evaluator.Item2();
-                row[evaluator.Item3[0]] = JValue.CreateNull();
-                var failures = new List<string>();
-                Assertions.False(evaluator.Item4(row, failures),
-                    evaluator.Item1 + " accepted a null observation.");
+                JObject row = evidence.Build();
+                row[evidence.Keys[0]] = JValue.CreateNull();
+                Reject(evidence, row, evidence.Name + " accepted a null observation.",
+                    ":missing-observation:" + evidence.Keys[0]);
                 var missingRow = new List<string>();
-                Assertions.False(evaluator.Item4(null, missingRow),
-                    evaluator.Item1 + " accepted an absent observation row.");
+                Assertions.False(evidence.Evaluate(null, missingRow),
+                    evidence.Name + " accepted an absent observation row.");
                 Assertions.True(missingRow.Any(value =>
                         value.EndsWith(":observation-row-missing", StringComparison.Ordinal)),
-                    evaluator.Item1 + " did not name an absent observation row.");
+                    evidence.Name + " did not name an absent observation row.");
             }
         }
 
-        internal static void IntendedGrantsAreNeverEvidence()
+        // R1: a filler feat in the slot the case claims to exercise is a setup
+        // failure, not evidence that an invalid feat was refused.
+        internal static void UnreservedOrFilledFeatSlotsCannotScorePass()
         {
-            // A row that claims full proficiency while the fixture's observed
-            // ranks are all zero must be rejected: only the measured facts
-            // count.
-            JObject acquisition = Acquisition();
-            acquisition["fixture"] = Fixture(0, 0, 0);
-            var failures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateFixtureProficiency(
-                    (JObject)acquisition["fixture"], "acquisition", true, false, false,
-                    failures),
-                "An unproven proficiency fixture was accepted.");
-            Assertions.True(failures.Any(value => value.Contains("fullProficiencyRank=0")),
-                "The unproven fixture failure did not name the observed rank.");
+            foreach (EvidenceCase evidence in Cases)
+            {
+                JObject unresolved = evidence.Build();
+                ((JObject)unresolved["reservation"])["reservedSlotResolved"] = false;
+                Reject(evidence, unresolved,
+                    evidence.Name + " accepted an unresolved reserved slot.",
+                    ":reserved-slot-not-resolved");
 
-            // A refusal fixture that secretly carries proficiency is not a
-            // negative control.
-            JObject refused = RefusedParent();
-            refused["fixture"] = Fixture(1, 0, 0);
-            var refusedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateRefusedParent(
-                    refused, refusedFailures),
-                "A refusal case with hidden proficiency was accepted.");
+                JObject filled = evidence.Build();
+                ((JObject)filled["reservation"])["reservedSlotUnselected"] = false;
+                Reject(evidence, filled,
+                    evidence.Name + " accepted a reserved slot a filler feat already took.",
+                    ":reserved-slot-already-filled");
+
+                JObject wrongSelection = evidence.Build();
+                ((JObject)wrongSelection["reservation"])["reservedSlotSelectionMatches"] =
+                    false;
+                Reject(evidence, wrongSelection,
+                    evidence.Name + " accepted a slot from the wrong native selection.",
+                    ":reserved-slot-wrong-selection");
+
+                JObject absentSlot = evidence.Build();
+                absentSlot["slotPresent"] = false;
+                Reject(evidence, absentSlot,
+                    evidence.Name + " accepted an absent feat slot.", ":slot-absent");
+
+                JObject notAnObject = evidence.Build();
+                notAnObject["reservation"] = "BasicFeatSelection";
+                Reject(evidence, notAnObject,
+                    evidence.Name + " accepted a reservation that is not an object.",
+                    ":reservation-not-an-object");
+
+                JObject truncated = evidence.Build();
+                ((JObject)truncated["reservation"]).Remove("reservedIndex");
+                Reject(evidence, truncated,
+                    evidence.Name + " accepted a reservation missing its occurrence index.",
+                    ":missing-observation:reservedIndex");
+            }
         }
 
+        // R3: the evaluators the runtime scenario actually calls must validate
+        // the measured proficiency ranks against the scope the case declared.
+        internal static void FixtureProficiencyIsValidatedByTheScoringEvaluators()
+        {
+            EvidenceCase acquisition = Find("acquisition");
+            JObject empty = Acquisition();
+            empty["fixture"] = new JObject();
+            Reject(acquisition, empty,
+                "The acquisition evaluator accepted an empty proficiency fixture.",
+                ":missing-observation:fullProficiencyRank");
+
+            JObject missingRank = Acquisition();
+            ((JObject)missingRank["fixture"]).Remove("twoHandedProficiencyRank");
+            Reject(acquisition, missingRank,
+                "The acquisition evaluator accepted a fixture missing a rank.",
+                ":missing-observation:twoHandedProficiencyRank");
+
+            JObject nullRank = Acquisition();
+            ((JObject)nullRank["fixture"])["oneHandedProficiencyRank"] = JValue.CreateNull();
+            Reject(acquisition, nullRank,
+                "The acquisition evaluator accepted a null proficiency rank.",
+                ":missing-observation:oneHandedProficiencyRank");
+
+            JObject invalidRank = Acquisition();
+            ((JObject)invalidRank["fixture"])["fullProficiencyRank"] = "one";
+            Reject(acquisition, invalidRank,
+                "The acquisition evaluator accepted a non-integer proficiency rank.",
+                "fullProficiencyRank-not-an-integer");
+
+            JObject noProficiency = Acquisition();
+            noProficiency["fixture"] = Fixture(0, 0, 0);
+            Reject(acquisition, noProficiency,
+                "The acquisition evaluator accepted a fixture with no proficiency at all.",
+                "fullProficiencyRank=0");
+
+            JObject notAnObject = Acquisition();
+            notAnObject["fixture"] = 1;
+            Reject(acquisition, notAnObject,
+                "The acquisition evaluator accepted a fixture that is not an object.",
+                ":fixture-not-an-object");
+
+            // A scoped case must reject a broader fixture, and the wrong scope.
+            EvidenceCase scoped = Find("scoped-child-refusal");
+            JObject broader = ScopedChildRefusal();
+            broader["fixture"] = Fixture(1, 0, 0);
+            Reject(scoped, broader,
+                "The scoped-refusal evaluator accepted full proficiency where the case " +
+                "declared one-handed only.", "fullProficiencyRank=1");
+
+            JObject wrongScope = ScopedChildRefusal();
+            wrongScope["fixture"] = Fixture(0, 0, 1);
+            Reject(scoped, wrongScope,
+                "The scoped-refusal evaluator accepted the wrong scoped proficiency.",
+                "oneHandedProficiencyRank=0");
+
+            EvidenceCase emptySelection = Find("empty-selection");
+            JObject unproven = EmptySelection();
+            unproven["fixture"] = Fixture(0, 0, 0);
+            Reject(emptySelection, unproven,
+                "The empty-selection evaluator accepted an unqualified fixture.",
+                "fullProficiencyRank=0");
+
+            EvidenceCase refused = Find("refused-parent");
+            JObject hidden = RefusedParent();
+            hidden["fixture"] = Fixture(1, 0, 0);
+            Reject(refused, hidden,
+                "The refusal evaluator accepted a fixture that secretly had proficiency.",
+                "fullProficiencyRank=1");
+
+            // And the correct fixture and behaviour are accepted.
+            foreach (EvidenceCase evidence in new[] { acquisition, scoped,
+                emptySelection, refused })
+            {
+                var failures = new List<string>();
+                Assertions.True(evidence.Evaluate(evidence.Build(), failures),
+                    evidence.Name + " rejected its own correct fixture: " +
+                    string.Join("|", failures.ToArray()));
+            }
+        }
+
+        // R4: a claimed successful confirmation must observe the native
+        // completion gate as true immediately before the level is applied.
+        internal static void ConfirmationRequiresNativeCompleteness()
+        {
+            var scored = new List<Tuple<EvidenceCase, string, string>> {
+                Tuple.Create(Find("pending-class-change"),
+                    "completeBeforeConfirmation", "confirmationApplied"),
+                Tuple.Create(Find("musket-master"),
+                    "completeBeforeConfirmation", "confirmationApplied"),
+                Tuple.Create(Find("acquisition"),
+                    "completeBeforeConfirmation", "confirmationApplied"),
+                Tuple.Create(Find("scoped-child-refusal"),
+                    "completeBeforeConfirmation", "confirmationApplied"),
+                Tuple.Create(Find("refused-parent"),
+                    "completeBeforeConfirmation", "confirmationApplied"),
+                Tuple.Create(Find("class-identity-control"),
+                    "buildCompleteBeforeConfirmation", "buildConfirmationApplied") };
+            foreach (var entry in scored)
+            {
+                EvidenceCase evidence = entry.Item1;
+
+                JObject incomplete = evidence.Build();
+                incomplete[entry.Item2] = false;
+                Reject(evidence, incomplete,
+                    evidence.Name + " accepted a confirmation the native completion " +
+                    "gate refused.", ":native-completion-refused-the-build");
+
+                JObject missing = evidence.Build();
+                missing.Remove(entry.Item2);
+                Reject(evidence, missing,
+                    evidence.Name + " accepted a confirmation with no completeness " +
+                    "observation.", ":missing-observation:" + entry.Item2);
+
+                JObject nulled = evidence.Build();
+                nulled[entry.Item2] = JValue.CreateNull();
+                Reject(evidence, nulled,
+                    evidence.Name + " accepted a null completeness observation.",
+                    ":missing-observation:" + entry.Item2);
+
+                JObject notApplied = evidence.Build();
+                notApplied[entry.Item3] = false;
+                Reject(evidence, notApplied,
+                    evidence.Name + " accepted a level that was never applied.",
+                    ":level-was-not-applied");
+            }
+
+            // The defensive probe must declare itself as one; it can never
+            // stand in for a claimed confirmation.
+            EvidenceCase probe = Find("empty-selection");
+            JObject undeclared = EmptySelection();
+            undeclared["appliedWithoutNativeCompletion"] = false;
+            Reject(probe, undeclared,
+                "The defensive lower-level application was accepted without declaring " +
+                "itself.", ":defensive-probe-not-declared");
+        }
+
+        // R1/R4: the pending class change must stay a single live transaction
+        // that ends at the native completion gate.
         internal static void CancelledVisitsCannotStandInForAPendingClassChange()
         {
-            // The finding this guards: two controllers means the run cancelled a
-            // visit and started an unrelated one instead of changing the class
-            // inside a live pending build.
-            JObject row = PendingClassChange();
-            row["controllerInstances"] = 2;
-            var failures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluatePendingClassChange(
-                    row, failures),
-                "Separate cancelled visits were accepted as a pending class change.");
-            Assertions.True(failures.Any(value =>
-                    value.EndsWith(":not-a-single-transaction", StringComparison.Ordinal)),
-                "The multi-controller failure was not named.");
+            EvidenceCase evidence = Find("pending-class-change");
+
+            JObject twoControllers = PendingClassChange();
+            twoControllers["controllerInstances"] = 2;
+            Reject(evidence, twoControllers,
+                "Separate cancelled visits were accepted as a pending class change.",
+                ":not-a-single-transaction");
 
             JObject neverHeld = PendingClassChange();
             neverHeld["heldBeforeChange"] = false;
-            var neverHeldFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluatePendingClassChange(
-                    neverHeld, neverHeldFailures),
-                "A class change with no held choice was accepted.");
+            Reject(evidence, neverHeld,
+                "A class change with no held choice was accepted.",
+                ":choice-was-never-held");
 
             JObject survived = PendingClassChange();
-            survived["choiceSurvivedChange"] = true;
-            var survivedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluatePendingClassChange(
-                    survived, survivedFailures),
-                "A choice that survived the class change was accepted.");
+            survived["holdAfterChange"] = Hold(true, true, 0);
+            Reject(evidence, survived,
+                "A choice that survived the class change was accepted.", null);
+
+            JObject grantedAnyway = PendingClassChange();
+            grantedAnyway["holdAfterChange"] = Hold(false, false, 1);
+            Reject(evidence, grantedAnyway,
+                "A dropped choice that still granted its fact was accepted.",
+                "trackedChildRank=1");
 
             JObject noRefresh = PendingClassChange();
             noRefresh["childEligibilityAfterRestore"] = Bools(true, false, true);
-            var noRefreshFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluatePendingClassChange(
-                    noRefresh, noRefreshFailures),
-                "Partial child eligibility after the restore was accepted.");
+            Reject(evidence, noRefresh,
+                "Partial child eligibility after the restore was accepted.",
+                ":child-not-eligible-after-restore");
+
+            JObject notReleased = PendingClassChange();
+            notReleased["reservationReleasedBeforeConfirmation"] = false;
+            Reject(evidence, notReleased,
+                "A confirmation that never released the test reservation was accepted.",
+                ":reservation-not-released");
 
             JObject stale = PendingClassChange();
             stale["acquiredAnyChildAfterConfirmation"] = true;
-            var staleFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluatePendingClassChange(
-                    stale, staleFailures),
-                "A stale choice that survived confirmation was accepted.");
+            Reject(evidence, stale,
+                "A stale choice that survived confirmation was accepted.",
+                ":stale-choice-survived-confirmation");
         }
 
         internal static void RepairedOrUngatedCompletionCannotScorePass()
         {
-            // The finding this guards: observing completion only after the test
-            // itself unselected the invalid choice.
+            EvidenceCase scoped = Find("scoped-child-refusal");
+
             JObject completed = ScopedChildRefusal();
             completed["completeWhileEmpty"] = true;
-            var failures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal(
-                    completed, failures),
-                "A build that could complete with an empty Rapid Reload choice was accepted.");
+            Reject(scoped, completed,
+                "A build that could complete with an empty Rapid Reload choice was " +
+                "accepted.", ":complete-while-empty");
 
             JObject unattributed = ScopedChildRefusal();
             unattributed["targetBlocksCompletion"] = false;
-            var unattributedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal(
-                    unattributed, unattributedFailures),
-                "A completion block that is not attributable to Rapid Reload was accepted.");
-            Assertions.True(unattributedFailures.Any(value =>
-                    value.EndsWith(":completion-block-not-attributable",
-                        StringComparison.Ordinal)),
-                "The unattributed completion block was not named.");
+            Reject(scoped, unattributed,
+                "A completion block that is not attributable to Rapid Reload was accepted.",
+                ":completion-block-not-attributable");
 
             JObject stillBlocked = ScopedChildRefusal();
-            stillBlocked["completeAfterLegalChoice"] = false;
-            var stillBlockedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal(
-                    stillBlocked, stillBlockedFailures),
-                "An unfinished character that never completes was accepted as attribution.");
+            stillBlocked["targetBlocksCompletionAfterLegalChoice"] = true;
+            Reject(scoped, stillBlocked,
+                "A target that still blocked after the legal choice was accepted.",
+                ":target-still-blocks-after-legal-choice");
 
             JObject banked = ScopedChildRefusal();
             banked["parentRankWhileEmpty"] = 1;
-            var bankedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal(
-                    banked, bankedFailures),
-                "An empty Rapid Reload choice that granted a fact was accepted.");
+            Reject(scoped, banked,
+                "An empty Rapid Reload choice that granted a fact was accepted.",
+                ":empty-selection-granted-a-fact");
 
             JObject accepted = ScopedChildRefusal();
             accepted["refusedChildSelected"] = true;
-            var acceptedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal(
-                    accepted, acceptedFailures),
-                "An out-of-scope firearm that was selected anyway was accepted.");
+            Reject(scoped, accepted,
+                "An out-of-scope firearm that was selected anyway was accepted.",
+                ":out-of-scope-child-accepted");
 
+            EvidenceCase probe = Find("empty-selection");
             JObject emptyBanked = EmptySelection();
             emptyBanked["acquiredParent"] = true;
-            var emptyBankedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateEmptySelection(
-                    emptyBanked, emptyBankedFailures),
-                "A banked empty Rapid Reload selection was accepted.");
+            Reject(probe, emptyBanked,
+                "A banked empty Rapid Reload selection was accepted.",
+                ":empty-choice-was-banked");
+
+            JObject emptyCompleted = EmptySelection();
+            emptyCompleted["completeWhileEmpty"] = true;
+            Reject(probe, emptyCompleted,
+                "Native completion of an empty Rapid Reload choice was accepted.",
+                ":native-completion-allowed-an-empty-choice");
         }
 
         internal static void ManuallyGrantedMusketMasterCannotScorePass()
         {
-            // The finding this guards: a base Gunslinger with hand-granted
-            // proficiency and a hand-granted Rapid Reload (Musket).
+            EvidenceCase evidence = Find("musket-master");
+
             JObject handGranted = MusketMaster();
             handGranted["fixture"] = Fixture(1, 0, 0);
-            var failures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateMusketMaster(
-                    handGranted, failures),
-                "A Musket Master fixture with full firearm proficiency was accepted.");
+            Reject(evidence, handGranted,
+                "A Musket Master fixture with full firearm proficiency was accepted.",
+                "fullProficiencyRank=1");
 
             JObject noArchetype = MusketMaster();
             noArchetype["isMusketMasterArchetype"] = false;
-            var noArchetypeFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateMusketMaster(
-                    noArchetype, noArchetypeFailures),
-                "A fixture without the Musket Master archetype identity was accepted.");
-            Assertions.True(noArchetypeFailures.Any(value =>
-                    value.EndsWith(":archetype-identity-absent", StringComparison.Ordinal)),
-                "The absent archetype identity was not named.");
+            Reject(evidence, noArchetype,
+                "A fixture without the Musket Master archetype identity was accepted.",
+                ":archetype-identity-absent");
 
             JObject noGrant = MusketMaster();
             noGrant["automaticMusketRank"] = 0;
-            var noGrantFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateMusketMaster(
-                    noGrant, noGrantFailures),
-                "A Musket Master without its automatic Rapid Reload grant was accepted.");
+            Reject(evidence, noGrant,
+                "A Musket Master without its automatic Rapid Reload grant was accepted.",
+                ":automatic-musket-grant-missing");
 
             JObject duplicate = MusketMaster();
             duplicate["ownedChildCanSelect"] = true;
-            var duplicateFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateMusketMaster(
-                    duplicate, duplicateFailures),
-                "A re-selectable owned firearm choice was accepted.");
+            Reject(evidence, duplicate,
+                "A re-selectable owned firearm choice was accepted.",
+                ":owned-child-consumed-another-feat");
 
             JObject extraSlot = MusketMaster();
             extraSlot["featSlotsConsumed"] = 2;
-            var extraSlotFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateMusketMaster(
-                    extraSlot, extraSlotFailures),
-                "A second consumed feat slot was accepted.");
+            Reject(evidence, extraSlot, "A second consumed feat slot was accepted.",
+                ":feat-slot-accounting");
 
             JObject outOfScope = MusketMaster();
             outOfScope["incompatibleChildCanSelect"] = true;
-            var outOfScopeFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateMusketMaster(
-                    outOfScope, outOfScopeFailures),
-                "A one-handed firearm choice was accepted for a Musket Master.");
+            Reject(evidence, outOfScope,
+                "A one-handed firearm choice was accepted for a Musket Master.",
+                ":out-of-scope-child-selectable");
         }
 
         internal static void ClassIdentityControlDemandsRealClassLevels()
         {
-            // The finding this guards: granting the class proficiency feature
-            // does not give a character Gunslinger class levels.
+            EvidenceCase evidence = Find("class-identity-control");
+
             JObject noLevels = ClassIdentityControl();
             noLevels["committedGunslingerLevel"] = 0;
-            var failures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateClassIdentityControl(
-                    noLevels, failures),
-                "A negative control with no Gunslinger class level was accepted.");
-            Assertions.True(failures.Any(value =>
-                    value.EndsWith(":no-committed-gunslinger-level",
-                        StringComparison.Ordinal)),
-                "The missing class level was not named.");
+            Reject(evidence, noLevels,
+                "A negative control with no Gunslinger class level was accepted.",
+                ":no-committed-gunslinger-level");
 
             JObject lostIdentity = ClassIdentityControl();
             lostIdentity["previewGunslingerLevel"] = 0;
-            var lostIdentityFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateClassIdentityControl(
-                    lostIdentity, lostIdentityFailures),
-                "A preview that lost Gunslinger identity was accepted.");
+            Reject(evidence, lostIdentity,
+                "A preview that lost Gunslinger identity was accepted.",
+                ":preview-lost-gunslinger-identity");
 
             // If native restoration puts proficiency back, the fixture is
             // invalid rather than a negative result.
             JObject restored = ClassIdentityControl();
             restored["previewFixture"] = Fixture(1, 0, 0);
-            var restoredFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateClassIdentityControl(
-                    restored, restoredFailures),
-                "A control whose preview regained proficiency was accepted.");
+            Reject(evidence, restored,
+                "A control whose preview regained proficiency was accepted.",
+                "fullProficiencyRank=1");
 
             JObject qualified = ClassIdentityControl();
             qualified["parentEligible"] = true;
-            var qualifiedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateClassIdentityControl(
-                    qualified, qualifiedFailures),
-                "Class identity alone was accepted as qualifying.");
-            Assertions.True(qualifiedFailures.Any(value =>
-                    value.EndsWith(":class-identity-alone-qualified",
-                        StringComparison.Ordinal)),
-                "The class-identity regression was not named.");
+            Reject(evidence, qualified,
+                "Class identity alone was accepted as qualifying.",
+                ":class-identity-alone-qualified");
 
             JObject selectable = ClassIdentityControl();
             selectable["parentCanSelect"] = true;
-            var selectableFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateClassIdentityControl(
-                    selectable, selectableFailures),
-                "A selectable parent on a proficiency-free Gunslinger was accepted.");
+            Reject(evidence, selectable,
+                "A selectable parent on a proficiency-free Gunslinger was accepted.",
+                ":parent-selectable-on-class-identity");
         }
 
-        internal static void ArchetypeScopeChangeDemandsRealScopeNarrowing()
+        // R2: the accepted native outcomes for a pending archetype change.
+        internal static void ArchetypeScopeChangeTracksTheInvalidChildNotTheParent()
         {
-            JObject twoControllers = ArchetypeScopeChange();
-            twoControllers["controllerInstances"] = 2;
-            var failures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateArchetypeScopeChange(
-                    twoControllers, failures),
-                "Separate visits were accepted as a pending archetype change.");
+            EvidenceCase evidence = Find("pending-archetype-change");
 
-            JObject wideScope = ArchetypeScopeChange();
-            wideScope["archetypeFixture"] = Fixture(1, 0, 0);
-            var wideScopeFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateArchetypeScopeChange(
-                    wideScope, wideScopeFailures),
-                "An archetype fixture that kept full proficiency was accepted.");
+            // A retained valid parent with the invalid child cleared is correct
+            // and is the baseline fixture; the engine removing both is equally
+            // correct.
+            JObject parentRemoved = ArchetypeScopeChange();
+            parentRemoved["holdAfterChange"] = Hold(false, false, 0);
+            parentRemoved["childSelectabilitySource"] = "probe";
+            var removedFailures = new List<string>();
+            Assertions.True(evidence.Evaluate(parentRemoved, removedFailures),
+                "The engine removing the whole selection was rejected: " +
+                string.Join("|", removedFailures.ToArray()));
 
-            JObject pistolStillLegal = ArchetypeScopeChange();
-            pistolStillLegal["childEligibilityAfterChange"] = Bools(true, false, true);
-            var pistolFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateArchetypeScopeChange(
-                    pistolStillLegal, pistolFailures),
-                "A one-handed firearm that stayed eligible under Musket Master was accepted.");
+            JObject pistolHeld = ArchetypeScopeChange();
+            pistolHeld["holdAfterChange"] = Hold(true, true, 0);
+            Reject(evidence, pistolHeld,
+                "A retained invalid Pistol child was accepted.",
+                ":invalid-child-survived-the-archetype-change");
+
+            JObject pistolGranted = ArchetypeScopeChange();
+            pistolGranted["invalidChildRankAfterChange"] = 1;
+            Reject(evidence, pistolGranted,
+                "A granted invalid Pistol child was accepted.",
+                ":invalid-child-was-granted");
+
+            JObject pistolSelectable = ArchetypeScopeChange();
+            pistolSelectable["childSelectableAfterChange"] = Bools(true, false, true);
+            Reject(evidence, pistolSelectable,
+                "A selectable Pistol choice under Musket Master was accepted.",
+                ":pistol-selectable-under-archetype");
+
+            JObject pistolEligible = ArchetypeScopeChange();
+            pistolEligible["childEligibilityAfterChange"] = Bools(true, false, true);
+            Reject(evidence, pistolEligible,
+                "An eligible Pistol choice under Musket Master was accepted.",
+                ":pistol-eligible-under-archetype");
+
+            JObject parentDisqualified = ArchetypeScopeChange();
+            parentDisqualified["parentEligibleAfterChange"] = false;
+            Reject(evidence, parentDisqualified,
+                "A Musket Master that no longer qualifies for the parent was accepted.",
+                ":parent-not-eligible-under-archetype");
 
             JObject ownedSelectable = ArchetypeScopeChange();
             ownedSelectable["childSelectableAfterChange"] = Bools(false, true, true);
-            var ownedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateArchetypeScopeChange(
-                    ownedSelectable, ownedFailures),
-                "The automatically granted firearm stayed selectable and was accepted.");
+            Reject(evidence, ownedSelectable,
+                "The automatically granted firearm stayed selectable and was accepted.",
+                ":owned-musket-selectable-under-archetype");
 
-            JObject survived = ArchetypeScopeChange();
-            survived["choiceSurvivedChange"] = true;
-            var survivedFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateArchetypeScopeChange(
-                    survived, survivedFailures),
-                "An out-of-scope choice that survived the archetype change was accepted.");
+            JObject unknownSource = ArchetypeScopeChange();
+            unknownSource["childSelectabilitySource"] = "<reserved-slot-unavailable>";
+            Reject(evidence, unknownSource,
+                "Child selectability from an unavailable slot was accepted.",
+                ":child-selectability-source=");
+
+            JObject twoControllers = ArchetypeScopeChange();
+            twoControllers["controllerInstances"] = 2;
+            Reject(evidence, twoControllers,
+                "Separate visits were accepted as a pending archetype change.",
+                ":not-a-single-transaction");
+
+            JObject wideScope = ArchetypeScopeChange();
+            wideScope["archetypeFixture"] = Fixture(1, 0, 0);
+            Reject(evidence, wideScope,
+                "An archetype fixture that kept full proficiency was accepted.",
+                "fullProficiencyRank=1");
 
             JObject grantSurvived = ArchetypeScopeChange();
             grantSurvived["automaticMusketRankAfterRemoval"] = 1;
-            var grantFailures = new List<string>();
-            Assertions.False(RapidReloadGateEvidenceRules.EvaluateArchetypeScopeChange(
-                    grantSurvived, grantFailures),
-                "An archetype grant that survived archetype removal was accepted.");
+            Reject(evidence, grantSurvived,
+                "An archetype grant that survived archetype removal was accepted.",
+                ":archetype-grant-survived-removal");
         }
 
         internal static void ScenarioUsesTheNativeOperationsItClaims()
@@ -543,15 +793,27 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.RapidReloadProficiencyGate.cs"));
             foreach (string token in new[] {
+                // R1: an explicit, rebuild-tolerant slot reservation.
+                "ReserveRapidReloadSlot(",
+                "ResolveReservedRapidReloadSlot(",
+                "!IsReservedRapidReloadSlot(value, reservation)",
+                "ReleaseRapidReloadReservation(reservation)",
+                "RapidReloadReservationHolds(reserved)",
+                // R2: parent and exact child tracked separately.
+                "DescribeRapidReloadHold(ctx, controller, ctx.Children[0])",
+                "retained-nested-state",
+                "WithdrawRapidReloadProbe(controller, reservation)",
+                // R4: the native completion boundary before any confirmation.
+                "ConfirmRapidReloadLevel(ctx, controller, descriptor, row,",
+                "levelUpState.IsComplete()",
+                "CanSelectAnything(levelUpState, preview)",
+                "appliedWithoutNativeCompletion",
+                // Single-transaction native pending-build changes.
                 "controller.SelectClass(ctx.Fighter, true)",
                 "controller.SelectClass(ctx.Gunslinger, true)",
                 "controller.AddArchetype(ctx.MusketMaster)",
                 "controller.RemoveArchetype(ctx.MusketMaster)",
-                "OpenRapidReloadVisit(ctx, descriptor, ctx.Gunslinger,",
                 "ctx.MusketMaster);",
-                "levelUpState.IsComplete()",
-                "CanSelectAnything(levelUpState, preview)",
-                "FindRapidReloadChildState(controller, ctx)",
                 ".EvaluatePendingClassChange(",
                 ".EvaluateArchetypeScopeChange(",
                 ".EvaluateMusketMaster(",
@@ -560,12 +822,13 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(scenario.Contains(token),
                     "The Rapid Reload gate scenario lost a required native step: " + token);
             // The corrected scenario must not reach completion observations by
-            // repairing the invalid state first.
+            // repairing the invalid state first: the single UnselectFeature call
+            // lives in the probe withdrawal helper.
             int unselectUses = scenario.Split(new[] { "controller.UnselectFeature(" },
                 StringSplitOptions.None).Length - 1;
             Assertions.Equal(1, unselectUses,
-                "UnselectFeature is only allowed once, to withdraw the archetype " +
-                "selectability probe after its observation.");
+                "UnselectFeature is only allowed once, to withdraw a probe-created " +
+                "selection after its observation.");
             string catalog = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestScenarioCatalog.cs"));
             Assertions.True(catalog.Contains("disposable-rapid-reload-proficiency-gate"),
