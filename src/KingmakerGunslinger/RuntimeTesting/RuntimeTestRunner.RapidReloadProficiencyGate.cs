@@ -754,6 +754,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     controller.AddStatPoint(attribute));
                 if (!added) break;
             }
+            // A pending class change can leave points overspent (Gunslinger
+            // ranks spent, then Fighter selected with fewer points). Refund
+            // them through the native minus-button operation, as a player must
+            // before the level can be confirmed.
+            int refunded = 0;
+            int refundGuard = 0;
+            while (controller.State.SkillPointsRemaining < 0 && refundGuard++ < 200)
+            {
+                bool returned = StatTypeHelper.Skills.Any(skill =>
+                    controller.UnspendSkillPoint(skill));
+                if (!returned) break;
+                refunded++;
+            }
             int skillGuard = 0;
             while (controller.State.SkillPointsRemaining > 0 && skillGuard++ < 200)
             {
@@ -796,6 +809,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             return new JObject {
                 ["skillPointsRemaining"] = controller.State.SkillPointsRemaining,
+                ["skillPointsRefunded"] = refunded,
                 ["attributePoints"] = controller.State.AttributePoints,
                 ["statsDistributionComplete"] =
                     controller.State.StatsDistribution.IsComplete(),

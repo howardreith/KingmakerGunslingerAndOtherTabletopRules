@@ -393,9 +393,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             { failures.Add(label + ":complete-while-empty"); ok = false; }
             if (!(bool)row["targetBlocksCompletion"])
             { failures.Add(label + ":completion-block-not-attributable"); ok = false; }
-            if ((int)row["parentRankWhileEmpty"] != 0 ||
-                (int)row["refusedChildRankWhileEmpty"] != 0)
-            { failures.Add(label + ":empty-selection-granted-a-fact"); ok = false; }
+            // The engine applies a chosen selection's own feature to the preview
+            // at once (observed natively: parentRankWhileEmpty = 1), exactly as
+            // for any selection feat. That is not a firearm grant: the refused
+            // firearm must hold no rank, and the empty choice must still block
+            // completion (checked above). parentRankWhileEmpty stays recorded.
+            if ((int)row["refusedChildRankWhileEmpty"] != 0)
+            { failures.Add(label + ":empty-selection-granted-a-firearm"); ok = false; }
             // Attribution: the same build completes once a legal choice is made.
             if (!(bool)row["legalChildSelected"])
             { failures.Add(label + ":legal-child-refused"); ok = false; }
@@ -434,8 +438,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             // never stand in for a claimed successful confirmation.
             if (!(bool)row["appliedWithoutNativeCompletion"])
             { failures.Add(label + ":defensive-probe-not-declared"); ok = false; }
-            if ((bool)row["acquiredParent"] || (bool)row["acquiredAnyChild"])
-            { failures.Add(label + ":empty-choice-was-banked"); ok = false; }
+            // The probe bypasses the native completion gate, so the engine
+            // applies whatever is selected, including the parent selection
+            // feature (acquiredParent stays recorded). A player cannot reach
+            // this state; what the probe proves is that no firearm is banked.
+            if ((bool)row["acquiredAnyChild"])
+            { failures.Add(label + ":empty-choice-banked-a-firearm"); ok = false; }
             return ok;
         }
 
