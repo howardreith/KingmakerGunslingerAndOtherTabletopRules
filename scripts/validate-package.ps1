@@ -43,6 +43,9 @@ try {
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
         'assets\bundles\kingmakergunslinger.easternweapons',
         'assets\bundles\asset-bundle-manifest.json',
+        # The Pteranodon replacement visual ships as mesh data rather than
+        # an AssetBundle: no bind poses, no material, no editor dependency.
+        'assets\pteranodon\pteranodon-mesh.json',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
