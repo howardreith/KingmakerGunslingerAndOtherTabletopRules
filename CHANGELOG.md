@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased - rapid-reload-proficiency-gate
+## 0.0.135-rapid-reload-proficiency-gate
+
+- Published under explicit owner authorization with native runtime
+  qualification NOT RUN and waived: the guarded
+  `disposable-rapid-reload-proficiency-gate` scenario has never executed,
+  because the runtime orchestrator's administrator-elevation guard refused
+  every attempt and was left intact. Save/load compatibility is unverified.
 
 - Rapid Reload now requires firearm proficiency at the selection itself rather
   than only on its per-firearm children. The project-owned parent selection
