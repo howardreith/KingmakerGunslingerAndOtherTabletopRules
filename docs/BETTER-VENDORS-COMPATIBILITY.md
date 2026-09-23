@@ -418,20 +418,22 @@ not be fabricated, and a real campaign must not be used:
 | Contract identity and IL fingerprints vs installed 2.0.8 binary | PASS (static, read-only) |
 | Domain suite (38 `better-vendors.*` cases: catalog, schedule, classification, planning, write-ahead ledger and uncertain outcomes, lifecycle, modules, exact-binary gate, degrade-closed registration, fixed-row reconciliation, hooks, acquisition isolation) | PASS |
 | Repository validation, clean Release build, package validation | recorded in the release notes |
-| Guarded `working-save-smoke`, commit `cca27056` (before the exact-binary gate and write-ahead ledger) | PASS, 11 of 11 assertions (see below) |
-| Adapter resolution and hook installation in game | PASS: `compatibility.ready` at package load against the live 2.0.8 assembly |
+| Guarded `working-save-smoke`, final code commit `c9427faa` | PASS, 11 of 11 assertions (see below) |
+| Exact-binary gate and hook installation in game | PASS: `compatibility.ready` at package load; the live assembly's file SHA-256 and MVID matched |
 | Registration and all progression contract checks in game | PASS: `progression-catalog.ready`, not `degraded` |
 | All five [acceptance areas](#acceptance-requirements-before-merge-or-release): stocking and purchase, persistence, native event coordination, settings, purchased-item behaviour | NOT RUN, **blocks merge and release**. The only authorized disposable save predates kingdom creation, and no kingdom-stage save is authorized. |
 | Craft Magic Items handling of the new variants | NOT TESTED |
 
-The guarded run `20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1`
-launched through Steam App ID 640820. It loaded `KMG_AUTOMATION_WORKING`
-without any save-writing call; that save and `KMG_AUTOMATION_BASELINE` kept
-their prior timestamps. The deployed artifact was:
+The guarded run `20260923T2036170490182Z-e8ae7b5631174645a40db7ccb7b89a38`
+ran on the final code commit `c9427faa`, which has the exact-binary gate and
+the write-ahead ledger. It launched through Steam App ID 640820 and loaded
+`KMG_AUTOMATION_WORKING` without any save-writing call. That save and
+`KMG_AUTOMATION_BASELINE` kept their prior timestamps. The deployed artifact
+was:
 
-- package `d9ba82339c52490406273f56b05824a63b9013a60b3e8a21bedaa5a973fa84e7`;
-- DLL `34fe16ad05527cba5caad37a4d7ce7727d0b1553ec38511675017c6d2776d4fe`;
-- MVID `c7ccdfcf-42a8-4b82-a241-bcc3a0310ac8`, with commit `cca27056`
+- package `20132261467f0d93ec501fda9ca0d495917ac8ce60ca99744935f59d5e72820f`;
+- DLL `461183e8f4f193dbdba96068ab97a502ea7846dc2191f88b33ceb8861b81adca`;
+- MVID `2d98ffc8-6c2b-4c06-bd3e-31d81f820211`, with commit `c9427faa`
   embedded.
 
 UMM loaded all 16 installed mods, including Better Vendors 2.0.8. The same
@@ -443,16 +445,16 @@ session's UMM log recorded exactly these two `better-vendors` lines:
 ```
 
 There were no failure, degraded or stock lines, and no Gunslinger error lines,
-as expected for a save without a kingdom. These lines show that the live
-fingerprints matched and that every progression contract check passed. They
-are not evidence of merchant stock behaviour.
+as expected for a save without a kingdom. These lines show that the exact
+approved binary was accepted in game and that every progression contract check
+passed. They are not evidence of merchant stock behaviour.
 
-An earlier guarded run on the first candidate commit `060df1d4`
-(`20260923T1810242389403Z-1bf61c4530d14e879a16919b182a9602`) also passed all
-11 assertions with the same two log lines. After each run, the prior live
-installation was restored from its pre-deployment backup. The final tree is
-byte-identical to the state before the first run: 238 files, 0.0.136-labelled
-DLL `c6cccdac…465c`.
+Earlier guarded runs also passed all 11 assertions with the same two log
+lines: `060df1d4` (`20260923T1810242389403Z-1bf61c4530d14e879a16919b182a9602`)
+and `cca27056` (`20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1`).
+After each run, the prior live installation was restored from its
+pre-deployment backup. The final tree is byte-identical to the state before
+the first run: 238 files, 0.0.136-labelled DLL `c6cccdac…465c`.
 
 Any Better Vendors build other than the exact 2.0.8 binary is rejected by the
 gate, leaving only this integration inactive. Unverified combinations:

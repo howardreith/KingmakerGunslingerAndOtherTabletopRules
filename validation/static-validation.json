@@ -1803,14 +1803,15 @@
     "nativeRuntimeEvidence": null,
     "nativeRuntimeScopeNote": "Merchant stock needs a kingdom-stage save; the only authorized disposable fixture predates kingdom creation.",
     "workingSaveSmoke": {
-      "runId": "20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1",
+      "runId": "20260923T2036170490182Z-e8ae7b5631174645a40db7ccb7b89a38",
       "status": "PASS",
       "assertions": 11,
-      "commit": "cca27056128d636b9f0736b86254010ba043c639",
-      "packageSha256": "d9ba82339c52490406273f56b05824a63b9013a60b3e8a21bedaa5a973fa84e7",
-      "dllSha256": "34fe16ad05527cba5caad37a4d7ce7727d0b1553ec38511675017c6d2776d4fe",
-      "dllMvid": "c7ccdfcf-42a8-4b82-a241-bcc3a0310ac8",
+      "commit": "c9427faa5eb772d7744fbcce6dc71f1e64e3b636",
+      "packageSha256": "20132261467f0d93ec501fda9ca0d495917ac8ce60ca99744935f59d5e72820f",
+      "dllSha256": "461183e8f4f193dbdba96068ab97a502ea7846dc2191f88b33ceb8861b81adca",
+      "dllMvid": "2d98ffc8-6c2b-4c06-bd3e-31d81f820211",
       "betterVendorsAdapterStatus": "Ready",
+      "exactBinaryGateAccepted": true,
       "progressionCatalogReady": "entries=50;reused=7;registered=43;firearms=30;melee=20;publishedToVendors=false",
       "progressionCatalogDegraded": false,
       "liveInstallationRestored": true,
@@ -1821,6 +1822,13 @@
           "commit": "060df1d428f33a759106720e7e1c1fb384e1c450",
           "dllSha256": "285cc5bb39652b95858129be87d8be96b1e710c142f755ef05748e1cfc2b1fdd",
           "dllMvid": "d49f0f7d-c1be-43dd-970b-64a2b5fb58bf"
+        },
+        {
+          "runId": "20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1",
+          "status": "PASS",
+          "commit": "cca27056128d636b9f0736b86254010ba043c639",
+          "dllSha256": "34fe16ad05527cba5caad37a4d7ce7727d0b1553ec38511675017c6d2776d4fe",
+          "dllMvid": "c7ccdfcf-42a8-4b82-a241-bcc3a0310ac8"
         }
       ]
     },
