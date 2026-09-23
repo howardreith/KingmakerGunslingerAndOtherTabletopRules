@@ -198,21 +198,37 @@ function Resolve-KmgRestorationResult {
 
 <#
 .SYNOPSIS
-Whether a compatibility lock belongs to this batch.
+Whether a compatibility lock was created by this batch.
 
 .DESCRIPTION
-A batch may release only a lock it owns. The snapshot directory name carries the
-same run stamp the harness writes into its lock, so ownership is decidable
-without trusting the lock file to be well formed. Anything else is recorded as
-foreign and left alone: stealing another session's lock is worse than leaving a
-stale one.
+A batch may release only a lock it owns. The first version of this compared the
+snapshot directory's timestamp against the lock owner's as a substring, on the
+assumption that the harness stamps its lock with the same run stamp. It does
+not: the snapshot is taken when the batch starts and the lock when the harness
+takes the runtime, and one second between them is enough to make the substring
+miss. That happened, the batch declined to release its own lock, and restoration
+failed with the live tree still carrying the test build.
+
+The reliable rule is the window. A batch holds the runtime exclusively for its
+whole duration, so any compatibility lock whose run id is stamped between the
+batch starting and now was created by this batch. A lock from outside that
+window belongs to someone else and is left alone, because stealing another
+session's lock is worse than leaving a stale one.
 #>
 function Test-KmgCompatibilityLockOwned {
     param(
         [Parameter(Mandatory = $true)][AllowEmptyString()][string]$LockOwner,
-        [Parameter(Mandatory = $true)][string]$SnapshotStamp
+        [Parameter(Mandatory = $true)][DateTime]$BatchStartedUtc,
+        [DateTime]$NowUtc = [DateTime]::UtcNow
     )
     if ([string]::IsNullOrWhiteSpace($LockOwner)) { return $false }
-    if ([string]::IsNullOrWhiteSpace($SnapshotStamp)) { return $false }
-    return $LockOwner.Contains($SnapshotStamp)
+    if ($LockOwner -notmatch '(?<stamp>[0-9]{8}T[0-9]{6})') { return $false }
+    $stamp = [DateTime]::ParseExact($Matches['stamp'], 'yyyyMMddTHHmmss',
+        [Globalization.CultureInfo]::InvariantCulture,
+        [Globalization.DateTimeStyles]::AssumeUniversal -bor
+        [Globalization.DateTimeStyles]::AdjustToUniversal)
+    # A couple of seconds of slack at the start: the harness can stamp its lock
+    # marginally before the wrapper records its own start.
+    return $stamp -ge $BatchStartedUtc.ToUniversalTime().AddSeconds(-5) -and
+        $stamp -le $NowUtc.ToUniversalTime().AddSeconds(5)
 }
