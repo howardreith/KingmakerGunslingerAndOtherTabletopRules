@@ -1756,6 +1756,13 @@
     "saveLoadCompatibilityVerified": false,
     "releaseVersion": "0.0.137",
     "releaseInformationalVersion": "0.0.137-rapid-reload-combat-feat",
-    "versionNote": "0.0.136 was already published; the classification change advances to 0.0.137. The release build differs from the natively qualified candidate only in version identity."
+    "versionNote": "0.0.136 was already published; the classification change advances to 0.0.137. The release build differs from the natively qualified candidate only in version identity.",
+    "publishedTag": "v0.0.137",
+    "publishedAtUtc": "2026-09-23T15:58:22Z",
+    "publishedCommit": "90510353e619bc9064cf31fb6c1a28c95ba125da",
+    "publishedPackage": "KingmakerGunslinger-0.0.137-rapid-reload-combat-feat.zip",
+    "publishedPackageSha256": "c2a78d5b100f25daf5bc24d648014fc504f6fdc56a8ff10749c4e327bc39f866",
+    "publishedDllSha256": "90cf7659c44ced848a1bbd9443ecf9b544794c67ae76297acd190c046e4bf64a",
+    "publishedArtifactNote": "Publish-Release.ps1 produced two identical deterministic builds from master; the downloaded public asset matches packageSha256. Native qualification ran on the 0.0.136-labelled candidate at 0eee3be9, which differs only in version identity."
   }
 }
