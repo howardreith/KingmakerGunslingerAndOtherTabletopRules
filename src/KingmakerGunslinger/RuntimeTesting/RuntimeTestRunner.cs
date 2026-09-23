@@ -16524,6 +16524,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                     }
 
+                    // Sprint 2's own visual. The view patch records one outcome
+                    // per attached Pteranodon view, so every Pteranodon this
+                    // run casts is checked, not only the first; a unit left on
+                    // the donor visual names the reason in its outcome.
+                    if (variant.Creature.Key == "pteranodon")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _pteranodonVisualOutcomes.Add(
+                                ExpandedSummoningPteranodonViewPatch.DescribeView(
+                                    unit.View));
+                        }
+                    }
+
                     completed++;
                     spawnedTotal += count;
                     if (variant.Multiplicity == SummonMultiplicity.One) singleExact++;
@@ -16679,6 +16694,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _pteranodonAttachedContract.IndexOf("boneCount=72",
                             StringComparison.Ordinal) >= 0,
                     "UnitAnimationManager.ActionSet on the summoned Pteranodon, plus its bind-pose rig dump"),
+                // Sprint 2's vertical slice on a live unit: the original mesh
+                // and painting attached through the donor's own material, the
+                // donor renderer disabled, on every Pteranodon this run cast.
+                Assertion("expanded-summoning-pteranodon-visual-attached",
+                    "every summoned Pteranodon carries the original mesh and albedo on a private material with the donor renderer disabled",
+                    _pteranodonVisualOutcomes.Count == 0 ? "<no pteranodon view observed>" :
+                        string.Join("|", _pteranodonVisualOutcomes
+                            .Distinct(StringComparer.Ordinal).ToArray()),
+                    _pteranodonVisualOutcomes.Count > 0 &&
+                        _pteranodonVisualOutcomes.All(value => value.StartsWith(
+                            "visual:attached;", StringComparison.Ordinal)),
+                    "ExpandedSummoningPteranodonViewPatch.DescribeView on each spawned unit's view"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
