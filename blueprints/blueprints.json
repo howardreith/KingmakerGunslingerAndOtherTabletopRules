@@ -15311,6 +15311,350 @@
       "status": "active",
       "milestone": "Magic Circle grouped family follow-up",
       "notes": "One native AbilityVariants learning identity; restricted roots expose only their class-legal children. Original 24 saved identities preserved."
+    },
+    {
+      "symbol": "KMG.Firearms.PistolPlus2Item",
+      "guid": "b767c7389ba64eb19008fa9d66712985",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Pistol +2; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.PistolPlus3Item",
+      "guid": "e52bc130e64a4000875eaa0f903b5ffe",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Pistol +3; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.PistolPlus4Item",
+      "guid": "7f7d1dede53648eeb2c72b65d0a128b3",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Pistol +4; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.PistolPlus5Item",
+      "guid": "f8e9c22e1f404215b5fbc795e3853531",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Pistol +5; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliablePistolPlus1Item",
+      "guid": "03e9ba98b2954416b93f73b7045daed9",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Pistol +1: actual +1 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliablePistolPlus2Item",
+      "guid": "04b5b1bb6e3f47bd8b7b7427ba913a7b",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Pistol +2: actual +2 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliablePistolPlus3Item",
+      "guid": "aff91d56deba4542b28ac1a57741a1af",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Pistol +3: actual +3 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliablePistolPlus4Item",
+      "guid": "cf82e7d300eb4400a4980ddb9c4ed44e",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Pistol +4: actual +4 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliablePistolPlus5Item",
+      "guid": "4a4e1316201a47aeb4b74b8d31bddb7e",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Pistol +5: actual +5 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.MusketPlus2Item",
+      "guid": "839dd0d49e7c4fbc92764475e31ee175",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Musket +2; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.MusketPlus3Item",
+      "guid": "6980d1bfc1d94cd19ea033ad31335c79",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Musket +3; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.MusketPlus4Item",
+      "guid": "3785d6ecc69542a2a45d3c3f8e80fd79",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Musket +4; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.MusketPlus5Item",
+      "guid": "640573a7a9f74535a1054793cf0fbfba",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Musket +5; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableMusketPlus1Item",
+      "guid": "ffd5c4578cce403ebb42efb161a30f43",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Musket +1: actual +1 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableMusketPlus2Item",
+      "guid": "ae4b32641ad847bfb4dc4e257dbd6415",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Musket +2: actual +2 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableMusketPlus3Item",
+      "guid": "e9fe300679ec44dfacf6be958ebf7b19",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Musket +3: actual +3 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableMusketPlus4Item",
+      "guid": "14d649b4ab534ebeb02f3c9477aca192",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Musket +4: actual +4 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableMusketPlus5Item",
+      "guid": "15393669d06e4749b0e7729ec1cbebdf",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Musket +5: actual +5 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.BlunderbussPlus2Item",
+      "guid": "ec12481bf56a4fa4addeefafdcfb0be7",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Blunderbuss +2; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.BlunderbussPlus3Item",
+      "guid": "1324e5cb0c374dd6b998546e83509d20",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Blunderbuss +3; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.BlunderbussPlus4Item",
+      "guid": "779fede186964943bb202aeaa9a517c4",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Blunderbuss +4; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.BlunderbussPlus5Item",
+      "guid": "ea8803dcb9a146e5af5265e5a5816b32",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Blunderbuss +5; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableBlunderbussPlus1Item",
+      "guid": "8ca37dd6f1c741bdbe7f18570037699c",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Blunderbuss +1: actual +1 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableBlunderbussPlus2Item",
+      "guid": "3d45b093ac204b4ea859c76be35ecf0d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Blunderbuss +2: actual +2 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableBlunderbussPlus3Item",
+      "guid": "237cdb2b9292418387674526e5aea35d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Blunderbuss +3: actual +3 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableBlunderbussPlus4Item",
+      "guid": "165a278175c745bd8a15bff452a0a00c",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Blunderbuss +4: actual +4 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.Firearms.ReliableBlunderbussPlus5Item",
+      "guid": "f09173f6eb12483f82c711d2532b5095",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "Generic Reliable Blunderbuss +5: actual +5 enhancement with the canonical Reliable enchantment (+1 equivalent, price only); canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.Plus2Item",
+      "guid": "59c1cc59146a42b0bcecd080bf418f2b",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+2 Elven Branched Spear; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.Plus3Item",
+      "guid": "5ee1cb27471943cea19b3e76b3e06e46",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+3 Elven Branched Spear; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.Plus4Item",
+      "guid": "a15696e9747d47598c0149e7f5bad740",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+4 Elven Branched Spear; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.ElvenBranchedSpear.Plus5Item",
+      "guid": "972a58902b9148bbbc176750a0e0b867",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+5 Elven Branched Spear; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.Plus2Item",
+      "guid": "744ffd16fc1b4bd98bd06eb419c0ec7d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+2 Wakizashi; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.Plus3Item",
+      "guid": "331b4668855841da933887e29adf69d9",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+3 Wakizashi; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.Plus4Item",
+      "guid": "f89d3f4ff5e14ef984be001735e3f284",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+4 Wakizashi; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Wakizashi.Plus5Item",
+      "guid": "31887bcf6c124135aa1e4ff828c1dc21",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+5 Wakizashi; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.Plus2Item",
+      "guid": "8a6b48a90a4743c9a74cd65b6d063094",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+2 Katana; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.Plus3Item",
+      "guid": "cc429a9210234467acfeeb16d6859193",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+3 Katana; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.Plus4Item",
+      "guid": "9c5a6631e1ac4a25a446fd27d3e7effa",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+4 Katana; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Katana.Plus5Item",
+      "guid": "a31923daa72d44db93ae8a30ed12f956",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+5 Katana; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.Plus2Item",
+      "guid": "be8ad97d3b5f479788ddb73988b4fda8",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+2 Nodachi; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.Plus3Item",
+      "guid": "f25d6a89ba364cb0874bb22e559e06bf",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+3 Nodachi; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.Plus4Item",
+      "guid": "973eb3e4d6954ba2943dae2791649b07",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+4 Nodachi; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.EasternWeapons.Nodachi.Plus5Item",
+      "guid": "6502156bda38474a871062a2cbefd8cb",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Better Vendors progression",
+      "notes": "+5 Nodachi; canonical-family clone; Better Vendors progression stock only."
     }
   ]
 }
