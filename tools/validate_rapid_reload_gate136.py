@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate release 0.0.135 metadata while retaining all inherited gates.
+"""Validate release 0.0.136 metadata while retaining all inherited gates.
 
 Mechanical acceptance is the domain suite and guarded runtime evidence, not
 these documentation/metadata checks. This release ships with its guarded
@@ -14,9 +14,9 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 import validate_magic_circle134 as baseline
 
-VERSION = "0.0.135"
-INFORMATIONAL_VERSION = "0.0.135-rapid-reload-proficiency-gate"
-PACKAGE = "KingmakerGunslinger-0.0.135-local-runtime.zip"
+VERSION = "0.0.136"
+INFORMATIONAL_VERSION = "0.0.136-rapid-reload-proficiency-gate"
+PACKAGE = "KingmakerGunslinger-0.0.136-local-runtime.zip"
 PACKAGE_SUFFIX = "rapid-reload-proficiency-gate"
 DETERMINISTIC_TEST_COUNT = 1702
 
@@ -56,7 +56,7 @@ def validate(root: Path) -> None:
     # The release notes must state the waiver in the owner's own terms rather
     # than implying the scenario ran.
     baseline.baseline.baseline.baseline.require_tokens(
-        root / "docs/RELEASE-NOTES-0.0.135.md",
+        root / "docs/RELEASE-NOTES-0.0.136.md",
         INFORMATIONAL_VERSION, "owner authorized", "Rapid Reload",
         "firearm proficiency", "NOT RUN", "waived", "uninstall")
 

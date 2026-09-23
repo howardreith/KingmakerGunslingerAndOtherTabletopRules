@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.135-rapid-reload-proficiency-gate",
+  "milestone": "0.0.136-rapid-reload-proficiency-gate",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.135",
+  "version": "0.0.136",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -1669,7 +1669,7 @@
     ],
     "classPrerequisiteAdded": false,
     "legacyWrapperRepublished": false,
-    "nativeQualification": "NOT RUN: disposable-rapid-reload-proficiency-gate never executed; the guarded runtime orchestrator refuses administrator elevation and every authoring session was elevated. The owner explicitly waived the in-game gate and authorized publication of 0.0.135.",
+    "nativeQualification": "NOT RUN: disposable-rapid-reload-proficiency-gate never executed; the guarded runtime orchestrator refuses administrator elevation and every authoring session was elevated. The owner explicitly waived the in-game gate and authorized publication of 0.0.136.",
     "scope": [
       "Rapid Reload parent selection requires firearm proficiency",
       "firearm-exact child prerequisites retained",
@@ -1701,10 +1701,11 @@
     "ownerWaivedNativeQualification": true,
     "saveLoadCompatibilityVerified": false,
     "compatibilityRuntimeQualificationPending": true,
-    "releaseVersion": "0.0.135",
-    "releaseInformationalVersion": "0.0.135-rapid-reload-proficiency-gate",
-    "qualifiedDllSha256": "CA327153252C9F6379D4D4F3A36B04EDAF89655566F6AC63A8915ADEABD02098",
-    "qualifiedPackageSha256": "990F333D2AE52CB469287958FF0D67AEE16F1A8C9E7A247DBEB4068C22367A00",
-    "artifactNote": "Static/build/package gates only. These hashes identify the built 0.0.135 candidate; no native runtime qualification was performed against them."
+    "releaseVersion": "0.0.136",
+    "releaseInformationalVersion": "0.0.136-rapid-reload-proficiency-gate",
+    "qualifiedDllSha256": "DF2F71CD8592ED9087D281EF333CA6F2F8D69EFC353A98CA95A6FCAC64A58464",
+    "qualifiedPackageSha256": "9749EC38ABD9FCFBDD54EB825E7FC0A5F6D6D33CFFC81FAE4AB95D026FBDD58A",
+    "artifactNote": "Static/build/package gates only. These hashes identify the built 0.0.136 candidate; no native runtime qualification was performed against them.",
+    "versionNote": "0.0.135 was already published on 2026-09-21 from the Magic Circle follow-up line (commit a7cd0041); this release advanced to 0.0.136 rather than replacing it."
   }
 }
