@@ -199,12 +199,19 @@ entry to the failure collection that decides the assertion; where a case is
 scored by its evaluator instead, `EvaluateCleanup` rejects any row carrying
 `cleanupError`. The boundary never throws, so the caller's `finally` still
 reaches `unit.Dispose()` and an in-flight body exception is never masked, and a
-null controller stays a no-op. The self-check also fault-injects that exact
-boundary: one controller is cancelled cleanly through it, and a second has its
-preview disposed and its public `Preview` field cleared so the native `Cancel()`
-throws — proving the failure is reported into a scored collection, keeps its
-diagnostics, does not escape the `finally`, and still leaves the fixture unit
-disposed.
+null controller stays a no-op. The self-check also exercises that exact
+boundary: one controller is cancelled cleanly through it, and a second — left
+completely intact — has a controlled failure supplied at the cancellation call
+through a private injection overload (`cancel` is null on every production
+path, which still runs the native `Cancel()`). The injected error therefore
+travels the production catch-and-report path without the controller being
+damaged to manufacture it. That controller is then torn down natively and
+unconditionally, with its outcome collected under its own
+`injection.real-teardown` label so a genuine teardown failure fails the
+scenario and can never read as the expected injected one, and its fixture unit
+is disposed in an independent boundary. This is an **injected** boundary
+failure: it is not evidence that the native `Cancel()` throws or that
+cancellation executed.
 
 `RapidReloadGateEvidenceRules` scores that evidence, and the domain suite
 exercises those rules with truncated and corrupted fixtures
