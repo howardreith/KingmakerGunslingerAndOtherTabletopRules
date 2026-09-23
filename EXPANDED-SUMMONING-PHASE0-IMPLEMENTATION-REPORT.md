@@ -270,9 +270,235 @@ Without them the suite reports failures that are environment gaps, not defects.
 
 The repository pins an exact `Case("` count per active release and mirrors it
 in every active feature block of `validation/static-validation.json`, so adding
-domain tests moves four records together. This mission moved them 1702 -> 1717.
+domain tests moves four records together. This mission moved them 1702 -> 1717, and the continuation below moved
+them further to 1733.
 No test was weakened or removed.
 
 `.gitattributes` mandates LF for `.cs`, `.csproj`, `.json`, `.py` and `.md`.
 Source-scanning tests assert exact multi-line tokens containing LF, so any tool
 that rewrites those files must preserve LF endings.
+
+
+---
+
+# Continuation, 2026-09-23: autonomous completion pass
+
+Everything above stands as written. This section records the work done under
+the owner's autonomous-completion order and supersedes nothing without saying
+so. Where an earlier claim here turned out to be wrong - the loader's bind-pose
+strategy in particular - the correction is stated explicitly rather than the
+old text being quietly edited.
+
+Branch `codex/expanded-summoning-phase0-sprints0-2`, draft PR #21. Accepted
+baseline `master` @ `35555a8d`, release 0.0.136. Not merged, not released, no
+candidate left installed, Sprint 3 not started.
+
+## Acceptance labels
+
+- `OwnerDelegationGranted` - the autonomous-completion order delegates
+  intermediate technical, menu/usability and visual acceptance to internal
+  review.
+- `InternalAcceptance` - recorded per item below.
+- `HumanReview: NOT_PERFORMED_NONBLOCKING` - throughout. Nothing in this report
+  is `OwnerAccepted` or `HumanVisualReviewPassed`.
+
+## What is complete
+
+### Sprint 0 - baseline freeze and program harness
+
+All live evidence at 0.0.136, each with restoration verified and the live tree
+returned to 0.0.117 / 136 files /
+`FD2FC61C250B13857D81ACC197A896450F5B242EE392FA7192B01201E908F35F`.
+
+| Item | Result |
+|---|---|
+| Structural inventory | PASS 38/38 |
+| Mechanical | PASS 13/13 |
+| Player path | PASS 10/10 |
+| Persistence trio | PASS 9/9 each |
+| Visual contracts | PASS 13/13 |
+| Compatibility matrix | see below |
+| Feature boundary | see below |
+
+### The feature-module gate was a tautology
+
+It compared the active flag against the settings the launcher had just written -
+both sides came from the same object - so it would have passed unchanged if the
+module had published its entire roster with the module off, or nothing with it
+on. It now censuses the eighteen native summon parents.
+
+| module | publishedParents | placements | nativeOptions | preservation | unclassified | placementsExact | nativeVariants |
+|---|---|---|---|---|---|---|---|
+| enabled | 18 | 667 | 26 | 0 | 0 | True | 0 |
+| disabled | 0 | 0 | 0 | 0 | 0 | True | 46 |
+
+The cross-run reading is the fact no single run can establish: Expanded
+Summoning **substitutes for** the native summon menu rather than adding to it.
+All 46 native variants are replaced by 667 project placements plus 26
+native-option wrappers, and with the module off the native 46 are untouched.
+`placementsExact` is the per-variant check across all 681 generated placements,
+true in both directions.
+
+Both runs' overall status is FAIL, for two reasons that are not this mission's
+and are not glossed: brown fur cannot pass in a profile without Call of the Wild
+in either module state, and three `teleportation-scroll-template-*` assertions
+fail identically on master's own lineage at 0.0.132. This branch changes no
+teleportation file.
+
+### Compatibility
+
+Every scenario that ran passed, with the mod set confirmed loaded rather than
+assumed, and the structural inventory 38/38 under each.
+
+| Profile | mods confirmed loaded |
+|---|---|
+| `gunslinger-only` | none |
+| `gunslinger-call-of-the-wild` | CallOfTheWild 1.14.4c-2.1 |
+| `gunslinger-arms-armor` | ArmsArmor |
+| `gunslinger-toggle-custom-soundpacks` | ToggleCustomSoundpacks |
+| `gunslinger-high-risk-combined` | ArmsArmor + CallOfTheWild + ToggleCustomSoundpacks |
+
+Call of the Wild was the profile worth running - it rewrites summon spells and
+shares all eighteen parents - and the surface is unchanged under it.
+
+`gunslinger-high-risk-combined` carried `CONFLICT-OBSERVED` for historically
+timing out before readiness. With a 600-second budget it reached readiness and
+passed. That is evidence the timeout was a budget problem, not that the older
+conflict never existed.
+
+### Sprint 2 - the Pteranodon
+
+The donor is `CR3_GiantEagleStandard`, shared by eagle, dire bat, pteranodon and
+roc, so every change is instance-local and those three are the controls.
+
+**The bind pose overturned a conclusion recorded earlier in this mission.** The
+capture had recorded live local transforms; those are whatever frame the
+animation system is on, and they showed folded wings - 1.638 across against
+3.152 long. The bind poses describe a spread pose 8.641 across against 2.937
+long, mirrored to 1e-5, disagreeing by 3.954 at the wingtip.
+
+That changed the loader too. It had been computing bind poses at attach time
+from the donor's live bones, on the reasoning that both sides of the product
+move together. They do, but that makes the mesh render as authored *in whatever
+frame the unit is on at attach*, and attach time is arbitrary. The loader now
+reuses the donor's own `sharedMesh.bindposes`, matched per bone name.
+
+**Deformation proof**, on the detached never-activated probe:
+
+    bone=L_Feather_3;degrees=25;ownedMoved=2;ownedStill=0;ownedDrifted=0;
+    worstDrift=0.00000;controlMoved=0;controlStill=100;
+    worstControlMotion=0.00000;largestMotion=0.1446;bakeDisagreement=0.00000
+
+Vertices the rotated bone owns moved and held station in its frame exactly; 100
+vertices on the opposite wing did not move; Unity's own `BakeMesh` agrees with
+the evaluated skinning to zero. `ownedMoved=2` is a thin population - the
+membrane blends across bones and few vertices exceed the 0.8 dominance threshold
+- and that is stated rather than rounded up.
+
+### The Unity licence, and why the asset ships as data
+
+The 2018.4.10f1 editor that built every previous AssetBundle in this repository
+stopped accepting its licence between 2026-08-21 and 2026-09-23. Same install,
+same project, same batch command: success then, and now `BatchMode: Unity has
+not been activated with a valid License` / `Missing or bad username and
+password`. Only 2018.4.10f1 and a Hub-installed 6000.5.6f1 are present, and a
+6000.x bundle will not load in a 2018.4 game.
+
+Rather than stop, the Pteranodon ships as ~70 KB of mesh data the runtime builds
+a `Mesh` from. It carries strictly less than a bundle would, has no editor
+dependency, and is less code on both sides. The bundle builder is retained but
+is not on the shipping path. Re-activating the licence needs Unity account
+credentials; nothing in this delivery depends on it.
+
+## What is not complete, and why
+
+### The live projected-menu measurement (C2/C3)
+
+Not obtained, after seven guarded runs. Fully recorded in
+`docs/EXPANDED-SUMMONING-PROJECTED-MENU-RUBRIC.md`. The short version: the
+shipped layout anchors the popup to the slot a player clicked, and no
+`ActionBarGroupSlot` is active in `KMG_AUTOMATION_WORKING`'s hierarchy. The
+layout policy is measured exhaustively at domain level instead (four viewports x
+200 option counts), the real menu remains covered by the supervised observation,
+and no live measurement at 120/110 entries is claimed anywhere.
+
+### The finished creature (E2)
+
+The body is authored and internally reviewed from renders: 680 vertices, span
+8.641 against length 3.223, ratio 2.68, inside a real Pteranodon's envelope. Two
+defects were found by looking at the renders and fixed - a tail stub detached
+from the torso, and a crest that read as a box. The crest still does not read
+unmistakably at silhouette scale, and there are no UVs or textures yet. It is
+accepted as the geometry that proves the pipeline, not as the finished creature.
+
+### Live acceptance groups
+
+Group 3 (casting) and group 5 (persistence) are satisfied by scenarios that pass
+on this candidate. Groups 1, 2, 4, 6 and 7 - motion and contact, presentation,
+crowding and isolation, failure recovery, repeated lifecycle - are **not
+performed**. They depend on the finished textured creature and on new scenarios
+that were not built.
+
+## Defects found and fixed in this mission's own tooling
+
+1. **A scenario that recorded FAIL could be counted as a pass.** The wrapper only
+   moved an outcome away from PASS when evidence was absent, so a FAIL with a
+   zero exit code did not increment the failure count.
+2. **The unattended matrix scheduled a supervised scenario**, aborting every
+   profile before its mechanical scenario.
+3. **A batch would not release its own compatibility lock**, because ownership
+   compared two stamps taken a second apart as substrings. Restoration failed
+   with the test build still live.
+4. **A new scenario was absent from the runner's working-save chains**, so it
+   launched and sat idle until the harness timed out.
+
+Each now has a test that fails on the defect and was mutation-checked.
+
+## Process incidents
+
+- A Release build run concurrently with a loading game starved it past its
+  300-second timeout; the leftover process then blocked restoration and the next
+  six matrix steps. Recovered by hand after confirming
+  `saveInteractionOccurred=false`; live tree verified back to 0.0.117.
+- The live installation ended every session at 0.0.117 / 136 files /
+  `FD2FC61C...`, verified after each run.
+
+
+## Additions after the draft above was written
+
+**The Unity licence was refreshed twice and still refuses.** Both 2018.4.10f1
+installs behave identically - the original standalone editor and a fresh
+Hub-installed 2018.4.10f1. Each reads the refreshed `Unity_lic.ulf` (both report
+a next-check date matching the file's own) and each then reports `BatchMode:
+Unity has not been activated with a valid License` followed by `Failed to
+activate/update license. Missing or bad username and password.` No editor
+version was changed and 6000.5.6f1 was never invoked. Logs are in
+`unity-asset-build/pteranodon-verify/`. The suspected cause - that Hub 3.20
+grants the seat through its licensing client while 2018.4 reads only the legacy
+ULF path - is a hypothesis, not a finding. It blocks nothing: the asset ships as
+mesh data.
+
+**The action-bar fixture for the projected menu hung the game.** Installing a
+`MechanicActionBarSlotSpontaneusSpell` and marking the UI settings dirty stopped
+frame production after the save loaded: no error, no result, the process
+resident and unresponsive until closed. Because a frame-budget guard cannot fire
+when frames stop, the scenario could not report its own failure and had to be
+diagnosed from the absent post-readiness stage. The mutation is disabled and the
+code retained with that reason recorded. The live 120/110 measurement therefore
+remains **not run**, and the prerequisite is now stated exactly: the disposable
+working save presents no anchorable action-bar group slot, and the direct way to
+create one destabilises the UI rebuild.
+
+**Both compatibility mechanical runs timed out in save load.** Nine of eleven
+assertions passed in each of `gunslinger-only` and
+`gunslinger-high-risk-combined`; the two failures are the save-load completion
+pair (`callback=False`, load reached step 26, after-load callback never fired).
+The same scenario passes 13/13 on this candidate outside a compatibility
+transaction, so this is recorded as a harness/environment characteristic of
+loading a save inside that transaction, not as a summoning defect and not as a
+pass.
+
+**Machine state.** Verified after every run in this pass: live installation
+0.0.117, 136 files, DLL
+`FD2FC61C250B13857D81ACC197A896450F5B242EE392FA7192B01201E908F35F`, no leftover
+process, no compatibility lock, no `Mods.kmg-compat-*` sidecar.
