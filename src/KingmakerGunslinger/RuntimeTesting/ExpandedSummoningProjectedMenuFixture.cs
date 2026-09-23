@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UI.ActionBar;
 using Kingmaker.UnitLogic.Abilities;
@@ -166,30 +167,32 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal bool Step(SummonFamily family, int cycle, ref int settled)
         {
-            // FindObjectsOfTypeAll returns every loaded instance, prefabs and
-            // UI templates included - 48 of them in a loaded save - so the one
-            // that belongs to the live action bar has to be picked out rather
-            // than assumed to be the only one. A group that belongs to a loaded
-            // scene is an instance; a prefab's scene handle is not valid.
-            ActionBarSpellsGroup[] groups = Resources
-                .FindObjectsOfTypeAll<ActionBarSpellsGroup>()
-                .Where(value => value != null && value.gameObject != null)
+            // Each ActionBarGroupSlot owns its own ActionBarSpellsGroup, so a
+            // loaded save has dozens of them and picking a group directly
+            // measures an arbitrary widget. The real player path is a click on a
+            // group slot, which the shipped patch intercepts to record the slot
+            // the popup anchors to; without that capture the layout code has
+            // nothing to anchor against and produces no snapshot at all, which
+            // is exactly what three earlier runs reported.
+            //
+            // So this reproduces the click: find a visible group slot, prefer
+            // one whose own ability is a published summon parent, capture it the
+            // way the patch does, and toggle that slot's own sub-group.
+            ActionBarGroupSlot[] slots = Resources
+                .FindObjectsOfTypeAll<ActionBarGroupSlot>()
+                .Where(value => value != null && value.gameObject != null &&
+                    value.gameObject.scene.IsValid() &&
+                    value.gameObject.scene.isLoaded &&
+                    value.gameObject.activeInHierarchy)
                 .ToArray();
-            ActionBarSpellsGroup[] live = groups.Where(value =>
-                value.gameObject.scene.IsValid() &&
-                value.gameObject.scene.isLoaded).ToArray();
-            _groupCount = groups.Length;
-            _liveGroupCount = live.Length;
-            if (live.Length == 0) return false;
+            _groupCount = slots.Length;
+            ActionBarGroupSlot slot = slots.FirstOrDefault(IsPublishedParentSlot)
+                ?? slots.FirstOrDefault();
+            if (slot == null) return false;
 
-            // More than one live instance would make the measurement ambiguous,
-            // so prefer one that is actually part of an active hierarchy and
-            // record the ambiguity either way.
-            ActionBarSpellsGroup group = live.Length == 1 ? live[0] :
-                (live.FirstOrDefault(value =>
-                    value.transform.parent != null &&
-                    value.transform.parent.gameObject.activeInHierarchy)
-                 ?? live[0]);
+            ActionBarSpellsGroup group = SubGroupOf(slot);
+            if (group == null) return false;
+            _liveGroupCount = 1;
 
             if (settled == 0)
             {
@@ -203,6 +206,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _pendingFamily = family;
                 _pendingCycle = cycle;
                 _pendingProjected = entries.Count;
+                ExpandedSummoningVariantMenuRuntime.CaptureSourceSlot(group, slot);
                 group.Toggle(_unit, entries, source);
                 settled++;
                 return false;
@@ -261,6 +265,53 @@ namespace KingmakerGunslinger.RuntimeTesting
             _measurements.Add(measurement);
             settled = 0;
             return true;
+        }
+
+        /// <summary>
+        /// The slot's own popup group. ActionBarGroupSlot keeps it in a private
+        /// field, which is how the shipped Harmony patch reaches it too.
+        /// </summary>
+        private static ActionBarSpellsGroup SubGroupOf(ActionBarGroupSlot slot)
+        {
+            FieldInfo field = typeof(ActionBarGroupSlot).GetField("SubGroup",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            return field == null ? null :
+                field.GetValue(slot) as ActionBarSpellsGroup;
+        }
+
+        /// <summary>
+        /// Whether this slot's own ability is one of the published summon
+        /// parents. Preferring such a slot makes the measurement faithful to
+        /// where the menu really opens; any visible slot still gives a valid
+        /// anchor if none is on the bar.
+        /// </summary>
+        private static bool IsPublishedParentSlot(ActionBarGroupSlot slot)
+        {
+            try
+            {
+                FieldInfo field = typeof(ActionBarGroupSlot).GetField("SubGroup",
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic);
+                if (field == null) return false;
+                object mechanic = slot.GetType()
+                    .GetProperty("MechanicSlot", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic)
+                    ?.GetValue(slot, null);
+                if (mechanic == null) return false;
+                object spell = mechanic.GetType()
+                    .GetProperty("Spell", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic)
+                    ?.GetValue(mechanic, null) as AbilityData;
+                AbilityData data = spell as AbilityData;
+                return data != null && data.Blueprint != null &&
+                    ExpandedSummoningPublisher.IsPublishedExpandedParent(
+                        data.Blueprint);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private static int CountGroupSlots()
