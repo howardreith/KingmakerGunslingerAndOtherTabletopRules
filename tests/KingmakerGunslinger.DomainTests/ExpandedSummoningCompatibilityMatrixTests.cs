@@ -148,6 +148,57 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// The unattended matrix driver must never schedule a supervised
+        /// scenario.
+        ///
+        /// This rule exists because the first run of that matrix scheduled
+        /// `observe-expanded-summoning-variant-menu`, which waits for a human to
+        /// open a menu. Unattended it is refused at the save-name check, and the
+        /// compatibility launcher stops a profile's list at the first scenario
+        /// that does not record PASS - so every profile aborted before its
+        /// mechanical scenario could run, and the matrix had to be re-run.
+        ///
+        /// The check reads the driver for any token that names a scenario the
+        /// harness knows, so a supervised name reintroduced anywhere in it -
+        /// in a step list, a helper variable, a default - is caught.
+        /// </summary>
+        internal static void AutomatedMatrixNeverSchedulesSupervisedScenarios()
+        {
+            string driver = Source(
+                "scripts/Invoke-ExpandedSummoningCompatibilityMatrix.ps1");
+            string harness = Source("scripts/RuntimeAutomation.Common.ps1");
+
+            var supervised = new HashSet<string>(
+                Regex.Matches(harness,
+                    "'(?<name>[a-z0-9-]+)'\\s*=\\s*\\[pscustomobject\\]@\\{" +
+                    "(?<body>[\\s\\S]*?)\\r?\\n    \\}")
+                    .Cast<Match>()
+                    .Where(value => Regex.IsMatch(value.Groups["body"].Value,
+                        "RequiresManualInteraction\\s*=\\s*\\$true"))
+                    .Select(value => value.Groups["name"].Value),
+                StringComparer.Ordinal);
+            Assertions.True(supervised.Count > 0,
+                "No supervised scenario could be found in the harness, so this " +
+                "check would pass vacuously.");
+
+            var scheduled = new HashSet<string>(
+                Regex.Matches(driver, "'(?<name>[a-z0-9-]+)'")
+                    .Cast<Match>().Select(value => value.Groups["name"].Value),
+                StringComparer.Ordinal);
+            var offenders = scheduled.Where(supervised.Contains)
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+
+            Assertions.True(
+                scheduled.Contains("observe-expanded-summoning-inventory"),
+                "The driver no longer schedules the structural inventory, so " +
+                "this check is looking at the wrong file.");
+            Assertions.True(offenders.Length == 0,
+                "The unattended compatibility matrix names supervised " +
+                "scenarios, which wait for a human and abort the rest of their " +
+                "profile: " + string.Join(", ", offenders));
+        }
+
+        /// <summary>
         /// The mechanical scenario loads the working save, so it may appear only
         /// in a profile cleared for save-backed runs, and the launcher must hand
         /// it the save name.

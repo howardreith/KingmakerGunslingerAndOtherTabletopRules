@@ -34,8 +34,8 @@ namespace KingmakerGunslinger.Assets
     internal static class PteranodonAssetRuntime
     {
         internal const string BundleName = "kingmakergunslinger.pteranodon";
-        internal const string MeshAssetName = "pteranodonmembrane";
-        internal const string BonesAssetName = "pteranodonmembranebones";
+        internal const string MeshAssetName = "pteranodonmesh";
+        internal const string BonesAssetName = "pteranodonbones";
 
         /// <summary>
         /// Bones the membrane may bind to. The bundle is rejected if it names
@@ -44,12 +44,17 @@ namespace KingmakerGunslinger.Assets
         /// </summary>
         private static readonly string[] AllowedBones =
         {
-            "L_Arm_Upper", "L_Arm_Lower", "L_Palm", "L_Foot0",
-            "L_Feather_1", "L_Feather_2", "L_Feather_3",
-            "L_Feather_4", "L_Feather_5", "L_Feather_6",
-            "R_Arm_Upper", "R_Arm_Lower", "R_Palm", "R_Foot0",
-            "R_Feather_1", "R_Feather_2", "R_Feather_3",
-            "R_Feather_4", "R_Feather_5", "R_Feather_6"
+            "LowerTorso", "UpperTorso", "Neck", "Head", "Jaw", "Tail",
+            "L_Arm_Upper", "L_Arm_Lower", "L_Palm", "L_Feather_1", "L_Feather_2",
+            "L_Feather_3", "L_Feather_4", "L_Feather_5", "L_Feather_6",
+            "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0", "L_Finger_1_1",
+            "L_Finger_1_2", "L_Finger_2_1", "L_Finger_2_2", "L_Finger_3_1",
+            "L_Finger_3_2", "L_Finger_4_1", "L_Finger_4_2", "R_Arm_Upper",
+            "R_Arm_Lower", "R_Palm", "R_Feather_1", "R_Feather_2", "R_Feather_3",
+            "R_Feather_4", "R_Feather_5", "R_Feather_6", "R_Leg0_Upper",
+            "R_Leg0_Lower", "R_Foot0", "R_Finger_1_1", "R_Finger_1_2",
+            "R_Finger_2_1", "R_Finger_2_2", "R_Finger_3_1", "R_Finger_3_2",
+            "R_Finger_4_1", "R_Finger_4_2"
         };
 
         private static readonly object Sync = new object();

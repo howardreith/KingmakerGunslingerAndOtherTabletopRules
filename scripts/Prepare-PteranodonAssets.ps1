@@ -23,14 +23,14 @@ $committed = Join-Path $root 'assets-source\original-models\pteranodon'
 $destination = Join-Path $ProjectPath 'Assets\Pteranodon'
 $editor = Join-Path $ProjectPath 'Assets\Editor'
 
-$fbx = Join-Path $SourceRoot 'pteranodon-membrane.fbx'
+$fbx = Join-Path $SourceRoot 'pteranodon.fbx'
 if (-not (Test-Path -LiteralPath $fbx -PathType Leaf)) {
     throw "The generated membrane FBX is missing: $fbx. Regenerate it with " +
-        "assets-source\original-models\pteranodon\generate_membrane.py as " +
+        "assets-source\original-models\pteranodon\generate_pteranodon.py as " +
         "described in that directory's SOURCE.md."
 }
 
-$report = Join-Path $committed 'pteranodon-membrane-build-report.json'
+$report = Join-Path $committed 'pteranodon-build-report.json'
 if (-not (Test-Path -LiteralPath $report -PathType Leaf)) {
     throw "The committed membrane build report is missing: $report"
 }
@@ -50,7 +50,7 @@ if ([string]$reportJson.rigSpace -notlike '*renderer-local*') {
 
 New-Item -ItemType Directory -Force -Path $destination, $editor | Out-Null
 Copy-Item -LiteralPath $fbx -Destination (Join-Path $destination `
-    'pteranodon-membrane.fbx') -Force
+    'pteranodon.fbx') -Force
 Copy-Item -LiteralPath $report -Destination (Join-Path $destination `
     'source-build-report.json') -Force
 Copy-Item -LiteralPath (Join-Path $root 'tools\unity\BuildPteranodonBundle.cs') `
