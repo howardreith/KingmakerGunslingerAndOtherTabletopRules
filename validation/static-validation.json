@@ -1641,7 +1641,7 @@
   "magicCircleFollowup": {
     "baselineCommit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
     "branch": "codex/magic-circle-followup-polish",
-    "deterministicTestCount": 1687,
+    "deterministicTestCount": 1697,
     "publicReleaseAuthorized": false,
     "nativeQualification": "PASS: candidate 11; seven guarded scenarios, 428 assertions; exact fixture cleanup and fresh absence; normal-play restoration verified",
     "nativeEvidence": "reports/magic-circle/FOLLOWUP-QUALIFICATION.json",
@@ -1658,9 +1658,9 @@
   "rapidReloadProficiencyGate": {
     "baselineCommit": "0e62a78e1238a2d46e447bb307ee1e83f93ed178",
     "branch": "codex/rapid-reload-proficiency-gate",
-    "deterministicTestCount": 1687,
+    "deterministicTestCount": 1697,
     "publicReleaseAuthorized": false,
-    "liveTestCountDelta": "1683 -> 1687; four Rapid Reload gate cases added to the shared suite",
+    "liveTestCountDelta": "1683 -> 1697; four Rapid Reload gate policy cases plus ten scenario evidence-evaluation cases added to the shared suite",
     "parentPrerequisiteGrouping": "Prerequisite.GroupType.Any",
     "parentGateKinds": [
       "Pistol",
@@ -1669,11 +1669,19 @@
     ],
     "classPrerequisiteAdded": false,
     "legacyWrapperRepublished": false,
-    "nativeQualification": "BLOCKED: disposable-rapid-reload-proficiency-gate registered but not run; the guarded runtime orchestrator refuses administrator elevation and the authoring session was elevated",
+    "nativeQualification": "BLOCKED: disposable-rapid-reload-proficiency-gate registered and corrected but never executed; the guarded runtime orchestrator refuses administrator elevation and the authoring sessions were elevated",
     "scope": [
       "Rapid Reload parent selection requires firearm proficiency",
       "firearm-exact child prerequisites retained",
-      "ordinary and Fighter combat-feat publication unchanged"
+      "ordinary and Fighter combat-feat publication unchanged",
+      "runtime scenario evidence scoring regression-tested in the domain suite"
+    ],
+    "reviewedCommit": "d6ab7f6215f8368507995834dacfa98970a11b79",
+    "reviewFindingsAddressed": [
+      "F1 pending class/archetype change in one live transaction",
+      "F2 refusal observed before cleanup against LevelUpState.IsComplete",
+      "F3 natively built Musket Master with the real nested child selection",
+      "F4 class-identity control with real Gunslinger class levels"
     ]
   }
 }
