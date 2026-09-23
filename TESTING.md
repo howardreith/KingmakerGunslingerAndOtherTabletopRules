@@ -80,6 +80,48 @@ pairs after live view attachment rather than inferring scale from blueprint
 metadata.
 
 
+## Better Vendors progression (0.0.138 candidate)
+
+The optional Better Vendors integration is covered by 35 dependency-free
+`better-vendors.*` domain cases in
+`tests/KingmakerGunslinger.DomainTests/BetterVendorsProgressionTests.cs`. They
+cover:
+
+- the exact 50-entry catalog, reused identities, manifest append, pricing,
+  exclusions, module ownership and visual mappings;
+- the verified Military schedule;
+- stock-call classification and pass-scope unwinding;
+- ordinary-query recognition;
+- grant planning for current-tier, catch-up, native-selection, module,
+  milestone and catalog-expansion cases;
+- the ledger and partial-failure recording;
+- a simulated campaign lifecycle: fresh, existing, both event orders, Better
+  Vendors' own first pass, disabling and campaign switching;
+- the fail-closed contract gate and one-time status reporting;
+- source checks that the hooks stay narrow and read-only, that other
+  acquisition paths exclude the variants, and that bootstrap registration is
+  unconditional.
+
+The machine-readable catalog must match the code. After building the domain
+tests, regenerate it with:
+
+```powershell
+.\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe `
+  --write-better-vendors-catalog docs\better-vendors-progression-catalog.json
+```
+
+The in-game stock behaviour is not yet qualified. It needs a save whose kingdom
+has reached Military I or higher. The only authorized disposable fixture,
+`KMG_AUTOMATION_WORKING`, predates kingdom creation, so Better Vendors'
+progression never runs in it. Qualifying the adapter's merchant behaviour
+needs an owner-authorized, disposable kingdom-stage fixture. Never fabricate
+one or reuse a real campaign save. The canonical `working-save-smoke`
+scenario can still show that the candidate loads, registers the 43 new
+blueprints and resolves the installed Better Vendors contract. Read the
+`better-vendors` lines in the UMM log for that. See
+[docs/BETTER-VENDORS-COMPATIBILITY.md](docs/BETTER-VENDORS-COMPATIBILITY.md).
+
+
 ## Rapid Reload proficiency gate
 
 `disposable-rapid-reload-proficiency-gate` is the guarded scenario for the

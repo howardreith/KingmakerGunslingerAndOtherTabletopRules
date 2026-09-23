@@ -96,28 +96,7 @@ namespace KingmakerGunslinger.Blueprints
             foreach (MagicFirearmItemSpec spec in specs)
             {
                 ProductionFirearmBlueprintEntry family = Family(firearms, spec.Kind);
-                BlueprintItemWeapon source = family.Item;
-                BlueprintWeaponEnchantment[] sourceEnchantments = GetEnchantments(source);
-                BlueprintItemWeapon item = registry.Register<BlueprintItemWeapon>(spec.Symbol,
-                    delegate
-                    {
-                        BlueprintItemWeapon clone = BlueprintCloneService.Clone(source,
-                            spec.InternalName);
-                        BlueprintItemAccess.Resolve().ConfigureWeapon(clone,
-                            LocalizationService.Create(spec.Symbol + ".Name", spec.DisplayName),
-                            LocalizationService.Create(spec.Symbol + ".Description",
-                                DescriptionFor(spec, family.Spec.Definition)),
-                            LocalizationService.Create(spec.Symbol + ".Flavor", spec.Flavor),
-                            spec.Cost, source.Weight);
-                        SetEnchantments(clone, spec.Enchantments.ToArray());
-                        FirearmWeaponPresentation.ApplyItemVariant(clone,
-                            spec.Symbol, spec.Kind);
-                        return clone;
-                    });
-                if (!ReferenceEquals(GetWeaponType(item), family.WeaponType))
-                    throw new InvalidOperationException(spec.DisplayName + " changed canonical family weapon type.");
-                if (!ReferenceEquals(GetEnchantments(source), sourceEnchantments))
-                    throw new InvalidOperationException(spec.DisplayName + " mutated its canonical source enchantment array.");
+                BlueprintItemWeapon item = RegisterItem(registry, spec, family);
                 entries.Add(new MagicFirearmBlueprintEntry(spec, item, family));
             }
             var result = new MagicFirearmBlueprintCatalog(entries.ToArray(), reliable, seeking);
@@ -133,22 +112,82 @@ namespace KingmakerGunslinger.Blueprints
                 catalog.Entries.Select(value => value.Item).Distinct().Count() != 10)
                 throw new InvalidOperationException("Magic firearm catalog identity/count mismatch.");
             foreach (MagicFirearmBlueprintEntry entry in catalog.Entries)
-            {
-                BlueprintWeaponEnchantment[] actual = GetEnchantments(entry.Item);
-                if (actual.Length != entry.Spec.Enchantments.Length ||
-                    actual.Distinct().Count() != actual.Length ||
-                    !actual.SequenceEqual(entry.Spec.Enchantments) ||
-                    !ReferenceEquals(GetWeaponType(entry.Item), entry.Family.WeaponType) ||
-                    entry.Item.Cost != entry.Spec.Cost ||
-                    !entry.Item.Weight.Equals(entry.Family.Item.Weight) ||
-                    BlueprintItemAccess.Resolve().Capture(entry.Item).IsStackable ||
-                    entry.Spec.Kind == FirearmKind.Rifle ||
-                    entry.Spec.Kind == FirearmKind.Revolver ||
-                    !FirearmWeaponPresentation
-                        .HasApprovedItemVariantOrFamilyFallback(entry.Item,
-                            entry.Spec.Symbol, entry.Spec.Kind))
-                    throw new InvalidOperationException("Magic firearm contract mismatch: " + entry.Spec.DisplayName);
-            }
+                ValidateItem(entry.Item, entry.Spec, entry.Family);
+        }
+
+        /// <summary>
+        /// Registers one magic firearm variant by cloning its exact canonical
+        /// family item, so the family weapon type, firearm definition, item
+        /// components and presentation fallback are inherited unchanged. Only
+        /// text, price and the complete static enchantment package differ.
+        /// </summary>
+        internal static BlueprintItemWeapon RegisterItem(
+            BlueprintRegistry registry, MagicFirearmItemSpec spec,
+            ProductionFirearmBlueprintEntry family)
+        {
+            if (registry == null || spec == null || family == null)
+                throw new ArgumentNullException(
+                    "Magic firearm item registration inputs are incomplete.");
+            BlueprintItemWeapon source = family.Item;
+            BlueprintWeaponEnchantment[] sourceEnchantments = GetEnchantments(source);
+            BlueprintItemWeapon item = registry.Register<BlueprintItemWeapon>(spec.Symbol,
+                delegate
+                {
+                    BlueprintItemWeapon clone = BlueprintCloneService.Clone(source,
+                        spec.InternalName);
+                    BlueprintItemAccess.Resolve().ConfigureWeapon(clone,
+                        LocalizationService.Create(spec.Symbol + ".Name", spec.DisplayName),
+                        LocalizationService.Create(spec.Symbol + ".Description",
+                            DescriptionFor(spec, family.Spec.Definition)),
+                        LocalizationService.Create(spec.Symbol + ".Flavor", spec.Flavor),
+                        spec.Cost, source.Weight);
+                    SetEnchantments(clone, spec.Enchantments.ToArray());
+                    FirearmWeaponPresentation.ApplyItemVariant(clone,
+                        spec.Symbol, spec.Kind);
+                    return clone;
+                });
+            if (!ReferenceEquals(GetWeaponType(item), family.WeaponType))
+                throw new InvalidOperationException(spec.DisplayName + " changed canonical family weapon type.");
+            if (!ReferenceEquals(GetEnchantments(source), sourceEnchantments))
+                throw new InvalidOperationException(spec.DisplayName + " mutated its canonical source enchantment array.");
+            return item;
+        }
+
+        internal static void ValidateItem(BlueprintItemWeapon item,
+            MagicFirearmItemSpec spec, ProductionFirearmBlueprintEntry family)
+        {
+            BlueprintWeaponEnchantment[] actual = GetEnchantments(item);
+            if (actual.Length != spec.Enchantments.Length ||
+                actual.Distinct().Count() != actual.Length ||
+                !actual.SequenceEqual(spec.Enchantments) ||
+                !ReferenceEquals(GetWeaponType(item), family.WeaponType) ||
+                item.Cost != spec.Cost ||
+                !item.Weight.Equals(family.Item.Weight) ||
+                BlueprintItemAccess.Resolve().Capture(item).IsStackable ||
+                spec.Kind == FirearmKind.Rifle ||
+                spec.Kind == FirearmKind.Revolver ||
+                !FirearmWeaponPresentation
+                    .HasApprovedItemVariantOrFamilyFallback(item,
+                        spec.Symbol, spec.Kind))
+                throw new InvalidOperationException("Magic firearm contract mismatch: " + spec.DisplayName);
+        }
+
+        internal static ProductionFirearmBlueprintEntry RequireFamily(
+            ProductionFirearmBlueprintCatalog catalog, FirearmKind kind)
+        {
+            if (catalog == null) throw new ArgumentNullException("catalog");
+            return Family(catalog, kind);
+        }
+
+        internal static BlueprintWeaponEnchantment[] ReadEnchantments(
+            BlueprintItemWeapon item)
+        {
+            return GetEnchantments(item);
+        }
+
+        internal static BlueprintWeaponType ReadWeaponType(BlueprintItemWeapon item)
+        {
+            return GetWeaponType(item);
         }
 
         private static string DescriptionFor(MagicFirearmItemSpec spec,

@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.0.138-better-vendors-progression (candidate, not released)
+
+- Optional Better Vendors 2.0.8 compatibility for magic-weapon progression.
+  Better Vendors' Military query keeps only weapons whose flavour text and
+  description are empty, and every weapon type of this mod carries a magic
+  description. So its generic progression never offered this mod's weapons,
+  and +2 to +5 variants of them did not exist.
+- 50 explicitly authorized catalog entries:
+  - Pistol, Musket and Blunderbuss ordinary and Reliable +1 to +5;
+  - Elven Branched Spear, Wakizashi, Katana and Nodachi +1 to +5.
+
+  The seven existing +1 items are reused unchanged, and 43 new blueprints are
+  appended to the identity manifest. Each carries one native enhancement
+  enchantment and the canonical family type, model, icon and weight. Price is
+  base + 300 + 2000 × (equivalent)². Reliable variants reuse the canonical
+  Reliable enchantment, unlock by actual enhancement and are priced as N + 1.
+- A reflection-only adapter checks the installed Better Vendors: its UMM entry,
+  structure, Military destination, enhancement tiers, lifecycle targets and
+  SHA-256 fingerprints of five method bodies. Only if all match does it patch
+  `AddStock` (postfix), `AddMilitaryStock` (prefix and postfix) and
+  `GetFilterWeapons` (read-only postfix). It adds a `BeginTrading` postfix for
+  the one-time catch-up. Absent, disabled, progression-off, different or
+  faulted Better Vendors leaves only this integration inactive.
+- The capital blacksmith's shared table receives each tier's entries at Better
+  Vendors' own ranks and quantities: 5, 5, 5, 2 and 2 copies at Military I, III,
+  V, VII and IX. Better Vendors' current-tier restocking is mirrored. Existing
+  saves catch up once, on first trade with that merchant. The save-local
+  `UnitPartBetterVendorsProgressionGrants` ledger records initial grants only
+  after the stock change is observed, and never reads or writes Better Vendors'
+  `stockUpToDate` flag. Module settings apply independently at every event.
+- Ordinary vendor publication, BTSL, campaign loot, named placement, retired
+  stock cleanup and Craft Magic Items registration are unchanged.
+- 35 new `better-vendors.*` domain cases; 1,739 in total. Native runtime
+  qualification of the stock behaviour and save/load are NOT RUN; see
+  `docs/BETTER-VENDORS-COMPATIBILITY.md`.
+
 ## 0.0.137-rapid-reload-combat-feat
 
 - Published under explicit owner authorization. The guarded native scenario

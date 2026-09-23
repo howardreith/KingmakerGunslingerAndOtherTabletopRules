@@ -583,19 +583,32 @@ namespace KingmakerGunslinger.Blueprints
             EasternWeaponGenericSpec spec,
             BlueprintWeaponEnchantment[] enchantments)
         {
+            Configure(item, definition, spec.Symbol, spec.DisplayName, spec.Cost,
+                spec.ColdIron, enchantments);
+        }
+
+        /// <summary>
+        /// Generic-item configuration shared by the catalog items and the
+        /// higher-enhancement progression variants of the same family.
+        /// </summary>
+        internal void Configure(BlueprintItemWeapon item,
+            CustomWeaponCategoryDefinition definition, string symbol,
+            string displayName, int cost, bool coldIron,
+            BlueprintWeaponEnchantment[] enchantments)
+        {
             BlueprintItemAccess.Resolve().ConfigureWeapon(item,
-                LocalizationService.Create(spec.Symbol + ".Name", spec.DisplayName),
-                LocalizationService.Create(spec.Symbol + ".Description",
+                LocalizationService.Create(symbol + ".Name", displayName),
+                LocalizationService.Create(symbol + ".Description",
                     DescribeItem(definition)),
-                LocalizationService.Create(spec.Symbol + ".Flavor",
+                LocalizationService.Create(symbol + ".Flavor",
                     "A carefully proportioned curved blade imported through specialist trade."),
-                spec.Cost, definition.WeightPounds);
+                cost, definition.WeightPounds);
             _enchantments.SetValue(item, enchantments == null
                 ? Array.Empty<BlueprintWeaponEnchantment>()
                 : enchantments.ToArray());
-            _overrideDamageType.SetValue(item, spec.ColdIron);
+            _overrideDamageType.SetValue(item, coldIron);
             _damageType.SetValue(item,
-                EasternWeaponTypeAccess.Physical(definition, spec.ColdIron));
+                EasternWeaponTypeAccess.Physical(definition, coldIron));
             _visualParameters.SetValue(item, item.Type.VisualParameters);
         }
 
@@ -613,30 +626,39 @@ namespace KingmakerGunslinger.Blueprints
             CustomWeaponCategoryDefinition definition,
             EasternWeaponGenericSpec spec)
         {
+            Validate(item, definition, spec.Symbol, spec.DisplayName, spec.Cost,
+                spec.Masterwork, spec.ColdIron, spec.Enhancement);
+        }
+
+        internal void Validate(BlueprintItemWeapon item,
+            CustomWeaponCategoryDefinition definition, string symbol,
+            string displayName, int cost, bool masterwork, bool coldIron,
+            int enhancement)
+        {
             BlueprintWeaponEnchantment[] enchantments =
                 (BlueprintWeaponEnchantment[])_enchantments.GetValue(item) ??
                 Array.Empty<BlueprintWeaponEnchantment>();
             DamageTypeDescription damage =
                 (DamageTypeDescription)_damageType.GetValue(item);
-            int expectedEnchantments = spec.Enhancement == 1 || spec.Masterwork ? 1 : 0;
-            if (item.Cost != spec.Cost ||
+            int expectedEnchantments = enhancement >= 1 || masterwork ? 1 : 0;
+            if (item.Cost != cost ||
                 !item.Weight.Equals((float)definition.WeightPounds) ||
                 item.IsActuallyStackable ||
-                item.IsMasterwork != (spec.Masterwork && spec.Enhancement == 0) ||
-                (bool)_overrideDamageType.GetValue(item) != spec.ColdIron ||
+                item.IsMasterwork != (masterwork && enhancement == 0) ||
+                (bool)_overrideDamageType.GetValue(item) != coldIron ||
                 damage == null || damage.Type != DamageType.Physical ||
-                damage.Physical.Material != (spec.ColdIron
+                damage.Physical.Material != (coldIron
                     ? PhysicalDamageMaterial.ColdIron : 0) ||
                 enchantments.Length != expectedEnchantments ||
                 enchantments.Any(value => value == null) ||
                 !ReferenceEquals(_visualParameters.GetValue(item),
                     item.VisualParameters) ||
                 !Assets.EasternWeaponAssetRuntime
-                    .HasApprovedVisualOrNativeFallback(item, spec.Symbol) ||
+                    .HasApprovedVisualOrNativeFallback(item, symbol) ||
                 item.Description.IndexOf("Brace",
                     StringComparison.OrdinalIgnoreCase) >= 0)
                 throw new InvalidOperationException("Eastern generic item is invalid: " +
-                    spec.DisplayName + ".");
+                    displayName + ".");
         }
 
         internal void ConfigureNamed(BlueprintItemWeapon item,
