@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.139-favored-class-integration (local candidate, not published)
+
+- Optional Favored Class integration under the Gunslinger Favored Class
+  Integration Charter. Work in progress; see
+  `FAVORED-CLASS-IMPLEMENTATION-REPORT.md` for the exact qualification state.
+- Exact-binary host contract for Favored Class 1.3.1 and Call of the Wild
+  1.14.4c-2.1 (whole-file SHA-256 and MVID); any other binary leaves only this
+  integration inactive.
+
 ## 0.0.138-better-vendors-progression
 
 - Published under explicit owner authorization. The five merchant and

@@ -1,5 +1,14 @@
 # Kingmaker Gunslinger
 
+The local candidate **0.0.139-favored-class-integration** is not published.
+It adds an optional integration with the Favored Class mod: Gunslinger and
+elemental-race favored-class options, and a Mostly Human alternate racial
+trait for the four elemental races. Favored Class stays optional, and only the
+exact qualified Favored Class 1.3.1 binary is supported. Its qualification
+status is recorded in
+[the candidate notes](docs/RELEASE-NOTES-0.0.139.md) and
+[the compatibility contract](docs/FAVORED-CLASS-COMPATIBILITY.md).
+
 The current full release, **0.0.138-better-vendors-progression**, adds
 optional Better Vendors compatibility. With the exact approved Better Vendors
 2.0.8 binary installed and its vendor progression on, the capital blacksmith
