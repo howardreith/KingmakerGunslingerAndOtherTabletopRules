@@ -1,6 +1,12 @@
 # Kingmaker Gunslinger
 
-**0.0.136-rapid-reload-proficiency-gate** makes Rapid Reload require firearm
+**0.0.137-rapid-reload-combat-feat** classifies Rapid Reload as a combat feat,
+so a character with firearm proficiency can take it with a Fighter bonus combat
+feat. The firearm-proficiency requirement is unchanged. The guarded native
+scenario passed on the candidate; save/load compatibility is unverified. See
+[release notes](docs/RELEASE-NOTES-0.0.137.md).
+
+The previous **0.0.136-rapid-reload-proficiency-gate** makes Rapid Reload require firearm
 proficiency instead of relying only on its per-firearm choices. Any proficiency
 source satisfies it, whatever granted it; no Gunslinger class or archetype
 prerequisite was added, and the per-firearm restrictions are unchanged.

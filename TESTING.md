@@ -206,18 +206,31 @@ overall **FAIL**. The assertions for this change passed:
   Pistol is taken, and only the Fighter slot holds the parent. The level
   confirms natively and grants the child.
 
-Three failures remain. They are pre-existing expectations in the earlier
-harness, recorded for owner review and not changed here:
+That run had three failures. They were pre-existing expectations in the
+earlier harness, and at the owner's direction they were corrected in
+`0eee3be9`:
 
-- B rows (`empty-selection-granted-a-fact`). Every refusal behavior passes, but
-  `parentRankWhileEmpty` is 1. The engine applies a chosen selection's own
-  feature to the preview at once.
+- B rows (`empty-selection-granted-a-fact`). Every refusal behavior passed, but
+  `parentRankWhileEmpty` was 1, because the engine applies a chosen selection's
+  own feature to the preview at once. The check now requires that the refused
+  firearm has no rank (`empty-selection-granted-a-firearm`). The empty choice
+  must still block completion, and the parent rank stays recorded.
 - `B.empty-selection-blocked` (`empty-choice-was-banked`). Native completion
-  refused the empty build. The parent was only banked by the deliberate
-  `ApplyLevelup` probe that bypasses that gate.
-- `pending-class-change`. Every pending-change behavior passes, but final
-  confirmation fails with `skillPointsRemaining = -3`, because the fixture spent
-  Gunslinger skill points before switching the pending class to Fighter.
+  refused the empty build, and the parent was only banked by the deliberate
+  `ApplyLevelup` probe that bypasses that gate. The probe now has to show that
+  no firearm is banked (`empty-choice-banked-a-firearm`).
+- `pending-class-change`. Final confirmation failed with
+  `skillPointsRemaining = -3`, because the fixture spent Gunslinger skill
+  points before switching the pending class to Fighter. The shared resolver
+  now refunds overspent points through native
+  `LevelUpController.UnspendSkillPoint` and records `skillPointsRefunded`.
+
+Passing native run on commit `0eee3be9` (evidence
+`runtime-evidence/20260923T1545397015359Z-disposable-rapid-reload-proficiency-gate`,
+loaded 0.0.136, installed DLL SHA-256
+`c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c`): status
+**PASS**, all eleven assertions. The pending class change refunded three
+points, confirmed natively, and left the Fighter without Rapid Reload.
 
 The first runs found two general fixture defects, now fixed. Independent
 proficiency fixtures were unregistered, so native `ReapplyFeaturesOnLevelUp`
