@@ -608,8 +608,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             LevelUpController controller, UnitDescriptor descriptor)
         {
             CharGenRoot chargen = BlueprintRoot.Instance.CharGen;
+            // A fresh chargen unit has no race yet; use native Human, as the
+            // qualified Magic Circle favored-class scenario does.
             if (controller.State.CanSelectRace &&
-                !controller.SelectRace(descriptor.Progression.Race))
+                !controller.SelectRace(BlueprintLibraryLookup.RequireExact<BlueprintRace>(
+                    BlueprintBootstrap.Library, "0a5d473ead98b0646b94495af250fdc4",
+                    "native Human")))
                 throw new InvalidOperationException(
                     "Native race selection rejected the Rapid Reload fixture.");
             if (controller.State.CanSelectGender)
