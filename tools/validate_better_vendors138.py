@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Validate the 0.0.138 Better Vendors progression candidate.
+"""Validate the 0.0.138 Better Vendors progression release.
 
 Retains every inherited gate. Mechanical acceptance is the domain suite and
-guarded runtime evidence, not these documentation/metadata checks. The
-candidate is not a release: its metadata must say so, and must not claim
-native runtime qualification that has not been observed.
+guarded runtime evidence, not these documentation/metadata checks. The release
+was owner authorized with the merchant and persistence acceptance areas NOT RUN
+and waived: the metadata must record that waiver, keep the five open areas
+listed, and must not claim native runtime qualification that was not observed.
 """
 from __future__ import annotations
 import argparse
@@ -163,8 +164,11 @@ def validate(root: Path) -> None:
         encoding="utf-8"))[STATIC_KEY]
     expected = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
-        "publicReleaseAuthorized": False,
-        "candidateOnly": True,
+        "publicReleaseAuthorized": True,
+        "ownerAuthorizedRelease": True,
+        "candidateOnly": False,
+        "releaseVersion": VERSION,
+        "releaseInformationalVersion": INFORMATIONAL_VERSION,
         "progressionEntries": 50,
         "reusedCanonicalEntries": 7,
         "newBlueprints": 43,
@@ -178,24 +182,30 @@ def validate(root: Path) -> None:
     }
     for key, value in expected.items():
         if state.get(key) != value:
-            raise AssertionError(f"Better Vendors candidate metadata mismatch: {key}")
+            raise AssertionError(f"Better Vendors release metadata mismatch: {key}")
     if not isinstance(state.get("nativeRuntimeQualified"), bool):
         raise AssertionError("Native runtime qualification must be recorded explicitly")
     if state.get("nativeRuntimeQualified") and not state.get("nativeRuntimeEvidence"):
         raise AssertionError("A native qualification claim needs recorded evidence")
     # Until merchant and persistence acceptance has real evidence, the five
-    # acceptance areas stay listed and the candidate stays merge-blocked.
+    # acceptance areas stay listed, and the build is either merge-blocked or
+    # released only under an explicit, recorded owner waiver.
     if not state.get("nativeRuntimeQualified"):
-        if state.get("mergeBlocked") is not True or \
-                len(state.get("pendingAcceptance") or []) != 5:
+        waived = state.get("ownerAuthorizedRelease") is True and \
+            state.get("acceptanceWaivedByOwner") is True and \
+            bool(state.get("ownerReleaseInstruction"))
+        if len(state.get("pendingAcceptance") or []) != 5 or \
+                not (state.get("mergeBlocked") is True or waived):
             raise AssertionError(
-                "An unqualified candidate must stay merge-blocked with its five acceptance areas")
+                "Unqualified merchant acceptance must stay listed and either block merge or carry a recorded owner waiver")
     if not isinstance(state.get("craftMagicItemsInteractionTested"), bool):
         raise AssertionError("The Craft Magic Items interaction status must be recorded")
 
     require_tokens(root / "docs/RELEASE-NOTES-0.0.138.md",
-        INFORMATIONAL_VERSION, "Better Vendors", "candidate", "not released",
-        "2.0.8", "Military", "Reliable", "catch-up", "optional", "uninstall")
+        INFORMATIONAL_VERSION, "Better Vendors",
+        "published under explicit owner authorization",
+        "NOT RUN, waived by the owner", "2.0.8", "Military", "Reliable",
+        "catch-up", "optional", "uninstall")
     require_tokens(root / "docs/BETTER-VENDORS-COMPATIBILITY.md",
         "2.0.8", "04fc03cf-853f-46c8-b6d5-1404180451fb",
         "8843509852964d9016d2996a3050bfbe6f068360c4f2f6b8ff7f6440ca712009",
@@ -203,7 +213,7 @@ def validate(root: Path) -> None:
         "UnitPartBetterVendorsProgressionGrants", "Reliable", "catch-up",
         "replenish", "corrosive", "Military VII", "uninstall",
         "exact approved binary", "write-ahead",
-        "## Acceptance requirements before merge or release",
+        "## Merchant and persistence acceptance (NOT RUN, waived for 0.0.138)",
         "## Known limitations and intentional differences",
         "This integration itself never removes merchandise")
 
@@ -219,7 +229,7 @@ def main() -> int:
         print(f"Better Vendors progression {VERSION} validation failed: {exc}",
               file=sys.stderr)
         return 1
-    print(f"Better Vendors progression {VERSION} candidate validation passed.")
+    print(f"Better Vendors progression {VERSION} release validation passed.")
     return 0
 
 
