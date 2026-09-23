@@ -1378,12 +1378,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
-                    RuntimeTestScenarioCatalog.DisposablePteranodonAttachedView)
-                {
-                    Complete(RunDisposablePteranodonAttachedView());
-                    return;
-                }
-                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableFirearmVisualRigs)
                 {
                     Complete(RunDisposableFirearmVisualRigs());
@@ -16486,6 +16480,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(
                             "Spawn result mismatch: count=" + count + ";kind=" +
                             exactKind + ";expected=" + expectedUnit.name + ".");
+                    // Sprint 2 needs the Pteranodon's attached view contract -
+                    // the controller, clips, attack and impact event frames, and
+                    // effect anchors that only exist once a view attaches to a
+                    // unit. A standalone scenario that built its own caster kept
+                    // failing in native destruction, so the capture rides along
+                    // with this already-proven lifecycle instead. It observes
+                    // only; it changes nothing this scenario asserts.
+                    if (_pteranodonAttachedContract == null &&
+                        variant.Creature.Key == "pteranodon" && count > 0 &&
+                        spawned[0].View != null)
+                    {
+                        try
+                        {
+                            _pteranodonAttachedContract =
+                                DescribeAttachedPteranodonView(spawned[0].View);
+                        }
+                        catch (Exception exception)
+                        {
+                            _pteranodonAttachedContract =
+                                "capture-failed:" + exception.GetType().Name;
+                        }
+                    }
+
                     completed++;
                     spawnedTotal += count;
                     if (variant.Multiplicity == SummonMultiplicity.One) singleExact++;
@@ -16624,6 +16641,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
+                // Sprint 2 authoring input, captured from a live attached view
+                // during this run's Pteranodon cast. The controller and clips
+                // only exist once a view attaches to a unit, so this is the one
+                // place they can be observed without a second lifecycle.
+                Assertion("expanded-summoning-pteranodon-attached-contract",
+                    "a live Pteranodon view reports its animator, controller, clips, events and anchors",
+                    _pteranodonAttachedContract ?? "<not captured>",
+                    _pteranodonAttachedContract != null &&
+                        _pteranodonAttachedContract.IndexOf("controller=<null>",
+                            StringComparison.Ordinal) < 0 &&
+                        _pteranodonAttachedContract.IndexOf("capture-failed",
+                            StringComparison.Ordinal) < 0,
+                    "UnitEntityView.Animator on the summoned Pteranodon, plus its rig dump"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
