@@ -1722,7 +1722,7 @@
     "publicationChanged": false,
     "proficiencyGateChanged": false,
     "ownerWaiverApplies": false,
-    "nativeQualification": "PENDING: disposable-rapid-reload-proficiency-gate extended with rapid-reload-combat-feat-classification and the J Gunslinger-then-Fighter bonus-slot case; see TESTING.md",
+    "nativeQualification": "PARTIAL, overall FAIL: run 20260923T1504537002644Z on commit 40710b6f (installed DLL 077169c47c98bc1d78c700d609f7c55061c5bfdb3a82a9a897adacce4e1b0fc0); combat-feat classification, publication, prerequisites, all acquisition rows including Gunslinger 1 to Fighter 1 bonus slot, Musket Master and class-identity PASS; three pre-existing harness expectations fail (preview parent rank while empty, defensive-probe banking, pending-class skill points); see TESTING.md",
     "scope": [
       "Rapid Reload parent classified as Feat and CombatFeat through BlueprintFeature.Groups",
       "Fighter combat-feat route exercised for scoped refusal, scoped acquisition and a natively built Gunslinger 1 taking Fighter 1"

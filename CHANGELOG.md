@@ -23,6 +23,15 @@
   - a natively built Gunslinger 1 taking its first Fighter level. It must find
     Rapid Reload in that level's own bonus-feat choice generation and acquire it
     with the Fighter bonus slot, not an ordinary feat.
+- The scenario's disposable fixtures now register their test-only proficiency
+  sources for the request. Character-creation visits also settle race, name,
+  portrait, gender and voice through the native setters. Without both, the
+  first native runs could not complete any level.
+- Native run on the candidate: the classification, publication, prerequisite,
+  every acquisition route (including the Gunslinger 1 → Fighter 1 bonus slot),
+  Musket Master and class-identity assertions pass. Three pre-existing harness
+  expectations still fail and are recorded in TESTING.md for owner review, so
+  the scenario as a whole is not a PASS.
 
 ## 0.0.136-rapid-reload-proficiency-gate
 
