@@ -136,35 +136,90 @@ hash. All three are **static props**. A skinned creature mesh bound to an
 existing skeleton is new ground for this repository, and that is the genuine
 technical risk this sprint exists to retire.
 
-## 5. Open questions that require the live donor
+## 5. Live donor observation — answered
 
-None of the following may be answered by name matching or assumption; the
-charter forbids treating a Roc-to-pterosaur adaptation as proven:
+Scenario `observe-summon-pteranodon-view-contracts`, run through the guarded
+harness against the installed game at 0.0.136. **Status PASS, 8/8 assertions.**
+Evidence:
+`runtime-evidence/20260923T1258015475577Z-observe-summon-pteranodon-view-contracts`.
 
-1. Is `CharacterAvatar` null for the donor, confirming a plain prefab with
-   `SkinnedMeshRenderer` plus `Animator` rather than a Character doll?
-2. The exact renderer set, their `rootBone`, `bones[]` order and bind poses.
-3. The exact bone hierarchy and names available to bind an original mesh to.
-4. The animator controller, its clips, and the attack/impact events that drive
-   bite timing.
-5. Which transforms `ParticlesSnapMap` and `UnitHitFxManager` anchor to.
-6. The collider and `CameraOrientedBoundsSize` values that own selection,
-   targeting and footprint, so the replacement preserves them.
+The donor prefab was instantiated inactive and 10,000 units below the play
+area, measured, and destroyed in a `finally`. The shipped Pteranodon identity
+was re-checked as SM 4 / SNA 4 and alignment-templated afterwards. No
+blueprint, unit, inventory, campaign or save state was touched.
 
-These require the guarded runtime observer path, following the precedent in
-`docs/FIREARM-NATIVE-RIG-FORENSICS.md` and the
-`observe-native-firearm-rig-contracts` scenario. Until they are answered from
-the running game, no mesh should be authored: authoring against a guessed
-skeleton is exactly the "bone-name matching is not proof" failure the charter
-names.
+### 5.1 It is bindable
+
+| Fact | Observed |
+|---|---|
+| Donor blueprint / prefab | `CR3_GiantEagleStandard` / `GiantEagle` |
+| `CharacterAvatar` | **null** - a plain skinned prefab, not a humanoid Character doll |
+| Skinned renderers | **1** (`eagle_boss1`, mesh `eagle_boss1`) |
+| Root bone | **`LowerTorso`** |
+| Bones / bind poses | **72 / 72** - consistent |
+| Materials / shader | 1 / `PF/StandardDynamic` |
+| Plain `MeshRenderer`s | 0 |
+| Child transforms | 194 |
+| Renderer bounds | 10.205 x 4.532 x 3.585 |
+| Corpulence | 1.6 |
+| Soft / core collider | `CapsuleCollider` / `MeshCollider` |
+
+One renderer, one material, a named root bone and matching bind poses is the
+straightforward case: an original mesh can be skinned to this rig and swapped
+on the instance without rebuilding anything.
+
+### 5.2 Where animation comes from
+
+`UnitEntityView.Animator` is **null** on a detached prefab, and
+`m_AnimatorManager` is null too - both bind when the view attaches to a unit.
+The Animator itself lives on a child object, **`GiantEagleBoss_Body_RIG_02`**.
+
+An earlier revision of this scenario asserted that an Animator must be present
+and failed. The assertion was wrong, not the game. Sprint 2 must therefore
+bind its mesh to the bones under that child rig and let the native animator
+keep driving them, rather than expecting an Animator on the view root.
+
+### 5.3 The rig — 72 bones
+
+Spine and head: `LowerTorso`, `UpperTorso`, `Neck`, `Head`, `Jaw` (+`_end`).
+
+Tail: `Tail`, `Tail_L`, `Tail_R` (each +`_end`).
+
+Legs, mirrored L/R: `Leg0_Upper` → `Leg0_Lower` → `Foot0` → four toes
+`Finger_1..4` (each `_1`, `_2`, `_2_end`).
+
+Wings, mirrored L/R: `Arm_Upper` → `Arm_Lower` → `Palm` → six feather chains
+`Feather_1..6` (each +`_end`).
+
+### 5.4 The one real modelling constraint
+
+**This is a feathered bird rig, and a Pteranodon is not a bird.** The wing
+chain terminates in six discrete feather bones per side. A pterosaur carries a
+single membrane stretched from an elongated fourth finger to the body, not six
+quills.
+
+The rig is still usable - the six feather bones can drive the membrane's
+trailing edge and the `Palm` → `Feather_1` chain can stand in for the
+elongated finger - but the mesh has to be authored for that from the start.
+Discovering this after a mesh existed would have meant rebuilding it, which is
+exactly why the charter requires the observation before the art.
+
+The legs are a better fit: four toes with two joints each suits a pterosaur
+foot without adaptation.
 
 ## 6. Disposition
 
-The seam exists, the toolchain is exact and installed, and the instance-local
-pattern is already shipped and tested. Sprint 2 is **feasible and not
-blocked**. Its remaining work is live donor inspection, original mesh and
-texture authoring, a 2018.4.10f1 bundle, the runtime loader with validated
-fallback, and live camera/motion acceptance in both RTWP and turn-based play.
+The seam is proven, not hypothesised. The donor is a single-renderer,
+single-material, 72-bone skinned prefab with consistent bind poses and a child
+Animator; the toolchain is exact and installed; and the instance-local
+mutation pattern is already shipped and tested. Sprint 2 is **feasible and not
+blocked**.
+
+Remaining work: author an original pterosaur mesh and textures skinned to the
+72 bones listed above, build a deterministic Unity 2018.4.10f1 bundle,
+implement safe loading with validated instance-local binding and an approved
+native fallback, and qualify it live in RTWP and turn-based play with
+Eagle, Dire Bat and Roc as donor-sharing negative controls.
 
 Nothing in Sprint 2 is complete. No Pteranodon visual has changed, and the
-accepted Roc-policy proxy remains in place as the approved fallback candidate.
+accepted proxy remains in place as the approved fallback candidate.
