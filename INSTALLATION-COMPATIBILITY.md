@@ -1,7 +1,12 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.136-rapid-reload-proficiency-gate` (UMM version `0.0.136`).
-The installable archive is `KingmakerGunslinger-0.0.136-rapid-reload-proficiency-gate.zip`.
+Full release: `0.0.137-rapid-reload-combat-feat` (UMM version `0.0.137`).
+The installable archive is `KingmakerGunslinger-0.0.137-rapid-reload-combat-feat.zip`.
+Rapid Reload is now a combat feat and can be taken with a Fighter bonus combat
+feat; the guarded native scenario passed and save/load compatibility is
+unverified. See [its release notes](docs/RELEASE-NOTES-0.0.137.md).
+The previous full release was `0.0.136-rapid-reload-proficiency-gate`
+(archive `KingmakerGunslinger-0.0.136-rapid-reload-proficiency-gate.zip`).
 Rapid Reload now requires firearm proficiency. Native runtime qualification for
 this release is NOT RUN and was waived by the owner, and save/load compatibility
 is unverified; the exact limits are recorded in

@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.136-rapid-reload-proficiency-gate",
+  "milestone": "0.0.137-rapid-reload-combat-feat",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.136",
+  "version": "0.0.137",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -1727,5 +1727,35 @@
       "Rapid Reload parent classified as Feat and CombatFeat through BlueprintFeature.Groups",
       "Fighter combat-feat route exercised for scoped refusal, scoped acquisition and a natively built Gunslinger 1 taking Fighter 1"
     ]
+  },
+  "rapidReloadCombatFeat137": {
+    "baselineCommit": "35555a8d8b4bd8df5a6868a60d3ca1fbb9cd366b",
+    "branch": "codex/rapid-reload-combat-feat-classification",
+    "deterministicTestCount": 1704,
+    "publicReleaseAuthorized": true,
+    "ownerAuthorizedRelease": true,
+    "parentGroups": [
+      "Feat",
+      "CombatFeat"
+    ],
+    "genericSelectionHelperChanged": false,
+    "publicationChanged": false,
+    "proficiencyGateChanged": false,
+    "nativeScenarioExecuted": true,
+    "nativeScenarioOverallPass": true,
+    "classificationAssertionPassed": true,
+    "fighterBonusSlotAcquisitionPassed": true,
+    "harnessExpectationsCorrectedByOwnerDirection": true,
+    "harnessCorrections": [
+      "scoped refusal: the native preview parent rank is allowed; the refused firearm must hold no rank",
+      "empty-selection probe: the probe-applied parent is allowed; no firearm may be banked",
+      "pending class change: overspent skill points refunded through native UnspendSkillPoint"
+    ],
+    "nativeQualification": "PASS: disposable-rapid-reload-proficiency-gate run 20260923T1545397015359Z on commit 0eee3be9 (0.0.136-labelled candidate, installed DLL c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c), 11 of 11 assertions",
+    "compatibilityRuntimeQualificationPending": true,
+    "saveLoadCompatibilityVerified": false,
+    "releaseVersion": "0.0.137",
+    "releaseInformationalVersion": "0.0.137-rapid-reload-combat-feat",
+    "versionNote": "0.0.136 was already published; the classification change advances to 0.0.137. The release build differs from the natively qualified candidate only in version identity."
   }
 }

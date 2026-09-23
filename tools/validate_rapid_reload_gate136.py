@@ -61,7 +61,7 @@ def validate(root: Path) -> None:
     # state; the owner's 0.0.136 waiver does not transfer to it.
     followup = metadata["rapidReloadCombatFeatFollowup"]
     for key, value in {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": 1704,
         "publicReleaseAuthorized": False,
         "parentGroups": ["Feat", "CombatFeat"],
         "genericSelectionHelperChanged": False,
@@ -76,7 +76,7 @@ def validate(root: Path) -> None:
     # than implying the scenario ran.
     baseline.baseline.baseline.baseline.require_tokens(
         root / "docs/RELEASE-NOTES-0.0.136.md",
-        INFORMATIONAL_VERSION, "owner authorized", "Rapid Reload",
+        "0.0.136-rapid-reload-proficiency-gate", "owner authorized", "Rapid Reload",
         "firearm proficiency", "NOT RUN", "waived", "uninstall")
 
 
