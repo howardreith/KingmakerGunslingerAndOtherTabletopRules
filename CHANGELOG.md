@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.0.138-better-vendors-progression (candidate, not released)
+## 0.0.138-better-vendors-progression
+
+- Published under explicit owner authorization. The five merchant and
+  persistence acceptance areas were NOT RUN (no kingdom-stage test save was
+  authorized), and the owner waived them. Save/load compatibility is
+  unverified.
 
 - Optional Better Vendors 2.0.8 compatibility for magic-weapon progression.
   Better Vendors' Military query keeps only weapons whose flavour text and
@@ -45,9 +50,9 @@
 - Ordinary vendor publication, BTSL, campaign loot, named placement, retired
   stock cleanup and Craft Magic Items registration are unchanged.
 - 38 new `better-vendors.*` domain cases; 1,742 in total.
-- Not merge- or release-ready. The real merchant, purchase, event-coordination,
-  settings and save/load paths are NOT RUN and block release until an
-  owner-authorized disposable kingdom-stage save exists. Craft Magic Items
+- The real merchant, purchase, event-coordination, settings and save/load
+  paths remain NOT RUN, waived by the owner for this release. They still need
+  an owner-authorized disposable kingdom-stage save. Craft Magic Items
   handling of the new variants is not tested. See
   `docs/BETTER-VENDORS-COMPATIBILITY.md`.
 

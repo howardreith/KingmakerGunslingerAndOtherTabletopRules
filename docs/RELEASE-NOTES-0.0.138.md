@@ -3,10 +3,12 @@
 Release: `0.0.138-better-vendors-progression`
 Package: `KingmakerGunslinger-0.0.138-better-vendors-progression.zip`
 Build label: Kingmaker Gunslinger 0.0.138.
-Publication status: **candidate, not released.** It has no owner
-authorization, no tag and no public package. Merge and release are blocked
-until the merchant and persistence acceptance areas below have evidence from
-an owner-authorized disposable kingdom-stage save.
+Publication status: published under explicit owner authorization. The owner
+reviewed the candidate and its stated limits, then asked to run the final
+tests, merge, push and cut a new release. The five merchant and persistence
+acceptance areas below were **NOT RUN**, because no kingdom-stage test save
+was authorized. The owner explicitly waived them for this release and will
+check them in play. Save/load compatibility is unverified.
 
 The qualified firearm SoundBank is unchanged, SHA-256
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
@@ -83,15 +85,15 @@ Optional **Better Vendors** compatibility for magic-weapon progression.
 | Guarded `working-save-smoke` on the final code commit `c9427faa` | PASS, 11 of 11 assertions (see below) |
 | Exact-binary gate accepted the live Better Vendors 2.0.8 assembly | PASS (`compatibility.ready`) |
 | All 50 progression entries registered and every contract check passed in game | PASS (`progression-catalog.ready`, not `degraded`) |
-| Actual stocking and purchase at a known Military rank | NOT RUN, blocks release |
-| Persistence and bought-out stock across a full restart | NOT RUN, blocks release |
-| Native event coordination (real stat improvement, both orderings) | NOT RUN, blocks release |
-| Progression and module settings, shared outdoor/throne-room stock | NOT RUN, blocks release |
-| Purchased Reliable firearm mechanics after save and load | NOT RUN, blocks release |
+| Actual stocking and purchase at a known Military rank | NOT RUN, waived by the owner |
+| Persistence and bought-out stock across a full restart | NOT RUN, waived by the owner |
+| Native event coordination (real stat improvement, both orderings) | NOT RUN, waived by the owner |
+| Progression and module settings, shared outdoor/throne-room stock | NOT RUN, waived by the owner |
+| Purchased Reliable firearm mechanics after save and load | NOT RUN, waived by the owner |
 | Craft Magic Items handling of the new variants | NOT TESTED |
 
 Historical domain checkpoints of 1,251, 1,288 and 1,325 cases remain archived
-under their original releases. The live suite for this candidate has 1,742
+under their original releases. The live suite for this release has 1,742
 cases.
 
 The guarded run `20260923T2036170490182Z-e8ae7b5631174645a40db7ccb7b89a38`
@@ -112,8 +114,11 @@ The domain suite models scheduling, planning and bookkeeping with a
 dictionary shop and an in-memory ledger. It does not serialize saves, drive the
 real trading hook or buy anything. The only authorized disposable save
 predates kingdom creation, so Better Vendors' Military progression cannot occur
-in it. No kingdom-stage save is authorized, and none was fabricated. The
-acceptance requirements and the exact verified identity are in
+in it. No kingdom-stage save was authorized, and none was fabricated. So real
+merchant stocking, purchases, native event coordination, settings changes and
+the ledger's save/load behaviour have not been observed in game. The owner
+waived those five areas for this release. They remain the first things to
+check in play. The acceptance areas and the exact verified identity are in
 [BETTER-VENDORS-COMPATIBILITY.md](BETTER-VENDORS-COMPATIBILITY.md).
 
 ## Compatibility

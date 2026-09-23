@@ -1,15 +1,16 @@
 # Installation, updates, removal, and compatibility
 
-Unreleased candidate: `0.0.138-better-vendors-progression` (UMM version
-`0.0.138`). Its build archive is
-`KingmakerGunslinger-0.0.138-better-vendors-progression.zip`, which is not a
-published release. It adds the optional Better Vendors progression integration
-described [below](#optional-better-vendors-integration). In-game stock
-behaviour and save/load compatibility are not yet qualified, which blocks its
-release. See [its candidate notes](docs/RELEASE-NOTES-0.0.138.md).
+Full release: `0.0.138-better-vendors-progression` (UMM version `0.0.138`).
+The installable archive is
+`KingmakerGunslinger-0.0.138-better-vendors-progression.zip`. It adds the
+optional Better Vendors progression integration described
+[below](#optional-better-vendors-integration). It was published under explicit
+owner authorization. In-game merchant stock and save/load behaviour were NOT
+RUN, and the owner waived them. See
+[its release notes](docs/RELEASE-NOTES-0.0.138.md).
 
-Full release: `0.0.137-rapid-reload-combat-feat` (UMM version `0.0.137`).
-The installable archive is `KingmakerGunslinger-0.0.137-rapid-reload-combat-feat.zip`.
+The previous full release was `0.0.137-rapid-reload-combat-feat` (UMM version
+`0.0.137`, archive `KingmakerGunslinger-0.0.137-rapid-reload-combat-feat.zip`).
 Rapid Reload is now a combat feat and can be taken with a Fighter bonus combat
 feat; the guarded native scenario passed and save/load compatibility is
 unverified. See [its release notes](docs/RELEASE-NOTES-0.0.137.md).
@@ -620,8 +621,8 @@ mechanical logs alone.
 
 ## Optional Better Vendors integration
 
-The 0.0.138 candidate adds this integration; it is not in any published
-release. It activates only when all of the following hold:
+Release 0.0.138 adds this integration. It activates only when all of the
+following hold:
 
 - the Unity Mod Manager entry `BetterVendors` is installed, loaded, active and
   enabled;
