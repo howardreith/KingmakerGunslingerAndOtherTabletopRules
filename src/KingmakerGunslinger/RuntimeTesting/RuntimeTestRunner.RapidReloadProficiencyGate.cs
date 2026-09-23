@@ -830,7 +830,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                CloseRapidReloadVisit(controller, row);
+                // The evaluator scores row["cleanupError"], so a failed
+                // cancellation here cannot pass unnoticed.
+                CloseRapidReloadVisit(controller, row, null,
+                    (string)row["case"]);
                 unit.Dispose();
             }
             return row;
@@ -913,7 +916,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                CloseRapidReloadVisit(controller, row);
+                // The evaluator scores row["cleanupError"], so a failed
+                // cancellation here cannot pass unnoticed.
+                CloseRapidReloadVisit(controller, row, null,
+                    (string)row["case"]);
                 unit.Dispose();
             }
             return row;
@@ -973,7 +979,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                CloseRapidReloadVisit(controller, row);
+                // The evaluator scores row["cleanupError"], so a failed
+                // cancellation here cannot pass unnoticed.
+                CloseRapidReloadVisit(controller, row, null,
+                    (string)row["case"]);
                 unit.Dispose();
             }
             return row;
@@ -1036,7 +1045,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                CloseRapidReloadVisit(controller, row);
+                // The evaluator scores row["cleanupError"], so a failed
+                // cancellation here cannot pass unnoticed.
+                CloseRapidReloadVisit(controller, row, null,
+                    (string)row["case"]);
                 unit.Dispose();
             }
             return row;
@@ -1143,7 +1155,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                CloseRapidReloadVisit(controller, row);
+                CloseRapidReloadVisit(controller, row, failures,
+                    "pending-class-change");
                 unit.Dispose();
                 row["controllerInstances"] = controllerInstances;
             }
@@ -1218,7 +1231,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                CloseRapidReloadVisit(controller, row);
+                CloseRapidReloadVisit(controller, row, failures,
+                    "pending-archetype-change");
                 unit.Dispose();
                 row["controllerInstances"] = controllerInstances;
             }
@@ -1402,7 +1416,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                CloseRapidReloadVisit(controller, row);
+                CloseRapidReloadVisit(controller, row, failures,
+                    "musket-master");
                 unit.Dispose();
             }
             return row;
@@ -1486,7 +1501,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                CloseRapidReloadVisit(controller, row);
+                CloseRapidReloadVisit(controller, row, failures,
+                    "class-identity-control");
                 unit.Dispose();
             }
             return row;
@@ -1496,11 +1512,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         // one cancellation boundary with the failed-initialization path, and a
         // null controller is a no-op, so a visit the helper already cancelled is
         // never cancelled twice.
-        private static void CloseRapidReloadVisit(LevelUpController controller,
-            JObject row)
+        //
+        // R6: a cancellation failure here is not merely described on the row.
+        // It is also added to the failure collection that decides the case's
+        // status, so a successfully initialised visit whose cleanup throws can
+        // never report PASS. `failures` may be null only for rows whose
+        // evaluator scores `cleanupError` instead (see EvaluateCleanup). This
+        // never throws, so the caller's finally still reaches unit.Dispose()
+        // and an in-flight body exception is never masked.
+        private static bool CloseRapidReloadVisit(LevelUpController controller,
+            JObject row, IList<string> failures, string label)
         {
-            Exception cleanupError = TryCancelRapidReloadVisit(controller);
-            if (cleanupError != null) row["cleanupError"] = cleanupError.Message;
+            return RapidReloadVisitCleanupRules.Report(
+                TryCancelRapidReloadVisit(controller), row, failures, label);
         }
 
         // ------------------------------------------------------------------
@@ -1557,7 +1581,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 // The caller owns nothing here, so this cancels nothing; the
                 // disposable unit still reaches its cleanup boundary.
-                CloseRapidReloadVisit(callerController, row);
+                CloseRapidReloadVisit(callerController, row, failures,
+                    "visit-ownership.failed-initialization");
                 failureUnit.Dispose();
             }
 
@@ -1582,11 +1607,117 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                CloseRapidReloadVisit(successController, row);
+                // R6: a cancellation failure on this caller-owned success path
+                // is added to the scored failure collection, not merely
+                // described on the row, so it can no longer report PASS.
+                row["successCleanupClean"] = CloseRapidReloadVisit(successController,
+                    row, failures, "visit-ownership.successful-initialization");
                 successUnit.Dispose();
             }
             row["cleanupComposition"] = RapidReloadVisitCleanupRules.CombinedFailureMessage;
+            RunRapidReloadCleanupReportingInjection(ctx, row, failures);
             return row;
+        }
+
+        // R6 fault injection, scoped to this one boundary: a successfully
+        // initialised controller is cancelled cleanly through the real
+        // CloseRapidReloadVisit, then a second controller has its preview
+        // disposed and its public Preview field cleared so the native Cancel()
+        // throws. Both calls go through the production cleanup path. Nothing is
+        // mocked and no native subsystem is replaced. The injected failure is
+        // collected locally, so this check proves the boundary reports rather
+        // than failing the run.
+        private void RunRapidReloadCleanupReportingInjection(
+            RapidReloadGateContext ctx, JObject row, IList<string> failures)
+        {
+            UnitEntityData cleanUnit = CreateDisposableUnit();
+            LevelUpController cleanController = null;
+            var cleanFailures = new List<string>();
+            var cleanRow = new JObject();
+            bool cleanUnitDisposed = false;
+            try
+            {
+                cleanController = OpenRapidReloadVisit(ctx, cleanUnit.Descriptor,
+                    ctx.Fighter, null);
+                row["injectionCleanCleanupReportedClean"] = CloseRapidReloadVisit(
+                    cleanController, cleanRow, cleanFailures, "injection.clean");
+                cleanController = null;
+            }
+            finally
+            {
+                CloseRapidReloadVisit(cleanController, cleanRow, cleanFailures,
+                    "injection.clean-residual");
+                cleanUnit.Dispose();
+                cleanUnitDisposed = true;
+            }
+            row["injectionCleanFailureCount"] = cleanFailures.Count;
+            row["injectionCleanUnitDisposed"] = cleanUnitDisposed;
+
+            UnitEntityData brokenUnit = CreateDisposableUnit();
+            LevelUpController brokenController = null;
+            var injectedFailures = new List<string>();
+            var injectedRow = new JObject();
+            bool injectedUnitDisposed = false;
+            bool boundaryThrew = false;
+            try
+            {
+                brokenController = OpenRapidReloadVisit(ctx, brokenUnit.Descriptor,
+                    ctx.Fighter, null);
+                // Dispose the preview exactly as Cancel() would, then remove it
+                // so the native cancellation this boundary performs throws.
+                if (brokenController.Preview != null &&
+                    brokenController.Preview.Unit != null)
+                    brokenController.Preview.Unit.Dispose();
+                brokenController.Preview = null;
+                try
+                {
+                    row["injectionFailedCleanupReportedClean"] =
+                        CloseRapidReloadVisit(brokenController, injectedRow,
+                            injectedFailures, "injection.failed");
+                }
+                catch (Exception)
+                {
+                    boundaryThrew = true;
+                }
+                brokenController = null;
+            }
+            finally
+            {
+                brokenUnit.Dispose();
+                injectedUnitDisposed = true;
+            }
+            row["injectionBoundaryThrew"] = boundaryThrew;
+            row["injectionFailureCount"] = injectedFailures.Count;
+            row["injectionFailureEntry"] = injectedFailures.Count == 0 ? "<none>" :
+                injectedFailures[0];
+            row["injectionRowCleanupError"] = injectedRow["cleanupError"] == null ?
+                "<none>" : (string)injectedRow["cleanupError"];
+            row["injectionRowCleanupDetailPresent"] =
+                injectedRow["cleanupErrorDetail"] != null;
+            row["injectionUnitDisposed"] = injectedUnitDisposed;
+
+            if (cleanFailures.Count != 0)
+                failures.Add("visit-ownership:clean-cleanup-reported-a-failure:" +
+                    string.Join("|", cleanFailures.ToArray()));
+            if (!(bool)row["injectionCleanCleanupReportedClean"])
+                failures.Add("visit-ownership:clean-cleanup-not-reported-clean");
+            if (!cleanUnitDisposed)
+                failures.Add("visit-ownership:clean-fixture-unit-not-disposed");
+            if (boundaryThrew)
+                failures.Add("visit-ownership:cleanup-boundary-threw-out-of-finally");
+            if ((bool)row["injectionFailedCleanupReportedClean"])
+                failures.Add("visit-ownership:failed-cleanup-reported-clean");
+            if (injectedFailures.Count != 1 ||
+                injectedFailures[0].IndexOf(
+                    RapidReloadVisitCleanupRules.CleanupFailurePrefix,
+                    StringComparison.Ordinal) < 0)
+                failures.Add("visit-ownership:failed-cleanup-not-scored:" +
+                    injectedFailures.Count);
+            if (injectedRow["cleanupError"] == null ||
+                injectedRow["cleanupErrorDetail"] == null)
+                failures.Add("visit-ownership:failed-cleanup-lost-its-diagnostics");
+            if (!injectedUnitDisposed)
+                failures.Add("visit-ownership:fixture-unit-not-disposed-after-cleanup-failure");
         }
 
         // ------------------------------------------------------------------

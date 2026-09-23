@@ -832,6 +832,73 @@ namespace KingmakerGunslinger.DomainTests
                 "A missing setup failure was accepted.");
         }
 
+        // R6: a controller that initialised successfully but whose cancellation
+        // later threw must not report PASS. Every case evaluator is driven, so
+        // the guard cannot be lost from one of them.
+        internal static void SuccessPathCleanupFailureCannotScorePass()
+        {
+            foreach (EvidenceCase evidence in Cases)
+            {
+                var cleanFailures = new List<string>();
+                Assertions.True(evidence.Evaluate(evidence.Build(), cleanFailures),
+                    evidence.Name + " rejected evidence with no cleanup error: " +
+                    string.Join("|", cleanFailures.ToArray()));
+
+                JObject failedCleanup = evidence.Build();
+                failedCleanup["cleanupError"] = "Native controller cancellation threw.";
+                Reject(evidence, failedCleanup,
+                    evidence.Name + " reported success despite a recorded cleanup " +
+                    "failure.", RapidReloadVisitCleanupRules.CleanupFailurePrefix);
+            }
+        }
+
+        // R6: the reporting half of the caller-side cleanup boundary, which is
+        // the path CloseRapidReloadVisit uses. Driving the native Cancel() half
+        // needs Kingmaker and is covered by the scenario's own injection check.
+        internal static void CleanupReportingBoundaryScoresAndKeepsDiagnostics()
+        {
+            // A clean cancellation writes nothing and reports clean.
+            var row = new JObject();
+            var failures = new List<string>();
+            Assertions.True(
+                RapidReloadVisitCleanupRules.Report(null, row, failures, "case"),
+                "A clean cancellation was not reported as clean.");
+            Assertions.Equal(0, failures.Count,
+                "A clean cancellation invented a failure.");
+            Assertions.True(row["cleanupError"] == null,
+                "A clean cancellation wrote a cleanup error.");
+
+            // A failed cancellation reaches the scored collection and keeps its
+            // diagnostics on the row.
+            var cleanupError = new InvalidOperationException(
+                "Native controller cancellation threw.");
+            Assertions.False(
+                RapidReloadVisitCleanupRules.Report(cleanupError, row, failures,
+                    "visit-ownership.successful-initialization"),
+                "A failed cancellation was reported as clean.");
+            Assertions.Equal(1, failures.Count,
+                "A failed cancellation did not reach the scored failure collection.");
+            Assertions.True(failures[0].StartsWith(
+                    "visit-ownership.successful-initialization" +
+                    RapidReloadVisitCleanupRules.CleanupFailurePrefix,
+                    StringComparison.Ordinal),
+                "The scored cleanup failure did not name its boundary: " + failures[0]);
+            Assertions.True(failures[0].Contains(cleanupError.Message),
+                "The scored cleanup failure lost its message.");
+            Assertions.Equal(cleanupError.Message, (string)row["cleanupError"],
+                "The cleanup error message was not recorded on the row.");
+            Assertions.True(row["cleanupErrorDetail"] != null &&
+                    ((string)row["cleanupErrorDetail"]).Contains(cleanupError.Message),
+                "The cleanup error detail was not preserved on the row.");
+
+            // The boundary never throws, so a caller's finally still reaches its
+            // fixture disposal, and an unlabelled or unscored call is tolerated
+            // rather than crashing the run.
+            Assertions.False(
+                RapidReloadVisitCleanupRules.Report(cleanupError, null, null, null),
+                "An unscored cleanup failure was reported as clean.");
+        }
+
         internal static void ScenarioUsesTheNativeOperationsItClaims()
         {
             string root = Environment.CurrentDirectory;
@@ -869,7 +936,13 @@ namespace KingmakerGunslinger.DomainTests
                 "catch (Exception setupError)",
                 "TryCancelRapidReloadVisit(controller)",
                 "RapidReloadVisitCleanupRules.Compose(setupError,",
-                "RunRapidReloadVisitOwnershipCheck("
+                "RunRapidReloadVisitOwnershipCheck(",
+                // R6: caller-owned cleanup reports into the scored collection,
+                // and the boundary itself is fault-injected in the scenario.
+                "RapidReloadVisitCleanupRules.Report(",
+                "row[\"successCleanupClean\"] = CloseRapidReloadVisit(successController,",
+                "RunRapidReloadCleanupReportingInjection(",
+                "brokenController.Preview = null;"
             })
                 Assertions.True(scenario.Contains(token),
                     "The Rapid Reload gate scenario lost a required native step: " + token);
@@ -881,6 +954,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1, unselectUses,
                 "UnselectFeature is only allowed once, to withdraw a probe-created " +
                 "selection after its observation.");
+            Assertions.False(scenario.Contains("CloseRapidReloadVisit(controller, row);"),
+                "A caller still uses the log-only cleanup form that could report PASS " +
+                "despite a failed cancellation.");
             string catalog = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestScenarioCatalog.cs"));
             Assertions.True(catalog.Contains("disposable-rapid-reload-proficiency-gate"),

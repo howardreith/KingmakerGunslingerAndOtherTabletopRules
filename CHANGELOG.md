@@ -54,6 +54,12 @@
   reports a cancellation that also fails alongside it instead of discarding
   either. Successful initialisation still hands the controller to the caller,
   so nothing is cancelled twice.
+- Made a failed cancellation of a caller-owned level-up controller a scored
+  failure rather than a descriptive field: the shared cleanup boundary now adds
+  the error to the collection that decides the assertion (and the evaluators
+  reject any row carrying one), so a successfully initialised visit whose
+  cleanup throws can no longer report PASS. The boundary still never throws, so
+  fixture units always reach disposal and no body exception is masked.
 - The scenario has not been executed; runtime qualification is blocked because
   the authoring sessions are elevated and the runtime orchestrator correctly
   refuses administrator elevation.

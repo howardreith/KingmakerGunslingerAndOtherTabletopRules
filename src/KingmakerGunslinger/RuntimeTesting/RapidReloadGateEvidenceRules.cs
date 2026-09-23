@@ -271,6 +271,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             return ok;
         }
 
+        /// <summary>
+        /// R6: a cancellation failure recorded on a case row fails that case.
+        /// Descriptive error text is not a failed assertion, so any row that
+        /// carries `cleanupError` is rejected here even when its behavioural
+        /// observations all look correct.
+        /// </summary>
+        private static bool EvaluateCleanup(JObject row, string label,
+            IList<string> failures)
+        {
+            JToken error = row["cleanupError"];
+            if (error == null || error.Type == JTokenType.Null) return true;
+            failures.Add(label + RapidReloadVisitCleanupRules.CleanupFailurePrefix +
+                (string)error);
+            return false;
+        }
+
         private static bool EvaluateHold(JObject row, string label, string key,
             bool expectParentHeld, bool expectTrackedChild, IList<string> failures)
         {
@@ -301,7 +317,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string label = Label(row, "refused-parent");
             if (!RequireObservations(row, label, RefusedParentKeys, failures)) return false;
-            bool ok = EvaluateScope(row, label, "fixture", scope, failures);
+            bool ok = EvaluateCleanup(row, label, failures);
+            ok &= EvaluateScope(row, label, "fixture", scope, failures);
             ok &= EvaluateReservation(row, label, failures);
             // The feat may remain visible while the native UI shows an unmet
             // prerequisite, but it must not be acquirable.
@@ -335,7 +352,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             string label = Label(row, "scoped-child-refusal");
             if (!RequireObservations(row, label, ScopedChildRefusalKeys, failures))
                 return false;
-            bool ok = EvaluateScope(row, label, "fixture", scope, failures);
+            bool ok = EvaluateCleanup(row, label, failures);
+            ok &= EvaluateScope(row, label, "fixture", scope, failures);
             ok &= EvaluateReservation(row, label, failures);
             if (!(bool)row["parentCanSelect"] || !(bool)row["parentSelected"])
             { failures.Add(label + ":parent-not-selected"); ok = false; }
@@ -377,7 +395,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             string label = Label(row, "empty-selection");
             if (!RequireObservations(row, label, EmptySelectionKeys, failures))
                 return false;
-            bool ok = EvaluateScope(row, label, "fixture", scope, failures);
+            bool ok = EvaluateCleanup(row, label, failures);
+            ok &= EvaluateScope(row, label, "fixture", scope, failures);
             ok &= EvaluateReservation(row, label, failures);
             if (!(bool)row["parentSelected"])
             { failures.Add(label + ":parent-not-selected"); ok = false; }
@@ -404,7 +423,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string label = Label(row, "acquisition");
             if (!RequireObservations(row, label, AcquisitionKeys, failures)) return false;
-            bool ok = EvaluateScope(row, label, "fixture", scope, failures);
+            bool ok = EvaluateCleanup(row, label, failures);
+            ok &= EvaluateScope(row, label, "fixture", scope, failures);
             ok &= EvaluateReservation(row, label, failures);
             if (!(bool)row["parentCanSelect"] || !(bool)row["parentSelected"])
             { failures.Add(label + ":parent-refused"); ok = false; }
@@ -423,7 +443,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             const string label = "pending-class-change";
             if (!RequireObservations(row, label, PendingClassChangeKeys, failures))
                 return false;
-            bool ok = true;
+            bool ok = EvaluateCleanup(row, label, failures);
             // One live transaction: the scenario must not have substituted
             // Cancel() plus a fresh visit for the native class change.
             if ((int)row["controllerInstances"] != 1)
@@ -474,7 +494,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             const string label = "pending-archetype-change";
             if (!RequireObservations(row, label, ArchetypeScopeChangeKeys, failures))
                 return false;
-            bool ok = true;
+            bool ok = EvaluateCleanup(row, label, failures);
             if ((int)row["controllerInstances"] != 1)
             { failures.Add(label + ":not-a-single-transaction"); ok = false; }
             ok &= EvaluateReservation(row, label, failures);
@@ -547,7 +567,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             const string label = "musket-master";
             if (!RequireObservations(row, label, MusketMasterKeys, failures)) return false;
-            bool ok = true;
+            bool ok = EvaluateCleanup(row, label, failures);
             if (!(bool)row["levelOneGrantsRapidReloadMusket"])
             { failures.Add(label + ":level-one-blueprint-grant-missing"); ok = false; }
             // The fixture is a natively built Musket Master: scope is
@@ -592,7 +612,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             const string label = "class-identity-control";
             if (!RequireObservations(row, label, ClassIdentityControlKeys, failures))
                 return false;
-            bool ok = true;
+            bool ok = EvaluateCleanup(row, label, failures);
             // The Gunslinger the control strips was itself confirmed through
             // the native completion gate.
             ok &= EvaluateConfirmation(row, label + ".build",
