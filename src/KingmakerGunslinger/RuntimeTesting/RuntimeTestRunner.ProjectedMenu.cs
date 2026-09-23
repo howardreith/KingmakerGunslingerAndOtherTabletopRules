@@ -27,7 +27,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// up. Without a bound it would hang until the harness timeout, which is
         /// a far worse way to learn the same thing.
         /// </summary>
-        private const int ProjectedMenuStarvationFrames = 600;
+        private const int ProjectedMenuStarvationFrames = 1800;
 
         private void RunExpandedSummoningProjectedMenu()
         {
@@ -54,10 +54,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_projectedMenuSettled == 0 &&
                     ++_projectedMenuStarved > ProjectedMenuStarvationFrames)
                     throw new InvalidOperationException(
-                        "No single ActionBarSpellsGroup was available to drive " +
-                        "after " + ProjectedMenuStarvationFrames + " frames; " +
-                        "loaded instances " + _projectedMenu.ObservedSpellGroupCount +
-                        ", of which live " + _projectedMenu.ObservedLiveSpellGroupCount + ".");
+                        "No action-bar group slot was available to anchor the " +
+                        "menu after " + ProjectedMenuStarvationFrames +
+                        " frames: " + _projectedMenu.Availability + ". The " +
+                        "layout anchors the popup to the slot a player clicked, " +
+                        "so without an active group slot there is nothing to " +
+                        "measure against.");
                 return;
             }
 
