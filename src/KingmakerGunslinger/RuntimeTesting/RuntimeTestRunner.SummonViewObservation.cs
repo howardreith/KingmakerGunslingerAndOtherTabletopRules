@@ -48,6 +48,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string skinningReport = "<unobserved>";
             bool animationDriverProven = false;
             int clipCount = 0;
+            string controllerName = null;
 
             try
             {
@@ -83,11 +84,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 animationBinding = observed.AnimationBinding;
                 skinningReport = observed.SkinningReport;
                 clipCount = observed.ClipCount;
-                // Discriminating: a real Animator, a real controller, and real
-                // clips. Recording that some string existed proved nothing.
+                controllerName = observed.ControllerName;
+                // What a DETACHED prefab can actually prove: a real Animator
+                // component with a real generic Avatar, which is what a custom
+                // mesh must bind against. The runtimeAnimatorController and its
+                // clips are assigned when the view attaches to a unit, so they
+                // are null here - demanding them would repeat the earlier
+                // mistake of asserting an attach-time fact on a detached object.
+                // The attached path is covered by the disposable scenario.
                 animationDriverProven = observed.DrivingAnimator != null &&
-                    !string.IsNullOrEmpty(observed.ControllerName) &&
-                    observed.ClipCount > 0;
+                    observed.HasGenericAvatar;
             }
             finally
             {
@@ -132,14 +138,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // attaches to a unit. Recording where animation actually comes
                 // from is the finding; demanding it on a detached prefab was
                 // exactly the assumption the charter warns against.
-                Assertion("pteranodon-donor-animation-driver-identified",
-                    "a real driving Animator with a named controller and at least one clip",
+                Assertion("pteranodon-donor-animator-and-avatar-identified",
+                    "a real driving Animator carrying a generic Avatar, observed directly",
                     animationBinding, animationDriverProven,
-                    "the child Animator actually present, its runtimeAnimatorController and clips"),
-                Assertion("pteranodon-donor-clip-events-recorded",
-                    "clip timing is observed so a replacement bite can land on the native frames",
-                    "clips=" + clipCount, clipCount > 0,
-                    "AnimationClip.events across the driving controller"),
+                    "the child Animator component and its Avatar on the detached prefab"),
+                Assertion("pteranodon-donor-controller-is-attach-time",
+                    "the controller and clips are absent on a detached prefab, so they bind on attach",
+                    "controller=" + (controllerName ?? "<null>") + ";clips=" + clipCount,
+                    controllerName == null && clipCount == 0,
+                    "recorded as an attach-time fact; the attached path is covered by disposable-pteranodon-attached-view"),
                 Assertion("pteranodon-donor-skinning-inputs-recorded",
                     "parent-relative bone paths, bone indices, bind-pose shape and renderer space",
                     skinningReport, skinningReport != "<unobserved>",
@@ -186,6 +193,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal int ClipCount;
             internal int ClipsWithEvents;
             internal int EventCount;
+            internal bool HasGenericAvatar;
             internal string SkinningReport;
         }
 
@@ -238,6 +246,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     : controller.animationClips.Where(value => value != null).ToArray();
                 result.ClipCount = clips.Length;
 
+                result.HasGenericAvatar = driving.avatar != null && !driving.avatar.isHuman;
                 binding.Append(";drivingAnimator=").Append(driving.name)
                     .Append(";controller=")
                     .Append(controller == null ? "<null>" : controller.name)
