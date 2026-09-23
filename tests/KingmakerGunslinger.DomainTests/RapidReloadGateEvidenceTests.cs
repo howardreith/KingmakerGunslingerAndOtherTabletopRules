@@ -897,6 +897,28 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(
                 RapidReloadVisitCleanupRules.Report(cleanupError, null, null, null),
                 "An unscored cleanup failure was reported as clean.");
+
+            // R7: an expected injected failure and a real teardown failure are
+            // reported under their own boundary labels, so one can never be
+            // mistaken for the other.
+            var injectedFailures = new List<string>();
+            var teardownFailures = new List<string>();
+            RapidReloadVisitCleanupRules.Report(
+                new InvalidOperationException("Injected Rapid Reload gate cancellation failure."),
+                new JObject(), injectedFailures, "injection.failed");
+            RapidReloadVisitCleanupRules.Report(
+                new InvalidOperationException("Native controller cancellation threw."),
+                new JObject(), teardownFailures, "injection.real-teardown");
+            Assertions.True(injectedFailures[0].StartsWith("injection.failed" +
+                    RapidReloadVisitCleanupRules.CleanupFailurePrefix,
+                    StringComparison.Ordinal),
+                "The injected boundary failure lost its label: " + injectedFailures[0]);
+            Assertions.True(teardownFailures[0].StartsWith("injection.real-teardown" +
+                    RapidReloadVisitCleanupRules.CleanupFailurePrefix,
+                    StringComparison.Ordinal),
+                "The real teardown failure lost its label: " + teardownFailures[0]);
+            Assertions.False(injectedFailures[0] == teardownFailures[0],
+                "An injected failure and a real teardown failure are indistinguishable.");
         }
 
         internal static void ScenarioUsesTheNativeOperationsItClaims()
@@ -942,7 +964,13 @@ namespace KingmakerGunslinger.DomainTests
                 "RapidReloadVisitCleanupRules.Report(",
                 "row[\"successCleanupClean\"] = CloseRapidReloadVisit(successController,",
                 "RunRapidReloadCleanupReportingInjection(",
-                "brokenController.Preview = null;"
+                // R7: the controlled failure is supplied at the cancellation
+                // call, the normal path still runs the native Cancel(), and the
+                // intact controller is torn down unconditionally afterwards.
+                "if (cancel == null) controller.Cancel(); else cancel(controller);",
+                "value => { throw injectedError; }",
+                "injection.real-teardown",
+                "injectedControllerIntactAfterBoundary"
             })
                 Assertions.True(scenario.Contains(token),
                     "The Rapid Reload gate scenario lost a required native step: " + token);
@@ -957,6 +985,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(scenario.Contains("CloseRapidReloadVisit(controller, row);"),
                 "A caller still uses the log-only cleanup form that could report PASS " +
                 "despite a failed cancellation.");
+            // R7: the destructive injection must not come back. The cleanup
+            // check may never damage a controller to manufacture a failure.
+            Assertions.False(scenario.Contains("Preview = null"),
+                "The cleanup check still clears a controller's Preview to force a " +
+                "cancellation failure.");
+            Assertions.False(scenario.Contains("Preview.Unit.Dispose()"),
+                "The cleanup check still disposes a controller's preview unit to force " +
+                "a cancellation failure.");
             string catalog = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestScenarioCatalog.cs"));
             Assertions.True(catalog.Contains("disposable-rapid-reload-proficiency-gate"),
