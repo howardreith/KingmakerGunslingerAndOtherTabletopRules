@@ -1768,7 +1768,7 @@
   "betterVendorsProgression138": {
     "baselineCommit": "202a41815f7ca80303e33c2f694804e7926efd8b",
     "branch": "codex/better-vendors-progression",
-    "deterministicTestCount": 1739,
+    "deterministicTestCount": 1740,
     "publicReleaseAuthorized": false,
     "candidateOnly": true,
     "progressionEntries": 50,
@@ -1790,6 +1790,19 @@
     "ordinaryVendorPublicationChanged": false,
     "nativeRuntimeQualified": false,
     "nativeRuntimeEvidence": null,
+    "nativeRuntimeScopeNote": "Merchant stock needs a kingdom-stage save; the only authorized disposable fixture predates kingdom creation.",
+    "workingSaveSmoke": {
+      "runId": "20260923T1810242389403Z-1bf61c4530d14e879a16919b182a9602",
+      "status": "PASS",
+      "assertions": 11,
+      "commit": "060df1d428f33a759106720e7e1c1fb384e1c450",
+      "packageSha256": "0ee2baa5db8574f822230acf0d37ca7a37fc0ccc3d679f158b0094cea98da03a",
+      "dllSha256": "285cc5bb39652b95858129be87d8be96b1e710c142f755ef05748e1cfc2b1fdd",
+      "dllMvid": "d49f0f7d-c1be-43dd-970b-64a2b5fb58bf",
+      "betterVendorsAdapterStatus": "Ready",
+      "progressionCatalogReady": "entries=50;reused=7;registered=43;firearms=30;melee=20;publishedToVendors=false",
+      "liveInstallationRestored": true
+    },
     "compatibilityRuntimeQualificationPending": true,
     "saveLoadCompatibilityVerified": false
   }
