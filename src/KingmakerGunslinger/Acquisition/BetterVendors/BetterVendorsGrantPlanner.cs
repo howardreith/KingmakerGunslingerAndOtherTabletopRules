@@ -197,6 +197,10 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
         internal int Copies { get; set; }
         internal int Partial { get; set; }
         internal int Failed { get; set; }
+
+        /// <summary>Initial grants whose stock changed but whose record failed.</summary>
+        internal int Unrecorded { get; set; }
+
         internal List<string> Recorded { get; private set; }
         internal List<Exception> Errors { get; private set; }
 
@@ -209,8 +213,8 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
         public override string ToString()
         {
             return string.Format(System.Globalization.CultureInfo.InvariantCulture,
-                "granted={0};replenished={1};copies={2};partial={3};failed={4}",
-                Granted, Replenished, Copies, Partial, Failed);
+                "granted={0};replenished={1};copies={2};partial={3};failed={4};unrecorded={5}",
+                Granted, Replenished, Copies, Partial, Failed, Unrecorded);
         }
     }
 
@@ -257,8 +261,18 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
                 if (grant.Reason == BetterVendorsGrantReason.InitialGrant)
                 {
                     outcome.Granted++;
-                    if (record(grant.Spec.Guid))
-                        outcome.Recorded.Add(grant.Spec.Guid);
+                    try
+                    {
+                        if (record(grant.Spec.Guid))
+                            outcome.Recorded.Add(grant.Spec.Guid);
+                    }
+                    catch (Exception exception)
+                    {
+                        // The stock change stands. Report the bookkeeping
+                        // failure and keep applying the independent grants.
+                        outcome.Unrecorded++;
+                        outcome.Errors.Add(exception);
+                    }
                 }
                 else
                 {

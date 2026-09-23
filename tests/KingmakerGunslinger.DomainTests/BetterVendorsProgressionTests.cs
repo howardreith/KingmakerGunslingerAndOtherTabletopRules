@@ -805,6 +805,111 @@ namespace KingmakerGunslinger.DomainTests
                     spec.Guid) + quantity, recorded.Add);
             Assertions.Equal(5, Count(shop, failing), "retried grant quantity");
             Assertions.Equal(2, Count(shop, partial), "partial grant was not topped up");
+
+            // A failing record never abandons the rest of the batch.
+            ProgressionWeaponSpec[] second = ProgressionWeaponCatalog.ForTier(2);
+            string unrecordable = second[0].Guid;
+            var secondShop = new Dictionary<string, int>(StringComparer.Ordinal);
+            var secondRecorded = new HashSet<string>(StringComparer.Ordinal);
+            BetterVendorsGrantOutcome bookkeeping = BetterVendorsGrantApplier.Apply(
+                second.Select(spec => new BetterVendorsGrant(spec,
+                    BetterVendorsProgressionSchedule.RequireTier(2),
+                    BetterVendorsGrantReason.InitialGrant)),
+                spec => Count(secondShop, spec.Guid), (spec, quantity) =>
+                    secondShop[spec.Guid] = Count(secondShop, spec.Guid) + quantity,
+                guid =>
+                {
+                    if (guid == unrecordable)
+                        throw new InvalidOperationException("ledger unavailable");
+                    return secondRecorded.Add(guid);
+                });
+            Assertions.Equal(1, bookkeeping.Unrecorded, "unrecorded count");
+            Assertions.Equal(1, bookkeeping.Errors.Count, "record failure retained");
+            Assertions.Equal(second.Length - 1, secondRecorded.Count,
+                "Every other grant in the batch is still recorded.");
+            Assertions.True(second.All(spec => Count(secondShop, spec.Guid) == 5),
+                "Every grant in the batch is still applied.");
+            Assertions.True(bookkeeping.ToString().EndsWith(";unrecorded=1",
+                    StringComparison.Ordinal),
+                "The outcome log reports unrecorded grants.");
+        }
+
+        internal static void ProgressionContractFailuresDisableOnlyMerchantStock()
+        {
+            for (int tier = 1; tier <= ProgressionWeaponCatalog.MaximumEnhancement; tier++)
+                Assertions.Equal(null,
+                    ProgressionWeaponCatalog.DescribeNativeEnhancementMismatch(tier,
+                        "Enhancement" + tier, tier,
+                        new[] { new KeyValuePair<int, bool>(tier, false) }),
+                    "The verified native +" + tier + " contract must match.");
+            var cases = new[]
+            {
+                Tuple.Create("Enhancement4X", 4, new[] { new KeyValuePair<int, bool>(4, false) }, "name"),
+                Tuple.Create("Enhancement4", 5, new[] { new KeyValuePair<int, bool>(4, false) }, "cost"),
+                Tuple.Create("Enhancement4", 4, new KeyValuePair<int, bool>[0], "component-count"),
+                Tuple.Create("Enhancement4", 4, new[] { new KeyValuePair<int, bool>(4, false),
+                    new KeyValuePair<int, bool>(1, false) }, "component-count"),
+                Tuple.Create("Enhancement4", 4, new[] { new KeyValuePair<int, bool>(3, false) }, "bonus"),
+                Tuple.Create("Enhancement4", 4, new[] { new KeyValuePair<int, bool>(4, true) }, "stacking")
+            };
+            foreach (var mismatch in cases)
+                Assertions.Equal("native-enhancement+4:" + mismatch.Item4,
+                    ProgressionWeaponCatalog.DescribeNativeEnhancementMismatch(4,
+                        mismatch.Item1, mismatch.Item2, mismatch.Item3),
+                    "Changed native data must be reported, never thrown: " +
+                    mismatch.Item4);
+            Assertions.Equal("native-enhancement+1:name",
+                ProgressionWeaponCatalog.DescribeNativeEnhancementMismatch(1, null,
+                    1, null), "Missing native data is reported.");
+
+            Assertions.True(ProgressionCatalogStatus.Usable.IsUsable &&
+                    new ProgressionCatalogStatus(new[] { null, " ", string.Empty })
+                        .IsUsable,
+                "Passed checks leave the catalog usable.");
+            var degraded = new ProgressionCatalogStatus(new[] {
+                "native-enhancement+4:cost", null,
+                "native-enhancement+4:cost", "KMG.Firearms.PistolPlus4Item:price" });
+            Assertions.False(degraded.IsUsable, "Any failed check withholds stock.");
+            Assertions.Equal(2, degraded.Failures.Length, "distinct failures");
+            Assertions.Equal("degraded:native-enhancement+4:cost|KMG.Firearms.PistolPlus4Item:price",
+                degraded.ToString(), "degraded status text");
+
+            string registration = Source("Blueprints", "ProgressionWeaponBlueprints.cs");
+            foreach (string removed in new[] {
+                "enhancement identity/component mismatch",
+                "Reliable no longer carries its +1 equivalent enchantment cost.",
+                "Progression weapon catalog identity/count mismatch.",
+                "Progression weapon contract mismatch (" })
+                Assertions.False(registration.Contains(removed),
+                    "A progression contract check must not throw: " + removed);
+            foreach (string token in new[] {
+                "var status = new ProgressionCatalogStatus(failures);",
+                "\"progression-catalog.degraded\"",
+                "merchantProgression=disabled;itemsRemainRegistered=true;",
+                "Check(failures, spec.Symbol, delegate",
+                "failures.AddRange(DescribeCatalogFailures(entries, enhancements," })
+                Assertions.True(registration.Contains(token),
+                    "Missing degrade-closed registration step: " + token);
+            int register = registration.IndexOf("MagicFirearmBlueprints.RegisterItem(",
+                StringComparison.Ordinal);
+            int validate = registration.IndexOf("MagicFirearmBlueprints.ValidateItem(",
+                StringComparison.Ordinal);
+            Assertions.True(register > 0 && validate > register,
+                "Variants are registered before any progression check runs.");
+
+            string runtime = Source("Acquisition", "BetterVendors",
+                "BetterVendorsStockRuntime.cs");
+            Assertions.Equal(2, CountOccurrences(runtime, "!catalog.Status.IsUsable"),
+                "Both stock paths must refuse a degraded catalog.");
+            int applyGrants = runtime.IndexOf(
+                "private static BetterVendorsGrantOutcome ApplyGrants(",
+                StringComparison.Ordinal);
+            int ensure = runtime.IndexOf("ledger.EnsureWritable();", applyGrants,
+                StringComparison.Ordinal);
+            int apply = runtime.IndexOf("BetterVendorsGrantApplier.Apply(", applyGrants,
+                StringComparison.Ordinal);
+            Assertions.True(applyGrants > 0 && ensure > applyGrants && apply > ensure,
+                "The ledger must exist before any stock is added.");
         }
 
         // ---------------------------------------------------------------
