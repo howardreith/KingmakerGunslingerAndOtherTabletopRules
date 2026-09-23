@@ -84,6 +84,10 @@ $record = [ordered]@{
     runs = @()
 }
 $failures = 0
+$reuseManifest = $null
+$reusePackage = $null
+$deploymentRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments'
+$repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 
 try {
     # Each scenario is attempted even if an earlier one fails, so one bad
@@ -104,11 +108,36 @@ try {
             }
             if ($SaveName) { $arguments.SaveName = $SaveName }
             # Only the first scenario needs to build and deploy; the rest run
-            # against the artifact already installed by that first deployment.
-            if (-not $first) { $arguments.ReuseInstalledArtifact = $true }
+            # against the artifact it installed. Reuse is refused unless the
+            # exact deployment manifest and package are named, so resolve both
+            # from what the first run actually produced rather than assuming.
+            if (-not $first -and $reusePackage -and $reuseManifest) {
+                $arguments.ReuseInstalledArtifact = $true
+                $arguments.DeploymentManifestPath = $reuseManifest
+                $arguments.PackagePath = $reusePackage
+            }
             & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') @arguments
             $run.exitCode = $LASTEXITCODE
             $run.outcome = if ($LASTEXITCODE -eq 0) { 'PASS' } else { 'FAIL' }
+            if ($first) {
+                # Capture what the deploying run produced so later scenarios can
+                # name it exactly; the harness refuses a vague reuse.
+                $candidate = Join-Path $repositoryRoot (
+                    "artifacts\local-runtime\$ExpectedVersion\" +
+                    "KingmakerGunslinger-$ExpectedVersion-local-runtime.zip")
+                if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+                    $reusePackage = $candidate
+                }
+                $manifest = Get-ChildItem -LiteralPath $deploymentRoot -Directory `
+                        -ErrorAction SilentlyContinue |
+                    Sort-Object Name -Descending |
+                    ForEach-Object { Join-Path $_.FullName 'deployment.json' } |
+                    Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } |
+                    Select-Object -First 1
+                if ($manifest) { $reuseManifest = $manifest }
+                $run.deploymentManifest = $reuseManifest
+                $run.package = $reusePackage
+            }
         }
         catch {
             $run.outcome = 'ERROR'
