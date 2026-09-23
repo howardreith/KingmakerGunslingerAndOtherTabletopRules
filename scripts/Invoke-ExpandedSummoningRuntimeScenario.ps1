@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
-Runs one guarded Expanded Summoning runtime scenario and always restores the
-live mod tree this mission mutated.
+Runs one or more guarded Expanded Summoning runtime scenarios and always
+restores the live mod tree this mission mutated.
 
 .DESCRIPTION
 Invoke-KingmakerRuntimeTest deploys a candidate and leaves it installed. That
@@ -21,8 +21,13 @@ installation and a blind restore could destroy it.
 #>
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
-    [Parameter(Mandatory = $true)][string]$Scenario,
+    # One or more scenarios. A batch shares a single snapshot and a single
+    # restore, so a baseline suite does not rebuild and redeploy per scenario.
+    [Parameter(Mandatory = $true)][string[]]$Scenario,
     [Parameter(Mandatory = $true)][string]$ExpectedVersion,
+    # Save name for scenarios that require one. AGENTS permits only
+    # KMG_AUTOMATION_WORKING for automated runs.
+    [string]$SaveName,
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$RestorationRecordRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\expanded-summoning-restoration',
     [hashtable]$ScenarioParameters = @{},
@@ -70,31 +75,55 @@ $snapshot = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
 Write-Host "Mission snapshot: $($snapshot.Destination)"
 
 $record = [ordered]@{
-    schemaVersion = 1
-    scenario = $Scenario
+    schemaVersion = 2
+    scenarios = @($Scenario)
     expectedVersion = $ExpectedVersion
     startedAtUtc = [DateTime]::UtcNow.ToString('o')
     snapshotDirectory = $snapshot.Destination
     liveBefore = [ordered]@{ files = $before.Files; sha256 = $before.Sha256 }
+    runs = @()
 }
-$scenarioExit = $null
+$failures = 0
 
 try {
-    & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') `
-        -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
-        -Parameters $ScenarioParameters -TimeoutSeconds $TimeoutSeconds `
-        -ExitAfterCompletion $true -Confirm:$false
-    $scenarioExit = $LASTEXITCODE
-    $record.scenarioOutcome = 'completed'
-}
-catch {
-    $record.scenarioOutcome = 'failed'
-    $record.scenarioError = $_.Exception.Message
-    throw
+    # Each scenario is attempted even if an earlier one fails, so one bad
+    # scenario cannot hide the rest of a baseline suite. Restoration still
+    # happens exactly once, in the finally below.
+    $first = $true
+    foreach ($name in $Scenario) {
+        Write-Host "=== scenario: $name ==="
+        $run = [ordered]@{ scenario = $name; startedAtUtc = [DateTime]::UtcNow.ToString('o') }
+        try {
+            $arguments = @{
+                Scenario = $name
+                ExpectedVersion = $ExpectedVersion
+                Parameters = $ScenarioParameters
+                TimeoutSeconds = $TimeoutSeconds
+                ExitAfterCompletion = $true
+                Confirm = $false
+            }
+            if ($SaveName) { $arguments.SaveName = $SaveName }
+            # Only the first scenario needs to build and deploy; the rest run
+            # against the artifact already installed by that first deployment.
+            if (-not $first) { $arguments.ReuseInstalledArtifact = $true }
+            & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') @arguments
+            $run.exitCode = $LASTEXITCODE
+            $run.outcome = if ($LASTEXITCODE -eq 0) { 'PASS' } else { 'FAIL' }
+        }
+        catch {
+            $run.outcome = 'ERROR'
+            $run.error = $_.Exception.Message
+            Write-Warning "Scenario $name errored: $($_.Exception.Message)"
+        }
+        if ($run.outcome -ne 'PASS') { $failures++ }
+        $run.completedAtUtc = [DateTime]::UtcNow.ToString('o')
+        $record.runs += $run
+        $first = $false
+    }
 }
 finally {
     # Runs on success, on failure, and on interruption.
-    $record.scenarioExitCode = $scenarioExit
+    $record.failures = $failures
     $deployed = Get-KmgTreeFingerprint -Directory $LiveModDirectory
     $record.liveAfterScenario = [ordered]@{ files = $deployed.Files; sha256 = $deployed.Sha256 }
 
@@ -129,7 +158,8 @@ finally {
         New-Item -ItemType Directory -Path $RestorationRecordRoot -Force | Out-Null
     }
     $recordPath = Join-Path $RestorationRecordRoot (
-        [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' + $Scenario + '.json')
+        [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' +
+        $Scenario[0] + '.json')
     ($record | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $recordPath -Encoding utf8
     Write-Host "Restoration record: $recordPath"
 }

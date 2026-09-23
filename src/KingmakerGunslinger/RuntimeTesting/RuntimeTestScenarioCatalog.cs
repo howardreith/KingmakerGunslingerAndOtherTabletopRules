@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -343,6 +343,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-native-firearm-rig-contracts";
         internal const string ObserveSummonPteranodonViewContracts =
             "observe-summon-pteranodon-view-contracts";
+        internal const string DisposablePteranodonAttachedView =
+            "disposable-pteranodon-attached-view";
         internal const string DisposableFirearmVisualRigs =
             "disposable-firearm-visual-rigs";
         internal const string ObserveFirearmItemLifecycleContracts =
@@ -707,6 +709,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveProductionFirearmFallbacks,
                 ObserveNativeFirearmRigContracts,
                 ObserveSummonPteranodonViewContracts,
+                DisposablePteranodonAttachedView,
                 DisposableFirearmVisualRigs,
                 ObserveFirearmItemLifecycleContracts,
                 DisposableReloadAutocast,
