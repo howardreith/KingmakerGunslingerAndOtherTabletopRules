@@ -1707,5 +1707,25 @@
     "qualifiedPackageSha256": "9749EC38ABD9FCFBDD54EB825E7FC0A5F6D6D33CFFC81FAE4AB95D026FBDD58A",
     "artifactNote": "Static/build/package gates only. These hashes identify the built 0.0.136 candidate; no native runtime qualification was performed against them.",
     "versionNote": "0.0.135 was already published on 2026-09-21 from the Magic Circle follow-up line (commit a7cd0041); this release advanced to 0.0.136 rather than replacing it."
+  },
+  "rapidReloadCombatFeatFollowup": {
+    "baselineCommit": "35555a8d8b4bd8df5a6868a60d3ca1fbb9cd366b",
+    "branch": "codex/rapid-reload-combat-feat-classification",
+    "deterministicTestCount": 1704,
+    "publicReleaseAuthorized": false,
+    "liveTestCountDelta": "1702 -> 1704; parent classification source regression plus classification and Fighter bonus-slot evidence scoring",
+    "parentGroups": [
+      "Feat",
+      "CombatFeat"
+    ],
+    "genericSelectionHelperChanged": false,
+    "publicationChanged": false,
+    "proficiencyGateChanged": false,
+    "ownerWaiverApplies": false,
+    "nativeQualification": "PENDING: disposable-rapid-reload-proficiency-gate extended with rapid-reload-combat-feat-classification and the J Gunslinger-then-Fighter bonus-slot case; see TESTING.md",
+    "scope": [
+      "Rapid Reload parent classified as Feat and CombatFeat through BlueprintFeature.Groups",
+      "Fighter combat-feat route exercised for scoped refusal, scoped acquisition and a natively built Gunslinger 1 taking Fighter 1"
+    ]
   }
 }

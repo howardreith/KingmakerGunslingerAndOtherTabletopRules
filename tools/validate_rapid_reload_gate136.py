@@ -18,7 +18,10 @@ VERSION = "0.0.136"
 INFORMATIONAL_VERSION = "0.0.136-rapid-reload-proficiency-gate"
 PACKAGE = "KingmakerGunslinger-0.0.136-local-runtime.zip"
 PACKAGE_SUFFIX = "rapid-reload-proficiency-gate"
-DETERMINISTIC_TEST_COUNT = 1702
+# The live suite on this line. The released 0.0.136 record keeps its own
+# historical 1702 below; the combat-feat classification follow-up adds two.
+DETERMINISTIC_TEST_COUNT = 1704
+RELEASED_TEST_COUNT = 1702
 
 
 def validate(root: Path) -> None:
@@ -32,7 +35,7 @@ def validate(root: Path) -> None:
         encoding="utf-8"))
     state = metadata["rapidReloadProficiencyGate"]
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": RELEASED_TEST_COUNT,
         "publicReleaseAuthorized": True,
         "parentPrerequisiteGrouping": "Prerequisite.GroupType.Any",
         "classPrerequisiteAdded": False,
@@ -53,6 +56,22 @@ def validate(root: Path) -> None:
     for marker in ("R1", "R2", "R3", "R4", "R5", "R6", "R7"):
         if not any(str(entry).startswith(marker) for entry in findings):
             raise AssertionError(f"Release metadata lost review finding {marker}")
+    # The combat-feat classification follow-up is an unreleased candidate on
+    # top of 0.0.136. It carries its own count and its own qualification
+    # state; the owner's 0.0.136 waiver does not transfer to it.
+    followup = metadata["rapidReloadCombatFeatFollowup"]
+    for key, value in {
+        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "publicReleaseAuthorized": False,
+        "parentGroups": ["Feat", "CombatFeat"],
+        "genericSelectionHelperChanged": False,
+        "publicationChanged": False,
+        "proficiencyGateChanged": False,
+        "ownerWaiverApplies": False,
+    }.items():
+        if followup.get(key) != value:
+            raise AssertionError(
+                f"Rapid Reload combat-feat follow-up metadata mismatch: {key}")
     # The release notes must state the waiver in the owner's own terms rather
     # than implying the scenario ran.
     baseline.baseline.baseline.baseline.require_tokens(
