@@ -341,6 +341,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-production-firearm-fallbacks";
         internal const string ObserveNativeFirearmRigContracts =
             "observe-native-firearm-rig-contracts";
+        internal const string ObserveSummonPteranodonViewContracts =
+            "observe-summon-pteranodon-view-contracts";
         internal const string DisposableFirearmVisualRigs =
             "disposable-firearm-visual-rigs";
         internal const string ObserveFirearmItemLifecycleContracts =
@@ -704,6 +706,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlunderbussThunderingScatter,
                 ObserveProductionFirearmFallbacks,
                 ObserveNativeFirearmRigContracts,
+                ObserveSummonPteranodonViewContracts,
                 DisposableFirearmVisualRigs,
                 ObserveFirearmItemLifecycleContracts,
                 DisposableReloadAutocast,
