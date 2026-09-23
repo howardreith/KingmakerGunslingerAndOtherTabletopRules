@@ -40,6 +40,15 @@
     <Compile Include="..\..\src\KingmakerGunslinger\CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityStatus.cs"><Link>CraftMagicItemsCompatibility\CraftMagicItemsCompatibilityStatus.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\CraftMagicItemsCompatibility\CraftMagicItemsContractProbe.cs"><Link>CraftMagicItemsCompatibility\CraftMagicItemsContractProbe.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\CraftMagicItemsCompatibility\CraftMagicItemsMundaneUiContract.cs"><Link>CraftMagicItemsCompatibility\CraftMagicItemsMundaneUiContract.cs</Link></Compile>
+    <Compile Include="FavoredClassRankPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassRankPolicy.cs"><Link>FavoredClass\FavoredClassRankPolicy.cs</Link></Compile>
+    <Compile Include="FavoredClassCatalogTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassCatalog.cs"><Link>FavoredClass\FavoredClassCatalog.cs</Link></Compile>
+    <Compile Include="FavoredClassEligibilityTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassEligibility.cs"><Link>FavoredClass\FavoredClassEligibility.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassRaceIdentity.cs"><Link>FavoredClass\FavoredClassRaceIdentity.cs</Link></Compile>
+    <Compile Include="FavoredClassHostContractTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassHostContract.cs"><Link>FavoredClass\FavoredClassHostContract.cs</Link></Compile>
     <Compile Include="BetterVendorsProgressionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\MagicWeaponPricing.cs"><Link>Acquisition\MagicWeaponPricing.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\ProgressionWeaponCatalog.cs"><Link>Acquisition\ProgressionWeaponCatalog.cs</Link></Compile>

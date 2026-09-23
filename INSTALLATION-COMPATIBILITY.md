@@ -1,5 +1,14 @@
 # Installation, updates, removal, and compatibility
 
+Local candidate (not published): `0.0.139-favored-class-integration` (UMM
+version `0.0.139`), archive
+`KingmakerGunslinger-0.0.139-favored-class-integration.zip`. It adds the
+optional Favored Class integration described in
+[docs/FAVORED-CLASS-COMPATIBILITY.md](docs/FAVORED-CLASS-COMPATIBILITY.md) and
+[its candidate notes](docs/RELEASE-NOTES-0.0.139.md). Favored Class is never
+required; only the exact qualified Favored Class 1.3.1 and Call of the Wild
+1.14.4c-2.1 binaries activate it.
+
 Full release: `0.0.138-better-vendors-progression` (UMM version `0.0.138`).
 The installable archive is
 `KingmakerGunslinger-0.0.138-better-vendors-progression.zip`. It adds the
