@@ -499,8 +499,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         // can be lost.
         private static Exception TryCancelRapidReloadVisit(LevelUpController controller)
         {
+            return TryCancelRapidReloadVisit(controller, null);
+        }
+
+        // R7: `cancel` is null on every production path, so the normal boundary
+        // still invokes the native controller.Cancel(). Only the cleanup
+        // reporting check supplies a controlled throwing operation, and it runs
+        // through this same catch, so the injected failure travels the real
+        // reporting path without damaging the controller.
+        private static Exception TryCancelRapidReloadVisit(LevelUpController controller,
+            Action<LevelUpController> cancel)
+        {
             if (controller == null) return null;
-            try { controller.Cancel(); return null; }
+            try
+            {
+                if (cancel == null) controller.Cancel(); else cancel(controller);
+                return null;
+            }
             catch (Exception cleanupError) { return cleanupError; }
         }
 
@@ -1523,8 +1538,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool CloseRapidReloadVisit(LevelUpController controller,
             JObject row, IList<string> failures, string label)
         {
+            return CloseRapidReloadVisit(controller, row, failures, label, null);
+        }
+
+        // The injection overload. `cancel` is null everywhere in production.
+        private static bool CloseRapidReloadVisit(LevelUpController controller,
+            JObject row, IList<string> failures, string label,
+            Action<LevelUpController> cancel)
+        {
             return RapidReloadVisitCleanupRules.Report(
-                TryCancelRapidReloadVisit(controller), row, failures, label);
+                TryCancelRapidReloadVisit(controller, cancel), row, failures, label);
         }
 
         // ------------------------------------------------------------------
@@ -1619,17 +1642,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             return row;
         }
 
-        // R6 fault injection, scoped to this one boundary: a successfully
-        // initialised controller is cancelled cleanly through the real
-        // CloseRapidReloadVisit, then a second controller has its preview
-        // disposed and its public Preview field cleared so the native Cancel()
-        // throws. Both calls go through the production cleanup path. Nothing is
-        // mocked and no native subsystem is replaced. The injected failure is
-        // collected locally, so this check proves the boundary reports rather
-        // than failing the run.
+        // R7 cleanup-reporting check, scoped to this one boundary. A
+        // successfully initialised controller is first cancelled cleanly
+        // through the real CloseRapidReloadVisit. A second, equally intact
+        // controller then has a controlled failure supplied at the cancellation
+        // call itself, so the injected error travels the production catching
+        // and reporting path without the controller being damaged to
+        // manufacture it. That controller is kept for unconditional native
+        // teardown afterwards, and its fixture unit is disposed independently.
+        //
+        // This is an injected boundary failure. It is not evidence that the
+        // native Cancel() itself throws or that cancellation executed; that
+        // still requires Kingmaker.
         private void RunRapidReloadCleanupReportingInjection(
             RapidReloadGateContext ctx, JObject row, IList<string> failures)
         {
+            // --- Clean cancellation through the real boundary --------------
             UnitEntityData cleanUnit = CreateDisposableUnit();
             LevelUpController cleanController = null;
             var cleanFailures = new List<string>();
@@ -1637,53 +1665,86 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool cleanUnitDisposed = false;
             try
             {
-                cleanController = OpenRapidReloadVisit(ctx, cleanUnit.Descriptor,
-                    ctx.Fighter, null);
-                row["injectionCleanCleanupReportedClean"] = CloseRapidReloadVisit(
-                    cleanController, cleanRow, cleanFailures, "injection.clean");
-                cleanController = null;
+                try
+                {
+                    cleanController = OpenRapidReloadVisit(ctx, cleanUnit.Descriptor,
+                        ctx.Fighter, null);
+                    row["injectionCleanCleanupReportedClean"] = CloseRapidReloadVisit(
+                        cleanController, cleanRow, cleanFailures, "injection.clean");
+                    cleanController = null;
+                }
+                finally
+                {
+                    // Residual teardown only if the body failed before the
+                    // cancellation above; a real failure here fails the run.
+                    CloseRapidReloadVisit(cleanController, cleanRow, failures,
+                        "injection.clean-residual");
+                }
             }
             finally
             {
-                CloseRapidReloadVisit(cleanController, cleanRow, cleanFailures,
-                    "injection.clean-residual");
                 cleanUnit.Dispose();
                 cleanUnitDisposed = true;
             }
             row["injectionCleanFailureCount"] = cleanFailures.Count;
             row["injectionCleanUnitDisposed"] = cleanUnitDisposed;
 
-            UnitEntityData brokenUnit = CreateDisposableUnit();
-            LevelUpController brokenController = null;
+            // --- Injected failure at the cancellation call ------------------
+            var injectedError = new InvalidOperationException(
+                "Injected Rapid Reload gate cancellation failure.");
+            UnitEntityData injectedUnit = CreateDisposableUnit();
+            LevelUpController injectedController = null;
             var injectedFailures = new List<string>();
             var injectedRow = new JObject();
+            var teardownFailures = new List<string>();
+            var teardownRow = new JObject();
             bool injectedUnitDisposed = false;
             bool boundaryThrew = false;
             try
             {
-                brokenController = OpenRapidReloadVisit(ctx, brokenUnit.Descriptor,
-                    ctx.Fighter, null);
-                // Dispose the preview exactly as Cancel() would, then remove it
-                // so the native cancellation this boundary performs throws.
-                if (brokenController.Preview != null &&
-                    brokenController.Preview.Unit != null)
-                    brokenController.Preview.Unit.Dispose();
-                brokenController.Preview = null;
                 try
                 {
-                    row["injectionFailedCleanupReportedClean"] =
-                        CloseRapidReloadVisit(brokenController, injectedRow,
-                            injectedFailures, "injection.failed");
+                    injectedController = OpenRapidReloadVisit(ctx,
+                        injectedUnit.Descriptor, ctx.Fighter, null);
+                    row["injectedControllerIntactBeforeBoundary"] =
+                        injectedController.Preview != null &&
+                        injectedController.State != null;
+                    // Defaulted so a boundary that escapes its catch is still
+                    // scored rather than crashing the scoring block below.
+                    row["injectionFailedCleanupReportedClean"] = false;
+                    try
+                    {
+                        row["injectionFailedCleanupReportedClean"] =
+                            CloseRapidReloadVisit(injectedController, injectedRow,
+                                injectedFailures, "injection.failed",
+                                value => { throw injectedError; });
+                    }
+                    catch (Exception)
+                    {
+                        boundaryThrew = true;
+                    }
+                    // The controller was never modified or discarded, so it is
+                    // still the same intact instance the real teardown below
+                    // cancels.
+                    row["injectedControllerIntactAfterBoundary"] =
+                        injectedController.Preview != null &&
+                        injectedController.State != null;
                 }
-                catch (Exception)
+                finally
                 {
-                    boundaryThrew = true;
+                    // Unconditional native teardown of that same controller.
+                    // Its outcome is collected apart from the injected error,
+                    // so a real teardown failure can never be mistaken for the
+                    // expected one.
+                    row["injectionRealTeardownClean"] = CloseRapidReloadVisit(
+                        injectedController, teardownRow, teardownFailures,
+                        "injection.real-teardown");
                 }
-                brokenController = null;
             }
             finally
             {
-                brokenUnit.Dispose();
+                // Fixture-unit disposal is independent of controller teardown.
+                injectedUnit.Dispose();
                 injectedUnitDisposed = true;
             }
             row["injectionBoundaryThrew"] = boundaryThrew;
@@ -1695,6 +1756,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["injectionRowCleanupDetailPresent"] =
                 injectedRow["cleanupErrorDetail"] != null;
             row["injectionUnitDisposed"] = injectedUnitDisposed;
+            row["injectionRealTeardownFailureCount"] = teardownFailures.Count;
+            row["injectionRealTeardownError"] = teardownRow["cleanupError"] == null ?
+                "<none>" : (string)teardownRow["cleanupError"];
 
             if (cleanFailures.Count != 0)
                 failures.Add("visit-ownership:clean-cleanup-reported-a-failure:" +
@@ -1710,12 +1774,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (injectedFailures.Count != 1 ||
                 injectedFailures[0].IndexOf(
                     RapidReloadVisitCleanupRules.CleanupFailurePrefix,
+                    StringComparison.Ordinal) < 0 ||
+                injectedFailures[0].IndexOf(injectedError.Message,
                     StringComparison.Ordinal) < 0)
                 failures.Add("visit-ownership:failed-cleanup-not-scored:" +
                     injectedFailures.Count);
             if (injectedRow["cleanupError"] == null ||
                 injectedRow["cleanupErrorDetail"] == null)
                 failures.Add("visit-ownership:failed-cleanup-lost-its-diagnostics");
+            if (!(bool)row["injectedControllerIntactBeforeBoundary"] ||
+                !(bool)row["injectedControllerIntactAfterBoundary"])
+                failures.Add("visit-ownership:injection-damaged-the-controller");
+            // A real teardown failure is a genuine scenario failure, and it is
+            // reported with its own reason so it cannot read as the injected one.
+            if (teardownFailures.Count != 0 || !(bool)row["injectionRealTeardownClean"])
+                failures.Add("visit-ownership:real-controller-teardown-failed:" +
+                    string.Join("|", teardownFailures.ToArray()));
             if (!injectedUnitDisposed)
                 failures.Add("visit-ownership:fixture-unit-not-disposed-after-cleanup-failure");
         }

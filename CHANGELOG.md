@@ -60,6 +60,13 @@
   reject any row carrying one), so a successfully initialised visit whose
   cleanup throws can no longer report PASS. The boundary still never throws, so
   fixture units always reach disposal and no body exception is masked.
+- Replaced the destructive cleanup-reporting injection: instead of disposing a
+  controller's preview and clearing its `Preview` field to force a cancellation
+  failure, the controlled failure is now supplied at the cancellation call
+  itself through a private injection overload, so the controller stays intact,
+  the injected error travels the production catch-and-report path, the same
+  controller is then torn down natively and unconditionally under its own label,
+  and fixture-unit disposal stays independent.
 - The scenario has not been executed; runtime qualification is blocked because
   the authoring sessions are elevated and the runtime orchestrator correctly
   refuses administrator elevation.
