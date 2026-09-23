@@ -11,7 +11,11 @@
   },
   "mission": {
     "name": "Expanded Summoning Phase 0 — Sprints 0-2",
-    "authorizedSprints": [0, 1, 2],
+    "authorizedSprints": [
+      0,
+      1,
+      2
+    ],
     "batchingException": "One worktree, one branch, one draft PR with separately reviewable Sprint 0/1/2 checkpoints. Acceptance criteria are not waived and human acceptance is not self-declared.",
     "sprint3Started": false
   },
@@ -72,7 +76,9 @@
       "visibleSummonMonsterChoices": 371,
       "visibleSummonNaturesAllyChoices": 322,
       "totalVisibleChoices": 693,
-      "registeredButHidden": ["dire-bat"],
+      "registeredButHidden": [
+        "dire-bat"
+      ],
       "borrowedBodyProxies": 20,
       "largestSingleMenuNow": {
         "summonMonster": "tier 8 and tier 9 = 69 visible choices",
@@ -116,9 +122,20 @@
       "uniqueCreatures": 145,
       "summonMonsterBaseEntries": 120,
       "summonNaturesAllyBaseEntries": 110,
-      "projectedPlacements": { "summonMonster": 624, "summonNaturesAlly": 608, "total": 1232 },
+      "projectedPlacements": {
+        "summonMonster": 624,
+        "summonNaturesAlly": 608,
+        "total": 1232
+      },
       "itemizedDiffAgainstCharter": "zero on every published figure (145/95/50/120/110/1232)",
-      "coverageStates": { "Planned": 78, "IdentityReserved": 0, "Registered": 1, "Published": 66, "TechnicallyVerified": 0, "OwnerAccepted": 0 },
+      "coverageStates": {
+        "Planned": 78,
+        "IdentityReserved": 0,
+        "Registered": 1,
+        "Published": 66,
+        "TechnicallyVerified": 0,
+        "OwnerAccepted": 0
+      },
       "newGuidsAllocated": 0,
       "productionCreaturesPublished": 0,
       "isolationProof": "expanded-summoning.ideal-roster-isolation asserts no publication, registration, bootstrap, or menu source references the manifest; expanded-summoning.ideal-roster-publishes-nothing asserts every Planned row has no live creature and the visible surface stays at 693."
@@ -136,7 +153,7 @@
   },
   "sprint2": {
     "name": "Skinned-Creature Asset Pipeline and Pteranodon Vertical Slice",
-    "technicalStatus": "AUDIT-COMPLETE; IMPLEMENTATION NOT STARTED",
+    "technicalStatus": "AUDIT AND LIVE DONOR OBSERVATION COMPLETE; ASSET IMPLEMENTATION NOT STARTED",
     "ownerAcceptance": "PENDING",
     "pteranodonVisualChanged": false,
     "audit": "docs/EXPANDED-SUMMONING-PTERANODON-NATIVE-AUDIT.md",
@@ -157,7 +174,28 @@
       "Implement safe bundle loading, asset validation, instance-local mesh and bone binding, material compatibility, cleanup and an approved native fallback.",
       "Live acceptance in RTWP and turn-based play across the seven charter scenario groups, with the Roc/Eagle/Dire Bat donor-sharing negative control."
     ],
-    "blockedOn": "Nothing technical. The next step launches Pathfinder: Kingmaker through Steam for guarded live donor observation, which takes over the machine's foreground; owner go-ahead was requested before doing that rather than interrupting the workstation unannounced."
+    "blockedOn": "Nothing. The remaining work is mesh and texture authoring against the recorded 72-bone rig, a Unity 2018.4.10f1 bundle, the runtime loader with validated fallback, and live acceptance.",
+    "liveObservation": {
+      "scenario": "observe-summon-pteranodon-view-contracts",
+      "status": "PASS 8/8",
+      "evidence": "runtime-evidence/20260923T1258015475577Z-observe-summon-pteranodon-view-contracts",
+      "committedEvidence": "reports/expanded-summoning-phase0/sprint2-pteranodon-donor-observation.json",
+      "donorPrefab": "GiantEagle (CR3_GiantEagleStandard)",
+      "characterAvatar": "null - plain skinned prefab, not a humanoid Character doll",
+      "skinnedRenderers": 1,
+      "rootBone": "LowerTorso",
+      "bones": 72,
+      "bindPoses": 72,
+      "materials": 1,
+      "shader": "PF/StandardDynamic",
+      "animatorLocation": "child object GiantEagleBoss_Body_RIG_02; UnitEntityView.Animator and m_AnimatorManager are both null until the view attaches to a unit",
+      "colliders": "m_SoftCollider CapsuleCollider; m_CoreCollider MeshCollider",
+      "corpulence": 1.6,
+      "rendererBounds": "10.205 x 4.532 x 3.585",
+      "childTransforms": 194,
+      "modellingConstraint": "The wing chain is Arm_Upper, Arm_Lower, Palm then six discrete Feather_1..6 bones per side. A Pteranodon carries a membrane on an elongated fourth finger, not six quills, so the mesh must be authored to let those feather bones drive a membrane trailing edge. The four-toed legs need no adaptation.",
+      "correctedAssertion": "The first run failed an assertion demanding an Animator on the view. That assertion was wrong: animation binds at attach time. It now records the binding instead."
+    }
   },
   "idealTarget": {
     "uniqueCreatures": 145,
@@ -172,7 +210,9 @@
       "existingCreaturesReused": 67,
       "newIdentitiesRequired": 78,
       "tierDisagreementsWithShippedCatalog": 0,
-      "aliases": { "dire-tiger-smilodon": "dire-tiger" }
+      "aliases": {
+        "dire-tiger-smilodon": "dire-tiger"
+      }
     }
   },
   "openBlockers": [],
@@ -194,7 +234,11 @@
         "assetPackageMismatches": 0,
         "workbookSummonMonsterBaseEntries": 120,
         "workbookSummonNaturesAllyBaseEntries": 110,
-        "workbookPlacements": { "summonMonster": 624, "summonNaturesAlly": 608, "total": 1232 },
+        "workbookPlacements": {
+          "summonMonster": 624,
+          "summonNaturesAlly": 608,
+          "total": 1232
+        },
         "variantElementalFamilies": "identical set of five",
         "exclusions": "28 in both",
         "verdict": "The charter-derived manifest is byte-for-byte equivalent to the controlling workbook on every compared field. No manifest change was required."
@@ -208,5 +252,5 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Complete Sprint 1: publish the ideal roster manifest with explicit coverage states, prove no production creature is published by it, and measure the per-parent menu scalability gate (69 -> ~124 worst-case single menu)."
+  "nextConcreteAction": "Sprint 2 asset implementation: author an original pterosaur mesh skinned to the recorded 72-bone rig (membrane driven by the Feather_1..6 chains), build the deterministic 2018.4.10f1 bundle, implement instance-local binding with an approved native fallback, and qualify live with Eagle/Dire Bat/Roc as donor-sharing negative controls."
 }
