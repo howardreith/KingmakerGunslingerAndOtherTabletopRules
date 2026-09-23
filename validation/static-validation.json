@@ -1768,7 +1768,7 @@
   "betterVendorsProgression138": {
     "baselineCommit": "202a41815f7ca80303e33c2f694804e7926efd8b",
     "branch": "codex/better-vendors-progression",
-    "deterministicTestCount": 1740,
+    "deterministicTestCount": 1742,
     "publicReleaseAuthorized": false,
     "candidateOnly": true,
     "progressionEntries": 50,
@@ -1787,7 +1787,18 @@
       "VendorLogic.BeginTrading postfix (one-time catch-up, Military destination only)"
     ],
     "saveLocalLedger": "UnitPartBetterVendorsProgressionGrants",
+    "betterVendorsGate": "exact approved binary: whole-file SHA-256 and loaded-module MVID",
+    "ledgerPolicy": "write-ahead claim; released only on a confirmed no-op; uncertain outcomes keep the claim",
     "ordinaryVendorPublicationChanged": false,
+    "mergeBlocked": true,
+    "pendingAcceptance": [
+      "actual stocking and purchase at a known Military rank",
+      "persistence and bought-out stock across a full restart",
+      "native event coordination in both orderings",
+      "progression and module settings with shared outdoor/throne-room stock",
+      "purchased Reliable firearm mechanics after save and load"
+    ],
+    "craftMagicItemsInteractionTested": false,
     "nativeRuntimeQualified": false,
     "nativeRuntimeEvidence": null,
     "nativeRuntimeScopeNote": "Merchant stock needs a kingdom-stage save; the only authorized disposable fixture predates kingdom creation.",

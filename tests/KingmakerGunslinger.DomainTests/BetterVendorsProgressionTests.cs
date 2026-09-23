@@ -785,13 +785,14 @@ namespace KingmakerGunslinger.DomainTests
                         throw new InvalidOperationException("partial mutation");
                     }
                     shop[spec.Guid] = Count(shop, spec.Guid) + quantity;
-                }, recorded.Add);
+                }, recorded.Add, recorded.Remove);
             Assertions.False(recorded.Contains(failing),
-                "An addition that changed nothing must stay unrecorded for retry.");
+                "A claim whose addition changed nothing must be released for retry.");
             Assertions.True(recorded.Contains(partial),
-                "A partially applied addition must be recorded, never topped up.");
+                "A partially applied addition must keep its claim, never topped up.");
             Assertions.Equal(1, outcome.Failed, "failed count");
             Assertions.Equal(1, outcome.Partial, "partial count");
+            Assertions.Equal(0, outcome.Uncertain, "uncertain count");
             Assertions.Equal(2, outcome.Errors.Count, "errors retained for logging");
             Assertions.Equal(tier.Length - 1, recorded.Count, "recorded count");
 
@@ -802,13 +803,14 @@ namespace KingmakerGunslinger.DomainTests
                 "A retry repeats only the failed, unapplied grant.");
             BetterVendorsGrantApplier.Apply(retry.Grants, spec => Count(shop,
                 spec.Guid), (spec, quantity) => shop[spec.Guid] = Count(shop,
-                    spec.Guid) + quantity, recorded.Add);
+                    spec.Guid) + quantity, recorded.Add, recorded.Remove);
             Assertions.Equal(5, Count(shop, failing), "retried grant quantity");
             Assertions.Equal(2, Count(shop, partial), "partial grant was not topped up");
 
-            // A failing record never abandons the rest of the batch.
+            // A claim that cannot be written stops that grant before any stock
+            // changes, and never abandons the rest of the batch.
             ProgressionWeaponSpec[] second = ProgressionWeaponCatalog.ForTier(2);
-            string unrecordable = second[0].Guid;
+            string unclaimable = second[0].Guid;
             var secondShop = new Dictionary<string, int>(StringComparer.Ordinal);
             var secondRecorded = new HashSet<string>(StringComparer.Ordinal);
             BetterVendorsGrantOutcome bookkeeping = BetterVendorsGrantApplier.Apply(
@@ -819,19 +821,195 @@ namespace KingmakerGunslinger.DomainTests
                     secondShop[spec.Guid] = Count(secondShop, spec.Guid) + quantity,
                 guid =>
                 {
-                    if (guid == unrecordable)
+                    if (guid == unclaimable)
                         throw new InvalidOperationException("ledger unavailable");
                     return secondRecorded.Add(guid);
-                });
-            Assertions.Equal(1, bookkeeping.Unrecorded, "unrecorded count");
-            Assertions.Equal(1, bookkeeping.Errors.Count, "record failure retained");
+                }, secondRecorded.Remove);
+            Assertions.Equal(0, Count(secondShop, unclaimable),
+                "No stock is added for a grant whose claim failed.");
+            Assertions.Equal(1, bookkeeping.Failed, "unclaimed grant stays eligible");
+            Assertions.Equal(1, bookkeeping.Errors.Count, "claim failure retained");
             Assertions.Equal(second.Length - 1, secondRecorded.Count,
-                "Every other grant in the batch is still recorded.");
-            Assertions.True(second.All(spec => Count(secondShop, spec.Guid) == 5),
-                "Every grant in the batch is still applied.");
-            Assertions.True(bookkeeping.ToString().EndsWith(";unrecorded=1",
-                    StringComparison.Ordinal),
-                "The outcome log reports unrecorded grants.");
+                "Every other grant in the batch is still claimed.");
+            Assertions.True(second.Where(spec => spec.Guid != unclaimable)
+                    .All(spec => Count(secondShop, spec.Guid) == 5),
+                "Every other grant in the batch is still applied.");
+            Assertions.True(bookkeeping.ToString().EndsWith(
+                    ";failed=1;uncertain=0;skipped=0", StringComparison.Ordinal),
+                "The outcome log reports every bookkeeping state.");
+        }
+
+        internal static void UncertainGrantsAreNeverRepeated()
+        {
+            ProgressionWeaponSpec spec = ProgressionWeaponCatalog.ForTier(3)[1];
+            BetterVendorsGrant grant = new BetterVendorsGrant(spec,
+                BetterVendorsProgressionSchedule.RequireTier(3),
+                BetterVendorsGrantReason.InitialGrant);
+
+            // Add succeeds -> the post-addition observation fails -> catch-up
+            // runs again -> no second full grant.
+            var shop = new Dictionary<string, int>(StringComparer.Ordinal);
+            var ledger = new ProgressionGrantLedger(new List<string>());
+            int observations = 0;
+            BetterVendorsGrantOutcome uncertain = BetterVendorsGrantApplier.Apply(
+                new[] { grant }, value =>
+                {
+                    if (++observations == 2)
+                        throw new InvalidOperationException("count unavailable");
+                    return Count(shop, value.Guid);
+                }, (value, quantity) => shop[value.Guid] = Count(shop, value.Guid) +
+                    quantity, ledger.Record, ledger.Withdraw);
+            Assertions.Equal(1, uncertain.Uncertain, "unobservable addition is uncertain");
+            Assertions.True(ledger.Has(spec.Guid),
+                "An addition whose result is unknown keeps its claim.");
+            RunCatchUpAgain(shop, ledger, 5);
+            Assertions.Equal(5, Count(shop, spec.Guid),
+                "A catch-up after an uncertain grant must not grant it again.");
+
+            // The add call changes stock and then throws (for example a later
+            // event handler) -> the observed change keeps the claim written
+            // before the addition -> a later catch-up adds nothing.
+            shop.Clear();
+            ledger = new ProgressionGrantLedger(new List<string>());
+            BetterVendorsGrantApplier.Apply(new[] { grant },
+                value => Count(shop, value.Guid), (value, quantity) =>
+                {
+                    shop[value.Guid] = Count(shop, value.Guid) + quantity;
+                    throw new InvalidOperationException("event handler failed after adding");
+                }, ledger.Record, ledger.Withdraw);
+            Assertions.True(ledger.Has(spec.Guid),
+                "A completed addition keeps its claim even when the add call throws.");
+            RunCatchUpAgain(shop, ledger, 5);
+            Assertions.Equal(5, Count(shop, spec.Guid),
+                "No second full grant after a post-addition failure.");
+
+            // Nothing added and the claim cannot be released -> conservative:
+            // the grant is not repeated, and the failure is reported.
+            shop.Clear();
+            ledger = new ProgressionGrantLedger(new List<string>());
+            BetterVendorsGrantOutcome stuck = BetterVendorsGrantApplier.Apply(
+                new[] { grant }, value => Count(shop, value.Guid),
+                (value, quantity) => { throw new InvalidOperationException("no mutation"); },
+                ledger.Record, guid => { throw new InvalidOperationException("release failed"); });
+            Assertions.Equal(1, stuck.Uncertain, "an unreleasable claim is uncertain");
+            Assertions.Equal(2, stuck.Errors.Count, "both failures reported");
+            Assertions.True(ledger.Has(spec.Guid), "the claim stays in place");
+
+            // The count before the addition fails -> nothing claimed or
+            // changed -> the grant stays eligible and a later trigger grants it.
+            shop.Clear();
+            ledger = new ProgressionGrantLedger(new List<string>());
+            BetterVendorsGrantOutcome unobserved = BetterVendorsGrantApplier.Apply(
+                new[] { grant }, value => { throw new InvalidOperationException("no table"); },
+                (value, quantity) => shop[value.Guid] = Count(shop, value.Guid) + quantity,
+                ledger.Record, ledger.Withdraw);
+            Assertions.Equal(1, unobserved.Failed, "unobserved grant failed cleanly");
+            Assertions.False(ledger.Has(spec.Guid), "nothing was claimed");
+            Assertions.Equal(0, Count(shop, spec.Guid), "nothing was added");
+            RunCatchUpAgain(shop, ledger, 5);
+            Assertions.Equal(5, Count(shop, spec.Guid),
+                "A grant that never touched stock is retried exactly once.");
+
+            // A grant already held by the ledger is skipped without stock.
+            BetterVendorsGrantOutcome held = BetterVendorsGrantApplier.Apply(
+                new[] { grant }, value => Count(shop, value.Guid),
+                (value, quantity) => shop[value.Guid] = Count(shop, value.Guid) + quantity,
+                ledger.Record, ledger.Withdraw);
+            Assertions.Equal(1, held.Skipped, "held grant skipped");
+            Assertions.Equal(5, Count(shop, spec.Guid), "held grant added nothing");
+
+            Assertions.Equal(0, BetterVendorsGrantApplier.Apply(new[] { new BetterVendorsGrant(
+                    spec, BetterVendorsProgressionSchedule.RequireTier(3),
+                    BetterVendorsGrantReason.Replenishment) },
+                value => Count(shop, value.Guid), (value, quantity) =>
+                    shop[value.Guid] = Count(shop, value.Guid) + quantity,
+                guid => { throw new InvalidOperationException("replenishment never claims"); },
+                guid => { throw new InvalidOperationException("replenishment never releases"); })
+                .Errors.Count, "A replenishment never touches the ledger.");
+            Assertions.Equal(10, Count(shop, spec.Guid), "replenishment added its quantity");
+        }
+
+        internal static void ModuleOffReconciliationTouchesOnlyReusedFixedRows()
+        {
+            // Every fixed capital row this mod publishes carries one copy.
+            Assertions.True(Source("Blueprints", "CapitalVendorBlueprints.cs")
+                    .Contains("internal const int WeaponCount = 1;"),
+                "Capital firearm rows carry exactly one copy.");
+            foreach (string path in new[] { "EasternWeaponCampaignBlueprints.cs",
+                "ElvenBranchedSpearCampaignBlueprints.cs" })
+                Assertions.True(Source("Blueprints", path)
+                        .Contains(".CreateFixedEntry(item, 1)"),
+                    path + " must publish one-copy fixed rows.");
+
+            // Stack contents persisted per blueprint: one fixed copy of a reused
+            // +1 item plus five progression copies, and five copies of a new
+            // +2 variant, which never has a fixed row.
+            string reused = ProgressionWeaponCatalog.RequireSymbol(
+                ProgressionWeaponCatalog.PistolPlus1Symbol).Guid;
+            string added = ProgressionWeaponCatalog.RequireSymbol(
+                "KMG.Firearms.PistolPlus2Item").Guid;
+            var entries = new Dictionary<string, int>(StringComparer.Ordinal)
+            {
+                { reused, 1 + 5 }, { added, 5 }
+            };
+            var moduleOn = new Dictionary<string, int>(StringComparer.Ordinal)
+            {
+                { reused, 1 }
+            };
+            var moduleOff = new Dictionary<string, int>(StringComparer.Ordinal);
+
+            ReconcileFixedRows(entries, moduleOn, moduleOff);
+            Assertions.Equal(5, entries[reused],
+                "Disabling the module withdraws exactly the one fixed copy.");
+            Assertions.Equal(5, entries[added], "A new variant is never reconciled.");
+            ReconcileFixedRows(entries, moduleOff, moduleOn);
+            Assertions.Equal(6, entries[reused], "Re-enabling restores the fixed copy.");
+
+            // If the fixed copy was already sold, the withdrawal takes one of
+            // the progression copies from the shared stack, and never more.
+            entries[reused] = 5;
+            ReconcileFixedRows(entries, moduleOn, moduleOff);
+            Assertions.Equal(4, entries[reused],
+                "At most one copy leaves a reused +1 stack.");
+            Assertions.Equal(5, entries[added], "New variants stay untouched.");
+            foreach (ProgressionWeaponSpec spec in ProgressionWeaponCatalog.All
+                .Where(value => !value.ReusesCanonicalItem))
+                Assertions.False(moduleOn.ContainsKey(spec.Guid),
+                    "No new variant may ever carry a fixed row: " + spec.Symbol);
+        }
+
+        /// <summary>
+        /// Model of the game's shared-table fixed-row reconciliation
+        /// (SharedVendorTables.GetTable in Kingmaker 2.1.7b): for every item
+        /// whose fixed-row count changed, the persisted stack for that item is
+        /// adjusted by the difference, never below zero, and a positive
+        /// remainder becomes new stock. Items with no fixed-row change are left
+        /// alone.
+        /// </summary>
+        private static void ReconcileFixedRows(Dictionary<string, int> entries,
+            Dictionary<string, int> knownFixed, Dictionary<string, int> currentFixed)
+        {
+            foreach (string item in knownFixed.Keys.Union(currentFixed.Keys).ToArray())
+            {
+                int known;
+                int current;
+                knownFixed.TryGetValue(item, out known);
+                currentFixed.TryGetValue(item, out current);
+                int difference = current - known;
+                if (difference == 0) continue;
+                entries[item] = Math.Max(0, Count(entries, item) + difference);
+            }
+        }
+
+        private static void RunCatchUpAgain(Dictionary<string, int> shop,
+            ProgressionGrantLedger ledger, int militaryRank)
+        {
+            BetterVendorsGrantPlan plan = BetterVendorsGrantPlanner.PlanCatchUp(
+                ProgressionWeaponCatalog.All, AllModules(), ledger.Has, true,
+                militaryRank);
+            BetterVendorsGrantApplier.Apply(plan.Grants, value => Count(shop,
+                value.Guid), (value, quantity) => shop[value.Guid] = Count(shop,
+                    value.Guid) + quantity, ledger.Record, ledger.Withdraw);
         }
 
         internal static void ProgressionContractFailuresDisableOnlyMerchantStock()
@@ -1035,12 +1213,14 @@ namespace KingmakerGunslinger.DomainTests
         {
             BetterVendorsContractObservation observed = VerifiedObservation();
             Assertions.True(BetterVendorsContract.Evaluate(observed).IsCompatible,
-                "The verified 2.0.8 observation must be compatible.");
+                "The exact approved 2.0.8 binary must be compatible.");
             observed.ModVersion = "2.0.9";
-            observed.ModuleVersionId = Guid.Empty.ToString();
-            observed.FileSha256 = new string('0', 64);
             Assertions.True(BetterVendorsContract.Evaluate(observed).IsCompatible,
-                "Identity labels are diagnostics; behavior fingerprints are the gate.");
+                "The UMM version label is a diagnostic; the approved binary is the gate.");
+            observed.ModuleVersionId = observed.ModuleVersionId.ToUpperInvariant();
+            observed.FileSha256 = observed.FileSha256.ToUpperInvariant();
+            Assertions.True(BetterVendorsContract.Evaluate(observed).IsCompatible,
+                "Identity comparisons ignore hexadecimal and GUID text case.");
         }
 
         internal static void UnverifiedContractsFailClosed()
@@ -1048,6 +1228,13 @@ namespace KingmakerGunslinger.DomainTests
             var mutations = new Dictionary<string, Action<BetterVendorsContractObservation>>
             {
                 { "assembly-name", value => value.AssemblyName = "BetterVendorsFork" },
+                // An unknown, rebuilt or unreadable binary is never approved,
+                // even when every structural check and fingerprint matches.
+                { "binary-sha256", value => value.FileSha256 = new string('0', 64) },
+                { "binary-sha256:unavailable", value => value.FileSha256 = "unavailable" },
+                { "binary-sha256:absent", value => value.FileSha256 = null },
+                { "binary-mvid", value => value.ModuleVersionId = Guid.Empty.ToString() },
+                { "binary-mvid:absent", value => value.ModuleVersionId = null },
                 { "required-member", value => value.MissingMember = "ProgressionLogic.AddMilitaryStock(int)" },
                 { "military-destination", value => value.MilitaryDestinationGuid = "afa2c7f292b8e1c4d9c835f0e8047dd3" },
                 { "enhancement-levels", value => value.EnhancementLevelGuids = null },
@@ -1127,12 +1314,19 @@ namespace KingmakerGunslinger.DomainTests
                 "Failed hook installation must be rolled back.");
             foreach (string forbidden in new[] { "stockUpToDate", "FreeformData",
                 "__result.Add", "__result.Remove", "__result.Clear",
-                "ref List<BlueprintItemWeapon>", ".Remove(", "RemoveAll(",
+                "ref List<BlueprintItemWeapon>", "RemoveAll(", "RemoveAt(",
+                ".Clear(", "inventory.Remove", "Inventory.Remove", ".Items.Remove",
                 "Invoke(null, new object[] { ", "AddStock.Invoke",
                 "AddMilitaryStock.Invoke", "ComponentsArray =" })
                 Assertions.False(all.Contains(forbidden),
                     "Adapter touched forbidden state or mutated Better Vendors: " +
                     forbidden);
+            // The only removal anywhere in the adapter releases the ledger's
+            // own write-ahead claim; merchandise is never removed.
+            Assertions.Equal(1, CountOccurrences(all, ".Remove("),
+                "The adapter may remove nothing but its own ledger claim.");
+            Assertions.True(all.Contains("return _entries.Remove(guid);"),
+                "The single removal must be the ledger's claim release.");
             Assertions.False(System.Text.RegularExpressions.Regex.IsMatch(all,
                     @"__result\s*=[^=]"),
                 "The Better Vendors selection result must never be reassigned.");
@@ -1441,7 +1635,8 @@ namespace KingmakerGunslinger.DomainTests
             {
                 BetterVendorsGrantApplier.Apply(grants, spec => Count(_shop,
                     spec.Guid), (spec, quantity) => _shop[spec.Guid] =
-                        Count(_shop, spec.Guid) + quantity, _ledger.Record);
+                        Count(_shop, spec.Guid) + quantity, _ledger.Record,
+                    _ledger.Withdraw);
             }
         }
     }
