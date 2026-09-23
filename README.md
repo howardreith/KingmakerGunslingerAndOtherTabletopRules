@@ -1,13 +1,23 @@
 # Kingmaker Gunslinger
 
-**0.0.134-magic-circle-alignment-spells** adds four level-3 Magic Circle spells
-with moving protection for everyone within ten feet, approved original artwork,
-and the existing shared Protection control-immunity setting. It retains the
-Word of Recall Favored Class repair and hardens guarded runtime ownership and
-persistence. See [release notes](docs/RELEASE-NOTES-0.0.134.md) for rules, settings,
-acquisition and qualification limits.
+**0.0.135-rapid-reload-proficiency-gate** makes Rapid Reload require firearm
+proficiency instead of relying only on its per-firearm choices. Any proficiency
+source satisfies it, whatever granted it; no Gunslinger class or archetype
+prerequisite was added, and the per-firearm restrictions are unchanged.
+**Native runtime qualification for this release is NOT RUN and was waived by the
+owner**, and save/load compatibility is unverified. See
+[release notes](docs/RELEASE-NOTES-0.0.135.md) for the rules change, what did not
+change, and the exact verification limits.
 
-The previous **0.0.133-word-of-recall-favored-class** is the owner-authorized full
+The previous **0.0.134-magic-circle-alignment-spells** adds four level-3 Magic
+Circle spells with moving protection for everyone within ten feet, approved
+original artwork, and the existing shared Protection control-immunity setting.
+It retains the Word of Recall Favored Class repair and hardens guarded runtime
+ownership and persistence. See
+[release notes](docs/RELEASE-NOTES-0.0.134.md) for rules, settings, acquisition
+and qualification limits.
+
+The earlier **0.0.133-word-of-recall-favored-class** is the owner-authorized full
 release: the canonical Word of Recall can be picked and learned through
 the genuine Favored Class Oracle bonus-spell route for Aasimar and Human
 Oracles, protected by a transactional pick-gate publication, complete

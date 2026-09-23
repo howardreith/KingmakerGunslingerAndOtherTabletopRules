@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.134-magic-circle-alignment-spells",
+  "milestone": "0.0.135-rapid-reload-proficiency-gate",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.134",
+  "version": "0.0.135",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -1659,7 +1659,7 @@
     "baselineCommit": "0e62a78e1238a2d46e447bb307ee1e83f93ed178",
     "branch": "codex/rapid-reload-proficiency-gate",
     "deterministicTestCount": 1702,
-    "publicReleaseAuthorized": false,
+    "publicReleaseAuthorized": true,
     "liveTestCountDelta": "1683 -> 1702; four Rapid Reload gate policy cases plus fifteen scenario evidence and visit-cleanup cases added to the shared suite",
     "parentPrerequisiteGrouping": "Prerequisite.GroupType.Any",
     "parentGateKinds": [
@@ -1669,7 +1669,7 @@
     ],
     "classPrerequisiteAdded": false,
     "legacyWrapperRepublished": false,
-    "nativeQualification": "BLOCKED: disposable-rapid-reload-proficiency-gate registered and corrected but never executed; the guarded runtime orchestrator refuses administrator elevation and the authoring sessions were elevated",
+    "nativeQualification": "NOT RUN: disposable-rapid-reload-proficiency-gate never executed; the guarded runtime orchestrator refuses administrator elevation and every authoring session was elevated. The owner explicitly waived the in-game gate and authorized publication of 0.0.135.",
     "scope": [
       "Rapid Reload parent selection requires firearm proficiency",
       "firearm-exact child prerequisites retained",
@@ -1694,7 +1694,17 @@
       "b6dd755c423916f74632b380c708728ac73a9512",
       "244d6fabc9507831305df7edffa473eb71dd18b9",
       "69e02c90c29875ca3b58e5945e5519e2e1ba8078",
-      "4bb8a3407dfea1f605e8cdd308302f2e240608e5"
-    ]
+      "4bb8a3407dfea1f605e8cdd308302f2e240608e5",
+      "a3f2b9a6276fe035182fb0b9cac103a0ab3a4ead"
+    ],
+    "nativeRuntimeQualified": false,
+    "ownerWaivedNativeQualification": true,
+    "saveLoadCompatibilityVerified": false,
+    "compatibilityRuntimeQualificationPending": true,
+    "releaseVersion": "0.0.135",
+    "releaseInformationalVersion": "0.0.135-rapid-reload-proficiency-gate",
+    "qualifiedDllSha256": "CA327153252C9F6379D4D4F3A36B04EDAF89655566F6AC63A8915ADEABD02098",
+    "qualifiedPackageSha256": "990F333D2AE52CB469287958FF0D67AEE16F1A8C9E7A247DBEB4068C22367A00",
+    "artifactNote": "Static/build/package gates only. These hashes identify the built 0.0.135 candidate; no native runtime qualification was performed against them."
   }
 }
