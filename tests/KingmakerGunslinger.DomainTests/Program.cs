@@ -703,6 +703,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("rapid-reload-evidence.class-identity-control-needs-levels", RapidReloadGateEvidenceTests.ClassIdentityControlDemandsRealClassLevels),
             Case("rapid-reload-evidence.archetype-change-tracks-the-invalid-child", RapidReloadGateEvidenceTests.ArchetypeScopeChangeTracksTheInvalidChildNotTheParent),
             Case("rapid-reload-evidence.failed-visit-init-keeps-both-errors", RapidReloadGateEvidenceTests.FailedVisitInitializationNeverDiscardsAnError),
+            Case("rapid-reload-evidence.success-path-cleanup-failure-fails", RapidReloadGateEvidenceTests.SuccessPathCleanupFailureCannotScorePass),
+            Case("rapid-reload-evidence.cleanup-reporting-is-scored", RapidReloadGateEvidenceTests.CleanupReportingBoundaryScoresAndKeepsDiagnostics),
             Case("rapid-reload-evidence.scenario-uses-native-operations", RapidReloadGateEvidenceTests.ScenarioUsesTheNativeOperationsItClaims),
             Case("firearm-proficiency.publication-policy", FirearmProficiencyPublicationTests.PublicationPolicyIsCompatibilityOnly),
             Case("firearm-proficiency.stable-identities", FirearmProficiencyPublicationTests.StableIdentitiesRemainExact),

@@ -19,8 +19,9 @@
   exact-child tracking across an archetype change, declared proficiency scopes
   validated by the evaluators that score each case, and the native
   `LevelUpState.IsComplete` gate required before every claimed confirmation, and
-  exception-safe ownership of a level-up controller whose initialisation fails.
-  It has still not been executed: the runtime orchestrator refuses administrator
+  exception-safe ownership of a level-up controller whose initialisation fails,
+  and caller-owned cancellation failures reaching the scored failure collection
+  rather than only the evidence row. It has still not been executed: the runtime orchestrator refuses administrator
   elevation by design and the authoring sessions were elevated, so runtime
   qualification for the Rapid Reload proficiency gate is recorded as blocked
   rather than passed. The `rapid-reload-evidence.*` domain cases only prove that

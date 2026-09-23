@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -30,6 +32,32 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (cleanupError == null) return null;
             return new AggregateException(CombinedFailureMessage, setupError,
                 cleanupError);
+        }
+
+        internal const string CleanupFailurePrefix = ":controller-cleanup-failed:";
+
+        /// <summary>
+        /// R6: the reporting half of the caller-side cleanup boundary, kept
+        /// apart from the native <c>Cancel()</c> call so a cancellation failure
+        /// on a successfully initialised controller reaches the collection that
+        /// actually decides the assertion instead of only being described on the
+        /// evidence row. Returns <c>true</c> when cleanup was clean; a null
+        /// cleanup error is a no-op. It never throws, so a caller can invoke it
+        /// from a <c>finally</c> that must still dispose its fixture unit.
+        /// </summary>
+        internal static bool Report(Exception cleanupError, JObject row,
+            IList<string> failures, string label)
+        {
+            if (cleanupError == null) return true;
+            if (row != null)
+            {
+                row["cleanupError"] = cleanupError.Message;
+                row["cleanupErrorDetail"] = cleanupError.ToString();
+            }
+            if (failures != null)
+                failures.Add((string.IsNullOrEmpty(label) ? "visit" : label) +
+                    CleanupFailurePrefix + cleanupError.Message);
+            return false;
         }
     }
 }

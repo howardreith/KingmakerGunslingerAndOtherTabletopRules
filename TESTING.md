@@ -192,6 +192,20 @@ not a Fighter archetype) and checks the original error, its stack, that a
 controller existed in the window, that the caller never owned it, and that a
 successful initialisation returns the same usable controller to the caller.
 
+Caller-owned cleanup is scored, not just described. `CloseRapidReloadVisit`
+routes any cancellation failure through `RapidReloadVisitCleanupRules.Report`,
+which records the message and full detail on the evidence row **and** adds an
+entry to the failure collection that decides the assertion; where a case is
+scored by its evaluator instead, `EvaluateCleanup` rejects any row carrying
+`cleanupError`. The boundary never throws, so the caller's `finally` still
+reaches `unit.Dispose()` and an in-flight body exception is never masked, and a
+null controller stays a no-op. The self-check also fault-injects that exact
+boundary: one controller is cancelled cleanly through it, and a second has its
+preview disposed and its public `Preview` field cleared so the native `Cancel()`
+throws — proving the failure is reported into a scored collection, keeps its
+diagnostics, does not escape the `finally`, and still leaves the fixture unit
+disposed.
+
 `RapidReloadGateEvidenceRules` scores that evidence, and the domain suite
 exercises those rules with truncated and corrupted fixtures
 (`rapid-reload-evidence.*`). That is regression coverage for the scoring only:

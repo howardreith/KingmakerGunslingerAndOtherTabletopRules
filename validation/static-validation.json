@@ -1641,7 +1641,7 @@
   "magicCircleFollowup": {
     "baselineCommit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
     "branch": "codex/magic-circle-followup-polish",
-    "deterministicTestCount": 1700,
+    "deterministicTestCount": 1702,
     "publicReleaseAuthorized": false,
     "nativeQualification": "PASS: candidate 11; seven guarded scenarios, 428 assertions; exact fixture cleanup and fresh absence; normal-play restoration verified",
     "nativeEvidence": "reports/magic-circle/FOLLOWUP-QUALIFICATION.json",
@@ -1658,9 +1658,9 @@
   "rapidReloadProficiencyGate": {
     "baselineCommit": "0e62a78e1238a2d46e447bb307ee1e83f93ed178",
     "branch": "codex/rapid-reload-proficiency-gate",
-    "deterministicTestCount": 1700,
+    "deterministicTestCount": 1702,
     "publicReleaseAuthorized": false,
-    "liveTestCountDelta": "1683 -> 1700; four Rapid Reload gate policy cases plus thirteen scenario evidence and visit-cleanup cases added to the shared suite",
+    "liveTestCountDelta": "1683 -> 1702; four Rapid Reload gate policy cases plus fifteen scenario evidence and visit-cleanup cases added to the shared suite",
     "parentPrerequisiteGrouping": "Prerequisite.GroupType.Any",
     "parentGateKinds": [
       "Pistol",
@@ -1685,12 +1685,14 @@
       "R2 exact-child tracking across an archetype change; a qualifying parent may survive",
       "R3 declared proficiency scope validated by the evaluators that score each case",
       "R4 native LevelUpState.IsComplete required before every claimed confirmation",
-      "R5 exception-safe controller ownership when visit initialisation fails"
+      "R5 exception-safe controller ownership when visit initialisation fails",
+      "R6 caller-owned cleanup failure reaches the scored collection and cannot report PASS"
     ],
     "reviewedCommits": [
       "d6ab7f6215f8368507995834dacfa98970a11b79",
       "b6dd755c423916f74632b380c708728ac73a9512",
-      "244d6fabc9507831305df7edffa473eb71dd18b9"
+      "244d6fabc9507831305df7edffa473eb71dd18b9",
+      "69e02c90c29875ca3b58e5945e5519e2e1ba8078"
     ]
   }
 }
