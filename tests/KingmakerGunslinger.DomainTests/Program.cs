@@ -436,6 +436,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.compatibility-scenarios-launchable", ExpandedSummoningCompatibilityMatrixTests.EveryDeclaredProfileScenarioIsLaunchable),
             Case("expanded-summoning.compatibility-both-surfaces", ExpandedSummoningCompatibilityMatrixTests.EveryProfileObservesBothSummoningSurfaces),
             Case("expanded-summoning.compatibility-working-save-scope", ExpandedSummoningCompatibilityMatrixTests.MechanicalScenarioRunsOnlyWhereSavesAreAllowed),
+            Case("expanded-summoning.compatibility-unattended-only", ExpandedSummoningCompatibilityMatrixTests.AutomatedMatrixNeverSchedulesSupervisedScenarios),
             Case("expanded-summoning.merge-idempotent", SummonPublicationPolicyTests.MergePreservesOrderAndIsIdempotent),
             Case("expanded-summoning.merge-conflicts", SummonPublicationPolicyTests.MergeDeduplicatesExistingAndRejectsConflicts),
             Case("expanded-summoning.native-reconciliation", SummonPublicationPolicyTests.NativeDuplicateCatalogIsExact),

@@ -1038,6 +1038,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonViewObservation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningBoundary.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonMembrane.cs" />
+    <Compile Include="RuntimeTesting\ExpandedSummoningProjectedMenuFixture.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonAttachedView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />

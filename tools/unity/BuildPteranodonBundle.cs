@@ -8,11 +8,11 @@ using UnityEngine;
 /// <summary>
 /// Builds the Expanded Summoning Pteranodon bundle in Unity 2018.4.10f1.
 ///
-/// The bundle ships one skinned prefab plus an ordered list of the bone NAMES
-/// its vertex weights index. It deliberately ships no bone transforms: the mesh
-/// bind poses are normalised to identity here and rebuilt at attach time from
-/// the live donor, which is both the redistribution-safe choice and the only
-/// correct one.
+/// The bundle ships exactly two assets: the mesh, and an ordered list of the
+/// bone NAMES its vertex weights index. It deliberately ships no bone
+/// transforms - the mesh's bind poses are normalised to identity here and
+/// rebuilt at attach time from the live donor - which is both the
+/// redistribution-safe choice and the only correct one.
 ///
 /// Unity skins a vertex as
 ///     v_world = sum_i w_i * bones[i].localToWorldMatrix * bindposes[i] * v
@@ -20,33 +20,47 @@ using UnityEngine;
 /// mesh render as authored in whatever animation frame the unit happened to be
 /// on. The donor's live pose differs from its bind pose by up to 3.954 units at
 /// the wingtip - folded wings against spread ones - so that would misplace the
-/// membrane differently on every summon. Reusing the donor's own
+/// creature differently on every summon. Reusing the donor's own
 /// sharedMesh.bindposes, which is the frame these vertices were authored in,
 /// makes the binding deterministic.
+///
+/// There is deliberately no prefab. An earlier draft built a
+/// SkinnedMeshRenderer prefab with an empty bones array and a placeholder
+/// material, and nothing loaded it: the runtime reads the mesh and the name
+/// list and builds its own renderer against the live donor. A prefab carrying a
+/// bone-less skinned renderer is dead weight and a serialisation risk for no
+/// benefit.
 /// </summary>
 public static class BuildPteranodonBundle
 {
     private const string Bundle = "kingmakergunslinger.pteranodon";
-    private const string SourceFbx = "Assets/Pteranodon/pteranodon-membrane.fbx";
-    private const string PrefabPath = "Assets/Pteranodon/PteranodonMembrane.prefab";
-    private const string BonesAssetPath =
-        "Assets/Pteranodon/PteranodonMembraneBones.txt";
-    private const string PrefabName = "PteranodonMembrane";
-    private const string BonesAssetName = "PteranodonMembraneBones";
+    private const string SourceFbx = "Assets/Pteranodon/pteranodon.fbx";
+    private const string MeshAssetPath = "Assets/Pteranodon/PteranodonMesh.asset";
+    private const string BonesAssetPath = "Assets/Pteranodon/PteranodonBones.txt";
 
     /// <summary>
-    /// Bones the membrane is allowed to bind to. A weight landing anywhere else
-    /// means the generator drifted, and the loader would then have to resolve a
-    /// name whose role nobody checked.
+    /// The bones the mesh is allowed to bind to: six shared, and twenty per
+    /// side - the wing chain, the leg, and eight toe bones.
+    ///
+    /// This is not redundant with the runtime's resolve step. That proves a name
+    /// exists on the donor; this proves the generator has not started weighting
+    /// geometry to a bone nobody reviewed. Absent on purpose: Tail_end, Tail_L,
+    /// Tail_R and every *_end leaf. The donor's eagle tail fan carries no
+    /// geometry, so a weight landing there would mean a fan had crept back in.
     /// </summary>
     private static readonly string[] AllowedBones =
     {
-        "L_Arm_Upper", "L_Arm_Lower", "L_Palm", "L_Foot0",
-        "L_Feather_1", "L_Feather_2", "L_Feather_3",
-        "L_Feather_4", "L_Feather_5", "L_Feather_6",
-        "R_Arm_Upper", "R_Arm_Lower", "R_Palm", "R_Foot0",
-        "R_Feather_1", "R_Feather_2", "R_Feather_3",
-        "R_Feather_4", "R_Feather_5", "R_Feather_6"
+        "LowerTorso", "UpperTorso", "Neck", "Head", "Jaw", "Tail",
+        "L_Arm_Upper", "L_Arm_Lower", "L_Palm", "L_Feather_1", "L_Feather_2",
+        "L_Feather_3", "L_Feather_4", "L_Feather_5", "L_Feather_6",
+        "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0", "L_Finger_1_1",
+        "L_Finger_1_2", "L_Finger_2_1", "L_Finger_2_2", "L_Finger_3_1",
+        "L_Finger_3_2", "L_Finger_4_1", "L_Finger_4_2", "R_Arm_Upper",
+        "R_Arm_Lower", "R_Palm", "R_Feather_1", "R_Feather_2", "R_Feather_3",
+        "R_Feather_4", "R_Feather_5", "R_Feather_6", "R_Leg0_Upper",
+        "R_Leg0_Lower", "R_Foot0", "R_Finger_1_1", "R_Finger_1_2",
+        "R_Finger_2_1", "R_Finger_2_2", "R_Finger_3_1", "R_Finger_3_2",
+        "R_Finger_4_1", "R_Finger_4_2"
     };
 
     public static void BuildBatch()
@@ -61,25 +75,22 @@ public static class BuildPteranodonBundle
         GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(SourceFbx);
         if (source == null) throw new FileNotFoundException(SourceFbx);
 
-        SkinnedMeshRenderer sourceRenderer = source
-            .GetComponentsInChildren<SkinnedMeshRenderer>(true)
-            .SingleOrDefault();
-        if (sourceRenderer == null) throw new InvalidOperationException(
-            "The Pteranodon source must contain exactly one SkinnedMeshRenderer.");
+        SkinnedMeshRenderer[] renderers =
+            source.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+        if (renderers.Length != 1) throw new InvalidOperationException(
+            "The Pteranodon source must contain exactly one " +
+            "SkinnedMeshRenderer; found " + renderers.Length + ".");
 
-        string[] boneNames = BuildBoneNameList(sourceRenderer);
-        Mesh mesh = NormalisedMesh(sourceRenderer.sharedMesh, boneNames.Length);
-        AssetDatabase.CreateAsset(mesh, "Assets/Pteranodon/PteranodonMembrane.asset");
+        string[] boneNames = BuildBoneNameList(renderers[0]);
+        Mesh mesh = NormalisedMesh(renderers[0].sharedMesh, boneNames.Length);
+
+        AssetDatabase.CreateAsset(mesh, MeshAssetPath);
         File.WriteAllText(Path.Combine(
             Path.GetDirectoryName(Application.dataPath), BonesAssetPath),
             string.Join("\n", boneNames));
         AssetDatabase.ImportAsset(BonesAssetPath);
-
-        BuildPrefab(mesh, boneNames.Length);
-        AssignBundle(PrefabPath);
+        AssignBundle(MeshAssetPath);
         AssignBundle(BonesAssetPath);
-        AssignBundle("Assets/Pteranodon/PteranodonMembrane.asset");
-
         AssetDatabase.RemoveUnusedAssetBundleNames();
         AssetDatabase.SaveAssets();
 
@@ -99,8 +110,9 @@ public static class BuildPteranodonBundle
 
         Debug.Log("KMG_PTERANODON_BUNDLE path=" + bundle +
             ";bytes=" + new FileInfo(bundle).Length +
-            ";prefab=" + PrefabName +
-            ";bonesAsset=" + BonesAssetName +
+            ";mesh=" + Path.GetFileNameWithoutExtension(MeshAssetPath) +
+            ";bonesAsset=" + Path.GetFileNameWithoutExtension(BonesAssetPath) +
+            ";boneCount=" + boneNames.Length +
             ";bones=" + string.Join(",", boneNames) +
             ";vertices=" + mesh.vertexCount +
             ";triangles=" + (mesh.triangles.Length / 3) +
@@ -111,8 +123,8 @@ public static class BuildPteranodonBundle
     {
         var importer = AssetImporter.GetAtPath(SourceFbx) as ModelImporter;
         if (importer == null) throw new FileNotFoundException(SourceFbx);
-        // The loader replaces bind poses on a copy of this mesh, which requires
-        // it to be readable at runtime.
+        // The runtime replaces bind poses on a copy of this mesh, which
+        // requires it to be readable in a player build.
         importer.isReadable = true;
         importer.animationType = ModelImporterAnimationType.None;
         importer.importAnimation = false;
@@ -143,7 +155,7 @@ public static class BuildPteranodonBundle
             !AllowedBones.Contains(value, StringComparer.Ordinal)).ToArray();
         if (unexpected.Length != 0)
             throw new InvalidOperationException(
-                "The membrane binds to bones outside the declared set: " +
+                "The mesh binds to bones outside the declared set: " +
                 string.Join(", ", unexpected));
         if (names.Distinct(StringComparer.Ordinal).Count() != names.Count)
             throw new InvalidOperationException(
@@ -153,8 +165,7 @@ public static class BuildPteranodonBundle
 
     /// <summary>
     /// A copy of the source mesh with every bind pose replaced by the identity.
-    ///
-    /// The vertices, weights and bone order are untouched; only the donor's
+    /// Vertices, weights and bone order are untouched; only the donor's
     /// transforms are dropped, because the loader supplies the real matrices.
     /// </summary>
     private static Mesh NormalisedMesh(Mesh source, int boneCount)
@@ -179,18 +190,17 @@ public static class BuildPteranodonBundle
                 if (values[slot] <= 0f) continue;
                 if (indexes[slot] < 0 || indexes[slot] >= boneCount)
                     throw new InvalidOperationException(
-                        "A Pteranodon vertex weight indexes a bone that does " +
-                        "not exist.");
+                        "A vertex weight indexes a bone that does not exist.");
             }
 
             float total = values.Sum();
             if (Math.Abs(total - 1f) > 0.001f)
                 throw new InvalidOperationException(
-                    "A Pteranodon vertex weight does not sum to one: " + total);
+                    "A vertex weight does not sum to one: " + total);
         }
 
         Mesh mesh = UnityEngine.Object.Instantiate(source);
-        mesh.name = PrefabName;
+        mesh.name = "PteranodonMesh";
         var identity = new Matrix4x4[boneCount];
         for (int index = 0; index < boneCount; index++)
             identity[index] = Matrix4x4.identity;
@@ -202,47 +212,10 @@ public static class BuildPteranodonBundle
         return mesh;
     }
 
-    private static void BuildPrefab(Mesh mesh, int boneCount)
-    {
-        GameObject root = new GameObject(PrefabName);
-        try
-        {
-            SkinnedMeshRenderer renderer =
-                root.AddComponent<SkinnedMeshRenderer>();
-            renderer.sharedMesh = mesh;
-            // No bones and no root bone: the loader resolves both against the
-            // live donor rig. Shipping transforms here would be donor rig data.
-            renderer.bones = new Transform[0];
-            renderer.rootBone = null;
-            renderer.updateWhenOffscreen = false;
-            renderer.localBounds = mesh.bounds;
-
-            Shader standard = Shader.Find("Standard");
-            if (standard == null) throw new InvalidOperationException(
-                "Unity Standard shader is unavailable.");
-            Material material = new Material(standard);
-            material.name = PrefabName + "Placeholder";
-            // The runtime clones the donor's own material so the membrane is
-            // shaded by the game's pipeline; this one only keeps the prefab
-            // valid inside the bundle.
-            AssetDatabase.CreateAsset(material,
-                "Assets/Pteranodon/PteranodonMembranePlaceholder.mat");
-            renderer.sharedMaterial = material;
-
-            PrefabUtility.CreatePrefab(PrefabPath, root);
-            AssignBundle("Assets/Pteranodon/PteranodonMembranePlaceholder.mat");
-        }
-        finally
-        {
-            UnityEngine.Object.DestroyImmediate(root);
-        }
-    }
-
     private static void AssignBundle(string assetPath)
     {
         AssetImporter importer = AssetImporter.GetAtPath(assetPath);
-        if (importer == null)
-            throw new FileNotFoundException(assetPath);
+        if (importer == null) throw new FileNotFoundException(assetPath);
         importer.assetBundleName = Bundle;
         importer.SaveAndReimport();
     }

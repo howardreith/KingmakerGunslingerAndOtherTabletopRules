@@ -45,4 +45,12 @@ if ($LASTEXITCODE -ne 0) { throw 'Icon runtime evidence corruption fixtures fail
 if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures failed.' }
 & (Join-Path $PSScriptRoot 'Test-IconCensusControlRequest.ps1')
 
+# Orchestration decisions for the Expanded Summoning runtime batches:
+# current-run result selection, stale-result rejection, parse failure,
+# scenario failure, restoration failure, interrupted operation, and a
+# successful transaction. It launches nothing and writes nothing to the
+# installation, so it belongs in the gate that runs every build rather
+# than in a script nobody executes.
+& (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1')
+
 Write-Host 'Version-aware repository validation passed.'
