@@ -56,7 +56,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "No single ActionBarSpellsGroup was available to drive " +
                         "after " + ProjectedMenuStarvationFrames + " frames; " +
-                        "observed " + _projectedMenu.ObservedSpellGroupCount + ".");
+                        "loaded instances " + _projectedMenu.ObservedSpellGroupCount +
+                        ", of which live " + _projectedMenu.ObservedLiveSpellGroupCount + ".");
                 return;
             }
 

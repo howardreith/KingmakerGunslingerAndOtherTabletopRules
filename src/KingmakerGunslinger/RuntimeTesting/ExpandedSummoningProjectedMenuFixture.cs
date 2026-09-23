@@ -166,21 +166,30 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal bool Step(SummonFamily family, int cycle, ref int settled)
         {
-            // Exactly one, or nothing is driven. Picking the first of several
-            // spell groups would toggle an arbitrary widget and measure
-            // whichever one happened to come back first, which is worse than
-            // reporting that the assumption no longer holds.
+            // FindObjectsOfTypeAll returns every loaded instance, prefabs and
+            // UI templates included - 48 of them in a loaded save - so the one
+            // that belongs to the live action bar has to be picked out rather
+            // than assumed to be the only one. A group that belongs to a loaded
+            // scene is an instance; a prefab's scene handle is not valid.
             ActionBarSpellsGroup[] groups = Resources
                 .FindObjectsOfTypeAll<ActionBarSpellsGroup>()
                 .Where(value => value != null && value.gameObject != null)
                 .ToArray();
-            if (groups.Length != 1)
-            {
-                _groupCount = groups.Length;
-                return false;
-            }
+            ActionBarSpellsGroup[] live = groups.Where(value =>
+                value.gameObject.scene.IsValid() &&
+                value.gameObject.scene.isLoaded).ToArray();
+            _groupCount = groups.Length;
+            _liveGroupCount = live.Length;
+            if (live.Length == 0) return false;
 
-            ActionBarSpellsGroup group = groups[0];
+            // More than one live instance would make the measurement ambiguous,
+            // so prefer one that is actually part of an active hierarchy and
+            // record the ambiguity either way.
+            ActionBarSpellsGroup group = live.Length == 1 ? live[0] :
+                (live.FirstOrDefault(value =>
+                    value.transform.parent != null &&
+                    value.transform.parent.gameObject.activeInHierarchy)
+                 ?? live[0]);
 
             if (settled == 0)
             {
@@ -270,7 +279,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>Set when the widget assumption fails, for reporting.</summary>
         private int _groupCount = -1;
+        private int _liveGroupCount = -1;
         internal int ObservedSpellGroupCount { get { return _groupCount; } }
+        internal int ObservedLiveSpellGroupCount { get { return _liveGroupCount; } }
 
         /// <summary>
         /// The rubric, evaluated. Written out in
@@ -281,9 +292,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal bool Passes(out string summary)
         {
             var reasons = new List<string>();
-            if (_groupCount >= 0 && _groupCount != 1)
-                reasons.Add("action-bar-spell-groups=" + _groupCount +
-                    " (expected exactly one to drive)");
+            if (_liveGroupCount > 1)
+                reasons.Add("live-action-bar-spell-groups=" + _liveGroupCount +
+                    " (expected one; the measurement would be ambiguous)");
             if (_measurements.Count != 2 * Cycles)
                 reasons.Add("expected " + (2 * Cycles) + " measurements, got " +
                     _measurements.Count);
