@@ -23,11 +23,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _projectedMenuStarved;
 
         /// <summary>
-        /// Frames allowed with no action-bar spell group present before giving
-        /// up. Without a bound it would hang until the harness timeout, which is
-        /// a far worse way to learn the same thing.
+        /// A hard budget on the whole measurement, not only on frames where
+        /// nothing has settled.
+        ///
+        /// The first version counted only un-settled frames, so a cycle that
+        /// began and then lost its widget froze the counter and the scenario
+        /// looped until the harness timed out - producing no result and no
+        /// diagnostic at all. A total budget cannot be defeated that way.
         /// </summary>
-        private const int ProjectedMenuStarvationFrames = 1800;
+        private const int ProjectedMenuBudgetFrames = 5400;
 
         private void RunExpandedSummoningProjectedMenu()
         {
@@ -44,27 +48,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningProjectedMenu);
             }
 
+            if (++_projectedMenuStarved > ProjectedMenuBudgetFrames)
+            {
+                _projectedMenu.RestoreActionBar();
+                throw new InvalidOperationException(
+                    "The projected menu did not complete within " +
+                    ProjectedMenuBudgetFrames + " frames. Setup: " +
+                    _projectedMenu.SetupReason + ". Slots: " +
+                    _projectedMenu.Availability + ". Progress: family=" +
+                    _projectedMenuFamily + ";cycle=" + _projectedMenuCycle +
+                    ";settled=" + _projectedMenuSettled + ";measured=" +
+                    _projectedMenu.Measurements.Count + ". The layout anchors " +
+                    "the popup to the slot a player clicked, so an absent or " +
+                    "vanishing group slot leaves nothing to measure against.");
+            }
+
             SummonFamily family = _projectedMenuFamily == 0
                 ? SummonFamily.Monster : SummonFamily.NaturesAlly;
             if (!_projectedMenu.Step(family, _projectedMenuCycle + 1,
                 ref _projectedMenuSettled))
-            {
-                // Step returns false both while a cycle is still settling and
-                // when the widget it needs is absent; only the second can go on
-                // forever, and it is distinguished by never having settled.
-                if (_projectedMenuSettled == 0 &&
-                    ++_projectedMenuStarved > ProjectedMenuStarvationFrames)
-                    throw new InvalidOperationException(
-                        "No action-bar group slot was available to anchor the " +
-                        "menu after " + ProjectedMenuStarvationFrames +
-                        " frames: " + _projectedMenu.Availability + ". The " +
-                        "layout anchors the popup to the slot a player clicked, " +
-                        "so without an active group slot there is nothing to " +
-                        "measure against. Setup: " + _projectedMenu.SetupReason);
                 return;
-            }
 
-            _projectedMenuStarved = 0;
+            // Deliberately not reset: the budget covers the whole measurement,
+            // and resetting it on progress is what let the previous version
+            // loop indefinitely.
             _projectedMenuCycle++;
             if (_projectedMenuCycle < ExpandedSummoningProjectedMenuFixture.Cycles)
                 return;
