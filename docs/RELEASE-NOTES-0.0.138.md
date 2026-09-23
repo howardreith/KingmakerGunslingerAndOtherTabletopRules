@@ -72,9 +72,9 @@ Optional **Better Vendors** compatibility for magic-weapon progression.
 | Clean Release build and build-output validation | PASS, no warnings |
 | Strict standalone UMM package validation | PASS |
 | Better Vendors contract fingerprints vs installed 2.0.8 binary | PASS (static) |
-| Guarded `working-save-smoke` on commit `060df1d4` | PASS, 11 of 11 assertions |
+| Guarded `working-save-smoke` on final code commit `cca27056` | PASS, 11 of 11 assertions |
 | Adapter resolution against the live Better Vendors 2.0.8 assembly | PASS (`compatibility.ready`) |
-| All 50 progression entries registered and validated in game | PASS (`progression-catalog.ready`) |
+| All 50 progression entries registered and every contract check passed in game | PASS (`progression-catalog.ready`, not `degraded`) |
 | Merchant stock in a kingdom-stage campaign | NOT RUN |
 | Save/load compatibility workflow | NOT RUN |
 
@@ -82,12 +82,18 @@ Historical domain checkpoints of 1,251, 1,288 and 1,325 cases remain archived
 under their original releases. The live suite for this candidate has 1,740
 cases.
 
-The guarded run `20260923T1810242389403Z-1bf61c4530d14e879a16919b182a9602`
+The guarded run `20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1`
 loaded `KMG_AUTOMATION_WORKING` through Steam App ID 640820, with Better
-Vendors 2.0.8 among the 16 loaded mods. It made no save-writing call. The
-deployed artifact was DLL `285cc5bb…1fdd`, MVID
-`d49f0f7d-c1be-43dd-970b-64a2b5fb58bf`, with commit `060df1d4` embedded. The
-prior installation was restored byte-for-byte afterwards.
+Vendors 2.0.8 among the 16 loaded mods, and made no save-writing call. The
+deployed artifact was:
+
+- package `d9ba82339c52490406273f56b05824a63b9013a60b3e8a21bedaa5a973fa84e7`;
+- DLL `34fe16ad05527cba5caad37a4d7ce7727d0b1553ec38511675017c6d2776d4fe`;
+- MVID `c7ccdfcf-42a8-4b82-a241-bcc3a0310ac8`, with commit `cca27056`
+  embedded.
+
+An earlier run on `060df1d4` also passed. After each run, the prior
+installation was restored byte-for-byte.
 
 The only authorized disposable save predates kingdom creation, so Better
 Vendors' Military progression cannot occur in it. No kingdom-stage fixture is
