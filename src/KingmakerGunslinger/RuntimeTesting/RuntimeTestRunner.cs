@@ -13460,6 +13460,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool activeShieldOther = _context.FeatureModules.Active.ShieldOther;
             bool activeExpandedSummoning =
                 _context.FeatureModules.Active.ExpandedSummoning;
+            ExpandedSummoningBoundary summoningBoundary =
+                ObserveExpandedSummoningBoundary(expectedExpandedSummoning);
             bool activeElvenBranchedSpears =
                 _context.FeatureModules.Active.ElvenBranchedSpears;
             bool activeEasternWeapons =
@@ -14186,10 +14188,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     characterRacesUnique && elementalPublicationExact,
                     "live BlueprintRoot CharacterRaces reference/GUID inventory"),
                 Assertion("feature-module-expanded-summoning-publication-gate",
-                    expectedExpandedSummoning ? "enabled" : "disabled",
-                    activeExpandedSummoning ? "enabled" : "disabled",
-                    activeExpandedSummoning == expectedExpandedSummoning,
-                    "immutable publication-plan input; parent surfaces are added after activation"),
+                    (expectedExpandedSummoning ? "enabled" : "disabled") + ";" +
+                        ExpandedSummoningBoundaryExpectation(
+                            expectedExpandedSummoning,
+                            summoningBoundary.NativeVariants),
+                    (activeExpandedSummoning ? "enabled" : "disabled") + ";" +
+                        summoningBoundary.Describe(),
+                    activeExpandedSummoning == expectedExpandedSummoning &&
+                        summoningBoundary.Describe() ==
+                            ExpandedSummoningBoundaryExpectation(
+                                expectedExpandedSummoning,
+                                summoningBoundary.NativeVariants),
+                    "live AbilityVariants census across the eighteen canonical native summon parents"),
                 Assertion("feature-module-elven-branched-spears-publication-gate",
                     expectedElvenBranchedSpears ?
                         "12 identities;7 parameter options;3 static references;22 campaign vendor rows plus six rows per installed BTSL table;6 loot rows" :
