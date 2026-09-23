@@ -259,7 +259,6 @@ $expected = @(
     'disposable-gunslinger-bleeding-wound',
     'observe-bodyguard-native-contracts',
     'observe-summon-pteranodon-view-contracts',
-    'disposable-pteranodon-attached-view',
     'observe-aid-another-compatibility-contracts',
     'disposable-bodyguard-feats',
     'disposable-helpful-bodyguard',
