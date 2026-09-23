@@ -121,15 +121,16 @@ tests, regenerate it with:
   --write-better-vendors-catalog docs\better-vendors-progression-catalog.json
 ```
 
-The in-game stock behaviour is not yet qualified, and this blocks merge and
-release. It needs a save whose kingdom has reached Military I or higher. The
-only authorized disposable fixture, `KMG_AUTOMATION_WORKING`, predates kingdom
-creation, so Better Vendors' progression never runs in it. Qualifying the
-merchant, purchase, event-coordination, settings and persistence paths needs
-an owner-authorized, disposable kingdom-stage fixture. Never fabricate one or
-reuse a real campaign save. The acceptance areas are listed in
-[docs/BETTER-VENDORS-COMPATIBILITY.md](docs/BETTER-VENDORS-COMPATIBILITY.md#acceptance-requirements-before-merge-or-release).
-The canonical `working-save-smoke` scenario can still show that the candidate
+The in-game stock behaviour is not yet qualified. The owner waived it for the
+0.0.138 release, and it remains open. It needs a save whose kingdom has
+reached Military I or higher. The only authorized disposable fixture,
+`KMG_AUTOMATION_WORKING`, predates kingdom creation, so Better Vendors'
+progression never runs in it. Qualifying the merchant, purchase,
+event-coordination, settings and persistence paths needs an owner-authorized,
+disposable kingdom-stage fixture. Never fabricate one or reuse a real campaign
+save. The acceptance areas are listed in
+[docs/BETTER-VENDORS-COMPATIBILITY.md](docs/BETTER-VENDORS-COMPATIBILITY.md#merchant-and-persistence-acceptance-not-run-waived-for-00138).
+The canonical `working-save-smoke` scenario can still show that the build
 loads, registers the 43 new blueprints and accepts the installed Better
 Vendors binary. Read the `better-vendors` lines in the UMM log for that.
 

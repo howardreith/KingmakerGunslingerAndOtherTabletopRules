@@ -1,10 +1,11 @@
-# Better Vendors progression compatibility (0.0.138 candidate)
+# Better Vendors progression compatibility (0.0.138)
 
-Status: **candidate, not released; merge and release are blocked.** Static
+Status: **released in 0.0.138 under explicit owner authorization.** Static
 contract verification, the complete domain suite and a guarded load smoke run
-pass. The real merchant and persistence paths are **not** qualified. They
-need an owner-authorized disposable kingdom-stage save; see
-[Acceptance requirements](#acceptance-requirements-before-merge-or-release).
+pass. The real merchant and persistence paths are **not** qualified in game.
+They need a disposable kingdom-stage save, which was not authorized. The owner
+waived them for this release; see
+[Merchant and persistence acceptance](#merchant-and-persistence-acceptance-not-run-waived-for-00138).
 
 When the optional Better Vendors mod is installed and enabled, and its vendor
 progression is switched on, this mod's generic magic weapons now progress at
@@ -22,7 +23,7 @@ Eastern Weapons and Elven Branched Spear weapon type sets that description,
 and Eastern items also carry flavour text. So the query never returned any of
 this mod's weapons. The Reliable firearms would have failed anyway, because the
 query wants exactly one enchantment. Also, +2 to +5 variants of these families
-did not exist before this candidate.
+did not exist before 0.0.138.
 
 The integration keeps those items out of Better Vendors' query. Its results are
 never changed. The integration adds this mod's authorized entries itself, in
@@ -274,7 +275,7 @@ classified:
 - **Unsupported.** A call above the current rank or out of range. Nothing is
   added.
 
-**Existing saves (catch-up).** A save can reach this candidate with Better
+**Existing saves (catch-up).** A save can reach 0.0.138 with Better
 Vendors' flag already `1`. The first time the capital blacksmith (or its
 throne-room clone) opens trade, every reached milestone's missing initial
 grants are added once. Military V gives the +1, +2 and +3 tiers. Military VII
@@ -348,7 +349,7 @@ content module is turned off, the existing vendor-row reconciliation can still
 reduce a reused +1 weapon's merchant stock by one (see
 [Other acquisition paths](#other-acquisition-paths)).
 
-**Uninstall** of *this* mod is not made safe by this candidate. As before,
+**Uninstall** of *this* mod is not made safe by 0.0.138. As before,
 removing the mod removes every blueprint it owns. That includes weapons
 already stocked in `SmithVendorTable` or carried by the party. Uninstall only
 from a save you are willing to lose.
@@ -393,15 +394,16 @@ UMM log lines use phase `better-vendors`:
    reconciliation (see [Other acquisition paths](#other-acquisition-paths)).
 4. **Not tested: Craft Magic Items** handling of the new variants.
 
-## Acceptance requirements before merge or release
+## Merchant and persistence acceptance (NOT RUN, waived for 0.0.138)
 
 The domain suite models the scheduling, planning and bookkeeping rules with a
 dictionary shop and an in-memory ledger. It does not serialize a save,
 reconstruct the ledger part, drive the real trading hook or buy anything. The
 guarded smoke run proves loading and contract resolution only. So these
-acceptance areas remain **NOT RUN** and block merge and release. They need an
-explicitly owner-authorized, disposable kingdom-stage save. That save must
-not be fabricated, and a real campaign must not be used:
+acceptance areas remain **NOT RUN**. The owner waived them for the 0.0.138
+release after reviewing these limits. They still need an explicitly
+owner-authorized, disposable kingdom-stage save; that save must not be
+fabricated, and a real campaign must not be used:
 
 | Acceptance area | Evidence needed |
 | --- | --- |
@@ -421,7 +423,7 @@ not be fabricated, and a real campaign must not be used:
 | Guarded `working-save-smoke`, final code commit `c9427faa` | PASS, 11 of 11 assertions (see below) |
 | Exact-binary gate and hook installation in game | PASS: `compatibility.ready` at package load; the live assembly's file SHA-256 and MVID matched |
 | Registration and all progression contract checks in game | PASS: `progression-catalog.ready`, not `degraded` |
-| All five [acceptance areas](#acceptance-requirements-before-merge-or-release): stocking and purchase, persistence, native event coordination, settings, purchased-item behaviour | NOT RUN, **blocks merge and release**. The only authorized disposable save predates kingdom creation, and no kingdom-stage save is authorized. |
+| All five [acceptance areas](#merchant-and-persistence-acceptance-not-run-waived-for-00138): stocking and purchase, persistence, native event coordination, settings, purchased-item behaviour | NOT RUN, **waived by the owner for 0.0.138**. The only authorized disposable save predates kingdom creation, and no kingdom-stage save was authorized. |
 | Craft Magic Items handling of the new variants | NOT TESTED |
 
 The guarded run `20260923T2036170490182Z-e8ae7b5631174645a40db7ccb7b89a38`
