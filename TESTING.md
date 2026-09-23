@@ -82,7 +82,7 @@ metadata.
 
 ## Better Vendors progression (0.0.138 candidate)
 
-The optional Better Vendors integration is covered by 35 dependency-free
+The optional Better Vendors integration is covered by 36 dependency-free
 `better-vendors.*` domain cases in
 `tests/KingmakerGunslinger.DomainTests/BetterVendorsProgressionTests.cs`. They
 cover:

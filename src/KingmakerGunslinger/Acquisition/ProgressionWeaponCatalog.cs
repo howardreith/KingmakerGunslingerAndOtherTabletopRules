@@ -267,6 +267,33 @@ namespace KingmakerGunslinger.Acquisition
                 family == ProgressionWeaponFamily.Blunderbuss;
         }
 
+        /// <summary>
+        /// Checks one native enhancement enchantment against the verified +N
+        /// contract: named EnhancementN, costing N, with exactly one
+        /// non-stacking WeaponEnhancementBonus of N (each bonus is given as
+        /// value/stacks). Returns the failed check, or null when it matches.
+        /// Game data changed by another mod is reported, never thrown.
+        /// </summary>
+        internal static string DescribeNativeEnhancementMismatch(int tier,
+            string name, int enchantmentCost,
+            IEnumerable<KeyValuePair<int, bool>> enhancementBonuses)
+        {
+            if (tier < 1 || tier > MaximumEnhancement)
+                throw new ArgumentOutOfRangeException("tier");
+            string level = tier.ToString(CultureInfo.InvariantCulture);
+            KeyValuePair<int, bool>[] bonuses = (enhancementBonuses ??
+                Enumerable.Empty<KeyValuePair<int, bool>>()).ToArray();
+            string check =
+                !string.Equals(name, "Enhancement" + level,
+                    StringComparison.Ordinal) ? "name" :
+                enchantmentCost != tier ? "cost" :
+                bonuses.Length != 1 ? "component-count" :
+                bonuses[0].Key != tier ? "bonus" :
+                bonuses[0].Value ? "stacking" : null;
+            return check == null ? null :
+                "native-enhancement+" + level + ":" + check;
+        }
+
         internal static ProgressionContentModule ModuleOf(
             ProgressionWeaponFamily family)
         {
@@ -462,6 +489,38 @@ namespace KingmakerGunslinger.Acquisition
                             family + ";reliable=" + reliable + ".");
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Outcome of the progression-specific contract checks made when the
+    /// variants are registered. Registration itself is unconditional (saved
+    /// items must always resolve); a failed check only withholds merchant
+    /// progression stock, so game data changed by another mod can never take
+    /// the rest of this mod down.
+    /// </summary>
+    internal sealed class ProgressionCatalogStatus
+    {
+        internal static readonly ProgressionCatalogStatus Usable =
+            new ProgressionCatalogStatus(new string[0]);
+
+        internal ProgressionCatalogStatus(IEnumerable<string> failures)
+        {
+            Failures = (failures ?? Enumerable.Empty<string>())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.Ordinal).ToArray();
+        }
+
+        /// <summary>Distinct failed checks, in the order they were found.</summary>
+        internal string[] Failures { get; private set; }
+
+        /// <summary>True only when every progression contract check passed.</summary>
+        internal bool IsUsable { get { return Failures.Length == 0; } }
+
+        public override string ToString()
+        {
+            return IsUsable ? "usable" :
+                "degraded:" + string.Join("|", Failures);
         }
     }
 }

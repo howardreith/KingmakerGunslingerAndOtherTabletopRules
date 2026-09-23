@@ -644,9 +644,17 @@ prevents duplicate grants.
 
 Disabling Better Vendors, its progression or a module stops future additions
 and deletes nothing. Removing *this* mod still removes every weapon it owns,
-including stocked ones; see [Removal warning](#removal-warning).
+including stocked ones; see [Removal warning](#removal-warning). To roll back
+to 0.0.137, use a save made before 0.0.138 was installed.
 
-The contract, catalog, stock rules and verification limits are in
+The new weapons register on every load, with or without Better Vendors. If one
+of the integration's own contract checks fails, for example because another mod
+changed a native enhancement enchantment, the weapons stay registered and only
+merchant progression is disabled. The failure is logged once as
+`progression-catalog.degraded`.
+
+The contract, catalog, stock rules, verification limits and open design
+questions are in
 [docs/BETTER-VENDORS-COMPATIBILITY.md](docs/BETTER-VENDORS-COMPATIBILITY.md).
 
 # Custom firearm SoundBank

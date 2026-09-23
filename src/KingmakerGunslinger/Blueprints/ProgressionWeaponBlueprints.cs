@@ -24,6 +24,13 @@ namespace KingmakerGunslinger.Blueprints
     /// saved item identity, so a variant bought in one session always resolves
     /// on a later load. Registration never publishes stock: no vendor table,
     /// loot table or catalog consumed by ordinary shops receives these items.
+    ///
+    /// The progression contract checks (native enhancement data, Reliable
+    /// cost, and each variant's mechanics, price and presentation) never
+    /// throw: a failure is recorded in the catalog status, which disables only
+    /// the optional merchant progression. Another mod changing native data can
+    /// therefore never take the rest of this mod down, even for players who
+    /// do not use Better Vendors.
     /// </summary>
     internal static class ProgressionWeaponBlueprints
     {
@@ -39,17 +46,25 @@ namespace KingmakerGunslinger.Blueprints
                 eastern == null || spears == null || logger == null)
                 throw new ArgumentNullException(
                     "Progression weapon registration inputs are incomplete.");
+            // The five native enhancement GUIDs are already required by the
+            // authored magic firearm catalog; only their stricter progression
+            // contract is checked here, and only into the status.
             BlueprintWeaponEnchantment[] enhancements = Enumerable.Range(1,
                     ProgressionWeaponCatalog.MaximumEnhancement)
                 .Select(tier => NativeEnhancement(library, tier)).ToArray();
+            var failures = new List<string>();
+            for (int tier = 1; tier <= enhancements.Length; tier++)
+                failures.Add(DescribeNativeEnhancement(enhancements[tier - 1], tier));
             BlueprintWeaponEnchantment reliable = magicFirearms.Reliable;
-            Enchantments.ReliableBlueprints.Validate(reliable);
+            Check(failures, "reliable-enchantment", delegate
+            {
+                Enchantments.ReliableBlueprints.Validate(reliable);
+            });
             if (reliable.EnchantmentCost !=
                     ProgressionWeaponCatalog.ReliableEquivalentBonus ||
                 reliable.EnchantmentCost !=
                     CraftMagicItemsCompatibilityPolicy.ReliableEquivalentBonus)
-                throw new InvalidOperationException(
-                    "Reliable no longer carries its +1 equivalent enchantment cost.");
+                failures.Add("reliable-cost");
 
             var easternAccess = new EasternWeaponItemAccess();
             var spearAccess = new SpearItemAccess();
@@ -64,13 +79,13 @@ namespace KingmakerGunslinger.Blueprints
                     item = sibling;
                 else if (spec.IsFirearm)
                     item = RegisterFirearm(registry, spec, firearms,
-                        enhancements, reliable);
+                        enhancements, reliable, failures);
                 else if (spec.Family == ProgressionWeaponFamily.ElvenBranchedSpear)
                     item = RegisterSpear(registry, spec, spears, sibling,
-                        enhancements, typeAccess, spearAccess);
+                        enhancements, typeAccess, spearAccess, failures);
                 else
                     item = RegisterEastern(registry, spec, eastern, sibling,
-                        enhancements, typeAccess, easternAccess);
+                        enhancements, typeAccess, easternAccess, failures);
                 entries.Add(new ProgressionWeaponBlueprintEntry(spec, item,
                     sibling, FamilyWeaponType(spec, firearms, eastern, spears)));
             }
@@ -84,52 +99,77 @@ namespace KingmakerGunslinger.Blueprints
                 value => !value.Spec.ReusesCanonicalItem))
                 items.SetIcon(entry.Item, entry.CanonicalPlusOne.Icon);
 
+            failures.AddRange(DescribeCatalogFailures(entries, enhancements,
+                reliable));
+            var status = new ProgressionCatalogStatus(failures);
             var catalog = new ProgressionWeaponBlueprintCatalog(
-                entries.ToArray(), enhancements, reliable);
-            Validate(catalog, firearms);
-            logger.Info("better-vendors", "progression-catalog.ready",
-                string.Format(CultureInfo.InvariantCulture,
-                    "entries={0};reused={1};registered={2};firearms={3};melee={4};publishedToVendors=false",
-                    catalog.Entries.Length,
-                    catalog.Entries.Count(value => value.Spec.ReusesCanonicalItem),
-                    catalog.Entries.Count(value => !value.Spec.ReusesCanonicalItem),
-                    catalog.Entries.Count(value => value.Spec.IsFirearm),
-                    catalog.Entries.Count(value => !value.Spec.IsFirearm)));
+                entries.ToArray(), enhancements, reliable, status);
+            string counts = string.Format(CultureInfo.InvariantCulture,
+                "entries={0};reused={1};registered={2};firearms={3};melee={4};publishedToVendors=false",
+                catalog.Entries.Length,
+                catalog.Entries.Count(value => value.Spec.ReusesCanonicalItem),
+                catalog.Entries.Count(value => !value.Spec.ReusesCanonicalItem),
+                catalog.Entries.Count(value => value.Spec.IsFirearm),
+                catalog.Entries.Count(value => !value.Spec.IsFirearm));
+            if (status.IsUsable)
+                logger.Info("better-vendors", "progression-catalog.ready", counts);
+            else
+                logger.Warning("better-vendors", "progression-catalog.degraded",
+                    counts + ";merchantProgression=disabled;itemsRemainRegistered=true;" +
+                    status);
             return catalog;
         }
 
-        internal static void Validate(ProgressionWeaponBlueprintCatalog catalog,
-            ProductionFirearmBlueprintCatalog firearms)
+        /// <summary>
+        /// Every progression contract failure of the registered catalog, or
+        /// none. Never throws for mismatched game or presentation data.
+        /// </summary>
+        internal static IEnumerable<string> DescribeCatalogFailures(
+            IList<ProgressionWeaponBlueprintEntry> entries,
+            BlueprintWeaponEnchantment[] enhancements,
+            BlueprintWeaponEnchantment reliable)
         {
-            if (catalog == null || firearms == null)
-                throw new ArgumentNullException("catalog");
-            if (catalog.Entries.Length != ProgressionWeaponCatalog.EntryCount ||
-                catalog.Entries.Select(value => value.Item).Distinct().Count() !=
+            if (entries == null || enhancements == null || reliable == null)
+                throw new ArgumentNullException("entries");
+            var failures = new List<string>();
+            if (entries.Count != ProgressionWeaponCatalog.EntryCount ||
+                entries.Select(value => value.Item).Distinct().Count() !=
                     ProgressionWeaponCatalog.EntryCount ||
-                catalog.Entries.Select(value => value.Item.AssetGuid).Distinct(
+                entries.Select(value => value.Item.AssetGuid).Distinct(
                     StringComparer.Ordinal).Count() !=
                     ProgressionWeaponCatalog.EntryCount ||
-                catalog.Entries.Count(value => value.Spec.ReusesCanonicalItem) !=
+                entries.Count(value => value.Spec.ReusesCanonicalItem) !=
                     ProgressionWeaponCatalog.ReusedEntryCount)
-                throw new InvalidOperationException(
-                    "Progression weapon catalog identity/count mismatch.");
-            foreach (ProgressionWeaponBlueprintEntry entry in catalog.Entries)
-                ValidateEntry(entry, catalog);
+                failures.Add("catalog-identity");
+            foreach (ProgressionWeaponBlueprintEntry entry in entries)
+            {
+                ProgressionWeaponBlueprintEntry current = entry;
+                string failure = null;
+                Check(failures, current.Spec.Symbol, delegate
+                {
+                    failure = DescribeEntryFailure(current, enhancements, reliable);
+                });
+                if (failure != null)
+                    failures.Add(current.Spec.Symbol + ":" + failure);
+            }
+            return failures;
         }
 
-        private static void ValidateEntry(ProgressionWeaponBlueprintEntry entry,
-            ProgressionWeaponBlueprintCatalog catalog)
+        private static string DescribeEntryFailure(
+            ProgressionWeaponBlueprintEntry entry,
+            BlueprintWeaponEnchantment[] enhancements,
+            BlueprintWeaponEnchantment reliable)
         {
             ProgressionWeaponSpec spec = entry.Spec;
             BlueprintItemWeapon item = entry.Item;
             BlueprintWeaponEnchantment[] actual =
                 MagicFirearmBlueprints.ReadEnchantments(item);
             BlueprintWeaponEnchantment[] expected = ExpectedEnchantments(spec,
-                catalog.Enhancements, catalog.Reliable);
+                enhancements, reliable);
             WeaponEnhancementBonus[] bonuses = actual.SelectMany(value =>
                 (value.ComponentsArray ?? new BlueprintComponent[0])
                     .OfType<WeaponEnhancementBonus>()).ToArray();
-            string failure =
+            return
                 !string.Equals(item.AssetGuid, spec.Guid, StringComparison.Ordinal)
                     ? "identity" :
                 !actual.SequenceEqual(expected) ? "enchantment-package" :
@@ -160,10 +200,24 @@ namespace KingmakerGunslinger.Blueprints
                     !ReferenceEquals(item.VisualParameters.Model,
                         entry.CanonicalPlusOne.VisualParameters.Model)
                     ? "family-visual" : null;
-            if (failure != null)
-                throw new InvalidOperationException(
-                    "Progression weapon contract mismatch (" + failure + "): " +
-                    spec.Symbol + ".");
+        }
+
+        /// <summary>
+        /// Runs one progression contract check and records, rather than
+        /// throws, any exception it raises.
+        /// </summary>
+        private static void Check(List<string> failures, string subject,
+            Action check)
+        {
+            try
+            {
+                check();
+            }
+            catch (Exception exception)
+            {
+                failures.Add(subject + ":" + exception.GetType().Name + ":" +
+                    exception.Message);
+            }
         }
 
         internal static BlueprintWeaponEnchantment[] ExpectedEnchantments(
@@ -180,7 +234,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintRegistry registry, ProgressionWeaponSpec spec,
             ProductionFirearmBlueprintCatalog firearms,
             BlueprintWeaponEnchantment[] enhancements,
-            BlueprintWeaponEnchantment reliable)
+            BlueprintWeaponEnchantment reliable, List<string> failures)
         {
             FirearmKind kind = ProgressionWeaponCatalog.FirearmKindOf(spec.Family);
             ProductionFirearmBlueprintEntry family =
@@ -193,7 +247,10 @@ namespace KingmakerGunslinger.Blueprints
                 ExpectedEnchantments(spec, enhancements, reliable));
             BlueprintItemWeapon item = MagicFirearmBlueprints.RegisterItem(
                 registry, itemSpec, family);
-            MagicFirearmBlueprints.ValidateItem(item, itemSpec, family);
+            Check(failures, spec.Symbol, delegate
+            {
+                MagicFirearmBlueprints.ValidateItem(item, itemSpec, family);
+            });
             return item;
         }
 
@@ -201,7 +258,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintRegistry registry, ProgressionWeaponSpec spec,
             EasternWeaponBlueprintSet eastern, BlueprintItemWeapon canonical,
             BlueprintWeaponEnchantment[] enhancements,
-            WeaponBlueprintAccess typeAccess, EasternWeaponItemAccess access)
+            WeaponBlueprintAccess typeAccess, EasternWeaponItemAccess access,
+            List<string> failures)
         {
             EasternWeaponFamily family =
                 ProgressionWeaponCatalog.EasternFamilyOf(spec.Family);
@@ -225,8 +283,11 @@ namespace KingmakerGunslinger.Blueprints
                         family);
                     return clone;
                 });
-            access.Validate(item, definition, spec.Symbol, spec.DisplayName,
-                spec.Cost, true, false, spec.ActualEnhancement);
+            Check(failures, spec.Symbol, delegate
+            {
+                access.Validate(item, definition, spec.Symbol, spec.DisplayName,
+                    spec.Cost, true, false, spec.ActualEnhancement);
+            });
             return item;
         }
 
@@ -234,7 +295,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintRegistry registry, ProgressionWeaponSpec spec,
             ElvenBranchedSpearBlueprintSet spears, BlueprintItemWeapon canonical,
             BlueprintWeaponEnchantment[] enhancements,
-            WeaponBlueprintAccess typeAccess, SpearItemAccess access)
+            WeaponBlueprintAccess typeAccess, SpearItemAccess access,
+            List<string> failures)
         {
             BlueprintWeaponEnchantment[] enchantments =
                 ExpectedEnchantments(spec, enhancements, null);
@@ -250,8 +312,11 @@ namespace KingmakerGunslinger.Blueprints
                         spec.Symbol);
                     return clone;
                 });
-            access.Validate(item, spec.DisplayName, spec.Cost, true, false,
-                spec.ActualEnhancement);
+            Check(failures, spec.Symbol, delegate
+            {
+                access.Validate(item, spec.DisplayName, spec.Cost, true, false,
+                    spec.ActualEnhancement);
+            });
             return item;
         }
 
@@ -320,20 +385,21 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintWeaponEnchantment NativeEnhancement(
             LibraryScriptableObject library, int tier)
         {
-            BlueprintWeaponEnchantment value = BlueprintLibraryLookup
+            return BlueprintLibraryLookup
                 .RequireExact<BlueprintWeaponEnchantment>(library,
                     BetterVendorsContract.EnhancementGuid(tier),
                     "native +" + tier + " weapon enchantment");
-            WeaponEnhancementBonus[] components = (value.ComponentsArray ??
-                new BlueprintComponent[0]).OfType<WeaponEnhancementBonus>()
-                .ToArray();
-            if (!string.Equals(value.name, "Enhancement" + tier,
-                    StringComparison.Ordinal) ||
-                value.EnchantmentCost != tier || components.Length != 1 ||
-                components[0].EnhancementBonus != tier || components[0].Stack)
-                throw new InvalidOperationException(
-                    "Native +" + tier + " enhancement identity/component mismatch.");
-            return value;
+        }
+
+        private static string DescribeNativeEnhancement(
+            BlueprintWeaponEnchantment value, int tier)
+        {
+            return ProgressionWeaponCatalog.DescribeNativeEnhancementMismatch(
+                tier, value.name, value.EnchantmentCost,
+                (value.ComponentsArray ?? new BlueprintComponent[0])
+                    .OfType<WeaponEnhancementBonus>()
+                    .Select(component => new KeyValuePair<int, bool>(
+                        component.EnhancementBonus, component.Stack)));
         }
     }
 
@@ -365,19 +431,28 @@ namespace KingmakerGunslinger.Blueprints
         internal ProgressionWeaponBlueprintCatalog(
             ProgressionWeaponBlueprintEntry[] entries,
             BlueprintWeaponEnchantment[] enhancements,
-            BlueprintWeaponEnchantment reliable)
+            BlueprintWeaponEnchantment reliable, ProgressionCatalogStatus status)
         {
             Entries = entries ?? throw new ArgumentNullException("entries");
             Enhancements = enhancements ??
                 throw new ArgumentNullException("enhancements");
             Reliable = reliable ?? throw new ArgumentNullException("reliable");
-            _byGuid = entries.ToDictionary(value => value.Spec.Guid,
-                StringComparer.Ordinal);
+            Status = status ?? throw new ArgumentNullException("status");
+            _byGuid = entries.GroupBy(value => value.Spec.Guid,
+                    StringComparer.Ordinal)
+                .ToDictionary(group => group.Key, group => group.First(),
+                    StringComparer.Ordinal);
         }
 
         internal ProgressionWeaponBlueprintEntry[] Entries { get; private set; }
         internal BlueprintWeaponEnchantment[] Enhancements { get; private set; }
         internal BlueprintWeaponEnchantment Reliable { get; private set; }
+
+        /// <summary>
+        /// Whether every progression contract check passed. Merchant
+        /// progression may stock these entries only while it is usable.
+        /// </summary>
+        internal ProgressionCatalogStatus Status { get; private set; }
 
         internal ProgressionWeaponSpec[] Specs
         {

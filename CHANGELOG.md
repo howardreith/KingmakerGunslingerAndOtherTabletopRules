@@ -30,9 +30,15 @@
   `UnitPartBetterVendorsProgressionGrants` ledger records initial grants only
   after the stock change is observed, and never reads or writes Better Vendors'
   `stockUpToDate` flag. Module settings apply independently at every event.
+- The 43 variants register on every load, with or without Better Vendors.
+  The integration's own contract checks (native enhancement data, Reliable
+  cost, each entry's mechanics, price and presentation) run after registration
+  and never throw. A failure disables only merchant progression, with one
+  `progression-catalog.degraded` warning. Data changed by another mod cannot
+  stop the rest of this mod.
 - Ordinary vendor publication, BTSL, campaign loot, named placement, retired
   stock cleanup and Craft Magic Items registration are unchanged.
-- 35 new `better-vendors.*` domain cases; 1,739 in total. Native runtime
+- 36 new `better-vendors.*` domain cases; 1,740 in total. Native runtime
   qualification of the stock behaviour and save/load are NOT RUN; see
   `docs/BETTER-VENDORS-COMPATIBILITY.md`.
 
