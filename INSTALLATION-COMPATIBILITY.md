@@ -1,11 +1,11 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.135-rapid-reload-proficiency-gate` (UMM version `0.0.135`).
-The installable archive is `KingmakerGunslinger-0.0.135-rapid-reload-proficiency-gate.zip`.
+Full release: `0.0.136-rapid-reload-proficiency-gate` (UMM version `0.0.136`).
+The installable archive is `KingmakerGunslinger-0.0.136-rapid-reload-proficiency-gate.zip`.
 Rapid Reload now requires firearm proficiency. Native runtime qualification for
 this release is NOT RUN and was waived by the owner, and save/load compatibility
 is unverified; the exact limits are recorded in
-[its release notes](docs/RELEASE-NOTES-0.0.135.md).
+[its release notes](docs/RELEASE-NOTES-0.0.136.md).
 The previous full release was `0.0.134-magic-circle-alignment-spells`
 (archive `KingmakerGunslinger-0.0.134-magic-circle-alignment-spells.zip`);
 Magic Circle settings, acquisition, save hydration and qualification limits are

@@ -1,9 +1,12 @@
-# Kingmaker Gunslinger 0.0.135
+# Kingmaker Gunslinger 0.0.136
 
-Release: `0.0.135-rapid-reload-proficiency-gate`
-Package: `KingmakerGunslinger-0.0.135-rapid-reload-proficiency-gate.zip`
-Build label: Kingmaker Gunslinger 0.0.135.
+Release: `0.0.136-rapid-reload-proficiency-gate`
+Package: `KingmakerGunslinger-0.0.136-rapid-reload-proficiency-gate.zip`
+Build label: Kingmaker Gunslinger 0.0.136.
 Publication status: published under explicit owner authorization.
+Version note: 0.0.135 was already published on 2026-09-21 from the Magic
+Circle follow-up line, so this release advanced to 0.0.136 rather than
+replacing it.
 
 The qualified firearm SoundBank is unchanged, SHA-256
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
