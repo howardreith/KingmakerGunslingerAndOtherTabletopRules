@@ -106,6 +106,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning";
         internal const string DisposableExpandedSummoningPlayerPath =
             "disposable-expanded-summoning-player-path";
+        /// <summary>
+        /// Development-only. Opens the real variant menu at the roster's
+        /// projected worst-case size - 120 Summon Monster entries and 110
+        /// Nature's Ally - and measures it. The shipped observation of that
+        /// menu is supervised and can only report on the list that exists
+        /// today, which is the wrong shape for a scalability gate.
+        /// </summary>
+        internal const string DisposableExpandedSummoningProjectedMenu =
+            "disposable-expanded-summoning-projected-menu";
         internal const string SummonSameTurnActivation =
             "summon-same-turn-activation";
         internal const string SummonSameTurnAcadamae =
@@ -573,6 +582,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningPlayerPath,
+                DisposableExpandedSummoningProjectedMenu,
                 SummonSameTurnActivation,
                 SummonSameTurnAcadamae,
                 SummonSameTurnMultiple,

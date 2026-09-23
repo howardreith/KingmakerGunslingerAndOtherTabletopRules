@@ -2492,6 +2492,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Complete(RunDisposableExpandedSummoningPlayerPath());
                 }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningProjectedMenu)
+                {
+                    RunExpandedSummoningProjectedMenu();
+                }
                 else if (RuntimeTestScenarioCatalog
                     .IsSummonSameTurnWorkingSaveScenario(_request.Scenario))
                 {
