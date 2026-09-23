@@ -198,7 +198,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!_setupAttempted)
             {
                 _setupAttempted = true;
-                _setupReason = TryInstallParentSlot();
+                _setupReason = InstallParentSlotEnabled
+                    ? TryInstallParentSlot()
+                    : "install disabled: it hung the UI rebuild";
             }
 
             ActionBarGroupSlot[] all = Resources
@@ -360,6 +362,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return false;
             }
         }
+
+        /// <summary>
+        /// Whether the fixture may place a summon parent into the action bar.
+        ///
+        /// Off. Installing a MechanicActionBarSlotSpontaneusSpell and marking
+        /// the settings dirty was tried, and the game stopped producing frames
+        /// after the save loaded: no error, no result, the process resident and
+        /// unresponsive until it was closed. A frame-budget guard cannot fire
+        /// when frames stop, so the scenario could not even report its own
+        /// failure.
+        ///
+        /// A fixture that can hang the game is worse than one that cannot take a
+        /// measurement, so the mutation stays off until the hang is understood.
+        /// The code is kept rather than deleted because the approach is right -
+        /// it reproduces the real click path - and only its effect on the UI
+        /// rebuild is unexplained.
+        /// </summary>
+        private const bool InstallParentSlotEnabled = false;
 
         private bool _setupAttempted;
         private string _setupReason = "<not attempted>";
