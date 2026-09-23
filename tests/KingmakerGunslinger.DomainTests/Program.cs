@@ -433,6 +433,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.coverage-identities-untouched", ExpandedSummoningCoverageTests.ExistingIdentitiesAreUntouched),
             Case("expanded-summoning.scenario-timeout-wiring", ExpandedSummoningScenarioWiringTests.WorkingSaveScenariosAreAllowedTheirTimeouts),
             Case("expanded-summoning.scenario-pteranodon-wiring", ExpandedSummoningScenarioWiringTests.PteranodonCaptureRidesTheProvenScenario),
+            Case("expanded-summoning.scenario-runner-chains", ExpandedSummoningScenarioWiringTests.WorkingSaveScenariosAreNamedInTheRunnerChains),
             Case("expanded-summoning.compatibility-scenarios-launchable", ExpandedSummoningCompatibilityMatrixTests.EveryDeclaredProfileScenarioIsLaunchable),
             Case("expanded-summoning.compatibility-both-surfaces", ExpandedSummoningCompatibilityMatrixTests.EveryProfileObservesBothSummoningSurfaces),
             Case("expanded-summoning.compatibility-working-save-scope", ExpandedSummoningCompatibilityMatrixTests.MechanicalScenarioRunsOnlyWhereSavesAreAllowed),

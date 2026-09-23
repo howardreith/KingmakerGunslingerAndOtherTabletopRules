@@ -56,9 +56,6 @@ $snapshot = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
     -LiveModDirectory $LiveModDirectory -Confirm:$false `
     -AllowEmptySource:($before.Files -eq 0)
 Write-Host "Mission snapshot: $($snapshot.Destination)"
-# The harness stamps its compatibility lock with the same run timestamp, so the
-# snapshot directory name identifies a lock this batch owns.
-$snapshotStamp = (Split-Path $snapshot.Destination -Leaf).Substring(0, 16)
 
 $record = [ordered]@{
     schemaVersion = 2
@@ -198,7 +195,7 @@ finally {
             if (Test-Path -LiteralPath $compatibilityLock -PathType Leaf) {
                 $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
                 if (Test-KmgCompatibilityLockOwned -LockOwner $lockOwner `
-                    -SnapshotStamp $snapshotStamp) {
+                    -BatchStartedUtc ([DateTime]$record.startedAtUtc)) {
                     . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
                     Remove-KmgCompatibilityOwnedLock -LockPath $compatibilityLock -RunId $lockOwner
                     $record.releasedStaleCompatibilityLock = $lockOwner

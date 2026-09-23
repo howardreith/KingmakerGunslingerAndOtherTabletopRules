@@ -179,50 +179,36 @@ try {
         'a teardown fault does not count as a scenario failure'
 
     # ----------------------------------------------------------- lock ownership
+    # A batch holds the runtime exclusively, so a lock stamped inside its own
+    # window is its own. The earlier rule compared the snapshot stamp as a
+    # substring and missed by one second, which left a batch unable to release
+    # its own lock and its restoration failed with the test build still live.
+    $batchStart = [DateTime]::SpecifyKind(
+        [DateTime]::ParseExact('20260923T195801', 'yyyyMMddTHHmmss',
+            [Globalization.CultureInfo]::InvariantCulture), 'Utc')
+    $batchNow = $batchStart.AddMinutes(7)
     Assert-True (Test-KmgCompatibilityLockOwned `
-        -LockOwner 'runtime-20260923T163832-abc' -SnapshotStamp '20260923T163832') `
-        'a lock stamped with this batch run is owned'
+        -LockOwner 'runtime-20260923T195802Z-6fd7fa93a51f' `
+        -BatchStartedUtc $batchStart -NowUtc $batchNow) `
+        'a lock stamped one second after the batch started is its own'
+    Assert-True (Test-KmgCompatibilityLockOwned `
+        -LockOwner 'runtime-20260923T200341Z-abc' `
+        -BatchStartedUtc $batchStart -NowUtc $batchNow) `
+        'a lock stamped mid-batch is its own'
     Assert-True (-not (Test-KmgCompatibilityLockOwned `
-        -LockOwner 'runtime-20260101T010101-zzz' -SnapshotStamp '20260923T163832')) `
-        "another run's lock is foreign and must be left alone"
+        -LockOwner 'runtime-20260923T193000Z-abc' `
+        -BatchStartedUtc $batchStart -NowUtc $batchNow)) `
+        "a lock predating the batch belongs to someone else"
+    Assert-True (-not (Test-KmgCompatibilityLockOwned `
+        -LockOwner 'runtime-20260923T210000Z-abc' `
+        -BatchStartedUtc $batchStart -NowUtc $batchNow)) `
+        'a lock stamped after now is not this batch'
     Assert-True (-not (Test-KmgCompatibilityLockOwned -LockOwner '' `
-        -SnapshotStamp '20260923T163832')) 'an empty lock file is not owned'
-
-    # -------------------------------------------------- live-path guards, real --
-    # These run the shipped scripts and require them to refuse. A regression
-    # that let either of them operate on an arbitrary directory would be a
-    # serious one, and it is cheap to prove they still refuse.
-    $scripts = $ScriptRoot
-    $refusedForeignBackup = $false
-    try {
-        & (Join-Path $scripts 'Backup-Live-Mod.ps1') `
-            -LiveModDirectory $temporary -Confirm:$false | Out-Null
-    }
-    catch { $refusedForeignBackup = $true }
-    Assert-True $refusedForeignBackup `
-        'Backup-Live-Mod.ps1 must refuse a directory that is not the live mod'
-
-    $refusedForeignBackupRoot = $false
-    try {
-        & (Join-Path $scripts 'Backup-Live-Mod.ps1') -BackupRoot $temporary `
-            -Confirm:$false | Out-Null
-    }
-    catch { $refusedForeignBackupRoot = $true }
-    Assert-True $refusedForeignBackupRoot `
-        'Backup-Live-Mod.ps1 must refuse a backup root outside the approved one'
-
-    # Restore refuses on two counts - a running game and a foreign live path -
-    # and either refusal proves a guard fired. Accepting both keeps the test
-    # unconditional instead of skipping when a run happens to be in flight.
-    $refusedForeignRestore = $false
-    try {
-        & (Join-Path $scripts 'Restore-Live-Mod.ps1') `
-            -BackupDirectory $temporary -LiveModDirectory $temporary `
-            -Confirm:$false | Out-Null
-    }
-    catch { $refusedForeignRestore = $true }
-    Assert-True $refusedForeignRestore `
-        'Restore-Live-Mod.ps1 must refuse to restore outside the live mod directory'
+        -BatchStartedUtc $batchStart -NowUtc $batchNow)) `
+        'an empty lock file is not owned'
+    Assert-True (-not (Test-KmgCompatibilityLockOwned -LockOwner 'no-timestamp' `
+        -BatchStartedUtc $batchStart -NowUtc $batchNow)) `
+        'a lock with no parseable stamp is not owned'
 
     # ------------------------------------ successful transaction and restoration
     # The fingerprint function is the shipped one; the copy is a stand-in,

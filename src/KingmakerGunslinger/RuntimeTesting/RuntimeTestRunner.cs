@@ -1827,6 +1827,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableExpandedSummoningProjectedMenu ||
                     RuntimeTestScenarioCatalog
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
@@ -1936,6 +1938,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .DisposableInHarmsWayOffTurnEconomy ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableExpandedSummoningProjectedMenu ||
                     RuntimeTestScenarioCatalog
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
@@ -5359,6 +5363,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableInHarmsWayOffTurnEconomy ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningProjectedMenu ||
                 RuntimeTestScenarioCatalog
                     .IsSummonSameTurnWorkingSaveScenario(
                     _request.Scenario) ||

@@ -126,6 +126,92 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// Every Expanded Summoning scenario that requires the working save must
+        /// be named in the runner's working-save chains.
+        ///
+        /// The runner decides more than once whether a scenario needs a save
+        /// loaded - once to keep it from completing at mod load, once at the
+        /// readiness gate, and once in the save-load predicate - and each is a
+        /// long boolean chain of explicit scenario names. A scenario missing
+        /// from them is accepted, launched, and then sits in OnUpdate forever
+        /// with no save and no dispatch, until the harness times out and leaves
+        /// a running game and a retained lease to recover by hand.
+        ///
+        /// That is exactly what disposable-expanded-summoning-projected-menu did
+        /// on its first run. The harness metadata, the catalog and the request
+        /// validator all agreed; the runner's chains did not, and nothing
+        /// checked them.
+        /// </summary>
+        internal static void WorkingSaveScenariosAreNamedInTheRunnerChains()
+        {
+            string harness = Source("scripts/RuntimeAutomation.Common.ps1");
+            string runner = Source(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            string catalog = Source(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs");
+
+            var offenders = new List<string>();
+            int examined = 0;
+            foreach (Match block in Regex.Matches(harness,
+                @"'(?<name>[a-z0-9-]+)'\s*=\s*\[pscustomobject\]@\{(?<body>.*?)
+    \}",
+                RegexOptions.Singleline))
+            {
+                string name = block.Groups["name"].Value;
+                if (name.IndexOf("expanded-summoning", StringComparison.Ordinal) < 0)
+                    continue;
+                string body = block.Groups["body"].Value;
+                if (body.IndexOf("RequiresSaveName = $true", StringComparison.Ordinal) < 0)
+                    continue;
+                // Supervised scenarios reach the save by a human-driven path and
+                // are deliberately not in these chains.
+                if (body.IndexOf("RequiresManualInteraction = $true",
+                    StringComparison.Ordinal) >= 0) continue;
+
+                Match constant = Regex.Match(catalog,
+                    @"internal const string (?<symbol>\w+)\s*=\s*?
+?\s*""" +
+                    Regex.Escape(name) + @"""");
+                if (!constant.Success)
+                {
+                    offenders.Add(name + " (no catalog constant)");
+                    continue;
+                }
+
+                string symbol = constant.Groups["symbol"].Value;
+                // A scenario admitted through a group predicate is named once
+                // inside that predicate and then reached by calls to it. That is
+                // legitimate wiring, so the predicate stands in for the chains.
+                // The predicate may live in either file.
+                string predicate =
+                    @"bool Is\w+\([^)]*\)\s*\{[\s\S]{0,2000}?" +
+                    Regex.Escape(symbol) + @"\b";
+                if (Regex.IsMatch(catalog, predicate) ||
+                    Regex.IsMatch(runner, predicate))
+                    continue;
+
+                examined++;
+                int mentions = Regex.Matches(runner,
+                    @"RuntimeTestScenarioCatalog\s*\.\s*" + Regex.Escape(symbol) +
+                    @"\b").Count;
+                // Three chains name such a scenario - the mod-load exclusion,
+                // the readiness gate and the save-load predicate - plus its
+                // dispatch. Fewer than four mentions means one was missed, and
+                // that only shows up after a launch.
+                if (mentions < 4)
+                    offenders.Add(name + " (named " + mentions + " times)");
+            }
+
+            Assertions.True(examined >= 3,
+                "The save-backed summoning scenario family shrank; this check " +
+                "would pass vacuously. Examined only " + examined + ".");
+            Assertions.True(offenders.Count == 0,
+                "These working-save scenarios are not named in enough of the " +
+                "runner's chains, so they would launch and then sit idle until " +
+                "the harness timed out: " + string.Join(", ", offenders.ToArray()));
+        }
+
+        /// <summary>
         /// The Pteranodon attached-view capture rides along with the proven
         /// disposable-expanded-summoning lifecycle.
         ///
