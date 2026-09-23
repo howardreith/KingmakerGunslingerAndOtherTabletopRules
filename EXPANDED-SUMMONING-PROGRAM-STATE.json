@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "program": "Kingmaker Expanded Summoning Ideal Roster",
+  "charter": {
+    "title": "Kingmaker_Expanded_Summoning_Implementation_Charter_v1.0.docx",
+    "version": "1.0",
+    "sha256": "73b0a42807499841f987eaf49fd8500498c1289e58e631ed897c007dc9796493",
+    "location": "C:/Dev/KingmakerGunslingerLab/handoffs (owner-supplied; not redistributed in this repository)",
+    "finalSprint": 45,
+    "automaticContinuationAllowed": false
+  },
+  "mission": {
+    "name": "Expanded Summoning Phase 0 — Sprints 0-2",
+    "authorizedSprints": [0, 1, 2],
+    "batchingException": "One worktree, one branch, one draft PR with separately reviewable Sprint 0/1/2 checkpoints. Acceptance criteria are not waived and human acceptance is not self-declared.",
+    "sprint3Started": false
+  },
+  "baseline": {
+    "acceptedDefaultBranch": "master",
+    "acceptedSha": "35555a8d8b4bd8df5a6868a60d3ca1fbb9cd366b",
+    "acceptedRelease": "0.0.136",
+    "informationalVersion": "0.0.136-rapid-reload-proficiency-gate",
+    "unityModManagerVersion": "0.32.4",
+    "workingBranch": "codex/expanded-summoning-phase0-sprints0-2",
+    "charterHistoricalBaseline": {
+      "release": "0.0.114",
+      "sha": "6874dc15a27ded132456dbdd480f47c794543a05",
+      "disposition": "Superseded, not reset. The charter's historical baseline is an ancestor of the accepted master used here; all charter roster figures were re-verified against shipped code at 0.0.136 and still hold."
+    }
+  },
+  "toolchain": {
+    "targetFramework": "v4.7",
+    "langVersion": "7.3",
+    "deterministic": true,
+    "treatWarningsAsErrors": true,
+    "dotnetSdk": "10.0.302",
+    "msbuild": "C:/Program Files (x86)/Microsoft Visual Studio/18/BuildTools/MSBuild/Current/Bin/MSBuild.exe",
+    "python": "3.14.6",
+    "gameInstall": "C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker",
+    "gameUnityVersion": "2018.4.10.10503941",
+    "assetAuthoring": {
+      "blender": "4.5.10 LTS",
+      "unityEditorForBundles": "2018.4.10f1 (C:/Program Files/Unity/Editor/Unity.exe)",
+      "unityAssetBuildProject": "C:/Dev/KingmakerGunslingerLab/unity-asset-build/KingmakerGunslinger-2018.4.10f1",
+      "note": "Unity 6000.5.6f1 is also installed via Hub but is not bundle-compatible with the 2018.4 runtime and is not used."
+    },
+    "machineLocalSetupRequiredInEachWorktree": [
+      "GamePath.props (gitignored) copied from the primary checkout",
+      "artifacts/inspection/bodyguard-native/Assembly-CSharp.il (+ .res) required by two Bodyguard IL contract tests"
+    ]
+  },
+  "sprint0": {
+    "name": "Baseline Freeze and Program Harness",
+    "technicalStatus": "COMPLETE",
+    "ownerAcceptance": "PENDING",
+    "productionBehaviorChanged": false,
+    "evidence": {
+      "domainSuiteBeforeChanges": "1702/1702 PASS, failures=0",
+      "domainSuiteAfterChanges": "1707/1707 PASS, failures=0",
+      "repositoryValidation": "PASS (version-aware, 0.0.136)",
+      "baselineCensus": "reports/expanded-summoning-phase0/sprint0-baseline-census.json"
+    },
+    "frozenSurface": {
+      "uniqueCreatures": 67,
+      "summonMonsterRosterEntries": 66,
+      "summonNaturesAllyRosterEntries": 57,
+      "registeredLogicalPlacements": 681,
+      "suppressedLogicalPlacements": 14,
+      "publishedLogicalPlacements": 667,
+      "nativeExpansionWrappers": 26,
+      "nativeOptionsInspected": 48,
+      "visibleSummonMonsterChoices": 371,
+      "visibleSummonNaturesAllyChoices": 322,
+      "totalVisibleChoices": 693,
+      "registeredButHidden": ["dire-bat"],
+      "borrowedBodyProxies": 20,
+      "largestSingleMenuNow": {
+        "summonMonster": "tier 8 and tier 9 = 69 visible choices",
+        "summonNaturesAlly": "tier 9 = 58 visible choices"
+      }
+    },
+    "baselineMatchesCharterHistoricalFigures": true,
+    "classifiedFindings": [
+      {
+        "id": "S0-F1",
+        "kind": "setup",
+        "summary": "A fresh worktree lacks the gitignored GamePath.props, so the domain suite cannot resolve Newtonsoft/Kingmaker references.",
+        "resolution": "Copied the machine-local file per GamePath.props.example. No repository change."
+      },
+      {
+        "id": "S0-F2",
+        "kind": "unavailable-validation",
+        "summary": "bodyguard-runtime.ac-breakdown and bodyguard-runtime.immediate-action-assembly failed in a fresh worktree because artifacts/inspection/bodyguard-native/Assembly-CSharp.il is gitignored build output.",
+        "resolution": "Restored the machine-local IL dump from the primary checkout. Both tests pass. Not a code defect and not caused by this mission."
+      },
+      {
+        "id": "S0-F3",
+        "kind": "pre-existing-coupling",
+        "summary": "The version-aware validator pins an exact Case(\") count for the active release, and every active feature block in validation/static-validation.json mirrors it. Adding domain tests requires updating all four records together.",
+        "resolution": "Updated 1702 -> 1707 in tools/validate_magic_circle134.py, tools/validate_rapid_reload_gate136.py and both static-validation.json blocks, matching the established feature-commit convention (see b2172801). No test was weakened or removed."
+      }
+    ]
+  },
+  "sprint1": {
+    "name": "Roster Manifest v2 and Menu Scalability Gate",
+    "technicalStatus": "IN-PROGRESS",
+    "ownerAcceptance": "PENDING"
+  },
+  "sprint2": {
+    "name": "Skinned-Creature Asset Pipeline and Pteranodon Vertical Slice",
+    "technicalStatus": "NOT-STARTED",
+    "ownerAcceptance": "PENDING"
+  },
+  "idealTarget": {
+    "uniqueCreatures": 145,
+    "creaturesRequiringWork": 95,
+    "baselineCompleteCreatures": 50,
+    "summonMonsterBaseEntries": 120,
+    "summonNaturesAllyBaseEntries": 110,
+    "coreVisibleQuantityPlacements": 1232,
+    "variantElementalFamilies": 5,
+    "derivationStatus": "Independently re-derived from charter Appendix A + Appendix B and reconciled to 145/95/50/120/110/1232 with zero delta.",
+    "identityReuse": {
+      "existingCreaturesReused": 67,
+      "newIdentitiesRequired": 78,
+      "tierDisagreementsWithShippedCatalog": 0,
+      "aliases": { "dire-tiger-smilodon": "dire-tiger" }
+    }
+  },
+  "openBlockers": [
+    {
+      "id": "B-1",
+      "kind": "setup",
+      "severity": "disclosed-not-blocking",
+      "item": "Kingmaker_Ideal_Summoning_Roster.xlsx",
+      "detail": "The mandated workbook is not present on this workstation (searched the lab tree, the repository, and the owner's Downloads/Desktop/Documents by name). The charter's Appendix A and Appendix B reproduce the controlling roster fields and independently reconcile to every published total (145/95/50/120/110/1232), so the manifest is built from the charter with recorded provenance rather than invented. Supply the workbook to confirm any field the appendices do not carry."
+    },
+    {
+      "id": "B-2",
+      "kind": "setup",
+      "severity": "disclosed-not-blocking",
+      "item": "Why work when others can do it for you - a guide to Summoning.docx",
+      "detail": "The tactical guide is not present on this workstation. The charter restates the guide's role for every creature in scope (Appendix A 'Required ideal work' plus the per-sprint battlefield roles), and the guide informs role only, never accepted statistics. Supply it to confirm Pteranodon's guide passage verbatim."
+    }
+  ],
+  "nextConcreteAction": "Complete Sprint 1: publish the ideal roster manifest with explicit coverage states, prove no production creature is published by it, and measure the per-parent menu scalability gate (69 -> ~124 worst-case single menu)."
+}
