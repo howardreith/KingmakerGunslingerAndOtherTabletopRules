@@ -1,5 +1,21 @@
 # Known issues and conservative adaptations
 
+- Rapid Reload's parent proficiency gate reads only the registered firearm
+  proficiency features, so any future independent proficiency source satisfies
+  it without further changes. `FirearmProficiencyScopeReconciler` remains a
+  separate concern: it removes incompatible scoped proficiency facts from
+  characters carrying the base or archetype proficiency presentations, so a
+  future independent scoped source granted to a Gunslinger or one of its
+  archetypes could still be reconciled away before the gate ever evaluates it.
+  That reconciler was deliberately left unchanged by the Rapid Reload gate work
+  and would need its own design pass when independent proficiency sources are
+  introduced.
+- The guarded `disposable-rapid-reload-proficiency-gate` runtime scenario is
+  registered, compiled and catalog-synchronised, but has not been executed. The
+  runtime orchestrator refuses administrator elevation by design and the
+  authoring session was elevated, so runtime qualification for the Rapid Reload
+  proficiency gate is recorded as blocked rather than passed. A clean Release
+  build and the complete domain suite are not runtime evidence.
 - RESOLVED (Z-FIREARM-MAINTENANCE, 0.0.127): the unified repair combat
   question is closed. Repair Firearm is now an out-of-combat, Broken-only
   full-round maintenance action gated by the native party-level combat

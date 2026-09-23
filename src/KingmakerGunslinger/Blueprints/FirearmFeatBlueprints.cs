@@ -74,6 +74,8 @@ namespace KingmakerGunslinger.Blueprints
         internal const string RapidReloadSelectionSymbol = "KMG.Feats.RapidReload";
         internal const string ExoticWeaponProficiencySymbol =
             "KMG.Feats.ExoticWeaponProficiencyFirearms";
+        internal const string ParentProficiencyGateComponentPrefix =
+            "$KMG_RapidReloadProficiencyGate_";
         internal static readonly FirearmKind[] Kinds =
             OfficialFirearmSupport.Kinds;
         internal static readonly FirearmKind[] RegisteredKinds =
@@ -132,8 +134,10 @@ namespace KingmakerGunslinger.Blueprints
                     wrapperChoices));
             wrapper.HideInUI = true;
             BlueprintFeatureSelection rapidSelection = registry.Register<BlueprintFeatureSelection>(
-                RapidReloadSelectionSymbol, () => CreateSelection("Rapid Reload",
-                    "Select a firearm type. Reloading that firearm uses the reduced action listed in its description.", rapid));
+                RapidReloadSelectionSymbol, () => CreateRapidReloadSelection(
+                    "Rapid Reload",
+                    "Select a firearm type. Reloading that firearm uses the reduced action listed in its description. Prerequisite: Proficiency with the selected firearm type. Class-granted firearm proficiency satisfies this requirement.",
+                    rapid, firearmProficiency, scopedProficiencies));
             var dependentSelections = new BlueprintFeatureSelection[DependentNames.Length];
             var dependentChoices = new BlueprintFeature[DependentNames.Length][];
             var registeredDependentChoices =
@@ -305,6 +309,50 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.Feats." + DependentSymbolStems[family] + kind + ".Description",
                     "Gain the " + DependentNames[family] + " benefit with " + kind + " firearms only."), null);
             return feature;
+        }
+
+        /// <summary>
+        /// Builds the project-owned Rapid Reload selection. It is the only feat
+        /// selection that carries a firearm-proficiency gate, so the generic
+        /// <see cref="CreateSelection"/> helper stays free of firearm rules.
+        /// </summary>
+        private static BlueprintFeatureSelection CreateRapidReloadSelection(
+            string name, string description, BlueprintFeature[] choices,
+            BlueprintFeature fullProficiency,
+            FirearmScopedProficiencyBlueprintSet scopedProficiencies)
+        {
+            BlueprintFeatureSelection selection = CreateSelection(name,
+                description, choices);
+            // The parent answers only "can this character qualify for any
+            // firearm Rapid Reload choice?"; every child keeps its own
+            // kind-exact check. One prerequisite per currently published
+            // official firearm kind is combined through the native engine's OR
+            // grouping: BlueprintFeature.MeetsPrerequisites folds every
+            // Prerequisite.GroupType.Any component with logical OR and folds
+            // the All group separately with logical AND, so these checks never
+            // become a conjunction. Proficiency identity comes from the
+            // existing proficiency features, never from class levels, an
+            // archetype, or the legacy compatibility wrapper.
+            selection.ComponentsArray = (selection.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Concat(
+                    RapidReloadPrerequisiteRules.ParentGateKinds.Select(kind =>
+                        (BlueprintComponent)CreateParentProficiencyPrerequisite(
+                            kind, fullProficiency, scopedProficiencies)))
+                .ToArray();
+            return selection;
+        }
+
+        private static PrerequisiteFirearmProficiency
+            CreateParentProficiencyPrerequisite(FirearmKind kind,
+                BlueprintFeature fullProficiency,
+                FirearmScopedProficiencyBlueprintSet scopedProficiencies)
+        {
+            PrerequisiteFirearmProficiency prerequisite =
+                CreateProficiencyPrerequisite(kind, fullProficiency,
+                    scopedProficiencies);
+            prerequisite.name = ParentProficiencyGateComponentPrefix + kind;
+            prerequisite.Group = Prerequisite.GroupType.Any;
+            return prerequisite;
         }
 
         private static PrerequisiteFirearmProficiency

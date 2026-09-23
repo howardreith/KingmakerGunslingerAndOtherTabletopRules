@@ -129,7 +129,7 @@ $protected = [ordered]@{
     'assets-source/original-models/eastern-weapons/world-tree-severer-icon-source.png' = 'cff3b5db26c709d15d47cd8af6cfe9da62c0c7c9ae7a681ce028a0efe85e3e33'
     'assets-source/original-models/elven-branched-spear/elven-branched-spear-icon.png' = 'ece96570240e97ec009914f42a569415b622282689276b8beeee258e95846960'
     'src/KingmakerGunslinger/Firearms/FirearmKind.cs' = 'e3a94f162f9b62cdbb4b1b5274d1a6d4aa43d4477d1099a1d5f709c45aaee911'
-    'src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs' = 'f08609beb8f8ffca8eefb0f02035c347298773753268009619ef1f24f52919b1'
+    'src/KingmakerGunslinger/Blueprints/FirearmFeatBlueprints.cs' = 'f31e06869d3312ed39e71668276fdc0e928e062a938fcf5f7ec9fa2b2e6102bf'
     # NativeFirearmFeatIntegration's explicitly authorized presentation delta is
     # checked against the original whole-file hash by validate_icon_catalog.py.
     # The canonical gate rejects every change outside that exact constructor site.

@@ -860,6 +860,7 @@
     <Compile Include="Rules\TwinShotKnockdownPolicy.cs" />
     <Compile Include="Reloading\FullAttackAutoReloadPolicy.cs" />
     <Compile Include="Reloading\RapidReloadRuntime.cs" />
+    <Compile Include="Reloading\RapidReloadPrerequisiteRules.cs" />
     <Compile Include="Reloading\ReloadAbilityPresentationPatches.cs" />
     <Compile Include="Reloading\ReloadPlayerFacingReasonPolicy.cs" />
     <Compile Include="Feats\FirearmWeaponFocusAttackBonus.cs" />
@@ -1076,6 +1077,7 @@
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeActionIcons.cs" />
     <Compile Include="RuntimeTesting\NativeRacialActionIconRules.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmHigherFeatRoots.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.RapidReloadProficiencyGate.cs" />
     <Compile Include="RuntimeTesting\FirearmHigherFeatRootsRules.cs" />
     <Compile Include="RuntimeTesting\IconConsumerCensus.cs" />
     <Compile Include="RuntimeTesting\IconGraphSnapshot.cs" />

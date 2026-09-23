@@ -1290,6 +1290,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableRapidReloadProficiencyGate)
+                {
+                    Complete(RunRapidReloadProficiencyGate());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableEmptyFirearmCommand)
                 {
                     Complete(RunDisposableEmptyFirearmCommand());
