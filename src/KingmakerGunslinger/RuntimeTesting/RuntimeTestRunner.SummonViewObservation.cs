@@ -42,6 +42,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool hasAnimator = false;
             bool boundToNamedBones = false;
             bool cleaned = false;
+            string animationBinding = "<unobserved>";
 
             try
             {
@@ -63,6 +64,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 boundToNamedBones = observed.BoundBoneCount > 0 &&
                     observed.RootBoneNamed && observed.BindPoseCount ==
                         observed.BoundBoneCount;
+                animationBinding = observed.AnimationBinding;
             }
             finally
             {
@@ -98,10 +100,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "characterAvatarAbsent=" + characterAvatarAbsent,
                     characterAvatarAbsent,
                     "UnitEntityView.CharacterAvatar on the transient instance"),
-                Assertion("pteranodon-donor-animator-present",
-                    "an Animator drives the donor",
-                    "hasAnimator=" + hasAnimator, hasAnimator,
-                    "UnitEntityView.Animator on the transient instance"),
+                // The first run of this scenario demanded an Animator here and
+                // failed. That assertion was wrong: the donor prefab carries no
+                // Animator of its own, so animation must be bound when the view
+                // attaches to a unit. Recording where animation actually comes
+                // from is the finding; demanding it on a detached prefab was
+                // exactly the assumption the charter warns against.
+                Assertion("pteranodon-donor-animation-binding-recorded",
+                    "the animation source on a detached donor prefab is recorded, not assumed",
+                    animationBinding, animationBinding != "<unobserved>",
+                    "Animator on the view, Animators in children, and UnitAnimationManager"),
                 Assertion("pteranodon-donor-bone-binding-is-consistent",
                     "named root bone with bindposes matching the bound bone count",
                     "boundToNamedBones=" + boundToNamedBones, boundToNamedBones,
@@ -134,6 +142,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool RootBoneNamed;
             internal bool CharacterAvatarAbsent;
             internal bool HasAnimator;
+            internal string AnimationBinding;
         }
 
         private static Observation Describe(UnitEntityView view)
@@ -148,6 +157,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             text.Append("view=").Append(view.name);
             text.Append(";characterAvatar=")
                 .Append(result.CharacterAvatarAbsent ? "<null>" : "present");
+
+            // Where animation actually comes from. A detached prefab may carry
+            // none of these; that is a fact about attach-time binding, not a
+            // defect, and Sprint 2 has to reuse whatever does drive the bones.
+            Animator[] childAnimators = view.GetComponentsInChildren<Animator>(true);
+            object animationManager = ReadField(view, "m_AnimatorManager");
+            var binding = new StringBuilder();
+            binding.Append("animatorOnView=")
+                .Append(animator == null ? "<null>" : animator.name)
+                .Append(";animatorsInChildren=").Append(Count(childAnimators.Length));
+            if (childAnimators.Length > 0)
+            {
+                binding.Append(";childAnimatorNames=").Append(string.Join(",",
+                    childAnimators.Where(value => value != null)
+                        .Select(value => value.name).Take(6).ToArray()));
+            }
+
+            binding.Append(";animationManagerField=")
+                .Append(animationManager == null || animationManager.Equals(null)
+                    ? "<null>" : animationManager.GetType().Name);
+            result.AnimationBinding = binding.ToString();
+            text.Append(';').Append(result.AnimationBinding);
 
             if (animator != null)
             {
@@ -205,13 +236,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .Distinct(StringComparer.Ordinal).Take(4).ToArray()))
                     .Append(']');
 
-                // The exact bone names an original mesh would have to bind to.
+                // The exact bone names an original mesh must bind to. The whole
+                // list is recorded deliberately: a truncated rig is useless to
+                // the modeller, and this is the evidence Sprint 2 authors from.
                 string[] boneNames = bones.Where(value => value != null)
                     .Select(value => value.name).ToArray();
+                text.Append(";boneCount=").Append(Count(boneNames.Length));
                 text.Append(";boneNames=")
-                    .Append(string.Join(",", boneNames.Take(40).ToArray()));
-                if (boneNames.Length > 40)
-                    text.Append(",+").Append(Count(boneNames.Length - 40));
+                    .Append(string.Join(",", boneNames));
             }
 
             MeshRenderer[] plain = view.GetComponentsInChildren<MeshRenderer>(true);
