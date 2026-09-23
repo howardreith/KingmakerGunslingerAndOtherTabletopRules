@@ -133,6 +133,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var pendingFailures = new List<string>();
             var musketFailures = new List<string>();
             var identityFailures = new List<string>();
+            var ownershipFailures = new List<string>();
+            JObject visitOwnership = null;
             JObject pendingClass = null, pendingArchetype = null;
             JObject musketMaster = null, classIdentity = null;
             BlueprintFeature independentFull = null;
@@ -273,6 +275,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 musketMaster = RunRapidReloadMusketMaster(ctx, musketFailures);
                 classIdentity = RunRapidReloadClassIdentityControl(ctx,
                     identityFailures);
+                visitOwnership = RunRapidReloadVisitOwnershipCheck(ctx,
+                    ownershipFailures);
             }
             finally
             {
@@ -337,6 +341,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Describe(classIdentity, identityFailures),
                     classIdentityAccepted && identityFailures.Count == 0,
                     "committed Gunslinger progression with fixture-local fact removal, re-proved on the live preview"),
+                Assertion("rapid-reload-visit-ownership-cleanup",
+                    "when a Rapid Reload gate visit fails to initialise after its level-up controller exists, the helper that created it owns the native cancellation, the original setup failure reaches the caller with its message and stack intact, and a successful initialisation instead hands the same controller to the caller",
+                    Describe(visitOwnership, ownershipFailures),
+                    ownershipFailures.Count == 0,
+                    "OpenRapidReloadVisit failure window driven by a natively rejected archetype"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "detached entity disposal and exact reference snapshots"),
@@ -435,18 +444,64 @@ namespace KingmakerGunslinger.RuntimeTesting
             RapidReloadGateContext ctx, UnitDescriptor descriptor,
             BlueprintCharacterClass characterClass, BlueprintArchetype archetype)
         {
-            var controller = (LevelUpController)ctx.Start.Invoke(null,
+            LevelUpController created;
+            return OpenRapidReloadVisit(ctx, descriptor, characterClass, archetype,
+                out created);
+        }
+
+        // R5: the helper owns the controller it creates until initialization
+        // succeeds. If a later step rejects or throws, the caller's assignment
+        // never completed, so the caller's finally block holds null and cannot
+        // cancel this instance — the cancellation has to happen here. On the
+        // success path ownership transfers to the caller and nothing is
+        // cancelled, so no routine double-cancellation is introduced. Nothing is
+        // claimed about a controller ctx.Start.Invoke never returned.
+        // `created` reports the controller this helper obtained whether or not
+        // initialization succeeded; only the R5 ownership self-check passes it.
+        private static LevelUpController OpenRapidReloadVisit(
+            RapidReloadGateContext ctx, UnitDescriptor descriptor,
+            BlueprintCharacterClass characterClass, BlueprintArchetype archetype,
+            out LevelUpController created)
+        {
+            created = (LevelUpController)ctx.Start.Invoke(null,
                 new object[] { descriptor, false, null, null, ctx.Mode });
-            if (archetype != null && !controller.AddArchetype(characterClass, archetype))
+            if (created == null)
                 throw new InvalidOperationException(
-                    "Native archetype selection rejected the Rapid Reload gate visit.");
-            if (!controller.SelectClass(characterClass, false))
-                throw new InvalidOperationException(
-                    "Native class selection rejected the Rapid Reload gate visit.");
-            controller.ApplyClassMechanics();
-            controller.ApplySpellbook();
-            controller.ApplySkillPoints();
-            return controller;
+                    "The native level-up controller factory returned no controller.");
+            LevelUpController controller = created;
+            try
+            {
+                if (archetype != null &&
+                    !controller.AddArchetype(characterClass, archetype))
+                    throw new InvalidOperationException(
+                        "Native archetype selection rejected the Rapid Reload gate visit.");
+                if (!controller.SelectClass(characterClass, false))
+                    throw new InvalidOperationException(
+                        "Native class selection rejected the Rapid Reload gate visit.");
+                controller.ApplyClassMechanics();
+                controller.ApplySpellbook();
+                controller.ApplySkillPoints();
+                return controller;
+            }
+            catch (Exception setupError)
+            {
+                Exception cleanupError = TryCancelRapidReloadVisit(controller);
+                Exception combined = RapidReloadVisitCleanupRules.Compose(setupError,
+                    cleanupError);
+                if (combined != null) throw combined;
+                // Bare rethrow: the original setup failure keeps its stack.
+                throw;
+            }
+        }
+
+        // The single native cancellation boundary. Returns the cleanup failure
+        // instead of throwing, so neither a setup failure nor a cleanup failure
+        // can be lost.
+        private static Exception TryCancelRapidReloadVisit(LevelUpController controller)
+        {
+            if (controller == null) return null;
+            try { controller.Cancel(); return null; }
+            catch (Exception cleanupError) { return cleanupError; }
         }
 
         // R1: an explicit reservation of one native feat slot. The engine
@@ -1437,12 +1492,101 @@ namespace KingmakerGunslinger.RuntimeTesting
             return row;
         }
 
+        // Caller-side cleanup for a controller the caller owns. It shares the
+        // one cancellation boundary with the failed-initialization path, and a
+        // null controller is a no-op, so a visit the helper already cancelled is
+        // never cancelled twice.
         private static void CloseRapidReloadVisit(LevelUpController controller,
             JObject row)
         {
-            if (controller == null) return;
-            try { controller.Cancel(); }
-            catch (Exception error) { row["cleanupError"] = error.Message; }
+            Exception cleanupError = TryCancelRapidReloadVisit(controller);
+            if (cleanupError != null) row["cleanupError"] = cleanupError.Message;
+        }
+
+        // ------------------------------------------------------------------
+        // R5: the failure window inside OpenRapidReloadVisit
+        // ------------------------------------------------------------------
+        // Musket Master is not a Fighter archetype, so AddArchetype.Check
+        // refuses it deterministically after the controller already exists.
+        // That reproduces the exact window R5 names: a controller was obtained,
+        // a later initialisation step failed, and the caller's variable was
+        // never assigned, so only the helper can cancel it.
+        private JObject RunRapidReloadVisitOwnershipCheck(RapidReloadGateContext ctx,
+            IList<string> failures)
+        {
+            var row = new JObject { ["case"] = "R5.failed-initialization-cleanup" };
+            UnitEntityData failureUnit = CreateDisposableUnit();
+            LevelUpController callerController = null;
+            LevelUpController createdInFailure = null;
+            try
+            {
+                try
+                {
+                    callerController = OpenRapidReloadVisit(ctx,
+                        failureUnit.Descriptor, ctx.Fighter, ctx.MusketMaster,
+                        out createdInFailure);
+                    row["initializationFailed"] = false;
+                }
+                catch (InvalidOperationException setupError)
+                {
+                    row["initializationFailed"] = true;
+                    row["setupErrorType"] = setupError.GetType().Name;
+                    row["setupErrorMessage"] = setupError.Message;
+                    row["setupErrorHasStack"] =
+                        !string.IsNullOrEmpty(setupError.StackTrace);
+                }
+                row["controllerCreatedInFailureWindow"] = createdInFailure != null;
+                row["callerControllerStillNull"] = callerController == null;
+                if (!(bool)row["initializationFailed"])
+                    failures.Add("visit-ownership:forced-rejection-did-not-occur");
+                else
+                {
+                    if ((string)row["setupErrorMessage"] == null ||
+                        !((string)row["setupErrorMessage"]).Contains(
+                            "Native archetype selection rejected"))
+                        failures.Add("visit-ownership:original-setup-error-not-preserved");
+                    if (!(bool)row["setupErrorHasStack"])
+                        failures.Add("visit-ownership:setup-error-lost-its-stack");
+                }
+                if (!(bool)row["controllerCreatedInFailureWindow"])
+                    failures.Add("visit-ownership:no-controller-in-failure-window");
+                if (!(bool)row["callerControllerStillNull"])
+                    failures.Add("visit-ownership:caller-unexpectedly-owned-the-controller");
+            }
+            finally
+            {
+                // The caller owns nothing here, so this cancels nothing; the
+                // disposable unit still reaches its cleanup boundary.
+                CloseRapidReloadVisit(callerController, row);
+                failureUnit.Dispose();
+            }
+
+            // Successful initialisation hands the same controller to the caller
+            // and leaves its cleanup to the caller's own finally block.
+            UnitEntityData successUnit = CreateDisposableUnit();
+            LevelUpController successController = null;
+            try
+            {
+                LevelUpController createdInSuccess;
+                successController = OpenRapidReloadVisit(ctx,
+                    successUnit.Descriptor, ctx.Fighter, null, out createdInSuccess);
+                row["successfulInitializationReturnsCreatedController"] =
+                    successController != null &&
+                    ReferenceEquals(successController, createdInSuccess);
+                row["returnedControllerUsable"] = successController != null &&
+                    successController.State != null && successController.Preview != null;
+                if (!(bool)row["successfulInitializationReturnsCreatedController"])
+                    failures.Add("visit-ownership:success-path-did-not-transfer-ownership");
+                if (!(bool)row["returnedControllerUsable"])
+                    failures.Add("visit-ownership:returned-controller-unusable");
+            }
+            finally
+            {
+                CloseRapidReloadVisit(successController, row);
+                successUnit.Dispose();
+            }
+            row["cleanupComposition"] = RapidReloadVisitCleanupRules.CombinedFailureMessage;
+            return row;
         }
 
         // ------------------------------------------------------------------
