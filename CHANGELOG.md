@@ -47,6 +47,13 @@
   fixture is rejected; and every claimed successful confirmation must observe
   `LevelUpState.IsComplete` as true immediately before the level is applied,
   with the one deliberate lower-level application labelled a defensive probe.
+- Made the scenario's visit helper exception-safe: it owns the level-up
+  controller it creates until initialisation succeeds, cancels that exact
+  controller when a later step rejects or throws (the caller's variable is still
+  null and cannot), rethrows the original failure with its stack intact, and
+  reports a cancellation that also fails alongside it instead of discarding
+  either. Successful initialisation still hands the controller to the caller,
+  so nothing is cancelled twice.
 - The scenario has not been executed; runtime qualification is blocked because
   the authoring sessions are elevated and the runtime orchestrator correctly
   refuses administrator elevation.
