@@ -1372,6 +1372,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario ==
+                    RuntimeTestScenarioCatalog.ObserveSummonPteranodonViewContracts)
+                {
+                    Complete(RunSummonPteranodonViewContractObservation());
+                    return;
+                }
+                if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableFirearmVisualRigs)
                 {
                     Complete(RunDisposableFirearmVisualRigs());
