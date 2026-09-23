@@ -68,6 +68,17 @@ Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakerguns
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakergunslinger.elvenbranchedspear') -Destination $bundleDestination
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakergunslinger.easternweapons') -Destination $bundleDestination
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\asset-bundle-manifest.json') -Destination $bundleDestination
+
+# The Pteranodon replacement visual ships as mesh data rather than an
+# AssetBundle: it carries no bind poses, no material and no import settings,
+# and it does not depend on a Unity editor licence or editor version.
+$pteranodonSource = Join-Path $outputDirectory 'assets\pteranodon'
+if (Test-Path -LiteralPath $pteranodonSource -PathType Container) {
+    $pteranodonDestination = Join-Path $modDirectory 'assets\pteranodon'
+    New-Item -ItemType Directory -Path $pteranodonDestination -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $pteranodonSource 'pteranodon-mesh.json') `
+        -Destination $pteranodonDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'

@@ -82,6 +82,8 @@ def parse_args():
                         choices=("all", "body", "membrane"))
     parser.add_argument("--blend-out", default=None)
     parser.add_argument("--report", default=None)
+    parser.add_argument("--mesh-data", default=None,
+                        help="runtime mesh data written for the loader")
     return parser.parse_args(argv)
 
 
@@ -418,6 +420,78 @@ def build_armature(rig):
     return obj
 
 
+def write_mesh_data(path, obj, mesh, weights, report):
+    """Emit the mesh as data the runtime loader can build a Mesh from.
+
+    This is the shipped path, and the AssetBundle is the alternative rather than
+    the other way round. Three reasons, in order of weight:
+
+    - It carries strictly less. The bundle format would embed bind poses, a
+      material and import settings; this carries our vertices, our normals, our
+      triangles, our weights, and the donor's bone NAMES. Names are the binding
+      contract and are already recorded in the native audit; no donor transform
+      leaves the machine.
+    - It does not depend on a Unity editor licence or a specific editor version.
+      That dependency is not hypothetical: the 2018.4.10f1 install that built
+      every previous bundle stopped accepting its licence between 2026-08-21 and
+      2026-09-23 and now demands account credentials to re-activate.
+    - It is less code than the bundle path on both sides.
+
+    Triangles are emitted with a flipped winding. Blender is right-handed with
+    +Z up; the donor renderer's space is left-handed with +Y up, which is the
+    space these vertices are authored in, so the handedness difference shows up
+    as inside-out faces unless the winding is reversed here.
+    """
+    import struct
+
+    # Blender 4.5 computes vertex normals itself; calc_normals_split was
+    # removed. Per-vertex normals are what a skinned mesh needs anyway.
+    vertices, normals, triangles = [], [], []
+    for vertex in mesh.vertices:
+        vertices.append((vertex.co.x, vertex.co.y, vertex.co.z))
+        normals.append((vertex.normal.x, vertex.normal.y, vertex.normal.z))
+    for polygon in mesh.polygons:
+        loop = list(polygon.vertices)
+        for corner in range(1, len(loop) - 1):
+            triangles.extend((loop[0], loop[corner + 1], loop[corner]))
+
+    order = sorted({name for entries in weights.values()
+                    for name, _ in entries})
+    index_of = {name: index for index, name in enumerate(order)}
+    bone_weights = []
+    for index in range(len(mesh.vertices)):
+        entries = sorted(weights.get(index, []), key=lambda e: -e[1])[:4]
+        total = sum(value for _, value in entries) or 1.0
+        slots = [(index_of[name], value / total) for name, value in entries]
+        while len(slots) < 4:
+            slots.append((0, 0.0))
+        bone_weights.append(slots)
+
+    payload = {
+        "schemaVersion": 1,
+        "space": "donor renderer local; +X left, +Y up, -Z forward",
+        "rigSha256": report["rigSha256"],
+        "bones": order,
+        "vertexCount": len(vertices),
+        "triangleCount": len(triangles) // 3,
+    }
+    blob = bytearray()
+    for value in vertices:
+        blob += struct.pack("<3f", *value)
+    for value in normals:
+        blob += struct.pack("<3f", *value)
+    for value in triangles:
+        blob += struct.pack("<i", value)
+    for slots in bone_weights:
+        for bone_index, weight in slots:
+            blob += struct.pack("<if", bone_index, weight)
+
+    import base64
+    payload["data"] = base64.b64encode(bytes(blob)).decode("ascii")
+    with open(path, "w", encoding="utf-8", newline=chr(10)) as handle:
+        json.dump(payload, handle, indent=1)
+
+
 def main():
     args = parse_args()
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -480,6 +554,10 @@ def main():
     if args.report:
         with open(args.report, "w", encoding="utf-8", newline="\n") as handle:
             json.dump(report, handle, indent=1)
+
+    if args.mesh_data:
+        write_mesh_data(args.mesh_data, obj, mesh, indexed, report)
+        log("wrote " + args.mesh_data)
 
     bpy.ops.object.select_all(action="DESELECT")
     obj.select_set(True)
