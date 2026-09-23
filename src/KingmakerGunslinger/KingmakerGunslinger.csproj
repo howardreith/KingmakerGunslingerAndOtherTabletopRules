@@ -211,6 +211,11 @@
     <Compile Include="Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs" />
     <Compile Include="Acquisition\MagicWeaponPricing.cs" />
     <Compile Include="Acquisition\ProgressionWeaponCatalog.cs" />
+    <Compile Include="FavoredClass\FavoredClassRankPolicy.cs" />
+    <Compile Include="FavoredClass\FavoredClassCatalog.cs" />
+    <Compile Include="FavoredClass\FavoredClassEligibility.cs" />
+    <Compile Include="FavoredClass\FavoredClassRaceIdentity.cs" />
+    <Compile Include="FavoredClass\FavoredClassHostContract.cs" />
     <Compile Include="Acquisition\BetterVendors\BetterVendorsContract.cs" />
     <Compile Include="Acquisition\BetterVendors\BetterVendorsProgressionSchedule.cs" />
     <Compile Include="Acquisition\BetterVendors\BetterVendorsStockPass.cs" />

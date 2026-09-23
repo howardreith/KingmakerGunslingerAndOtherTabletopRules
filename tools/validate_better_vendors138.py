@@ -25,6 +25,9 @@ DETERMINISTIC_TEST_COUNT = 1742
 STATIC_KEY = "betterVendorsProgression138"
 PRESERVED_MANIFEST_ENTRIES = 1913
 CATALOG = "docs/better-vendors-progression-catalog.json"
+# Exact ordered (symbol, guid) pairs a later, separately validated candidate
+# appends after this release's 43 identities (none by default).
+AUTHORIZED_APPENDED_AFTER = ()
 
 # Exact ordered identities appended after the preserved 1913-entry ledger.
 APPENDED = (
@@ -93,9 +96,11 @@ def validate(root: Path) -> None:
     if len(APPENDED) != 43 or len({guid for _, guid in APPENDED}) != 43:
         raise AssertionError("The appended progression identity list is malformed")
     # The Magic Circle block stays exact; only these identities may follow it.
-    validate_magic_circle.AUTHORIZED_APPENDED = APPENDED
-    validate_icon_overhaul132.MANIFEST_TOTAL = PRESERVED_MANIFEST_ENTRIES + len(APPENDED)
-    validate_icon_overhaul132.MANIFEST_ACTIVE = 1911 + len(APPENDED)
+    validate_magic_circle.AUTHORIZED_APPENDED = APPENDED + tuple(AUTHORIZED_APPENDED_AFTER)
+    validate_icon_overhaul132.MANIFEST_TOTAL = (PRESERVED_MANIFEST_ENTRIES + len(APPENDED) +
+                                                len(AUTHORIZED_APPENDED_AFTER))
+    validate_icon_overhaul132.MANIFEST_ACTIVE = (1911 + len(APPENDED) +
+                                                 len(AUTHORIZED_APPENDED_AFTER))
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     baseline.PACKAGE = PACKAGE
@@ -105,9 +110,12 @@ def validate(root: Path) -> None:
 
     entries = json.loads((root / "blueprints/blueprints.json").read_text(
         encoding="utf-8"))["entries"]
-    tail = entries[PRESERVED_MANIFEST_ENTRIES:]
+    tail = entries[PRESERVED_MANIFEST_ENTRIES:PRESERVED_MANIFEST_ENTRIES + len(APPENDED)]
     if [(entry["symbol"], entry["guid"]) for entry in tail] != list(APPENDED):
         raise AssertionError("Better Vendors progression identities drifted")
+    after = entries[PRESERVED_MANIFEST_ENTRIES + len(APPENDED):]
+    if [(entry["symbol"], entry["guid"]) for entry in after] != list(AUTHORIZED_APPENDED_AFTER):
+        raise AssertionError("Unauthorized identities follow the Better Vendors block")
     if any(entry["plannedType"] != "BlueprintItemWeapon" or
            entry["status"] != "active" or
            entry["milestone"] != "Better Vendors progression" for entry in tail):
@@ -163,12 +171,12 @@ def validate(root: Path) -> None:
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": 1742,
         "publicReleaseAuthorized": True,
         "ownerAuthorizedRelease": True,
         "candidateOnly": False,
-        "releaseVersion": VERSION,
-        "releaseInformationalVersion": INFORMATIONAL_VERSION,
+        "releaseVersion": "0.0.138",
+        "releaseInformationalVersion": "0.0.138-better-vendors-progression",
         "progressionEntries": 50,
         "reusedCanonicalEntries": 7,
         "newBlueprints": 43,
@@ -202,7 +210,7 @@ def validate(root: Path) -> None:
         raise AssertionError("The Craft Magic Items interaction status must be recorded")
 
     require_tokens(root / "docs/RELEASE-NOTES-0.0.138.md",
-        INFORMATIONAL_VERSION, "Better Vendors",
+        "0.0.138-better-vendors-progression", "Better Vendors",
         "published under explicit owner authorization",
         "NOT RUN, waived by the owner", "2.0.8", "Military", "Reliable",
         "catch-up", "optional", "uninstall")
