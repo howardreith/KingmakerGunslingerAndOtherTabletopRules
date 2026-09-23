@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased: Rapid Reload combat-feat classification (candidate on 0.0.136)
+## 0.0.137-rapid-reload-combat-feat
 
-- Not a release. This candidate is built on the published 0.0.136 source.
-  Public release is not authorized, and the owner's 0.0.136 runtime waiver does
-  not cover it. Native runtime qualification is pending.
+- Published under explicit owner authorization. The guarded native scenario
+  passed all eleven assertions on the candidate; save/load compatibility is
+  unverified.
 - The Rapid Reload parent selection is now classified as both a feat and a
   combat feat. Its own `BlueprintFeature.Groups` was never assigned, so it
   stayed empty. The selection's `Group`/`Group2` only name the category the
@@ -27,11 +27,13 @@
   sources for the request. Character-creation visits also settle race, name,
   portrait, gender and voice through the native setters. Without both, the
   first native runs could not complete any level.
-- Native run on the candidate: the classification, publication, prerequisite,
-  every acquisition route (including the Gunslinger 1 → Fighter 1 bonus slot),
-  Musket Master and class-identity assertions pass. Three pre-existing harness
-  expectations still fail and are recorded in TESTING.md for owner review, so
-  the scenario as a whole is not a PASS.
+- At the owner's direction, three pre-existing scenario expectations were
+  corrected to match native behaviour. A chosen selection appears on the
+  preview at once, so the checks now require that no firearm is granted.
+  The forced-level probe only has to show no firearm is banked. The
+  class-change fixture refunds overspent skill points through native
+  `UnspendSkillPoint`.
+- Native run on the candidate: all eleven assertions PASS.
 
 ## 0.0.136-rapid-reload-proficiency-gate
 
