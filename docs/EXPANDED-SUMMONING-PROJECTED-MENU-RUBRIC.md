@@ -76,3 +76,49 @@ just the call.
 executable form, so this document and the gate cannot drift apart silently. The
 scenario that drives it is development-only: it is constructed by the guarded
 runtime-test runner for one allowlisted disposable scenario and by nothing else.
+
+
+## Status of the live measurement, 2026-09-23
+
+**Not obtained.** The fixture is implemented, wired as
+`disposable-expanded-summoning-projected-menu`, and gated by the domain suite,
+but it has not produced a measurement against the disposable working save.
+
+Seven guarded runs were spent on it. What they established, in order:
+
+1. The scenario was not named in the runner's working-save chains, so it
+   launched and sat idle. Fixed, with a test that now enforces the naming.
+2. `FindObjectsOfTypeAll<ActionBarSpellsGroup>` returns 48 instances, not one:
+   prefabs and UI templates are included.
+3. Filtering to instances belonging to a loaded scene leaves 47, because every
+   `ActionBarGroupSlot` owns its own popup group. Toggling one of those produced
+   no snapshot at all.
+4. The reason is that the shipped layout anchors the popup to the slot the
+   player clicked, captured by a Harmony prefix on `OnToggleGroupClick`. The
+   fixture now reproduces that capture and toggles the clicked slot's own
+   sub-group - the actual player path.
+5. With that in place, no `ActionBarGroupSlot` is active in the loaded save's
+   hierarchy at all, so there is no anchor to measure against.
+
+The honest reading is that this fixture needs a save in which the caster has a
+summon parent on the action bar, and `KMG_AUTOMATION_WORKING` does not present
+one. Creating such a fixture is a change to the shared disposable save that
+other scenarios depend on, and it is not obviously within the bounded scope of
+this sprint.
+
+### What is claimed instead, precisely
+
+- **The layout policy is measured, exhaustively, at domain level.**
+  `ExpandedSummoningMenuScalabilityTests` evaluates four viewports against 200
+  option counts - 800 combinations - including the projected 120 and 110.
+- **The real rendered menu is measured, supervised.**
+  `observe-expanded-summoning-variant-menu` snapshots an actual menu a human
+  opened, checking rendered bounds, viewport, scrolling, and first/middle/last
+  reachability.
+- **The live projected-size measurement is not claimed at all.** No number in
+  this document is reported as having been observed at 120 or 110 entries in a
+  running game.
+
+The fixture stays in the tree because it is correct as far as it goes and
+becomes useful the moment a suitable fixture exists; its failure message names
+exactly what is missing rather than timing out silently.
