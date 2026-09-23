@@ -440,6 +440,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.compatibility-unattended-only", ExpandedSummoningCompatibilityMatrixTests.AutomatedMatrixNeverSchedulesSupervisedScenarios),
             Case("pteranodon.mesh-data-well-formed", PteranodonMeshDataTests.ShippedMeshDataIsWellFormed),
             Case("pteranodon.mesh-data-payload", PteranodonMeshDataTests.ShippedMeshDataPayloadIsConsistent),
+            Case("pteranodon.albedo-manifest", PteranodonMeshDataTests.ShippedAlbedoMatchesItsManifest),
             Case("expanded-summoning.merge-idempotent", SummonPublicationPolicyTests.MergePreservesOrderAndIsIdempotent),
             Case("expanded-summoning.merge-conflicts", SummonPublicationPolicyTests.MergeDeduplicatesExistingAndRejectsConflicts),
             Case("expanded-summoning.native-reconciliation", SummonPublicationPolicyTests.NativeDuplicateCatalogIsExact),

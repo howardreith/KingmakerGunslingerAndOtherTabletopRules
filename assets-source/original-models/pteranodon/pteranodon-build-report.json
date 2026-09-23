@@ -1,12 +1,12 @@
 {
- "schemaVersion": 2,
+ "schemaVersion": 3,
  "parts": "all",
  "rigSource": "bind poses of the attached summoned Pteranodon (SkinnedMeshRenderer.sharedMesh.bindposes inverted)",
  "rigSpace": "renderer-local; the frame the donor mesh was authored in",
  "rigSha256": "38fc5f00831a831f9a3885609a8db0d608776ebc9d66af51ca5a10dab8ec75f2",
  "rigBoneCount": 72,
- "vertices": 680,
- "polygons": 584,
+ "vertices": 682,
+ "polygons": 585,
  "boneGroups": 46,
  "maxInfluencesPerVertex": 3,
  "extent": {
@@ -25,5 +25,45 @@
  },
  "span": 8.641280174255371,
  "length": 3.2232022285461426,
- "spanToLength": 2.6809612185435556
+ "spanToLength": 2.6809612185435556,
+ "uvAtlas": {
+  "membrane": [
+   0.0,
+   0.5,
+   1.0,
+   1.0
+  ],
+  "body": [
+   0.0,
+   0.25,
+   0.5,
+   0.5
+  ],
+  "crest": [
+   0.5,
+   0.25,
+   1.0,
+   0.5
+  ],
+  "beak": [
+   0.0,
+   0.0,
+   0.5,
+   0.25
+  ],
+  "limbs": [
+   0.5,
+   0.0,
+   1.0,
+   0.25
+  ]
+ },
+ "albedo": {
+  "file": "pteranodon-albedo.png",
+  "sha256": "7169649b8ec101cf6ff3071420678feab4499a743bba263ecbefe2b04b0325c7",
+  "width": 1024,
+  "height": 1024,
+  "bitDepth": 8,
+  "colorType": 2
+ }
 }

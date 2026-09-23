@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Harmony12;
@@ -30,6 +31,21 @@ namespace KingmakerGunslinger.Summoning
         internal const string PteranodonBlueprintName =
             "KMG_Summoning_Unit_Pteranodon";
         private const string CustomChildName = "KMG_PteranodonMembrane";
+        private const string MainTexture = "_MainTex";
+
+        /// <summary>
+        /// Texture slots the donor's material may carry that the painting does
+        /// not: the eagle's normal, specular, occlusion, emission and detail
+        /// maps are indexed by the eagle's texture coordinates, which mean
+        /// nothing on this mesh. Each one present is cleared on the private
+        /// copy, and the shader falls back to its flat default for that slot.
+        /// </summary>
+        private static readonly string[] SuppressedMaps =
+        {
+            "_BumpMap", "_SpecGlossMap", "_MetallicGlossMap", "_OcclusionMap",
+            "_EmissionMap", "_DetailAlbedoMap", "_DetailNormalMap", "_DetailMask",
+            "_ParallaxMap"
+        };
 
         private sealed class Attachment
         {
@@ -97,6 +113,9 @@ namespace KingmakerGunslinger.Summoning
             string[] boneNames;
             if (!PteranodonAssetRuntime.TryGetMembrane(out source, out boneNames))
                 return "donor-visual:" + PteranodonAssetRuntime.Status;
+            Texture2D albedo;
+            if (!PteranodonAssetRuntime.TryGetAlbedo(out albedo))
+                return "donor-visual:" + PteranodonAssetRuntime.Status;
 
             SkinnedMeshRenderer[] donors = view
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true)
@@ -118,22 +137,29 @@ namespace KingmakerGunslinger.Summoning
             Material donorMaterial = donor.sharedMaterial;
             if (donorMaterial == null)
                 return "donor-visual:donor-material-missing";
+            // The painting can only be shown through a main texture slot. A
+            // shader without one is not something this patch knows how to
+            // paint, so the donor stays; nothing has been changed yet.
+            if (!donorMaterial.HasProperty(MainTexture))
+                return "donor-visual:donor-material-has-no-main-texture";
 
             GameObject child = null;
             Material material = null;
             Mesh mesh = null;
             try
             {
-                // A copy, so the cached bundle asset keeps its normalised bind
-                // poses and a second unit binds from the same clean source.
+                // A copy, so the cached asset keeps its identity bind poses and
+                // a second unit binds from the same clean source.
                 mesh = UnityEngine.Object.Instantiate(source);
                 mesh.name = CustomChildName;
                 mesh.bindposes = bindposes;
 
-                // Cloned from the donor's material so the membrane is shaded by
-                // the game's own pipeline rather than a bundled stand-in.
+                // Cloned from the donor's material so the creature is shaded by
+                // the game's own pipeline rather than a bundled stand-in; then
+                // the eagle's textures are replaced by the painting.
                 material = new Material(donorMaterial);
                 material.name = CustomChildName;
+                string dressing = DressMaterial(material, albedo);
 
                 child = new GameObject(CustomChildName);
                 child.transform.SetParent(donor.transform.parent, false);
@@ -163,8 +189,9 @@ namespace KingmakerGunslinger.Summoning
                 // stays active so anything else parented under it - effects,
                 // anchors, colliders - keeps working.
                 donor.enabled = false;
-                return "membrane:attached;bones=" + bones.Length +
-                    ";vertices=" + mesh.vertexCount;
+                return "visual:attached;bones=" + bones.Length +
+                    ";vertices=" + mesh.vertexCount + ";albedo=" +
+                    albedo.width + "x" + albedo.height + ";" + dressing;
             }
             catch (Exception error)
             {
@@ -177,6 +204,60 @@ namespace KingmakerGunslinger.Summoning
                 attachment.Mesh = null;
                 return "donor-visual:attach-failed:" + error.GetType().Name;
             }
+        }
+
+        /// <summary>
+        /// Puts the painting on the private material copy and takes the
+        /// eagle's own maps off it. Returns what was done, for the evidence
+        /// record: which slots existed and were cleared, and the tint the
+        /// donor material carried, which is reset to white so the albedo
+        /// renders as painted.
+        /// </summary>
+        private static string DressMaterial(Material material, Texture2D albedo)
+        {
+            material.SetTexture(MainTexture, albedo);
+            material.SetTextureScale(MainTexture, Vector2.one);
+            material.SetTextureOffset(MainTexture, Vector2.zero);
+
+            var cleared = new List<string>();
+            foreach (string name in SuppressedMaps)
+            {
+                if (!material.HasProperty(name) || material.GetTexture(name) == null)
+                    continue;
+                material.SetTexture(name, null);
+                cleared.Add(name);
+            }
+
+            string tint = "<none>";
+            if (material.HasProperty("_Color"))
+            {
+                Color original = material.GetColor("_Color");
+                tint = Describe(original);
+                material.SetColor("_Color", Color.white);
+            }
+
+            string emission = "<none>";
+            if (material.HasProperty("_EmissionColor"))
+            {
+                emission = Describe(material.GetColor("_EmissionColor"));
+                material.SetColor("_EmissionColor", Color.black);
+            }
+
+            return "shader=" + (material.shader == null ? "<null>" :
+                material.shader.name) + ";cleared=" + (cleared.Count == 0 ?
+                "<none>" : string.Join(",", cleared.ToArray())) +
+                ";donorTint=" + tint + ";donorEmission=" + emission;
+        }
+
+        private static string Describe(Color value)
+        {
+            return string.Join("/", new[]
+            {
+                value.r.ToString("0.###", CultureInfo.InvariantCulture),
+                value.g.ToString("0.###", CultureInfo.InvariantCulture),
+                value.b.ToString("0.###", CultureInfo.InvariantCulture),
+                value.a.ToString("0.###", CultureInfo.InvariantCulture)
+            });
         }
 
         /// <summary>Puts the donor back exactly as it was.</summary>

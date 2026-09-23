@@ -6,10 +6,12 @@ input. The repository license applies.
 
 ## What is committed here, and what deliberately is not
 
-Committed: the generator, the rig converter, and the build report. The build
-report carries counts, extents, and the bone *names* the mesh binds to - the
-same class of fact the native audit already records - but no per-bone
-coordinates.
+Committed: the generator, the painter, the rig converter, and the build
+report. The build report carries counts, extents, the atlas, the albedo's hash,
+and the bone *names* the mesh binds to - the same class of fact the native audit
+already records - but no per-bone coordinates. Shipped beside the mesh data:
+the painted albedo, `assets/pteranodon/pteranodon-albedo.png`, which the mesh
+data pins by exact hash.
 
 Not committed: the captured donor rig, and the `.fbx` and `.blend` the
 generator produces from it. A skinned replacement mesh can only exist in the
@@ -49,17 +51,31 @@ shipped bundle is scrubbed of donor transforms as well - see below.
    membrane built that way looks plausible at rest and tears open the moment the
    wings spread.
 
-3. Generate with Blender 4.5.10 LTS and `PYTHONHASHSEED=0`:
+3. Paint the albedo, under Blender's Python (it has numpy, and Blender
+   writes the PNG):
+
+   ```
+   blender --background --factory-startup --python paint_pteranodon_albedo.py -- \
+       --out assets/pteranodon/pteranodon-albedo.png
+   ```
+
+   Every mark is a closed-form or seeded-noise function of the atlas
+   coordinates, so the file is byte-identical on every run.
+
+4. Generate with Blender 4.5.10 LTS and `PYTHONHASHSEED=0`:
 
    ```
    blender --background --factory-startup --python generate_pteranodon.py -- \
        --rig rig.measured.json --out pteranodon.fbx \
        --blend-out pteranodon.blend \
-       --report pteranodon-build-report.json
+       --report pteranodon-build-report.json \
+       --albedo assets/pteranodon/pteranodon-albedo.png \
+       --mesh-data assets/pteranodon/pteranodon-mesh.json
    ```
 
-   Add `--mesh-data assets/pteranodon/pteranodon-mesh.json` to emit the file
-   the runtime loads. That is the whole build: there is no Unity editor step.
+   `--mesh-data` emits the file the runtime loads. It names the albedo by bare
+   file name, exact SHA-256 and header dimensions, which is why the painting
+   comes first. That is the whole build: there is no Unity editor step.
    `docs/EXPANDED-SUMMONING-PTERANODON-CUSTOM-ASSET-BUILD.md` records why this
    ships as mesh data rather than an AssetBundle like every other custom asset
    here.
@@ -92,6 +108,23 @@ animations instead of sliding through them.
 
 Every vertex carries at most three influences, inside Unity's limit of four.
 
+Texture coordinates are generated with the geometry, into a fixed atlas the
+painter shares (`ATLAS` in the generator):
+
+| Region | Texels (u, v; v up) | Mapping |
+|---|---|---|
+| `membrane` | u 0-1, v 0.5-1 | span along u from the root, chord along v from the leading edge; both faces of both wings share it |
+| `body` | u 0-0.5, v 0.25-0.5 | tail stub (u = 0) to the front of the skull (u = 1); v is the ring angle folded belly (0) to back (1) |
+| `crest` | u 0.5-1, v 0.25-0.5 | side view, brow (u = 0) to tip (u = 1), lower edge (v = 0) to upper (v = 1) |
+| `beak` | u 0-0.5, v 0-0.25 | root to tip along u; the lower beak paints the lower half of the region and the upper beak the upper, each folded belly to top |
+| `limbs` | u 0.5-1, v 0-0.25 | legs and toes along their length, folded like the body |
+
+Folding the ring angle instead of unwrapping it means the two flanks share
+texels and the body has no seam anywhere; countershading is then a plain
+gradient in v. The cost is that the left and right flanks are mirror images,
+which on a symmetrical animal is invisible. `body-plan.md` records the palette
+and markings the painter lays down in each region.
+
 ## Bind poses are not shipped
 
 The exported mesh data contains no bind poses at all, and the runtime builds the
@@ -114,6 +147,9 @@ vertices were authored in - makes the binding deterministic.
 
 The generator is deterministic given the same `rig.measured.json`: it performs no
 random or hash-ordered operations and writes vertices in a fixed traversal order.
+The painter is deterministic too: one fixed seed per region and no input but the
+requested size, so its bytes match across machines. The build report records the
+albedo's hash, and the mesh data carries it as the contract the runtime checks.
 Blender's `.blend` container embeds session metadata and is semantically
 reproducible but not byte-identical, which is why the `.blend` is a local build
 artefact rather than the authority. The authority is this script plus the

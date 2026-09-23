@@ -100,21 +100,36 @@ repository: permitted structural facts, recorded in
    the worst left/right mirror error so an accidental live-pose capture is
    obvious immediately: the bind pose mirrors to 1e-5, an animated one does not.
 
-3. Generate the mesh with Blender 4.5.10 LTS:
+3. Paint the albedo with Blender 4.5.10 LTS, whose Python carries numpy:
 
    ```powershell
    blender --background --factory-startup `
-       --python assets-source\original-models\pteranodon\generate_membrane.py -- `
+       --python assets-source\original-models\pteranodon\paint_pteranodon_albedo.py -- `
+       --out assets\pteranodon\pteranodon-albedo.png
+   ```
+
+   Every mark is a closed-form or seeded-noise function of the atlas
+   coordinates; two runs give the same bytes.
+
+4. Generate the mesh and its runtime data with the same Blender and
+   `PYTHONHASHSEED=0`:
+
+   ```powershell
+   blender --background --factory-startup `
+       --python assets-source\original-models\pteranodon\generate_pteranodon.py -- `
        --rig  C:\Dev\KingmakerGunslingerLab\unity-asset-build\pteranodon-source\rig.measured.json `
-       --out  C:\Dev\KingmakerGunslingerLab\unity-asset-build\pteranodon-source\pteranodon-membrane.fbx `
-       --blend-out C:\Dev\KingmakerGunslingerLab\unity-asset-build\pteranodon-source\pteranodon-membrane.blend `
-       --report assets-source\original-models\pteranodon\pteranodon-membrane-build-report.json
+       --out  C:\Dev\KingmakerGunslingerLab\unity-asset-build\pteranodon-source\pteranodon.fbx `
+       --blend-out C:\Dev\KingmakerGunslingerLab\unity-asset-build\pteranodon-source\pteranodon.blend `
+       --report assets-source\original-models\pteranodon\pteranodon-build-report.json `
+       --albedo assets\pteranodon\pteranodon-albedo.png `
+       --mesh-data assets\pteranodon\pteranodon-mesh.json
    ```
 
    The generator refuses to emit a mesh with more than four influences per
-   vertex, which Unity cannot represent.
+   vertex, which Unity cannot represent, and refuses `--mesh-data` without
+   `--albedo`, because the runtime loads the two as one asset.
 
-4. That is the whole build. There is no Unity editor step.
+5. That is the whole build. There is no Unity editor step.
 
 ## Why this ships as mesh data and not an AssetBundle
 
@@ -150,42 +165,60 @@ shipping path today.
 
 ## The mesh data format
 
-`assets/pteranodon/pteranodon-mesh.json`, about 70 KB:
+`assets/pteranodon/pteranodon-mesh.json`, about 80 KB, beside
+`pteranodon-albedo.png`, a 1024 x 1024 8-bit RGB PNG of about 630 KB:
 
 | Field | Meaning |
 |---|---|
-| `schemaVersion` | 1; the runtime refuses anything else |
+| `schemaVersion` | 2; the runtime refuses anything else |
 | `space` | `donor renderer local; +X left, +Y up, -Z forward` |
 | `rigSha256` | the rig capture the geometry was authored against |
 | `bones` | 46 names, in the order the vertex weights index |
+| `uvAtlas` | the five named regions the texture coordinates map into; they tile the unit square exactly |
+| `albedo` | the painting beside the file: bare file name, SHA-256, and the width, height, bit depth and colour type read from its PNG header |
 | `vertexCount`, `triangleCount` | payload arithmetic, checked on load |
-| `data` | base64: positions, normals, triangle indices, then four (bone index, weight) pairs per vertex |
+| `data` | base64: positions, normals, texture coordinates, triangle indices, then four (bone index, weight) pairs per vertex |
 
 Triangle winding is reversed on export. Blender is right-handed with +Z up and
 the donor renderer's space is left-handed with +Y up, so without the flip every
 face would be inside out.
 
-`PteranodonMeshDataTests` validates the shipped file on every build: schema,
-bone count and membership, payload length, triangle indices in range, weights
-summing to one, no vertex over four influences, and every declared bone actually
-carrying geometry. The runtime repeats those checks before it touches a donor
+`PteranodonMeshDataTests` validates the shipped files on every build: schema,
+bone count and membership, the atlas tiling the square, payload length, texture
+coordinates inside the atlas, triangle indices in range, weights summing to one,
+no vertex over four influences, every declared bone actually carrying geometry,
+and the albedo on disk hashing to the value the mesh names with the header the
+manifest declares. The runtime repeats those checks before it touches a donor
 renderer, because a file can change between a build and a run.
 
-## Runtime behaviour## Runtime behaviour
+## Runtime behaviour
 
 `PteranodonAssetRuntime.Configure` builds the mesh once per process and
 validates it completely before anything is published. A mesh built in code is
 readable by construction, so the bundle path's separate readability check is not
 needed.
 
+The albedo is loaded in the same call. The bytes beside the mesh must hash to
+the value the mesh names and the PNG header must carry the declared size before
+`ImageConversion.LoadImage` is invoked; the result is a mip-mapped, trilinear,
+clamped `Texture2D`. If either half fails, neither is published and the status
+names the reason - `donor-visual:albedo-hash-mismatch`,
+`donor-visual:invalid-mesh-data` and so on - because a mesh without its painting
+is not the reviewed creature and is not shown.
+
 `ExpandedSummoningPteranodonViewPatch` is a Harmony postfix on
 `UnitEntityView.OnDataAttached`, keyed on the blueprint name
 `KMG_Summoning_Unit_Pteranodon` and made idempotent by a
 `ConditionalWeakTable`. For each attaching view it resolves the donor's single
 `SkinnedMeshRenderer`, maps each declared bone name to that renderer's bone
-array, takes the matching bind pose, builds a private mesh and material, adds a
-sibling `SkinnedMeshRenderer`, and only then disables the donor's renderer
-component.
+array, takes the matching bind pose, builds a private mesh and a private copy
+of the donor's material, puts the albedo in that copy's `_MainTex`, clears
+whichever of the eagle's own normal, specular, occlusion, emission and detail
+maps the copy carries (they are indexed by the eagle's texture coordinates and
+mean nothing on this mesh), resets the tint to white, adds a sibling
+`SkinnedMeshRenderer`, and only then disables the donor's renderer component.
+The outcome string records the shader, the slots cleared and the tint the donor
+carried, so the evidence shows exactly what was done to the copy.
 
 Only the component's `enabled` flag is changed, and only on that one instance.
 The donor GameObject stays active so anything parented under it - effects
