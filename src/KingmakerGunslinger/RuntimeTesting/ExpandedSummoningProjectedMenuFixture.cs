@@ -178,13 +178,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             // So this reproduces the click: find a visible group slot, prefer
             // one whose own ability is a published summon parent, capture it the
             // way the patch does, and toggle that slot's own sub-group.
-            ActionBarGroupSlot[] slots = Resources
+            ActionBarGroupSlot[] all = Resources
                 .FindObjectsOfTypeAll<ActionBarGroupSlot>()
-                .Where(value => value != null && value.gameObject != null &&
-                    value.gameObject.scene.IsValid() &&
-                    value.gameObject.scene.isLoaded &&
-                    value.gameObject.activeInHierarchy)
+                .Where(value => value != null && value.gameObject != null)
                 .ToArray();
+            ActionBarGroupSlot[] scened = all.Where(value =>
+                value.gameObject.scene.IsValid() &&
+                value.gameObject.scene.isLoaded).ToArray();
+            ActionBarGroupSlot[] slots = scened.Where(value =>
+                value.gameObject.activeInHierarchy).ToArray();
+            // Report each stage. "Nothing found" is several different problems
+            // and they need different answers, so the counts say which.
+            _availability = "loaded=" + all.Length + ";scened=" + scened.Length +
+                ";active=" + slots.Length;
             _groupCount = slots.Length;
             ActionBarGroupSlot slot = slots.FirstOrDefault(IsPublishedParentSlot)
                 ?? slots.FirstOrDefault();
@@ -331,6 +337,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>Set when the widget assumption fails, for reporting.</summary>
         private int _groupCount = -1;
         private int _liveGroupCount = -1;
+        private string _availability = "<unmeasured>";
+        internal string Availability { get { return _availability; } }
         internal int ObservedSpellGroupCount { get { return _groupCount; } }
         internal int ObservedLiveSpellGroupCount { get { return _liveGroupCount; } }
 
