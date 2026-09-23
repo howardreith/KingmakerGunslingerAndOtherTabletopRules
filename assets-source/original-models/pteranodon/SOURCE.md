@@ -58,9 +58,11 @@ shipped bundle is scrubbed of donor transforms as well - see below.
        --report pteranodon-build-report.json
    ```
 
-4. Stage and build the bundle: `.\scripts\Prepare-PteranodonAssets.ps1`, then
-   the Unity 2018.4.10f1 batch build described in
-   `docs/EXPANDED-SUMMONING-PTERANODON-CUSTOM-ASSET-BUILD.md`.
+   Add `--mesh-data assets/pteranodon/pteranodon-mesh.json` to emit the file
+   the runtime loads. That is the whole build: there is no Unity editor step.
+   `docs/EXPANDED-SUMMONING-PTERANODON-CUSTOM-ASSET-BUILD.md` records why this
+   ships as mesh data rather than an AssetBundle like every other custom asset
+   here.
 
 ## What the generator authors
 
@@ -92,9 +94,9 @@ Every vertex carries at most three influences, inside Unity's limit of four.
 
 ## Bind poses are not shipped
 
-The Unity builder normalises the mesh's bind poses before writing the bundle and
-fails if any donor transform survives. At attach time the runtime loader rebuilds
-them from the live donor: for each bone name the mesh declares, it takes that
+The exported mesh data contains no bind poses at all, and the runtime builds the
+mesh with identity ones. At attach time the loader replaces them from the live
+donor: for each bone name the mesh declares, it takes that
 transform's index in the donor renderer's `bones` array and reads the donor's own
 `sharedMesh.bindposes` entry.
 

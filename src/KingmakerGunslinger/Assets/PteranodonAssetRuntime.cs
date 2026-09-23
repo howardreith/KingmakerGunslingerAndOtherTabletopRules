@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using KingmakerGunslinger.Bootstrap;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Assets
@@ -10,12 +11,24 @@ namespace KingmakerGunslinger.Assets
     /// <summary>
     /// Loads and validates the Pteranodon replacement visual once per process.
     ///
-    /// The bundle carries original geometry, its vertex weights, and the ordered
-    /// list of bone NAMES those weights index. It deliberately carries no bone
-    /// transforms: the mesh's bind poses are normalised to identity when the
-    /// bundle is built and rebuilt from the live donor at attach time.
+    /// The asset is mesh data - vertices, normals, triangles, vertex weights,
+    /// and the ordered list of bone NAMES those weights index - not an
+    /// AssetBundle. Three reasons, in order of weight:
     ///
-    /// That is not only a redistribution precaution. Unity skins a vertex as
+    /// - It carries strictly less. A bundle would embed bind poses, a material
+    ///   and import settings; this carries our own geometry plus the donor's
+    ///   bone names, which are the binding contract and are already recorded in
+    ///   the native audit. No donor transform ships.
+    /// - It depends on no Unity editor licence and no specific editor version.
+    ///   That is not hypothetical: the 2018.4.10f1 install that built every
+    ///   previous bundle in this repository stopped accepting its licence
+    ///   between 2026-08-21 and 2026-09-23 and now demands account credentials
+    ///   to re-activate.
+    /// - It is less code on both sides than the bundle path it replaces.
+    ///
+    /// Bind poses are supplied at attach time from the live donor, which is the
+    /// only correct binding as well as the redistribution-safe one. Unity skins
+    /// a vertex as
     ///
     ///     v_world = sum_i w_i * bones[i].localToWorldMatrix * bindposes[i] * v
     ///
@@ -23,9 +36,9 @@ namespace KingmakerGunslinger.Assets
     /// mesh render as authored in whatever animation frame the unit happened to
     /// be on. The donor's live pose differs from its bind pose by up to 3.954
     /// units at the wingtip - folded wings against spread ones - which would
-    /// misplace the membrane differently on every summon. Reusing the donor's
-    /// own sharedMesh.bindposes, the frame the vertices were authored in, makes
-    /// the binding deterministic.
+    /// misplace the creature differently on every summon. Reusing the donor's
+    /// own sharedMesh.bindposes, the frame these vertices were authored in,
+    /// makes the binding deterministic.
     ///
     /// Every failure path here leaves the donor visual intact, which is the
     /// approved fallback: a Pteranodon that looks like a giant eagle is a
@@ -33,14 +46,20 @@ namespace KingmakerGunslinger.Assets
     /// </summary>
     internal static class PteranodonAssetRuntime
     {
-        internal const string BundleName = "kingmakergunslinger.pteranodon";
-        internal const string MeshAssetName = "pteranodonmesh";
-        internal const string BonesAssetName = "pteranodonbones";
+        internal const string MeshDataRelativePath =
+            "assets/pteranodon/pteranodon-mesh.json";
+        internal const int SupportedSchemaVersion = 1;
 
         /// <summary>
-        /// Bones the membrane may bind to. The bundle is rejected if it names
-        /// anything else, so a drifted asset cannot silently ask the loader to
-        /// resolve a bone whose role nobody checked.
+        /// The bones the mesh may bind to: six shared, and twenty per side - the
+        /// wing chain, the leg, and eight toe bones.
+        ///
+        /// This is not redundant with resolving them against the donor. That
+        /// proves a name exists; this proves the generator has not started
+        /// weighting geometry to a bone nobody reviewed. Absent on purpose:
+        /// Tail_end, Tail_L, Tail_R and every *_end leaf. The donor's eagle tail
+        /// fan carries no geometry, so a weight landing there would mean a fan
+        /// had crept back in.
         /// </summary>
         private static readonly string[] AllowedBones =
         {
@@ -58,7 +77,6 @@ namespace KingmakerGunslinger.Assets
         };
 
         private static readonly object Sync = new object();
-        private static AssetBundle _bundle;
         private static Mesh _mesh;
         private static string[] _boneNames;
         private static string _status = "donor-visual:not-configured";
@@ -67,9 +85,6 @@ namespace KingmakerGunslinger.Assets
 
         internal static bool HasValidatedMesh
         { get { lock (Sync) return _mesh != null && _boneNames != null; } }
-
-        internal static AssetBundle GetLoadedBundleForGuardedAttribution()
-        { lock (Sync) return _bundle; }
 
         /// <summary>The validated mesh and the bone names its weights index.</summary>
         internal static bool TryGetMembrane(out Mesh mesh, out string[] boneNames)
@@ -89,154 +104,181 @@ namespace KingmakerGunslinger.Assets
             if (!context.FeatureModules.Active.ExpandedSummoning)
             {
                 lock (Sync) _status = "donor-visual:module-disabled";
-                context.Logger.Info("pteranodon", "bundle.skipped",
+                context.Logger.Info("pteranodon", "mesh.skipped",
                     "Expanded Summoning is disabled; the donor visual remains active.");
                 return;
             }
 
             lock (Sync)
             {
-                if (_bundle != null && _mesh != null && _boneNames != null)
+                if (_mesh != null && _boneNames != null)
                 {
-                    context.Logger.Info("pteranodon", "bundle.reused",
-                        "The validated Pteranodon membrane is already published.");
+                    context.Logger.Info("pteranodon", "mesh.reused",
+                        "The validated Pteranodon mesh is already published.");
                     return;
                 }
             }
 
-            string path = Path.Combine(context.ModEntry.Path, "assets",
-                "bundles", BundleName);
+            string path = Path.Combine(context.ModEntry.Path,
+                MeshDataRelativePath.Replace('/', Path.DirectorySeparatorChar));
             if (!File.Exists(path))
             {
-                lock (Sync) _status = "donor-visual:bundle-missing";
-                context.Logger.Warning("pteranodon", "bundle.missing",
-                    "The Pteranodon bundle is unavailable; the donor visual remains active: " + path);
+                lock (Sync) _status = "donor-visual:mesh-data-missing";
+                context.Logger.Warning("pteranodon", "mesh.missing",
+                    "The Pteranodon mesh data is unavailable; the donor visual remains active: " + path);
                 return;
             }
 
-            AssetBundle candidate = null;
             try
             {
-                candidate = AssetBundle.LoadFromFile(path);
-                if (candidate == null)
-                    throw new InvalidDataException(
-                        "AssetBundle.LoadFromFile returned null for " + path);
-
-                Mesh mesh = candidate.LoadAsset<Mesh>(MeshAssetName);
-                TextAsset bones = candidate.LoadAsset<TextAsset>(BonesAssetName);
-                string[] names = ValidateBundle(mesh, bones);
-
+                string[] names;
+                Mesh mesh = BuildMesh(File.ReadAllText(path), out names);
                 lock (Sync)
                 {
-                    _bundle = candidate;
                     _mesh = mesh;
                     _boneNames = names;
-                    _status = "membrane:published";
+                    _status = "mesh:published";
                 }
-                candidate = null;
-                context.Logger.Info("pteranodon", "bundle.published",
-                    "Validated the Pteranodon membrane: vertices=" +
-                    mesh.vertexCount + ";bones=" + names.Length);
+
+                context.Logger.Info("pteranodon", "mesh.published",
+                    "Validated the Pteranodon mesh: vertices=" +
+                    mesh.vertexCount + ";triangles=" +
+                    (mesh.triangles.Length / 3) + ";bones=" + names.Length);
             }
             catch (Exception error)
             {
                 lock (Sync)
                 {
-                    _bundle = null;
                     _mesh = null;
                     _boneNames = null;
-                    _status = "donor-visual:invalid-bundle";
+                    _status = "donor-visual:invalid-mesh-data";
                 }
-                context.Logger.Warning("pteranodon", "bundle.rejected",
-                    "The Pteranodon bundle was rejected; the donor visual remains active: " +
+                context.Logger.Warning("pteranodon", "mesh.rejected",
+                    "The Pteranodon mesh data was rejected; the donor visual remains active: " +
                     error.Message);
-            }
-            finally
-            {
-                if (candidate != null) candidate.Unload(true);
             }
         }
 
         /// <summary>
-        /// Everything that must hold before a single donor renderer is touched.
+        /// Builds the mesh, validating everything before a donor renderer could
+        /// ever be touched. Bind poses are left at identity: the attach path
+        /// supplies the donor's own.
         /// </summary>
-        private static string[] ValidateBundle(Mesh mesh, TextAsset bones)
+        internal static Mesh BuildMesh(string json, out string[] boneNames)
         {
-            if (mesh == null) throw new InvalidDataException(
-                "The bundle has no mesh named " + MeshAssetName + ".");
-            if (bones == null) throw new InvalidDataException(
-                "The bundle has no bone list named " + BonesAssetName + ".");
-            if (!mesh.isReadable) throw new InvalidDataException(
-                "The membrane mesh is not readable, so its bind poses cannot be rebuilt.");
-            if (mesh.vertexCount == 0) throw new InvalidDataException(
-                "The membrane mesh has no vertices.");
-            if (mesh.triangles == null || mesh.triangles.Length == 0)
+            JObject document = JObject.Parse(json);
+            int schema = (int?)document["schemaVersion"] ?? 0;
+            if (schema != SupportedSchemaVersion)
                 throw new InvalidDataException(
-                    "The membrane mesh has no triangles.");
+                    "Unsupported Pteranodon mesh schema " + schema + "; expected " +
+                    SupportedSchemaVersion + ".");
 
-            BoneWeight[] weights = mesh.boneWeights;
-            if (weights == null || weights.Length != mesh.vertexCount)
-                throw new InvalidDataException(
-                    "The membrane mesh is not fully weighted: " +
-                    (weights == null ? 0 : weights.Length) + " of " +
-                    mesh.vertexCount + ".");
-
-            string[] names = bones.text
-                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(value => value.Trim())
-                .Where(value => value.Length != 0).ToArray();
-            if (names.Length == 0) throw new InvalidDataException(
-                "The membrane bone list is empty.");
+            var names = ((JArray)document["bones"] ?? new JArray())
+                .Select(value => (string)value).ToArray();
+            if (names.Length == 0)
+                throw new InvalidDataException("The bone list is empty.");
+            if (names.Any(string.IsNullOrWhiteSpace))
+                throw new InvalidDataException("The bone list has a blank name.");
             if (names.Distinct(StringComparer.Ordinal).Count() != names.Length)
-                throw new InvalidDataException(
-                    "The membrane bone list repeats a name.");
-
+                throw new InvalidDataException("The bone list repeats a name.");
             string[] unexpected = names.Where(value =>
                 !AllowedBones.Contains(value, StringComparer.Ordinal)).ToArray();
-            if (unexpected.Length != 0) throw new InvalidDataException(
-                "The membrane binds to bones outside the declared set: " +
-                string.Join(", ", unexpected));
-
-            Matrix4x4[] bindposes = mesh.bindposes;
-            if (bindposes == null || bindposes.Length != names.Length)
+            if (unexpected.Length != 0)
                 throw new InvalidDataException(
-                    "The membrane has " + (bindposes == null ? 0 :
-                    bindposes.Length) + " bind poses for " + names.Length +
-                    " bones.");
-            // Donor transforms must not ship. A bundle that carries them is
-            // rejected rather than silently used, because a stale baked pose is
-            // exactly the failure the runtime rebind exists to remove.
-            for (int index = 0; index < bindposes.Length; index++)
+                    "The mesh binds to bones outside the declared set: " +
+                    string.Join(", ", unexpected));
+
+            int vertexCount = (int?)document["vertexCount"] ?? 0;
+            int triangleCount = (int?)document["triangleCount"] ?? 0;
+            if (vertexCount <= 0 || triangleCount <= 0)
+                throw new InvalidDataException(
+                    "The mesh declares " + vertexCount + " vertices and " +
+                    triangleCount + " triangles.");
+
+            byte[] blob = Convert.FromBase64String((string)document["data"] ?? string.Empty);
+            int expected = vertexCount * 12 + vertexCount * 12 +
+                triangleCount * 3 * 4 + vertexCount * 4 * 8;
+            if (blob.Length != expected)
+                throw new InvalidDataException(
+                    "The mesh payload is " + blob.Length + " bytes; " +
+                    expected + " were expected for " + vertexCount +
+                    " vertices and " + triangleCount + " triangles.");
+
+            int offset = 0;
+            var vertices = new Vector3[vertexCount];
+            for (int index = 0; index < vertexCount; index++)
+                vertices[index] = ReadVector(blob, ref offset);
+            var normals = new Vector3[vertexCount];
+            for (int index = 0; index < vertexCount; index++)
+                normals[index] = ReadVector(blob, ref offset);
+            var triangles = new int[triangleCount * 3];
+            for (int index = 0; index < triangles.Length; index++)
             {
-                if (bindposes[index] != Matrix4x4.identity)
+                triangles[index] = BitConverter.ToInt32(blob, offset);
+                offset += 4;
+                if (triangles[index] < 0 || triangles[index] >= vertexCount)
                     throw new InvalidDataException(
-                        "The membrane ships a non-identity bind pose at index " +
-                        index + "; bind poses are rebuilt from the live donor.");
+                        "A triangle indexes vertex " + triangles[index] +
+                        " of " + vertexCount + ".");
             }
 
-            foreach (BoneWeight weight in weights)
+            var weights = new BoneWeight[vertexCount];
+            for (int index = 0; index < vertexCount; index++)
             {
-                int[] indexes = { weight.boneIndex0, weight.boneIndex1,
-                    weight.boneIndex2, weight.boneIndex3 };
-                float[] values = { weight.weight0, weight.weight1,
-                    weight.weight2, weight.weight3 };
+                var slots = new int[4];
+                var values = new float[4];
                 float total = 0f;
                 for (int slot = 0; slot < 4; slot++)
                 {
+                    slots[slot] = BitConverter.ToInt32(blob, offset);
+                    offset += 4;
+                    values[slot] = BitConverter.ToSingle(blob, offset);
+                    offset += 4;
                     total += values[slot];
                     if (values[slot] <= 0f) continue;
-                    if (indexes[slot] < 0 || indexes[slot] >= names.Length)
+                    if (slots[slot] < 0 || slots[slot] >= names.Length)
                         throw new InvalidDataException(
-                            "A membrane vertex weight indexes bone " +
-                            indexes[slot] + " of " + names.Length + ".");
+                            "A vertex weight indexes bone " + slots[slot] +
+                            " of " + names.Length + ".");
                 }
 
                 if (Math.Abs(total - 1f) > 0.001f)
                     throw new InvalidDataException(
-                        "A membrane vertex weight sums to " + total + ".");
+                        "A vertex weight sums to " + total + ".");
+                weights[index] = new BoneWeight
+                {
+                    boneIndex0 = slots[0], weight0 = values[0],
+                    boneIndex1 = slots[1], weight1 = values[1],
+                    boneIndex2 = slots[2], weight2 = values[2],
+                    boneIndex3 = slots[3], weight3 = values[3]
+                };
             }
 
-            return names;
+            var mesh = new Mesh { name = "KMG_Pteranodon" };
+            mesh.vertices = vertices;
+            mesh.normals = normals;
+            mesh.triangles = triangles;
+            mesh.boneWeights = weights;
+            // Identity bind poses on purpose: the attach path replaces them with
+            // the donor's own, and shipping any other value would be shipping a
+            // pose that is wrong by construction.
+            var identity = new Matrix4x4[names.Length];
+            for (int index = 0; index < names.Length; index++)
+                identity[index] = Matrix4x4.identity;
+            mesh.bindposes = identity;
+            mesh.RecalculateBounds();
+
+            boneNames = names;
+            return mesh;
+        }
+
+        private static Vector3 ReadVector(byte[] blob, ref int offset)
+        {
+            float x = BitConverter.ToSingle(blob, offset);
+            float y = BitConverter.ToSingle(blob, offset + 4);
+            float z = BitConverter.ToSingle(blob, offset + 8);
+            offset += 12;
+            return new Vector3(x, y, z);
         }
 
         /// <summary>
@@ -254,6 +296,8 @@ namespace KingmakerGunslinger.Assets
             bindposes = null;
             reason = null;
             if (donor == null) { reason = "donor-renderer-missing"; return false; }
+            if (boneNames == null || boneNames.Length == 0)
+            { reason = "no-bone-names"; return false; }
             Transform[] donorBones = donor.bones;
             Mesh donorMesh = donor.sharedMesh;
             if (donorBones == null || donorBones.Length == 0)
@@ -270,8 +314,11 @@ namespace KingmakerGunslinger.Assets
                 if (donorBones[slot] == null) continue;
                 // A duplicated bone name would make the mapping ambiguous.
                 if (index.ContainsKey(donorBones[slot].name))
-                { reason = "donor-bone-name-ambiguous:" + donorBones[slot].name;
-                  return false; }
+                {
+                    reason = "donor-bone-name-ambiguous:" + donorBones[slot].name;
+                    return false;
+                }
+
                 index[donorBones[slot].name] = slot;
             }
 
