@@ -97,9 +97,9 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Existing 135-file package plus 89 original elemental/strategic paintings and
-# the 3 composed strategic scroll item icons.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 235 } else { 233 }
+# Existing 135-file package plus 89 original elemental/strategic paintings,
+# the 3 composed strategic scroll item icons, and the Pteranodon mesh data.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 236 } else { 234 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount
