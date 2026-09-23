@@ -124,6 +124,7 @@
     <Compile Include="Summoning\SummonVisibilityCatalog.cs" />
     <Compile Include="Summoning\SummonViewScaleCatalog.cs" />
     <Compile Include="Summoning\ExpandedSummoningViewScalePatch.cs" />
+    <Compile Include="Summoning\ExpandedSummoningPteranodonViewPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuRuntime.cs" />
     <Compile Include="Summoning\SummonIconCatalog.cs" />
@@ -276,6 +277,7 @@
     <Compile Include="Actions\ExactEquippedFirearmContext.cs" />
     <Compile Include="Actions\ExactEquippedFirearmResolver.cs" />
     <Compile Include="Assets\FirearmAssetRuntime.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.cs" />
     <Compile Include="Audio\FirearmSoundEventCatalog.cs" />
     <Compile Include="Audio\FirearmSoundBankManifest.cs" />
     <Compile Include="Audio\FirearmSoundBankManifestLoader.cs" />
