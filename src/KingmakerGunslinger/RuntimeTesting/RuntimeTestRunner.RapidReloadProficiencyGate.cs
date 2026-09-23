@@ -144,6 +144,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintFeature independentFull = null;
             BlueprintFeature independentOneHanded = null;
             BlueprintFeature independentTwoHanded = null;
+            var fixtureRegistrations = new List<RapidReloadFixtureRegistration>();
             bool cleaned = false;
             bool ignoreOff = !IgnorePrerequisites.Ignore;
             try
@@ -156,6 +157,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 independentTwoHanded = CreateIndependentProficiencySource(
                     "KMG_RuntimeFixture_IndependentTwoHandedFirearmProficiency",
                     ctx.TwoHanded);
+                // A level-up preview is rebuilt from blueprint identities, so an
+                // unregistered fixture fact comes back with a null blueprint and
+                // native ReapplyFeaturesOnLevelUp throws. Register each fixture
+                // for this request only; it is removed before destruction.
+                foreach (BlueprintFeature fixture in new[] { independentFull,
+                    independentOneHanded, independentTwoHanded })
+                    fixtureRegistrations.Add(new RapidReloadFixtureRegistration(
+                        BlueprintBootstrap.Library, fixture));
 
                 // --- Native prerequisite matrix (retained coverage) ---------
                 // Each row proves the fixture's actual proficiency ranks before
@@ -314,6 +323,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                foreach (RapidReloadFixtureRegistration registration in
+                    fixtureRegistrations)
+                    registration.Dispose();
                 DestroyFixtureBlueprint(independentFull);
                 DestroyFixtureBlueprint(independentOneHanded);
                 DestroyFixtureBlueprint(independentTwoHanded);
@@ -452,6 +464,59 @@ namespace KingmakerGunslinger.RuntimeTesting
             feature.Groups = Array.Empty<FeatureGroup>();
             feature.ComponentsArray = new BlueprintComponent[] { grant };
             return feature;
+        }
+
+        // Request-local library registration for one fixture blueprint, with a
+        // fresh collision-checked identity. Dispose removes exactly what this
+        // instance added; it never touches an entry it does not own.
+        private sealed class RapidReloadFixtureRegistration : IDisposable
+        {
+            private readonly LibraryScriptableObject _library;
+            private readonly BlueprintScriptableObject _blueprint;
+            private readonly ICollection<BlueprintScriptableObject> _all;
+            private readonly string _guid;
+            private bool _inDictionary;
+            private bool _inList;
+
+            internal RapidReloadFixtureRegistration(LibraryScriptableObject library,
+                BlueprintScriptableObject blueprint)
+            {
+                _library = library;
+                _blueprint = blueprint;
+                _all = library.GetAllBlueprints();
+                _guid = Guid.NewGuid().ToString("N");
+                if (library.BlueprintsByAssetId.ContainsKey(_guid))
+                    throw new InvalidOperationException(
+                        "Rapid Reload fixture GUID collision: " + _guid);
+                FieldInfo field = typeof(BlueprintScriptableObject).GetField(
+                    "m_AssetGuid", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (field == null || field.FieldType != typeof(string))
+                    throw new MissingFieldException(
+                        typeof(BlueprintScriptableObject).FullName, "m_AssetGuid");
+                field.SetValue(blueprint, _guid);
+                try
+                {
+                    _all.Add(blueprint);
+                    _inList = true;
+                    library.BlueprintsByAssetId.Add(_guid, blueprint);
+                    _inDictionary = true;
+                }
+                catch
+                {
+                    Dispose();
+                    throw;
+                }
+            }
+
+            public void Dispose()
+            {
+                BlueprintScriptableObject current;
+                if (_inDictionary && _library.BlueprintsByAssetId.TryGetValue(
+                        _guid, out current) && ReferenceEquals(current, _blueprint))
+                    _library.BlueprintsByAssetId.Remove(_guid);
+                if (_inList) _all.Remove(_blueprint);
+                _inDictionary = _inList = false;
+            }
         }
 
         private static void DestroyFixtureBlueprint(BlueprintScriptableObject value)
