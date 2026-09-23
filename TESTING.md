@@ -84,19 +84,72 @@ metadata.
 
 `disposable-rapid-reload-proficiency-gate` is the guarded scenario for the
 Rapid Reload firearm-proficiency requirement. It reads the registered parent
-and child blueprints, then drives the real `LevelUpController` on disposable
-units through the ordinary and Fighter combat-feat slots: absent proficiency
-(including a Fighter that already has native crossbow proficiency), full,
-one-handed, two-handed, an independent test-only proficiency source on a
-non-Gunslinger, Gunslinger class identity with no proficiency facts, the
-preserved legacy compatibility wrapper, a fresh level-one Gunslinger, pending
-class changes in both directions, and the Musket Master duplicate-ownership
-case. Eligibility answers come from native `MeetsPrerequisites` and `CanSelect`
-through `SelectFeature`; nothing is mocked and no prerequisite is bypassed.
+and child blueprints and drives the real `LevelUpController` on disposable
+units. Every fixture proves its own observed proficiency ranks before any of
+its eligibility answers are scored, so an intended grant is never treated as
+evidence.
+
+Coverage:
+
+- **Refusal, both catalogs.** A Fighter with no firearm proficiency (but with
+  native martial crossbow proficiency) is offered the parent in the ordinary
+  and Fighter combat-feat slots, `CanSelect` is false, `SelectFeature` is
+  refused, no nested choice is held, and nothing is acquired.
+- **Out-of-scope firearm.** A scoped-proficiency character selects the parent
+  legally and is refused the wrong firearm. The resulting empty Rapid Reload
+  choice is inspected *before* any cleanup: it keeps `LevelUpState.IsComplete`
+  false (the exact check `CharacterBuildController.Next` enforces before it
+  calls `Commit`), the Rapid Reload state is named in the blocking set, and no
+  fact is banked. Every other build requirement is satisfied legally first, and
+  the same build completes once a legal firearm is chosen, so the block is
+  attributable to the target selection rather than to an unfinished character.
+- **Pending class change.** One live controller: a qualifying Gunslinger build
+  holds Rapid Reload (Pistol), then `SelectClass` moves the pending class to
+  Fighter. The engine rebuilds its own preview and re-checks every pending
+  action; the scenario verifies the preview lost firearm proficiency, the
+  parent and all official children fail, the held choice was dropped by the
+  engine, eligibility returns when the class is changed back, and a re-held
+  choice again does not survive confirmation as the non-proficient class. A
+  second controller instance in this evidence is itself a failure, so cancelled
+  visits cannot stand in for the transition.
+- **Pending archetype change.** The same single-transaction treatment for
+  `AddArchetype`/`RemoveArchetype`: Musket Master narrows the scope to
+  two-handed firearms, the automatic Rapid Reload (Musket) grant appears, the
+  held Pistol choice is dropped, Blunderbuss remains selectable, and removing
+  the archetype restores the full scope and drops the automatic grant.
+- **Musket Master.** Built through the native archetype route with nothing
+  granted by hand. The scenario proves Gunslinger levels, Musket Master
+  archetype identity, two-handed-only proficiency and the automatic Rapid
+  Reload (Musket) grant, then works through the real nested child selection:
+  the owned Musket choice cannot consume another feat, Pistol stays out of
+  scope, and Blunderbuss is acquired by exactly one feat slot.
+- **Class identity without proficiency.** A genuine Gunslinger is committed
+  through native class mechanics; its firearm-proficiency facts are then
+  removed fixture-locally and their absence is re-proved on the committed
+  descriptor and again on a live preview that still shows Gunslinger levels.
+  The parent and every child fail and the parent cannot be selected. If native
+  restoration were to put proficiency back, the fixture fails as invalid rather
+  than scoring as a negative result.
+- Retained coverage: OR-grouped (`GroupType.Any`) parent prerequisites with the
+  correct full/scoped proficiency identity, firearm-exact child gates, no
+  class or archetype prerequisite, the same gated parent in both feat catalogs,
+  compatibility-only Rifle/Revolver choices unpublished, the legacy wrapper
+  unpublished but still satisfying the gate, and independent proficiency grants
+  on non-Gunslingers qualifying.
+
+`RapidReloadGateEvidenceRules` scores that evidence, and the domain suite
+exercises those rules with truncated and corrupted fixtures
+(`rapid-reload-evidence.*`). That is regression coverage for the scoring only:
+it proves a run which skipped a native operation, lost a precondition, repaired
+an invalid state, or used separate cancelled visits cannot be scored as a pass.
+The four `rapid-reload-gate.*` cases are policy coverage of
+`RapidReloadPrerequisiteRules`. Neither set proves the registered blueprints or
+the native selection flow.
 
 As of this branch the scenario has **not** been run. The guarded orchestrator
-refuses administrator elevation by design; runtime qualification for this
-change is blocked, not passed.
+refuses administrator elevation by design and the authoring sessions were
+elevated; runtime qualification for this change is blocked, not passed. A green
+domain suite does not close any of the runtime findings.
 
 ## Current teleportation hardening qualification
 

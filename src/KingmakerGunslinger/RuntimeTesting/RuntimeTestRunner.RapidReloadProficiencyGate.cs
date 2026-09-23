@@ -9,6 +9,7 @@ using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Class.LevelUp;
@@ -26,60 +27,97 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         // Rapid Reload must require firearm proficiency, never Gunslinger class
-        // identity. This scenario reads the registered production blueprints and
-        // drives the real LevelUpController: every eligibility answer below comes
-        // from the native prerequisite machinery (BlueprintFeature.MeetsPrerequisites
-        // and BlueprintFeatureSelection.CanSelect through SelectFeature), never from
-        // a mocked selection system or a duplicated policy formula. No production
-        // prerequisite is bypassed: IgnorePrerequisites stays off and no target fact
-        // is inserted directly except on the explicitly owned fixtures below.
+        // identity. Everything below is observed on the registered production
+        // blueprints through the native machinery: BlueprintFeature.
+        // MeetsPrerequisites, BlueprintFeatureSelection.CanSelect through
+        // LevelUpController.SelectFeature, LevelUpState.IsComplete (the exact
+        // check CharacterBuildController.Next enforces before it calls Commit)
+        // and LevelUpController.SelectClass / AddArchetype / RemoveArchetype for
+        // pending-build changes. Nothing is mocked, no prerequisite is bypassed,
+        // and no observation is repaired before it is taken.
         private const string RapidReloadBasicFeatSelectionGuid =
             "247a4068296e8be42890143f451b4b45";
         private const string RapidReloadFighterFeatSelectionGuid =
             "41c8486641f7d6d4283ca9dae4147a9f";
 
+        private sealed class RapidReloadGateContext
+        {
+            internal BlueprintFeatureSelection Parent;
+            internal BlueprintFeature[] Children;
+            internal BlueprintFeature[] RegisteredChildren;
+            internal BlueprintFeature Full;
+            internal BlueprintFeature OneHanded;
+            internal BlueprintFeature TwoHanded;
+            internal BlueprintFeature LegacyWrapper;
+            internal FirearmKind[] Kinds;
+            internal BlueprintCharacterClass Fighter;
+            internal BlueprintCharacterClass Gunslinger;
+            internal BlueprintFeature GunslingerProficiencies;
+            internal BlueprintArchetype MusketMaster;
+            internal BlueprintFeatureSelection Basic;
+            internal BlueprintFeatureSelection FighterFeats;
+            internal MethodInfo Start;
+            internal MethodInfo Apply;
+            internal object Mode;
+        }
+
         private RuntimeTestResult RunRapidReloadProficiencyGate()
         {
             FirearmFeatBlueprintSet feats = BlueprintBootstrap.FirearmFeats;
-            if (feats == null)
-                throw new InvalidOperationException(
-                    "The registered firearm feat blueprints are unavailable.");
-            BlueprintFeatureSelection parent = feats.RapidReload;
-            BlueprintFeature[] children = feats.RapidReloadChoices;
-            BlueprintFeature[] registeredChildren = feats.RegisteredRapidReloadChoices;
-            BlueprintFeature fullProficiency = BlueprintBootstrap.FirearmProficiency;
             FirearmScopedProficiencyBlueprintSet scoped =
                 BlueprintBootstrap.ScopedFirearmProficiencies;
-            BlueprintFeature legacyWrapper = feats.ExoticWeaponProficiency;
             GunslingerClassBlueprintSet gunslinger = BlueprintBootstrap.GunslingerClass;
-            FirearmKind[] kinds = RapidReloadPrerequisiteRules.ParentGateKinds;
-            if (parent == null || children == null || children.Length != kinds.Length ||
-                registeredChildren == null || fullProficiency == null || scoped == null ||
-                legacyWrapper == null || gunslinger == null)
+            if (feats == null || scoped == null || gunslinger == null ||
+                gunslinger.MusketMaster == null)
                 throw new InvalidOperationException(
                     "The Rapid Reload gate fixture inputs are incomplete.");
-            BlueprintFeatureSelection basic = BlueprintLibraryLookup.RequireExact<
-                BlueprintFeatureSelection>(BlueprintBootstrap.Library,
-                    RapidReloadBasicFeatSelectionGuid, "native basic feat selection");
-            BlueprintFeatureSelection fighterFeats = BlueprintLibraryLookup.RequireExact<
-                BlueprintFeatureSelection>(BlueprintBootstrap.Library,
-                    RapidReloadFighterFeatSelectionGuid,
-                    "native Fighter combat feat selection");
-            BlueprintCharacterClass fighter = BlueprintBootstrap.Library.GetAllBlueprints()
+            var ctx = new RapidReloadGateContext
+            {
+                Parent = feats.RapidReload,
+                Children = feats.RapidReloadChoices,
+                RegisteredChildren = feats.RegisteredRapidReloadChoices,
+                Full = BlueprintBootstrap.FirearmProficiency,
+                OneHanded = scoped.OneHanded,
+                TwoHanded = scoped.TwoHanded,
+                LegacyWrapper = feats.ExoticWeaponProficiency,
+                Kinds = RapidReloadPrerequisiteRules.ParentGateKinds,
+                Gunslinger = gunslinger.CharacterClass,
+                GunslingerProficiencies = gunslinger.Proficiencies,
+                MusketMaster = gunslinger.MusketMaster.Archetype
+            };
+            if (ctx.Parent == null || ctx.Children == null ||
+                ctx.Children.Length != ctx.Kinds.Length || ctx.Full == null ||
+                ctx.OneHanded == null || ctx.TwoHanded == null ||
+                ctx.LegacyWrapper == null || ctx.Gunslinger == null ||
+                ctx.GunslingerProficiencies == null || ctx.MusketMaster == null)
+                throw new InvalidOperationException(
+                    "The registered Rapid Reload blueprints are incomplete.");
+            ctx.Basic = BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                BlueprintBootstrap.Library, RapidReloadBasicFeatSelectionGuid,
+                "native basic feat selection");
+            ctx.FighterFeats = BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(
+                BlueprintBootstrap.Library, RapidReloadFighterFeatSelectionGuid,
+                "native Fighter combat feat selection");
+            ctx.Fighter = BlueprintBootstrap.Library.GetAllBlueprints()
                 .OfType<BlueprintCharacterClass>()
                 .SingleOrDefault(value => value.name == "FighterClass");
-            if (fighter == null)
+            if (ctx.Fighter == null)
                 throw new InvalidOperationException(
                     "The native Fighter class is unavailable for the Rapid Reload gate.");
+            ctx.Start = typeof(LevelUpController).GetMethods(BindingFlags.Public |
+                    BindingFlags.NonPublic | BindingFlags.Static)
+                .Single(value => value.Name == "StartWithoutAssigningStaticInstance" &&
+                    value.GetParameters().Length == 5);
+            ctx.Apply = typeof(LevelUpController).GetMethod("ApplyLevelup",
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            ctx.Mode = Enum.Parse(ctx.Start.GetParameters()[4].ParameterType,
+                "LevelUp", false);
 
-            // --- Registered blueprint wiring -------------------------------
+            // --- Registered blueprint wiring (retained coverage) -----------
             var wiringFailures = new List<string>();
-            JObject wiring = DescribeRapidReloadWiring(parent, children,
-                registeredChildren, fullProficiency, scoped, legacyWrapper, kinds,
-                wiringFailures);
+            JObject wiring = DescribeRapidReloadWiring(ctx, wiringFailures);
             var catalogFailures = new List<string>();
-            JObject catalog = DescribeRapidReloadCatalogs(parent, registeredChildren,
-                legacyWrapper, basic, fighterFeats, kinds.Length, catalogFailures);
+            JObject catalog = DescribeRapidReloadCatalogs(ctx, catalogFailures);
 
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
@@ -93,9 +131,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var flow = new JArray();
             var flowFailures = new List<string>();
             var pendingFailures = new List<string>();
-            JObject pending = null;
-            var musketMasterFailures = new List<string>();
-            JObject musketMaster = null;
+            var musketFailures = new List<string>();
+            var identityFailures = new List<string>();
+            JObject pendingClass = null, pendingArchetype = null;
+            JObject musketMaster = null, classIdentity = null;
             BlueprintFeature independentFull = null;
             BlueprintFeature independentOneHanded = null;
             BlueprintFeature independentTwoHanded = null;
@@ -104,148 +143,119 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 independentFull = CreateIndependentProficiencySource(
-                    "KMG_RuntimeFixture_IndependentFullFirearmProficiency",
-                    fullProficiency);
+                    "KMG_RuntimeFixture_IndependentFullFirearmProficiency", ctx.Full);
                 independentOneHanded = CreateIndependentProficiencySource(
                     "KMG_RuntimeFixture_IndependentOneHandedFirearmProficiency",
-                    scoped.OneHanded);
+                    ctx.OneHanded);
                 independentTwoHanded = CreateIndependentProficiencySource(
                     "KMG_RuntimeFixture_IndependentTwoHandedFirearmProficiency",
-                    scoped.TwoHanded);
+                    ctx.TwoHanded);
 
-                // --- Native prerequisite matrix on disposable units ---------
-                AddRapidReloadMatrixRow(matrix, matrixFailures, "A.no-proficiency",
-                    parent, children, kinds, false, false, false, null);
-                AddRapidReloadMatrixRow(matrix, matrixFailures, "C.full-proficiency",
-                    parent, children, kinds, true, false, false,
-                    descriptor => GrantFixtureFact(descriptor, fullProficiency));
-                AddRapidReloadMatrixRow(matrix, matrixFailures, "D.one-handed",
-                    parent, children, kinds, false, true, false,
-                    descriptor => GrantFixtureFact(descriptor, scoped.OneHanded));
-                AddRapidReloadMatrixRow(matrix, matrixFailures, "E.two-handed",
-                    parent, children, kinds, false, false, true,
-                    descriptor => GrantFixtureFact(descriptor, scoped.TwoHanded));
-                AddRapidReloadMatrixRow(matrix, matrixFailures, "E2.both-scoped",
-                    parent, children, kinds, false, true, true, descriptor =>
+                // --- Native prerequisite matrix (retained coverage) ---------
+                // Each row proves the fixture's actual proficiency ranks before
+                // its eligibility answers are scored.
+                AddRapidReloadMatrixRow(ctx, matrix, matrixFailures,
+                    "A.no-proficiency", false, false, false, null);
+                AddRapidReloadMatrixRow(ctx, matrix, matrixFailures,
+                    "C.full-proficiency", true, false, false,
+                    descriptor => GrantFixtureFact(descriptor, ctx.Full));
+                AddRapidReloadMatrixRow(ctx, matrix, matrixFailures,
+                    "D.one-handed", false, true, false,
+                    descriptor => GrantFixtureFact(descriptor, ctx.OneHanded));
+                AddRapidReloadMatrixRow(ctx, matrix, matrixFailures,
+                    "E.two-handed", false, false, true,
+                    descriptor => GrantFixtureFact(descriptor, ctx.TwoHanded));
+                AddRapidReloadMatrixRow(ctx, matrix, matrixFailures,
+                    "E2.both-scoped", false, true, true, descriptor =>
                     {
-                        GrantFixtureFact(descriptor, scoped.OneHanded);
-                        GrantFixtureFact(descriptor, scoped.TwoHanded);
+                        GrantFixtureFact(descriptor, ctx.OneHanded);
+                        GrantFixtureFact(descriptor, ctx.TwoHanded);
                     });
-                // F: an independent, test-only source granting an existing
-                // proficiency fact through the real AddFacts mechanism. No
-                // Gunslinger level and no legacy wrapper are involved.
-                AddRapidReloadMatrixRow(matrix, matrixFailures, "F.independent-full",
-                    parent, children, kinds, true, false, false,
+                AddRapidReloadMatrixRow(ctx, matrix, matrixFailures,
+                    "F.independent-full", true, false, false,
                     descriptor => GrantFixtureFact(descriptor, independentFull));
-                AddRapidReloadMatrixRow(matrix, matrixFailures,
-                    "F.independent-one-handed", parent, children, kinds, false, true,
-                    false,
+                AddRapidReloadMatrixRow(ctx, matrix, matrixFailures,
+                    "F.independent-one-handed", false, true, false,
                     descriptor => GrantFixtureFact(descriptor, independentOneHanded));
-                AddRapidReloadMatrixRow(matrix, matrixFailures,
-                    "F.independent-two-handed", parent, children, kinds, false, false,
-                    true,
+                AddRapidReloadMatrixRow(ctx, matrix, matrixFailures,
+                    "F.independent-two-handed", false, false, true,
                     descriptor => GrantFixtureFact(descriptor, independentTwoHanded));
-                // G: Gunslinger class identity with every firearm proficiency
-                // fact removed must not qualify.
-                AddRapidReloadMatrixRow(matrix, matrixFailures,
-                    "G.gunslinger-identity-without-proficiency", parent, children,
-                    kinds, false, false, false, descriptor =>
-                    {
-                        GrantFixtureFact(descriptor, gunslinger.Proficiencies);
-                        RemoveFixtureFact(descriptor, fullProficiency);
-                        RemoveFixtureFact(descriptor, scoped.OneHanded);
-                        RemoveFixtureFact(descriptor, scoped.TwoHanded);
-                    });
-                // H: the preserved legacy wrapper still satisfies the gate
-                // through its existing full-proficiency grant.
-                AddRapidReloadMatrixRow(matrix, matrixFailures,
-                    "H.legacy-wrapper-owner", parent, children, kinds, true, false,
-                    false, descriptor => GrantFixtureFact(descriptor, legacyWrapper));
+                AddRapidReloadMatrixRow(ctx, matrix, matrixFailures,
+                    "H.legacy-wrapper-owner", true, false, false,
+                    descriptor => GrantFixtureFact(descriptor, ctx.LegacyWrapper));
 
-                // --- Real selection flow ------------------------------------
-                MethodInfo start = typeof(LevelUpController).GetMethods(
-                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
-                    .Single(value => value.Name == "StartWithoutAssigningStaticInstance" &&
-                        value.GetParameters().Length == 5);
-                MethodInfo apply = typeof(LevelUpController).GetMethod("ApplyLevelup",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                object mode = Enum.Parse(start.GetParameters()[4].ParameterType,
-                    "LevelUp", false);
+                // --- A/B: refusal through both real feat catalogs -----------
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadRefusedParent(ctx, "A.ordinary-feat-no-proficiency",
+                        ctx.Basic, null),
+                    RapidReloadGateEvidenceRules.EvaluateRefusedParent, flowFailures));
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadRefusedParent(ctx, "A.combat-feat-no-proficiency",
+                        ctx.FighterFeats, null),
+                    RapidReloadGateEvidenceRules.EvaluateRefusedParent, flowFailures));
 
-                // A + B: no firearm proficiency, both catalogs. The Fighter
-                // level-one preview already carries native martial (crossbow)
-                // proficiency, which must not unlock Rapid Reload.
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "A.ordinary-feat-no-proficiency", fighter, basic, parent,
-                    children[0], null, false, flowFailures));
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "A.combat-feat-no-proficiency", fighter, fighterFeats, parent,
-                    children[0], null, false, flowFailures));
-                // C: full proficiency, both catalogs.
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "C.ordinary-feat-full-proficiency", fighter, basic, parent,
-                    children[0],
-                    descriptor => GrantFixtureFact(descriptor, fullProficiency),
-                    true, flowFailures));
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "C.combat-feat-full-proficiency", fighter, fighterFeats, parent,
-                    children[0],
-                    descriptor => GrantFixtureFact(descriptor, fullProficiency),
-                    true, flowFailures));
-                // D and E keep the firearm-specific restriction inside the real
-                // child menu.
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "D.one-handed-pistol", fighter, basic, parent, children[0],
-                    descriptor => GrantFixtureFact(descriptor, scoped.OneHanded), true,
+                // --- B: an out-of-scope firearm refused after a legal parent -
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadScopedChildRefusal(ctx,
+                        "B.one-handed-refuses-musket", ctx.OneHanded, 1, 0),
+                    RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal,
                     flowFailures));
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "D.one-handed-musket-refused", fighter, basic, parent, children[1],
-                    descriptor => GrantFixtureFact(descriptor, scoped.OneHanded), false,
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadScopedChildRefusal(ctx,
+                        "B.two-handed-refuses-pistol", ctx.TwoHanded, 0, 1),
+                    RapidReloadGateEvidenceRules.EvaluateScopedChildRefusal,
                     flowFailures));
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "D.one-handed-blunderbuss-refused", fighter, basic, parent,
-                    children[2],
-                    descriptor => GrantFixtureFact(descriptor, scoped.OneHanded),
-                    false, flowFailures));
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "E.two-handed-musket", fighter, basic, parent, children[1],
-                    descriptor => GrantFixtureFact(descriptor, scoped.TwoHanded), true,
-                    flowFailures));
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "E.two-handed-blunderbuss", fighter, basic, parent, children[2],
-                    descriptor => GrantFixtureFact(descriptor, scoped.TwoHanded), true,
-                    flowFailures));
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "E.two-handed-pistol-refused", fighter, basic, parent, children[0],
-                    descriptor => GrantFixtureFact(descriptor, scoped.TwoHanded), false,
-                    flowFailures));
-                // F: the decisive future-proofing regression through the normal
-                // feat-selection flow on a character with no Gunslinger level.
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "F.independent-source-full", fighter, basic, parent, children[0],
-                    descriptor => GrantFixtureFact(descriptor, independentFull), true,
-                    flowFailures));
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "F.independent-source-two-handed", fighter, basic, parent,
-                    children[1],
-                    descriptor => GrantFixtureFact(descriptor, independentTwoHanded),
-                    true, flowFailures));
-                // H: the legacy wrapper owner keeps its acquisition route.
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "H.legacy-wrapper-owner", fighter, basic, parent, children[0],
-                    descriptor => GrantFixtureFact(descriptor, legacyWrapper), true,
-                    flowFailures));
-                // I: a fresh level-one Gunslinger qualifies from its class
-                // proficiency package alone, inside the level-up visit.
-                flow.Add(RunRapidReloadSelectionAttempt(start, apply, mode,
-                    "I.fresh-level-one-gunslinger", gunslinger.CharacterClass, basic,
-                    parent, children[0], null, true, flowFailures));
 
-                pending = RunRapidReloadPendingClassChange(start, apply, mode,
-                    gunslinger.CharacterClass, fighter, basic, parent, children[0],
+                // --- B: a held parent with no child cannot be confirmed -----
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadEmptySelection(ctx, "B.empty-selection-blocked",
+                        ctx.Full),
+                    RapidReloadGateEvidenceRules.EvaluateEmptySelection, flowFailures));
+
+                // --- C/D/E/F/H/I: legal acquisition routes ------------------
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadAcquisition(ctx, "C.ordinary-feat-full-proficiency",
+                        ctx.Fighter, null, ctx.Basic, 0, ctx.Full),
+                    RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadAcquisition(ctx, "C.combat-feat-full-proficiency",
+                        ctx.Fighter, null, ctx.FighterFeats, 0, ctx.Full),
+                    RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadAcquisition(ctx, "D.one-handed-pistol", ctx.Fighter,
+                        null, ctx.Basic, 0, ctx.OneHanded),
+                    RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadAcquisition(ctx, "E.two-handed-musket", ctx.Fighter,
+                        null, ctx.Basic, 1, ctx.TwoHanded),
+                    RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadAcquisition(ctx, "E.two-handed-blunderbuss",
+                        ctx.Fighter, null, ctx.Basic, 2, ctx.TwoHanded),
+                    RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadAcquisition(ctx, "F.independent-source-full",
+                        ctx.Fighter, null, ctx.Basic, 0, independentFull),
+                    RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadAcquisition(ctx, "F.independent-source-two-handed",
+                        ctx.Fighter, null, ctx.Basic, 1, independentTwoHanded),
+                    RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadAcquisition(ctx, "H.legacy-wrapper-owner",
+                        ctx.Fighter, null, ctx.Basic, 0, ctx.LegacyWrapper),
+                    RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
+                flow.Add(ScoreRapidReloadRow(
+                    RunRapidReloadAcquisition(ctx, "I.fresh-level-one-gunslinger",
+                        ctx.Gunslinger, null, ctx.Basic, 0, null),
+                    RapidReloadGateEvidenceRules.EvaluateAcquisition, flowFailures));
+
+                pendingClass = RunRapidReloadPendingClassChange(ctx, pendingFailures);
+                pendingArchetype = RunRapidReloadPendingArchetypeChange(ctx,
                     pendingFailures);
-                musketMaster = DescribeMusketMasterRapidReload(gunslinger, children,
-                    start, mode, musketMasterFailures);
+                musketMaster = RunRapidReloadMusketMaster(ctx, musketFailures);
+                classIdentity = RunRapidReloadClassIdentityControl(ctx,
+                    identityFailures);
             }
             finally
             {
@@ -256,54 +266,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SameReferences(unitsBefore, SnapshotReferences(allUnits));
             }
 
-            string wiringObserved = wiring.ToString(Newtonsoft.Json.Formatting.None) +
-                (wiringFailures.Count == 0 ? "" :
-                    ";failures=" + string.Join("|", wiringFailures.ToArray()));
-            string catalogObserved = catalog.ToString(Newtonsoft.Json.Formatting.None) +
-                (catalogFailures.Count == 0 ? "" :
-                    ";failures=" + string.Join("|", catalogFailures.ToArray()));
-            string matrixObserved = "ignorePrerequisitesOff=" + ignoreOff + ";" +
-                matrix.ToString(Newtonsoft.Json.Formatting.None) +
-                (matrixFailures.Count == 0 ? "" :
-                    ";failures=" + string.Join("|", matrixFailures.ToArray()));
-            string flowObserved = flow.ToString(Newtonsoft.Json.Formatting.None) +
-                (flowFailures.Count == 0 ? "" :
-                    ";failures=" + string.Join("|", flowFailures.ToArray()));
-            string pendingObserved = (pending == null ? "<not-run>" :
-                pending.ToString(Newtonsoft.Json.Formatting.None)) +
-                (pendingFailures.Count == 0 ? "" :
-                    ";failures=" + string.Join("|", pendingFailures.ToArray()));
-            string musketObserved = (musketMaster == null ? "<not-run>" :
-                musketMaster.ToString(Newtonsoft.Json.Formatting.None)) +
-                (musketMasterFailures.Count == 0 ? "" :
-                    ";failures=" + string.Join("|", musketMasterFailures.ToArray()));
+            // Every advertised selection-flow case must have executed.
+            const int expectedFlowRows = 14;
+            if (flow.Count != expectedFlowRows)
+                flowFailures.Add("flow-row-count=" + flow.Count + "/" + expectedFlowRows);
+            const int expectedMatrixRows = 9;
+            if (matrix.Count != expectedMatrixRows)
+                matrixFailures.Add("matrix-row-count=" + matrix.Count + "/" +
+                    expectedMatrixRows);
+            bool pendingClassAccepted = RapidReloadGateEvidenceRules
+                .EvaluatePendingClassChange(pendingClass, pendingFailures);
+            bool pendingArchetypeAccepted = RapidReloadGateEvidenceRules
+                .EvaluateArchetypeScopeChange(pendingArchetype, pendingFailures);
+            bool musketMasterAccepted = RapidReloadGateEvidenceRules
+                .EvaluateMusketMaster(musketMaster, musketFailures);
+            bool classIdentityAccepted = RapidReloadGateEvidenceRules
+                .EvaluateClassIdentityControl(classIdentity, identityFailures);
 
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("rapid-reload-parent-proficiency-prerequisites",
                     "the registered Rapid Reload selection carries exactly one OR-grouped (Prerequisite.GroupType.Any) firearm-proficiency prerequisite per official kind, each referencing the registered full and scoped proficiency features, with no class, archetype or legacy-wrapper prerequisite and IgnorePrerequisites false",
-                    wiringObserved, wiringFailures.Count == 0,
+                    Describe(wiring, wiringFailures), wiringFailures.Count == 0,
                     "registered BlueprintFeatureSelection.ComponentsArray"),
                 Assertion("rapid-reload-catalog-publication",
                     "the same gated parent stays published exactly once in the ordinary and Fighter combat feat catalogs; no compatibility-only child is published and the legacy wrapper stays out of every selection",
-                    catalogObserved, catalogFailures.Count == 0,
+                    Describe(catalog, catalogFailures), catalogFailures.Count == 0,
                     "native feat selection Features/AllFeatures enumeration"),
                 Assertion("rapid-reload-native-prerequisite-matrix",
-                    "BlueprintFeature.MeetsPrerequisites on disposable units matches the shared gate rules for absent, full, one-handed, two-handed, independent-source, Gunslinger-identity-without-facts and legacy-wrapper characters",
-                    matrixObserved, ignoreOff && matrixFailures.Count == 0,
+                    "on nine disposable fixtures whose actual proficiency ranks are proved first, native BlueprintFeature.MeetsPrerequisites matches the shared gate rules for absent, full, one-handed, two-handed, both-scoped, independent-source and legacy-wrapper characters",
+                    "ignorePrerequisitesOff=" + ignoreOff + ";" +
+                        Describe(matrix, matrixFailures),
+                    ignoreOff && matrixFailures.Count == 0,
                     "native BlueprintFeature.MeetsPrerequisites scored by RapidReloadPrerequisiteRules"),
                 Assertion("rapid-reload-selection-flow",
-                    "LevelUpController selection through the ordinary and Fighter combat feat slots grants Rapid Reload exactly when firearm proficiency covers the chosen firearm, and never otherwise; a refused attempt leaves no Rapid Reload fact after ApplyLevelup",
-                    flowObserved, flowFailures.Count == 0,
-                    "LevelUpController SelectFeature/ApplyLevelup on disposable units"),
-                Assertion("rapid-reload-pending-build-refresh",
-                    "eligibility follows the pending class: a Gunslinger visit qualifies, switching the pending class to Fighter withdraws the parent and every child, switching back restores them, and a held-then-abandoned Gunslinger choice does not survive confirmation as a Fighter",
-                    pendingObserved, pendingFailures.Count == 0,
-                    "repeated LevelUpController visits with SelectClass and ApplyClassMechanics"),
+                    "all 14 real LevelUpController cases execute: an unproficient character is refused at the parent in both feat catalogs and holds nothing; an out-of-scope firearm is refused and the resulting empty Rapid Reload choice both blocks LevelUpState.IsComplete and banks no fact before any cleanup; and every legally proficient route acquires exactly its chosen firearm",
+                    Describe(flow, flowFailures), flowFailures.Count == 0,
+                    "LevelUpController SelectFeature + LevelUpState.IsComplete (the check CharacterBuildController.Next enforces before Commit)"),
+                Assertion("rapid-reload-pending-build-change",
+                    "inside one live level-up transaction, the native SelectClass and AddArchetype/RemoveArchetype operations rebuild the pending build: a held Rapid Reload choice is dropped by the engine when the pending class loses firearm proficiency, cannot survive confirmation as that class, returns to eligibility when the class is restored, and follows the Musket Master proficiency scope when the pending archetype changes",
+                    "class=" + Describe(pendingClass, null) + ";archetype=" +
+                        Describe(pendingArchetype, pendingFailures),
+                    pendingClassAccepted && pendingArchetypeAccepted &&
+                        pendingFailures.Count == 0,
+                    "single-controller LevelUpController.SelectClass / AddArchetype / RemoveArchetype with native preview rebuild"),
                 Assertion("rapid-reload-musket-master-and-duplicates",
-                    "Musket Master still grants Rapid Reload (Musket) at level one, the owned child can no longer be selected again, and the remaining legal choice stays available",
-                    musketObserved, musketMasterFailures.Count == 0,
-                    "archetype LevelEntry inspection plus native CanSelect on an owning unit"),
+                    "a Musket Master built through the native archetype route carries two-handed firearm proficiency only and the automatic Rapid Reload (Musket) grant; through the real nested child selection the owned Musket choice cannot consume another feat, Pistol stays out of scope, and Blunderbuss is acquired by exactly one feat slot",
+                    Describe(musketMaster, musketFailures),
+                    musketMasterAccepted && musketFailures.Count == 0,
+                    "native AddArchetype + ApplyClassMechanics, nested FeatureSelectionState and CanSelect"),
+                Assertion("rapid-reload-class-identity-negative-control",
+                    "a character with real Gunslinger class levels and every firearm-proficiency fact proved absent at evaluation time fails the parent and every official child, and cannot select the parent in a real feat slot",
+                    Describe(classIdentity, identityFailures),
+                    classIdentityAccepted && identityFailures.Count == 0,
+                    "committed Gunslinger progression with fixture-local fact removal, re-proved on the live preview"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "detached entity disposal and exact reference snapshots"),
@@ -318,146 +334,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 assertions, null);
         }
 
-        private static JObject DescribeRapidReloadWiring(
-            BlueprintFeatureSelection parent, BlueprintFeature[] children,
-            BlueprintFeature[] registeredChildren, BlueprintFeature fullProficiency,
-            FirearmScopedProficiencyBlueprintSet scoped, BlueprintFeature legacyWrapper,
-            FirearmKind[] kinds, IList<string> failures)
+        private static string Describe(JToken value, IList<string> failures)
         {
-            BlueprintComponent[] parentComponents = parent.ComponentsArray ??
-                Array.Empty<BlueprintComponent>();
-            PrerequisiteFirearmProficiency[] parentGate = parentComponents
-                .OfType<PrerequisiteFirearmProficiency>().ToArray();
-            if (parentGate.Length != kinds.Length)
-                failures.Add("parent-gate-count=" + parentGate.Length);
-            if (!parentGate.Select(value => value.Kind).SequenceEqual(kinds))
-                failures.Add("parent-gate-kinds");
-            if (parentGate.Any(value => value.Group != Prerequisite.GroupType.Any))
-                failures.Add("parent-gate-not-or-grouped");
-            if (parentGate.Any(value =>
-                    !ReferenceEquals(value.FullProficiency, fullProficiency) ||
-                    !ReferenceEquals(value.OneHandedProficiency, scoped.OneHanded) ||
-                    !ReferenceEquals(value.TwoHandedProficiency, scoped.TwoHanded)))
-                failures.Add("parent-gate-proficiency-identity");
-            if (parentComponents.OfType<Prerequisite>().Count() != parentGate.Length)
-                failures.Add("parent-carries-foreign-prerequisites");
-            if (parentComponents.OfType<PrerequisiteClassLevel>().Any() ||
-                parentComponents.OfType<PrerequisiteArchetypeLevel>().Any() ||
-                parentComponents.OfType<PrerequisiteNoClassLevel>().Any())
-                failures.Add("parent-has-class-prerequisite");
-            if (parentComponents.OfType<PrerequisiteFeature>().Any(value =>
-                    ReferenceEquals(value.Feature, legacyWrapper)))
-                failures.Add("parent-requires-legacy-wrapper");
-            if (parent.IgnorePrerequisites) failures.Add("parent-ignores-prerequisites");
-            var childRows = new JArray();
-            for (int index = 0; index < children.Length; index++)
-            {
-                BlueprintComponent[] components = children[index].ComponentsArray ??
-                    Array.Empty<BlueprintComponent>();
-                PrerequisiteFirearmProficiency[] gate = components
-                    .OfType<PrerequisiteFirearmProficiency>().ToArray();
-                if (gate.Length != 1) failures.Add("child-gate-count:" + kinds[index]);
-                else
-                {
-                    if (gate[0].Kind != kinds[index])
-                        failures.Add("child-gate-kind:" + kinds[index]);
-                    if (gate[0].Group != Prerequisite.GroupType.All)
-                        failures.Add("child-gate-not-and-grouped:" + kinds[index]);
-                    if (!ReferenceEquals(gate[0].FullProficiency, fullProficiency) ||
-                        !ReferenceEquals(gate[0].OneHandedProficiency, scoped.OneHanded) ||
-                        !ReferenceEquals(gate[0].TwoHandedProficiency, scoped.TwoHanded))
-                        failures.Add("child-gate-proficiency-identity:" + kinds[index]);
-                }
-                if (components.OfType<PrerequisiteClassLevel>().Any() ||
-                    components.OfType<PrerequisiteArchetypeLevel>().Any())
-                    failures.Add("child-has-class-prerequisite:" + kinds[index]);
-                childRows.Add(new JObject {
-                    ["kind"] = kinds[index].ToString(),
-                    ["guid"] = children[index].AssetGuid,
-                    ["prerequisiteCount"] = components.OfType<Prerequisite>().Count(),
-                    ["firearmPrerequisiteCount"] = gate.Length,
-                    ["group"] = gate.Length == 1 ? gate[0].Group.ToString() : "<none>",
-                    ["uiText"] = gate.Length == 1 ? gate[0].GetUIText() : "<none>" });
-            }
+            return (value == null ? "<not-run>" :
+                    value.ToString(Newtonsoft.Json.Formatting.None)) +
+                (failures == null || failures.Count == 0 ? "" :
+                    ";failures=" + string.Join("|", failures.ToArray()));
+        }
+
+        private static JObject ScoreRapidReloadRow(JObject row,
+            Func<JObject, IList<string>, bool> evaluator, IList<string> failures)
+        {
+            evaluator(row, failures);
+            return row ?? new JObject { ["case"] = "<missing>" };
+        }
+
+        // ------------------------------------------------------------------
+        // Fixture helpers
+        // ------------------------------------------------------------------
+
+        // The observed proficiency ranks of a descriptor or a live preview.
+        // Acceptance never reads an intended grant; it reads this.
+        private static JObject DescribeRapidReloadFixture(RapidReloadGateContext ctx,
+            UnitDescriptor descriptor)
+        {
             return new JObject {
-                ["parentGuid"] = parent.AssetGuid,
-                ["parentName"] = parent.name,
-                ["parentIgnorePrerequisites"] = parent.IgnorePrerequisites,
-                ["parentGate"] = new JArray(parentGate.Select(value => new JObject {
-                    ["componentName"] = value.name,
-                    ["kind"] = value.Kind.ToString(),
-                    ["group"] = value.Group.ToString(),
-                    ["uiText"] = value.GetUIText() })),
-                ["registeredChildCount"] = registeredChildren.Length,
-                ["children"] = childRows };
+                ["fullProficiencyRank"] = descriptor.Progression.Features.GetRank(ctx.Full),
+                ["oneHandedProficiencyRank"] =
+                    descriptor.Progression.Features.GetRank(ctx.OneHanded),
+                ["twoHandedProficiencyRank"] =
+                    descriptor.Progression.Features.GetRank(ctx.TwoHanded) };
         }
 
-        private static JObject DescribeRapidReloadCatalogs(
-            BlueprintFeatureSelection parent, BlueprintFeature[] registeredChildren,
-            BlueprintFeature legacyWrapper, BlueprintFeatureSelection basic,
-            BlueprintFeatureSelection fighterFeats, int officialCount,
-            IList<string> failures)
-        {
-            foreach (var entry in new[] {
-                new KeyValuePair<string, BlueprintFeatureSelection>("basic", basic),
-                new KeyValuePair<string, BlueprintFeatureSelection>("fighter", fighterFeats) })
-            {
-                int features = CountRapidReloadReference(entry.Value.Features, parent);
-                int allFeatures = CountRapidReloadReference(entry.Value.AllFeatures, parent);
-                if (features != 1 || allFeatures != 1)
-                    failures.Add("parent-publication:" + entry.Key + "=" + features +
-                        "/" + allFeatures);
-            }
-            BlueprintFeature[] compatibilityOnly = registeredChildren
-                .Skip(officialCount).ToArray();
-            BlueprintFeatureSelection[] allSelections = BlueprintBootstrap.Library
-                .GetAllBlueprints().OfType<BlueprintFeatureSelection>().ToArray();
-            foreach (BlueprintFeature retired in compatibilityOnly)
-            {
-                if (CountRapidReloadReference(parent.Features, retired) != 0 ||
-                    CountRapidReloadReference(parent.AllFeatures, retired) != 0)
-                    failures.Add("retired-child-in-parent:" + retired.name);
-                if (allSelections.Any(selection =>
-                        CountRapidReloadReference(selection.Features, retired) != 0 ||
-                        CountRapidReloadReference(selection.AllFeatures, retired) != 0))
-                    failures.Add("retired-child-published:" + retired.name);
-            }
-            if (allSelections.Any(selection =>
-                    CountRapidReloadReference(selection.Features, legacyWrapper) != 0 ||
-                    CountRapidReloadReference(selection.AllFeatures, legacyWrapper) != 0))
-                failures.Add("legacy-wrapper-published");
-            if (parent.Features.Length != officialCount ||
-                parent.AllFeatures.Length != officialCount)
-                failures.Add("parent-choice-count=" + parent.Features.Length + "/" +
-                    parent.AllFeatures.Length);
-            return new JObject {
-                ["basicFeatures"] = CountRapidReloadReference(basic.Features, parent),
-                ["basicAllFeatures"] = CountRapidReloadReference(basic.AllFeatures, parent),
-                ["fighterFeatures"] = CountRapidReloadReference(fighterFeats.Features, parent),
-                ["fighterAllFeatures"] = CountRapidReloadReference(
-                    fighterFeats.AllFeatures, parent),
-                ["parentChoices"] = new JArray(parent.AllFeatures.Select(value =>
-                    value == null ? "<null>" : value.name)),
-                ["compatibilityOnlyChoices"] = new JArray(compatibilityOnly.Select(
-                    value => value.name)),
-                ["selectionsScanned"] = allSelections.Length };
-        }
-
-        private static int CountRapidReloadReference(BlueprintFeature[] source,
-            BlueprintFeature target)
-        {
-            return (source ?? Array.Empty<BlueprintFeature>()).Count(value =>
-                ReferenceEquals(value, target) || value != null && target != null &&
-                string.Equals(value.AssetGuid, target.AssetGuid,
-                    StringComparison.Ordinal));
-        }
-
-        // Test-only proficiency source. It is created for this request only,
-        // never registered, never published and destroyed in the scenario's
-        // finally block, so players can never acquire it.
         private static BlueprintFeature CreateIndependentProficiencySource(
             string name, BlueprintFeature granted)
         {
+            // Test-only proficiency source: created for this request only, never
+            // registered, never published and destroyed in the scenario's
+            // finally block, so players can never acquire it.
             var grant = ScriptableObject.CreateInstance<AddFacts>();
             grant.name = "$KMG_RuntimeFixture_GrantFirearmProficiency";
             grant.Facts = new BlueprintUnitFact[] { granted };
@@ -488,357 +402,966 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The disposable unit rejected the fixture fact " + feature.name + ".");
         }
 
-        private static void RemoveFixtureFact(UnitDescriptor descriptor,
-            BlueprintFeature feature)
+        private static UnitEntityData CreateDisposableUnit()
         {
-            if (descriptor.HasFact(feature)) descriptor.RemoveFact(feature);
+            return new Kingmaker.UI.LevelUp.ChargenUnit(
+                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
         }
 
-        private static void AddRapidReloadMatrixRow(JArray matrix,
-            IList<string> failures, string label, BlueprintFeatureSelection parent,
-            BlueprintFeature[] children, FirearmKind[] kinds, bool expectedFull,
-            bool expectedOneHanded, bool expectedTwoHanded,
+        // Opens one real level-up visit. Archetypes are added before the class
+        // is selected, exactly as the engine's own AddClassLevels.AddLevel does.
+        private static LevelUpController OpenRapidReloadVisit(
+            RapidReloadGateContext ctx, UnitDescriptor descriptor,
+            BlueprintCharacterClass characterClass, BlueprintArchetype archetype)
+        {
+            var controller = (LevelUpController)ctx.Start.Invoke(null,
+                new object[] { descriptor, false, null, null, ctx.Mode });
+            if (archetype != null && !controller.AddArchetype(characterClass, archetype))
+                throw new InvalidOperationException(
+                    "Native archetype selection rejected the Rapid Reload gate visit.");
+            if (!controller.SelectClass(characterClass, false))
+                throw new InvalidOperationException(
+                    "Native class selection rejected the Rapid Reload gate visit.");
+            controller.ApplyClassMechanics();
+            controller.ApplySpellbook();
+            controller.ApplySkillPoints();
+            return controller;
+        }
+
+        // Legally satisfies everything the native completion check needs except
+        // the Rapid Reload selection under test, so a blocked completion can be
+        // attributed to the target rather than to an unfinished character.
+        // Skill and attribute points are resolved first because their actions
+        // outrank feature selections and would otherwise force a preview rebuild
+        // after the target choice was made.
+        private static JObject ResolveRapidReloadNonTargetRequirements(
+            RapidReloadGateContext ctx, LevelUpController controller)
+        {
+            // Character-build fields the native completion check also demands.
+            // Each is only touched when the engine says it is still open, so
+            // the fixture never fabricates a choice the build did not offer.
+            if (controller.State.CanSelectRaceStat)
+                controller.SelectRaceStat(StatType.Strength);
+            if (controller.State.CanSelectAlignment)
+                controller.SelectAlignment(Alignment.TrueNeutral);
+            int statGuard = 0;
+            while (!controller.State.StatsDistribution.IsComplete() && statGuard++ < 200)
+            {
+                bool added = StatTypeHelper.Attributes.Any(attribute =>
+                    controller.AddStatPoint(attribute));
+                if (!added) break;
+            }
+            int skillGuard = 0;
+            while (controller.State.SkillPointsRemaining > 0 && skillGuard++ < 200)
+            {
+                bool spent = StatTypeHelper.Skills.Any(skill =>
+                    controller.State.SkillPointsRemaining > 0 &&
+                    controller.SpendSkillPoint(skill));
+                if (!spent) break;
+            }
+            int attributeGuard = 0;
+            while (controller.State.AttributePoints > 0 && attributeGuard++ < 200)
+            {
+                bool spent = StatTypeHelper.Attributes.Any(attribute =>
+                    controller.State.AttributePoints > 0 &&
+                    controller.SpendAttributePoint(attribute));
+                if (!spent) break;
+            }
+            var resolved = new JArray();
+            int selectionGuard = 0;
+            while (selectionGuard++ < 40)
+            {
+                LevelUpState levelUpState = controller.State;
+                UnitDescriptor preview = controller.Preview;
+                FeatureSelectionState pending = levelUpState.Selections.FirstOrDefault(
+                    value => !value.Selected && value.Selection != null &&
+                        !ReferenceEquals(value.Selection, ctx.Parent) &&
+                        value.CanSelectAnything(levelUpState, preview));
+                if (pending == null) break;
+                IFeatureSelectionItem choice = pending.Selection
+                    .ExtractSelectionItems(preview, preview)
+                    .FirstOrDefault(item => item != null && item.Feature != null &&
+                        !ReferenceEquals(item.Feature, ctx.Parent) &&
+                        pending.Selection.CanSelect(preview, levelUpState, pending, item));
+                if (choice == null) break;
+                if (!controller.SelectFeature(pending, choice)) break;
+                resolved.Add((pending.Selection as BlueprintScriptableObject) == null
+                    ? "<unnamed>"
+                    : ((BlueprintScriptableObject)pending.Selection).name + "=" +
+                        choice.Feature.name);
+            }
+            return new JObject {
+                ["skillPointsRemaining"] = controller.State.SkillPointsRemaining,
+                ["attributePoints"] = controller.State.AttributePoints,
+                ["statsDistributionComplete"] =
+                    controller.State.StatsDistribution.IsComplete(),
+                ["canSelectRaceStat"] = controller.State.CanSelectRaceStat,
+                ["canSelectAlignment"] = controller.State.CanSelectAlignment,
+                ["canSelectRace"] = controller.State.CanSelectRace,
+                ["canSelectName"] = controller.State.CanSelectName,
+                ["canSelectPortrait"] = controller.State.CanSelectPortrait,
+                ["canSelectGender"] = controller.State.CanSelectGender,
+                ["canSelectVoice"] = controller.State.CanSelectVoice,
+                ["resolvedOtherSelections"] = resolved };
+        }
+
+        private static FeatureSelectionState FindRapidReloadSlot(
+            LevelUpController controller, BlueprintFeatureSelection slotSelection)
+        {
+            return controller.State.Selections.FirstOrDefault(value =>
+                !value.Selected && ReferenceEquals(value.Selection, slotSelection));
+        }
+
+        // The nested Rapid Reload choice state that SelectFeature.Apply creates
+        // for a selection-valued item.
+        private static FeatureSelectionState FindRapidReloadChildState(
+            LevelUpController controller, RapidReloadGateContext ctx)
+        {
+            return controller.State.Selections.FirstOrDefault(value =>
+                ReferenceEquals(value.Selection, ctx.Parent));
+        }
+
+        private static bool RapidReloadChoiceHeld(LevelUpController controller,
+            RapidReloadGateContext ctx)
+        {
+            return controller.State.Selections.Any(value =>
+                ReferenceEquals(value.Selection, ctx.Parent) ||
+                value.SelectedItem != null &&
+                ReferenceEquals(value.SelectedItem.Feature, ctx.Parent));
+        }
+
+        // LevelUpState.IsComplete is the exact gate CharacterBuildController.Next
+        // enforces before it calls Commit. The blocking set names which pending
+        // selections keep it false.
+        private static JObject DescribeRapidReloadCompletion(
+            RapidReloadGateContext ctx, LevelUpController controller)
+        {
+            LevelUpState levelUpState = controller.State;
+            UnitDescriptor preview = controller.Preview;
+            FeatureSelectionState[] blockers = levelUpState.Selections.Where(value =>
+                !value.Selected && value.Selection != null &&
+                value.CanSelectAnything(levelUpState, preview)).ToArray();
+            return new JObject {
+                ["isComplete"] = levelUpState.IsComplete(),
+                ["remainingSelections"] = levelUpState.RemainingSelections(),
+                ["blockers"] = new JArray(blockers.Select(value =>
+                    (value.Selection as BlueprintScriptableObject) == null ?
+                        "<unnamed>" : ((BlueprintScriptableObject)value.Selection).name)),
+                ["targetBlocks"] = blockers.Any(value =>
+                    ReferenceEquals(value.Selection, ctx.Parent)),
+                ["skillPointsRemaining"] = levelUpState.SkillPointsRemaining,
+                ["attributePoints"] = levelUpState.AttributePoints };
+        }
+
+        private static JArray DescribeRapidReloadChildEligibility(
+            RapidReloadGateContext ctx, UnitDescriptor descriptor, LevelUpState levelUpState)
+        {
+            return new JArray(ctx.Children.Select(child =>
+                child.MeetsPrerequisites(null, descriptor, levelUpState)));
+        }
+
+        private static IFeatureSelectionItem FindItem(IFeatureSelection selection,
+            UnitDescriptor preview, BlueprintFeature feature)
+        {
+            return selection.ExtractSelectionItems(preview, preview)
+                .FirstOrDefault(item => item != null &&
+                    ReferenceEquals(item.Feature, feature));
+        }
+
+        // ------------------------------------------------------------------
+        // Case A/B: no firearm proficiency, both feat catalogs
+        // ------------------------------------------------------------------
+        private JObject RunRapidReloadRefusedParent(RapidReloadGateContext ctx,
+            string label, BlueprintFeatureSelection slotSelection,
             Action<UnitDescriptor> prepare)
         {
-            UnitEntityData unit = new Kingmaker.UI.LevelUp.ChargenUnit(
-                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+            UnitEntityData unit = CreateDisposableUnit();
+            LevelUpController controller = null;
+            var row = new JObject { ["case"] = label, ["slot"] = slotSelection.name };
             try
             {
                 UnitDescriptor descriptor = unit.Descriptor;
                 if (prepare != null) prepare(descriptor);
-                bool parentObserved = parent.MeetsPrerequisites(null, descriptor, null);
+                controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Fighter, null);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                // A Fighter already carries native martial proficiency, so the
+                // crossbow control is satisfied by the same fixture.
+                row["previewCrossbowProficiency"] =
+                    controller.Preview.Proficiencies.Contains(WeaponCategory.LightCrossbow) ||
+                    controller.Preview.Proficiencies.Contains(WeaponCategory.HeavyCrossbow);
+                FeatureSelectionState slot = FindRapidReloadSlot(controller, slotSelection);
+                row["slotPresent"] = slot != null;
+                if (slot == null) return row;
+                IFeatureSelectionItem parentItem = FindItem(slotSelection,
+                    controller.Preview, ctx.Parent);
+                row["parentOffered"] = parentItem != null;
+                if (parentItem == null) return row;
+                row["parentCanSelect"] = slotSelection.CanSelect(controller.Preview,
+                    controller.State, slot, parentItem);
+                row["parentSelected"] = controller.SelectFeature(slot, parentItem);
+                row["parentChoiceHeld"] = RapidReloadChoiceHeld(controller, ctx);
+                row["childEligibility"] = DescribeRapidReloadChildEligibility(ctx,
+                    controller.Preview, controller.State);
+                row["completion"] = DescribeRapidReloadCompletion(ctx, controller);
+                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                controller.Cancel();
+                controller = null;
+                row["acquiredParent"] =
+                    descriptor.Progression.Features.GetRank(ctx.Parent) > 0;
+                row["acquiredChild"] = ctx.Children.Any(child =>
+                    descriptor.Progression.Features.GetRank(child) > 0);
+            }
+            finally
+            {
+                CloseRapidReloadVisit(controller, row);
+                unit.Dispose();
+            }
+            return row;
+        }
+
+        // ------------------------------------------------------------------
+        // Case B: legal parent, out-of-scope firearm child
+        // ------------------------------------------------------------------
+        private JObject RunRapidReloadScopedChildRefusal(RapidReloadGateContext ctx,
+            string label, BlueprintFeature proficiency, int refusedIndex, int legalIndex)
+        {
+            UnitEntityData unit = CreateDisposableUnit();
+            LevelUpController controller = null;
+            var row = new JObject { ["case"] = label, ["slot"] = ctx.Basic.name,
+                ["refusedChild"] = ctx.Children[refusedIndex].name,
+                ["legalChild"] = ctx.Children[legalIndex].name };
+            try
+            {
+                UnitDescriptor descriptor = unit.Descriptor;
+                GrantFixtureFact(descriptor, proficiency);
+                controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Fighter, null);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
+                row["slotPresent"] = slot != null;
+                if (slot == null) return row;
+                IFeatureSelectionItem parentItem = FindItem(ctx.Basic,
+                    controller.Preview, ctx.Parent);
+                row["parentCanSelect"] = parentItem != null && ctx.Basic.CanSelect(
+                    controller.Preview, controller.State, slot, parentItem);
+                row["parentSelected"] = parentItem != null &&
+                    controller.SelectFeature(slot, parentItem);
+                FeatureSelectionState childState = FindRapidReloadChildState(controller, ctx);
+                row["childStatePresent"] = childState != null;
+                if (childState == null) return row;
+                IFeatureSelectionItem refused = FindItem(childState.Selection,
+                    controller.Preview, ctx.Children[refusedIndex]);
+                row["refusedChildOffered"] = refused != null;
+                row["refusedChildCanSelect"] = refused != null &&
+                    childState.Selection.CanSelect(controller.Preview, controller.State,
+                        childState, refused);
+                row["refusedChildSelected"] = refused != null &&
+                    controller.SelectFeature(childState, refused);
+                // Everything below is observed before any cleanup or repair.
+                childState = FindRapidReloadChildState(controller, ctx);
+                row["childStateSelectedAfterRefusal"] = childState != null &&
+                    childState.Selected;
+                JObject blockedCompletion = DescribeRapidReloadCompletion(ctx, controller);
+                row["completionWhileEmpty"] = blockedCompletion;
+                row["completeWhileEmpty"] = (bool)blockedCompletion["isComplete"];
+                row["targetBlocksCompletion"] = (bool)blockedCompletion["targetBlocks"];
+                row["parentRankWhileEmpty"] =
+                    controller.Preview.Progression.Features.GetRank(ctx.Parent);
+                row["refusedChildRankWhileEmpty"] = controller.Preview.Progression
+                    .Features.GetRank(ctx.Children[refusedIndex]);
+                // Attribution: the same build completes once a legal firearm is
+                // chosen, so the block belongs to the Rapid Reload choice.
+                IFeatureSelectionItem legal = childState == null ? null :
+                    FindItem(childState.Selection, controller.Preview,
+                        ctx.Children[legalIndex]);
+                row["legalChildSelected"] = legal != null && childState != null &&
+                    controller.SelectFeature(childState, legal);
+                JObject afterLegal = DescribeRapidReloadCompletion(ctx, controller);
+                row["completionAfterLegalChoice"] = afterLegal;
+                row["completeAfterLegalChoice"] = (bool)afterLegal["isComplete"];
+                row["targetBlocksCompletionAfterLegalChoice"] = (bool)afterLegal["targetBlocks"];
+                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                controller.Cancel();
+                controller = null;
+                row["acquiredLegalChild"] = descriptor.Progression.Features
+                    .GetRank(ctx.Children[legalIndex]) > 0;
+                row["acquiredRefusedChild"] = descriptor.Progression.Features
+                    .GetRank(ctx.Children[refusedIndex]) > 0;
+            }
+            finally
+            {
+                CloseRapidReloadVisit(controller, row);
+                unit.Dispose();
+            }
+            return row;
+        }
+
+        // ------------------------------------------------------------------
+        // Case B: a held parent with no firearm chosen
+        // ------------------------------------------------------------------
+        private JObject RunRapidReloadEmptySelection(RapidReloadGateContext ctx,
+            string label, BlueprintFeature proficiency)
+        {
+            UnitEntityData unit = CreateDisposableUnit();
+            LevelUpController controller = null;
+            var row = new JObject { ["case"] = label, ["slot"] = ctx.Basic.name };
+            try
+            {
+                UnitDescriptor descriptor = unit.Descriptor;
+                GrantFixtureFact(descriptor, proficiency);
+                controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Fighter, null);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
+                row["slotPresent"] = slot != null;
+                if (slot == null) return row;
+                IFeatureSelectionItem parentItem = FindItem(ctx.Basic,
+                    controller.Preview, ctx.Parent);
+                row["parentSelected"] = parentItem != null &&
+                    controller.SelectFeature(slot, parentItem);
+                FeatureSelectionState childState = FindRapidReloadChildState(controller, ctx);
+                row["childStatePresent"] = childState != null;
+                row["childStateSelected"] = childState != null && childState.Selected;
+                // No firearm is chosen and nothing is unselected first: this is
+                // the state a player would try to confirm.
+                JObject completion = DescribeRapidReloadCompletion(ctx, controller);
+                row["completion"] = completion;
+                row["completeWhileEmpty"] = (bool)completion["isComplete"];
+                row["targetBlocksCompletion"] = (bool)completion["targetBlocks"];
+                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                controller.Cancel();
+                controller = null;
+                row["acquiredParent"] =
+                    descriptor.Progression.Features.GetRank(ctx.Parent) > 0;
+                row["acquiredAnyChild"] = ctx.RegisteredChildren.Any(child =>
+                    descriptor.Progression.Features.GetRank(child) > 0);
+            }
+            finally
+            {
+                CloseRapidReloadVisit(controller, row);
+                unit.Dispose();
+            }
+            return row;
+        }
+
+        // ------------------------------------------------------------------
+        // Legal acquisition through a real feat slot
+        // ------------------------------------------------------------------
+        private JObject RunRapidReloadAcquisition(RapidReloadGateContext ctx,
+            string label, BlueprintCharacterClass characterClass,
+            BlueprintArchetype archetype, BlueprintFeatureSelection slotSelection,
+            int childIndex, BlueprintFeature proficiency)
+        {
+            UnitEntityData unit = CreateDisposableUnit();
+            LevelUpController controller = null;
+            var row = new JObject { ["case"] = label, ["class"] = characterClass.name,
+                ["slot"] = slotSelection.name, ["child"] = ctx.Children[childIndex].name };
+            try
+            {
+                UnitDescriptor descriptor = unit.Descriptor;
+                if (proficiency != null) GrantFixtureFact(descriptor, proficiency);
+                controller = OpenRapidReloadVisit(ctx, descriptor, characterClass, archetype);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                FeatureSelectionState slot = FindRapidReloadSlot(controller, slotSelection);
+                row["slotPresent"] = slot != null;
+                if (slot == null) return row;
+                IFeatureSelectionItem parentItem = FindItem(slotSelection,
+                    controller.Preview, ctx.Parent);
+                row["parentOffered"] = parentItem != null;
+                row["parentCanSelect"] = parentItem != null && slotSelection.CanSelect(
+                    controller.Preview, controller.State, slot, parentItem);
+                row["parentSelected"] = parentItem != null &&
+                    controller.SelectFeature(slot, parentItem);
+                FeatureSelectionState childState = FindRapidReloadChildState(controller, ctx);
+                row["childStatePresent"] = childState != null;
+                IFeatureSelectionItem childItem = childState == null ? null :
+                    FindItem(childState.Selection, controller.Preview,
+                        ctx.Children[childIndex]);
+                row["childOffered"] = childItem != null;
+                row["childCanSelect"] = childItem != null &&
+                    childState.Selection.CanSelect(controller.Preview, controller.State,
+                        childState, childItem);
+                row["childSelected"] = childItem != null &&
+                    controller.SelectFeature(childState, childItem);
+                JObject completion = DescribeRapidReloadCompletion(ctx, controller);
+                row["completion"] = completion;
+                row["completeAfterLegalChoice"] = (bool)completion["isComplete"];
+                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                controller.Cancel();
+                controller = null;
+                row["acquiredChild"] = descriptor.Progression.Features
+                    .GetRank(ctx.Children[childIndex]) > 0;
+                row["otherChildRanks"] = new JArray(ctx.Children.Select(child =>
+                    descriptor.Progression.Features.GetRank(child)));
+            }
+            finally
+            {
+                CloseRapidReloadVisit(controller, row);
+                unit.Dispose();
+            }
+            return row;
+        }
+
+        // ------------------------------------------------------------------
+        // F1: a genuine pending class change inside one live transaction
+        // ------------------------------------------------------------------
+        private JObject RunRapidReloadPendingClassChange(RapidReloadGateContext ctx,
+            IList<string> failures)
+        {
+            UnitEntityData unit = CreateDisposableUnit();
+            LevelUpController controller = null;
+            var row = new JObject();
+            int controllerInstances = 0;
+            try
+            {
+                UnitDescriptor descriptor = unit.Descriptor;
+                controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Gunslinger, null);
+                controllerInstances++;
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                row["gunslingerFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                row["gunslingerLevel"] =
+                    controller.Preview.Progression.GetClassLevel(ctx.Gunslinger);
+                if (!HoldRapidReloadChoice(ctx, controller, ctx.Basic, 0, row, "held"))
+                    failures.Add("pending-class-change:initial-hold-failed");
+                row["heldBeforeChange"] = (bool)row["held"];
+                FeatureSelectionState heldState = FindRapidReloadChildState(controller, ctx);
+                row["heldChildName"] = heldState == null || heldState.SelectedItem == null ||
+                    heldState.SelectedItem.Feature == null ? "<none>" :
+                    heldState.SelectedItem.Feature.name;
+
+                // The native change-class operation on the SAME controller. It
+                // removes the previous SelectClass action, rebuilds the preview
+                // and re-checks every pending action; nothing here cancels the
+                // visit or constructs a second controller.
+                if (!controller.SelectClass(ctx.Fighter, true))
+                    throw new InvalidOperationException(
+                        "Native class change to Fighter was rejected.");
+                row["fighterFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                row["fighterGunslingerLevel"] =
+                    controller.Preview.Progression.GetClassLevel(ctx.Gunslinger);
+                row["fighterLevelInPreview"] =
+                    controller.Preview.Progression.GetClassLevel(ctx.Fighter);
+                row["parentEligibleAfterChange"] = ctx.Parent.MeetsPrerequisites(null,
+                    controller.Preview, controller.State);
+                row["childEligibilityAfterChange"] = DescribeRapidReloadChildEligibility(
+                    ctx, controller.Preview, controller.State);
+                row["choiceSurvivedChange"] = RapidReloadChoiceHeld(controller, ctx);
+
+                // Change back through the same native route.
+                if (!controller.SelectClass(ctx.Gunslinger, true))
+                    throw new InvalidOperationException(
+                        "Native class change back to Gunslinger was rejected.");
+                row["restoredFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                row["parentEligibleAfterRestore"] = ctx.Parent.MeetsPrerequisites(null,
+                    controller.Preview, controller.State);
+                row["childEligibilityAfterRestore"] = DescribeRapidReloadChildEligibility(
+                    ctx, controller.Preview, controller.State);
+                row["choiceRestoredByEngine"] = RapidReloadChoiceHeld(controller, ctx);
+
+                row["requirementsAfterRestore"] =
+                    ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                if (!HoldRapidReloadChoice(ctx, controller, ctx.Basic, 0, row, "rehold"))
+                    failures.Add("pending-class-change:rehold-failed");
+                row["reheldBeforeSecondChange"] = (bool)row["rehold"];
+
+                if (!controller.SelectClass(ctx.Fighter, true))
+                    throw new InvalidOperationException(
+                        "Native second class change to Fighter was rejected.");
+                row["choiceSurvivedSecondChange"] = RapidReloadChoiceHeld(controller, ctx);
+                row["requirementsBeforeConfirmation"] =
+                    ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                row["completionBeforeConfirmation"] =
+                    DescribeRapidReloadCompletion(ctx, controller);
+                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                controller.Cancel();
+                controller = null;
+                row["confirmedFighterLevel"] =
+                    descriptor.Progression.GetClassLevel(ctx.Fighter);
+                row["confirmedGunslingerLevel"] =
+                    descriptor.Progression.GetClassLevel(ctx.Gunslinger);
+                row["acquiredParentAfterConfirmation"] =
+                    descriptor.Progression.Features.GetRank(ctx.Parent) > 0;
+                row["acquiredAnyChildAfterConfirmation"] = ctx.RegisteredChildren.Any(
+                    child => descriptor.Progression.Features.GetRank(child) > 0);
+            }
+            finally
+            {
+                CloseRapidReloadVisit(controller, row);
+                unit.Dispose();
+                row["controllerInstances"] = controllerInstances;
+            }
+            return row;
+        }
+
+        // ------------------------------------------------------------------
+        // F1: a genuine pending archetype (proficiency-scope) change
+        // ------------------------------------------------------------------
+        private JObject RunRapidReloadPendingArchetypeChange(RapidReloadGateContext ctx,
+            IList<string> failures)
+        {
+            UnitEntityData unit = CreateDisposableUnit();
+            LevelUpController controller = null;
+            var row = new JObject();
+            int controllerInstances = 0;
+            try
+            {
+                UnitDescriptor descriptor = unit.Descriptor;
+                controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Gunslinger, null);
+                controllerInstances++;
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                row["baseFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                // Pistol: legal for the base Gunslinger, illegal for a Musket
+                // Master.
+                if (!HoldRapidReloadChoice(ctx, controller, ctx.Basic, 0, row, "held"))
+                    failures.Add("pending-archetype-change:initial-hold-failed");
+                row["heldBeforeChange"] = (bool)row["held"];
+
+                // The native pending-archetype operation on the same controller.
+                row["archetypeApplied"] = controller.AddArchetype(ctx.MusketMaster);
+                row["archetypeFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                row["isMusketMasterAfterChange"] =
+                    controller.Preview.Progression.IsArchetype(ctx.MusketMaster);
+                row["automaticMusketRankAfterChange"] =
+                    controller.Preview.Progression.Features.GetRank(ctx.Children[1]);
+                row["parentEligibleAfterChange"] = ctx.Parent.MeetsPrerequisites(null,
+                    controller.Preview, controller.State);
+                row["childEligibilityAfterChange"] = DescribeRapidReloadChildEligibility(
+                    ctx, controller.Preview, controller.State);
+                row["choiceSurvivedChange"] = RapidReloadChoiceHeld(controller, ctx);
+                row["childSelectableAfterChange"] = DescribeRapidReloadChildSelectability(
+                    ctx, controller, failures, "pending-archetype-change");
+
+                controller.RemoveArchetype(ctx.MusketMaster);
+                row["archetypeRemoved"] =
+                    !controller.Preview.Progression.IsArchetype(ctx.MusketMaster);
+                row["restoredFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                row["automaticMusketRankAfterRemoval"] =
+                    controller.Preview.Progression.Features.GetRank(ctx.Children[1]);
+                row["childEligibilityAfterRemoval"] = DescribeRapidReloadChildEligibility(
+                    ctx, controller.Preview, controller.State);
+                controller.Cancel();
+                controller = null;
+            }
+            finally
+            {
+                CloseRapidReloadVisit(controller, row);
+                unit.Dispose();
+                row["controllerInstances"] = controllerInstances;
+            }
+            return row;
+        }
+
+        // Opens Rapid Reload in a real feat slot and reports which firearms the
+        // native child selection would actually accept, then withdraws the probe
+        // so the caller's transaction is left as it was.
+        private static JArray DescribeRapidReloadChildSelectability(
+            RapidReloadGateContext ctx, LevelUpController controller,
+            IList<string> failures, string label)
+        {
+            FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
+            if (slot == null)
+            {
+                failures.Add(label + ":selectability-slot-absent");
+                return new JArray();
+            }
+            IFeatureSelectionItem parentItem = FindItem(ctx.Basic, controller.Preview,
+                ctx.Parent);
+            if (parentItem == null || !controller.SelectFeature(slot, parentItem))
+            {
+                failures.Add(label + ":selectability-parent-refused");
+                return new JArray();
+            }
+            FeatureSelectionState childState = FindRapidReloadChildState(controller, ctx);
+            if (childState == null)
+            {
+                failures.Add(label + ":selectability-child-state-absent");
+                return new JArray();
+            }
+            var selectable = new JArray(ctx.Children.Select(child =>
+            {
+                IFeatureSelectionItem item = FindItem(childState.Selection,
+                    controller.Preview, child);
+                return item != null && childState.Selection.CanSelect(controller.Preview,
+                    controller.State, childState, item);
+            }));
+            controller.UnselectFeature(slot);
+            return selectable;
+        }
+
+        private static bool HoldRapidReloadChoice(RapidReloadGateContext ctx,
+            LevelUpController controller, BlueprintFeatureSelection slotSelection,
+            int childIndex, JObject row, string key)
+        {
+            FeatureSelectionState slot = FindRapidReloadSlot(controller, slotSelection);
+            if (slot == null) { row[key] = false; return false; }
+            IFeatureSelectionItem parentItem = FindItem(slotSelection,
+                controller.Preview, ctx.Parent);
+            if (parentItem == null || !controller.SelectFeature(slot, parentItem))
+            { row[key] = false; return false; }
+            FeatureSelectionState childState = FindRapidReloadChildState(controller, ctx);
+            IFeatureSelectionItem childItem = childState == null ? null :
+                FindItem(childState.Selection, controller.Preview, ctx.Children[childIndex]);
+            bool held = childItem != null && controller.SelectFeature(childState, childItem);
+            // "Held" means the engine actually records the exact choice, not
+            // merely that SelectFeature returned true.
+            FeatureSelectionState confirmed = FindRapidReloadChildState(controller, ctx);
+            held = held && confirmed != null && confirmed.SelectedItem != null &&
+                ReferenceEquals(confirmed.SelectedItem.Feature, ctx.Children[childIndex]);
+            row[key] = held;
+            return held;
+        }
+
+        // ------------------------------------------------------------------
+        // F3: a natively built Musket Master
+        // ------------------------------------------------------------------
+        private JObject RunRapidReloadMusketMaster(RapidReloadGateContext ctx,
+            IList<string> failures)
+        {
+            LevelEntry levelOne = (ctx.MusketMaster.AddFeatures ??
+                Array.Empty<LevelEntry>()).FirstOrDefault(value => value.Level == 1);
+            var row = new JObject {
+                ["archetype"] = ctx.MusketMaster.name,
+                ["levelOneGrantsRapidReloadMusket"] = levelOne != null &&
+                    levelOne.Features != null && levelOne.Features.Any(value =>
+                        ReferenceEquals(value, ctx.Children[1])),
+                ["levelOneFeatures"] = new JArray((levelOne == null ||
+                        levelOne.Features == null ? new List<BlueprintFeatureBase>() :
+                        levelOne.Features).Select(value =>
+                            value == null ? "<null>" : value.name)) };
+            UnitEntityData unit = CreateDisposableUnit();
+            LevelUpController controller = null;
+            try
+            {
+                UnitDescriptor descriptor = unit.Descriptor;
+                // Nothing is granted by hand: the archetype's own level-one
+                // package supplies both the two-handed proficiency scope and the
+                // automatic Rapid Reload (Musket) grant.
+                controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Gunslinger,
+                    ctx.MusketMaster);
+                row["requirements"] = ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                row["fixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                row["gunslingerLevel"] =
+                    controller.Preview.Progression.GetClassLevel(ctx.Gunslinger);
+                row["isMusketMasterArchetype"] =
+                    controller.Preview.Progression.IsArchetype(ctx.MusketMaster);
+                row["automaticMusketRank"] =
+                    controller.Preview.Progression.Features.GetRank(ctx.Children[1]);
+                FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
+                row["slotPresent"] = slot != null;
+                if (slot == null) return row;
+                IFeatureSelectionItem parentItem = FindItem(ctx.Basic,
+                    controller.Preview, ctx.Parent);
+                row["parentCanSelect"] = parentItem != null && ctx.Basic.CanSelect(
+                    controller.Preview, controller.State, slot, parentItem);
+                row["parentSelected"] = parentItem != null &&
+                    controller.SelectFeature(slot, parentItem);
+                FeatureSelectionState childState = FindRapidReloadChildState(controller, ctx);
+                row["childStatePresent"] = childState != null;
+                if (childState == null) return row;
+                IFeatureSelectionItem owned = FindItem(childState.Selection,
+                    controller.Preview, ctx.Children[1]);
+                row["ownedChildOffered"] = owned != null;
+                row["ownedChildCanSelect"] = owned != null &&
+                    childState.Selection.CanSelect(controller.Preview, controller.State,
+                        childState, owned);
+                row["ownedChildSelected"] = owned != null &&
+                    controller.SelectFeature(childState, owned);
+                childState = FindRapidReloadChildState(controller, ctx);
+                IFeatureSelectionItem incompatible = childState == null ? null :
+                    FindItem(childState.Selection, controller.Preview, ctx.Children[0]);
+                row["incompatibleChildOffered"] = incompatible != null;
+                row["incompatibleChildCanSelect"] = incompatible != null &&
+                    childState.Selection.CanSelect(controller.Preview, controller.State,
+                        childState, incompatible);
+                IFeatureSelectionItem legal = childState == null ? null :
+                    FindItem(childState.Selection, controller.Preview, ctx.Children[2]);
+                row["legalChildCanSelect"] = legal != null && childState != null &&
+                    childState.Selection.CanSelect(controller.Preview, controller.State,
+                        childState, legal);
+                row["legalChildSelected"] = legal != null && childState != null &&
+                    controller.SelectFeature(childState, legal);
+                row["completion"] = DescribeRapidReloadCompletion(ctx, controller);
+                row["featSlotsConsumed"] = controller.State.Selections.Count(value =>
+                    value.SelectedItem != null &&
+                    ReferenceEquals(value.SelectedItem.Feature, ctx.Parent));
+                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                controller.Cancel();
+                controller = null;
+                row["acquiredLegalChild"] =
+                    descriptor.Progression.Features.GetRank(ctx.Children[2]) > 0;
+                row["acquiredOwnedChildRank"] =
+                    descriptor.Progression.Features.GetRank(ctx.Children[1]);
+                row["acquiredIncompatibleChildRank"] =
+                    descriptor.Progression.Features.GetRank(ctx.Children[0]);
+            }
+            finally
+            {
+                CloseRapidReloadVisit(controller, row);
+                unit.Dispose();
+            }
+            return row;
+        }
+
+        // ------------------------------------------------------------------
+        // F4: real Gunslinger levels, no firearm-proficiency facts
+        // ------------------------------------------------------------------
+        private JObject RunRapidReloadClassIdentityControl(RapidReloadGateContext ctx,
+            IList<string> failures)
+        {
+            UnitEntityData unit = CreateDisposableUnit();
+            LevelUpController controller = null;
+            var row = new JObject();
+            try
+            {
+                UnitDescriptor descriptor = unit.Descriptor;
+                // A genuine Gunslinger committed through native class mechanics.
+                controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Gunslinger, null);
+                row["buildRequirements"] =
+                    ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                ctx.Apply.Invoke(controller, new object[] { descriptor });
+                controller.Cancel();
+                controller = null;
+                row["builtGunslingerLevel"] =
+                    descriptor.Progression.GetClassLevel(ctx.Gunslinger);
+                row["builtFixture"] = DescribeRapidReloadFixture(ctx, descriptor);
+                if (descriptor.Progression.Features.GetRank(ctx.Full) <= 0)
+                    failures.Add("class-identity-control:gunslinger-build-had-no-proficiency");
+
+                // Fixture-local removal only: the owning class-proficiency
+                // package first, then any surviving proficiency fact.
+                if (descriptor.HasFact(ctx.GunslingerProficiencies))
+                    descriptor.RemoveFact(ctx.GunslingerProficiencies);
+                foreach (BlueprintFeature proficiency in new[] { ctx.Full,
+                    ctx.OneHanded, ctx.TwoHanded })
+                    if (descriptor.HasFact(proficiency)) descriptor.RemoveFact(proficiency);
+                row["committedGunslingerLevel"] =
+                    descriptor.Progression.GetClassLevel(ctx.Gunslinger);
+                row["committedFixture"] = DescribeRapidReloadFixture(ctx, descriptor);
+                row["parentEligible"] = ctx.Parent.MeetsPrerequisites(null, descriptor, null);
+                row["childEligibility"] = DescribeRapidReloadChildEligibility(ctx,
+                    descriptor, null);
+
+                // Exercise selection on a live preview. The next level is taken
+                // as a Fighter so the Gunslinger progression is not re-applied;
+                // Gunslinger class identity is preserved and re-proved below. If
+                // the preview restored any proficiency the control is invalid and
+                // the fixture assertion fails rather than scoring a pass.
+                controller = OpenRapidReloadVisit(ctx, descriptor, ctx.Fighter, null);
+                row["previewRequirements"] =
+                    ResolveRapidReloadNonTargetRequirements(ctx, controller);
+                row["previewGunslingerLevel"] =
+                    controller.Preview.Progression.GetClassLevel(ctx.Gunslinger);
+                row["previewFixture"] = DescribeRapidReloadFixture(ctx, controller.Preview);
+                FeatureSelectionState slot = FindRapidReloadSlot(controller, ctx.Basic);
+                row["slotPresent"] = slot != null;
+                if (slot != null)
+                {
+                    IFeatureSelectionItem parentItem = FindItem(ctx.Basic,
+                        controller.Preview, ctx.Parent);
+                    row["parentOffered"] = parentItem != null;
+                    row["parentCanSelect"] = parentItem != null && ctx.Basic.CanSelect(
+                        controller.Preview, controller.State, slot, parentItem);
+                    row["parentSelected"] = parentItem != null &&
+                        controller.SelectFeature(slot, parentItem);
+                }
+                controller.Cancel();
+                controller = null;
+            }
+            finally
+            {
+                CloseRapidReloadVisit(controller, row);
+                unit.Dispose();
+            }
+            return row;
+        }
+
+        private static void CloseRapidReloadVisit(LevelUpController controller,
+            JObject row)
+        {
+            if (controller == null) return;
+            try { controller.Cancel(); }
+            catch (Exception error) { row["cleanupError"] = error.Message; }
+        }
+
+        // ------------------------------------------------------------------
+        // Retained wiring and catalog coverage
+        // ------------------------------------------------------------------
+        private static JObject DescribeRapidReloadWiring(RapidReloadGateContext ctx,
+            IList<string> failures)
+        {
+            BlueprintComponent[] parentComponents = ctx.Parent.ComponentsArray ??
+                Array.Empty<BlueprintComponent>();
+            PrerequisiteFirearmProficiency[] parentGate = parentComponents
+                .OfType<PrerequisiteFirearmProficiency>().ToArray();
+            if (parentGate.Length != ctx.Kinds.Length)
+                failures.Add("parent-gate-count=" + parentGate.Length);
+            if (!parentGate.Select(value => value.Kind).SequenceEqual(ctx.Kinds))
+                failures.Add("parent-gate-kinds");
+            if (parentGate.Any(value => value.Group != Prerequisite.GroupType.Any))
+                failures.Add("parent-gate-not-or-grouped");
+            if (parentGate.Any(value =>
+                    !ReferenceEquals(value.FullProficiency, ctx.Full) ||
+                    !ReferenceEquals(value.OneHandedProficiency, ctx.OneHanded) ||
+                    !ReferenceEquals(value.TwoHandedProficiency, ctx.TwoHanded)))
+                failures.Add("parent-gate-proficiency-identity");
+            if (parentComponents.OfType<Prerequisite>().Count() != parentGate.Length)
+                failures.Add("parent-carries-foreign-prerequisites");
+            if (parentComponents.OfType<PrerequisiteClassLevel>().Any() ||
+                parentComponents.OfType<PrerequisiteArchetypeLevel>().Any() ||
+                parentComponents.OfType<PrerequisiteNoClassLevel>().Any())
+                failures.Add("parent-has-class-prerequisite");
+            if (parentComponents.OfType<PrerequisiteFeature>().Any(value =>
+                    ReferenceEquals(value.Feature, ctx.LegacyWrapper)))
+                failures.Add("parent-requires-legacy-wrapper");
+            if (ctx.Parent.IgnorePrerequisites)
+                failures.Add("parent-ignores-prerequisites");
+            var childRows = new JArray();
+            for (int index = 0; index < ctx.Children.Length; index++)
+            {
+                BlueprintComponent[] components = ctx.Children[index].ComponentsArray ??
+                    Array.Empty<BlueprintComponent>();
+                PrerequisiteFirearmProficiency[] gate = components
+                    .OfType<PrerequisiteFirearmProficiency>().ToArray();
+                if (gate.Length != 1)
+                    failures.Add("child-gate-count:" + ctx.Kinds[index]);
+                else
+                {
+                    if (gate[0].Kind != ctx.Kinds[index])
+                        failures.Add("child-gate-kind:" + ctx.Kinds[index]);
+                    if (gate[0].Group != Prerequisite.GroupType.All)
+                        failures.Add("child-gate-not-and-grouped:" + ctx.Kinds[index]);
+                    if (!ReferenceEquals(gate[0].FullProficiency, ctx.Full) ||
+                        !ReferenceEquals(gate[0].OneHandedProficiency, ctx.OneHanded) ||
+                        !ReferenceEquals(gate[0].TwoHandedProficiency, ctx.TwoHanded))
+                        failures.Add("child-gate-proficiency-identity:" + ctx.Kinds[index]);
+                }
+                if (components.OfType<PrerequisiteClassLevel>().Any() ||
+                    components.OfType<PrerequisiteArchetypeLevel>().Any())
+                    failures.Add("child-has-class-prerequisite:" + ctx.Kinds[index]);
+                childRows.Add(new JObject {
+                    ["kind"] = ctx.Kinds[index].ToString(),
+                    ["guid"] = ctx.Children[index].AssetGuid,
+                    ["prerequisiteCount"] = components.OfType<Prerequisite>().Count(),
+                    ["firearmPrerequisiteCount"] = gate.Length,
+                    ["group"] = gate.Length == 1 ? gate[0].Group.ToString() : "<none>",
+                    ["uiText"] = gate.Length == 1 ? gate[0].GetUIText() : "<none>" });
+            }
+            return new JObject {
+                ["parentGuid"] = ctx.Parent.AssetGuid,
+                ["parentName"] = ctx.Parent.name,
+                ["parentIgnorePrerequisites"] = ctx.Parent.IgnorePrerequisites,
+                ["parentGate"] = new JArray(parentGate.Select(value => new JObject {
+                    ["componentName"] = value.name,
+                    ["kind"] = value.Kind.ToString(),
+                    ["group"] = value.Group.ToString(),
+                    ["uiText"] = value.GetUIText() })),
+                ["registeredChildCount"] = ctx.RegisteredChildren.Length,
+                ["children"] = childRows };
+        }
+
+        private static JObject DescribeRapidReloadCatalogs(RapidReloadGateContext ctx,
+            IList<string> failures)
+        {
+            foreach (var entry in new[] {
+                new KeyValuePair<string, BlueprintFeatureSelection>("basic", ctx.Basic),
+                new KeyValuePair<string, BlueprintFeatureSelection>("fighter",
+                    ctx.FighterFeats) })
+            {
+                int features = CountRapidReloadReference(entry.Value.Features, ctx.Parent);
+                int allFeatures = CountRapidReloadReference(entry.Value.AllFeatures,
+                    ctx.Parent);
+                if (features != 1 || allFeatures != 1)
+                    failures.Add("parent-publication:" + entry.Key + "=" + features +
+                        "/" + allFeatures);
+            }
+            BlueprintFeature[] compatibilityOnly = ctx.RegisteredChildren
+                .Skip(ctx.Kinds.Length).ToArray();
+            BlueprintFeatureSelection[] allSelections = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintFeatureSelection>().ToArray();
+            foreach (BlueprintFeature retired in compatibilityOnly)
+            {
+                if (CountRapidReloadReference(ctx.Parent.Features, retired) != 0 ||
+                    CountRapidReloadReference(ctx.Parent.AllFeatures, retired) != 0)
+                    failures.Add("retired-child-in-parent:" + retired.name);
+                if (allSelections.Any(selection =>
+                        CountRapidReloadReference(selection.Features, retired) != 0 ||
+                        CountRapidReloadReference(selection.AllFeatures, retired) != 0))
+                    failures.Add("retired-child-published:" + retired.name);
+            }
+            if (allSelections.Any(selection =>
+                    CountRapidReloadReference(selection.Features, ctx.LegacyWrapper) != 0 ||
+                    CountRapidReloadReference(selection.AllFeatures, ctx.LegacyWrapper) != 0))
+                failures.Add("legacy-wrapper-published");
+            if (ctx.Parent.Features.Length != ctx.Kinds.Length ||
+                ctx.Parent.AllFeatures.Length != ctx.Kinds.Length)
+                failures.Add("parent-choice-count=" + ctx.Parent.Features.Length + "/" +
+                    ctx.Parent.AllFeatures.Length);
+            return new JObject {
+                ["basicFeatures"] = CountRapidReloadReference(ctx.Basic.Features, ctx.Parent),
+                ["basicAllFeatures"] = CountRapidReloadReference(ctx.Basic.AllFeatures,
+                    ctx.Parent),
+                ["fighterFeatures"] = CountRapidReloadReference(ctx.FighterFeats.Features,
+                    ctx.Parent),
+                ["fighterAllFeatures"] = CountRapidReloadReference(
+                    ctx.FighterFeats.AllFeatures, ctx.Parent),
+                ["parentChoices"] = new JArray(ctx.Parent.AllFeatures.Select(value =>
+                    value == null ? "<null>" : value.name)),
+                ["compatibilityOnlyChoices"] = new JArray(compatibilityOnly.Select(
+                    value => value.name)),
+                ["selectionsScanned"] = allSelections.Length };
+        }
+
+        private static int CountRapidReloadReference(BlueprintFeature[] source,
+            BlueprintFeature target)
+        {
+            return (source ?? Array.Empty<BlueprintFeature>()).Count(value =>
+                ReferenceEquals(value, target) || value != null && target != null &&
+                string.Equals(value.AssetGuid, target.AssetGuid,
+                    StringComparison.Ordinal));
+        }
+
+        private static void AddRapidReloadMatrixRow(RapidReloadGateContext ctx,
+            JArray matrix, IList<string> failures, string label, bool expectedFull,
+            bool expectedOneHanded, bool expectedTwoHanded,
+            Action<UnitDescriptor> prepare)
+        {
+            UnitEntityData unit = CreateDisposableUnit();
+            try
+            {
+                UnitDescriptor descriptor = unit.Descriptor;
+                if (prepare != null) prepare(descriptor);
+                JObject fixture = DescribeRapidReloadFixture(ctx, descriptor);
+                // The fixture's real ranks are proved before its answers count.
+                RapidReloadGateEvidenceRules.EvaluateFixtureProficiency(fixture, label,
+                    expectedFull, expectedOneHanded, expectedTwoHanded, failures);
+                bool parentObserved = ctx.Parent.MeetsPrerequisites(null, descriptor, null);
                 bool parentExpected = RapidReloadPrerequisiteRules.ParentQualifies(
                     expectedFull, expectedOneHanded, expectedTwoHanded);
                 if (parentObserved != parentExpected)
                     failures.Add(label + ":parent=" + parentObserved);
                 var childRows = new JArray();
-                for (int index = 0; index < children.Length; index++)
+                for (int index = 0; index < ctx.Children.Length; index++)
                 {
-                    bool observed = children[index].MeetsPrerequisites(null, descriptor,
-                        null);
+                    bool observed = ctx.Children[index].MeetsPrerequisites(null,
+                        descriptor, null);
                     bool expected = RapidReloadPrerequisiteRules.ChildQualifies(
-                        kinds[index], expectedFull, expectedOneHanded, expectedTwoHanded);
+                        ctx.Kinds[index], expectedFull, expectedOneHanded, expectedTwoHanded);
                     if (observed != expected)
-                        failures.Add(label + ":" + kinds[index] + "=" + observed);
+                        failures.Add(label + ":" + ctx.Kinds[index] + "=" + observed);
                     childRows.Add(new JObject {
-                        ["kind"] = kinds[index].ToString(),
+                        ["kind"] = ctx.Kinds[index].ToString(),
                         ["observed"] = observed, ["expected"] = expected });
                 }
                 matrix.Add(new JObject {
                     ["case"] = label,
-                    ["grantedFull"] = expectedFull,
-                    ["grantedOneHanded"] = expectedOneHanded,
-                    ["grantedTwoHanded"] = expectedTwoHanded,
+                    ["fixture"] = fixture,
                     ["parentObserved"] = parentObserved,
                     ["parentExpected"] = parentExpected,
                     ["children"] = childRows });
             }
             finally { unit.Dispose(); }
-        }
-
-        // One real level-up visit: build a disposable unit of the given class,
-        // find the requested native feat slot, try to commit Rapid Reload and the
-        // requested firearm choice through the controller, then apply the level.
-        private JObject RunRapidReloadSelectionAttempt(MethodInfo start,
-            MethodInfo apply, object mode, string label,
-            BlueprintCharacterClass characterClass,
-            BlueprintFeatureSelection slotSelection, BlueprintFeatureSelection parent,
-            BlueprintFeature child, Action<UnitDescriptor> prepare,
-            bool expectAcquired, IList<string> failures)
-        {
-            UnitEntityData unit = new Kingmaker.UI.LevelUp.ChargenUnit(
-                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
-            LevelUpController controller = null;
-            var row = new JObject { ["case"] = label,
-                ["class"] = characterClass.name, ["slot"] = slotSelection.name,
-                ["child"] = child.name, ["expectAcquired"] = expectAcquired };
-            bool parentCanSelect = false, parentSelected = false, childSelected = false;
-            try
-            {
-                UnitDescriptor descriptor = unit.Descriptor;
-                if (prepare != null) prepare(descriptor);
-                controller = (LevelUpController)start.Invoke(null,
-                    new object[] { descriptor, false, null, null, mode });
-                if (!controller.SelectClass(characterClass, false))
-                    throw new InvalidOperationException(
-                        "Native class selection rejected the Rapid Reload gate visit.");
-                controller.ApplyClassMechanics();
-                row["previewCrossbowProficiency"] =
-                    controller.Preview.Proficiencies.Contains(WeaponCategory.LightCrossbow) ||
-                    controller.Preview.Proficiencies.Contains(WeaponCategory.HeavyCrossbow);
-                row["previewParentEligible"] = parent.MeetsPrerequisites(null,
-                    controller.Preview, controller.State);
-                FeatureSelectionState slot = controller.State.Selections
-                    .FirstOrDefault(value => !value.Selected &&
-                        ReferenceEquals(value.Selection, slotSelection));
-                if (slot == null)
-                {
-                    failures.Add(label + ":slot-absent");
-                    row["slotPresent"] = false;
-                    return row;
-                }
-                row["slotPresent"] = true;
-                IFeatureSelectionItem[] items = slotSelection
-                    .ExtractSelectionItems(controller.Preview, controller.Preview).ToArray();
-                IFeatureSelectionItem parentItem = items.FirstOrDefault(value =>
-                    value != null && ReferenceEquals(value.Feature, parent));
-                row["parentOffered"] = parentItem != null;
-                if (parentItem == null)
-                {
-                    failures.Add(label + ":parent-not-offered");
-                    return row;
-                }
-                parentCanSelect = slotSelection.CanSelect(controller.Preview,
-                    controller.State, slot, parentItem);
-                row["parentCanSelect"] = parentCanSelect;
-                parentSelected = controller.SelectFeature(slot, parentItem);
-                row["parentSelected"] = parentSelected;
-                if (parentSelected)
-                {
-                    FeatureSelectionState childSlot = slot.Next;
-                    IFeatureSelectionItem[] childItems = childSlot == null ||
-                        childSlot.Selection == null ? Array.Empty<IFeatureSelectionItem>() :
-                        childSlot.Selection.ExtractSelectionItems(controller.Preview,
-                            controller.Preview).ToArray();
-                    row["childMenu"] = new JArray(childItems.Select(value =>
-                        value == null || value.Feature == null ? "<null>" :
-                            value.Feature.name));
-                    IFeatureSelectionItem childItem = childItems.FirstOrDefault(value =>
-                        value != null && ReferenceEquals(value.Feature, child));
-                    row["childOffered"] = childItem != null;
-                    if (childItem != null)
-                    {
-                        row["childCanSelect"] = childSlot.Selection.CanSelect(
-                            controller.Preview, controller.State, childSlot, childItem);
-                        childSelected = controller.SelectFeature(childSlot, childItem);
-                    }
-                    row["childSelected"] = childSelected;
-                    if (!childSelected)
-                    {
-                        // Never leave a dangling parent commit behind: the
-                        // confirmation below must not be able to bank an empty
-                        // Rapid Reload selection.
-                        try { controller.UnselectFeature(slot); }
-                        catch (Exception error) { row["unselectError"] = error.Message; }
-                    }
-                }
-                apply.Invoke(controller, new object[] { descriptor });
-                controller.Cancel();
-                controller = null;
-                bool acquiredParent = descriptor.Progression.Features.GetRank(parent) > 0;
-                bool acquiredChild = descriptor.Progression.Features.GetRank(child) > 0;
-                row["acquiredParent"] = acquiredParent;
-                row["acquiredChild"] = acquiredChild;
-                row["classLevel"] = descriptor.Progression.GetClassLevel(characterClass);
-                if (acquiredChild != expectAcquired)
-                    failures.Add(label + ":acquiredChild=" + acquiredChild);
-                if (!expectAcquired && acquiredParent)
-                    failures.Add(label + ":empty-parent-banked");
-                if (expectAcquired && !parentCanSelect)
-                    failures.Add(label + ":parent-refused");
-                if (!expectAcquired && childSelected)
-                    failures.Add(label + ":ineligible-choice-committed");
-            }
-            finally
-            {
-                if (controller != null)
-                {
-                    try { controller.Cancel(); }
-                    catch (Exception error) { row["cleanupError"] = error.Message; }
-                }
-                unit.Dispose();
-            }
-            return row;
-        }
-
-        // Pending-build proof: eligibility must follow the class being built,
-        // and a choice held under a qualifying pending class must not survive a
-        // confirmation made under a non-qualifying one.
-        private JObject RunRapidReloadPendingClassChange(MethodInfo start,
-            MethodInfo apply, object mode, BlueprintCharacterClass gunslinger,
-            BlueprintCharacterClass fighter, BlueprintFeatureSelection slotSelection,
-            BlueprintFeatureSelection parent, BlueprintFeature child,
-            IList<string> failures)
-        {
-            UnitEntityData unit = new Kingmaker.UI.LevelUp.ChargenUnit(
-                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
-            var row = new JObject();
-            LevelUpController controller = null;
-            try
-            {
-                UnitDescriptor descriptor = unit.Descriptor;
-                var parentEligibility = new JArray();
-                var childEligibility = new JArray();
-                BlueprintCharacterClass[] sequence = { gunslinger, fighter, gunslinger };
-                for (int visit = 0; visit < sequence.Length; visit++)
-                {
-                    controller = (LevelUpController)start.Invoke(null,
-                        new object[] { descriptor, false, null, null, mode });
-                    if (!controller.SelectClass(sequence[visit], false))
-                        throw new InvalidOperationException(
-                            "Native class selection rejected a pending-change visit.");
-                    controller.ApplyClassMechanics();
-                    parentEligibility.Add(parent.MeetsPrerequisites(null,
-                        controller.Preview, controller.State));
-                    childEligibility.Add(child.MeetsPrerequisites(null,
-                        controller.Preview, controller.State));
-                    controller.Cancel();
-                    controller = null;
-                }
-                row["pendingClassSequence"] = new JArray(sequence.Select(
-                    value => value.name));
-                row["parentEligibility"] = parentEligibility;
-                row["childEligibility"] = childEligibility;
-                if (!(bool)parentEligibility[0])
-                    failures.Add("gunslinger-visit-not-eligible");
-                if ((bool)parentEligibility[1])
-                    failures.Add("fighter-visit-eligible-without-proficiency");
-                if (!(bool)parentEligibility[2])
-                    failures.Add("gunslinger-visit-did-not-refresh");
-                if (!(bool)childEligibility[0] || (bool)childEligibility[1] ||
-                    !(bool)childEligibility[2])
-                    failures.Add("child-eligibility-did-not-refresh");
-
-                // Hold the choice under the qualifying pending class, abandon
-                // the visit, then confirm the level as a Fighter.
-                controller = (LevelUpController)start.Invoke(null,
-                    new object[] { descriptor, false, null, null, mode });
-                if (!controller.SelectClass(gunslinger, false))
-                    throw new InvalidOperationException(
-                        "Native class selection rejected the stale-choice visit.");
-                controller.ApplyClassMechanics();
-                FeatureSelectionState slot = controller.State.Selections
-                    .FirstOrDefault(value => !value.Selected &&
-                        ReferenceEquals(value.Selection, slotSelection));
-                bool held = false;
-                if (slot != null)
-                {
-                    IFeatureSelectionItem parentItem = slotSelection
-                        .ExtractSelectionItems(controller.Preview, controller.Preview)
-                        .FirstOrDefault(value => value != null &&
-                            ReferenceEquals(value.Feature, parent));
-                    if (parentItem != null && controller.SelectFeature(slot, parentItem))
-                    {
-                        FeatureSelectionState childSlot = slot.Next;
-                        IFeatureSelectionItem childItem = childSlot == null ||
-                            childSlot.Selection == null ? null : childSlot.Selection
-                                .ExtractSelectionItems(controller.Preview,
-                                    controller.Preview)
-                                .FirstOrDefault(value => value != null &&
-                                    ReferenceEquals(value.Feature, child));
-                        held = childItem != null &&
-                            controller.SelectFeature(childSlot, childItem);
-                    }
-                }
-                row["staleChoiceHeld"] = held;
-                if (!held) failures.Add("stale-choice-was-never-held");
-                controller.Cancel();
-                controller = null;
-
-                controller = (LevelUpController)start.Invoke(null,
-                    new object[] { descriptor, false, null, null, mode });
-                if (!controller.SelectClass(fighter, false))
-                    throw new InvalidOperationException(
-                        "Native class selection rejected the confirmation visit.");
-                controller.ApplyClassMechanics();
-                apply.Invoke(controller, new object[] { descriptor });
-                controller.Cancel();
-                controller = null;
-                bool survived = descriptor.Progression.Features.GetRank(child) > 0 ||
-                    descriptor.Progression.Features.GetRank(parent) > 0;
-                row["staleChoiceSurvivedConfirmation"] = survived;
-                row["fighterLevel"] = descriptor.Progression.GetClassLevel(fighter);
-                row["gunslingerLevel"] = descriptor.Progression.GetClassLevel(gunslinger);
-                if (survived) failures.Add("stale-choice-survived-confirmation");
-            }
-            finally
-            {
-                if (controller != null)
-                {
-                    try { controller.Cancel(); }
-                    catch (Exception error) { row["cleanupError"] = error.Message; }
-                }
-                unit.Dispose();
-            }
-            return row;
-        }
-
-        // Musket Master keeps its automatic level-one Rapid Reload (Musket)
-        // grant, and an already-owned child cannot consume a second feat.
-        private JObject DescribeMusketMasterRapidReload(
-            GunslingerClassBlueprintSet gunslinger, BlueprintFeature[] children,
-            MethodInfo start, object mode, IList<string> failures)
-        {
-            BlueprintArchetype archetype = gunslinger.MusketMaster == null ? null :
-                gunslinger.MusketMaster.Archetype;
-            if (archetype == null)
-            {
-                failures.Add("musket-master-archetype-missing");
-                return new JObject { ["archetype"] = "<missing>" };
-            }
-            BlueprintFeature musketChild = children[1];
-            LevelEntry levelOne = (archetype.AddFeatures ?? Array.Empty<LevelEntry>())
-                .FirstOrDefault(value => value.Level == 1);
-            bool granted = levelOne != null && levelOne.Features != null &&
-                levelOne.Features.Any(value => ReferenceEquals(value, musketChild));
-            if (!granted) failures.Add("musket-master-level-one-grant-missing");
-            var row = new JObject {
-                ["archetype"] = archetype.name,
-                ["levelOneGrantsRapidReloadMusket"] = granted,
-                ["levelOneFeatures"] = new JArray((levelOne == null ||
-                        levelOne.Features == null ?
-                        new List<BlueprintFeatureBase>() : levelOne.Features)
-                    .Select(value => value == null ? "<null>" : value.name)) };
-            UnitEntityData unit = new Kingmaker.UI.LevelUp.ChargenUnit(
-                BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
-            LevelUpController controller = null;
-            try
-            {
-                UnitDescriptor descriptor = unit.Descriptor;
-                GrantFixtureFact(descriptor,
-                    BlueprintBootstrap.ScopedFirearmProficiencies.TwoHanded);
-                GrantFixtureFact(descriptor, musketChild);
-                controller = (LevelUpController)start.Invoke(null,
-                    new object[] { descriptor, false, null, null, mode });
-                if (!controller.SelectClass(gunslinger.CharacterClass, false))
-                    throw new InvalidOperationException(
-                        "Native class selection rejected the Musket Master duplicate visit.");
-                controller.ApplyClassMechanics();
-                BlueprintFeatureSelection parent =
-                    BlueprintBootstrap.FirearmFeats.RapidReload;
-                FeatureSelectionState slot = controller.State.Selections
-                    .FirstOrDefault(value => !value.Selected &&
-                        value.Selection is BlueprintFeatureSelection);
-                IFeatureSelectionItem[] items = parent.ExtractSelectionItems(
-                    controller.Preview, controller.Preview).ToArray();
-                IFeatureSelectionItem ownedItem = items.FirstOrDefault(value =>
-                    value != null && ReferenceEquals(value.Feature, musketChild));
-                IFeatureSelectionItem otherItem = items.FirstOrDefault(value =>
-                    value != null && ReferenceEquals(value.Feature, children[2]));
-                bool ownedSelectable = slot != null && ownedItem != null &&
-                    parent.CanSelect(controller.Preview, controller.State, slot, ownedItem);
-                bool otherSelectable = slot != null && otherItem != null &&
-                    parent.CanSelect(controller.Preview, controller.State, slot, otherItem);
-                row["slotPresent"] = slot != null;
-                row["ownedChildStillSelectable"] = ownedSelectable;
-                row["unownedLegalChildSelectable"] = otherSelectable;
-                if (slot == null) failures.Add("musket-master-duplicate-slot-absent");
-                if (ownedSelectable) failures.Add("owned-child-can-be-reselected");
-                if (slot != null && !otherSelectable)
-                    failures.Add("legal-unowned-child-unavailable");
-                controller.Cancel();
-                controller = null;
-            }
-            finally
-            {
-                if (controller != null)
-                {
-                    try { controller.Cancel(); }
-                    catch (Exception error) { row["cleanupError"] = error.Message; }
-                }
-                unit.Dispose();
-            }
-            return row;
         }
     }
 }

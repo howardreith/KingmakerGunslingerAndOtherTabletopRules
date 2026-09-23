@@ -23,9 +23,23 @@
   which reads the registered blueprints and drives the real LevelUpController
   across the absent, full, one-handed, two-handed, independent-source,
   class-identity-only, legacy-wrapper, pending-build and Musket Master cases.
-  It has not been executed; runtime qualification is blocked because this
-  session is elevated and the runtime orchestrator correctly refuses
-  administrator elevation.
+- Corrected that scenario after review so it cannot report a false positive:
+  the pending class and archetype changes now happen inside one live
+  `LevelUpController` (native `SelectClass`, `AddArchetype` and
+  `RemoveArchetype` with the engine's own preview rebuild) instead of separate
+  cancelled visits; a refused firearm choice is inspected against
+  `LevelUpState.IsComplete` and the owned facts before any test-driven cleanup,
+  with the other build requirements satisfied legally so the block is
+  attributable to Rapid Reload; the Musket Master case is built through the real
+  archetype route with nothing granted by hand and uses the actual nested child
+  selection; and the class-identity negative control now has real Gunslinger
+  class levels with its proficiency facts proved absent at evaluation time.
+- Added `RapidReloadGateEvidenceRules` plus `rapid-reload-evidence.*` domain
+  coverage so a scenario run that skipped a native operation, lost a
+  precondition or repaired an invalid state cannot be scored as a pass.
+- The scenario has not been executed; runtime qualification is blocked because
+  the authoring sessions are elevated and the runtime orchestrator correctly
+  refuses administrator elevation.
 
 ## 0.0.134-magic-circle-alignment-spells
 
