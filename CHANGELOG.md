@@ -1,5 +1,32 @@
 # Changelog
 
+## Unreleased - rapid-reload-proficiency-gate
+
+- Rapid Reload now requires firearm proficiency at the selection itself rather
+  than only on its per-firearm children. The project-owned parent selection
+  carries one OR-grouped (`Prerequisite.GroupType.Any`) firearm-proficiency
+  prerequisite per currently published official firearm kind, so a character
+  without firearm proficiency can no longer acquire Rapid Reload through
+  ordinary feat selection or Fighter combat-bonus-feat selection.
+- Any valid firearm-proficiency source satisfies the requirement, whatever
+  granted it. No Gunslinger class or archetype prerequisite was added, and the
+  retired Exotic Weapon Proficiency (Firearms) compatibility wrapper is neither
+  required nor republished.
+- The firearm-specific child restrictions are unchanged: one-handed proficiency
+  still unlocks only Pistol, and two-handed proficiency only Musket and
+  Blunderbuss. Musket Master keeps its automatic level-one Rapid Reload (Musket)
+  grant, reload action costs and the runtime benefit lookup are untouched, and
+  no save-load cleanup strips existing Rapid Reload feats.
+- The parent description now states the proficiency prerequisite and that
+  class-granted firearm proficiency satisfies it.
+- Added the guarded `disposable-rapid-reload-proficiency-gate` runtime scenario,
+  which reads the registered blueprints and drives the real LevelUpController
+  across the absent, full, one-handed, two-handed, independent-source,
+  class-identity-only, legacy-wrapper, pending-build and Musket Master cases.
+  It has not been executed; runtime qualification is blocked because this
+  session is elevated and the runtime orchestrator correctly refuses
+  administrator elevation.
+
 ## 0.0.134-magic-circle-alignment-spells
 
 - Add Magic Circle against Evil, Good, Law and Chaos: level-3 touch spells with
