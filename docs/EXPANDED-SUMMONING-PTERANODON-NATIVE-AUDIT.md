@@ -29,7 +29,24 @@ The charter and the shipped roster call this a "Roc" proxy, but that is the
 *view policy label*, not the donor. The donor blueprint is
 `CR3_GiantEagleStandard`.
 
-### 1.1 The donor is shared by four creatures
+### 1.1 What the guide says this creature is for
+
+The summoning guide (reference R1) rates Pteranodon the air pick at its tier:
+it values the ten-foot reach for attacks of opportunity, and the fact that
+"everything stacks on that main attack" - a single bite of 2d6 plus modifiers -
+and elsewhere calls multiple Pteranodons the best single-target aerial
+attacker available at that level.
+
+This corroborates the shipped profile rather than changing it: Large size
+carries the ten-foot reach, and `Bite2d6` is the stacked main attack. The
+consequence for this sprint is an acceptance emphasis, not a stat change. The
+replacement visual must land its bite impact at the correct time and at the
+correct point at Large reach, because that single attack is the creature's
+entire tactical identity. A pterosaur that reads well standing still but
+whose bite connects late, or visually short of its reach, would fail the
+charter's signature-role requirement even with every number intact.
+
+### 1.2 The donor is shared by four creatures
 
 This is the governing constraint on the whole sprint:
 
