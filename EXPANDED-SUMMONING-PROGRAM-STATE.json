@@ -136,8 +136,28 @@
   },
   "sprint2": {
     "name": "Skinned-Creature Asset Pipeline and Pteranodon Vertical Slice",
-    "technicalStatus": "NOT-STARTED",
-    "ownerAcceptance": "PENDING"
+    "technicalStatus": "AUDIT-COMPLETE; IMPLEMENTATION NOT STARTED",
+    "ownerAcceptance": "PENDING",
+    "pteranodonVisualChanged": false,
+    "audit": "docs/EXPANDED-SUMMONING-PTERANODON-NATIVE-AUDIT.md",
+    "findings": {
+      "donorBlueprint": "406c1e1af5400ac4881e330502ccbd9e (CR3_GiantEagleStandard), role flag 0 = visual/body donor",
+      "viewPolicyLabelIsNotTheDonor": "The charter and roster call this a Roc proxy; Roc is the view-policy label, the donor is the giant eagle prefab.",
+      "donorIsShared": "eagle, dire-bat, pteranodon and roc all use the same donor, so every visual change must be instance-local and reversible. Those three are the sprint's negative controls.",
+      "viewSeam": "Kingmaker.View.UnitEntityView exposes Animator, nullable CharacterAvatar, AnimationManager, the soft/core colliders, UnitMultiHighlight selection, ParticlesSnapMap, UnitHitFxManager and CameraOrientedBoundsSize.",
+      "skeletonTypeIsHumanoidOnly": "Kingmaker.Visual.CharacterSystem.Skeleton carries RaceBoneHierarchyObject and CloakScaleFudge, marking it the humanoid Character-doll rig rather than a general creature binding seam. Bone-name matching against it is explicitly not compatibility evidence.",
+      "instanceLocalPrecedent": "ExpandedSummoningViewScalePatch already does instance-scoped, idempotent, validated view mutation via a Harmony postfix on UnitEntityView.OnDataAttached keyed on blueprint name.",
+      "toolchainConfirmed": "Unity 2018.4.10f1 (exact game match) plus Blender 4.5.10 LTS, with three shipped deterministic bundles as precedent. All three precedents are static props; a skinned creature mesh bound to an existing skeleton is new ground for this repository."
+    },
+    "feasibility": "FEASIBLE AND NOT BLOCKED. The seam exists, the toolchain is exact and installed, and the instance-local pattern is already shipped and tested.",
+    "remainingWork": [
+      "Live donor inspection through a guarded autonomous observation scenario: confirm CharacterAvatar is null, capture the renderer set, rootBone, bones[] order, bind poses, animator clips, attack/impact events, particle and hit-fx anchors, colliders and camera bounds.",
+      "Author an original pterosaur mesh and textures in Blender, rigged to the bone names the live inspection actually reports.",
+      "Build a deterministic Unity 2018.4.10f1 AssetBundle with retained editable source and provenance.",
+      "Implement safe bundle loading, asset validation, instance-local mesh and bone binding, material compatibility, cleanup and an approved native fallback.",
+      "Live acceptance in RTWP and turn-based play across the seven charter scenario groups, with the Roc/Eagle/Dire Bat donor-sharing negative control."
+    ],
+    "blockedOn": "Nothing technical. The next step launches Pathfinder: Kingmaker through Steam for guarded live donor observation, which takes over the machine's foreground; owner go-ahead was requested before doing that rather than interrupting the workstation unannounced."
   },
   "idealTarget": {
     "uniqueCreatures": 145,
