@@ -166,9 +166,24 @@ namespace KingmakerGunslinger.DomainTests
             JObject manifest = JObject.Parse(File.ReadAllText(Path.Combine(root,
                 "blueprints", "blueprints.json")));
             JArray entries = (JArray)manifest["entries"];
-            JObject[] eastern = entries.Cast<JObject>().Where(value =>
+            JObject[] allEastern = entries.Cast<JObject>().Where(value =>
                 ((string)value["symbol"]).StartsWith("KMG.EasternWeapons.",
                     StringComparison.Ordinal)).ToArray();
+            // Better Vendors progression appends exactly the twelve generic
+            // +2..+5 Eastern variants under its own milestone; the Eastern
+            // Weapons foundation ledger itself is unchanged.
+            JObject[] progression = allEastern.Where(value =>
+                (string)value["milestone"] == "Better Vendors progression")
+                .ToArray();
+            Assertions.Equal(12, progression.Length,
+                "Eastern progression variant count changed.");
+            Assertions.True(progression.All(value =>
+                    (string)value["plannedType"] == "BlueprintItemWeapon" &&
+                    (string)value["status"] == "active" &&
+                    new[] { ".Plus2Item", ".Plus3Item", ".Plus4Item", ".Plus5Item" }
+                        .Any(((string)value["symbol"]).EndsWith)),
+                "Eastern progression identities must be generic +2..+5 items.");
+            JObject[] eastern = allEastern.Except(progression).ToArray();
             Assertions.Equal(46, eastern.Length,
                 "Eastern foundation identity ledger count changed.");
             Assertions.Equal(46, eastern.Select(value =>
@@ -235,8 +250,11 @@ namespace KingmakerGunslinger.DomainTests
 
         private static JObject[] EasternNamedItemEntries(JObject manifest)
         {
+            // Generic items, including the Better Vendors progression +2..+5
+            // variants, are never named items.
             string[] genericSuffixes = { ".BaseItem", ".MasterworkItem",
-                ".ColdIronItem", ".Plus1Item" };
+                ".ColdIronItem", ".Plus1Item", ".Plus2Item", ".Plus3Item",
+                ".Plus4Item", ".Plus5Item" };
             return ((JArray)manifest["entries"]).Cast<JObject>().Where(value =>
             {
                 string symbol = (string)value["symbol"];

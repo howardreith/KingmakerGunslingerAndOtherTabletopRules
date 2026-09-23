@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.137\"") &&
-                props.Contains("<KmgVersion>0.0.137</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.137-rapid-reload-combat-feat</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.137\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.137\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.137-rapid-reload-combat-feat\")"),
-                "Release and assembly identity are not transactionally pinned to the Rapid Reload gate release.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.138\"") &&
+                props.Contains("<KmgVersion>0.0.138</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.138-better-vendors-progression</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.138\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.138\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.138-better-vendors-progression\")"),
+                "Release and assembly identity are not transactionally pinned to the Better Vendors progression candidate.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-rapid-reload-combat-feat.zip") &&
+                "$($info.Id)-$($info.Version)-better-vendors-progression.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Rapid Reload combat-feat archive.");
-            Assertions.True(runtime.Contains("active version 0.0.137") &&
-                localBuild.Contains("active version 0.0.137") &&
-                localBuild.Contains("local-runtime\\0.0.137"),
+                "Package identity is not pinned to the Better Vendors progression archive.");
+            Assertions.True(runtime.Contains("active version 0.0.138") &&
+                localBuild.Contains("active version 0.0.138") &&
+                localBuild.Contains("local-runtime\\0.0.138"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 

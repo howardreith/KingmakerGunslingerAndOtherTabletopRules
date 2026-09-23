@@ -440,3 +440,23 @@ as the retained 0.0.117 prefix. Historical qualification statements above retain
 their original scope; current evidence is in TELEPORTATION-HARDENING-REPORT.md.
 
 The Magic Circle follow-up preserves all 24 spell/held-touch/carrier/area/recipient/scroll identities and appends three grouped family parents, for 1913 stable identifiers: 1911 active and 2 reserved. All pre-existing GUIDs remain unchanged; these identities remain registered when content publication is disabled. The full, Paladin and Antipaladin parents expose four, two and two existing children respectively.
+
+## Better Vendors progression identities (0.0.138 candidate)
+
+The optional Better Vendors progression integration appends exactly 43 generic
+magic weapon variants after the preserved 1913-entry ledger, for
+1956 stable identifiers: 1954 active and 2 reserved. Every pre-existing GUID is unchanged,
+including the seven canonical +1 items the progression catalog reuses (Pistol,
+Musket and Blunderbuss +1, and the +1 Elven Branched Spear, Wakizashi, Katana
+and Nodachi). The appended symbols follow the existing generic item patterns:
+
+- `KMG.Firearms.{Pistol|Musket|Blunderbuss}Plus{2..5}Item`
+- `KMG.Firearms.Reliable{Pistol|Musket|Blunderbuss}Plus{1..5}Item`
+- `KMG.ElvenBranchedSpear.Plus{2..5}Item`
+- `KMG.EasternWeapons.{Wakizashi|Katana|Nodachi}.Plus{2..5}Item`
+
+All register on every load, independently of Better Vendors and of every
+feature module, so an acquired variant always resolves on a later load. The
+exact ordered list and GUIDs are enforced by `tools/validate_better_vendors138.py`
+and listed with family, module, enhancement, Reliable flag and price in
+[better-vendors-progression-catalog.json](better-vendors-progression-catalog.json).

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
@@ -114,6 +115,25 @@ ARTIFACTS = {
 }
 
 
+PROGRESSION_FIREARM = re.compile(
+    r"^KMG\.Firearms\.(Reliable)?(Pistol|Musket|Blunderbuss)Plus([1-5])Item$")
+PROGRESSION_EASTERN = re.compile(
+    r"^KMG\.EasternWeapons\.(Wakizashi|Katana|Nodachi)\.Plus([2-5])Item$")
+PROGRESSION_SPEAR = re.compile(r"^KMG\.ElvenBranchedSpear\.Plus([2-5])Item$")
+
+
+def progression_display_name(symbol: str):
+    """Better Vendors progression variants follow their family's generic name."""
+    match = PROGRESSION_FIREARM.match(symbol)
+    if match and (match.group(1) or match.group(3) != "1"):
+        prefix = "Reliable " if match.group(1) else ""
+        return f"{prefix}{match.group(2)} +{match.group(3)}"
+    match = PROGRESSION_SPEAR.match(symbol)
+    if match:
+        return f"+{match.group(1)} Elven Branched Spear"
+    return None
+
+
 def firearm_kind(symbol: str) -> str:
     if symbol == "KMG.Test.TestMusketItem":
         return "Musket"
@@ -140,6 +160,9 @@ def generic_eastern_name(symbol: str, family: str) -> str:
         return f"Cold Iron {family}"
     if symbol.endswith(".Plus1Item"):
         return f"+1 {family}"
+    match = PROGRESSION_EASTERN.match(symbol)
+    if match:
+        return f"+{match.group(2)} {family}"
     raise ValueError(f"Missing Eastern display name for {symbol}")
 
 
@@ -152,6 +175,9 @@ def tier(symbol: str) -> str:
            ("BaseItem", "MasterworkItem", "ColdIronItem", "Early", "Advanced")):
         return "generic"
     if "Plus1" in symbol or "MasterworkColdIron" in symbol:
+        return "enhanced"
+    if (PROGRESSION_FIREARM.match(symbol) or PROGRESSION_EASTERN.match(symbol)
+            or PROGRESSION_SPEAR.match(symbol)):
         return "enhanced"
     return "named"
 
@@ -181,7 +207,8 @@ def eastern_variant(symbol: str, family: str) -> str:
         return {"Wakizashi": "Wakizashi.Petal",
                 "Katana": "Katana.Reed",
                 "Nodachi": "Nodachi.Cleaver"}[family]
-    if symbol.endswith((".BaseItem", ".MasterworkItem", ".Plus1Item")):
+    if (symbol.endswith((".BaseItem", ".MasterworkItem", ".Plus1Item"))
+            or PROGRESSION_EASTERN.match(symbol)):
         return f"{family}.Classic"
     capstones = {
         "KMG.EasternWeapons.Wakizashi.NightWithoutMoon",
@@ -214,7 +241,7 @@ def eastern_variant(symbol: str, family: str) -> str:
 def spear_variant(symbol: str) -> str:
     if symbol.endswith(("BaseItem", "MasterworkItem", "ColdIronItem",
                         "MasterworkColdIronItem", "Plus1Item",
-                        "Plus1ColdIronItem")):
+                        "Plus1ColdIronItem")) or PROGRESSION_SPEAR.match(symbol):
         return "ElvenBranchedSpear.ClassicBranch"
     if symbol.endswith(("Boughkeeper", "Thornstep", "MoonlitFork")):
         return "ElvenBranchedSpear.ThornBranch"
@@ -226,7 +253,8 @@ def make_record(entry: dict) -> dict:
     common = {
         "symbolicIdentity": symbol,
         "assetGuid": entry["guid"],
-        "displayedName": DISPLAY_NAMES.get(symbol, symbol.rsplit(".", 1)[1]),
+        "displayedName": DISPLAY_NAMES.get(symbol) or
+            progression_display_name(symbol) or symbol.rsplit(".", 1)[1],
         "tier": tier(symbol),
     }
     if symbol.startswith("KMG.Firearms.") or symbol.startswith("KMG.Test."):
@@ -396,8 +424,9 @@ def generate() -> None:
     for record in records:
         record["weaponTypeAssetGuid"] = identity_by_symbol.get(
             record["weaponType"], "native-runtime-donor")
-    if len(records) != 70:
-        raise RuntimeError(f"Expected all 70 active custom weapon items, got {len(records)}")
+    # 70 pre-existing identities plus 43 Better Vendors progression variants.
+    if len(records) != 113:
+        raise RuntimeError(f"Expected all 113 active custom weapon items, got {len(records)}")
     symbols = [record["symbolicIdentity"] for record in records]
     guids = [record["assetGuid"] for record in records]
     if len(set(symbols)) != len(symbols) or len(set(guids)) != len(guids):

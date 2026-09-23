@@ -209,6 +209,17 @@
     <Compile Include="Acquisition\RetiredVendorStockPolicy.cs" />
     <Compile Include="Acquisition\RetiredKitVendorStockCleanup.cs" />
     <Compile Include="Acquisition\ProjectMagicItemDiscoverabilityPolicy.cs" />
+    <Compile Include="Acquisition\MagicWeaponPricing.cs" />
+    <Compile Include="Acquisition\ProgressionWeaponCatalog.cs" />
+    <Compile Include="Acquisition\BetterVendors\BetterVendorsContract.cs" />
+    <Compile Include="Acquisition\BetterVendors\BetterVendorsProgressionSchedule.cs" />
+    <Compile Include="Acquisition\BetterVendors\BetterVendorsStockPass.cs" />
+    <Compile Include="Acquisition\BetterVendors\BetterVendorsGrantPlanner.cs" />
+    <Compile Include="Acquisition\BetterVendors\BetterVendorsIntegrationStatus.cs" />
+    <Compile Include="Acquisition\BetterVendors\UnitPartBetterVendorsProgressionGrants.cs" />
+    <Compile Include="Acquisition\BetterVendors\BetterVendorsStockRuntime.cs" />
+    <Compile Include="Acquisition\BetterVendors\BetterVendorsCompatibilityCoordinator.cs" />
+    <Compile Include="Blueprints\ProgressionWeaponBlueprints.cs" />
     <Compile Include="Presentation\PlayerFacingTextPolicy.cs" />
     <Compile Include="Presentation\GunslingerClassAppearanceCatalog.cs" />
     <Compile Include="Presentation\GunslingerClassAppearance.cs" />

@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.137-rapid-reload-combat-feat",
+  "milestone": "0.0.138-better-vendors-progression",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.137",
+  "version": "0.0.138",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -1764,5 +1764,33 @@
     "publishedPackageSha256": "c2a78d5b100f25daf5bc24d648014fc504f6fdc56a8ff10749c4e327bc39f866",
     "publishedDllSha256": "90cf7659c44ced848a1bbd9443ecf9b544794c67ae76297acd190c046e4bf64a",
     "publishedArtifactNote": "Publish-Release.ps1 produced two identical deterministic builds from master; the downloaded public asset matches packageSha256. Native qualification ran on the 0.0.136-labelled candidate at 0eee3be9, which differs only in version identity."
+  },
+  "betterVendorsProgression138": {
+    "baselineCommit": "202a41815f7ca80303e33c2f694804e7926efd8b",
+    "branch": "codex/better-vendors-progression",
+    "deterministicTestCount": 1739,
+    "publicReleaseAuthorized": false,
+    "candidateOnly": true,
+    "progressionEntries": 50,
+    "reusedCanonicalEntries": 7,
+    "newBlueprints": 43,
+    "betterVendorsVerifiedVersion": "2.0.8",
+    "betterVendorsVerifiedAssembly": "BetterVendors 1.0.0.39014",
+    "betterVendorsVerifiedMvid": "04fc03cf-853f-46c8-b6d5-1404180451fb",
+    "betterVendorsVerifiedFileSha256": "8843509852964d9016d2996a3050bfbe6f068360c4f2f6b8ff7f6440ca712009",
+    "betterVendorsPublicSourceCompared": "github thehambeard/BetterVendors 3cb12966 (tag 1.0.7): Harmony12, arcane stock at Arsinoe, no AddStock try/catch; Military schedule identical",
+    "betterVendorsRequired": false,
+    "hooks": [
+      "ProgressionLogic.AddStock postfix (pass scope end)",
+      "ProgressionLogic.AddMilitaryStock prefix/postfix (tier mirror)",
+      "ProgressionLogic.GetFilterWeapons postfix (read-only observation)",
+      "VendorLogic.BeginTrading postfix (one-time catch-up, Military destination only)"
+    ],
+    "saveLocalLedger": "UnitPartBetterVendorsProgressionGrants",
+    "ordinaryVendorPublicationChanged": false,
+    "nativeRuntimeQualified": false,
+    "nativeRuntimeEvidence": null,
+    "compatibilityRuntimeQualificationPending": true,
+    "saveLoadCompatibilityVerified": false
   }
 }

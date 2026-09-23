@@ -36,7 +36,8 @@ namespace KingmakerGunslinger.Bootstrap
         internal const int ExpectedRegisteredBlueprintCount = 341 + 1 + 5 + 2 +
             ExpandedSummoningIdentityCatalog.FoundationIdentityCount +
             UrbanBarbarianIdentityCatalog.IdentityCount +
-            ElementalRaceIdentityCatalog.IdentityCount;
+            ElementalRaceIdentityCatalog.IdentityCount +
+            Acquisition.ProgressionWeaponCatalog.NewBlueprintCount;
 
         private static readonly object Gate = new object();
         private static LibraryScriptableObject _pendingLibrary;
@@ -365,6 +366,13 @@ namespace KingmakerGunslinger.Bootstrap
             get { lock (Gate) { return _magicFirearms; } }
         }
 
+        private static ProgressionWeaponBlueprintCatalog _progressionWeapons;
+
+        internal static ProgressionWeaponBlueprintCatalog ProgressionWeapons
+        {
+            get { lock (Gate) { return _progressionWeapons; } }
+        }
+
         internal static GunslingerClassBlueprintSet GunslingerClass
         {
             get { lock (Gate) { return _gunslingerClassBlueprints; } }
@@ -623,6 +631,7 @@ namespace KingmakerGunslinger.Bootstrap
                     _paperCartridgeMode = result.PaperCartridgeMode;
                     _productionFirearms = result.ProductionFirearms;
                     _magicFirearms = result.MagicFirearms;
+                    _progressionWeapons = result.ProgressionWeapons;
                     _gunslingerClassBlueprints = result.GunslingerClassBlueprints;
                     _acadamaeGraduate = result.AcadamaeGraduate;
                     _acadamaeGraduateMode = result.AcadamaeGraduateMode;
@@ -1114,6 +1123,13 @@ namespace KingmakerGunslinger.Bootstrap
                     easternWeapons,
                     reloadTestMusketAbility, repairTestMusketAbility,
                     overhaulTestMusketAbility);
+                // Generic magic variants for optional merchant progression:
+                // registered unconditionally so saved items always resolve,
+                // and never published to any vendor or loot table here.
+                ProgressionWeaponBlueprintCatalog progressionWeapons =
+                    ProgressionWeaponBlueprints.Register(library, registry,
+                        productionFirearms, magicFirearms, easternWeapons,
+                        elvenBranchedSpears, context.Logger);
                 PlayerFacingPresentation.ApplyArchetypes(
                     gunslingerClassBlueprints.CharacterClass,
                     gunslingerClassBlueprints.CharacterClass.Icon);
@@ -1203,6 +1219,7 @@ namespace KingmakerGunslinger.Bootstrap
                     testMusket,
                     productionFirearms,
                     magicFirearms,
+                    progressionWeapons,
                     firearmStateTokens,
                     batteredOrigin,
                     basicAmmunition,
@@ -1580,6 +1597,7 @@ namespace KingmakerGunslinger.Bootstrap
                 TestMusketBlueprintSet testMusket,
                 ProductionFirearmBlueprintCatalog productionFirearms,
                 MagicFirearmBlueprintCatalog magicFirearms,
+                ProgressionWeaponBlueprintCatalog progressionWeapons,
                 FirearmStateTokenBlueprintSet firearmStateTokens,
                 BlueprintWeaponEnchantment batteredOrigin,
                 BasicAmmunitionBlueprintSet basicAmmunition,
@@ -1622,6 +1640,8 @@ namespace KingmakerGunslinger.Bootstrap
                 TestMusket = testMusket ?? throw new ArgumentNullException("testMusket");
                 ProductionFirearms = productionFirearms ?? throw new ArgumentNullException("productionFirearms");
                 MagicFirearms = magicFirearms ?? throw new ArgumentNullException("magicFirearms");
+                ProgressionWeapons = progressionWeapons ??
+                    throw new ArgumentNullException("progressionWeapons");
                 FirearmStateTokens = firearmStateTokens ?? throw new ArgumentNullException("firearmStateTokens");
                 BatteredOrigin = batteredOrigin ?? throw new ArgumentNullException("batteredOrigin");
                 BasicAmmunition = basicAmmunition ?? throw new ArgumentNullException("basicAmmunition");
@@ -1696,6 +1716,9 @@ namespace KingmakerGunslinger.Bootstrap
             internal ProductionFirearmBlueprintCatalog ProductionFirearms { get; private set; }
 
             internal MagicFirearmBlueprintCatalog MagicFirearms { get; private set; }
+
+            internal ProgressionWeaponBlueprintCatalog ProgressionWeapons
+            { get; private set; }
 
             internal FirearmStateTokenBlueprintSet FirearmStateTokens { get; private set; }
 
