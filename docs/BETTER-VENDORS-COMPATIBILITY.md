@@ -369,31 +369,41 @@ are recorded for a decision rather than changed unilaterally:
 | Contract identity and IL fingerprints vs installed 2.0.8 binary | PASS (static, read-only) |
 | Domain suite (36 `better-vendors.*` cases: catalog, schedule, classification, planning, ledger, lifecycle, modules, fail-closed contract, degrade-closed registration, hooks, acquisition isolation) | PASS |
 | Repository validation, clean Release build, package validation | recorded in the release notes |
-| Guarded `working-save-smoke`, commit `060df1d4` | PASS, 11 of 11 assertions (see below) |
+| Guarded `working-save-smoke`, final code commit `cca27056` | PASS, 11 of 11 assertions (see below) |
 | Adapter resolution and hook installation in game | PASS: `compatibility.ready` at package load against the live 2.0.8 assembly |
-| Registration and validation of all 50 entries in game | PASS: `progression-catalog.ready` |
+| Registration and all progression contract checks in game | PASS: `progression-catalog.ready`, not `degraded` |
 | Merchant stock in a kingdom-stage campaign | NOT RUN: the only authorized disposable fixture predates kingdom creation, and no kingdom-stage fixture is authorized |
 | Save/load of the ledger | NOT RUN |
 
-The guarded run `20260923T1810242389403Z-1bf61c4530d14e879a16919b182a9602`
+The guarded run `20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1`
 launched through Steam App ID 640820. It loaded `KMG_AUTOMATION_WORKING`
 without any save-writing call; that save and `KMG_AUTOMATION_BASELINE` kept
-their prior timestamps. The deployed artifact was package `0ee2baa5…da03a`,
-DLL `285cc5bb…1fdd`, MVID `d49f0f7d-c1be-43dd-970b-64a2b5fb58bf`, with
-commit `060df1d4` embedded. UMM loaded all 16 installed mods, including Better
-Vendors 2.0.8. The same session's UMM log recorded:
+their prior timestamps. The deployed artifact was:
+
+- package `d9ba82339c52490406273f56b05824a63b9013a60b3e8a21bedaa5a973fa84e7`;
+- DLL `34fe16ad05527cba5caad37a4d7ce7727d0b1553ec38511675017c6d2776d4fe`;
+- MVID `c7ccdfcf-42a8-4b82-a241-bcc3a0310ac8`, with commit `cca27056`
+  embedded.
+
+UMM loaded all 16 installed mods, including Better Vendors 2.0.8. The same
+session's UMM log recorded exactly these two `better-vendors` lines:
 
 ```text
 [better-vendors][compatibility.ready] checkpoint=package-load;status=Ready;Verified Better Vendors mod=2.0.8;assembly=BetterVendors 1.0.0.39014;mvid=04fc03cf-853f-46c8-b6d5-1404180451fb;sha256=8843509852964d9016d2996a3050bfbe6f068360c4f2f6b8ff7f6440ca712009; hooks=AddStock,AddMilitaryStock,GetFilterWeapons,BeginTrading;progressionNow=active
 [better-vendors][progression-catalog.ready] entries=50;reused=7;registered=43;firearms=30;melee=20;publishedToVendors=false
 ```
 
-The log had no `better-vendors` failure lines and no stock lines, as expected
-for a save without a kingdom. These lines show that the live fingerprints
-matched and that bootstrap validation passed. They are not evidence of merchant
-stock behaviour. The prior live installation was restored from its
-pre-deployment backup afterwards, and the restored tree is byte-identical to
-that backup.
+There were no failure, degraded or stock lines, and no Gunslinger error lines,
+as expected for a save without a kingdom. These lines show that the live
+fingerprints matched and that every progression contract check passed. They
+are not evidence of merchant stock behaviour.
+
+An earlier guarded run on the first candidate commit `060df1d4`
+(`20260923T1810242389403Z-1bf61c4530d14e879a16919b182a9602`) also passed all
+11 assertions with the same two log lines. After each run, the prior live
+installation was restored from its pre-deployment backup. The final tree is
+byte-identical to the state before the first run: 238 files, 0.0.136-labelled
+DLL `c6cccdac…465c`.
 
 Unverified combinations:
 
