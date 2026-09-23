@@ -157,7 +157,45 @@ skeleton. Instead the autonomous guarded scenario
 `observe-summon-pteranodon-view-contracts` was implemented to report the real
 donor contract from the running game.
 
-## 6. Environment notes
+## 6. Runtime evidence and machine restoration
+
+The guarded scenario `observe-summon-pteranodon-view-contracts` was run twice
+against the installed game at 0.0.136 through Steam App ID 640820.
+
+| Run | Evidence directory | Result |
+|---|---|---|
+| 1 | `20260923T1250267753124Z-observe-summon-pteranodon-view-contracts` | FAIL 1/8 - the assertion was wrong, not the game |
+| 2 | `20260923T1258015475577Z-observe-summon-pteranodon-view-contracts` | **PASS 8/8** |
+
+Run 1 demanded an Animator on a detached donor prefab. Animation binds at
+attach time, so none exists to find; the assertion now records the binding
+instead of requiring it. The committed extract is
+`reports/expanded-summoning-phase0/sprint2-pteranodon-donor-observation.json`.
+
+Between the runs the harness refused to launch on a dirty working tree, which
+is the intended guard; the correction was committed before re-running.
+
+### Machine state
+
+- Kingmaker exited cleanly after both runs; no process was left running.
+- The live mod directory was backed up before deployment to
+  `runtime-backups/live-mod/20260923T1250204338674Z`, and deployment was
+  verified against a manifest at
+  `runtime-evidence/deployments/20260923T1250266804870Z/deployment.json`.
+- **The installed mod changed version.** Before the run the live installation
+  held **0.0.117** (DLL 6,501,376 bytes, SHA-256 prefix `FD2FC61C250B1385`) -
+  a stale build left by an earlier qualification. It now holds this mission's
+  **0.0.136** build (DLL 9,135,104 bytes, SHA-256 prefix `254295C295EA77FF`).
+  That is the harness's ordinary deploy-and-leave behaviour, not a defect, and
+  the previous installation is recoverable from the backup above. Restoring
+  0.0.117 is an owner decision: it is older than the accepted release, so
+  leaving 0.0.136 installed is likely the more correct state.
+- No save was read, written, or selected. `KMG_AUTOMATION_BASELINE` was never
+  touched, and the scenario requires no save at all.
+- Other worktrees, including the rapid-reload and magic-circle checkouts, were
+  left at their original commits throughout.
+
+## 7. Environment notes
 
 Each fresh worktree needs two gitignored machine-local inputs that are not in
 source control:
