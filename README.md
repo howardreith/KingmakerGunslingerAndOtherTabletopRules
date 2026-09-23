@@ -1,12 +1,12 @@
 # Kingmaker Gunslinger
 
-**0.0.135-rapid-reload-proficiency-gate** makes Rapid Reload require firearm
+**0.0.136-rapid-reload-proficiency-gate** makes Rapid Reload require firearm
 proficiency instead of relying only on its per-firearm choices. Any proficiency
 source satisfies it, whatever granted it; no Gunslinger class or archetype
 prerequisite was added, and the per-firearm restrictions are unchanged.
 **Native runtime qualification for this release is NOT RUN and was waived by the
 owner**, and save/load compatibility is unverified. See
-[release notes](docs/RELEASE-NOTES-0.0.135.md) for the rules change, what did not
+[release notes](docs/RELEASE-NOTES-0.0.136.md) for the rules change, what did not
 change, and the exact verification limits.
 
 The previous **0.0.134-magic-circle-alignment-spells** adds four level-3 Magic

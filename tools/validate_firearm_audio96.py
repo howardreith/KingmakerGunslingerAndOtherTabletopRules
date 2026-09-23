@@ -85,7 +85,7 @@ def validate(root: Path) -> None:
     require_tokens(
         root / "docs/FIREARM-WWISE-MANUAL-AUDITORY-ACCEPTANCE.md",
         "Sound effect sounds working to me", "owner auditory release gate accepted")
-    release_suffix = ("rapid-reload-proficiency-gate" if VERSION == "0.0.135"
+    release_suffix = ("rapid-reload-proficiency-gate" if VERSION == "0.0.136"
         else "magic-circle-alignment-spells" if VERSION == "0.0.134" else "word-of-recall-favored-class"
         if VERSION == "0.0.133" else "icon-art-overhaul"
         if VERSION in ("0.0.130", "0.0.131", "0.0.132") else "recall-and-smart-scrolls"
