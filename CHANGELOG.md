@@ -1,5 +1,29 @@
 # Changelog
 
+## Unreleased: Rapid Reload combat-feat classification (candidate on 0.0.136)
+
+- Not a release. This candidate is built on the published 0.0.136 source.
+  Public release is not authorized, and the owner's 0.0.136 runtime waiver does
+  not cover it. Native runtime qualification is pending.
+- The Rapid Reload parent selection is now classified as both a feat and a
+  combat feat. Its own `BlueprintFeature.Groups` was never assigned, so it
+  stayed empty. The selection's `Group`/`Group2` only name the category the
+  selection offers (the native `GetGroup` phase label). The engine's
+  `HasGroup`, the character-sheet feat list and compatibility catalog scans all
+  read `Groups`. The parent now carries `Feat` and `CombatFeat`, the same as its
+  official firearm children and native combat feats.
+- Nothing else changed: the proficiency gate, child prerequisites, ranks,
+  catalog publication, the generic selection helper, icons and localization are
+  untouched. Rifle/Revolver choices and the legacy wrapper stay unpublished.
+- The guarded `disposable-rapid-reload-proficiency-gate` scenario gains:
+  - a `rapid-reload-combat-feat-classification` assertion, which reads native
+    `HasGroup` on the registered parent and children beside native Combat
+    Reflexes;
+  - scoped refusal and acquisition rows through the Fighter combat-feat slot;
+  - a natively built Gunslinger 1 taking its first Fighter level. It must find
+    Rapid Reload in that level's own bonus-feat choice generation and acquire it
+    with the Fighter bonus slot, not an ordinary feat.
+
 ## 0.0.136-rapid-reload-proficiency-gate
 
 - Published under explicit owner authorization with native runtime

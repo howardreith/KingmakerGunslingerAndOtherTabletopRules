@@ -169,6 +169,26 @@ Coverage:
   compatibility-only Rifle/Revolver choices unpublished, the legacy wrapper
   unpublished but still satisfying the gate, and independent proficiency grants
   on non-Gunslingers qualifying through the ordinary feat route.
+- **Combat-feat classification.** The `rapid-reload-combat-feat-classification`
+  assertion reads native `BlueprintFeature.HasGroup` on the registered parent
+  and every official child, next to native Combat Reflexes. All of them must be
+  both `Feat` and `CombatFeat`, and the parent must not be hidden from feat
+  menus. Catalog membership alone never satisfies it. A selection's own
+  `Group`/`Group2` do not classify it: they only name the category it offers.
+- **Fighter combat-feat route.** Scoped refusal (one-handed refuses Musket,
+  two-handed refuses Pistol) and scoped acquisition (one-handed Pistol,
+  two-handed Musket) also run through the Fighter bonus combat-feat slot.
+- **Gunslinger 1 takes Fighter 1.** A Gunslinger level is built and confirmed
+  natively, and its class package is the only proficiency source. The next
+  visit takes Fighter 1. It must have no ordinary feat slot, and it must offer
+  the parent from the reserved Fighter slot's own `ExtractSelectionItems`.
+  Pistol is then chosen, the Fighter slot (and no ordinary slot) must hold the
+  parent, and the level is confirmed through the native completion gate.
+
+Status of the classification follow-up: domain coverage passes, including a
+source regression that fails if the parent's classification is removed or
+moved into the generic selection helper. The extended scenario has **not** been
+run in game yet.
 
 Every claimed successful confirmation records `LevelUpState.IsComplete()`
 immediately before the level is applied, and the harness refuses to apply an

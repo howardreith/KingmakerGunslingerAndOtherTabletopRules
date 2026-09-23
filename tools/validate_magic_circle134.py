@@ -27,8 +27,10 @@ def validate(root: Path) -> None:
     metadata = json.loads((root / "validation/static-validation.json").read_text(encoding="utf-8"))
     state = metadata["magicCircle134"]  # Historical acceptance; never transferred to new pixels.
     followup = metadata["magicCircleFollowup"]
+    # The follow-up candidate's count is its own historical snapshot; later
+    # releases in the chain grow the live suite without rewriting it.
     if (followup.get("publicReleaseAuthorized") is not False or
-            followup.get("deterministicTestCount") != DETERMINISTIC_TEST_COUNT):
+            followup.get("deterministicTestCount") != 1702):
         raise AssertionError("Follow-up candidate must retain its own test count and no public release authorization")
     for key, value in {
         "deterministicTestCount": 1678,
