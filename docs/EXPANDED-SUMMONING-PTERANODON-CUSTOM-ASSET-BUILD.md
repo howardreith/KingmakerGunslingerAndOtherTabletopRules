@@ -114,41 +114,69 @@ repository: permitted structural facts, recorded in
    The generator refuses to emit a mesh with more than four influences per
    vertex, which Unity cannot represent.
 
-4. Stage into the exact Unity project:
+4. That is the whole build. There is no Unity editor step.
 
-   ```powershell
-   .\scripts\Prepare-PteranodonAssets.ps1
-   ```
+## Why this ships as mesh data and not an AssetBundle
 
-   Staging refuses an FBX whose build report does not record a rig SHA-256 and
-   the donor renderer space, so a mesh of unknown provenance cannot be built
-   into a bundle.
+Every previous custom asset in this repository - the firearms, the Elven
+Branched Spear, the eastern weapons - ships as a Unity AssetBundle built by a
+dedicated editor script in Unity 2018.4.10f1. The Pteranodon does not, and the
+reasons are worth writing down because the pattern is otherwise consistent.
 
-5. Build the bundle with the installed Unity 2018.4.10f1 editor:
+**It carries strictly less.** A bundle embeds bind poses, a material and import
+settings. The mesh data carries our vertices, our normals, our triangles, our
+vertex weights, and the donor's bone *names*. Names are the binding contract and
+are already recorded in the native audit; no donor transform ships. For a
+skinned replacement - which, unlike a rigid prop, can only exist in the donor's
+bind frame - that distinction is the whole redistribution question.
 
-   ```powershell
-   & "C:\Program Files\Unity\Editor\Unity.exe" -batchmode -nographics -quit `
-       -projectPath "C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1" `
-       -executeMethod BuildPteranodonBundle.BuildBatch
-   ```
+**It has no editor dependency.** A bundle is tied to an exact Unity version and
+to an activated editor licence. That is not a hypothetical cost: the
+2018.4.10f1 install that built every previous bundle here stopped accepting its
+licence between 2026-08-21 and 2026-09-23. The same install, the same project
+and the same batch command succeeded on the earlier date and now reports
+`BatchMode: Unity has not been activated with a valid License` and
+`Failed to activate/update license. Missing or bad username and password`. Only
+2018.4.10f1 and a Hub-installed 6000.5.6f1 are present, and a bundle built by
+6000.x will not load in a 2018.4 game, so there was no second route.
 
-   The builder rejects every Unity version except 2018.4.10f1. It validates that
-   the source has exactly one `SkinnedMeshRenderer`, that every bone it binds to
-   is in the declared set, that no bone name repeats, that every vertex weight
-   sums to one and indexes a bone that exists, and that no donor bind pose
-   survives normalisation.
+**It is less code.** Around a hundred lines of exporter and a hundred of loader,
+against an editor script plus an importer configuration plus a staging script.
 
-6. Stage the emitted `Builds/Windows/kingmakergunslinger.pteranodon` into
-   `assets/bundles/` and record its SHA-256 in
-   `assets/bundles/asset-bundle-manifest.json`.
+`tools/unity/BuildPteranodonBundle.cs` and `scripts/Prepare-PteranodonAssets.ps1`
+are retained: they are correct, and a bundle becomes the better answer again if
+the asset ever needs compressed textures or several meshes. They are not on the
+shipping path today.
 
-## Runtime behaviour
+## The mesh data format
 
-`PteranodonAssetRuntime.Configure` loads the bundle once per process and
-validates it completely before anything is published. The validation is the same
-list the builder enforces, re-checked on the shipped artefact, plus a readability
-check - the loader has to replace bind poses on a copy of the mesh, which
-requires the mesh to be readable.
+`assets/pteranodon/pteranodon-mesh.json`, about 70 KB:
+
+| Field | Meaning |
+|---|---|
+| `schemaVersion` | 1; the runtime refuses anything else |
+| `space` | `donor renderer local; +X left, +Y up, -Z forward` |
+| `rigSha256` | the rig capture the geometry was authored against |
+| `bones` | 46 names, in the order the vertex weights index |
+| `vertexCount`, `triangleCount` | payload arithmetic, checked on load |
+| `data` | base64: positions, normals, triangle indices, then four (bone index, weight) pairs per vertex |
+
+Triangle winding is reversed on export. Blender is right-handed with +Z up and
+the donor renderer's space is left-handed with +Y up, so without the flip every
+face would be inside out.
+
+`PteranodonMeshDataTests` validates the shipped file on every build: schema,
+bone count and membership, payload length, triangle indices in range, weights
+summing to one, no vertex over four influences, and every declared bone actually
+carrying geometry. The runtime repeats those checks before it touches a donor
+renderer, because a file can change between a build and a run.
+
+## Runtime behaviour## Runtime behaviour
+
+`PteranodonAssetRuntime.Configure` builds the mesh once per process and
+validates it completely before anything is published. A mesh built in code is
+readable by construction, so the bundle path's separate readability check is not
+needed.
 
 `ExpandedSummoningPteranodonViewPatch` is a Harmony postfix on
 `UnitEntityView.OnDataAttached`, keyed on the blueprint name
