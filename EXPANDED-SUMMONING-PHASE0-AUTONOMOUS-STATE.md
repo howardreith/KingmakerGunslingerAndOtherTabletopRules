@@ -90,6 +90,23 @@ action`. Do not restart the project or rerun completed work.
 - Never trust a green signal without checking provenance: evidence directory
   dates, restoration result, and the scenario's own recorded status are separate
   facts from the wrapper's exit code.
+- **Do not build, render, or run the test suite while a guarded scenario is
+  loading.** Doing so starved a run past its 300s timeout; the launcher then
+  could not restore because the process was still up, and the six remaining
+  matrix steps each failed on that same leftover process. Recovery was manual:
+  confirm `saveInteractionOccurred=false` and that the main menu was never
+  reached, close the game, then
+  `Restore-KingmakerCompatibilityProfile.ps1 -RunId <id>`.
+- A batched runtime driver must stop the moment a step leaves Kingmaker running
+  or a `Mods.kmg-compat-*` transaction open, and must fingerprint the live tree
+  before and after. Carrying on produces a run of identical, uninformative
+  failures and leaves the install mutated the whole time.
+- Bash heredocs to `python -` in this environment collapse backslash escapes, so
+  a literal backslash in a replacement string must be written `chr(92)`. A `\r`
+  written the obvious way became a carriage return and split a line in this
+  file, twice.
+- Python's `Path.write_text` emits CRLF on Windows; `.gitattributes` wants LF for
+  everything but `.ps1`. Pass `newline="\n"`, or write bytes.
 
 ## Sprint 0 live evidence at 0.0.136 (all PASS, all restored)
 
