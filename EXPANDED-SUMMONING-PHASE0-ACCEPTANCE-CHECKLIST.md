@@ -102,3 +102,40 @@ These are decisions, not findings. Each is reversible.
 - [ ] Sprint 1 accepted
 - [ ] Sprint 2 audit accepted, asset work authorised to proceed
 - [ ] Draft PR reviewed; **not merged**
+
+
+---
+
+## Acceptance state after the autonomous completion pass, 2026-09-23
+
+Three things are tracked separately here and must not be conflated.
+
+- **OwnerDelegationGranted** - the autonomous-completion order delegates
+  intermediate technical, menu/usability and visual acceptance to internal
+  review for Sprints 0-2.
+- **InternalAcceptance** - recorded per row below.
+- **HumanReview: NOT_PERFORMED_NONBLOCKING** - for every row. Nothing here is
+  `OwnerAccepted` and nothing is `HumanVisualReviewPassed`.
+
+| Item | Internal acceptance | Evidence |
+|---|---|---|
+| Structural inventory | ACCEPTED | 38/38 under all five compatibility profiles |
+| Mechanical casting | ACCEPTED | 13/13 on the candidate outside a compatibility transaction |
+| Player path | ACCEPTED | 10/10 |
+| Persistence trio | ACCEPTED | 9/9 each |
+| Visual contracts | ACCEPTED | 13/13 |
+| Feature boundary | ACCEPTED | census PASS in both module directions |
+| Compatibility coexistence | ACCEPTED | five profiles, mod sets confirmed loaded |
+| Compatibility mechanical | NOT ACCEPTED | both runs timed out in save load inside the transaction |
+| Rig contract | ACCEPTED | animation ActionSet, clips, events, anchors, 72-bone bind pose |
+| Deformation proof | ACCEPTED | zero drift, control wing unmoved, BakeMesh agrees to zero |
+| Loader and fallback | PARTIALLY ACCEPTED | implemented and validated; fallback paths not exercised live |
+| Finished creature | NOT ACCEPTED | body authored; crest does not read at silhouette scale, no UVs or textures |
+| Projected menu, live | NOT RUN | no anchorable action-bar slot in the disposable save |
+| Live acceptance groups 1, 2, 4, 6, 7 | NOT PERFORMED | depend on the finished creature and on scenarios not built |
+
+### What a human still needs to look at
+
+The finished creature, in party-camera play, once it has a crest that reads and
+a texture. No image in this mission has been reviewed by anyone but the
+implementation thread, and the renders inspected were untextured clay.

@@ -137,3 +137,50 @@ surfaces, and the exact bone names an original mesh would have to bind to. The
 observation instantiates the donor prefab inactive and far from play, measures
 it, and destroys it in a `finally` block; it mutates no blueprint, unit,
 inventory or save.
+
+
+## 2026-09-23 - autonomous completion pass
+
+Sprint 0's remaining gate was the compatibility and feature-boundary matrix. The
+feature-module gate turned out to be a tautology: it compared the active flag
+against the settings object the launcher had just written, so it would have
+passed unchanged had the module published its whole roster with the module off.
+It now censuses the eighteen native summon parents, and running it in both
+directions established something no single run could - the module substitutes
+for the native summon menu rather than adding to it. All 46 native variants
+across those parents are replaced by 667 project placements plus 26
+native-option wrappers, and with the module off the 46 are untouched.
+
+Five compatibility profiles passed, with the mod set confirmed loaded in each
+rather than assumed. Call of the Wild was the one worth running, since it
+rewrites summon spells and shares all eighteen parents; the surface is unchanged
+under it. `gunslinger-high-risk-combined`, historically `CONFLICT-OBSERVED` for
+timing out before readiness, reached readiness with a 600-second budget and
+passed - evidence that the historical timeout was a budget problem, not that the
+old conflict never existed.
+
+The Pteranodon work turned on a measurement that contradicted an earlier
+conclusion in this journal. The rig capture had been recording live local
+transforms, which are whatever frame the animation system is on; they showed
+folded wings. The bind poses show a spread pose disagreeing by 3.954 units at
+the wingtip. That invalidated the loader design too: computing bind poses at
+attach time makes the mesh render as authored in whatever frame the unit happens
+to be on, and attach time is arbitrary. The loader now reuses the donor's own
+bind poses. The deformation proof that followed is exact - vertices the probed
+bone owns move and hold station in its frame to zero drift, the opposite wing
+does not move, and Unity's own BakeMesh agrees with the evaluated skinning to
+zero.
+
+The Unity editor's licence stopped working between 2026-08-21 and today, on the
+same install that had built every previous AssetBundle here. Rather than stop,
+the asset ships as mesh data the runtime builds a Mesh from; it carries strictly
+less than a bundle would and has no editor dependency. Two licence refreshes and
+a fresh Hub install of the same pinned 2018.4.10f1 did not change the batchmode
+refusal.
+
+Four defects in this mission's own tooling were found and fixed, each with a
+test that fails on the defect: a scenario that recorded FAIL could be counted as
+a pass; the unattended matrix scheduled a supervised scenario; a batch would not
+release its own compatibility lock; and a new scenario was absent from the
+runner's working-save chains. A fifth problem - a fixture that hung the game -
+was diagnosed and disabled rather than shipped.
