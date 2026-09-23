@@ -1132,7 +1132,11 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false
         ReadinessBehavior = 'autonomous-working-save'
-        TimeoutCategory = 'basic'; UsesCatalogTimeout = $true
+        # A working-save scenario must declare the working-save timeout
+        # category. Declaring 'basic' alongside the catalog, selection and
+        # working-stage timeout flags is contradictory, and the runtime rejects
+        # the request with scenario-timeouts-not-allowed before it runs.
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'disposable-firearm-visual-rigs' = [pscustomobject]@{
