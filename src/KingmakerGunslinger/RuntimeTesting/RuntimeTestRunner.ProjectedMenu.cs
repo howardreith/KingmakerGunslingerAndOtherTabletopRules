@@ -38,7 +38,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (party.Length == 0) throw new InvalidOperationException(
                     "The loaded working save has no party member to build " +
                     "projected menu entries against.");
-                _projectedMenu = new ExpandedSummoningProjectedMenuFixture(party[0]);
+                _projectedMenu = new ExpandedSummoningProjectedMenuFixture(party[0],
+                    _request.EvidenceDirectory);
                 _trace.Record("scenario-activated", RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningProjectedMenu);
             }
@@ -59,7 +60,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " frames: " + _projectedMenu.Availability + ". The " +
                         "layout anchors the popup to the slot a player clicked, " +
                         "so without an active group slot there is nothing to " +
-                        "measure against.");
+                        "measure against. Setup: " + _projectedMenu.SetupReason);
                 return;
             }
 
@@ -71,8 +72,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             _projectedMenuFamily++;
             if (_projectedMenuFamily < 2) return;
 
+            // The action bar goes back before anything is reported, whatever
+            // the outcome. A fixture that leaves the bar rearranged has changed
+            // the thing it was measuring.
+            _projectedMenu.RestoreActionBar();
+
             string summary;
             bool passes = _projectedMenu.Passes(out summary);
+            summary = "setup=" + _projectedMenu.SetupReason + " | " + summary;
             var assertions = new System.Collections.Generic.List<RuntimeTestAssertion>
             {
                 Assertion("expanded-summoning-projected-menu",

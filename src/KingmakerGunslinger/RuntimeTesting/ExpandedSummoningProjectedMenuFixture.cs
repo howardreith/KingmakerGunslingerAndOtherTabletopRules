@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UI.ActionBar;
+using Kingmaker.UI.UnitSettings;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
@@ -56,10 +57,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly UnitEntityData _unit;
         private readonly List<Measurement> _measurements = new List<Measurement>();
 
-        internal ExpandedSummoningProjectedMenuFixture(UnitEntityData unit)
+        private readonly string _screenshotDirectory;
+
+        internal ExpandedSummoningProjectedMenuFixture(UnitEntityData unit,
+            string screenshotDirectory)
         {
             if (unit == null) throw new ArgumentNullException("unit");
             _unit = unit;
+            _screenshotDirectory = screenshotDirectory;
         }
 
         internal sealed class Measurement
@@ -79,6 +84,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal long OpenMilliseconds;
             internal long ManagedBytesDelta;
             internal int GroupSlotDelta;
+            internal string Resolution = string.Empty;
+            internal float UiScale;
+            internal int TooltipsPresent;
+            internal string Screenshot = string.Empty;
             internal string Reason = string.Empty;
 
             public override string ToString()
@@ -86,11 +95,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return string.Format(CultureInfo.InvariantCulture,
                     "{0}/{1}/cycle{2}:rendered={3};slots={4};first={5};middle={6}" +
                     ";last={7};bounded={8};scrollNeeded={9};scrollExact={10}" +
-                    ";firstVisible={11};openMs={12};bytes={13};slotDelta={14};{15}",
+                    ";firstVisible={11};openMs={12};bytes={13};slotDelta={14}" +
+                    ";resolution={15};uiScale={16:F3};tooltips={17};shot={18};{19}",
                     Family, Projected, Cycle, Rendered, SlotCount,
                     FirstReachable, MiddleReachable, LastReachable, Bounded,
                     ScrollingRequired, ScrollingExact, FirstStartsVisible,
-                    OpenMilliseconds, ManagedBytesDelta, GroupSlotDelta, Reason);
+                    OpenMilliseconds, ManagedBytesDelta, GroupSlotDelta,
+                    Resolution, UiScale, TooltipsPresent, Screenshot, Reason);
             }
         }
 
@@ -178,6 +189,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             // So this reproduces the click: find a visible group slot, prefer
             // one whose own ability is a published summon parent, capture it the
             // way the patch does, and toggle that slot's own sub-group.
+            // The disposable working save presents no group slot on its own,
+            // so the fixture puts a real summon parent into a real action-bar
+            // index and lets the UI build the slot. This is fixture setup, not
+            // a production change: nothing in the shipped summoning code is
+            // touched, the anchor is not bypassed, and the index is restored to
+            // whatever held it before. No save is written.
+            if (!_setupAttempted)
+            {
+                _setupAttempted = true;
+                _setupReason = TryInstallParentSlot();
+            }
+
             ActionBarGroupSlot[] all = Resources
                 .FindObjectsOfTypeAll<ActionBarGroupSlot>()
                 .Where(value => value != null && value.gameObject != null)
@@ -228,6 +251,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Cycle = _pendingCycle,
                 OpenMilliseconds = _pendingWatch.ElapsedMilliseconds
             };
+
+            measurement.Resolution = Screen.width + "x" + Screen.height;
+            Canvas canvas = group.GetComponentInParent<Canvas>();
+            measurement.UiScale = canvas == null ? 0f : canvas.scaleFactor;
+            // Tooltip presence is a layout fact and is all this claims: whether
+            // the slots carry a tooltip component, not whether its text is
+            // right. Text correctness is the structural inventory's job.
+            measurement.TooltipsPresent = group
+                .GetComponentsInChildren<UnityEngine.EventSystems.IPointerEnterHandler>(true)
+                .Length;
+            if (!string.IsNullOrEmpty(_screenshotDirectory))
+            {
+                string shot = "projected-menu-" + _pendingFamily + "-cycle" +
+                    _pendingCycle + ".png";
+                measurement.Screenshot = CaptureScreenshot(
+                    System.IO.Path.Combine(_screenshotDirectory, shot)) ? shot :
+                    "<capture-unavailable>";
+            }
 
             ExpandedSummoningVariantMenuSnapshot snapshot;
             if (!ExpandedSummoningVariantMenuRuntime.TryGetSnapshot(group,
@@ -313,6 +354,115 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return data != null && data.Blueprint != null &&
                     ExpandedSummoningPublisher.IsPublishedExpandedParent(
                         data.Blueprint);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private bool _setupAttempted;
+        private string _setupReason = "<not attempted>";
+        private int _installedIndex = -1;
+        private MechanicActionBarSlot _replacedSlot;
+        internal string SetupReason { get { return _setupReason; } }
+
+        /// <summary>
+        /// Places a published summon parent in the first free action-bar index.
+        /// Returns a description of what happened, for the record either way.
+        /// </summary>
+        private string TryInstallParentSlot()
+        {
+            try
+            {
+                BlueprintAbility parent = BlueprintBootstrap.Library
+                    .GetAllBlueprints().OfType<BlueprintAbility>()
+                    .Where(ExpandedSummoningPublisher.IsPublishedExpandedParent)
+                    .OrderByDescending(value => value.Variants == null ? 0 :
+                        value.Variants.Length)
+                    .FirstOrDefault();
+                if (parent == null) return "no published parent to install";
+
+                UnitUISettings settings = _unit.UISettings;
+                if (settings == null) return "unit has no UI settings";
+
+                for (int index = 0; index < 60; index++)
+                {
+                    MechanicActionBarSlot existing = settings.GetSlot(index, _unit);
+                    if (!(existing is MechanicActionBarSlotEmpty)) continue;
+                    _installedIndex = index;
+                    _replacedSlot = existing;
+                    break;
+                }
+
+                if (_installedIndex < 0) return "no free action-bar index";
+
+                var slot = new MechanicActionBarSlotSpontaneusSpell
+                {
+                    Spell = new AbilityData(parent, _unit.Descriptor),
+                    Unit = _unit
+                };
+                settings.SetSlot(slot, _installedIndex);
+                settings.SetDirty();
+                return "installed " + parent.name + " at index " + _installedIndex;
+            }
+            catch (Exception error)
+            {
+                return "install-failed:" + error.GetType().Name;
+            }
+        }
+
+        /// <summary>
+        /// Puts the action bar back. Called whatever the outcome, because a
+        /// fixture that leaves the bar rearranged is a fixture that changed the
+        /// thing it was measuring.
+        /// </summary>
+        internal void RestoreActionBar()
+        {
+            if (_installedIndex < 0) return;
+            try
+            {
+                UnitUISettings settings = _unit.UISettings;
+                if (settings == null) return;
+                settings.SetSlot(_replacedSlot ?? new MechanicActionBarSlotEmpty(),
+                    _installedIndex);
+                settings.SetDirty();
+            }
+            catch (Exception)
+            {
+                // Nothing useful to do here; the scenario is disposable and the
+                // unit dies with the session.
+            }
+            finally
+            {
+                _installedIndex = -1;
+                _replacedSlot = null;
+            }
+        }
+
+        /// <summary>
+        /// Writes a screenshot, if this build can.
+        ///
+        /// UnityEngine.ScreenCapture lives in ScreenCaptureModule, which is
+        /// outside the project's qualified reference bundle, so it is reached
+        /// reflectively rather than by widening the bundle for one diagnostic.
+        /// A build without it records that the capture was unavailable instead
+        /// of failing the measurement.
+        /// </summary>
+        private static bool CaptureScreenshot(string path)
+        {
+            try
+            {
+                Type type = Type.GetType(
+                    "UnityEngine.ScreenCapture, UnityEngine.ScreenCaptureModule") ??
+                    Type.GetType("UnityEngine.ScreenCapture, UnityEngine");
+                if (type == null) return false;
+                MethodInfo capture = type.GetMethod("CaptureScreenshot",
+                    BindingFlags.Public | BindingFlags.Static, null,
+                    new[] { typeof(string) }, null);
+                if (capture == null) return false;
+                capture.Invoke(null, new object[] { path });
+                return true;
             }
             catch (Exception)
             {
