@@ -169,7 +169,8 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
             Player player = Game.Instance == null ? null : Game.Instance.Player;
             ProgressionWeaponBlueprintCatalog catalog =
                 BlueprintBootstrap.ProgressionWeapons;
-            if (player == null || player.Kingdom == null || catalog == null)
+            if (player == null || player.Kingdom == null || catalog == null ||
+                !catalog.Status.IsUsable)
                 return 0;
             int rank = CurrentMilitaryRank(player);
             LedgerAccess ledger = LedgerAccess.For(player);
@@ -199,7 +200,8 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
                 BlueprintBootstrap.ProgressionWeapons;
             string inactive;
             Player player = Game.Instance == null ? null : Game.Instance.Player;
-            if (catalog == null || player == null || player.Kingdom == null ||
+            if (catalog == null || !catalog.Status.IsUsable || player == null ||
+                player.Kingdom == null ||
                 !BetterVendorsCompatibilityCoordinator.TryGetActiveProgression(
                     out inactive))
                 return;
@@ -246,9 +248,10 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
         }
 
         /// <summary>
-        /// Read access to the loaded campaign's ledger. The persisted part is
-        /// created lazily on the first recorded grant, so campaigns that never
-        /// receive a grant carry no new save data.
+        /// Access to the loaded campaign's ledger. The persisted part is
+        /// created only just before the first stock addition that must be
+        /// recorded, so campaigns that never receive a grant carry no new save
+        /// data.
         /// </summary>
         internal sealed class LedgerAccess
         {
@@ -278,11 +281,22 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
                 return _ledger != null && _ledger.Has(guid);
             }
 
-            internal bool Record(string guid)
+            /// <summary>
+            /// Creates the persisted part if it does not exist yet. Called
+            /// before any stock mutation that will need recording, so a
+            /// failure here leaves the merchant untouched instead of leaving
+            /// added copies unrecorded.
+            /// </summary>
+            internal void EnsureWritable()
             {
                 if (_ledger == null)
                     _ledger = _owner.Ensure<UnitPartBetterVendorsProgressionGrants>()
                         .Ledger;
+            }
+
+            internal bool Record(string guid)
+            {
+                EnsureWritable();
                 return _ledger.Record(guid);
             }
 
@@ -318,6 +332,9 @@ namespace KingmakerGunslinger.Acquisition.BetterVendors
             BetterVendorsGrant[] grants, ProgressionWeaponBlueprintCatalog catalog,
             ItemsCollection inventory, LedgerAccess ledger)
         {
+            if (grants.Any(value =>
+                    value.Reason == BetterVendorsGrantReason.InitialGrant))
+                ledger.EnsureWritable();
             BetterVendorsGrantOutcome outcome = BetterVendorsGrantApplier.Apply(
                 grants,
                 spec => inventory.Count(catalog.Require(spec.Guid).Item),
