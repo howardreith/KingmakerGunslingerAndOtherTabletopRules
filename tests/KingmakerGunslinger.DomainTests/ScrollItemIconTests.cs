@@ -115,7 +115,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Guide lacks the corrected native-shell contract token: " + token);
             // Package count carries the three composed icons.
             string package = File.ReadAllText(Path.Combine(root, "scripts", "package.ps1"));
-            Assertions.True(package.Contains("{ 236 } else { 234 }"),
+            Assertions.True(package.Contains("{ 237 } else { 235 }"),
                 "Package file count does not include the three composed scroll icons.");
             // The runtime identity check must verify the composed item icon,
             // not the retired spell-matches-item equality.
