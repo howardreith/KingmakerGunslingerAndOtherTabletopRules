@@ -153,6 +153,7 @@
     <Compile Include="RapidReloadPrerequisiteTests.cs" />
     <Compile Include="RapidReloadGateEvidenceTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\RapidReloadGateEvidenceRules.cs"><Link>RuntimeTesting\RapidReloadGateEvidenceRules.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\RapidReloadVisitCleanupRules.cs"><Link>RuntimeTesting\RapidReloadVisitCleanupRules.cs</Link></Compile>
     <Compile Include="FirearmProficiencyPublicationTests.cs" />
     <Compile Include="WeaponVisualMappingAuditTests.cs" />
     <Compile Include="WeaponPresentationMissionTests.cs" />
