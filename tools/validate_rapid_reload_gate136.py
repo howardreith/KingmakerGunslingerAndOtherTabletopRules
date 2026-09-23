@@ -18,7 +18,7 @@ VERSION = "0.0.136"
 INFORMATIONAL_VERSION = "0.0.136-rapid-reload-proficiency-gate"
 PACKAGE = "KingmakerGunslinger-0.0.136-local-runtime.zip"
 PACKAGE_SUFFIX = "rapid-reload-proficiency-gate"
-DETERMINISTIC_TEST_COUNT = 1717
+DETERMINISTIC_TEST_COUNT = 1724
 
 
 def validate(root: Path) -> None:

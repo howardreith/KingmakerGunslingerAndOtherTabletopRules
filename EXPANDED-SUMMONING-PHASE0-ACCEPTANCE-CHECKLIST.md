@@ -7,15 +7,25 @@ This checklist covers Sprints 0-2 only. **Sprint 3 is not started.**
 
 ## What to expect before you look
 
-Phase 0 deliberately changes nothing a player can see. If you notice any
-difference in the summon menus or in any creature's appearance, that is a
-defect, not the feature.
+**Exactly one thing should look different: Pteranodon.** Sprint 2 replaces its
+borrowed body with an original pterosaur visual. Everything else is unchanged,
+and any other visible difference is a defect rather than the feature.
+
+Changed on purpose:
+
+- Pteranodon's model, textures and silhouette.
+
+Unchanged, and a difference here is a defect:
 
 - Visible summon choices are still **693** (371 Summon Monster, 322 Nature's
   Ally).
-- No creature was added, removed, hidden, or unhidden.
-- No GUID was allocated. No model, icon, or animation changed.
-- Pteranodon still uses its accepted borrowed body.
+- No creature was added, removed, hidden, or unhidden. Dire Bat stays hidden.
+- Pteranodon's identity, Summon Monster IV / Nature's Ally IV placements,
+  higher-tier quantities, statistics, reach, attack cadence, alignment
+  templating, AI, duration and persistence.
+- Every other creature's appearance, including Eagle and Roc, which share
+  Pteranodon's donor prefab and are the negative controls for this work.
+- Ordinary menu semantics: names, icons, tooltips, ordering and quantities.
 
 ## 1. Menus - confirm nothing moved
 

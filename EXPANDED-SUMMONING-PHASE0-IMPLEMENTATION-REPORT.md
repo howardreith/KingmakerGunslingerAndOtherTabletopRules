@@ -75,20 +75,42 @@ side, and zero mismatches in Summon Monster tier, Summon Nature's Ally tier,
 design priority, effort, or asset package. The five variant elemental families
 and the 28 exclusions agree. No manifest change was required.
 
-### Present versus planned publication
+### Present versus planned coverage
 
-| Coverage state | Creatures |
+Coverage is **derived** from the union of `ExpandedSummoningCatalog` and
+`SummonNativeExpansionCatalog`, not stored as a hand-maintained column.
+
+An earlier revision stored it as literal data filled from the project-owned
+catalog alone. That marked the eleven creatures which ship solely as retained
+native wrappers - Axiomite, Bogeyman, Frost Giant, Hamadryad, Manticore, Mite,
+Movanic Deva, Nereid, Redcap, Soul Eater and Thanadaemon - as though no
+identity existed for them. The reuse and publication tests read the same single
+catalog, so they encoded the omission rather than detecting it. Deriving
+coverage means a catalog change moves the counts and the pinned tests fail.
+
+| Unit identity | Creatures |
 |---|---|
-| Planned | 78 |
-| IdentityReserved | 0 |
-| Registered (save-safe, unpublished) | 1 (`dire-bat`) |
-| Published | 66 |
-| TechnicallyVerified | 0 |
-| OwnerAccepted | 0 |
+| Project-owned (`ExpandedSummoningCatalog`) | 67 |
+| Retained native wrapper | 11 |
+| None yet | 67 |
+| **Represented today** | **78** (77 published somewhere, 1 registered but hidden) |
 
-All 67 shipped creatures are reused in place at unchanged tiers, so 78 new
-identities remain outstanding rather than a second identity for a creature that
-already ships. **No GUID was allocated and no creature was published.**
+| Family placement | Summon Monster | Nature's Ally |
+|---|---|---|
+| Published | 72 | 60 |
+| Registered | 1 | 1 |
+| Planned | 47 | 49 |
+| NotOffered | 25 | 35 |
+
+Unit identity, family placement, future target and acceptance are tracked
+separately. **Frost Giant is the regression case**: its unit exists and is
+Published at Summon Monster VIII through a retained wrapper, while its Nature's
+Ally VII placement is still Planned. It must never be classified as a
+nonexistent unit, nor its new family placement as already shipped.
+
+All 78 existing identities are reused in place at unchanged tiers, so **67** new
+creature identities remain outstanding. **No GUID was allocated, no creature was
+published, and every existing wrapper keeps its exact native unit GUID.**
 
 ## 4. What changed in the menus
 
@@ -99,8 +121,20 @@ eighteen parent spells; no menu ever holds it.
 
 | Menu | Today | Projected | Factor |
 |---|---|---|---|
-| Worst single Summon Monster parent | 69 | 124 | 1.80x |
-| Worst single Nature's Ally parent | 58 | 112 | 1.93x |
+| Worst single Summon Monster parent | 69 | 120 | 1.74x |
+| Worst single Nature's Ally parent | 58 | 110 | 1.90x |
+
+An earlier revision reported 124 and 112 by adding the tier-9 native wrappers
+to the 120 and 110 plan. Those wrapper creatures - Bogeyman, Frost Giant,
+Movanic Deva, Thanadaemon, Nereid and Hamadryad - are creatures of the ideal
+roster and were already inside the plan, so the addition counted them twice.
+One creature is one option whichever catalog supplies its unit. Every tier and
+the 624 + 608 = 1,232 aggregate now derive from the same deduplicated plan.
+
+Ordering is proved through the shipped `SummonDisplayOrderPolicy` rather than
+asserted about the manifest's alphabetical enumeration: singles, then 1d3, then
+1d4+1, with synthetic unrelated third-party children preserved at the end and
+the result stable across repeated ordering.
 
 `SummonVariantMenuLayoutPolicy` already clamps to the canvas-safe rectangle and
 scrolls, and its contract is explicitly option-count agnostic. It was therefore
@@ -112,10 +146,17 @@ measured, not replaced, against a rubric fixed before measuring:
 - R4 growth costs scroll extent, never viewport height;
 - R5 projected scale behaves in the same shape as baseline scale.
 
-Result: PASS at 1280x720, 1600x900, 1920x1080 and 3440x1440, at every option
-count from 1 to 200, and at a 154-option stretch probe. The charter permits one
-bounded presentation solution when the existing UI is shown to fail. It did not
-fail, so none was built.
+Result: PASS at 1280x720, 1600x900, 1920x1080 and 3440x1440 across the **full**
+option-count grid - 4 viewports x 200 counts = 800 evaluations, asserted by
+count so the claim cannot outrun the run. An earlier revision looped only the
+first viewport while the evidence claimed the whole grid.
+
+A 154-option **stress sample** probes headroom. It is deliberately larger than
+the plan and is not a target roster; it authorises no later-sprint content.
+
+The charter permits one bounded presentation solution when the existing UI is
+shown to fail. It did not fail, so none was built - and a bookkeeping error
+found in review is not a reason to build one.
 
 ### Unresolved performance/UX decisions
 
@@ -182,14 +223,35 @@ is the intended guard; the correction was committed before re-running.
   `runtime-backups/live-mod/20260923T1250204338674Z`, and deployment was
   verified against a manifest at
   `runtime-evidence/deployments/20260923T1250266804870Z/deployment.json`.
-- **The installed mod changed version.** Before the run the live installation
-  held **0.0.117** (DLL 6,501,376 bytes, SHA-256 prefix `FD2FC61C250B1385`) -
-  a stale build left by an earlier qualification. It now holds this mission's
-  **0.0.136** build (DLL 9,135,104 bytes, SHA-256 prefix `254295C295EA77FF`).
-  That is the harness's ordinary deploy-and-leave behaviour, not a defect, and
-  the previous installation is recoverable from the backup above. Restoring
-  0.0.117 is an owner decision: it is older than the accepted release, so
-  leaving 0.0.136 installed is likely the more correct state.
+- **The installed mod was restored.** The first runs left this mission's
+  0.0.136 branch build installed over the pre-run 0.0.117 installation. The
+  mission required restoration and did not authorize a permanent installation,
+  and a shared version string does not make a branch artifact an accepted
+  release, so the deploy-and-leave default was not treated as permission.
+
+  Before restoring, ownership was established rather than assumed: the live
+  DLL hash matched this mission's exact build byte for byte, no save had been
+  written after the deployment (the newest save predates it), and the only
+  files newer than the deployed DLL were `FeatureModules.json` written by this
+  mission's own runs. Nothing else had touched the installation, so a blind
+  downgrade was not a risk.
+
+  | State | Version | DLL SHA-256 | Files |
+  |---|---|---|---|
+  | Pre-run backup | 0.0.117 | `FD2FC61C250B1385…` | 136 |
+  | After this mission's runs | 0.0.136 | `254295C295EA77FF…` | 238 |
+  | After restoration | 0.0.117 | `FD2FC61C250B1385…` | 136 |
+
+  The restored hash equals the pre-run backup hash exactly. The backup is
+  retained.
+
+- **Subsequent runs restore themselves.**
+  `scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1` fingerprints the live
+  tree, snapshots it, runs the scenario, and restores its own snapshot in a
+  `finally` - on success, on failure and on interruption - recording
+  before/after fingerprints under
+  `runtime-evidence/expanded-summoning-restoration`. It refuses to restore over
+  a tree that changed underneath it rather than destroying someone else's work.
 - No save was read, written, or selected. `KMG_AUTOMATION_BASELINE` was never
   touched, and the scenario requires no save at all.
 - Other worktrees, including the rapid-reload and magic-circle checkouts, were
