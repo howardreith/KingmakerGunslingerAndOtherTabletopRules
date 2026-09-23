@@ -73,6 +73,9 @@ $snapshot = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
     -LiveModDirectory $LiveModDirectory -Confirm:$false `
     -AllowEmptySource:($before.Files -eq 0)
 Write-Host "Mission snapshot: $($snapshot.Destination)"
+# The harness stamps its compatibility lock with the same run timestamp, so the
+# snapshot directory name identifies a lock this batch owns.
+$snapshotStamp = (Split-Path $snapshot.Destination -Leaf).Substring(0, 16)
 
 $record = [ordered]@{
     schemaVersion = 2
@@ -144,7 +147,27 @@ try {
             $run.error = $_.Exception.Message
             Write-Warning "Scenario $name errored: $($_.Exception.Message)"
         }
-        if ($run.outcome -ne 'PASS') { $failures++ }
+        # The harness can write a complete result and still throw during
+        # teardown. Read what the scenario actually recorded so a teardown fault
+        # is not reported as a scenario failure, and vice versa.
+        $evidence = Get-ChildItem 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' -Directory `
+                -Filter ('*-' + $name) -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending | Select-Object -First 1
+        if ($evidence) {
+            $resultPath = Join-Path $evidence.FullName 'runtime-result.json'
+            if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
+                $scenarioResult = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+                $run.evidenceDirectory = $evidence.Name
+                $run.scenarioStatus = $scenarioResult.status
+                if ($run.outcome -eq 'ERROR' -and $scenarioResult.status -eq 'PASS') {
+                    $run.outcome = 'PASS-WITH-TEARDOWN-FAULT'
+                }
+            }
+        }
+        # A scenario that recorded PASS and then faulted during teardown is not
+        # a scenario failure; the teardown fault is reported separately.
+        if ($run.outcome -ne 'PASS' -and
+            $run.outcome -ne 'PASS-WITH-TEARDOWN-FAULT') { $failures++ }
         $run.completedAtUtc = [DateTime]::UtcNow.ToString('o')
         $record.runs += $run
         $first = $false
@@ -162,6 +185,30 @@ finally {
     }
     else {
         try {
+            # The harness returns while Kingmaker is still shutting down, and a
+            # restore during that window is refused. Wait for the process to go
+            # rather than treating the race as a restoration failure.
+            $exitDeadline = [DateTime]::UtcNow.AddSeconds(120)
+            while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
+                [DateTime]::UtcNow -lt $exitDeadline) {
+                Start-Sleep -Milliseconds 500
+            }
+
+            # A run that aborted mid-transaction can leave its own compatibility
+            # lock behind. Release it only when this batch owns it; the helper
+            # throws if the recorded owner differs.
+            $compatibilityLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
+            if (Test-Path -LiteralPath $compatibilityLock -PathType Leaf) {
+                $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
+                if ($lockOwner -like ('*' + $snapshotStamp + '*')) {
+                    . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
+                    Remove-KmgCompatibilityOwnedLock -LockPath $compatibilityLock -RunId $lockOwner
+                    $record.releasedStaleCompatibilityLock = $lockOwner
+                } else {
+                    $record.foreignCompatibilityLock = $lockOwner
+                }
+            }
+
             Assert-KmgNotRunning
             & (Join-Path $PSScriptRoot 'Restore-Live-Mod.ps1') `
                 -BackupDirectory $snapshot.Destination `
