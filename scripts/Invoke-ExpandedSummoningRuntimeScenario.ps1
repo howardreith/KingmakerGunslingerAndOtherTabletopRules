@@ -38,29 +38,12 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 
-function Get-KmgTreeFingerprint {
-    param([Parameter(Mandatory = $true)][string]$Directory)
-    if (-not (Test-Path -LiteralPath $Directory -PathType Container)) {
-        return [pscustomobject]@{ Files = 0; Sha256 = '<absent>' }
-    }
-    # One order-stable digest over every relative path and its content hash, so
-    # a moved, added, or edited file all change the fingerprint.
-    $root = (Resolve-Path -LiteralPath $Directory).Path.TrimEnd('\') + '\'
-    $entries = Get-ChildItem -LiteralPath $Directory -Recurse -File |
-        Sort-Object { $_.FullName.Substring($root.Length) }
-    $builder = New-Object Text.StringBuilder
-    foreach ($entry in $entries) {
-        [void]$builder.Append($entry.FullName.Substring($root.Length).ToLowerInvariant())
-        [void]$builder.Append('|')
-        [void]$builder.Append((Get-FileHash -LiteralPath $entry.FullName -Algorithm SHA256).Hash)
-        [void]$builder.AppendLine()
-    }
-    $bytes = [Text.Encoding]::UTF8.GetBytes($builder.ToString())
-    $stream = New-Object IO.MemoryStream (, $bytes)
-    try { $hash = (Get-FileHash -InputStream $stream -Algorithm SHA256).Hash }
-    finally { $stream.Dispose() }
-    return [pscustomobject]@{ Files = $entries.Count; Sha256 = $hash }
-}
+# The orchestration decisions - which evidence belongs to this run, how the
+# launcher's exit reconciles with the scenario's own recorded status, whether
+# restoration is needed and whether it worked, and whether a compatibility lock
+# belongs to this batch - live in one dot-sourced file so the bounded test
+# suite exercises the shipped rules rather than a second copy of them.
+. (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 
 Assert-KmgNotRunning
 
@@ -121,7 +104,9 @@ try {
             }
             & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') @arguments
             $run.exitCode = $LASTEXITCODE
-            $run.outcome = if ($LASTEXITCODE -eq 0) { 'PASS' } else { 'FAIL' }
+            # How the launcher exited and what the scenario recorded are two
+            # separate facts; this is only the first of them.
+            $launcher = if ($LASTEXITCODE -eq 0) { 'Clean' } else { 'Unclean' }
             if ($first) {
                 # Capture what the deploying run produced so later scenarios can
                 # name it exactly; the harness refuses a vague reuse.
@@ -143,7 +128,7 @@ try {
             }
         }
         catch {
-            $run.outcome = 'ERROR'
+            $launcher = 'Unclean'
             $run.error = $_.Exception.Message
             Write-Warning "Scenario $name errored: $($_.Exception.Message)"
         }
@@ -157,40 +142,28 @@ try {
         # directories are named with a UTC stamp, so require that stamp to be at
         # or after the moment this scenario started.
         $startedStamp = ([DateTime]$run.startedAtUtc).ToUniversalTime()
-        $evidence = Get-ChildItem 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' -Directory `
-                -Filter ('*-' + $name) -ErrorAction SilentlyContinue |
-            Where-Object {
-                $stamp = $null
-                if ($_.Name -match '^(?<t>[0-9]{8}T[0-9]{6})') {
-                    $stamp = [DateTime]::ParseExact($Matches['t'], 'yyyyMMddTHHmmss',
-                        [Globalization.CultureInfo]::InvariantCulture,
-                        [Globalization.DateTimeStyles]::AssumeUniversal -bor
-                        [Globalization.DateTimeStyles]::AdjustToUniversal)
-                }
-                $stamp -ne $null -and $stamp -ge $startedStamp.AddSeconds(-90)
-            } |
-            Sort-Object Name -Descending | Select-Object -First 1
-        if (-not $evidence) {
-            # No evidence from this run: say so rather than inheriting an old
-            # result. An outcome already set by the catch block stands.
-            $run.scenarioStatus = 'NO-EVIDENCE-FROM-THIS-RUN'
-            if ($run.outcome -eq 'PASS') { $run.outcome = 'NO-EVIDENCE' }
-        }
+        $evidenceNames = @(Get-ChildItem 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' -Directory -ErrorAction SilentlyContinue |
+            ForEach-Object Name)
+        $evidenceName = Select-KmgScenarioEvidence -DirectoryNames $evidenceNames `
+            -Scenario $name -StartedUtc $startedStamp
+        $evidence = if ($evidenceName) {
+            Get-Item -LiteralPath (Join-Path 'C:\Dev\KingmakerGunslingerLab\runtime-evidence' $evidenceName)
+        } else { $null }
+        $scenarioStatus = $null
         if ($evidence) {
-            $resultPath = Join-Path $evidence.FullName 'runtime-result.json'
-            if (Test-Path -LiteralPath $resultPath -PathType Leaf) {
-                $scenarioResult = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
-                $run.evidenceDirectory = $evidence.Name
-                $run.scenarioStatus = $scenarioResult.status
-                if ($run.outcome -eq 'ERROR' -and $scenarioResult.status -eq 'PASS') {
-                    $run.outcome = 'PASS-WITH-TEARDOWN-FAULT'
-                }
-            }
+            $run.evidenceDirectory = $evidence.Name
+            $scenarioStatus = Read-KmgScenarioStatus -Scenario $name `
+                -ResultPath (Join-Path $evidence.FullName 'runtime-result.json')
         }
-        # A scenario that recorded PASS and then faulted during teardown is not
-        # a scenario failure; the teardown fault is reported separately.
-        if ($run.outcome -ne 'PASS' -and
-            $run.outcome -ne 'PASS-WITH-TEARDOWN-FAULT') { $failures++ }
+        # A result file that is missing, unreadable, malformed, or written for a
+        # different scenario yields no status, which is treated as no usable
+        # evidence rather than as a pass.
+        $run.scenarioStatus = if ($scenarioStatus) { $scenarioStatus }
+            else { 'NO-EVIDENCE-FROM-THIS-RUN' }
+        $run.launcherOutcome = $launcher
+        $run.outcome = Resolve-KmgScenarioOutcome -LauncherOutcome $launcher `
+            -EvidenceStatus $scenarioStatus
+        if (Test-KmgScenarioOutcomeFailed $run.outcome) { $failures++ }
         $run.completedAtUtc = [DateTime]::UtcNow.ToString('o')
         $record.runs += $run
         $first = $false
@@ -202,7 +175,8 @@ finally {
     $deployed = Get-KmgTreeFingerprint -Directory $LiveModDirectory
     $record.liveAfterScenario = [ordered]@{ files = $deployed.Files; sha256 = $deployed.Sha256 }
 
-    if ($deployed.Sha256 -eq $before.Sha256) {
+    if (-not (Resolve-KmgRestorationNeeded -BeforeSha256 $before.Sha256 `
+        -AfterScenarioSha256 $deployed.Sha256)) {
         $record.restoration = 'not-needed'
         Write-Host 'Live tree already matches the pre-run snapshot; nothing to restore.'
     }
@@ -223,7 +197,8 @@ finally {
             $compatibilityLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
             if (Test-Path -LiteralPath $compatibilityLock -PathType Leaf) {
                 $lockOwner = (Get-Content -LiteralPath $compatibilityLock -Raw).Trim()
-                if ($lockOwner -like ('*' + $snapshotStamp + '*')) {
+                if (Test-KmgCompatibilityLockOwned -LockOwner $lockOwner `
+                    -SnapshotStamp $snapshotStamp) {
                     . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
                     Remove-KmgCompatibilityOwnedLock -LockPath $compatibilityLock -RunId $lockOwner
                     $record.releasedStaleCompatibilityLock = $lockOwner
@@ -238,7 +213,8 @@ finally {
                 -LiveModDirectory $LiveModDirectory -Confirm:$false | Out-Null
             $after = Get-KmgTreeFingerprint -Directory $LiveModDirectory
             $record.liveAfterRestore = [ordered]@{ files = $after.Files; sha256 = $after.Sha256 }
-            $record.restoration = if ($after.Sha256 -eq $before.Sha256) { 'verified' } else { 'MISMATCH' }
+            $record.restoration = Resolve-KmgRestorationResult `
+                -BeforeSha256 $before.Sha256 -RestoredSha256 $after.Sha256
             if ($record.restoration -ne 'verified') {
                 Write-Warning "Restored tree does not match the pre-run fingerprint. Snapshot retained: $($snapshot.Destination)"
             } else {

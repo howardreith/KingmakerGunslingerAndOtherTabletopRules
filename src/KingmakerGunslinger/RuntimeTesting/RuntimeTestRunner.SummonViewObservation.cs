@@ -49,6 +49,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool animationDriverProven = false;
             int clipCount = 0;
             string controllerName = null;
+            string membraneDeformation = "<unobserved>";
 
             try
             {
@@ -94,6 +95,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // The attached path is covered by the disposable scenario.
                 animationDriverProven = observed.DrivingAnimator != null &&
                     observed.HasGenericAvatar;
+
+                // The replacement mesh is bound to this probe's own rig, one
+                // feather bone is rotated by a known angle, the result is
+                // measured, and the bone is put back. The probe never became
+                // active, so nothing the game owns moves.
+                membraneDeformation = DescribeMembraneDeformation(
+                    instance.gameObject);
             }
             finally
             {
@@ -159,6 +167,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "pteranodon remains SM 4 / SNA 4 and alignment-templated",
                     "identityIntact=" + identityIntact, identityIntact,
                     "ExpandedSummoningCatalog after observation"),
+                // The authoring reconstruction has to be shown to bind
+                // consistently, not merely to have matching counts and names.
+                // A mesh bound with the wrong bind poses still moves when a bone
+                // moves; what it does not do is hold station in that bone's own
+                // frame, which is what this measures.
+                Assertion("expanded-summoning-membrane-deformation",
+                    "vertices the probed feather bone owns move in world space " +
+                    "and hold station in that bone's frame, while the opposite " +
+                    "wing does not move at all",
+                    membraneDeformation,
+                    MembraneDeformationExact(membraneDeformation),
+                    "replacement mesh skinned against the donor's own bind poses " +
+                    "on the detached probe, with one bone rotated 25 degrees and " +
+                    "restored"),
                 Assertion("pteranodon-probe-never-activated",
                     "the clone is inactive from creation, so Awake and OnEnable never run",
                     "activeInHierarchy=" + activeInHierarchy, !activeInHierarchy,
