@@ -56,6 +56,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             UnitEntityData caster = null;
             BlueprintUnit casterBlueprint = null;
+            Kingmaker.EntitySystem.SceneEntitiesState scene = null;
+            object sceneEntities = null;
+            object[] entitiesBefore = null;
             UnitEntityData summoned = null;
             MethodInfo summonRuleMethod = null;
             string attachedReport = "<unobserved>";
@@ -84,16 +87,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "No exact loaded Unity scene was available for the disposable caster.");
 
+                // The caster must be spawned INTO the loaded area's persistent
+                // state. Passing null spawns a unit with no AreaPersistentState,
+                // which native destruction then dereferences: the first version
+                // of this scenario died in EntityDestructionController with a
+                // NullReferenceException during its own cleanup. Native spawn
+                // placement also needs the loaded area's pathfinding graph.
+                UnitEntityData areaAnchor = partyBefore.OfType<UnitEntityData>()
+                    .FirstOrDefault(value => value.HoldingState != null);
+                if (areaAnchor == null)
+                    throw new InvalidOperationException(
+                        "The guarded working save provided no party unit with an area state.");
+                scene = areaAnchor.HoldingState;
+
                 casterBlueprint = UnityEngine.Object.Instantiate(
                     BlueprintRoot.Instance.DefaultPlayerCharacter);
                 casterBlueprint.name = "KMG_Runtime_PteranodonAttachedView_Caster";
                 casterBlueprint.IsCheater = true;
                 caster = Game.Instance.EntityCreator.SpawnUnit(
-                    casterBlueprint, Vector3.zero, Quaternion.identity, null);
+                    casterBlueprint, Vector3.zero, Quaternion.identity, scene);
                 Game.Instance.EntityCreator.Tick();
                 if (caster == null || caster.View == null)
                     throw new InvalidOperationException(
                         "Native entity creation did not produce a live caster view.");
+                if (!caster.IsInState)
+                    throw new InvalidOperationException(
+                        "The disposable caster did not enter the exact loaded-area state.");
+                sceneEntities = scene.AllEntityData;
+                entitiesBefore = SnapshotReferences(sceneEntities);
 
                 _context.Harmony.Patch(summonRuleMethod, null,
                     new HarmonyMethod(capturePostfix), null);
@@ -145,8 +166,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (summonRuleMethod != null)
                     _context.Harmony.Unpatch(summonRuleMethod,
                         HarmonyPatchType.All, _context.ModId);
-                foreach (UnitEntityData unit in SnapshotReferences(allUnits)
-                    .OfType<UnitEntityData>()
+                IEnumerable<UnitEntityData> localUnits = sceneEntities == null
+                    ? Enumerable.Empty<UnitEntityData>()
+                    : SnapshotReferences(sceneEntities).OfType<UnitEntityData>();
+                foreach (UnitEntityData unit in localUnits.Concat(
+                    SnapshotReferences(allUnits).OfType<UnitEntityData>())
                     .Where(value => !unitsBefore.Any(prior =>
                         ReferenceEquals(prior, value))).Distinct().ToArray())
                 {
@@ -154,7 +178,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     else unit.Dispose();
                 }
 
-                Game.Instance.EntityDestroyer.Tick();
+                // Destroying a unit removes its facts first, and native aura
+                // components can enqueue dependent entities only while that
+                // first item is processed. A single Tick leaves those behind,
+                // so drain across several passes exactly as the shipped
+                // expanded-summoning scenario does.
+                if (sceneEntities != null)
+                    DrainExpandedSummoningDestroyQueue(sceneEntities, entitiesBefore);
+                else
+                    Game.Instance.EntityDestroyer.Tick();
                 if (casterBlueprint != null)
                     UnityEngine.Object.Destroy(casterBlueprint);
                 cleaned = SameReferences(unitsBefore, SnapshotReferences(allUnits)) &&
