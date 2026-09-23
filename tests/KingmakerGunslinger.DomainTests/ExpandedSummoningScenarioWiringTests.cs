@@ -126,32 +126,44 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// The regression case itself, named so it cannot be lost in a list.
+        /// The Pteranodon attached-view capture rides along with the proven
+        /// disposable-expanded-summoning lifecycle.
+        ///
+        /// A standalone scenario for this was written and withdrawn after it
+        /// died twice inside EntityDestructionController during its own
+        /// cleanup: reproducing the spawn and teardown lifecycle correctly is
+        /// fiddly, and the reimplementation kept diverging from the shipped
+        /// one. Reusing a lifecycle that already passes beat maintaining a
+        /// second copy of it. This test pins that decision so the capture
+        /// cannot quietly lose its home.
         /// </summary>
-        internal static void PteranodonAttachedViewIsFullyWired()
+        internal static void PteranodonCaptureRidesTheProvenScenario()
         {
-            string catalog = Source("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs");
-            string request = Source("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRequest.cs");
             string runner = Source("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs");
+            string helper = Source(
+                "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.PteranodonAttachedView.cs");
+            string catalog = Source("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs");
             string harness = Source("scripts/RuntimeAutomation.Common.ps1");
-            string preflight = Source("scripts/Test-RuntimeScenarioPreflight.ps1");
 
-            Assertions.True(catalog.Contains("\"disposable-pteranodon-attached-view\""),
-                "The scenario is missing its catalog constant.");
-            Assertions.True(catalog.Contains("DisposablePteranodonAttachedView,"),
-                "The scenario is not in the catalog's known-scenario list.");
-            Assertions.True(runner.Contains("RunDisposablePteranodonAttachedView()"),
-                "The scenario has no runner dispatch.");
-            Assertions.True(harness.Contains("'disposable-pteranodon-attached-view'"),
-                "The scenario has no harness metadata.");
-            Assertions.True(preflight.Contains("'disposable-pteranodon-attached-view'"),
-                "The scenario is not preflight-allowlisted.");
+            Assertions.True(helper.Contains("DescribeAttachedPteranodonView"),
+                "The attached-view capture helper is missing.");
+            Assertions.True(runner.Contains("_pteranodonAttachedContract ="),
+                "The proven scenario no longer captures the Pteranodon contract.");
+            Assertions.True(runner.Contains(
+                    "expanded-summoning-pteranodon-attached-contract"),
+                "The captured contract is not asserted anywhere.");
+            Assertions.True(helper.Contains("pteranodon-attached-rig.json"),
+                "The rig dump is no longer written to the run's evidence directory.");
 
-            // The specific omission that cost a launch and a hung process.
-            Assertions.True(request.Contains(
-                    "RuntimeTestScenarioCatalog.DisposablePteranodonAttachedView"),
-                "The runtime request validator does not allow this working-save " +
-                "scenario, so its timeouts would be rejected at acceptance.");
+            // The withdrawn scenario must be gone from every wiring point, not
+            // left half-registered where it could be invoked and fail.
+            foreach (string source in new[] { runner, catalog, harness })
+            {
+                Assertions.False(source.Contains("disposable-pteranodon-attached-view"),
+                    "The withdrawn standalone scenario is still wired in.");
+                Assertions.False(source.Contains("DisposablePteranodonAttachedView"),
+                    "The withdrawn standalone scenario constant is still referenced.");
+            }
         }
     }
 }
