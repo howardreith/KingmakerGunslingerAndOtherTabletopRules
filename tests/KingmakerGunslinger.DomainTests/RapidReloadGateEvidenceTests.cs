@@ -607,10 +607,19 @@ namespace KingmakerGunslinger.DomainTests
                 ":target-still-blocks-after-legal-choice");
 
             JObject banked = ScopedChildRefusal();
-            banked["parentRankWhileEmpty"] = 1;
+            banked["refusedChildRankWhileEmpty"] = 1;
             Reject(scoped, banked,
-                "An empty Rapid Reload choice that granted a fact was accepted.",
-                ":empty-selection-granted-a-fact");
+                "An empty Rapid Reload choice that granted a firearm was accepted.",
+                ":empty-selection-granted-a-firearm");
+
+            // Native behaviour: the chosen parent selection is applied to the
+            // preview at once. That alone must not fail the case.
+            JObject previewParent = ScopedChildRefusal();
+            previewParent["parentRankWhileEmpty"] = 1;
+            var previewFailures = new List<string>();
+            Assertions.True(scoped.Evaluate(previewParent, previewFailures),
+                "The native preview parent rank failed a scoped refusal: " +
+                string.Join("|", previewFailures.ToArray()));
 
             JObject accepted = ScopedChildRefusal();
             accepted["refusedChildSelected"] = true;
@@ -620,10 +629,19 @@ namespace KingmakerGunslinger.DomainTests
 
             EvidenceCase probe = Find("empty-selection");
             JObject emptyBanked = EmptySelection();
-            emptyBanked["acquiredParent"] = true;
+            emptyBanked["acquiredAnyChild"] = true;
             Reject(probe, emptyBanked,
-                "A banked empty Rapid Reload selection was accepted.",
-                ":empty-choice-was-banked");
+                "An empty Rapid Reload probe that banked a firearm was accepted.",
+                ":empty-choice-banked-a-firearm");
+
+            // The probe bypasses native completion; the parent selection it
+            // applies is expected and must not fail the case.
+            JObject probeParent = EmptySelection();
+            probeParent["acquiredParent"] = true;
+            var probeFailures = new List<string>();
+            Assertions.True(probe.Evaluate(probeParent, probeFailures),
+                "The probe's applied parent selection failed the case: " +
+                string.Join("|", probeFailures.ToArray()));
 
             JObject emptyCompleted = EmptySelection();
             emptyCompleted["completeWhileEmpty"] = true;
