@@ -52,10 +52,10 @@ shipped bundle is scrubbed of donor transforms as well - see below.
 3. Generate with Blender 4.5.10 LTS and `PYTHONHASHSEED=0`:
 
    ```
-   blender --background --factory-startup --python generate_membrane.py -- \
-       --rig rig.measured.json --out pteranodon-membrane.fbx \
-       --blend-out pteranodon-membrane.blend \
-       --report pteranodon-membrane-build-report.json
+   blender --background --factory-startup --python generate_pteranodon.py -- \
+       --rig rig.measured.json --out pteranodon.fbx \
+       --blend-out pteranodon.blend \
+       --report pteranodon-build-report.json
    ```
 
 4. Stage and build the bundle: `.\scripts\Prepare-PteranodonAssets.ps1`, then
@@ -64,10 +64,16 @@ shipped bundle is scrubbed of donor transforms as well - see below.
 
 ## What the generator authors
 
-The current source is the **membrane test mesh** - the wing sheet alone, which
-is the smallest piece of original geometry that can prove a replacement mesh
-deforms correctly under the donor's own animations. The finished creature body
-is authored on top of the same rig once that proof holds.
+`--parts membrane` emits the wing sheets alone: the smallest piece of original
+geometry that can prove a replacement mesh deforms correctly under the donor's
+own animations. `--parts all`, the default, adds the body on the same rig.
+
+`body-plan.md` records where the donor's anatomy and a pterosaur's disagree and
+what was decided in each case. The three that matter: the beak extends forward
+of the last head bone on purpose, so an opening jaw swings a beak rather than
+twitching a head; the crest is weighted entirely to `Head`, because a crest is
+bone; and the donor's eagle tail fan is left carrying no geometry at all rather
+than being dressed up as a tail a Pteranodon does not have.
 
 A pterosaur's brachiopatagium is one sheet bounded by the leading edge
 (shoulder, elbow, wrist, elongated finger, wingtip), the trailing edge (wingtip
