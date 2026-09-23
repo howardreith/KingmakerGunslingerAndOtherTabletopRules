@@ -18,8 +18,9 @@
   explicit rebuild-tolerant reservation of the feat slot each case exercises,
   exact-child tracking across an archetype change, declared proficiency scopes
   validated by the evaluators that score each case, and the native
-  `LevelUpState.IsComplete` gate required before every claimed confirmation. It
-  has still not been executed: the runtime orchestrator refuses administrator
+  `LevelUpState.IsComplete` gate required before every claimed confirmation, and
+  exception-safe ownership of a level-up controller whose initialisation fails.
+  It has still not been executed: the runtime orchestrator refuses administrator
   elevation by design and the authoring sessions were elevated, so runtime
   qualification for the Rapid Reload proficiency gate is recorded as blocked
   rather than passed. The `rapid-reload-evidence.*` domain cases only prove that

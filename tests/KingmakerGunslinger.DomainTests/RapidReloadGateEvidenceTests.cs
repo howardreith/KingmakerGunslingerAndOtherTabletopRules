@@ -786,6 +786,52 @@ namespace KingmakerGunslinger.DomainTests
                 ":archetype-grant-survived-removal");
         }
 
+        // R5: a failed visit initialisation must keep its original error, and a
+        // cleanup failure on top of it must reach the run as well. This calls
+        // the same composition the production failure path calls.
+        internal static void FailedVisitInitializationNeverDiscardsAnError()
+        {
+            var setupError = new InvalidOperationException(
+                "Native archetype selection rejected the Rapid Reload gate visit.");
+
+            // Cleanup succeeded: the caller rethrows the original, so its stack
+            // and diagnostics are untouched.
+            Assertions.True(
+                RapidReloadVisitCleanupRules.Compose(setupError, null) == null,
+                "A clean cancellation did not leave the original setup failure to be rethrown.");
+
+            // Cleanup also failed: both failures must survive, and the result is
+            // still an exception, so it can never read as success.
+            var cleanupError = new InvalidOperationException(
+                "Native controller cancellation threw.");
+            Exception combined = RapidReloadVisitCleanupRules.Compose(setupError,
+                cleanupError);
+            Assertions.True(combined != null,
+                "A cleanup failure was swallowed instead of being reported.");
+            var aggregate = combined as AggregateException;
+            Assertions.True(aggregate != null,
+                "The combined failure is not an AggregateException: " +
+                combined.GetType().FullName);
+            Assertions.Equal(2, aggregate.InnerExceptions.Count,
+                "The combined failure did not carry exactly the setup and cleanup errors.");
+            Assertions.True(ReferenceEquals(aggregate.InnerExceptions[0], setupError),
+                "The original setup failure is not the first inner exception.");
+            Assertions.True(ReferenceEquals(aggregate.InnerExceptions[1], cleanupError),
+                "The cleanup failure is not the second inner exception.");
+            Assertions.True(aggregate.Message.Contains(
+                    RapidReloadVisitCleanupRules.CombinedFailureMessage),
+                "The combined failure does not explain what happened.");
+            string rendered = aggregate.ToString();
+            Assertions.True(rendered.Contains(setupError.Message) &&
+                    rendered.Contains(cleanupError.Message),
+                "The recorded exception summary would not show both failures.");
+
+            // A cleanup failure can never be composed without the original.
+            Assertions.Throws<ArgumentNullException>(
+                () => RapidReloadVisitCleanupRules.Compose(null, cleanupError),
+                "A missing setup failure was accepted.");
+        }
+
         internal static void ScenarioUsesTheNativeOperationsItClaims()
         {
             string root = Environment.CurrentDirectory;
@@ -817,7 +863,13 @@ namespace KingmakerGunslinger.DomainTests
                 ".EvaluatePendingClassChange(",
                 ".EvaluateArchetypeScopeChange(",
                 ".EvaluateMusketMaster(",
-                ".EvaluateClassIdentityControl("
+                ".EvaluateClassIdentityControl(",
+                // R5: exception-safe ownership of a newly created controller.
+                "out LevelUpController created",
+                "catch (Exception setupError)",
+                "TryCancelRapidReloadVisit(controller)",
+                "RapidReloadVisitCleanupRules.Compose(setupError,",
+                "RunRapidReloadVisitOwnershipCheck("
             })
                 Assertions.True(scenario.Contains(token),
                     "The Rapid Reload gate scenario lost a required native step: " + token);

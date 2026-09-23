@@ -178,6 +178,20 @@ view), so it enforces the same gate and then calls `ApplyLevelup`, the method
 `Commit` calls; the evidence is labelled as exactly that and never as an
 exercised UI button.
 
+Fixture lifecycle: `OpenRapidReloadVisit` owns the level-up controller it
+creates until initialisation succeeds. If a later step rejects or throws, the
+caller's assignment never completed and its `finally` block holds `null`, so the
+helper cancels that controller itself before the failure propagates; the
+original setup error keeps its stack through a bare rethrow, and a cancellation
+that also fails is reported beside it as an `AggregateException`
+(`RapidReloadVisitCleanupRules.Compose`) rather than replacing or hiding either
+failure. On success, ownership transfers to the caller and nothing is cancelled
+twice. The scenario's own `rapid-reload-visit-ownership-cleanup` assertion
+drives that failure window with a natively rejected archetype (Musket Master is
+not a Fighter archetype) and checks the original error, its stack, that a
+controller existed in the window, that the caller never owned it, and that a
+successful initialisation returns the same usable controller to the caller.
+
 `RapidReloadGateEvidenceRules` scores that evidence, and the domain suite
 exercises those rules with truncated and corrupted fixtures
 (`rapid-reload-evidence.*`). That is regression coverage for the scoring only:
