@@ -575,6 +575,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             LevelUpController controller = created;
             try
             {
+                SettleRapidReloadCharacterCreation(controller, descriptor);
                 if (archetype != null &&
                     !controller.AddArchetype(characterClass, archetype))
                     throw new InvalidOperationException(
@@ -596,6 +597,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Bare rethrow: the original setup failure keeps its stack.
                 throw;
             }
+        }
+
+        // A disposable unit's first visit is character creation, and native
+        // LevelUpState.IsComplete stays false while race, name, portrait,
+        // gender or voice is still open even with no selection pending. Settle
+        // only the fields the engine reports open, through the native setters,
+        // before the class and any slot reservation (race rebuilds the preview).
+        private static void SettleRapidReloadCharacterCreation(
+            LevelUpController controller, UnitDescriptor descriptor)
+        {
+            CharGenRoot chargen = BlueprintRoot.Instance.CharGen;
+            if (controller.State.CanSelectRace &&
+                !controller.SelectRace(descriptor.Progression.Race))
+                throw new InvalidOperationException(
+                    "Native race selection rejected the Rapid Reload fixture.");
+            if (controller.State.CanSelectGender)
+                controller.SelectGender(descriptor.Gender);
+            if (controller.State.CanSelectName)
+                controller.SelectName("KMG Rapid Reload Fixture");
+            if (controller.State.CanSelectPortrait)
+                controller.SelectPortrait(chargen.Portraits.First(value => value != null));
+            if (controller.State.CanSelectVoice)
+                controller.SelectVoice((descriptor.Gender == Gender.Male ?
+                    chargen.MaleVoices : chargen.FemaleVoices)
+                    .First(value => value != null));
         }
 
         // The single native cancellation boundary. Returns the cleanup failure
