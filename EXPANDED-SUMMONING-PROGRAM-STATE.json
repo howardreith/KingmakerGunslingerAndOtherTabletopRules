@@ -175,20 +175,37 @@
       "aliases": { "dire-tiger-smilodon": "dire-tiger" }
     }
   },
-  "openBlockers": [
+  "openBlockers": [],
+  "resolvedBlockers": [
     {
       "id": "B-1",
       "kind": "setup",
-      "severity": "disclosed-not-blocking",
+      "status": "RESOLVED",
       "item": "Kingmaker_Ideal_Summoning_Roster.xlsx",
-      "detail": "The mandated workbook is not present on this workstation (searched the lab tree, the repository, and the owner's Downloads/Desktop/Documents by name). The charter's Appendix A and Appendix B reproduce the controlling roster fields and independently reconcile to every published total (145/95/50/120/110/1232), so the manifest is built from the charter with recorded provenance rather than invented. Supply the workbook to confirm any field the appendices do not carry."
+      "detail": "Initially absent from this workstation, so the manifest was derived from charter Appendix A + B with recorded provenance. The owner then supplied the workbook, and the manifest was reconciled against its deduplicated Shared Backlog sheet.",
+      "reconciliation": {
+        "workbookCreatureRows": 145,
+        "manifestCreatures": 145,
+        "creaturesOnlyInWorkbook": 0,
+        "creaturesOnlyInManifest": 0,
+        "tierMismatches": 0,
+        "priorityMismatches": 0,
+        "effortMismatches": 0,
+        "assetPackageMismatches": 0,
+        "workbookSummonMonsterBaseEntries": 120,
+        "workbookSummonNaturesAllyBaseEntries": 110,
+        "workbookPlacements": { "summonMonster": 624, "summonNaturesAlly": 608, "total": 1232 },
+        "variantElementalFamilies": "identical set of five",
+        "exclusions": "28 in both",
+        "verdict": "The charter-derived manifest is byte-for-byte equivalent to the controlling workbook on every compared field. No manifest change was required."
+      }
     },
     {
       "id": "B-2",
       "kind": "setup",
-      "severity": "disclosed-not-blocking",
+      "status": "RESOLVED",
       "item": "Why work when others can do it for you - a guide to Summoning.docx",
-      "detail": "The tactical guide is not present on this workstation. The charter restates the guide's role for every creature in scope (Appendix A 'Required ideal work' plus the per-sprint battlefield roles), and the guide informs role only, never accepted statistics. Supply it to confirm Pteranodon's guide passage verbatim."
+      "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
   "nextConcreteAction": "Complete Sprint 1: publish the ideal roster manifest with explicit coverage states, prove no production creature is published by it, and measure the per-parent menu scalability gate (69 -> ~124 worst-case single menu)."
