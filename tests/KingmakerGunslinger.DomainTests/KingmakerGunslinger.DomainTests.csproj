@@ -128,6 +128,7 @@
     <Compile Include="ExpandedSummoningIdealRosterTests.cs" />
     <Compile Include="ExpandedSummoningMenuScalabilityTests.cs" />
     <Compile Include="ExpandedSummoningCoverageTests.cs" />
+    <Compile Include="ExpandedSummoningCompatibilityMatrixTests.cs" />
     <Compile Include="ExpandedSummoningScenarioWiringTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
