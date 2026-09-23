@@ -128,27 +128,51 @@
         "total": 1232
       },
       "itemizedDiffAgainstCharter": "zero on every published figure (145/95/50/120/110/1232)",
-      "coverageStates": {
-        "Planned": 78,
-        "IdentityReserved": 0,
-        "Registered": 1,
-        "Published": 66,
-        "TechnicallyVerified": 0,
-        "OwnerAccepted": 0
-      },
       "newGuidsAllocated": 0,
       "productionCreaturesPublished": 0,
-      "isolationProof": "expanded-summoning.ideal-roster-isolation asserts no publication, registration, bootstrap, or menu source references the manifest; expanded-summoning.ideal-roster-publishes-nothing asserts every Planned row has no live creature and the visible surface stays at 693."
+      "isolationProof": "expanded-summoning.ideal-roster-isolation asserts no publication, registration, bootstrap, or menu source references the manifest; expanded-summoning.ideal-roster-publishes-nothing asserts every Planned row has no live creature and the visible surface stays at 693.",
+      "coverageModel": {
+        "derivedFrom": "ExpandedSummoningCoveragePolicy, over the union of ExpandedSummoningCatalog and SummonNativeExpansionCatalog",
+        "whyDerived": "An earlier revision stored coverage as literal data filled from the project-owned catalog alone. That marked the eleven retained native-wrapper creatures as though no identity existed, and the tests read the same single catalog so they encoded the omission instead of catching it.",
+        "unitIdentity": {
+          "projectOwned": 67,
+          "retainedNativeWrapper": 11,
+          "noneYet": 67
+        },
+        "representedCreatures": 78,
+        "publishedSomewhere": 77,
+        "registeredButHidden": 1,
+        "familyPlacement": {
+          "summonMonster": {
+            "Published": 72,
+            "Registered": 1,
+            "Planned": 47,
+            "NotOffered": 25
+          },
+          "summonNaturesAlly": {
+            "Published": 60,
+            "Registered": 1,
+            "Planned": 49,
+            "NotOffered": 35
+          }
+        },
+        "newIdentitiesRequired": 67,
+        "regressionCase": "Frost Giant: unit exists as a retained native wrapper and is Published at Summon Monster VIII, while its Nature's Ally VII placement is Planned. Neither half may be collapsed into the other."
+      }
     },
     "menuScalabilityGate": {
       "aggregateIsNotOneMenu": "1,232 is spread across eighteen parent spells.",
       "worstSingleParentNow": "Summon Monster VIII and IX: 69 visible choices",
-      "worstSingleParentProjected": "Summon Monster IX: 124 (120 generated + 4 preserved native wrappers)",
-      "growthFactor": "1.80x on the only axis a player experiences",
+      "worstSingleParentProjected": "Summon Monster IX: 120; Summon Nature's Ally IX: 110",
+      "growthFactor": "1.74x Summon Monster (69 -> 120); 1.90x Nature's Ally (58 -> 110)",
       "rubric": "R1 stays inside the canvas-safe rect; R2 overflow always offers scrolling; R3 the scroll range spans exactly the overflow with no stranded head or tail; R4 growth costs scroll extent and never viewport height; R5 projected scale behaves in the same shape as baseline scale. Fixed before measuring.",
-      "result": "PASS at 1280x720, 1600x900, 1920x1080 and 3440x1440, at every option count from 1 to 200, and at a 154-option stretch probe.",
+      "result": "PASS at 1280x720, 1600x900, 1920x1080 and 3440x1440 across the full option-count grid.",
       "decision": "The shipped bounded presentation already clamps to the canvas-safe rectangle and scrolls, and its geometry is option-count agnostic by construction. The existing UI suffices, so no new presentation solution was implemented. The charter permits one bounded solution only when the existing UI is shown to fail; it did not fail.",
-      "liveMeasurementStatus": "NOT RUN. The deterministic gate is geometry proof, not a substitute for in-game open/reopen timing, scrolling feel, memory behaviour, or screenshots at projected scale. That evidence requires a guarded runtime scenario with a development-only stress fixture and is disclosed as outstanding."
+      "liveMeasurementStatus": "NOT RUN. The deterministic gate is geometry proof, not a substitute for in-game open/reopen timing, scrolling feel, memory behaviour, or screenshots at projected scale. That evidence requires a guarded runtime scenario with a development-only stress fixture and is disclosed as outstanding.",
+      "deduplicationCorrection": "An earlier revision reported 124/112 by adding the tier-9 native wrappers to the 120/110 plan. Those wrapper creatures are roster creatures and were already inside the plan, so the addition double-counted them. One creature is one option whichever catalog supplies its unit.",
+      "gridExecuted": "4 viewports x 200 option counts = 800 evaluations, asserted by count. An earlier revision looped only the first viewport while the evidence claimed the whole grid.",
+      "stressSample": "154 options per parent, labelled a headroom probe rather than a target roster.",
+      "orderingProof": "Projected order is run through the shipped SummonDisplayOrderPolicy with synthetic third-party children: singles then 1d3 then 1d4+1, foreign children preserved at the end, and stable across repeated ordering."
     }
   },
   "sprint2": {
@@ -252,5 +276,24 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Sprint 2 asset implementation: author an original pterosaur mesh skinned to the recorded 72-bone rig (membrane driven by the Feather_1..6 chains), build the deterministic 2018.4.10f1 bundle, implement instance-local binding with an approved native fallback, and qualify live with Eagle/Dire Bat/Roc as donor-sharing negative controls."
+  "nextConcreteAction": "Sprint 2 asset implementation: author an original pterosaur mesh skinned to the recorded 72-bone rig (membrane driven by the Feather_1..6 chains), build the deterministic 2018.4.10f1 bundle, implement instance-local binding with an approved native fallback, and qualify live with Eagle/Dire Bat/Roc as donor-sharing negative controls.",
+  "deploymentReconciliation": {
+    "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
+    "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
+    "intervening": "No save was written after the deployment; the newest save predates it. The only files newer than the deployed DLL were FeatureModules.json written by this mission's own runs.",
+    "restored": true,
+    "restoredFromBackup": "runtime-backups/live-mod/20260923T1250204338674Z",
+    "beforeRestore": {
+      "version": "0.0.136",
+      "dllSha256Prefix": "254295C295EA77FF",
+      "files": 238
+    },
+    "afterRestore": {
+      "version": "0.0.117",
+      "dllSha256Prefix": "FD2FC61C250B1385",
+      "files": 136
+    },
+    "verification": "Post-restore hash equals the pre-run backup hash exactly.",
+    "futureRuns": "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1 snapshots the live tree, runs the scenario, and restores its own snapshot on success, failure and interruption, recording before/after fingerprints to runtime-evidence/expanded-summoning-restoration."
+  }
 }

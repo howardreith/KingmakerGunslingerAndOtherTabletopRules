@@ -120,50 +120,66 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(67, reused, "Every shipped creature must be reused.");
-            Assertions.Equal(78, ExpandedSummoningIdealRosterCatalog.All
-                .Count(value => !shipped.ContainsKey(value.Key)),
-                "The remaining ideal roster requires 78 new identities.");
+            Assertions.Equal(67, reused,
+                "Every project-owned creature must be reused.");
+
+            // The retained native wrappers are identities too. Counting only
+            // the project-owned catalog here is what hid eleven creatures.
+            foreach (string key in ExpandedSummoningCoveragePolicy.NativeWrapperCreatures)
+            {
+                Assertions.True(ExpandedSummoningIdealRosterCatalog.Find(key) != null,
+                    "A retained native creature must be reused, not re-planned: " + key);
+                Assertions.False(shipped.ContainsKey(key),
+                    "A wrapper creature must not also be project-owned: " + key);
+            }
+
+            Assertions.Equal(67, ExpandedSummoningIdealRosterCatalog.All
+                .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
+                    SummonUnitProvenance.None),
+                "The remaining ideal roster needs 67 new creature identities.");
         }
 
         /// <summary>
-        /// The manifest is a plan, not a publication. A Planned row must have no
-        /// live creature behind it, and anything marked Published must actually
-        /// ship, so the ledger can never overstate what a player can cast.
+        /// The manifest is a plan, not a publication. Coverage is derived from
+        /// the union of both shipped catalogs, so a creature that ships only as
+        /// a retained native wrapper counts as represented and a creature with
+        /// no live option anywhere counts as planned.
         /// </summary>
         internal static void PlannedRowsPublishNothing()
         {
-            var shipped = new HashSet<string>(
-                ExpandedSummoningCatalog.All.Select(value => value.Key),
-                StringComparer.Ordinal);
-
             foreach (IdealRosterEntry entry in ExpandedSummoningIdealRosterCatalog.All)
             {
-                if (entry.Coverage == IdealRosterCoverage.Planned)
+                SummonUnitProvenance provenance =
+                    ExpandedSummoningCoveragePolicy.Provenance(entry.Key);
+                bool anyPlacementLive =
+                    ExpandedSummoningCoveragePolicy.Coverage(entry.Key,
+                        SummonFamily.Monster, entry.MonsterTier) >=
+                        SummonFamilyCoverage.Registered ||
+                    ExpandedSummoningCoveragePolicy.Coverage(entry.Key,
+                        SummonFamily.NaturesAlly, entry.NaturesAllyTier) >=
+                        SummonFamilyCoverage.Registered;
+
+                if (provenance == SummonUnitProvenance.None)
                 {
-                    Assertions.False(shipped.Contains(entry.Key),
-                        "A Planned row must not have a live creature: " + entry.Key);
+                    Assertions.False(anyPlacementLive,
+                        "A creature with no unit identity cannot own a live placement: " +
+                        entry.Key);
                 }
                 else
                 {
-                    Assertions.True(shipped.Contains(entry.Key),
-                        "A row past Planned must name a shipped creature: " + entry.Key);
+                    Assertions.True(anyPlacementLive,
+                        "A represented creature must own at least one live placement: " +
+                        entry.Key);
                 }
-
-                // Nothing in this mission may claim verification or acceptance.
-                Assertions.True(entry.Coverage <= IdealRosterCoverage.Published,
-                    "No creature may be marked verified or accepted yet: " + entry.Key);
             }
 
-            Assertions.Equal(78, ExpandedSummoningIdealRosterCatalog
-                .CoverageCount(IdealRosterCoverage.Planned),
-                "Planned creature count changed.");
-            Assertions.Equal(1, ExpandedSummoningIdealRosterCatalog
-                .CoverageCount(IdealRosterCoverage.Registered),
-                "Dire Bat is the only registered-but-unpublished identity.");
-            Assertions.Equal(66, ExpandedSummoningIdealRosterCatalog
-                .CoverageCount(IdealRosterCoverage.Published),
-                "Published creature count changed.");
+            Assertions.Equal(67, ExpandedSummoningIdealRosterCatalog.All.Count(
+                    value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
+                        SummonUnitProvenance.None),
+                "67 ideal-roster creatures have no unit identity yet.");
+            Assertions.Equal(78,
+                ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
+                "78 creatures already own a unit identity.");
 
             // The live player-visible surface must be untouched by Sprint 1.
             Assertions.Equal(693,

@@ -107,6 +107,7 @@
     <Compile Include="Summoning\SummonFamily.cs" />
     <Compile Include="Summoning\ExpandedSummoningBaselineInventory.cs" />
     <Compile Include="Summoning\ExpandedSummoningIdealRosterCatalog.cs" />
+    <Compile Include="Summoning\ExpandedSummoningCoveragePolicy.cs" />
     <Compile Include="Summoning\SummonMultiplicity.cs" />
     <Compile Include="Summoning\SummonTemplatePolicy.cs" />
     <Compile Include="Summoning\SummonCreatureSpec.cs" />

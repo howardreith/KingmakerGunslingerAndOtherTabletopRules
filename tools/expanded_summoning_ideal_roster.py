@@ -18,13 +18,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdealRosterCatalog.cs"
 SHIPPED = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
+WRAPPERS = ROOT / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs"
 ROSTER_DOC = ROOT / "planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md"
 TRACE_DOC = ROOT / "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md"
 
 ENTRY = re.compile(
     r'R\("([^"]+)","([^"]+)",(null|\d+),(null|\d+),(null|\d+),'
     r'IdealRosterPriority\.(\w+),IdealRosterEffort\.(\w+),'
-    r'IdealRosterCoverage\.(\w+),(true|false),"([^"]*)"\)')
+    r'(true|false),"([^"]*)"\)')
+# Wrapper factories are always called at the start of an indented line.
+WRAPPER_SM = re.compile(r'^\s*N\(\s*(\d)\s*,\s*"([^"]+)"', re.M)
+WRAPPER_SNA = re.compile(r'^\s*A\(\s*(\d)\s*,\s*"([^"]+)"', re.M)
 SHIPPED_ENTRY = re.compile(r'C\("([^"]+)",')
 
 # Charter section 5.1. Phase, name and roster weight per sprint; the charter
@@ -95,13 +99,13 @@ ELEMENTAL_SPRINTS = {42, 43, 44}
 
 class Entry:
     __slots__ = ("key", "name", "sm", "sna", "sprint", "priority", "effort",
-                 "coverage", "baseline", "package")
+                 "baseline", "package")
 
     def __init__(self, m):
         def num(v):
             return None if v == "null" else int(v)
         (self.key, self.name, sm, sna, sprint, self.priority, self.effort,
-         self.coverage, baseline, self.package) = m.groups()
+         baseline, self.package) = m.groups()
         self.sm, self.sna, self.sprint = num(sm), num(sna), num(sprint)
         self.baseline = baseline == "true"
 
@@ -168,7 +172,7 @@ def family_table(rows, label):
     return out
 
 
-def roster_doc(entries, d, shipped):
+def roster_doc(entries, d, shipped, cov):
     lines = [
         "# Expanded Summoning ideal roster manifest",
         "",
@@ -204,42 +208,58 @@ def roster_doc(entries, d, shipped):
     lines += family_table(d["sm_rows"], "Summon Monster")
     lines += family_table(d["sna_rows"], "Summon Nature's Ally")
 
+    project = cov["project"]
+    wrapper_only = cov["wrapper_only"]
+    unrepresented = cov["unrepresented"]
+    fam_counts = cov["fam_counts"]
+    published_somewhere = cov["published_somewhere"]
     lines += [
         "## Coverage ledger",
         "",
-        "| State | Creatures | Meaning |",
+        "Coverage is derived from the union of the shipped catalogs, never",
+        "hand-maintained. A creature that ships only as a retained native",
+        "wrapper counts as represented; an earlier revision consulted only the",
+        "project-owned catalog and so hid eleven of them.",
+        "",
+        "| Unit identity | Creatures | Meaning |",
+        "|---|---|---|",
+        f"| Project-owned | {len(project)} | A summon-safe unit in ExpandedSummoningCatalog |",
+        f"| Retained native wrapper | {len(wrapper_only)} | A native unit exposed through a preserved wrapper |",
+        f"| None yet | {unrepresented} | In the ideal roster; no unit identity exists |",
+        "",
+        "| Family placement | Summon Monster | Nature's Ally |",
         "|---|---|---|",
     ]
-    order = ["Planned", "IdentityReserved", "Registered", "Published",
-             "TechnicallyVerified", "OwnerAccepted"]
-    meaning = {
-        "Planned": "In the roster; no identity exists yet",
-        "IdentityReserved": "GUID reserved append-only; nothing registered",
-        "Registered": "Registered for save safety; withheld from menus",
-        "Published": "Visible in at least one legal placement",
-        "TechnicallyVerified": "Meets the charter Definition of Done under test",
-        "OwnerAccepted": "Accepted by the owner in play; never self-declared",
-    }
-    for state in order:
-        n = sum(1 for e in entries if e.coverage == state)
-        lines.append(f"| {state} | {n} | {meaning[state]} |")
+    for state in ("Published", "Registered", "Planned", "NotOffered"):
+        lines.append(f"| {state} | {fam_counts['sm'][state]} | {fam_counts['sna'][state]} |")
     lines += [
         "",
-        f"Identity reuse: {len(shipped)} shipped creatures are reused in place "
-        f"(charter decision D-01, one creature one identity); "
-        f"{d['unique'] - len(shipped)} new identities remain to be allocated.",
+        f"Represented today: **{len(project) + len(wrapper_only)}** creatures "
+        f"({published_somewhere} published somewhere, "
+        f"{len(project) + len(wrapper_only) - published_somewhere} registered but hidden).",
+        "",
+        "Frost Giant is the case that makes the split necessary: its unit exists "
+        "and is published at Summon Monster VIII through a retained wrapper, "
+        "while its Nature's Ally VII placement is still only planned.",
+    ]
+    lines += [
+        "",
+        f"Identity reuse: {len(project) + len(wrapper_only)} existing creature "
+        f"identities are reused in place (charter decision D-01, one creature "
+        f"one identity); {unrepresented} new identities remain to be allocated.",
         "",
         "## Creatures",
         "",
-        "| Creature | SM | SNA | Sprint | Priority | Effort | Coverage | Asset package |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Creature | SM | SNA | Sprint | Priority | Effort | Unit identity | SM cover | SNA cover | Asset package |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for e in sorted(entries, key=lambda x: x.key):
         lines.append(
             f"| {e.name} | {e.sm or '-'} | {e.sna or '-'} | "
             f"{('S%d' % e.sprint) if e.sprint is not None else 'complete'} | "
             f"{e.priority} | {e.effort if e.effort != 'None' else '-'} | "
-            f"{e.coverage} | {e.package} |")
+            f"{cov['identity'][e.key]} | {cov['states'][e.key]['sm']} | "
+            f"{cov['states'][e.key]['sna']} | {e.package} |")
     lines.append("")
     return "\n".join(lines)
 
@@ -293,6 +313,68 @@ def trace_doc(entries):
     return "\n".join(lines)
 
 
+def canonical(wrapper_key):
+    """PascalCase wrapper key to the canonical kebab creature key."""
+    out = []
+    for i, c in enumerate(wrapper_key):
+        if i and c.isupper():
+            out.append("-")
+        out.append(c.lower())
+    return "".join(out)
+
+
+def coverage(entries, shipped):
+    """Derive coverage from the union of both shipped catalogs."""
+    text = WRAPPERS.read_text(encoding="utf-8")
+    wrap = {"sm": {}, "sna": {}}
+    for tier, key in WRAPPER_SM.findall(text):
+        wrap["sm"].setdefault(canonical(key), set()).add(int(tier))
+    for tier, key in WRAPPER_SNA.findall(text):
+        wrap["sna"].setdefault(canonical(key), set()).add(int(tier))
+    wrapper_keys = set(wrap["sm"]) | set(wrap["sna"])
+    wrapper_only = sorted(wrapper_keys - shipped)
+
+    # Dire Bat is the one registered-but-hidden project-owned identity.
+    hidden = {"dire-bat"}
+    fam_counts = {"sm": {}, "sna": {}}
+    states_by_key = {}
+    published_somewhere = 0
+    for e in entries:
+        states = {}
+        for fam, tier in (("sm", e.sm), ("sna", e.sna)):
+            if tier is None:
+                states[fam] = "NotOffered"
+            elif e.key in shipped:
+                states[fam] = "Registered" if e.key in hidden else "Published"
+            elif e.key in wrap[fam]:
+                states[fam] = "Published"
+            else:
+                states[fam] = "Planned"
+            fam_counts[fam][states[fam]] = fam_counts[fam].get(states[fam], 0) + 1
+        states_by_key[e.key] = states
+        if "Published" in states.values():
+            published_somewhere += 1
+
+    for fam in ("sm", "sna"):
+        for state in ("Published", "Registered", "Planned", "NotOffered"):
+            fam_counts[fam].setdefault(state, 0)
+
+    identity = {}
+    for e in entries:
+        identity[e.key] = ("ProjectOwned" if e.key in shipped
+                           else "NativeWrapper" if e.key in wrapper_keys else "None")
+    return {
+        "identity": identity,
+        "states": states_by_key,
+        "project": sorted(shipped),
+        "wrapper_only": wrapper_only,
+        "unrepresented": sum(1 for e in entries
+                             if e.key not in shipped and e.key not in wrapper_keys),
+        "fam_counts": fam_counts,
+        "published_somewhere": published_somewhere,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true",
@@ -312,7 +394,8 @@ def main():
         print("Shipped creatures absent from the ideal roster:", sorted(missing))
         return 1
 
-    roster, trace = roster_doc(entries, d, shipped), trace_doc(entries)
+    cov = coverage(entries, shipped)
+    roster, trace = roster_doc(entries, d, shipped, cov), trace_doc(entries)
     if args.check:
         stale = [p.name for p, text in ((ROSTER_DOC, roster), (TRACE_DOC, trace))
                  if not p.exists() or p.read_text(encoding="utf-8") != text]
@@ -328,7 +411,8 @@ def main():
           f"SM {d['sm_entries']}/{d['sm_total']}; "
           f"SNA {d['sna_entries']}/{d['sna_total']}; "
           f"total {d['sm_total'] + d['sna_total']} placements; "
-          f"{len(shipped)} identities reused.")
+          f"{len(cov['project'])} project-owned + {len(cov['wrapper_only'])} "
+          f"retained-native identities reused; {cov['unrepresented']} still to allocate.")
     return 0
 
 
