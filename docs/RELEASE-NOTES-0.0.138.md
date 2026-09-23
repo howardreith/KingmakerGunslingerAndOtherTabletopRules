@@ -80,8 +80,8 @@ Optional **Better Vendors** compatibility for magic-weapon progression.
 | Clean Release build and build-output validation | PASS, no warnings |
 | Strict standalone UMM package validation | PASS |
 | Exact Better Vendors 2.0.8 binary identity and contract vs the installed binary | PASS (static) |
-| Guarded `working-save-smoke` on `cca27056`, before the exact-binary gate and write-ahead ledger | PASS, 11 of 11 assertions (see below) |
-| Adapter accepted the live Better Vendors 2.0.8 assembly | PASS (`compatibility.ready`) |
+| Guarded `working-save-smoke` on the final code commit `c9427faa` | PASS, 11 of 11 assertions (see below) |
+| Exact-binary gate accepted the live Better Vendors 2.0.8 assembly | PASS (`compatibility.ready`) |
 | All 50 progression entries registered and every contract check passed in game | PASS (`progression-catalog.ready`, not `degraded`) |
 | Actual stocking and purchase at a known Military rank | NOT RUN, blocks release |
 | Persistence and bought-out stock across a full restart | NOT RUN, blocks release |
@@ -94,20 +94,19 @@ Historical domain checkpoints of 1,251, 1,288 and 1,325 cases remain archived
 under their original releases. The live suite for this candidate has 1,742
 cases.
 
-The guarded run `20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1`
-on `cca27056` loaded `KMG_AUTOMATION_WORKING` through Steam App ID 640820,
+The guarded run `20260923T2036170490182Z-e8ae7b5631174645a40db7ccb7b89a38`
+on `c9427faa` loaded `KMG_AUTOMATION_WORKING` through Steam App ID 640820,
 with Better Vendors 2.0.8 among the 16 loaded mods, and made no save-writing
-call. Its UMM log showed the live assembly's file SHA-256 and MVID matching the
-approved values. The later exact-binary gate relies on exactly those two
-values. The deployed artifact was:
+call. The exact-binary gate accepted the live assembly. The deployed artifact
+was:
 
-- package `d9ba82339c52490406273f56b05824a63b9013a60b3e8a21bedaa5a973fa84e7`;
-- DLL `34fe16ad05527cba5caad37a4d7ce7727d0b1553ec38511675017c6d2776d4fe`;
-- MVID `c7ccdfcf-42a8-4b82-a241-bcc3a0310ac8`, with commit `cca27056`
+- package `20132261467f0d93ec501fda9ca0d495917ac8ce60ca99744935f59d5e72820f`;
+- DLL `461183e8f4f193dbdba96068ab97a502ea7846dc2191f88b33ceb8861b81adca`;
+- MVID `2d98ffc8-6c2b-4c06-bd3e-31d81f820211`, with commit `c9427faa`
   embedded.
 
-An earlier run on `060df1d4` also passed. After each run, the prior
-installation was restored byte-for-byte.
+Earlier runs on `060df1d4` and `cca27056` also passed. After each run, the
+prior installation was restored byte-for-byte.
 
 The domain suite models scheduling, planning and bookkeeping with a
 dictionary shop and an in-memory ledger. It does not serialize saves, drive the
