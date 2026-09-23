@@ -103,8 +103,36 @@
   },
   "sprint1": {
     "name": "Roster Manifest v2 and Menu Scalability Gate",
-    "technicalStatus": "IN-PROGRESS",
-    "ownerAcceptance": "PENDING"
+    "technicalStatus": "COMPLETE-EXCEPT-LIVE-MEASUREMENT",
+    "ownerAcceptance": "PENDING",
+    "productionBehaviorChanged": false,
+    "manifest": {
+      "artifact": "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdealRosterCatalog.cs",
+      "generatedDocs": [
+        "planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md",
+        "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md"
+      ],
+      "generator": "tools/expanded_summoning_ideal_roster.py (--check verifies the docs are current)",
+      "uniqueCreatures": 145,
+      "summonMonsterBaseEntries": 120,
+      "summonNaturesAllyBaseEntries": 110,
+      "projectedPlacements": { "summonMonster": 624, "summonNaturesAlly": 608, "total": 1232 },
+      "itemizedDiffAgainstCharter": "zero on every published figure (145/95/50/120/110/1232)",
+      "coverageStates": { "Planned": 78, "IdentityReserved": 0, "Registered": 1, "Published": 66, "TechnicallyVerified": 0, "OwnerAccepted": 0 },
+      "newGuidsAllocated": 0,
+      "productionCreaturesPublished": 0,
+      "isolationProof": "expanded-summoning.ideal-roster-isolation asserts no publication, registration, bootstrap, or menu source references the manifest; expanded-summoning.ideal-roster-publishes-nothing asserts every Planned row has no live creature and the visible surface stays at 693."
+    },
+    "menuScalabilityGate": {
+      "aggregateIsNotOneMenu": "1,232 is spread across eighteen parent spells.",
+      "worstSingleParentNow": "Summon Monster VIII and IX: 69 visible choices",
+      "worstSingleParentProjected": "Summon Monster IX: 124 (120 generated + 4 preserved native wrappers)",
+      "growthFactor": "1.80x on the only axis a player experiences",
+      "rubric": "R1 stays inside the canvas-safe rect; R2 overflow always offers scrolling; R3 the scroll range spans exactly the overflow with no stranded head or tail; R4 growth costs scroll extent and never viewport height; R5 projected scale behaves in the same shape as baseline scale. Fixed before measuring.",
+      "result": "PASS at 1280x720, 1600x900, 1920x1080 and 3440x1440, at every option count from 1 to 200, and at a 154-option stretch probe.",
+      "decision": "The shipped bounded presentation already clamps to the canvas-safe rectangle and scrolls, and its geometry is option-count agnostic by construction. The existing UI suffices, so no new presentation solution was implemented. The charter permits one bounded solution only when the existing UI is shown to fail; it did not fail.",
+      "liveMeasurementStatus": "NOT RUN. The deterministic gate is geometry proof, not a substitute for in-game open/reopen timing, scrolling feel, memory behaviour, or screenshots at projected scale. That evidence requires a guarded runtime scenario with a development-only stress fixture and is disclosed as outstanding."
+    }
   },
   "sprint2": {
     "name": "Skinned-Creature Asset Pipeline and Pteranodon Vertical Slice",

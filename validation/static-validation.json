@@ -1641,7 +1641,7 @@
   "magicCircleFollowup": {
     "baselineCommit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
     "branch": "codex/magic-circle-followup-polish",
-    "deterministicTestCount": 1707,
+    "deterministicTestCount": 1717,
     "publicReleaseAuthorized": false,
     "nativeQualification": "PASS: candidate 11; seven guarded scenarios, 428 assertions; exact fixture cleanup and fresh absence; normal-play restoration verified",
     "nativeEvidence": "reports/magic-circle/FOLLOWUP-QUALIFICATION.json",
@@ -1658,7 +1658,7 @@
   "rapidReloadProficiencyGate": {
     "baselineCommit": "0e62a78e1238a2d46e447bb307ee1e83f93ed178",
     "branch": "codex/rapid-reload-proficiency-gate",
-    "deterministicTestCount": 1707,
+    "deterministicTestCount": 1717,
     "publicReleaseAuthorized": true,
     "liveTestCountDelta": "1683 -> 1702; four Rapid Reload gate policy cases plus fifteen scenario evidence and visit-cleanup cases added to the shared suite",
     "parentPrerequisiteGrouping": "Prerequisite.GroupType.Any",
