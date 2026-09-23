@@ -16646,14 +16646,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // only exist once a view attaches to a unit, so this is the one
                 // place they can be observed without a second lifecycle.
                 Assertion("expanded-summoning-pteranodon-attached-contract",
-                    "a live Pteranodon view reports its animator, controller, clips, events and anchors",
+                    "a live Pteranodon reports its animation ActionSet, clips, events, anchors and a 72-bone bind-pose rig",
                     _pteranodonAttachedContract ?? "<not captured>",
                     _pteranodonAttachedContract != null &&
-                        _pteranodonAttachedContract.IndexOf("controller=<null>",
-                            StringComparison.Ordinal) < 0 &&
                         _pteranodonAttachedContract.IndexOf("capture-failed",
-                            StringComparison.Ordinal) < 0,
-                    "UnitEntityView.Animator on the summoned Pteranodon, plus its rig dump"),
+                            StringComparison.Ordinal) < 0 &&
+                        _pteranodonAttachedContract.IndexOf("animationManager=<null>",
+                            StringComparison.Ordinal) < 0 &&
+                        _pteranodonAttachedContract.IndexOf("actionCount=0",
+                            StringComparison.Ordinal) < 0 &&
+                        _pteranodonAttachedContract.IndexOf("boneCount=72",
+                            StringComparison.Ordinal) >= 0,
+                    "UnitAnimationManager.ActionSet on the summoned Pteranodon, plus its bind-pose rig dump"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,

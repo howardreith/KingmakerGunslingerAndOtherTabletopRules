@@ -55,44 +55,66 @@ namespace KingmakerGunslinger.RuntimeTesting
             var rigLines = new List<string>();
             if (animator != null)
             {
-                RuntimeAnimatorController controller =
-                    animator.runtimeAnimatorController;
-                text.Append(";controller=")
-                    .Append(controller == null ? "<null>" : controller.name);
                 text.Append(";avatar=").Append(animator.avatar == null ? "<null>"
                     : animator.avatar.name + (animator.avatar.isHuman
                         ? "/human" : "/generic"));
+                // Recorded for completeness, and expected to be null: Kingmaker
+                // does not drive creatures through Mecanim.
+                text.Append(";mecanimController=")
+                    .Append(animator.runtimeAnimatorController == null
+                        ? "<null>" : animator.runtimeAnimatorController.name);
+            }
 
-                AnimationClip[] clips = controller == null ||
-                        controller.animationClips == null
-                    ? new AnimationClip[0]
-                    : controller.animationClips.Where(value => value != null)
-                        .ToArray();
-                text.Append(";clipCount=").Append(Number(clips.Length));
-                text.Append(";clips=").Append(string.Join(",",
-                    clips.Select(value => value.name)
-                        .Distinct(StringComparer.Ordinal)
-                        .OrderBy(value => value, StringComparer.Ordinal)
-                        .ToArray()));
+            // Kingmaker animates units through a Playables-based system, not a
+            // RuntimeAnimatorController: UnitAnimationManager owns an ActionSet
+            // of UnitAnimationAction objects, each holding its own clips, and
+            // drives them through m_LocoMotionHandle and friends. Three earlier
+            // revisions of this capture asserted a Mecanim controller and failed
+            // on a detached prefab, then on an attached view, then on a live
+            // summon - the assumption was wrong, not the game. Read the real
+            // source instead, reflectively, so no assumption about the action
+            // type is baked in either.
+            object animationManager = ReadField(view, "m_AnimatorManager");
+            text.Append(";animationManager=")
+                .Append(animationManager == null || animationManager.Equals(null)
+                    ? "<null>" : animationManager.GetType().Name);
 
-                var events = new List<string>();
-                foreach (AnimationClip clip in clips)
+            var actionNames = new List<string>();
+            var clipNames = new List<string>();
+            var events = new List<string>();
+            if (animationManager != null && !animationManager.Equals(null))
+            {
+                var actionSet = ReadMemberOrNull(animationManager, "ActionSet")
+                    as System.Collections.IEnumerable;
+                if (actionSet != null)
                 {
-                    AnimationEvent[] clipEvents = clip.events;
-                    if (clipEvents == null) continue;
-                    foreach (AnimationEvent clipEvent in clipEvents)
+                    foreach (object action in actionSet)
                     {
-                        events.Add(clip.name + "@" + clipEvent.time.ToString(
-                            "0.###", CultureInfo.InvariantCulture) + ":" +
-                            clipEvent.functionName);
+                        if (action == null) continue;
+                        var behaviour = action as UnityEngine.Object;
+                        actionNames.Add(behaviour == null
+                            ? action.GetType().Name
+                            : behaviour.name + ":" + action.GetType().Name);
+                        CollectAnimationClips(action, clipNames, events);
                     }
                 }
-
-                text.Append(";eventCount=").Append(Number(events.Count));
-                text.Append(";events=").Append(string.Join(",",
-                    events.OrderBy(value => value, StringComparer.Ordinal)
-                        .Take(80).ToArray()));
             }
+
+            text.Append(";actionCount=").Append(Number(actionNames.Count));
+            text.Append(";actions=").Append(string.Join(",",
+                actionNames.Distinct(StringComparer.Ordinal)
+                    .OrderBy(value => value, StringComparer.Ordinal)
+                    .Take(60).ToArray()));
+            text.Append(";clipCount=").Append(Number(clipNames.Count));
+            text.Append(";clips=").Append(string.Join(",",
+                clipNames.Distinct(StringComparer.Ordinal)
+                    .OrderBy(value => value, StringComparer.Ordinal)
+                    .Take(60).ToArray()));
+            text.Append(";eventCount=").Append(Number(events.Count));
+            text.Append(";events=").Append(string.Join(",",
+                events.Distinct(StringComparer.Ordinal)
+                    .OrderBy(value => value, StringComparer.Ordinal)
+                    .Take(80).ToArray()));
 
             // Effect and selection anchors the replacement must keep.
             object snapMap = ReadField(view, "m_ParticleSnapMap");
@@ -130,6 +152,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rigLines.Add("  \"renderer\": \"" + renderer.name + "\",");
                 rigLines.Add("  \"rootBone\": \"" + (renderer.rootBone == null
                     ? string.Empty : renderer.rootBone.name) + "\",");
+                // The bind pose is the frame the original mesh's vertices were
+                // authored in, and unlike the live local transforms it does not
+                // move with animation. bindposes[i] is
+                //   bone[i].worldToLocalMatrix * renderer.localToWorldMatrix
+                // at bind time, so its inverse gives the bone's bind transform
+                // in renderer space. A replacement mesh must be authored here,
+                // not against whatever pose the creature happened to be holding.
+                Matrix4x4[] bindPoses = renderer.sharedMesh.bindposes ??
+                    new Matrix4x4[0];
+                rigLines.Add("  \"bindPoseCount\": " + Number(bindPoses.Length) + ",");
                 rigLines.Add("  \"bones\": [");
                 for (int index = 0; index < bones.Length; index++)
                 {
@@ -138,6 +170,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3 localPosition = bone.localPosition;
                     Quaternion localRotation = bone.localRotation;
                     Vector3 localScale = bone.localScale;
+
+                    string bindFields = string.Empty;
+                    if (index < bindPoses.Length)
+                    {
+                        Matrix4x4 bind = bindPoses[index].inverse;
+                        Vector3 bindPosition = bind.MultiplyPoint3x4(Vector3.zero);
+                        Quaternion bindRotation = Quaternion.LookRotation(
+                            bind.GetColumn(2), bind.GetColumn(1));
+                        bindFields = string.Concat(
+                            ", \"bindPosition\": [", Decimal(bindPosition.x), ", ",
+                            Decimal(bindPosition.y), ", ", Decimal(bindPosition.z), "]",
+                            ", \"bindRotation\": [", Decimal(bindRotation.x), ", ",
+                            Decimal(bindRotation.y), ", ", Decimal(bindRotation.z),
+                            ", ", Decimal(bindRotation.w), "]");
+                    }
+
                     rigLines.Add(string.Concat(
                         "    { \"index\": ", Number(index),
                         ", \"name\": \"", bone.name, "\"",
@@ -150,6 +198,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ", ", Decimal(localRotation.w), "]",
                         ", \"localScale\": [", Decimal(localScale.x), ", ",
                         Decimal(localScale.y), ", ", Decimal(localScale.z), "]",
+                        bindFields,
                         " }", index == bones.Length - 1 ? string.Empty : ","));
                 }
 
@@ -169,6 +218,92 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             return text.ToString();
+        }
+
+        /// <summary>
+        /// Reads a property or field by name without assuming the declaring
+        /// type, so the capture survives a shape it did not anticipate.
+        /// </summary>
+        private static object ReadMemberOrNull(object instance, string name)
+        {
+            if (instance == null) return null;
+            for (Type type = instance.GetType(); type != null; type = type.BaseType)
+            {
+                System.Reflection.PropertyInfo property = type.GetProperty(name,
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.DeclaredOnly);
+                if (property != null && property.CanRead)
+                {
+                    try { return property.GetValue(instance, null); }
+                    catch (Exception) { return null; }
+                }
+
+                System.Reflection.FieldInfo field = type.GetField(name,
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.DeclaredOnly);
+                if (field != null)
+                {
+                    try { return field.GetValue(instance); }
+                    catch (Exception) { return null; }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Pulls every AnimationClip reachable from one animation action, and
+        /// the frames its events fire on. Actions expose their clips under
+        /// several member names across the hierarchy, so this looks for clips
+        /// rather than for a particular shape.
+        /// </summary>
+        private static void CollectAnimationClips(object action,
+            List<string> clipNames, List<string> events)
+        {
+            var seen = new List<AnimationClip>();
+            for (Type type = action.GetType(); type != null; type = type.BaseType)
+            {
+                foreach (System.Reflection.FieldInfo field in type.GetFields(
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.DeclaredOnly))
+                {
+                    object value;
+                    try { value = field.GetValue(action); }
+                    catch (Exception) { continue; }
+                    if (value == null) continue;
+
+                    var clip = value as AnimationClip;
+                    if (clip != null) { seen.Add(clip); continue; }
+
+                    var many = value as System.Collections.IEnumerable;
+                    if (many == null || value is string) continue;
+                    foreach (object item in many)
+                    {
+                        var nested = item as AnimationClip;
+                        if (nested != null) seen.Add(nested);
+                    }
+                }
+            }
+
+            foreach (AnimationClip clip in seen)
+            {
+                if (clip == null) continue;
+                clipNames.Add(clip.name);
+                AnimationEvent[] clipEvents = clip.events;
+                if (clipEvents == null) continue;
+                foreach (AnimationEvent clipEvent in clipEvents)
+                {
+                    events.Add(clip.name + "@" + clipEvent.time.ToString(
+                        "0.###", CultureInfo.InvariantCulture) + ":" +
+                        clipEvent.functionName);
+                }
+            }
         }
 
         private static string Number(int value)
