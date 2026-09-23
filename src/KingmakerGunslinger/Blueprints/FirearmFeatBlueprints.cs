@@ -323,6 +323,13 @@ namespace KingmakerGunslinger.Blueprints
         {
             BlueprintFeatureSelection selection = CreateSelection(name,
                 description, choices);
+            // Group/Group2 only name the category this selection offers (the
+            // native GetGroup phase label). The parent's own classification is
+            // the inherited BlueprintFeature.Groups that HasGroup, the feat list
+            // and compatibility catalog scans read, and it defaults to empty, so
+            // classify the published parent like its official children and every
+            // native combat feat.
+            selection.Groups = new[] { FeatureGroup.Feat, FeatureGroup.CombatFeat };
             // The parent answers only "can this character qualify for any
             // firearm Rapid Reload choice?"; every child keeps its own
             // kind-exact check. One prerequisite per currently published

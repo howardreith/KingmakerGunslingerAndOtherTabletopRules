@@ -921,6 +921,122 @@ namespace KingmakerGunslinger.DomainTests
                 "An injected failure and a real teardown failure are indistinguishable.");
         }
 
+        internal static JObject Classification()
+        {
+            return new JObject {
+                ["parentHasFeatGroup"] = true,
+                ["parentHasCombatFeatGroup"] = true,
+                ["childrenHaveFeatGroup"] = Bools(true, true, true),
+                ["childrenHaveCombatFeatGroup"] = Bools(true, true, true),
+                ["nativeReferenceHasFeatGroup"] = true,
+                ["nativeReferenceHasCombatFeatGroup"] = true,
+                ["parentHideInUI"] = false,
+                ["parentHideNotAvailableInUI"] = false };
+        }
+
+        internal static JObject FighterBonusSlot()
+        {
+            return new JObject {
+                ["case"] = "J.gunslinger-then-fighter-bonus-feat",
+                ["buildCompleteBeforeConfirmation"] = true,
+                ["buildConfirmationApplied"] = true,
+                ["builtGunslingerLevel"] = 1,
+                ["reservation"] = Reservation("FighterFeatSelection"),
+                ["slotPresent"] = true,
+                ["fixture"] = Fixture(1, 0, 0),
+                ["previewFighterLevel"] = 1,
+                ["ordinaryFeatSlotOpen"] = false,
+                ["parentOffered"] = true,
+                ["parentCanSelect"] = true,
+                ["parentSelected"] = true,
+                ["childOffered"] = true,
+                ["childCanSelect"] = true,
+                ["childSelected"] = true,
+                ["parentHeldByFighterSlot"] = true,
+                ["parentHeldByOrdinarySlot"] = false,
+                ["completeBeforeConfirmation"] = true,
+                ["confirmationApplied"] = true,
+                ["confirmedFighterLevel"] = 1,
+                ["acquiredChild"] = true };
+        }
+
+        // The original defect: a parent whose own Groups are empty is still in
+        // both catalogs, so only a classification check can catch it.
+        internal static void CombatFeatClassificationAndFighterSlotAreScored()
+        {
+            var accepted = new List<string>();
+            Assertions.True(RapidReloadGateEvidenceRules.EvaluateClassification(
+                    Classification(), accepted) && accepted.Count == 0,
+                "Complete classification evidence was rejected: " +
+                    string.Join("|", accepted.ToArray()));
+            foreach (var mutation in new[] {
+                new KeyValuePair<string, string>("parentHasCombatFeatGroup",
+                    "parent-not-a-combat-feat"),
+                new KeyValuePair<string, string>("parentHasFeatGroup",
+                    "parent-not-a-feat"),
+                new KeyValuePair<string, string>("nativeReferenceHasCombatFeatGroup",
+                    "native-reference-not-a-combat-feat") })
+            {
+                JObject row = Classification();
+                row[mutation.Key] = false;
+                var failures = new List<string>();
+                Assertions.False(RapidReloadGateEvidenceRules.EvaluateClassification(
+                    row, failures), "Classification passed with " + mutation.Key + "=false.");
+                Assertions.True(failures.Any(value => value.Contains(mutation.Value)),
+                    "Classification did not name " + mutation.Value + ".");
+            }
+            JObject childless = Classification();
+            childless["childrenHaveCombatFeatGroup"] = Bools(true, false, true);
+            Assertions.False(RapidReloadGateEvidenceRules.EvaluateClassification(
+                childless, new List<string>()), "A child lost its combat-feat group.");
+            JObject hidden = Classification();
+            hidden["parentHideNotAvailableInUI"] = true;
+            Assertions.False(RapidReloadGateEvidenceRules.EvaluateClassification(
+                hidden, new List<string>()), "A hidden parent was accepted.");
+            JObject missing = Classification();
+            missing.Remove("parentHasCombatFeatGroup");
+            Assertions.False(RapidReloadGateEvidenceRules.EvaluateClassification(
+                missing, new List<string>()), "Missing classification evidence passed.");
+
+            accepted.Clear();
+            Assertions.True(RapidReloadGateEvidenceRules.EvaluateFighterBonusSlot(
+                    FighterBonusSlot(), accepted) && accepted.Count == 0,
+                "Complete Fighter bonus-slot evidence was rejected: " +
+                    string.Join("|", accepted.ToArray()));
+            foreach (var mutation in new[] {
+                new KeyValuePair<string, JToken>("parentOffered", false),
+                new KeyValuePair<string, JToken>("parentCanSelect", false),
+                new KeyValuePair<string, JToken>("childSelected", false),
+                new KeyValuePair<string, JToken>("ordinaryFeatSlotOpen", true),
+                new KeyValuePair<string, JToken>("parentHeldByFighterSlot", false),
+                new KeyValuePair<string, JToken>("parentHeldByOrdinarySlot", true),
+                new KeyValuePair<string, JToken>("builtGunslingerLevel", 0),
+                new KeyValuePair<string, JToken>("previewFighterLevel", 0),
+                new KeyValuePair<string, JToken>("confirmedFighterLevel", 0),
+                new KeyValuePair<string, JToken>("completeBeforeConfirmation", false),
+                new KeyValuePair<string, JToken>("buildConfirmationApplied", false),
+                new KeyValuePair<string, JToken>("acquiredChild", false),
+                new KeyValuePair<string, JToken>("fixture", Fixture(0, 0, 0)),
+                new KeyValuePair<string, JToken>("cleanupError", "cancel failed") })
+            {
+                JObject row = FighterBonusSlot();
+                row[mutation.Key] = mutation.Value;
+                var failures = new List<string>();
+                Assertions.False(RapidReloadGateEvidenceRules.EvaluateFighterBonusSlot(
+                    row, failures), "Fighter bonus-slot evidence passed with " +
+                    mutation.Key + "=" + mutation.Value + ".");
+                Assertions.True(failures.Count > 0,
+                    "Fighter bonus-slot rejection had no diagnostic: " + mutation.Key);
+            }
+            foreach (string key in RapidReloadGateEvidenceRules.FighterBonusSlotKeys)
+            {
+                JObject row = FighterBonusSlot();
+                row.Remove(key);
+                Assertions.False(RapidReloadGateEvidenceRules.EvaluateFighterBonusSlot(
+                    row, new List<string>()), "Fighter bonus-slot passed without " + key);
+            }
+        }
+
         internal static void ScenarioUsesTheNativeOperationsItClaims()
         {
             string root = Environment.CurrentDirectory;
@@ -970,7 +1086,19 @@ namespace KingmakerGunslinger.DomainTests
                 "if (cancel == null) controller.Cancel(); else cancel(controller);",
                 "value => { throw injectedError; }",
                 "injection.real-teardown",
-                "injectedControllerIntactAfterBoundary"
+                "injectedControllerIntactAfterBoundary",
+                // Combat-feat classification through the native call, and the
+                // real Fighter bonus slot fed by its own choice generation.
+                ".EvaluateClassification(classification, classificationFailures)",
+                "ctx.Parent.HasGroup(FeatureGroup.CombatFeat)",
+                "BodyguardFeatBlueprints.CombatReflexesGuid",
+                ".EvaluateFighterBonusSlot(fighterBonus,",
+                "IFeatureSelectionItem parentItem = FindItem(slot.Selection,",
+                "\"B.combat-one-handed-refuses-musket\", ctx.FighterFeats,",
+                "\"B.combat-two-handed-refuses-pistol\", ctx.FighterFeats,",
+                "\"D.combat-one-handed-pistol\"",
+                "\"E.combat-two-handed-musket\"",
+                "const int expectedFlowRows = 19;"
             })
                 Assertions.True(scenario.Contains(token),
                     "The Rapid Reload gate scenario lost a required native step: " + token);

@@ -33,6 +33,51 @@ namespace KingmakerGunslinger.DomainTests
                 "Rapid Reload exact-once publication is not fail-closed.");
         }
 
+        // Group/Group2 only name what a selection offers; the published Rapid
+        // Reload parent is classified by its inherited BlueprintFeature.Groups,
+        // which the engine leaves empty unless it is assigned.
+        internal static void RapidReloadParentIsACombatFeat()
+        {
+            string source = Read("src", "KingmakerGunslinger", "Blueprints",
+                "FirearmFeatBlueprints.cs");
+            string rapid = Body(source,
+                "private static BlueprintFeatureSelection CreateRapidReloadSelection(");
+            string generic = Body(source,
+                "private static BlueprintFeatureSelection CreateSelection(");
+            Assertions.True(rapid.Contains(
+                    "selection.Groups = new[] { FeatureGroup.Feat, FeatureGroup.CombatFeat };"),
+                "The Rapid Reload parent is not classified as a feat and a combat feat.");
+            Assertions.True(rapid.IndexOf("selection.Groups =", StringComparison.Ordinal) ==
+                    rapid.LastIndexOf("selection.Groups =", StringComparison.Ordinal),
+                "The Rapid Reload parent classification is assigned more than once.");
+            Assertions.False(generic.Contains(".Groups ="),
+                "The generic selection helper classifies every firearm selection.");
+            Assertions.True(generic.Contains("selection.Group = FeatureGroup.Feat;") &&
+                generic.Contains("selection.Group2 = FeatureGroup.CombatFeat;"),
+                "The generic selection helper's offered-category groups changed.");
+            Assertions.True(rapid.Contains("RapidReloadPrerequisiteRules.ParentGateKinds") &&
+                rapid.Contains("CreateParentProficiencyPrerequisite("),
+                "The Rapid Reload parent lost its proficiency gate.");
+            Assertions.True(source.Contains(
+                    "new[] { FeatureGroup.Feat, FeatureGroup.CombatFeat } :"),
+                "The official firearm child classification changed.");
+        }
+
+        private static string Body(string source, string signature)
+        {
+            int start = source.IndexOf(signature, StringComparison.Ordinal);
+            Assertions.True(start >= 0, "Missing method: " + signature);
+            int open = source.IndexOf('{', start);
+            int depth = 0;
+            for (int index = open; index < source.Length; index++)
+            {
+                if (source[index] == '{') depth++;
+                else if (source[index] == '}' && --depth == 0)
+                    return source.Substring(open, index - open + 1);
+            }
+            throw new InvalidOperationException("Unbalanced method: " + signature);
+        }
+
         internal static void StableIdentitiesRemainExact()
         {
             JObject manifest = JObject.Parse(Read("blueprints",
