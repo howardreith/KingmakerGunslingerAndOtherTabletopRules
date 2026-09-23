@@ -187,8 +187,42 @@ Coverage:
 
 Status of the classification follow-up: domain coverage passes, including a
 source regression that fails if the parent's classification is removed or
-moved into the generic selection helper. The extended scenario has **not** been
-run in game yet.
+moved into the generic selection helper.
+
+Native run on commit `40710b6f` (evidence
+`runtime-evidence/20260923T1504537002644Z-disposable-rapid-reload-proficiency-gate`,
+loaded 0.0.136, installed DLL SHA-256
+`077169c47c98bc1d78c700d609f7c55061c5bfdb3a82a9a897adacce4e1b0fc0`) reported
+overall **FAIL**. The assertions for this change passed:
+
+- `rapid-reload-combat-feat-classification`, `rapid-reload-catalog-publication`,
+  `rapid-reload-parent-proficiency-prerequisites`, the native prerequisite
+  matrix, Musket Master and duplicates, the class-identity control, visit
+  cleanup, isolation and loaded version all PASS.
+- Every acquisition row passes, including the combat-route rows
+  `D.combat-one-handed-pistol` and `E.combat-two-handed-musket`, and row J.
+  In row J a natively confirmed Gunslinger 1 takes Fighter 1 with no ordinary
+  slot. The Fighter slot's own menu offers Rapid Reload and it can be selected.
+  Pistol is taken, and only the Fighter slot holds the parent. The level
+  confirms natively and grants the child.
+
+Three failures remain. They are pre-existing expectations in the earlier
+harness, recorded for owner review and not changed here:
+
+- B rows (`empty-selection-granted-a-fact`). Every refusal behavior passes, but
+  `parentRankWhileEmpty` is 1. The engine applies a chosen selection's own
+  feature to the preview at once.
+- `B.empty-selection-blocked` (`empty-choice-was-banked`). Native completion
+  refused the empty build. The parent was only banked by the deliberate
+  `ApplyLevelup` probe that bypasses that gate.
+- `pending-class-change`. Every pending-change behavior passes, but final
+  confirmation fails with `skillPointsRemaining = -3`, because the fixture spent
+  Gunslinger skill points before switching the pending class to Fighter.
+
+The first runs found two general fixture defects, now fixed. Independent
+proficiency fixtures were unregistered, so native `ReapplyFeaturesOnLevelUp`
+threw on the rebuilt preview. Disposable character-creation visits also never
+settled race, name, portrait, gender or voice, so no build could complete.
 
 Every claimed successful confirmation records `LevelUpState.IsComplete()`
 immediately before the level is applied, and the harness refuses to apply an
