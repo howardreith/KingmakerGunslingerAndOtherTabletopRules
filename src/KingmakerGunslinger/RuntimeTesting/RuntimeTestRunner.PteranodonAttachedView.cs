@@ -36,6 +36,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _pteranodonAttachedContract;
 
         /// <summary>
+        /// One view-patch outcome per Pteranodon view spawned in a run, in
+        /// cast order. Every one must be an attachment for the vertical slice
+        /// to hold; a fallback here is a fact to report, not a pass.
+        /// </summary>
+        private readonly List<string> _pteranodonVisualOutcomes = new List<string>();
+
+        /// <summary>
         /// Everything Sprint 2 must preserve about a live Pteranodon's view:
         /// the driving animator and its controller, the clips and the frames
         /// their attack and impact events fire on, and the anchors effects and

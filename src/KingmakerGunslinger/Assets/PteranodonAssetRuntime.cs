@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -11,14 +13,15 @@ namespace KingmakerGunslinger.Assets
     /// <summary>
     /// Loads and validates the Pteranodon replacement visual once per process.
     ///
-    /// The asset is mesh data - vertices, normals, triangles, vertex weights,
-    /// and the ordered list of bone NAMES those weights index - not an
-    /// AssetBundle. Three reasons, in order of weight:
+    /// The asset is mesh data - vertices, normals, texture coordinates,
+    /// triangles, vertex weights, and the ordered list of bone NAMES those
+    /// weights index - plus one painted albedo, not an AssetBundle. Three
+    /// reasons, in order of weight:
     ///
     /// - It carries strictly less. A bundle would embed bind poses, a material
-    ///   and import settings; this carries our own geometry plus the donor's
-    ///   bone names, which are the binding contract and are already recorded in
-    ///   the native audit. No donor transform ships.
+    ///   and import settings; this carries our own geometry and painting plus
+    ///   the donor's bone names, which are the binding contract and are already
+    ///   recorded in the native audit. No donor transform ships.
     /// - It depends on no Unity editor licence and no specific editor version.
     ///   That is not hypothetical: the 2018.4.10f1 install that built every
     ///   previous bundle in this repository stopped accepting its licence
@@ -40,6 +43,11 @@ namespace KingmakerGunslinger.Assets
     /// own sharedMesh.bindposes, the frame these vertices were authored in,
     /// makes the binding deterministic.
     ///
+    /// The mesh and the albedo are one asset: the mesh data names the texture
+    /// file, its exact SHA-256 and its header dimensions, and the visual is
+    /// published only when both check out. A mesh without its painting is not
+    /// the reviewed creature, so it is not shown.
+    ///
     /// Every failure path here leaves the donor visual intact, which is the
     /// approved fallback: a Pteranodon that looks like a giant eagle is a
     /// cosmetic shortfall, an invisible or half-bound one is a defect.
@@ -48,7 +56,7 @@ namespace KingmakerGunslinger.Assets
     {
         internal const string MeshDataRelativePath =
             "assets/pteranodon/pteranodon-mesh.json";
-        internal const int SupportedSchemaVersion = 1;
+        internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
         /// The bones the mesh may bind to: six shared, and twenty per side - the
@@ -76,15 +84,38 @@ namespace KingmakerGunslinger.Assets
             "R_Finger_4_1", "R_Finger_4_2"
         };
 
+        /// <summary>
+        /// What the mesh data says about its painting. Checked against the
+        /// bytes on disk before the texture is decoded, so a texture swapped
+        /// after the build is refused rather than shown.
+        /// </summary>
+        internal sealed class AlbedoRequirement
+        {
+            internal string File;
+            internal string Sha256;
+            internal int Width;
+            internal int Height;
+        }
+
         private static readonly object Sync = new object();
         private static Mesh _mesh;
         private static string[] _boneNames;
+        private static Texture2D _albedo;
         private static string _status = "donor-visual:not-configured";
 
         internal static string Status { get { lock (Sync) return _status; } }
 
         internal static bool HasValidatedMesh
         { get { lock (Sync) return _mesh != null && _boneNames != null; } }
+
+        internal static bool HasValidatedVisual
+        {
+            get
+            {
+                lock (Sync)
+                    return _mesh != null && _boneNames != null && _albedo != null;
+            }
+        }
 
         /// <summary>The validated mesh and the bone names its weights index.</summary>
         internal static bool TryGetMembrane(out Mesh mesh, out string[] boneNames)
@@ -95,6 +126,16 @@ namespace KingmakerGunslinger.Assets
                 boneNames = _boneNames == null ? null :
                     (string[])_boneNames.Clone();
                 return mesh != null && boneNames != null;
+            }
+        }
+
+        /// <summary>The validated albedo the mesh's texture coordinates index.</summary>
+        internal static bool TryGetAlbedo(out Texture2D albedo)
+        {
+            lock (Sync)
+            {
+                albedo = _albedo;
+                return albedo != null;
             }
         }
 
@@ -111,10 +152,10 @@ namespace KingmakerGunslinger.Assets
 
             lock (Sync)
             {
-                if (_mesh != null && _boneNames != null)
+                if (_mesh != null && _boneNames != null && _albedo != null)
                 {
                     context.Logger.Info("pteranodon", "mesh.reused",
-                        "The validated Pteranodon mesh is already published.");
+                        "The validated Pteranodon visual is already published.");
                     return;
                 }
             }
@@ -129,28 +170,55 @@ namespace KingmakerGunslinger.Assets
                 return;
             }
 
+            Mesh mesh = null;
+            Texture2D albedo = null;
             try
             {
                 string[] names;
-                Mesh mesh = BuildMesh(File.ReadAllText(path), out names);
+                AlbedoRequirement requirement;
+                mesh = BuildMesh(File.ReadAllText(path), out names, out requirement);
+                string reason;
+                albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                    out reason);
+                if (albedo == null)
+                {
+                    UnityEngine.Object.Destroy(mesh);
+                    lock (Sync)
+                    {
+                        _mesh = null;
+                        _boneNames = null;
+                        _albedo = null;
+                        _status = "donor-visual:" + reason;
+                    }
+                    context.Logger.Warning("pteranodon", "albedo.rejected",
+                        "The Pteranodon albedo was rejected; the donor visual remains active: " +
+                        reason);
+                    return;
+                }
+
                 lock (Sync)
                 {
                     _mesh = mesh;
                     _boneNames = names;
-                    _status = "mesh:published";
+                    _albedo = albedo;
+                    _status = "visual:published";
                 }
 
                 context.Logger.Info("pteranodon", "mesh.published",
-                    "Validated the Pteranodon mesh: vertices=" +
+                    "Validated the Pteranodon visual: vertices=" +
                     mesh.vertexCount + ";triangles=" +
-                    (mesh.triangles.Length / 3) + ";bones=" + names.Length);
+                    (mesh.triangles.Length / 3) + ";bones=" + names.Length +
+                    ";albedo=" + albedo.width + "x" + albedo.height);
             }
             catch (Exception error)
             {
+                if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                if (albedo != null) UnityEngine.Object.Destroy(albedo);
                 lock (Sync)
                 {
                     _mesh = null;
                     _boneNames = null;
+                    _albedo = null;
                     _status = "donor-visual:invalid-mesh-data";
                 }
                 context.Logger.Warning("pteranodon", "mesh.rejected",
@@ -159,12 +227,19 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        internal static Mesh BuildMesh(string json, out string[] boneNames)
+        {
+            AlbedoRequirement ignored;
+            return BuildMesh(json, out boneNames, out ignored);
+        }
+
         /// <summary>
         /// Builds the mesh, validating everything before a donor renderer could
         /// ever be touched. Bind poses are left at identity: the attach path
         /// supplies the donor's own.
         /// </summary>
-        internal static Mesh BuildMesh(string json, out string[] boneNames)
+        internal static Mesh BuildMesh(string json, out string[] boneNames,
+            out AlbedoRequirement albedo)
         {
             JObject document = JObject.Parse(json);
             int schema = (int?)document["schemaVersion"] ?? 0;
@@ -188,6 +263,8 @@ namespace KingmakerGunslinger.Assets
                     "The mesh binds to bones outside the declared set: " +
                     string.Join(", ", unexpected));
 
+            albedo = ReadAlbedoRequirement(document["albedo"] as JObject);
+
             int vertexCount = (int?)document["vertexCount"] ?? 0;
             int triangleCount = (int?)document["triangleCount"] ?? 0;
             if (vertexCount <= 0 || triangleCount <= 0)
@@ -196,7 +273,7 @@ namespace KingmakerGunslinger.Assets
                     triangleCount + " triangles.");
 
             byte[] blob = Convert.FromBase64String((string)document["data"] ?? string.Empty);
-            int expected = vertexCount * 12 + vertexCount * 12 +
+            int expected = vertexCount * 12 + vertexCount * 12 + vertexCount * 8 +
                 triangleCount * 3 * 4 + vertexCount * 4 * 8;
             if (blob.Length != expected)
                 throw new InvalidDataException(
@@ -211,6 +288,23 @@ namespace KingmakerGunslinger.Assets
             var normals = new Vector3[vertexCount];
             for (int index = 0; index < vertexCount; index++)
                 normals[index] = ReadVector(blob, ref offset);
+            var coordinates = new Vector2[vertexCount];
+            for (int index = 0; index < vertexCount; index++)
+            {
+                float u = BitConverter.ToSingle(blob, offset);
+                float v = BitConverter.ToSingle(blob, offset + 4);
+                offset += 8;
+                // The atlas is authored inside the unit square and the texture
+                // is clamped; a coordinate outside it would sample an edge
+                // texel and mean the generator and the painter had diverged.
+                if (float.IsNaN(u) || float.IsNaN(v) || u < 0f || u > 1f ||
+                    v < 0f || v > 1f)
+                    throw new InvalidDataException(
+                        "Vertex " + index + " has texture coordinate (" + u +
+                        ", " + v + ") outside the atlas.");
+                coordinates[index] = new Vector2(u, v);
+            }
+
             var triangles = new int[triangleCount * 3];
             for (int index = 0; index < triangles.Length; index++)
             {
@@ -257,6 +351,7 @@ namespace KingmakerGunslinger.Assets
             var mesh = new Mesh { name = "KMG_Pteranodon" };
             mesh.vertices = vertices;
             mesh.normals = normals;
+            mesh.uv = coordinates;
             mesh.triangles = triangles;
             mesh.boneWeights = weights;
             // Identity bind poses on purpose: the attach path replaces them with
@@ -270,6 +365,115 @@ namespace KingmakerGunslinger.Assets
 
             boneNames = names;
             return mesh;
+        }
+
+        private static AlbedoRequirement ReadAlbedoRequirement(JObject albedo)
+        {
+            if (albedo == null)
+                throw new InvalidDataException("The mesh data names no albedo.");
+            string file = (string)albedo["file"] ?? string.Empty;
+            string sha256 = (string)albedo["sha256"] ?? string.Empty;
+            int width = (int?)albedo["width"] ?? 0;
+            int height = (int?)albedo["height"] ?? 0;
+            // A bare file name beside the mesh data, never a path: the mesh
+            // must not be able to point the loader anywhere else.
+            if (file.Length == 0 || file.IndexOfAny(new[] { '/', '\\', ':' }) >= 0 ||
+                file == "." || file == ".." ||
+                !file.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidDataException(
+                    "The albedo file name is not a bare .png beside the mesh: '" +
+                    file + "'.");
+            if (sha256.Length != 64 || !sha256.All(IsLowerHex))
+                throw new InvalidDataException(
+                    "The albedo hash is not a lowercase SHA-256.");
+            if (width < 64 || width > 4096 || height < 64 || height > 4096)
+                throw new InvalidDataException(
+                    "The albedo declares " + width + "x" + height + ".");
+            return new AlbedoRequirement
+            { File = file, Sha256 = sha256, Width = width, Height = height };
+        }
+
+        private static bool IsLowerHex(char value)
+        {
+            return (value >= '0' && value <= '9') || (value >= 'a' && value <= 'f');
+        }
+
+        /// <summary>
+        /// Decodes the painting the mesh data names, and only that painting:
+        /// the bytes must hash to the recorded value and the PNG header must
+        /// carry the recorded dimensions before anything is decoded. Returns
+        /// null with a reason rather than throwing, so a bad texture is a
+        /// recorded fallback and not an exception in the middle of Configure.
+        /// </summary>
+        internal static Texture2D LoadAlbedo(string directory,
+            AlbedoRequirement requirement, out string reason)
+        {
+            reason = null;
+            string path = Path.Combine(directory ?? string.Empty, requirement.File);
+            if (!File.Exists(path)) { reason = "albedo-missing"; return null; }
+
+            byte[] bytes = File.ReadAllBytes(path);
+            string actual;
+            using (SHA256 sha = SHA256.Create())
+                actual = string.Concat(sha.ComputeHash(bytes)
+                    .Select(value => value.ToString("x2")));
+            if (!string.Equals(actual, requirement.Sha256, StringComparison.Ordinal))
+            { reason = "albedo-hash-mismatch"; return null; }
+
+            // PNG signature, then the IHDR chunk: width, height, bit depth and
+            // colour type at fixed offsets. Only 8-bit RGB or RGBA is accepted.
+            if (bytes.Length < 33 || bytes[0] != 0x89 || bytes[1] != 0x50 ||
+                bytes[2] != 0x4E || bytes[3] != 0x47 || bytes[12] != (byte)'I' ||
+                bytes[13] != (byte)'H' || bytes[14] != (byte)'D' ||
+                bytes[15] != (byte)'R')
+            { reason = "albedo-not-png"; return null; }
+            int width = (bytes[16] << 24) | (bytes[17] << 16) | (bytes[18] << 8) | bytes[19];
+            int height = (bytes[20] << 24) | (bytes[21] << 16) | (bytes[22] << 8) | bytes[23];
+            if (width != requirement.Width || height != requirement.Height)
+            { reason = "albedo-dimensions-mismatch"; return null; }
+            if (bytes[24] != 8 || (bytes[25] != 2 && bytes[25] != 6))
+            { reason = "albedo-format-unsupported"; return null; }
+
+            Texture2D texture = null;
+            try
+            {
+                // Mip chain on: the creature is seen from the party camera at
+                // every distance, and an unmipped 1024 texture shimmers.
+                texture = new Texture2D(2, 2, TextureFormat.ARGB32, true);
+                if (!LoadImage(texture, bytes) || texture.width != width ||
+                    texture.height != height)
+                {
+                    UnityEngine.Object.Destroy(texture);
+                    reason = "albedo-decode-failed";
+                    return null;
+                }
+
+                texture.name = "KMG_Pteranodon_Albedo";
+                texture.filterMode = FilterMode.Trilinear;
+                texture.wrapMode = TextureWrapMode.Clamp;
+                texture.anisoLevel = 4;
+                texture.hideFlags = HideFlags.DontUnloadUnusedAsset;
+                return texture;
+            }
+            catch (Exception error)
+            {
+                if (texture != null) UnityEngine.Object.Destroy(texture);
+                reason = "albedo-decode-failed:" + error.GetType().Name;
+                return null;
+            }
+        }
+
+        private static bool LoadImage(Texture2D texture, byte[] bytes)
+        {
+            Type type = Type.GetType(
+                "UnityEngine.ImageConversion, UnityEngine.ImageConversionModule",
+                false);
+            MethodInfo method = type == null ? null : type.GetMethod("LoadImage",
+                BindingFlags.Public | BindingFlags.Static, null,
+                new[] { typeof(Texture2D), typeof(byte[]), typeof(bool) }, null);
+            if (method == null) throw new MissingMethodException(
+                "Unity runtime lacks ImageConversion.LoadImage.");
+            return (bool)method.Invoke(null, new object[] { texture, bytes, false });
         }
 
         private static Vector3 ReadVector(byte[] blob, ref int offset)

@@ -3,8 +3,9 @@
 
 Run headless:
 
-    blender --background --factory-startup --python generate_pteranodon_body.py \
+    blender --background --factory-startup --python generate_pteranodon.py \
         -- --rig rig.measured.json --out pteranodon.fbx [--parts all|body|membrane]
+           [--albedo pteranodon-albedo.png --mesh-data pteranodon-mesh.json]
 
 This supersedes the membrane-only prototype: the membrane code is unchanged and
 the body is authored onto the same rig, in the same frame.
@@ -24,6 +25,10 @@ short version is that the beak extends forward of the last head bone on purpose,
 the crest is weighted entirely to `Head` because a crest is bone, and the
 donor's eagle tail fan is deliberately left with no geometry on it rather than
 being dressed up as a tail.
+
+Texture coordinates are generated here too, into the atlas `ATLAS` describes,
+and `paint_pteranodon_albedo.py` paints that atlas. The two scripts share the
+region table, so a change to it is a change to both.
 """
 import argparse
 import hashlib
@@ -59,14 +64,39 @@ BEAK_TIP_Z = -2.25
 LOWER_BEAK_TIP_Z = -2.12
 BEAK_HALF_HEIGHT = 0.075
 BEAK_HALF_WIDTH = 0.055
-# Crest: swept back and up from the skull.
-CREST_BACK_Z = -0.18
-CREST_TOP_Y = 2.86
-CREST_HALF_WIDTH = 0.035
+# Crest: a spike swept back and up from the skull, with the TIP as its apex.
+# Iterations 5 and 6 both peaked directly above the skull and trailed down
+# behind it, which reads as a wedge sitting on the head. A Pteranodon's crest
+# is recognised by the opposite shape: the highest point is the trailing tip,
+# and the upper edge runs from the brow to that tip in one rising line, about
+# a third of a right angle above the beak. Length is about the beak's.
+CREST_TIP_BACK = 1.05
+CREST_TIP_UP = 0.72
+# Half-width at the skull, thinning to a blade at the tip. The base is thick
+# enough to register from the game's high camera, where a paper-thin sagittal
+# blade vanishes edge-on.
+CREST_HALF_WIDTH_BASE = 0.060
+CREST_HALF_WIDTH_TIP = 0.012
 # Only the first third of the donor's eagle tail carries geometry.
 TAIL_STUB_FRACTION = 0.35
 # Blend across the last quarter of each segment so joints do not crease.
 JOINT_BLEND = 0.25
+
+# --- texture atlas --------------------------------------------------------
+# Regions of the albedo as (u0, v0, u1, v1), v upward as Unity samples it.
+# Tubes map their length along u and a belly-to-back FOLD along v: the ring
+# angle is folded so the left and right flanks share texels. That leaves the
+# body with no seam anywhere and makes countershading a plain gradient in v.
+# The membrane maps span along u and chord along v, and both faces of both
+# wings share the one sheet. The crest is a side projection. The two beaks
+# take the two halves of their region.
+ATLAS = {
+    "membrane": (0.0, 0.5, 1.0, 1.0),
+    "body": (0.0, 0.25, 0.5, 0.5),
+    "crest": (0.5, 0.25, 1.0, 0.5),
+    "beak": (0.0, 0.0, 0.5, 0.25),
+    "limbs": (0.5, 0.0, 1.0, 0.25),
+}
 
 
 def log(message):
@@ -84,7 +114,12 @@ def parse_args():
     parser.add_argument("--report", default=None)
     parser.add_argument("--mesh-data", default=None,
                         help="runtime mesh data written for the loader")
-    return parser.parse_args(argv)
+    parser.add_argument("--albedo", default=None,
+                        help="painted albedo the mesh data will reference")
+    args = parser.parse_args(argv)
+    if args.mesh_data and not args.albedo:
+        parser.error("--mesh-data needs --albedo: the runtime loads both")
+    return args
 
 
 def load_rig(path):
@@ -104,6 +139,20 @@ def head(bones, name):
 
 def mirror(point):
     return Vector((-point.x, point.y, point.z))
+
+
+def region_uv(name, u, v):
+    """Maps a (u, v) inside one atlas region to texture coordinates."""
+    u0, v0, u1, v1 = ATLAS[name]
+    u = min(1.0, max(0.0, u))
+    v = min(1.0, max(0.0, v))
+    return (u0 + u * (u1 - u0), v0 + v * (v1 - v0))
+
+
+def fold(angle):
+    """Belly 0, flank 0.5, back 1. The ring angle is folded rather than
+    unwrapped so the two flanks share texels and there is no seam."""
+    return 0.5 + 0.5 * math.sin(angle)
 
 
 def resample(points, count):
@@ -136,14 +185,24 @@ def basis(direction):
     return right, up, forward
 
 
-def add_tube(bm, weights, points, radii, bone_names, segments=RING_SEGMENTS,
-             cap_start=True, cap_end=True):
+def add_tube(bm, weights, uvs, points, radii, bone_names, region,
+             segments=RING_SEGMENTS, cap_start=True, cap_end=True, along=None):
     """A closed tube through `points`, each ring weighted to its own bone.
 
     `bone_names` has one entry per point; a ring blends into the next bone over
-    the last JOINT_BLEND of its segment so the joint does not crease.
+    the last JOINT_BLEND of its segment so the joint does not crease. `along`
+    gives each ring's u inside `region`; by default it is the ring's fraction
+    of the tube's length.
     """
     assert len(points) == len(radii) == len(bone_names)
+    if along is None:
+        lengths = [0.0]
+        for index in range(1, len(points)):
+            lengths.append(lengths[-1] +
+                           (points[index] - points[index - 1]).length)
+        total = lengths[-1] or 1.0
+        along = [value / total for value in lengths]
+    assert len(along) == len(points)
     rings = []
     for index, centre in enumerate(points):
         if index == 0:
@@ -167,6 +226,7 @@ def add_tube(bm, weights, points, radii, bone_names, segments=RING_SEGMENTS,
                                  (bone_names[index + 1], blend)]
             else:
                 weights[vert] = [(bone_names[index], 1.0)]
+            uvs[vert] = region_uv(region, along[index], fold(angle))
         rings.append(ring)
 
     for index in range(len(rings) - 1):
@@ -188,10 +248,14 @@ def add_tube(bm, weights, points, radii, bone_names, segments=RING_SEGMENTS,
     return rings
 
 
-def add_beak(bm, weights, root, tip, bone, half_height, half_width, rows=5):
+def add_beak(bm, weights, uvs, root, tip, bone, half_height, half_width,
+             region, band, rows=5):
     """A tapering wedge from the skull to a point. Upper and lower beak share
-    this shape; only the bone and the tip differ."""
+    this shape; only the bone, the tip and the atlas band differ. `band` is
+    the (low, high) slice of the region's v the beak paints into, and the
+    four sides fold belly-to-top inside it like a tube would."""
     grid = []
+    band_low, band_high = band
     for row in range(rows):
         factor = row / float(rows - 1)
         centre = root.lerp(tip, factor)
@@ -199,10 +263,12 @@ def add_beak(bm, weights, root, tip, bone, half_height, half_width, rows=5):
         height = half_height * taper
         width = half_width * taper
         column = []
-        for offset in ((0.0, height), (width, 0.0), (0.0, -height),
-                       (-width, 0.0)):
+        for offset, side_fold in (((0.0, height), 1.0), ((width, 0.0), 0.5),
+                                  ((0.0, -height), 0.0), ((-width, 0.0), 0.5)):
             vert = bm.verts.new(centre + Vector((offset[0], offset[1], 0.0)))
             weights[vert] = [(bone, 1.0)]
+            uvs[vert] = region_uv(region, factor,
+                                  band_low + side_fold * (band_high - band_low))
             column.append(vert)
         grid.append(column)
     for row in range(rows - 1):
@@ -220,29 +286,47 @@ def add_beak(bm, weights, root, tip, bone, half_height, half_width, rows=5):
     return grid
 
 
-def add_crest(bm, weights, skull, bone):
+def add_crest(bm, weights, uvs, skull, bone):
     """A swept blade from the back of the skull. Weighted entirely to Head,
     because a crest is bone and should move exactly with the skull."""
-    # Read clockwise from the brow: up the leading edge, over the top, then
-    # back and down to a trailing point well behind the skull. A Pteranodon's
-    # crest is the silhouette people recognise it by, so it is deliberately
-    # the largest feature on the head.
+    # Read clockwise from the brow: along the skull roof, up the rising upper
+    # edge to the tip, then back down the lower edge to the occiput. The tip
+    # is the highest point of the whole head; nothing on the crest is above
+    # the line from brow to tip. A Pteranodon's crest is the silhouette
+    # people recognise it by, so it is deliberately the largest feature on
+    # the head, and it is authored as a spike rather than a fin.
+    tip = Vector((0.0, skull.y + CREST_TIP_UP, skull.z + CREST_TIP_BACK))
+    brow = Vector((0.0, skull.y + 0.05, skull.z - 0.14))
+    occiput = Vector((0.0, skull.y + 0.06, skull.z + 0.16))
     profile = [
-        Vector((0.0, skull.y + 0.04, skull.z - 0.10)),
-        Vector((0.0, skull.y + 0.42, skull.z - 0.06)),
-        Vector((0.0, CREST_TOP_Y, skull.z + 0.34)),
-        Vector((0.0, CREST_TOP_Y - 0.26, CREST_BACK_Z)),
-        Vector((0.0, skull.y + 0.30, CREST_BACK_Z - 0.02)),
-        Vector((0.0, skull.y + 0.05, skull.z + 0.26)),
+        brow,
+        Vector((0.0, skull.y + 0.19, skull.z - 0.02)),
+        brow.lerp(tip, 0.55) + Vector((0.0, 0.10, 0.0)),
+        tip,
+        occiput.lerp(tip, 0.5) - Vector((0.0, 0.02, 0.0)),
+        occiput,
+        Vector((0.0, skull.y - 0.02, skull.z + 0.12)),
     ]
+    # Base points keep the skull's thickness; the blade thins towards the tip.
+    thickness = [1.0, 0.9, 0.45, 0.0, 0.45, 1.0, 1.0]
+    # The crest is painted as a side view: u from the brow back to the tip,
+    # v from the lower edge up. Both faces share it.
+    z_low = min(point.z for point in profile)
+    z_high = max(point.z for point in profile)
+    y_low = min(point.y for point in profile)
+    y_high = max(point.y for point in profile)
     left, right = [], []
     for index, point in enumerate(profile):
-        # Thin to a blade at the trailing tip rather than ending in a slab.
-        taper = CREST_HALF_WIDTH * (1.0 if index < 3 else 0.45)
+        taper = CREST_HALF_WIDTH_TIP + (CREST_HALF_WIDTH_BASE -
+                                        CREST_HALF_WIDTH_TIP) * thickness[index]
         vert_left = bm.verts.new(point + Vector((taper, 0.0, 0.0)))
         vert_right = bm.verts.new(point + Vector((-taper, 0.0, 0.0)))
         weights[vert_left] = [(bone, 1.0)]
         weights[vert_right] = [(bone, 1.0)]
+        uv = region_uv("crest", (point.z - z_low) / (z_high - z_low),
+                       (point.y - y_low) / (y_high - y_low))
+        uvs[vert_left] = uv
+        uvs[vert_right] = uv
         left.append(vert_left)
         right.append(vert_right)
     for index in range(len(profile) - 1):
@@ -316,8 +400,9 @@ def wing_grid(bones, side):
     return columns, assignments
 
 
-def add_membrane(bm, weights, bones, side):
+def add_membrane(bm, weights, uvs, bones, side):
     columns, assignments = wing_grid(bones, side)
+    stations = len(columns)
     sheets = []
     for sign in (1.0, -1.0):
         sheet = []
@@ -327,6 +412,10 @@ def add_membrane(bm, weights, bones, side):
                 normal = sheet_normal(columns, i, j)
                 vert = bm.verts.new(position + normal * HALF_THICKNESS * sign)
                 weights[vert] = assignments[(i, j)]
+                # Span along u from the root, chord along v from the leading
+                # edge; the upper and lower faces and both wings share it.
+                uvs[vert] = region_uv("membrane", i / float(stations - 1),
+                                      j / float(CHORD_ROWS - 1))
                 verts.append(vert)
             sheet.append(verts)
         sheets.append(sheet)
@@ -351,52 +440,65 @@ def add_membrane(bm, weights, bones, side):
                 pass
 
 
-def add_body(bm, weights, bones):
+def add_body(bm, weights, uvs, bones):
     lower = head(bones, "LowerTorso")
     upper = head(bones, "UpperTorso")
     neck = head(bones, "Neck")
     skull = head(bones, "Head")
     jaw = head(bones, "Jaw")
-
-    add_tube(bm, weights, [lower, upper, neck], [0.30, 0.26, 0.15],
-             ["LowerTorso", "UpperTorso", "Neck"], cap_start=False)
-    add_tube(bm, weights, [neck, skull], [0.15, 0.13], ["Neck", "Head"],
-             cap_start=False)
-    add_tube(bm, weights,
-             [skull, skull + Vector((0.0, -0.02, -0.18))],
-             [0.13, 0.10], ["Head", "Head"], cap_start=False, cap_end=False)
-
+    tail = head(bones, "Tail")
+    tail_end = head(bones, "Tail_end")
+    stub = tail.lerp(tail_end, TAIL_STUB_FRACTION)
     beak_root = skull + Vector((0.0, -0.02, -0.18))
-    add_beak(bm, weights, beak_root,
+
+    # The whole body - tail stub, torso, neck and skull - paints along one
+    # strip by its position along the creature, tail at u = 0 and the front
+    # of the skull at u = 1, so the texture is continuous across the tubes
+    # that make it up.
+    def body_along(point):
+        return (stub.z - point.z) / (stub.z - beak_root.z)
+
+    torso = [lower, upper, neck]
+    add_tube(bm, weights, uvs, torso, [0.30, 0.26, 0.15],
+             ["LowerTorso", "UpperTorso", "Neck"], "body", cap_start=False,
+             along=[body_along(point) for point in torso])
+    add_tube(bm, weights, uvs, [neck, skull], [0.15, 0.13], ["Neck", "Head"],
+             "body", cap_start=False,
+             along=[body_along(neck), body_along(skull)])
+    add_tube(bm, weights, uvs, [skull, beak_root], [0.13, 0.10],
+             ["Head", "Head"], "body", cap_start=False, cap_end=False,
+             along=[body_along(skull), body_along(beak_root)])
+
+    add_beak(bm, weights, uvs, beak_root,
              Vector((0.0, beak_root.y - 0.05, BEAK_TIP_Z)), "Head",
-             BEAK_HALF_HEIGHT, BEAK_HALF_WIDTH)
-    add_beak(bm, weights, jaw,
+             BEAK_HALF_HEIGHT, BEAK_HALF_WIDTH, "beak", (0.5, 1.0))
+    add_beak(bm, weights, uvs, jaw,
              Vector((0.0, jaw.y - 0.03, LOWER_BEAK_TIP_Z)), "Jaw",
-             BEAK_HALF_HEIGHT * 0.7, BEAK_HALF_WIDTH * 0.85)
-    add_crest(bm, weights, skull, "Head")
+             BEAK_HALF_HEIGHT * 0.7, BEAK_HALF_WIDTH * 0.85, "beak", (0.0, 0.5))
+    add_crest(bm, weights, uvs, skull, "Head")
 
     for side in ("L", "R"):
         thigh = head(bones, side + "_Leg0_Upper")
         shank = head(bones, side + "_Leg0_Lower")
         ankle = head(bones, side + "_Foot0")
-        add_tube(bm, weights, [thigh, shank, ankle], [0.10, 0.07, 0.05],
-                 [side + "_Leg0_Upper", side + "_Leg0_Lower", side + "_Foot0"])
+        add_tube(bm, weights, uvs, [thigh, shank, ankle], [0.10, 0.07, 0.05],
+                 [side + "_Leg0_Upper", side + "_Leg0_Lower", side + "_Foot0"],
+                 "limbs")
         for toe in range(1, 5):
             chain = ["%s_Finger_%d_1" % (side, toe),
                      "%s_Finger_%d_2" % (side, toe),
                      "%s_Finger_%d_2_end" % (side, toe)]
             points = [head(bones, n) for n in chain]
-            add_tube(bm, weights, points, [0.028, 0.020, 0.010],
-                     [chain[0], chain[1], chain[1]], segments=5)
+            add_tube(bm, weights, uvs, points, [0.028, 0.020, 0.010],
+                     [chain[0], chain[1], chain[1]], "limbs", segments=5)
 
-    tail = head(bones, "Tail")
-    tail_end = head(bones, "Tail_end")
-    stub = tail.lerp(tail_end, TAIL_STUB_FRACTION)
     # Start at the hips, not at the Tail bone. The Tail bone's head is 0.25
     # behind the torso's rear cap, so a tube that began there left the stub
     # floating clear of the body - visible immediately in the top view.
-    add_tube(bm, weights, [lower, tail, stub], [0.22, 0.12, 0.05],
-             ["LowerTorso", "Tail", "Tail"], cap_start=False)
+    stub_chain = [lower, tail, stub]
+    add_tube(bm, weights, uvs, stub_chain, [0.22, 0.12, 0.05],
+             ["LowerTorso", "Tail", "Tail"], "body", cap_start=False,
+             along=[body_along(point) for point in stub_chain])
 
 
 def build_armature(rig):
@@ -420,7 +522,40 @@ def build_armature(rig):
     return obj
 
 
-def write_mesh_data(path, obj, mesh, weights, report):
+def albedo_manifest(path):
+    """What the runtime checks before it uses the albedo: the exact bytes,
+    and the dimensions read straight from the PNG header."""
+    data = Path(path).read_bytes()
+    if data[:8] != bytes((0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)) \
+            or data[12:16] != b"IHDR":
+        raise SystemExit("albedo is not a PNG: " + str(path))
+    return {
+        "file": Path(path).name,
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "width": int.from_bytes(data[16:20], "big"),
+        "height": int.from_bytes(data[20:24], "big"),
+        "bitDepth": data[24],
+        "colorType": data[25],
+    }
+
+
+def attach_preview_material(obj, mesh, albedo):
+    """A material for local review renders only: the runtime builds its own
+    from the donor's, and nothing about this one ships."""
+    material = bpy.data.materials.new("PteranodonAlbedoPreview")
+    material.use_nodes = True
+    nodes = material.node_tree.nodes
+    principled = nodes.get("Principled BSDF")
+    image_node = nodes.new("ShaderNodeTexImage")
+    image_node.image = bpy.data.images.load(str(Path(albedo).resolve()))
+    image_node.image.colorspace_settings.name = "sRGB"
+    material.node_tree.links.new(image_node.outputs["Color"],
+                                 principled.inputs["Base Color"])
+    principled.inputs["Roughness"].default_value = 0.75
+    mesh.materials.append(material)
+
+
+def write_mesh_data(path, obj, mesh, weights, uvs, report, albedo):
     """Emit the mesh as data the runtime loader can build a Mesh from.
 
     This is the shipped path, and the AssetBundle is the alternative rather than
@@ -428,9 +563,9 @@ def write_mesh_data(path, obj, mesh, weights, report):
 
     - It carries strictly less. The bundle format would embed bind poses, a
       material and import settings; this carries our vertices, our normals, our
-      triangles, our weights, and the donor's bone NAMES. Names are the binding
-      contract and are already recorded in the native audit; no donor transform
-      leaves the machine.
+      texture coordinates, our triangles, our weights, and the donor's bone
+      NAMES. Names are the binding contract and are already recorded in the
+      native audit; no donor transform leaves the machine.
     - It does not depend on a Unity editor licence or a specific editor version.
       That dependency is not hypothetical: the 2018.4.10f1 install that built
       every previous bundle stopped accepting its licence between 2026-08-21 and
@@ -441,15 +576,21 @@ def write_mesh_data(path, obj, mesh, weights, report):
     +Z up; the donor renderer's space is left-handed with +Y up, which is the
     space these vertices are authored in, so the handedness difference shows up
     as inside-out faces unless the winding is reversed here.
+
+    The albedo is referenced by name, exact hash and header dimensions; the
+    runtime refuses the mesh if the texture beside it is not that file.
     """
     import struct
 
     # Blender 4.5 computes vertex normals itself; calc_normals_split was
     # removed. Per-vertex normals are what a skinned mesh needs anyway.
-    vertices, normals, triangles = [], [], []
+    vertices, normals, coords, triangles = [], [], [], []
     for vertex in mesh.vertices:
         vertices.append((vertex.co.x, vertex.co.y, vertex.co.z))
         normals.append((vertex.normal.x, vertex.normal.y, vertex.normal.z))
+        if vertex.index not in uvs:
+            raise SystemExit("vertex %d has no texture coordinate" % vertex.index)
+        coords.append(uvs[vertex.index])
     for polygon in mesh.polygons:
         loop = list(polygon.vertices)
         for corner in range(1, len(loop) - 1):
@@ -468,10 +609,12 @@ def write_mesh_data(path, obj, mesh, weights, report):
         bone_weights.append(slots)
 
     payload = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "space": "donor renderer local; +X left, +Y up, -Z forward",
         "rigSha256": report["rigSha256"],
         "bones": order,
+        "uvAtlas": {name: list(region) for name, region in ATLAS.items()},
+        "albedo": albedo_manifest(albedo),
         "vertexCount": len(vertices),
         "triangleCount": len(triangles) // 3,
     }
@@ -480,6 +623,8 @@ def write_mesh_data(path, obj, mesh, weights, report):
         blob += struct.pack("<3f", *value)
     for value in normals:
         blob += struct.pack("<3f", *value)
+    for value in coords:
+        blob += struct.pack("<2f", *value)
     for value in triangles:
         blob += struct.pack("<i", value)
     for slots in bone_weights:
@@ -503,17 +648,27 @@ def main():
     bpy.context.collection.objects.link(obj)
     bm = bmesh.new()
     weights = {}
+    uvs = {}
     if args.parts in ("all", "body"):
-        add_body(bm, weights, bones)
+        add_body(bm, weights, uvs, bones)
     if args.parts in ("all", "membrane"):
         for side in ("L", "R"):
-            add_membrane(bm, weights, bones, side)
+            add_membrane(bm, weights, uvs, bones, side)
     bm.normal_update()
     bm.to_mesh(mesh)
     indexed = {}
     for vert, entries in weights.items():
         indexed[vert.index] = entries
+    uv_indexed = {}
+    for vert, uv in uvs.items():
+        uv_indexed[vert.index] = uv
     bm.free()
+
+    # The same coordinates on the Blender mesh, so the .blend and the .fbx
+    # carry them and a review render can show the painted creature.
+    layer = mesh.uv_layers.new(name="Albedo")
+    for loop in mesh.loops:
+        layer.data[loop.index].uv = uv_indexed[loop.vertex_index]
 
     groups = {}
     for entries in indexed.values():
@@ -527,12 +682,14 @@ def main():
     modifier = obj.modifiers.new(name="Armature", type="ARMATURE")
     modifier.object = armature
     obj.parent = armature
+    if args.albedo:
+        attach_preview_material(obj, mesh, args.albedo)
 
     xs = [v.co.x for v in mesh.vertices]
     ys = [v.co.y for v in mesh.vertices]
     zs = [v.co.z for v in mesh.vertices]
     report = {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "parts": args.parts,
         "rigSource": rig.get("source"),
         "rigSpace": rig.get("space"),
@@ -547,6 +704,8 @@ def main():
         "span": max(xs) - min(xs),
         "length": max(zs) - min(zs),
         "spanToLength": (max(xs) - min(xs)) / (max(zs) - min(zs)),
+        "uvAtlas": {name: list(region) for name, region in ATLAS.items()},
+        "albedo": albedo_manifest(args.albedo) if args.albedo else None,
     }
     log(json.dumps(report, indent=1))
     if report["maxInfluencesPerVertex"] > 4:
@@ -556,7 +715,8 @@ def main():
             json.dump(report, handle, indent=1)
 
     if args.mesh_data:
-        write_mesh_data(args.mesh_data, obj, mesh, indexed, report)
+        write_mesh_data(args.mesh_data, obj, mesh, indexed, uv_indexed, report,
+                        args.albedo)
         log("wrote " + args.mesh_data)
 
     bpy.ops.object.select_all(action="DESELECT")

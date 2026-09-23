@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Kingmaker.Blueprints;
 using Kingmaker.View;
+using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -172,6 +173,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // A mesh bound with the wrong bind poses still moves when a bone
                 // moves; what it does not do is hold station in that bone's own
                 // frame, which is what this measures.
+                // The shipped asset is mesh plus painting: the loader publishes
+                // the visual only when the mesh data validates AND the albedo
+                // beside it is the exact file the mesh names. Anything else is
+                // a named fallback, recorded here rather than discovered later.
+                Assertion("expanded-summoning-pteranodon-visual-published",
+                    "the Pteranodon mesh data and its hash-pinned albedo both validated at load",
+                    PteranodonAssetRuntime.Status,
+                    PteranodonAssetRuntime.HasValidatedVisual &&
+                        PteranodonAssetRuntime.Status == "visual:published",
+                    "PteranodonAssetRuntime.Status after Configure"),
                 Assertion("expanded-summoning-membrane-deformation",
                     "vertices the probed feather bone owns move in world space " +
                     "and hold station in that bone's frame, while the opposite " +
