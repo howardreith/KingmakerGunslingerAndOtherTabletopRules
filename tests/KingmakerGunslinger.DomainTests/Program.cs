@@ -707,6 +707,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("rapid-reload-evidence.cleanup-reporting-is-scored", RapidReloadGateEvidenceTests.CleanupReportingBoundaryScoresAndKeepsDiagnostics),
             Case("rapid-reload-evidence.scenario-uses-native-operations", RapidReloadGateEvidenceTests.ScenarioUsesTheNativeOperationsItClaims),
             Case("firearm-proficiency.publication-policy", FirearmProficiencyPublicationTests.PublicationPolicyIsCompatibilityOnly),
+            Case("firearm-proficiency.rapid-reload-combat-feat-classification", FirearmProficiencyPublicationTests.RapidReloadParentIsACombatFeat),
+            Case("rapid-reload-evidence.classification-and-fighter-slot", RapidReloadGateEvidenceTests.CombatFeatClassificationAndFighterSlotAreScored),
             Case("firearm-proficiency.stable-identities", FirearmProficiencyPublicationTests.StableIdentitiesRemainExact),
             Case("firearm-proficiency.runtime-contract", FirearmProficiencyPublicationTests.RuntimeScenariosExerciseRealOwnersAndArchetypes),
             Case("firearm-proficiency.respec-reconciliation", FirearmProficiencyPublicationTests.ScopedRespecReconciliationIsLegacySafe),
