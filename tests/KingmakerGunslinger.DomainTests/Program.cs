@@ -284,6 +284,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("favored-class.performance-owner-text", FavoredClassPerformanceTests.OwnerTextStatesTheOwnersRange),
             Case("favored-class.runtime-scenarios-registered", FavoredClassSourceTests.RuntimeScenariosAreRegisteredEverywhere),
             Case("favored-class.source-invariants", FavoredClassSourceTests.IntegrationSourceInvariants),
+            Case("favored-class.persistence-families", FavoredClassSourceTests.PersistenceFamiliesCoverEveryMechanicFamily),
             Case("better-vendors.catalog-fifty-entries", BetterVendorsProgressionTests.CatalogHasExactlyTheFiftyAuthorizedEntries),
             Case("better-vendors.catalog-reused-identities", BetterVendorsProgressionTests.ReusedCanonicalIdentitiesAreUnchanged),
             Case("better-vendors.catalog-manifest-append", BetterVendorsProgressionTests.ManifestAppendsExactlyTheNewIdentities),
