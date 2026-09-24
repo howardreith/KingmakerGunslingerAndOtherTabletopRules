@@ -6,8 +6,11 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics.Properties;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.FavoredClass.Mechanics;
 using UnityEngine;
@@ -51,12 +54,47 @@ namespace KingmakerGunslinger.FavoredClass
 
     internal sealed class FavoredClassBlueprintSet
     {
+        private readonly IDictionary<string, BlueprintScriptableObject> _auxiliary;
+
         internal FavoredClassBlueprintSet(IList<FavoredClassLeafPair> pairs,
             string gunslingerClassGuid)
+            : this(pairs, gunslingerClassGuid, null)
+        {
+        }
+
+        internal FavoredClassBlueprintSet(IList<FavoredClassLeafPair> pairs,
+            string gunslingerClassGuid, IDictionary<string, BlueprintScriptableObject> auxiliary)
         {
             Pairs = pairs ?? throw new ArgumentNullException("pairs");
             GunslingerClassGuid = gunslingerClassGuid ??
                 throw new ArgumentNullException("gunslingerClassGuid");
+            _auxiliary = new Dictionary<string, BlueprintScriptableObject>(
+                auxiliary ?? new Dictionary<string, BlueprintScriptableObject>(), StringComparer.Ordinal);
+        }
+
+        /// <summary>Owned helper identities (aura steps property, pet features) by symbol.</summary>
+        internal IEnumerable<KeyValuePair<string, BlueprintScriptableObject>> Auxiliary
+        {
+            get { return _auxiliary; }
+        }
+
+        /// <summary>O06: the earned-steps property the native aura buffs read, or null.</summary>
+        internal BlueprintUnitProperty AuraStepsProperty
+        {
+            get
+            {
+                BlueprintScriptableObject value;
+                return _auxiliary.TryGetValue(FavoredClassBlueprints.AuraStepsPropertySymbol, out value)
+                    ? value as BlueprintUnitProperty : null;
+            }
+        }
+
+        /// <summary>O07/O08: the hidden pet feature of a pet-armor effect, or null.</summary>
+        internal BlueprintFeature PetFeature(string effectId)
+        {
+            string symbol = FavoredClassBlueprints.PetFeatureSymbol(effectId);
+            BlueprintScriptableObject value;
+            return symbol != null && _auxiliary.TryGetValue(symbol, out value) ? value as BlueprintFeature : null;
         }
 
         internal IList<FavoredClassLeafPair> Pairs { get; private set; }
@@ -100,7 +138,38 @@ namespace KingmakerGunslinger.FavoredClass
                 { FavoredClassCatalog.Fighter, "48ac8db94d5de7645906c7d0ad3bcfbd" },
                 { FavoredClassCatalog.Monk, "e8f21e5b58e0569468e420ebea456124" },
                 { FavoredClassCatalog.Cleric, "67819271767a9dd4fbfd4ae700befea0" },
+                { FavoredClassCatalog.Paladin, "bfa11238e7ae3544bbeb4d0b92e897ec" },
+                { FavoredClassCatalog.Ranger, "cda0615668a6df14eb36ba19ee881af6" },
             };
+
+        // Classes of an optional provider (Call of the Wild), which may be
+        // created after KMG registers: only their identities are used at
+        // registration; publication skips a class the host did not scan.
+        private static readonly Dictionary<string, string> OptionalProviderClassGuids =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                { FavoredClassCatalog.Summoner, "0f4c4ada51334b43a802350c5c0b85f5" },
+            };
+
+        // O06/O07/O08 helper identities and native features.
+        internal const string AuraStepsPropertySymbol = "KMG.FavoredClass.Paladin.AuraAllyBonus.StepsProperty";
+        internal const string CompanionPetFeatureSymbol = "KMG.FavoredClass.Ranger.CompanionNaturalArmor.PetFeature";
+        internal const string EidolonPetFeatureSymbol = "KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature";
+        internal const string AuraOfCourageFeatureGuid = "e45ab30f49215054e83b4ea12165409f";
+        internal const string AuraOfResolveFeatureGuid = "a28693b24cc412c478b8b85877f2dad2";
+        internal const string HuntersBondSelectionGuid = "b705c5184a96a84428eeb35ae2517a14";
+        // Call of the Wild's eidolon class (optional provider; resolved by identity at use).
+        internal const string EidolonClassGuid = "e3b3ad6decb14cdba2e7e14982d90035";
+
+        internal static string PetFeatureSymbol(string effectId)
+        {
+            switch (effectId)
+            {
+                case FavoredClassCatalog.EffectCompanionArmor: return CompanionPetFeatureSymbol;
+                case FavoredClassCatalog.EffectEidolonArmor: return EidolonPetFeatureSymbol;
+                default: return null;
+            }
+        }
 
         // Native blueprints the Phase 3 mechanics read.
         internal const string FastBombsBuffGuid = "c42ae8f9652bbc14eb13b31d12d20f8a";
@@ -122,6 +191,8 @@ namespace KingmakerGunslinger.FavoredClass
                 { FavoredClassCatalog.EffectUnarmedConfirmation, "7812ad3672a4b9a4fb894ea402095167" },
                 { FavoredClassCatalog.EffectAquaticPenetration, "ee7dc126939e4d9438357fbd5980d459" },
                 { FavoredClassCatalog.EffectGrappleStunning, "a29a582c3daa4c24bb0e991c596ccb28" },
+                { FavoredClassCatalog.EffectPaladinAuras, AuraOfCourageFeatureGuid },
+                { FavoredClassCatalog.EffectCompanionArmor, "ee63330662126374e8785cc901941ac7" },
             };
 
         internal static FavoredClassBlueprintSet Register(BlueprintRegistry registry,
@@ -133,6 +204,7 @@ namespace KingmakerGunslinger.FavoredClass
             if (gunslinger == null) throw new ArgumentNullException("gunslinger");
             if (firearms == null) throw new ArgumentNullException("firearms");
             var pairs = new List<FavoredClassLeafPair>();
+            var auxiliary = new Dictionary<string, BlueprintScriptableObject>(StringComparer.Ordinal);
             foreach (string effectId in FavoredClassLeafCatalog.ImplementedEffects)
             {
                 FavoredClassEffectSpec effect = FavoredClassCatalog.Effect(effectId);
@@ -151,14 +223,15 @@ namespace KingmakerGunslinger.FavoredClass
                             () => CreateLeaf(partialSpec, icon));
                     BlueprintFeature full = registry.Register<BlueprintFeature>(fullSpec.Symbol,
                         () => CreateLeaf(fullSpec, icon));
+                    RegisterAuxiliary(effect, full, registry, auxiliary);
                     AttachPrerequisites(effect, full, partial, library, gunslinger);
-                    AttachMechanics(effect, full, partial, library, gunslinger);
+                    AttachMechanics(effect, full, partial, library, gunslinger, auxiliary);
                     pairs.Add(new FavoredClassLeafPair(effect, targetKey,
                         HostClassGuidFor(effect, gunslinger), full, partial));
                 }
             }
             FavoredClassBlueprintSet set = new FavoredClassBlueprintSet(pairs.AsReadOnly(),
-                gunslinger.CharacterClass.AssetGuid);
+                gunslinger.CharacterClass.AssetGuid, auxiliary);
             Validate(set);
             return set;
         }
@@ -171,7 +244,112 @@ namespace KingmakerGunslinger.FavoredClass
             string guid;
             if (NativeClassGuids.TryGetValue(effect.ClassFamily, out guid))
                 return guid;
+            if (OptionalProviderClassGuids.TryGetValue(effect.ClassFamily, out guid))
+                return guid;
             throw new InvalidOperationException("No verified host class for " + effect.Id);
+        }
+
+        /// <summary>
+        /// Owned helper identities of the aura and pet counters, registered
+        /// with the leaves so their saved facts always resolve.
+        /// </summary>
+        private static void RegisterAuxiliary(FavoredClassEffectSpec effect, BlueprintFeature full,
+            BlueprintRegistry registry, IDictionary<string, BlueprintScriptableObject> auxiliary)
+        {
+            switch (effect.Id)
+            {
+                case FavoredClassCatalog.EffectPaladinAuras:
+                    auxiliary[AuraStepsPropertySymbol] = registry.Register<BlueprintUnitProperty>(
+                        AuraStepsPropertySymbol, () => CreateStepsProperty(effect, full));
+                    break;
+                case FavoredClassCatalog.EffectCompanionArmor:
+                {
+                    BlueprintCharacterClass companion = BlueprintRoot.Instance == null ||
+                        BlueprintRoot.Instance.Progression == null ? null :
+                        BlueprintRoot.Instance.Progression.AnimalCompanion;
+                    if (companion == null)
+                        throw new InvalidOperationException("The native animal companion class is unavailable.");
+                    auxiliary[CompanionPetFeatureSymbol] = registry.Register<BlueprintFeature>(
+                        CompanionPetFeatureSymbol, () => CreatePetFeature(CompanionPetFeatureSymbol, effect,
+                            full, companion.AssetGuid, "Animal Companion Armor (Favored Class)"));
+                    break;
+                }
+                case FavoredClassCatalog.EffectEidolonArmor:
+                    auxiliary[EidolonPetFeatureSymbol] = registry.Register<BlueprintFeature>(
+                        EidolonPetFeatureSymbol, () => CreatePetFeature(EidolonPetFeatureSymbol, effect,
+                            full, EidolonClassGuid, "Eidolon Armor (Favored Class)"));
+                    break;
+            }
+        }
+
+        private static BlueprintUnitProperty CreateStepsProperty(FavoredClassEffectSpec effect,
+            BlueprintFeature full)
+        {
+            var property = ScriptableObject.CreateInstance<BlueprintUnitProperty>();
+            property.name = "KMG_" + AuraStepsPropertySymbol.Substring(
+                FavoredClassLeafCatalog.SymbolPrefix.Length).Replace('.', '_');
+            var getter = ScriptableObject.CreateInstance<FavoredClassEarnedStepsProperty>();
+            getter.name = "$" + property.name + "_Getter";
+            getter.Feature = full;
+            getter.Divisor = effect.Rate.Divisor;
+            getter.CapSteps = effect.Rate.CapSteps ?? 0;
+            property.ComponentsArray = new BlueprintComponent[] { getter };
+            return property;
+        }
+
+        private static BlueprintFeature CreatePetFeature(string symbol, FavoredClassEffectSpec effect,
+            BlueprintFeature full, string petClassGuid, string title)
+        {
+            var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+            feature.name = "KMG_" + symbol.Substring(FavoredClassLeafCatalog.SymbolPrefix.Length)
+                .Replace('.', '_');
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.HideInCharacterSheetAndLevelUp = true;
+            feature.Groups = new FeatureGroup[0];
+            var armor = ScriptableObject.CreateInstance<FavoredClassPetNaturalArmor>();
+            armor.name = "$" + feature.name + "_NaturalArmor";
+            armor.MasterFeature = full;
+            armor.Divisor = effect.Rate.Divisor;
+            armor.CapSteps = effect.Rate.CapSteps ?? 0;
+            armor.PetClassGuid = petClassGuid;
+            feature.ComponentsArray = new BlueprintComponent[] { armor };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(symbol + ".Name", title),
+                LocalizationService.Create(symbol + ".Description",
+                    "Natural armor bonus from the master's favored class investment."),
+                null);
+            return feature;
+        }
+
+        /// <summary>
+        /// The class features a counter improves, when an archetype can remove
+        /// all of them: the counter is then not offered (dormant investment in
+        /// a feature gained later stays legal).
+        /// </summary>
+        private static BlueprintFeature[] ImprovedFeatures(FavoredClassEffectSpec effect,
+            LibraryScriptableObject library)
+        {
+            switch (effect.Id)
+            {
+                case FavoredClassCatalog.EffectPaladinAuras:
+                    return new[]
+                    {
+                        BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                            AuraOfCourageFeatureGuid, "native Aura of Courage"),
+                        BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                            AuraOfResolveFeatureGuid, "native Aura of Resolve")
+                    };
+                case FavoredClassCatalog.EffectCompanionArmor:
+                    return new BlueprintFeature[]
+                    {
+                        BlueprintLibraryLookup.RequireExact<BlueprintFeatureSelection>(library,
+                            HuntersBondSelectionGuid, "native Hunter's Bond selection")
+                    };
+                default:
+                    return new BlueprintFeature[0];
+            }
         }
 
         /// <summary>
@@ -240,7 +418,9 @@ namespace KingmakerGunslinger.FavoredClass
             // grant; reapplying on level-up re-evaluates the owned modifier.
             feature.ReapplyOnLevelUp = spec.Role == FavoredClassInvestmentRole.Full &&
                 (spec.EffectId == FavoredClassCatalog.EffectHalflingNimble ||
-                    spec.EffectId == FavoredClassCatalog.EffectDrowNimble);
+                    spec.EffectId == FavoredClassCatalog.EffectDrowNimble ||
+                    spec.EffectId == FavoredClassCatalog.EffectCompanionArmor ||
+                    spec.EffectId == FavoredClassCatalog.EffectEidolonArmor);
             feature.Groups = new FeatureGroup[0];
             feature.ComponentsArray = new BlueprintComponent[0];
             BlueprintUnitFactAccess.Resolve().Configure(feature,
@@ -254,9 +434,13 @@ namespace KingmakerGunslinger.FavoredClass
             BlueprintFeature full, BlueprintFeature partial, LibraryScriptableObject library,
             GunslingerClassBlueprintSet gunslinger)
         {
-            BlueprintCharacterClass hostClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
-                library, HostClassGuidFor(effect, gunslinger), "host class of " + effect.Id);
             IList<BlueprintArchetype> replacing = ReplacingArchetypes(effect, library, gunslinger);
+            BlueprintFeature[] improved = ImprovedFeatures(effect, library);
+            // An optional provider's class may not exist yet; it is read only
+            // when an archetype rule needs it.
+            BlueprintCharacterClass hostClass = replacing.Count == 0 && improved.Length == 0 ? null :
+                BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
+                    library, HostClassGuidFor(effect, gunslinger), "host class of " + effect.Id);
             foreach (BlueprintFeature leaf in new[] { partial, full })
             {
                 if (leaf == null)
@@ -268,6 +452,15 @@ namespace KingmakerGunslinger.FavoredClass
                 };
                 for (int index = 0; index < replacing.Count; index++)
                     components.Add(NoArchetype(leaf, hostClass, replacing[index], index));
+                if (improved.Length > 0)
+                {
+                    var available = ScriptableObject.CreateInstance<PrerequisiteFavoredClassFeatureAvailable>();
+                    available.name = "$" + leaf.name + "_FeatureAvailable";
+                    available.CharacterClass = hostClass;
+                    available.Features = improved;
+                    available.Group = Prerequisite.GroupType.All;
+                    components.Add(available);
+                }
                 leaf.ComponentsArray = leaf.ComponentsArray.Concat(components).ToArray();
             }
         }
@@ -343,9 +536,10 @@ namespace KingmakerGunslinger.FavoredClass
         }
 
         private static void AttachMechanics(FavoredClassEffectSpec effect, BlueprintFeature full,
-            BlueprintFeature partial, LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger)
+            BlueprintFeature partial, LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger,
+            IDictionary<string, BlueprintScriptableObject> auxiliary)
         {
-            BlueprintComponent mechanics = CreateMechanics(effect, full, library, gunslinger);
+            BlueprintComponent mechanics = CreateMechanics(effect, full, library, gunslinger, auxiliary);
             if (mechanics != null)
                 full.ComponentsArray = full.ComponentsArray.Concat(
                     new[] { mechanics }).ToArray();
@@ -375,7 +569,7 @@ namespace KingmakerGunslinger.FavoredClass
         /// </summary>
         private static BlueprintComponent CreateMechanics(FavoredClassEffectSpec effect,
             BlueprintFeature full, LibraryScriptableObject library,
-            GunslingerClassBlueprintSet gunslinger)
+            GunslingerClassBlueprintSet gunslinger, IDictionary<string, BlueprintScriptableObject> auxiliary)
         {
             int divisor = effect.Rate.Divisor;
             int cap = effect.Rate.CapSteps ?? 0;
@@ -492,9 +686,21 @@ namespace KingmakerGunslinger.FavoredClass
                         library, StunningFistResourceGuid, "native Stunning Fist resource");
                     return stunning;
                 }
+                case FavoredClassCatalog.EffectCompanionArmor:
+                case FavoredClassCatalog.EffectEidolonArmor:
+                {
+                    var projection = ScriptableObject.CreateInstance<FavoredClassPetArmorProjection>();
+                    projection.name = "$" + full.name + "_PetArmor";
+                    projection.PetFeature = (BlueprintFeature)auxiliary[PetFeatureSymbol(effect.Id)];
+                    projection.PetClassGuid = projection.PetFeature.ComponentsArray
+                        .OfType<FavoredClassPetNaturalArmor>().Single().PetClassGuid;
+                    return projection;
+                }
                 case FavoredClassCatalog.EffectMisfire:
                 case FavoredClassCatalog.EffectHalflingDodge:
                 case FavoredClassCatalog.EffectInitiative:
+                case FavoredClassCatalog.EffectPaladinAuras:
+                    // O06 is read inside the native aura buffs (FavoredClassAuraPublication).
                     return null;
                 default:
                     throw new InvalidOperationException("No mechanics are implemented for " + effect.Id);
@@ -530,6 +736,25 @@ namespace KingmakerGunslinger.FavoredClass
             if (set.Pairs.Select(pair => pair.Effect.Id + "|" + pair.TargetKey)
                     .Distinct(StringComparer.Ordinal).Count() != set.Pairs.Count)
                 throw new InvalidOperationException("Favored-class counters are not unique.");
+            foreach (string effectId in new[] { FavoredClassCatalog.EffectCompanionArmor,
+                FavoredClassCatalog.EffectEidolonArmor })
+            {
+                FavoredClassLeafPair pair = set.Pair(effectId, null);
+                if (pair == null)
+                    continue;
+                BlueprintFeature pet = set.PetFeature(effectId);
+                FavoredClassPetArmorProjection[] projection = pair.Full.ComponentsArray
+                    .OfType<FavoredClassPetArmorProjection>().ToArray();
+                if (pet == null || !pet.HideInUI || projection.Length != 1 ||
+                    !ReferenceEquals(projection[0].PetFeature, pet) ||
+                    pet.ComponentsArray.OfType<FavoredClassPetNaturalArmor>().Count(armor =>
+                        ReferenceEquals(armor.MasterFeature, pair.Full)) != 1)
+                    throw new InvalidOperationException("Pet-armor graph is malformed: " + effectId);
+            }
+            if (set.Pair(FavoredClassCatalog.EffectPaladinAuras, null) != null &&
+                (set.AuraStepsProperty == null || set.AuraStepsProperty.ComponentsArray
+                    .OfType<FavoredClassEarnedStepsProperty>().Count() != 1))
+                throw new InvalidOperationException("The paladin aura steps property is malformed.");
         }
     }
 }

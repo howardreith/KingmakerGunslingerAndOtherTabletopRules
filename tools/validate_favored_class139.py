@@ -20,7 +20,7 @@ VERSION = "0.0.139"
 INFORMATIONAL_VERSION = "0.0.139-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1787
+DETERMINISTIC_TEST_COUNT = 1790
 STATIC_KEY = "favoredClassIntegration139"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -60,6 +60,15 @@ APPENDED = (
     ("KMG.FavoredClass.Cleric.AquaticPenetration.Full", "189538fd7b67433e8d0cea5e691dd8eb"),
     ("KMG.FavoredClass.Monk.GrappleStunning.Partial", "9c56579186ef4fdba0f07d956b1cb9a5"),
     ("KMG.FavoredClass.Monk.GrappleStunning.Full", "ca51bd6d19b241e48f05e6acf892a5f1"),
+    ("KMG.FavoredClass.Paladin.AuraAllyBonus.Partial", "076fb613ebba4c54b3bcd3edbf841fa6"),
+    ("KMG.FavoredClass.Paladin.AuraAllyBonus.Full", "4c88771d0d5b4348843d1011d7ae242e"),
+    ("KMG.FavoredClass.Paladin.AuraAllyBonus.StepsProperty", "604f0f1bae3041618aa08b6348a088e6"),
+    ("KMG.FavoredClass.Ranger.CompanionNaturalArmor.Partial", "a2fa12fa25a848c7b297a515e745865c"),
+    ("KMG.FavoredClass.Ranger.CompanionNaturalArmor.Full", "4dda167346da47d7b8ee82244229df75"),
+    ("KMG.FavoredClass.Ranger.CompanionNaturalArmor.PetFeature", "5c47cb4deec546289e7302295b4efae2"),
+    ("KMG.FavoredClass.Summoner.EidolonNaturalArmor.Partial", "c8d050714c6c4def9e15f49dc9ea52b4"),
+    ("KMG.FavoredClass.Summoner.EidolonNaturalArmor.Full", "02c00d3cf652431a93f0248c9a5d9c96"),
+    ("KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature", "563c6a25ff824d14a6bfc8012d62e46a"),
     ("KMG.MostlyHuman.Identity", "d71a4b4250914a7aa6d4bec53dfc768f"),
     ("KMG.MostlyHuman.Ifrit.Selection", "c0485fc76e514ad38c09961dbdc6efc7"),
     ("KMG.MostlyHuman.Ifrit.Standard", "7c508ee3415942bb91f584306d70bf70"),

@@ -44,6 +44,24 @@ namespace KingmakerGunslinger.FavoredClass
                 _profile = profile;
         }
 
+        private static HashSet<string> _unavailableEffects = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Effects withheld from publication because their exact native read
+        /// point failed validation in this process (only that counter).
+        /// </summary>
+        internal static void SetUnavailableEffects(IEnumerable<string> effectIds)
+        {
+            lock (Gate)
+                _unavailableEffects = new HashSet<string>(effectIds ?? new string[0], StringComparer.Ordinal);
+        }
+
+        internal static bool IsEffectUnavailable(string effectId)
+        {
+            lock (Gate)
+                return effectId != null && _unavailableEffects.Contains(effectId);
+        }
+
         internal static void ConfigureMostlyHumanIdentity(BlueprintFeature identity)
         {
             lock (Gate)

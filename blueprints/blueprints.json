@@ -15929,6 +15929,78 @@
       "notes": "Favored class completing investment: +1 CMD against grapple per rank and +1 Stunning Fist attempt per day per rank (U04 Undine Monk mixed-rate counter)."
     },
     {
+      "symbol": "KMG.FavoredClass.Paladin.AuraAllyBonus.Partial",
+      "guid": "076fb613ebba4c54b3bcd3edbf841fa6",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 to the ally save bonuses of Aura of Courage and Aura of Resolve (O06 Oread Paladin counter); published only into the Favored Class host's Paladin bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Paladin.AuraAllyBonus.Full",
+      "guid": "4c88771d0d5b4348843d1011d7ae242e",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 to the ally save bonuses of Aura of Courage and Aura of Resolve per rank (O06 Oread Paladin counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Paladin.AuraAllyBonus.StepsProperty",
+      "guid": "604f0f1bae3041618aa08b6348a088e6",
+      "plannedType": "BlueprintUnitProperty",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Owned unit property: the aura paladin's earned O06 steps, read by the integration's rank config on the two native paladin ally buffs."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Ranger.CompanionNaturalArmor.Partial",
+      "guid": "a2fa12fa25a848c7b297a515e745865c",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 natural armor for the animal companion (O07 Oread Ranger counter); published only into the Favored Class host's Ranger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Ranger.CompanionNaturalArmor.Full",
+      "guid": "4dda167346da47d7b8ee82244229df75",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 natural armor for the current animal companion per rank (O07 Oread Ranger counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Ranger.CompanionNaturalArmor.PetFeature",
+      "guid": "5c47cb4deec546289e7302295b4efae2",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Hidden owned pet feature projected onto the master's current animal companion; its natural armor is the master's earned O07 steps."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Summoner.EidolonNaturalArmor.Partial",
+      "guid": "c8d050714c6c4def9e15f49dc9ea52b4",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 natural armor for the eidolon (O08 Oread Summoner counter; Call of the Wild Summoner); published only into the Favored Class host's Summoner bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Summoner.EidolonNaturalArmor.Full",
+      "guid": "02c00d3cf652431a93f0248c9a5d9c96",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 natural armor for the current eidolon per rank (O08 Oread Summoner counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature",
+      "guid": "563c6a25ff824d14a6bfc8012d62e46a",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Hidden owned pet feature projected onto the master's current eidolon; its natural armor is the master's earned O08 steps."
+    },
+    {
       "symbol": "KMG.MostlyHuman.Identity",
       "guid": "d71a4b4250914a7aa6d4bec53dfc768f",
       "plannedType": "BlueprintFeature",
