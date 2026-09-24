@@ -16839,7 +16839,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _pteranodonVisualOutcomes.Count + ";patchOutcomes=" +
                         (ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count -
                             patchOutcomesBefore),
-                    _pteranodonCastsSeen >= 4 && _pteranodonVisualOutcomes.Count >= 6 &&
+                    _pteranodonCastsSeen >= 4 &&
+                        _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
                         ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count -
                             patchOutcomesBefore == _pteranodonVisualOutcomes.Count &&
                         pteranodonAttachedClean,

@@ -110,6 +110,27 @@ namespace KingmakerGunslinger.Summoning
             return attachment.Outcome;
         }
 
+        /// <summary>
+        /// The donor's own rig as this view's renderer held it before the
+        /// swap - the 72 bones and bind poses the Pteranodon was authored
+        /// against. False when nothing was swapped on the view, in which case
+        /// the renderer itself still carries that rig.
+        /// </summary>
+        internal static bool TryGetDonorRig(UnitEntityView view,
+            out Transform[] bones, out Matrix4x4[] bindposes)
+        {
+            bones = null;
+            bindposes = null;
+            Attachment attachment;
+            if (view == null || !Applied.TryGetValue(view, out attachment) ||
+                attachment.Mesh == null || attachment.OriginalMesh == null ||
+                attachment.OriginalBones == null)
+                return false;
+            bones = attachment.OriginalBones;
+            bindposes = attachment.OriginalMesh.bindposes;
+            return true;
+        }
+
         private static void Record(string outcome)
         {
             lock (Sync)
