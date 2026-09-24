@@ -318,6 +318,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     failures.Add(identity.Ancestry + ": non-optional race identity is missing");
                 return row;
             }
+            bool playable = Kingmaker.Blueprints.Root.BlueprintRoot.Instance.Progression
+                .CharacterRaces.Contains(race);
+            row["playable"] = playable;
+            if (!playable)
+            {
+                // An NPC-only race blueprint cannot be chosen at character
+                // creation; its route is recorded, never scored as offered.
+                row["disposition"] = "PRESENT BUT NOT PLAYABLE";
+                if (identity.Provider != FavoredClassRaceProvider.Optional)
+                    failures.Add(identity.Ancestry + ": native or KMG race is not playable");
+                return row;
+            }
             UnitEntityData unit = null;
             LevelUpController controller = null;
             try
