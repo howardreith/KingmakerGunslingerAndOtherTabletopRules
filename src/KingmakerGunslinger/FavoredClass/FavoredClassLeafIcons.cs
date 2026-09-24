@@ -37,7 +37,8 @@ namespace KingmakerGunslinger.FavoredClass
                 {
                     BlueprintScriptableObject blueprint;
                     library.BlueprintsByAssetId.TryGetValue(guid, out blueprint);
-                    Sprite candidate = IconOf(blueprint);
+                    var fact = blueprint as BlueprintUnitFact;
+                    Sprite candidate = fact == null ? null : fact.Icon;
                     if (candidate != null)
                     {
                         icon = candidate;
@@ -61,14 +62,5 @@ namespace KingmakerGunslinger.FavoredClass
             return withheld.AsReadOnly();
         }
 
-        /// <summary>A donor's art: a unit fact's icon, or a class's own icon.</summary>
-        private static Sprite IconOf(BlueprintScriptableObject blueprint)
-        {
-            var fact = blueprint as BlueprintUnitFact;
-            if (fact != null)
-                return fact.Icon;
-            var characterClass = blueprint as BlueprintCharacterClass;
-            return characterClass == null ? null : characterClass.Icon;
-        }
     }
 }

@@ -56,14 +56,13 @@ namespace KingmakerGunslinger.FavoredClass
         internal const string CriticalFocusGuid = "8ac59959b1b23c347a0361dc97cc786d";
         internal const string ImprovedDirtyTrickGuid = "ed699d64870044b43bb5a7fbe3f29494";
         internal const string ImprovedTripGuid = "0f15c6f70d8fb2b49aa6cc24239cc5fa";
-        internal const string EidolonNaturalArmorFeatureGuid = "1fd770617aaa4499b8f5482c33e915af";
-        internal const string EidolonFeatureSelectionGuid = "56b56bbc2dd3464da28a43f9ed6216cd";
 
         /// <summary>
-        /// Call of the Wild's Eidolon class; its art is the pet's own identity
-        /// (the natural armor feature and the eidolon selection have none).
+        /// Kingmaker's Barkskin spell: the native natural-armor bonus art. Call
+        /// of the Wild's eidolon natural armor feature, eidolon selection and
+        /// Eidolon class carry no art in the qualified profile.
         /// </summary>
-        internal const string EidolonClassGuid = "e3b3ad6decb14cdba2e7e14982d90035";
+        internal const string BarkskinGuid = "5b77d7cc65b8ab74688e74a37fc2f553";
 
         private static readonly Dictionary<string, FavoredClassIconDonor> ByEffect =
             new Dictionary<string, FavoredClassIconDonor>(StringComparer.Ordinal)
@@ -103,9 +102,9 @@ namespace KingmakerGunslinger.FavoredClass
                     "Aura of Courage", "e45ab30f49215054e83b4ea12165409f") },
                 { FavoredClassCatalog.EffectCompanionArmor, new FavoredClassIconDonor(FavoredClassIconSource.Native,
                     "the animal companion selection", "ee63330662126374e8785cc901941ac7") },
-                { FavoredClassCatalog.EffectEidolonArmor, new FavoredClassIconDonor(FavoredClassIconSource.Provider,
-                    "Call of the Wild's eidolon natural armor, else the eidolon's own art", EidolonNaturalArmorFeatureGuid,
-                    EidolonFeatureSelectionGuid, EidolonClassGuid) },
+                { FavoredClassCatalog.EffectEidolonArmor, new FavoredClassIconDonor(FavoredClassIconSource.Native,
+                    "the native Barkskin spell's natural-armor bonus art (the eidolon's natural armor it improves)",
+                    BarkskinGuid) },
             };
 
         /// <summary>The ability each bloodline power target improves (its own art).</summary>

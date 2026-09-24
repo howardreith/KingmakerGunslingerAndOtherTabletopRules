@@ -1341,8 +1341,15 @@
     },
     "mostly-human-human-ancestry": {
       "source": "src/KingmakerGunslinger/ElementalRaces/ElementalMostlyHumanIcons.cs",
-      "assignment": "ElementalMostlyHumanIcons.Complete: the native Human race's Icon (0a5d473ead98b0646b94495af250fdc4), or the parent race's Icon when the Human race has none; the trait is unpublished if a choice stays blank.",
+      "assignment": "ElementalMostlyHumanIcons.Complete: the native Human race's Icon (0a5d473ead98b0646b94495af250fdc4), else the native human Skilled racial feature's Icon (3adf9274a210b164cb68f472dc1e4544; Kingmaker's Human race carries none), else the parent race's Icon; the trait is unpublished if a choice stays blank.",
       "nativeDonorGuid": null,
+      "evidenceClass": "source-inspection",
+      "liveStatus": "not-yet-captured"
+    },
+    "fcb-native-Barkskin": {
+      "source": "src/KingmakerGunslinger/FavoredClass/FavoredClassIconPolicy.cs",
+      "assignment": "IconFor: NativeIconSource(exact identity).Icon of the native Barkskin spell, whose natural-armor bonus art names the eidolon natural armor it improves (Call of the Wild's eidolon features carry no art).",
+      "nativeDonorGuid": "5b77d7cc65b8ab74688e74a37fc2f553",
       "evidenceClass": "source-inspection",
       "liveStatus": "not-yet-captured"
     }
@@ -9814,10 +9821,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-provider-donor",
-      "concept": "favored-class-improved-provider",
-      "disposition": "intentional-family-share",
-      "reason": "Shares the art of Call of the Wild's eidolon natural armor feature, its eidolon feature selection, else the Eidolon class's own art (the first with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
+      "currentArt": "fcb-native-Barkskin",
+      "concept": "favored-class-improved-native",
+      "disposition": "native-semantic-reuse",
+      "reason": "Shows the exact art of the native Barkskin spell, whose natural-armor bonus names the eidolon natural armor the counter improves (Call of the Wild's eidolon features carry no art); no new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Summoner.EidolonNaturalArmor.Full",
@@ -9827,10 +9834,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-provider-donor",
-      "concept": "favored-class-improved-provider",
-      "disposition": "intentional-family-share",
-      "reason": "Shares the art of Call of the Wild's eidolon natural armor feature, its eidolon feature selection, else the Eidolon class's own art (the first with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
+      "currentArt": "fcb-native-Barkskin",
+      "concept": "favored-class-improved-native",
+      "disposition": "native-semantic-reuse",
+      "reason": "Shows the exact art of the native Barkskin spell, whose natural-armor bonus names the eidolon natural armor the counter improves (Call of the Wild's eidolon features carry no art); no new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature",
@@ -11533,7 +11540,7 @@
       "currentArt": "mostly-human-human-ancestry",
       "concept": "mostly-human-ancestry",
       "disposition": "intentional-family-share",
-      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the human Skilled racial feature's, since Kingmaker's Human race carries none; the parent race's as a last resort); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Ifrit.Standard",
@@ -11559,7 +11566,7 @@
       "currentArt": "mostly-human-human-ancestry",
       "concept": "mostly-human-ancestry",
       "disposition": "intentional-family-share",
-      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the human Skilled racial feature's, since Kingmaker's Human race carries none; the parent race's as a last resort); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Oread.Selection",
@@ -11572,7 +11579,7 @@
       "currentArt": "mostly-human-human-ancestry",
       "concept": "mostly-human-ancestry",
       "disposition": "intentional-family-share",
-      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the human Skilled racial feature's, since Kingmaker's Human race carries none; the parent race's as a last resort); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Oread.Standard",
@@ -11598,7 +11605,7 @@
       "currentArt": "mostly-human-human-ancestry",
       "concept": "mostly-human-ancestry",
       "disposition": "intentional-family-share",
-      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the human Skilled racial feature's, since Kingmaker's Human race carries none; the parent race's as a last resort); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Sylph.Selection",
@@ -11611,7 +11618,7 @@
       "currentArt": "mostly-human-human-ancestry",
       "concept": "mostly-human-ancestry",
       "disposition": "intentional-family-share",
-      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the human Skilled racial feature's, since Kingmaker's Human race carries none; the parent race's as a last resort); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Sylph.Standard",
@@ -11637,7 +11644,7 @@
       "currentArt": "mostly-human-human-ancestry",
       "concept": "mostly-human-ancestry",
       "disposition": "intentional-family-share",
-      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the human Skilled racial feature's, since Kingmaker's Human race carries none; the parent race's as a last resort); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Undine.Selection",
@@ -11650,7 +11657,7 @@
       "currentArt": "mostly-human-human-ancestry",
       "concept": "mostly-human-ancestry",
       "disposition": "intentional-family-share",
-      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the human Skilled racial feature's, since Kingmaker's Human race carries none; the parent race's as a last resort); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Undine.Standard",
@@ -11676,7 +11683,7 @@
       "currentArt": "mostly-human-human-ancestry",
       "concept": "mostly-human-ancestry",
       "disposition": "intentional-family-share",
-      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the human Skilled racial feature's, since Kingmaker's Human race carries none; the parent race's as a last resort); a choice that would stay blank unpublishes the trait. No new painting."
     }
   ],
   "uiEntries": [

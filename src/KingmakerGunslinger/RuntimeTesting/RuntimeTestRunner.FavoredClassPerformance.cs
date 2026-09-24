@@ -270,6 +270,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!released && Time.realtimeSinceStartup - _releaseStarted < ReleaseTimeoutSeconds)
                             return;
                         Release["releasedSeconds"] = Time.realtimeSinceStartup - _releaseStarted;
+                        Release["ringsPooled"] = _scaledRings.Count(ring => ring != null);
+                        Release["ringsDestroyed"] = _scaledRings.Count(ring => ring == null);
                         Release["allRestored"] = released;
                         Release["scaledAfterRelease"] = FavoredClassPerformanceRing.ScaledCount;
                         if (!released)
@@ -365,7 +367,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var row = new JObject { ["fxAssetId"] = area.Fx == null ? null : area.Fx.AssetId };
                 GameObject controlRing = Ring(control), lowRing = Ring(low), highRing = Ring(high);
-                bool expectRing = target.RingAssetId != null;
+                bool expectRing = target.RingSpawns;
                 row["present"] = new JObject { ["control"] = controlRing != null, ["low"] = lowRing != null,
                     ["high"] = highRing != null };
                 if ((area.Fx == null ? null : area.Fx.AssetId) != target.RingAssetId)
@@ -374,7 +376,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (controlRing != null || lowRing != null)
                         RingFailures.Add(label + ": a ring exists although the provider link resolves to none");
-                    row["noRing"] = "the provider's effect link resolves to no effect for any bard";
+                    row["noRing"] = "the provider's effect link names an area blueprint and spawns nothing for any bard";
                     return row;
                 }
                 if (controlRing == null || lowRing == null || highRing == null)
@@ -449,7 +451,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var row = new JObject();
                 BlueprintFeature leaf = _leaves.Pair(FavoredClassCatalog.EffectPerformanceRange, target.Key).Full;
-                GrantFavoredClassRanks(_low, leaf, Low);
+                // The ranks were granted by ObserveTarget; granting again would add a rank.
+                int lowRank = _low.Descriptor.Progression.Features.GetRank(leaf);
+                row["lowRank"] = lowRank;
+                if (lowRank != Low)
+                    TextFailures.Add(target.Key + ": the two-step bard holds rank " + lowRank);
                 var entries = new JArray();
                 foreach (UnitEntityData unit in new[] { _control, _low })
                 {
@@ -493,7 +499,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (fact != null)
                         unit.Descriptor.RemoveFact(fact);
                 }
-                RemoveRanks(_low, leaf);
                 row["owners"] = entries;
                 return row;
             }
@@ -569,8 +574,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (AreaEffectEntityData data in _spawned.Where(value => value != null))
                     try
                     {
+                        AreaEffectView view = data.View;
                         data.ForceEnd();
                         data.Destroy();
+                        // The native destroyer only sweeps the loaded area and the
+                        // cross-scene state; fixture units hold their own scene
+                        // state, so the view object is destroyed exactly as the
+                        // destroyer would (its OnDestroy releases the ring).
+                        if (view != null && view.gameObject != null)
+                            UnityEngine.Object.Destroy(view.gameObject);
                     }
                     catch (Exception exception)
                     {
