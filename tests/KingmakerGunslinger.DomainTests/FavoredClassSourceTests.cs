@@ -15,7 +15,8 @@ namespace KingmakerGunslinger.DomainTests
             "disposable-favored-class-initiative-timing",
             "observe-favored-class-host-state",
             "disposable-favored-class-elemental-core",
-            "disposable-favored-class-mostly-human"
+            "disposable-favored-class-mostly-human",
+            "disposable-favored-class-elemental-advanced"
         };
 
         private static string Read(params string[] parts)

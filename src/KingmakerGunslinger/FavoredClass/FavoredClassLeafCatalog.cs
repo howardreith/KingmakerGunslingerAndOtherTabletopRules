@@ -166,6 +166,18 @@ namespace KingmakerGunslinger.FavoredClass
                 "+1 additional Stunning Fist attempt per day",
                 "Stunning Fist attempts are added only while this character has Stunning Fist (an archetype that replaces it, such as Call of the Wild's Zen Archer, gains none); grabs that make no combat maneuver check are unaffected.",
                 "+1 CMD against grapple"),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectPaladinAuras,
+                "Paladin.AuraAllyBonus", "Aura Bonus for Allies",
+                "+1 to the saving throw bonus your Aura of Courage and Aura of Resolve grant allies",
+                "It is part of the aura's own morale bonus, applies only while that aura applies (Courage from 3rd level, Resolve from 8th), and never changes the aura's range, your own immunities or other saves; where two paladins' auras overlap, the game still applies only the higher morale bonus. Not available to an archetype that replaces both auras, such as Divine Hunter."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectCompanionArmor,
+                "Ranger.CompanionNaturalArmor", "Animal Companion Armor",
+                "+1 natural armor bonus for your animal companion",
+                "It moves to a replacement companion, stacks with the companion's own natural armor and with Barkskin, and never changes your own AC. Not available to an archetype that replaces Hunter's Bond, such as Flamewarden, Freebooter or Stormwalker."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectEidolonArmor,
+                "Summoner.EidolonNaturalArmor", "Eidolon Armor",
+                "+1 natural armor bonus for your eidolon",
+                "It applies to your current eidolon, stacks with its own natural armor and never changes your own AC. The Summoner is provided by Call of the Wild."),
         };
 
         /// <summary>

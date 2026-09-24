@@ -84,4 +84,43 @@ namespace KingmakerGunslinger.FavoredClass
             return "Favored class race option";
         }
     }
+
+    /// <summary>
+    /// The improved class feature is still attainable: none of the unit's
+    /// archetypes of the host class removes every listed feature (O06: both
+    /// paladin auras; O07: the Hunter's Bond that grants the companion).
+    /// Earlier, dormant investment in a feature gained later stays legal.
+    /// </summary>
+    public sealed class PrerequisiteFavoredClassFeatureAvailable : Prerequisite
+    {
+        public BlueprintCharacterClass CharacterClass;
+        public BlueprintFeature[] Features;
+
+        public override bool Check(FeatureSelectionState selectionState, UnitDescriptor unit,
+            LevelUpState state)
+        {
+            if (unit == null || CharacterClass == null || Features == null || Features.Length == 0)
+                return false;
+            ClassData data = unit.Progression.GetClassData(CharacterClass);
+            BlueprintArchetype[] archetypes = data == null ? new BlueprintArchetype[0] :
+                System.Linq.Enumerable.ToArray(data.Archetypes);
+            return System.Linq.Enumerable.Any(Features, feature => feature != null &&
+                !System.Linq.Enumerable.Any(archetypes, archetype => Removes(archetype, feature)));
+        }
+
+        private static bool Removes(BlueprintArchetype archetype, BlueprintFeature feature)
+        {
+            if (archetype == null || archetype.RemoveFeatures == null)
+                return false;
+            return System.Linq.Enumerable.Any(archetype.RemoveFeatures, entry => entry != null &&
+                entry.Features != null && entry.Features.Contains(feature));
+        }
+
+        public override string GetUIText()
+        {
+            return "Can gain " + string.Join(" or ", System.Linq.Enumerable.ToArray(
+                System.Linq.Enumerable.Select(Features ?? new BlueprintFeature[0],
+                    feature => feature == null ? "?" : feature.Name)));
+        }
+    }
 }

@@ -97,6 +97,32 @@ namespace KingmakerGunslinger.FavoredClass
                 "9c56579186ef4fdba0f07d956b1cb9a5", "BlueprintFeature"),
             new FavoredClassIdentity("KMG.FavoredClass.Monk.GrappleStunning.Full",
                 "ca51bd6d19b241e48f05e6acf892a5f1", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Paladin.AuraAllyBonus.Partial",
+                "076fb613ebba4c54b3bcd3edbf841fa6", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Paladin.AuraAllyBonus.Full",
+                "4c88771d0d5b4348843d1011d7ae242e", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Paladin.AuraAllyBonus.StepsProperty",
+                "604f0f1bae3041618aa08b6348a088e6", "BlueprintUnitProperty"),
+            new FavoredClassIdentity("KMG.FavoredClass.Ranger.CompanionNaturalArmor.Partial",
+                "a2fa12fa25a848c7b297a515e745865c", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Ranger.CompanionNaturalArmor.Full",
+                "4dda167346da47d7b8ee82244229df75", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Ranger.CompanionNaturalArmor.PetFeature",
+                "5c47cb4deec546289e7302295b4efae2", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Summoner.EidolonNaturalArmor.Partial",
+                "c8d050714c6c4def9e15f49dc9ea52b4", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Summoner.EidolonNaturalArmor.Full",
+                "02c00d3cf652431a93f0248c9a5d9c96", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature",
+                "563c6a25ff824d14a6bfc8012d62e46a", "BlueprintFeature"),
+        };
+
+        /// <summary>Owned helper identities that are not menu leaves.</summary>
+        internal static readonly string[] AuxiliarySymbols =
+        {
+            "KMG.FavoredClass.Paladin.AuraAllyBonus.StepsProperty",
+            "KMG.FavoredClass.Ranger.CompanionNaturalArmor.PetFeature",
+            "KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature"
         };
 
         internal static IList<FavoredClassIdentity> All

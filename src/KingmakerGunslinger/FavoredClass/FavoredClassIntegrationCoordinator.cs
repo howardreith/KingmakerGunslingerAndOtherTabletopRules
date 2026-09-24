@@ -29,6 +29,7 @@ namespace KingmakerGunslinger.FavoredClass
         private static FavoredClassPublication _publication;
         private static FavoredClassHostHandles _host;
         private static FavoredClassSettingsResult _settings;
+        private static FavoredClassAuraPublication _aura;
 
         internal static FavoredClassPublication Publication
         {
@@ -38,6 +39,12 @@ namespace KingmakerGunslinger.FavoredClass
         internal static FavoredClassHostHandles Host
         {
             get { lock (Gate) return _host; }
+        }
+
+        /// <summary>O06's native aura read point, when committed.</summary>
+        internal static FavoredClassAuraPublication Aura
+        {
+            get { lock (Gate) return _aura; }
         }
 
         /// <summary>The settings resolution the effective profile came from.</summary>
@@ -158,6 +165,17 @@ namespace KingmakerGunslinger.FavoredClass
                         host.Decision.ToString(), 0, null), checkpoint);
                     return !pending;
                 }
+                // O06's native read point is validated before planning: a
+                // drifted aura contract withholds only that counter.
+                string auraProblem = null;
+                if (set.Pair(FavoredClassCatalog.EffectPaladinAuras, null) != null)
+                    try { FavoredClassAuraPublication.Check(BlueprintBootstrap.Library); }
+                    catch (Exception auraException) { auraProblem = auraException.Message; }
+                FavoredClassRuntime.SetUnavailableEffects(auraProblem == null ? new string[0] :
+                    new[] { FavoredClassCatalog.EffectPaladinAuras });
+                if (auraProblem != null)
+                    context.Logger.Warning(Phase, "native-contract.unavailable",
+                        "effect=" + FavoredClassCatalog.EffectPaladinAuras + ";" + auraProblem);
                 publication = FavoredClassPublication.Plan(set, host, profile,
                     context.FeatureModules.Active.Gunslinger, null);
                 // Ancestry scopes are registered before the publication
@@ -170,6 +188,14 @@ namespace KingmakerGunslinger.FavoredClass
                 context.Logger.Info(Phase, "ancestry-bridge.scoped",
                     "trackedHumanPrerequisites=" + bridged + ";permission=mostly-human-geniekin-only");
                 publication.Commit();
+                FavoredClassAuraPublication aura = null;
+                if (auraProblem == null && set.AuraStepsProperty != null)
+                {
+                    aura = FavoredClassAuraPublication.Apply(BlueprintBootstrap.Library, set.AuraStepsProperty);
+                    lock (Gate) _aura = aura;
+                    context.Logger.Info(Phase, "aura-read-point.committed",
+                        string.Join("|", aura.Evidence.ToArray()));
+                }
                 lock (Gate) _publication = publication;
                 Report(context, new FavoredClassIntegrationStatus(
                     FavoredClassIntegrationAvailability.Published,
@@ -181,6 +207,18 @@ namespace KingmakerGunslinger.FavoredClass
             catch (Exception exception)
             {
                 Hooks.FavoredClassHostRaceBridge.Clear();
+                FavoredClassAuraPublication committedAura;
+                lock (Gate)
+                {
+                    committedAura = _aura;
+                    _aura = null;
+                }
+                if (committedAura != null)
+                    try { committedAura.Rollback(); }
+                    catch (Exception auraRollbackException)
+                    {
+                        exception = new AggregateException(exception, auraRollbackException);
+                    }
                 if (publication != null && publication.IsCommitted)
                     try { publication.Rollback(); }
                     catch (Exception rollbackException)

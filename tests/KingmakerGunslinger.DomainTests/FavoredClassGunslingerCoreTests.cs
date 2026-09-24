@@ -39,6 +39,10 @@ namespace KingmakerGunslinger.DomainTests
                 Tuple.Create(FavoredClassCatalog.EffectUnarmedConfirmation, (string)null, 5, 10),
                 Tuple.Create(FavoredClassCatalog.EffectAquaticPenetration, (string)null, 20, 0),
                 Tuple.Create(FavoredClassCatalog.EffectGrappleStunning, (string)null, 6, 14),
+                // Phase 3 advanced (1/4, uncapped).
+                Tuple.Create(FavoredClassCatalog.EffectPaladinAuras, (string)null, 5, 15),
+                Tuple.Create(FavoredClassCatalog.EffectCompanionArmor, (string)null, 5, 15),
+                Tuple.Create(FavoredClassCatalog.EffectEidolonArmor, (string)null, 5, 15),
             };
             IList<FavoredClassLeafSpec> leaves = FavoredClassLeafCatalog.AllLeaves();
             Assertions.Equal(expected.Sum(counter => counter.Item4 > 0 ? 2 : 1), leaves.Count,
