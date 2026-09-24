@@ -295,6 +295,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FavoredClassLevelUpHarness.FillOthers(backend, reserved);
                     FillFcbSpells(backend);
                     RefreshFcbCensusScreen(presenter);
+                    // Every backend pick rebuilds the level-up state.
+                    state = FcbCensusRewardState(backend, visit) ?? state;
                 }
             }
             catch (Exception exception)
@@ -352,8 +354,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // the reward collection is switched to again until it shows.
                 var shown = new JArray();
                 record["shown"] = shown;
+                state = FcbCensusRewardState(backend, visit) ?? state;
                 for (int attempt = 0; attempt < 3 &&
-                    !ReferenceEquals(selector.SelectorLayerBody.CurrentSelectionState, state); attempt++)
+                    !SameFcbCensusState(selector.SelectorLayerBody.CurrentSelectionState, state); attempt++)
                 {
                     FeatureSelectionState current = selector.SelectorLayerBody.CurrentSelectionState;
                     shown.Add(current == null || current.Selection == null ? "none" :
@@ -426,6 +429,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["skillPointsRemaining"] = backend == null ? -1 : backend.State.SkillPointsRemaining,
                 ["blockers"] = backend == null ? new JArray() : FavoredClassLevelUpHarness.Blockers(backend),
             };
+        }
+
+        private static FeatureSelectionState FcbCensusRewardState(LevelUpController backend, FcbCensusVisit visit)
+        {
+            return backend.State.Selections.FirstOrDefault(value => !value.Selected &&
+                ReferenceEquals(value.Selection, visit.Reward));
+        }
+
+        /// <summary>The same selection state across a level-up state rebuild.</summary>
+        private static bool SameFcbCensusState(FeatureSelectionState a, FeatureSelectionState b)
+        {
+            return a != null && b != null && (ReferenceEquals(a, b) ||
+                (ReferenceEquals(a.Selection, b.Selection) && a.Index == b.Index));
         }
 
         /// <summary>Owned targets reveal the leaves that name them (performances, revelations, bloodline powers).</summary>
@@ -511,10 +527,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             JObject record, HashSet<BlueprintFeature> rendered)
         {
             var problems = new List<string>();
-            if (!ReferenceEquals(selector.SelectorLayerBody.CurrentSelectionState, state))
+            if (!SameFcbCensusState(selector.SelectorLayerBody.CurrentSelectionState, state))
                 problems.Add("the selector does not show the reward state");
             CharBuildSelectorItem[] rows = selector.SelectorLayerBody.SelectorItems.Where(value => value != null &&
-                value.gameObject.activeInHierarchy && ReferenceEquals(value.FeatureSelection, state) &&
+                value.gameObject.activeInHierarchy && SameFcbCensusState(value.FeatureSelection, state) &&
                 value.Feature != null && value.Feature.Feature != null).ToArray();
             var ours = new HashSet<BlueprintFeature>(visit.Pairs.SelectMany(pair => pair.Leaves));
             var allOurs = new HashSet<BlueprintFeature>(BlueprintBootstrap.FavoredClassLeaves.Pairs
