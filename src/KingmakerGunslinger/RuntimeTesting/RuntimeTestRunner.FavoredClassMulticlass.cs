@@ -53,7 +53,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Where(pair => pair.Value == null).Select(pair => pair.Key.name).ToArray()));
             else
             {
-                var owned = new HashSet<BlueprintFeature>(leaves.Pairs.SelectMany(pair => pair.Leaves));
+                var owned = new Dictionary<BlueprintFeature, string>();
+                foreach (FavoredClassLeafPair pair in leaves.Pairs)
+                    foreach (BlueprintFeature leaf in pair.Leaves)
+                        owned[leaf] = pair.HostClassGuid;
                 evidence["ordinary"] = RunFcbMulticlassCase("Human", FavoredClassAncestry.Human, null,
                     new[] { gunslinger.CharacterClass, fighter, gunslinger.CharacterClass, rogue },
                     new[] { gunslinger.CharacterClass }, rewardByClass, leaves, owned, failures);
@@ -67,7 +70,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReadExactMember(Game.Instance, "State"), "AllUnits")));
             string evidencePath = WriteFavoredClassEvidence("favored-class-multiclass.json", evidence);
             assertions.Add(Assertion("fcb-multiclass-rewards",
-                "each level of a favored class opens exactly its own host reward selection once and a pick closes it; levels of other classes open none; a Multitalented Half-elf earns rewards on both chosen classes and nowhere else; KMG counters appear only in the Gunslinger reward selection",
+                "each level of a favored class opens exactly its own host reward selection once and a pick closes it; levels of other classes open none; a Multitalented Half-elf earns rewards on both chosen classes and nowhere else; each class's reward selection lists only that class's own KMG counters",
                 Describe(evidence, failures), failures.Count == 0,
                 "native level-up visits: LevelUpState.Selections of the host reward selections"));
             assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
@@ -83,7 +86,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private JArray RunFcbMulticlassCase(string label, string ancestry, BlueprintCharacterClass multitalented,
             BlueprintCharacterClass[] visits, BlueprintCharacterClass[] favored,
             Dictionary<BlueprintCharacterClass, BlueprintFeatureSelection> rewardByClass,
-            FavoredClassBlueprintSet leaves, HashSet<BlueprintFeature> owned, IList<string> failures)
+            FavoredClassBlueprintSet leaves, Dictionary<BlueprintFeature, string> owned, IList<string> failures)
         {
             var library = BlueprintBootstrap.Library;
             BlueprintRace race = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
@@ -148,13 +151,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 rewardByClass[visit].AssetGuid);
                             if (state == null)
                                 throw new InvalidOperationException("the favored level has no open reward state");
-                            string[] kmg = FavoredClassLevelUpHarness.Items(controller, state)
-                                .Where(item => owned.Contains(item.Feature)).Select(item => item.Feature.name).ToArray();
+                            IFeatureSelectionItem[] kmg = FavoredClassLevelUpHarness.Items(controller, state)
+                                .Where(item => owned.ContainsKey(item.Feature)).ToArray();
                             row["kmgItems"] = kmg.Length;
-                            bool gunslingerReward = ReferenceEquals(visit, BlueprintBootstrap.GunslingerClass.CharacterClass);
-                            if (!gunslingerReward && kmg.Length != 0)
+                            string[] foreign = kmg.Where(item => owned[item.Feature] != visit.AssetGuid)
+                                .Select(item => item.Feature.name).ToArray();
+                            if (foreign.Length != 0)
                                 failures.Add(label + " visit " + (index + 1) + ": " + visit.name +
-                                    " reward selection lists KMG counters " + string.Join(",", kmg));
+                                    " reward selection lists another class's KMG counters " + string.Join(",", foreign));
+                            bool gunslingerReward = ReferenceEquals(visit, BlueprintBootstrap.GunslingerClass.CharacterClass);
                             BlueprintFeature pick = gunslingerReward && ancestry == FavoredClassAncestry.Human ?
                                 grit.Partial : hitPoint;
                             if (!FavoredClassLevelUpHarness.Select(controller, state, pick))
