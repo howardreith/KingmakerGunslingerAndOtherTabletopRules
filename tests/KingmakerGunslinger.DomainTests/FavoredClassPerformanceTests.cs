@@ -102,7 +102,8 @@ namespace KingmakerGunslinger.DomainTests
                 "blueprint.Shape != AreaEffectShape.Cylinder",
                 "FavoredClassPerformanceManifest.KeyForArea(blueprint.AssetGuid)",
                 "context.MaybeCaster",
-                "FavoredClassEarnedSteps.For(caster.Descriptor, FavoredClassCatalog.EffectPerformanceRange, key)",
+                "FavoredClassEarnedSteps.For(caster.Descriptor, FavoredClassCatalog.EffectPerformanceRange,",
+                "catch (Exception)",
                 "__instance.Shape as ScriptZoneCylinder",
                 "FavoredClassMechanicsPolicy.PerformanceRadiusMeters(blueprint.Size.Meters, steps)"
             })
