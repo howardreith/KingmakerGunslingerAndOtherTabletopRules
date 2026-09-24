@@ -31,10 +31,13 @@ namespace KingmakerGunslinger.DomainTests
             // progression variants (their exact identities are asserted by
             // BetterVendorsProgressionTests.ManifestAppendsExactlyTheNewIdentities).
             Assertions.Equal(1913 + KingmakerGunslinger.Acquisition
-                    .ProgressionWeaponCatalog.NewBlueprintCount, entries.Length,
+                    .ProgressionWeaponCatalog.NewBlueprintCount +
+                    KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount,
+                entries.Length,
                 "Current blueprint ledger count changed.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition
-                    .ProgressionWeaponCatalog.NewBlueprintCount,
+                    .ProgressionWeaponCatalog.NewBlueprintCount +
+                    KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount,
                 entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Current active identity count changed.");
