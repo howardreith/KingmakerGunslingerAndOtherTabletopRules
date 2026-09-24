@@ -215,12 +215,15 @@ namespace KingmakerGunslinger.FavoredClass
     /// bounded, cycle-safe walk of the live blueprint graph from its own
     /// revelation features: granted facts, level-gated features (walked, never
     /// moved), variants, touch deliveries, buffs, areas, activatable buffs
-    /// and their action lists. Only the Oracle engine's own class-level rank
-    /// configs (the sum of Oracle levels and Demon Hunter levels) are scaled.
-    /// Breakpoint tables, tier selections the audit holds back, explicitly
-    /// held-back reads and one-threshold resources never move, so no
-    /// revelation, ability or extra use is gained early. Read points reached
-    /// from two targets are withheld from both.
+    /// and their action lists. Every value the owned revelation computes from
+    /// the Oracle engine's class level (the sum of Oracle levels and Demon
+    /// Hunter levels) uses the effective level: its rank configs including
+    /// their steps, tiers and breakpoint tables, its resources including their
+    /// single-level thresholds, and its caster level and DC (charter 8.10).
+    /// Feature-granting level gates are never moved, so no revelation or
+    /// ability is gained early, and the possession BAB read is excluded (the
+    /// charter never raises BAB). Read points reached from two targets are
+    /// withheld from both.
     /// </summary>
     internal static class FavoredClassRevelationScopes
     {
@@ -415,10 +418,11 @@ namespace KingmakerGunslinger.FavoredClass
                     {
                         FavoredClassResourceFormula formula = FavoredClassResourceFormula.Read(resource, oracle);
                         if (formula != null && formula.Amount.ScalesWithOracle)
+                        {
                             scope.Resources[resource] = formula;
-                        else if (formula != null && (formula.Amount.LevelScalesWithOracle ||
-                                 formula.Amount.DivScalesWithOracle))
-                            scope.Evidence.Add("held-threshold-resource:" + resource.name);
+                            if (formula.Amount.IncreasedByLevelStartPlusDivStep && formula.Amount.PerStepIncrease == 0)
+                                scope.Evidence.Add("threshold-resource:" + resource.name);
+                        }
                         continue;
                     }
                     contexts.Add(blueprint);
@@ -449,15 +453,17 @@ namespace KingmakerGunslinger.FavoredClass
                         continue;
                     string key = blueprint.AssetGuid + "|" + config.Type;
                     string label = blueprint.name + "|" + config.Type;
+                    if (scope.Target.ExcludedRanks.Contains(key))
+                    {
+                        scope.Evidence.Add("excluded-read:" + label);
+                        continue;
+                    }
+                    scope.RankSources.Add(new KeyValuePair<ContextRankConfig, BlueprintScriptableObject>(config,
+                        blueprint));
                     if ((ContextRankProgression)RankProgression.GetValue(config) == ContextRankProgression.Custom)
-                        scope.Evidence.Add("held-breakpoint-table:" + label);
-                    else if (scope.Target.ExcludedRanks.Contains(key))
-                        scope.Evidence.Add("held-read:" + label);
-                    else if (tierRanks.Contains(key) && !scope.Target.IncludedTiers.Contains(key))
-                        scope.Evidence.Add("held-tier:" + label);
-                    else
-                        scope.RankSources.Add(new KeyValuePair<ContextRankConfig, BlueprintScriptableObject>(config,
-                            blueprint));
+                        scope.Evidence.Add("breakpoint-table:" + label);
+                    if (tierRanks.Contains(key))
+                        scope.Evidence.Add("tier:" + label);
                 }
         }
 

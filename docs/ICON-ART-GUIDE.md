@@ -189,6 +189,18 @@ and GUID check. The Teleportation module's independent registration-failure
 boundary is preserved. This table has no separate sprite cache or runtime art
 catalog parser.
 
+Favored-class counters and Mostly Human choices (0.0.139) are never published
+with a null icon. Each counter shows the exact thing it improves:
+`FavoredClassIconPolicy` names one donor per effect or target: a KMG feature,
+deed or firearm, a native feature or ability, or an optional-provider revelation,
+performance or eidolon feature. Provider donors are resolved by exact GUID when
+the publication commits, and a counter whose donor has no art is withheld from
+publication. The Mostly Human Standard entry keeps its parent race's art; the
+choice and its selector show the native Human race's art, or the parent race's
+art when the Human race has none. The trait is unpublished if any choice would
+stay blank. These are donor shares, not new identities; original art remains
+optional future work.
+
 The canonical catalog owns dispositions, protection, review decisions and exact
 mission consumer coverage. Unchanged legacy manifests remain export authorities;
 delegate by path/hash rather than keeping conflicting copies. The pilot and
