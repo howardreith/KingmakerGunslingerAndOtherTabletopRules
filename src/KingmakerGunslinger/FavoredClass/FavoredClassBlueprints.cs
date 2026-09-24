@@ -186,8 +186,7 @@ namespace KingmakerGunslinger.FavoredClass
         {
             string nativeSource;
             if (NativeIconSources.TryGetValue(effect.Id, out nativeSource))
-                return BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library, nativeSource,
-                    "native icon source for " + effect.Id).Icon;
+                return NativeIconSource(library, nativeSource, effect.Id).Icon;
             switch (effect.Id)
             {
                 case FavoredClassCatalog.EffectMisfire:
@@ -212,6 +211,20 @@ namespace KingmakerGunslinger.FavoredClass
                 default:
                     return null;
             }
+        }
+
+        // An icon source is a native feature or ability; presentation only,
+        // but still resolved exactly by identity and failing closed.
+        private static BlueprintUnitFact NativeIconSource(LibraryScriptableObject library, string guid,
+            string effectId)
+        {
+            BlueprintScriptableObject blueprint;
+            if (library.BlueprintsByAssetId == null ||
+                !library.BlueprintsByAssetId.TryGetValue(guid, out blueprint) ||
+                !(blueprint is BlueprintFeature || blueprint is BlueprintAbility))
+                throw new InvalidOperationException("Native icon source for " + effectId +
+                    " is missing or not a feature/ability: " + guid);
+            return (BlueprintUnitFact)blueprint;
         }
 
         private static BlueprintFeature CreateLeaf(FavoredClassLeafSpec spec, Sprite icon)
@@ -421,8 +434,9 @@ namespace KingmakerGunslinger.FavoredClass
                     bombs.name = "$" + full.name + "_BombDamage";
                     bombs.Divisor = divisor;
                     bombs.CapSteps = cap;
-                    FastBombs lineage = BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
-                        FastBombsBuffGuid, "native Fast Bombs").ComponentsArray.OfType<FastBombs>()
+                    FastBombs lineage = BlueprintLibraryLookup
+                        .RequireExact<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(library,
+                            FastBombsBuffGuid, "native Fast Bombs").ComponentsArray.OfType<FastBombs>()
                         .Single();
                     bombs.Bombs = lineage.Abilities.Where(value => value != null).ToArray();
                     if (bombs.Bombs.Length == 0)
