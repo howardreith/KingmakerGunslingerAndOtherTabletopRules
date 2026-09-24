@@ -19,6 +19,7 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet(
         'mod-load-smoke',
+        'observe-favored-class-host-state',
         'observe-optional-mod-compatibility',
         'observe-class-blueprint-contracts',
         'observe-gunslinger-presentation',

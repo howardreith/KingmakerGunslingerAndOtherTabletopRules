@@ -920,14 +920,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var row = new JObject();
             FavoredClassLeafPair pair = leaves.Pair(FavoredClassCatalog.EffectInitiative, null);
+            // Measured against the unit's own Initiative stat after both the
+            // rule and the initiative handlers ran, so the result does not
+            // depend on which of the two points applies the deed.
             Func<UnitEntityData, int> roll = unit =>
             {
                 var rule = new RuleInitiativeRoll(unit);
                 Rulebook.Trigger(rule);
-                int before = rule.Modifier;
                 EventBus.RaiseEvent<IUnitInitiativeHandler>(handler =>
                     handler.HandleUnitRollsInitiative(rule));
-                return rule.Modifier - before;
+                return rule.Modifier - unit.Stats.Initiative.ModifiedValue;
             };
             UnitEntityData control = create();
             UnitEntityData invested = create();
