@@ -20,7 +20,12 @@ $requiredFiles = @(
     'assets\bundles\kingmakergunslinger.firearms',
     'assets\bundles\kingmakergunslinger.elvenbranchedspear',
     'assets\bundles\kingmakergunslinger.easternweapons',
-    'assets\bundles\asset-bundle-manifest.json'
+    'assets\bundles\asset-bundle-manifest.json',
+    # The Pteranodon replacement visual ships as mesh data plus its painted
+    # albedo rather than an AssetBundle: no bind poses, no material, no
+    # editor dependency.
+    'assets\pteranodon\pteranodon-mesh.json',
+    'assets\pteranodon\pteranodon-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -69,6 +74,8 @@ $allowedRelativePaths = @{
     'assets\bundles\kingmakergunslinger.elvenbranchedspear' = $true
     'assets\bundles\kingmakergunslinger.easternweapons' = $true
     'assets\bundles\asset-bundle-manifest.json' = $true
+    'assets\pteranodon\pteranodon-mesh.json' = $true
+    'assets\pteranodon\pteranodon-albedo.png' = $true
 }
 
 $unexpected = @()
