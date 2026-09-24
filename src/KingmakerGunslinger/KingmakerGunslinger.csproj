@@ -219,6 +219,7 @@
     <Compile Include="FavoredClass\FavoredClassLeafCatalog.cs" />
     <Compile Include="FavoredClass\FavoredClassIdentityCatalog.cs" />
     <Compile Include="FavoredClass\FavoredClassIntegrationStatus.cs" />
+    <Compile Include="FavoredClass\FavoredClassSettings.cs" />
     <Compile Include="FavoredClass\FavoredClassRuntime.cs" />
     <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassGritResourceBonus.cs" />
