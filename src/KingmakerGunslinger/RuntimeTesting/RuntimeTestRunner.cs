@@ -25641,7 +25641,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int initialGrit = -1, afterPositiveGrit = -1,
                 withBefore = -1, withAfter = -1,
                 withDuplicate = -1, emptyGrit = -1, emptyBefore = -1,
-                emptyAfter = -1;
+                emptyAfter = -1, statInitiative = -1;
             bool cleaned = false; string stage = "construct-disposable";
             GunslingerInitiativeRuntimeDiagnostics.Reset();
             try
@@ -25654,6 +25654,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslinger.Grit.Resource);
 
                 stage = "positive-grit-roll";
+                statInitiative = unit.Descriptor.Stats.Initiative.ModifiedValue;
                 var withGrit = new RuleInitiativeRoll(unit);
                 Rulebook.Trigger(withGrit);
                 withBefore = withGrit.Modifier;
@@ -25698,7 +25699,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (unit == null || !ContainsReference(allUnits, unit));
             }
             string observed = "initialGrit=" + initialGrit + ";afterPositiveGrit=" +
-                afterPositiveGrit + ";withBefore=" +
+                afterPositiveGrit + ";stat=" + statInitiative + ";withBefore=" +
                 withBefore + ";withAfter=" + withAfter + ";withDuplicate=" +
                 withDuplicate + ";emptyGrit=" + emptyGrit + ";emptyBefore=" +
                 emptyBefore + ";emptyAfter=" + emptyAfter + ";applied=" +
@@ -25708,21 +25709,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 GunslingerInitiativeRuntimeDiagnostics.Faults;
             var assertions = new List<RuntimeTestAssertion>
             {
+                // The deed applies while the rule resolves, before the native
+                // combat-entry controller stores the result; the later
+                // IUnitInitiativeHandler replay is a duplicate no-op.
                 Assertion("initiative-positive-grit", "+2 native modifier; no spend",
                     observed, initialGrit > 0 && afterPositiveGrit == initialGrit &&
-                    withAfter == withBefore + 2,
-                    "exact RuleInitiativeRoll handler boundary"),
+                    withBefore == statInitiative + 2 && withAfter == withBefore,
+                    "RuleInitiativeRoll initiator OnEventDidTrigger boundary"),
                 Assertion("initiative-duplicate-stability", "same modifier after replay",
                     observed, withDuplicate == withAfter,
                     "weak rule-identity duplicate guard"),
                 Assertion("initiative-zero-grit", "+0 native modifier",
-                    observed, emptyGrit == 0 && emptyAfter == emptyBefore,
+                    observed, emptyGrit == 0 && emptyBefore == statInitiative &&
+                    emptyAfter == emptyBefore,
                     "native Gunslinger grit resource gate"),
+                // One application while the positive-grit rule resolves, two
+                // duplicate handler replays, and two rejections (the zero-grit
+                // rule and its handler replay).
                 Assertion("initiative-diagnostics",
-                    "applied=1;rejected=1;duplicates=1;faults=0", observed,
+                    "applied=1;rejected=2;duplicates=2;faults=0", observed,
                     GunslingerInitiativeRuntimeDiagnostics.Applied == 1 &&
-                    GunslingerInitiativeRuntimeDiagnostics.Rejected == 1 &&
-                    GunslingerInitiativeRuntimeDiagnostics.Duplicates == 1 &&
+                    GunslingerInitiativeRuntimeDiagnostics.Rejected == 2 &&
+                    GunslingerInitiativeRuntimeDiagnostics.Duplicates == 2 &&
                     GunslingerInitiativeRuntimeDiagnostics.Faults == 0,
                     "production initiative diagnostics"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",

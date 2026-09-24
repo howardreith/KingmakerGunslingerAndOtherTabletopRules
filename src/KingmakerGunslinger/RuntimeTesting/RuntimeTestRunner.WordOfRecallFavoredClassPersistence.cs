@@ -146,6 +146,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             var experienceProperty = typeof(UnitProgressionData).GetProperty("Experience");
             UnitEntityData unit = null;
+            UnitEntityData gunslingerUnit = null;
             LevelUpController backend = null;
             var trace = new List<object>();
             Application.logMessageReceived += ObserveTeleportSpellbookUiException;
@@ -224,7 +225,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!player.Party.Contains(unit))
                         throw new InvalidOperationException(
                             "The persistence Oracle did not enter the traveling party.");
+                    // L01: the Gunslinger favored-class subject shares the
+                    // same guarded disposable save.
+                    JObject gunslingerExpected;
+                    gunslingerUnit = PrepareGunslingerFcbPersistence(anchor, player,
+                        out gunslingerExpected);
                     _fcbPersistenceExpected = new JObject {
+                        ["gunslinger"] = gunslingerExpected,
                         ["unitId"] = unit.UniqueId,
                         ["unitName"] = "KMG FCB Persistence Oracle",
                         ["classId"] = oracle.AssetGuid,
@@ -248,6 +255,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (unit.HoldingState != null &&
                         unit.HoldingState.AllEntityData.Contains(unit))
                         unit.HoldingState.RemoveEntityData(unit);
+                    DetachGunslingerFcbPersistence(player, ref gunslingerUnit);
                     player.InvalidateCharacterLists(); player.UpdateCharacterLists();
                     captureStarterItems("persistence-prepare-starter-items");
                     foreach (var entry in starterDeltas)
@@ -332,6 +340,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             expectedNew.Count(value => string.Equals(value, recallId,
                                 StringComparison.Ordinal)) == 1,
                         new { knownSixth, expectedKnown, expectedNew, expectedOrdinaryNew });
+                    gunslingerUnit = VerifyGunslingerFcbPersistence(
+                        (JObject)plan.Expected["gunslinger"], player);
                     // Strategic cast from the reloaded save: exactly one
                     // sixth-level spontaneous slot, no scroll substitution.
                     game.LoadArea(game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint,
@@ -365,6 +375,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     backend.Cancel();
                 }
                 ui.LevelUpController = priorBackend; presenter.Unit = priorPresenterUnit;
+                if (gunslingerUnit != null && plan.Phase == "verify")
+                    player.PartyCharacters.RemoveAll(value =>
+                        value.UniqueId == gunslingerUnit.UniqueId);
+                else if (gunslingerUnit != null)
+                    DetachGunslingerFcbPersistence(player, ref gunslingerUnit);
                 if (unit != null && plan.Phase == "verify")
                 {
                     // The verify process leaves the loaded save untouched; the
