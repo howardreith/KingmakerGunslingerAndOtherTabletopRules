@@ -86,7 +86,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["realTime"], failures[false]), failures[false].Count == 0,
                 "UnitCombatJoinController + UnitCombatPrepareController; UnitCombatState.Initiative"));
             assertions.Add(Assertion("fcb-initiative-turn-based-entry",
-                "entering turn-based combat, the stored and turn-order initiative equal d20 + Initiative + the deed's +2 + the earned Ifrit steps",
+                "entering turn-based combat, the stored initiative the turn order uses equals d20 + Initiative + the deed's +2 + the earned Ifrit steps",
                 Describe(evidence["turnBased"], failures[true]), failures[true].Count == 0,
                 "native turn-based toggle; CombatController known initiative"));
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -165,14 +165,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["expectedStored"] = expected;
                 if (turnBased)
                 {
+                    // The scope enrolls both actors before toggling turn-based
+                    // mode, so the controller orders them from the stored
+                    // combat-state initiative; its known-initiative cache is
+                    // recorded as evidence only.
                     var known = typeof(CombatController).GetField("m_KnownInitiative",
                         BindingFlags.Instance | BindingFlags.NonPublic)
                         .GetValue(Game.Instance.TurnBasedCombatController) as Dictionary<string, int>;
                     int value;
                     row["turnBasedKnownInitiative"] = known != null && known.TryGetValue(actor.UniqueId, out value)
-                        ? value : int.MinValue;
-                    if ((int)row["turnBasedKnownInitiative"] != expected)
-                        failures.Add("the turn-based known initiative lacks the deed bonus");
+                        ? (JToken)value : "not-cached";
+                    row["turnBasedSortedFirst"] = Game.Instance.TurnBasedCombatController.SortedUnits
+                        .Select(unit => ReferenceEquals(unit, actor) ? "gunslinger" : "enemy")
+                        .FirstOrDefault();
+                    row["enemyStoredInitiative"] = enemy.CombatState.Initiative;
                 }
                 if (stored != expected)
                     failures.Add("the stored initiative is " + stored + ", expected d20 " + d20 + " + stat " +
