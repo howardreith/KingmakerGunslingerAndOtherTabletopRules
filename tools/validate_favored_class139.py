@@ -20,7 +20,7 @@ VERSION = "0.0.139"
 INFORMATIONAL_VERSION = "0.0.139-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1790
+DETERMINISTIC_TEST_COUNT = 1793
 STATIC_KEY = "favoredClassIntegration139"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -69,6 +69,14 @@ APPENDED = (
     ("KMG.FavoredClass.Summoner.EidolonNaturalArmor.Partial", "c8d050714c6c4def9e15f49dc9ea52b4"),
     ("KMG.FavoredClass.Summoner.EidolonNaturalArmor.Full", "02c00d3cf652431a93f0248c9a5d9c96"),
     ("KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature", "563c6a25ff824d14a6bfc8012d62e46a"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Partial", "917f52c439a14fa4ab27a38f3ed9c903"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Full", "5a0698585272446aa1d382f248662347"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.FireBlast.Partial", "d24a00e4558f4a8dacc00e30d519f829"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.FireBlast.Full", "53c4743882314561822fe7b188ab5c25"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.AirRay.Partial", "c914960ba2e24de68009307c87b6f3d5"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.AirRay.Full", "4d43fea45ce1455ba6a9bfaa1e9d4524"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.AirBlast.Partial", "2ab5c20220c746cfabb58e768a331590"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.AirBlast.Full", "505a86ad1c104a8e890df0adbc48d8c3"),
     ("KMG.MostlyHuman.Identity", "d71a4b4250914a7aa6d4bec53dfc768f"),
     ("KMG.MostlyHuman.Ifrit.Selection", "c0485fc76e514ad38c09961dbdc6efc7"),
     ("KMG.MostlyHuman.Ifrit.Standard", "7c508ee3415942bb91f584306d70bf70"),

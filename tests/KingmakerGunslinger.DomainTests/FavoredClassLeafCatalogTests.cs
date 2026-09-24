@@ -92,7 +92,8 @@ namespace KingmakerGunslinger.DomainTests
                 foreach (FavoredClassLeafSpec leaf in leaves)
                 {
                     Assertions.False(string.IsNullOrWhiteSpace(leaf.Name), leaf.Symbol + " name.");
-                    foreach (string id in effect.Rows)
+                    // A target names the routes that open it (all of the effect's rows unless restricted).
+                    foreach (string id in FavoredClassLeafCatalog.TargetRows(effectId, leaf.TargetKey))
                     {
                         FavoredClassSourceRow row = FavoredClassCatalog.Row(id);
                         if (!row.IsScheduled)

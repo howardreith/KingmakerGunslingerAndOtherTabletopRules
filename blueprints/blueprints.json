@@ -16001,6 +16001,70 @@
       "notes": "Hidden owned pet feature projected onto the master's current eidolon; its natural armor is the master's earned O08 steps."
     },
     {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Partial",
+      "guid": "917f52c439a14fa4ab27a38f3ed9c903",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective sorcerer level for Elemental Ray (Fire) (I08 Ifrit Sorcerer counter; one counter per power); published only into the Favored Class host's Sorcerer bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Full",
+      "guid": "5a0698585272446aa1d382f248662347",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective sorcerer level for Elemental Ray (Fire) per rank, max +2 (I08 Ifrit Sorcerer counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.FireBlast.Partial",
+      "guid": "d24a00e4558f4a8dacc00e30d519f829",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective sorcerer level for Elemental Blast (Fire) (I08 Ifrit Sorcerer counter; one counter per power); published only into the Favored Class host's Sorcerer bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.FireBlast.Full",
+      "guid": "53c4743882314561822fe7b188ab5c25",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective sorcerer level for Elemental Blast (Fire) per rank, max +2 (I08 Ifrit Sorcerer counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.AirRay.Partial",
+      "guid": "c914960ba2e24de68009307c87b6f3d5",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective sorcerer level for Elemental Ray (Air) (S06 Sylph Sorcerer counter; one counter per power); published only into the Favored Class host's Sorcerer bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.AirRay.Full",
+      "guid": "4d43fea45ce1455ba6a9bfaa1e9d4524",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective sorcerer level for Elemental Ray (Air) per rank, max +2 (S06 Sylph Sorcerer counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.AirBlast.Partial",
+      "guid": "2ab5c20220c746cfabb58e768a331590",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective sorcerer level for Elemental Blast (Air) (S06 Sylph Sorcerer counter; one counter per power); published only into the Favored Class host's Sorcerer bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.AirBlast.Full",
+      "guid": "505a86ad1c104a8e890df0adbc48d8c3",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective sorcerer level for Elemental Blast (Air) per rank, max +2 (S06 Sylph Sorcerer counter)."
+    },
+    {
       "symbol": "KMG.MostlyHuman.Identity",
       "guid": "d71a4b4250914a7aa6d4bec53dfc768f",
       "plannedType": "BlueprintFeature",
