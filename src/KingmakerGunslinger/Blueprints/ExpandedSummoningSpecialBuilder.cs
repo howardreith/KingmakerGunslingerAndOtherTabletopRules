@@ -433,8 +433,10 @@ namespace KingmakerGunslinger.Blueprints
                 List<BlueprintUnitFact> facts = (unit.AddFacts ??
                     Array.Empty<BlueprintUnitFact>()).Where(value => value != null &&
                         !MephitDonorElementFactGuids.Contains(value.AssetGuid)).ToList();
+                // Subtypes, immunities and vulnerabilities are all native
+                // BlueprintFeatures; the lookup is exact by type.
                 foreach (string guid in MephitVariantFactGuids(profile.Key))
-                    facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
+                    facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
                         library, guid, profile.Key + " element fact"));
                 facts.AddRange(grants);
                 unit.AddFacts = facts.ToArray();
