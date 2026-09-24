@@ -1148,6 +1148,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassAdvanced.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassOracle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPerformance.cs" />
+    <Compile Include="RuntimeTesting\FavoredClassPerformanceVisualProbe.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPerformanceVisuals.cs" />
     <Compile Include="RuntimeTesting\RapidReloadGateEvidenceRules.cs" />
     <Compile Include="RuntimeTesting\RapidReloadVisitCleanupRules.cs" />
     <Compile Include="RuntimeTesting\FirearmHigherFeatRootsRules.cs" />
