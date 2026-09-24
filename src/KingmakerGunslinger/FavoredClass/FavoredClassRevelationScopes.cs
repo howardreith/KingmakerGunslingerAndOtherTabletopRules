@@ -12,6 +12,7 @@ using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.PubSubSystem;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.ActivatableAbilities;
@@ -423,7 +424,7 @@ namespace KingmakerGunslinger.FavoredClass
                     contexts.Add(blueprint);
                     if (blueprint is BlueprintAbility && IsOracleParams(blueprint, oracle))
                         scope.ParamsAbilities.Add(blueprint);
-                    EnqueueFields(blueprint, current.Depth + 1, blueprint, pending);
+                    EnqueueFields(blueprint, current.Depth + 1, blueprint, pending, false);
                     foreach (BlueprintComponent component in blueprint.ComponentsArray ?? new BlueprintComponent[0])
                         if (component != null && !IsRestriction(component))
                             pending.Enqueue(new Node(component, current.Depth + 1, blueprint));
@@ -437,7 +438,8 @@ namespace KingmakerGunslinger.FavoredClass
                         tierRanks.Add(current.Owner.AssetGuid + "|" + value.ValueRank);
                 }
                 if (!current.Value.GetType().Name.StartsWith("ContextActionRemove", StringComparison.Ordinal))
-                    EnqueueFields(current.Value, current.Depth + 1, current.Owner, pending);
+                    EnqueueFields(current.Value, current.Depth + 1, current.Owner, pending,
+                        IsRuleReaction(current.Value));
             }
             foreach (BlueprintScriptableObject blueprint in contexts)
                 foreach (ContextRankConfig config in (blueprint.ComponentsArray ?? new BlueprintComponent[0])
@@ -459,32 +461,46 @@ namespace KingmakerGunslinger.FavoredClass
                 }
         }
 
-        private static void EnqueueFields(object holder, int depth, BlueprintScriptableObject owner, Queue<Node> pending)
+        /// <param name="actionsOnly">
+        /// For a rule reaction, only the actions it executes: its blueprint
+        /// references are filters (for example the channels a channel
+        /// resistance bonus applies against), never grants.
+        /// </param>
+        private static void EnqueueFields(object holder, int depth, BlueprintScriptableObject owner, Queue<Node> pending,
+            bool actionsOnly)
         {
             foreach (FieldInfo field in holder.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public))
             {
                 object value = field.GetValue(holder);
                 if (value == null)
                     continue;
-                if (Follows(value))
+                if (Follows(value, actionsOnly))
                     pending.Enqueue(new Node(value, depth, owner));
                 else if (value is IEnumerable && !(value is string))
                     foreach (object item in (IEnumerable)value)
-                        if (item != null && Follows(item))
+                        if (item != null && Follows(item, actionsOnly))
                             pending.Enqueue(new Node(item, depth, owner));
             }
         }
 
-        // Grants and executed effects only: conditions, prerequisites,
-        // restrictions, summoned units, classes and selections are never
-        // followed.
-        private static bool Follows(object value)
+        private static bool IsRuleReaction(object component)
         {
-            if (value is BlueprintFeatureSelection)
+            return component is BlueprintComponent && (component is IInitiatorRulebookSubscriber ||
+                component is ITargetRulebookSubscriber || component is IGlobalRulebookSubscriber);
+        }
+
+        // Grants and executed effects only: conditions, prerequisites,
+        // restrictions, rule-reaction filters, summoned units, classes and
+        // selections are never followed.
+        private static bool Follows(object value, bool actionsOnly)
+        {
+            if (value is GameAction || value is ActionList)
+                return true;
+            if (actionsOnly || value is BlueprintFeatureSelection)
                 return false;
             return value is BlueprintFeature || value is BlueprintAbility || value is BlueprintBuff ||
                 value is BlueprintActivatableAbility || value is BlueprintAbilityAreaEffect ||
-                value is BlueprintAbilityResource || value is GameAction || value is ActionList;
+                value is BlueprintAbilityResource;
         }
 
         private static bool IsRestriction(BlueprintComponent component)
