@@ -29,7 +29,8 @@ namespace KingmakerGunslinger.Classes
                 if (TrueGritRuntime.Evaluate(Owner,
                     TrueGritDeed.GunslingerInitiative, 0, true).Available)
                     grit = Math.Max(1, grit);
-                GunslingerInitiativeRuntime.Apply(rule, grit);
+                GunslingerInitiativeRuntime.Apply(rule, grit,
+                    FavoredClass.Mechanics.FavoredClassEarnedSteps.InitiativeBonus(Owner));
             }
             catch
             {

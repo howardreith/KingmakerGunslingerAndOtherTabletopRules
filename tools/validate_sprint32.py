@@ -12,6 +12,9 @@ import validate_sprint31
 VERSION = "0.0.32"
 INFORMATIONAL_VERSION = "0.0.32-s32-scatter-attacks"
 TEST_COUNT = 662
+# The aggregate's misfire-threshold token. A later milestone that
+# deliberately moves the aggregate to the effective threshold replaces it.
+SCATTER_MISFIRE_AGGREGATE_TOKEN = "IsMisfire(definition.MisfireValue)"
 
 
 def read(root: Path, relative: str) -> str:
@@ -68,7 +71,7 @@ def validate(root: Path, version: str = VERSION,
     require_tokens(
         read(root, "src/KingmakerGunslinger/Scatter/ScatterAttackVolleyService.cs"),
         ["ReferenceIdentityComparer.Instance", "IsScatter",
-         "IsMisfire(definition.MisfireValue)", "count != plan.TargetCount"],
+         SCATTER_MISFIRE_AGGREGATE_TOKEN, "count != plan.TargetCount"],
         "Sprint 32 scatter volley aggregation",
     )
     require_tokens(

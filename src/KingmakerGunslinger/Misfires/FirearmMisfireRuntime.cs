@@ -116,7 +116,9 @@ namespace KingmakerGunslinger.Misfires
                         Classes.FirearmTrainingRuntime.Resolve(wielder,
                             postDischarge.Definition.Kind).ReducedBrokenMisfire,
                         firearmItem as ItemEntityWeapon,
-                        firedAmmunition),
+                        firedAmmunition,
+                        FavoredClass.Mechanics.FavoredClassEarnedSteps.MisfireReduction(
+                            wielder, postDischarge.Definition.Kind)),
                     postDischarge.Definition.MisfireBurstRadiusFeet,
                     Normalize(postDischarge.ItemDisplayName),
                     postDischarge.Definition.Kind);

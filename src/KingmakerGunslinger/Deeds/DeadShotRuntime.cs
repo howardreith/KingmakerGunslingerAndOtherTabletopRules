@@ -121,7 +121,9 @@ namespace KingmakerGunslinger.Deeds
                     firearm.Definition.MisfireValue, firearm.EffectiveCondition,
                     Classes.FirearmTrainingRuntime.Resolve(casterEntity,
                         firearm.Definition.Kind).ReducedBrokenMisfire,
-                    firearm.Weapon, before.LoadedAmmunition);
+                    firearm.Weapon, before.LoadedAmmunition,
+                    global::KingmakerGunslinger.FavoredClass.Mechanics.FavoredClassEarnedSteps
+                        .MisfireReduction(casterEntity, firearm.Definition.Kind));
                 var probes = new RuleAttackRoll[decision.AttackBonuses.Length];
                 var observations = new DeadShotRollObservation[probes.Length];
                 for (int index = 0; index < probes.Length; index++)
