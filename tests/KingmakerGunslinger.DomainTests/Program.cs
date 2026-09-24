@@ -447,6 +447,38 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.quantity-same-kind", ExpandedSummoningCatalogTests.QuantityRulesAreExactAndSameKind),
             Case("expanded-summoning.alignment-policies", ExpandedSummoningCatalogTests.AlignmentPoliciesAreFamilyScoped),
             Case("expanded-summoning.catalog-guards", ExpandedSummoningCatalogTests.CatalogGuardsInvalidSpecs),
+            Case("expanded-summoning.baseline-frozen-surface", ExpandedSummoningBaselineInventoryTests.ShippedSurfaceMatchesFrozenBaseline),
+            Case("expanded-summoning.baseline-visible-decomposition", ExpandedSummoningBaselineInventoryTests.VisibleChoicesDecomposeExactly),
+            Case("expanded-summoning.baseline-parent-census", ExpandedSummoningBaselineInventoryTests.PerParentCensusReconciles),
+            Case("expanded-summoning.baseline-hidden-and-proxies", ExpandedSummoningBaselineInventoryTests.HiddenAndProxyCreaturesAreRecorded),
+            Case("expanded-summoning.baseline-observer-inert", ExpandedSummoningBaselineInventoryTests.ObserverIsInertAndDeterministic),
+            Case("expanded-summoning.ideal-roster-targets", ExpandedSummoningIdealRosterTests.ManifestMatchesCharterTargets),
+            Case("expanded-summoning.ideal-roster-placements", ExpandedSummoningIdealRosterTests.ProjectedPlacementsReconcileToCharter),
+            Case("expanded-summoning.ideal-roster-quantities", ExpandedSummoningIdealRosterTests.QuantitySemanticsMatchShippedRules),
+            Case("expanded-summoning.ideal-roster-identity-reuse", ExpandedSummoningIdealRosterTests.ShippedIdentitiesAreReusedNotDuplicated),
+            Case("expanded-summoning.ideal-roster-publishes-nothing", ExpandedSummoningIdealRosterTests.PlannedRowsPublishNothing),
+            Case("expanded-summoning.ideal-roster-isolation", ExpandedSummoningIdealRosterTests.NoPublicationPathReferencesTheManifest),
+            Case("expanded-summoning.menu-scale-dedup", ExpandedSummoningMenuScalabilityTests.ProjectedScaleIsDeduplicated),
+            Case("expanded-summoning.menu-scale-one-plan", ExpandedSummoningMenuScalabilityTests.EveryTierDerivesFromOneDeduplicatedPlan),
+            Case("expanded-summoning.menu-scale-order", ExpandedSummoningMenuScalabilityTests.ProjectedOrderMatchesTheShippedContract),
+            Case("expanded-summoning.menu-scale-rubric", ExpandedSummoningMenuScalabilityTests.BaselineAndProjectedScalesSatisfyTheRubric),
+            Case("expanded-summoning.menu-scale-stress-sample", ExpandedSummoningMenuScalabilityTests.StressSampleStaysBounded),
+            Case("expanded-summoning.menu-scale-every-count", ExpandedSummoningMenuScalabilityTests.EveryOptionCountRemainsBounded),
+            Case("expanded-summoning.coverage-native-represented", ExpandedSummoningCoverageTests.RetainedNativeCreaturesAreRepresented),
+            Case("expanded-summoning.coverage-union", ExpandedSummoningCoverageTests.RepresentationIsTheUnionOfBothCatalogs),
+            Case("expanded-summoning.coverage-frost-giant-split", ExpandedSummoningCoverageTests.FrostGiantSplitsAcrossFamilies),
+            Case("expanded-summoning.coverage-per-family", ExpandedSummoningCoverageTests.PerFamilyCoverageAgreesWithTheCatalogs),
+            Case("expanded-summoning.coverage-identities-untouched", ExpandedSummoningCoverageTests.ExistingIdentitiesAreUntouched),
+            Case("expanded-summoning.scenario-timeout-wiring", ExpandedSummoningScenarioWiringTests.WorkingSaveScenariosAreAllowedTheirTimeouts),
+            Case("expanded-summoning.scenario-pteranodon-wiring", ExpandedSummoningScenarioWiringTests.PteranodonCaptureRidesTheProvenScenario),
+            Case("expanded-summoning.scenario-runner-chains", ExpandedSummoningScenarioWiringTests.WorkingSaveScenariosAreNamedInTheRunnerChains),
+            Case("expanded-summoning.compatibility-scenarios-launchable", ExpandedSummoningCompatibilityMatrixTests.EveryDeclaredProfileScenarioIsLaunchable),
+            Case("expanded-summoning.compatibility-both-surfaces", ExpandedSummoningCompatibilityMatrixTests.EveryProfileObservesBothSummoningSurfaces),
+            Case("expanded-summoning.compatibility-working-save-scope", ExpandedSummoningCompatibilityMatrixTests.MechanicalScenarioRunsOnlyWhereSavesAreAllowed),
+            Case("expanded-summoning.compatibility-unattended-only", ExpandedSummoningCompatibilityMatrixTests.AutomatedMatrixNeverSchedulesSupervisedScenarios),
+            Case("pteranodon.mesh-data-well-formed", PteranodonMeshDataTests.ShippedMeshDataIsWellFormed),
+            Case("pteranodon.mesh-data-payload", PteranodonMeshDataTests.ShippedMeshDataPayloadIsConsistent),
+            Case("pteranodon.albedo-manifest", PteranodonMeshDataTests.ShippedAlbedoMatchesItsManifest),
             Case("expanded-summoning.merge-idempotent", SummonPublicationPolicyTests.MergePreservesOrderAndIsIdempotent),
             Case("expanded-summoning.merge-conflicts", SummonPublicationPolicyTests.MergeDeduplicatesExistingAndRejectsConflicts),
             Case("expanded-summoning.native-reconciliation", SummonPublicationPolicyTests.NativeDuplicateCatalogIsExact),
@@ -1820,6 +1852,31 @@ namespace KingmakerGunslinger.DomainTests
                 {
                     Console.Error.WriteLine(
                         "FAIL production firearm manifest and SoundBank artifact validation: " +
+                        exception);
+                    return 1;
+                }
+            }
+
+            if (args.Length == 2 && string.Equals(
+                args[0],
+                "--emit-summoning-baseline",
+                StringComparison.Ordinal))
+            {
+                try
+                {
+                    // Sprint 0 evidence: write the frozen structural census the
+                    // charter measures every later summoning sprint against.
+                    File.WriteAllText(args[1],
+                        Summoning.ExpandedSummoningBaselineInventory.Emit());
+                    Console.WriteLine(
+                        "PASS emitted the Expanded Summoning baseline census to " +
+                        args[1] + ".");
+                    return 0;
+                }
+                catch (Exception exception)
+                {
+                    Console.Error.WriteLine(
+                        "FAIL Expanded Summoning baseline census emission: " +
                         exception);
                     return 1;
                 }

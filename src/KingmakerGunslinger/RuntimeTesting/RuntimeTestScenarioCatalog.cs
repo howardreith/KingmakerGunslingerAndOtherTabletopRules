@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -106,6 +106,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning";
         internal const string DisposableExpandedSummoningPlayerPath =
             "disposable-expanded-summoning-player-path";
+        /// <summary>
+        /// Development-only. Opens the real variant menu at the roster's
+        /// projected worst-case size - 120 Summon Monster entries and 110
+        /// Nature's Ally - and measures it. The shipped observation of that
+        /// menu is supervised and can only report on the list that exists
+        /// today, which is the wrong shape for a scalability gate.
+        /// </summary>
+        internal const string DisposableExpandedSummoningProjectedMenu =
+            "disposable-expanded-summoning-projected-menu";
+        /// <summary>
+        /// Development-only. The mechanical Expanded Summoning run with the
+        /// Pteranodon visual's two fallback paths exercised on live units: the
+        /// first Pteranodon cast runs with the visual withdrawn, the second
+        /// with a fault injected after the donor renderer is suppressed, and
+        /// the rest run clean. Every other creature is cast exactly as in the
+        /// plain run.
+        /// </summary>
+        internal const string DisposableExpandedSummoningPteranodonFaultDrill =
+            "disposable-expanded-summoning-pteranodon-fault-drill";
         internal const string SummonSameTurnActivation =
             "summon-same-turn-activation";
         internal const string SummonSameTurnAcadamae =
@@ -341,6 +360,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-production-firearm-fallbacks";
         internal const string ObserveNativeFirearmRigContracts =
             "observe-native-firearm-rig-contracts";
+        internal const string ObserveSummonPteranodonViewContracts =
+            "observe-summon-pteranodon-view-contracts";
         internal const string DisposableFirearmVisualRigs =
             "disposable-firearm-visual-rigs";
         internal const string ObserveFirearmItemLifecycleContracts =
@@ -571,6 +592,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningPlayerPath,
+                DisposableExpandedSummoningProjectedMenu,
+                DisposableExpandedSummoningPteranodonFaultDrill,
                 SummonSameTurnActivation,
                 SummonSameTurnAcadamae,
                 SummonSameTurnMultiple,
@@ -704,6 +727,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlunderbussThunderingScatter,
                 ObserveProductionFirearmFallbacks,
                 ObserveNativeFirearmRigContracts,
+                ObserveSummonPteranodonViewContracts,
                 DisposableFirearmVisualRigs,
                 ObserveFirearmItemLifecycleContracts,
                 DisposableReloadAutocast,

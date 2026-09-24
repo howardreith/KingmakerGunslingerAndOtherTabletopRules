@@ -1768,7 +1768,7 @@
   "betterVendorsProgression138": {
     "baselineCommit": "202a41815f7ca80303e33c2f694804e7926efd8b",
     "branch": "codex/better-vendors-progression",
-    "deterministicTestCount": 1742,
+    "deterministicTestCount": 1774,
     "publicReleaseAuthorized": true,
     "ownerAuthorizedRelease": true,
     "ownerReleaseInstruction": "Run the final tests. IF they have issues, please address them. If not, please proceeding with committing, merging, pushing to remote, incrementing the version number and cutting a new release.",
