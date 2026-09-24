@@ -124,8 +124,9 @@ namespace KingmakerGunslinger.Summoning
         /// Cyclops Flash of Insight, bounded (Sprint 3). Tabletop: once per
         /// day, as an immediate action, the cyclops chooses the exact result
         /// of one of its own die rolls. Here: once per summoning, as a swift
-        /// action, its next attack roll in the round is an automatic hit and
-        /// critical threat. The confirmation roll stays ordinary.
+        /// action, its next attack in the round is an automatic critical hit:
+        /// Kingmaker's automatic-hit path never rolls, so the threat and its
+        /// confirmation can only be granted together there.
         /// </summary>
         internal const int CyclopsFlashOfInsightUses = 1;
         internal const int CyclopsFlashOfInsightRounds = 1;

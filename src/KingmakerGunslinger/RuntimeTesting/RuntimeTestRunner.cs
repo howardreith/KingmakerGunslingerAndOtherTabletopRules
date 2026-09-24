@@ -3816,6 +3816,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "ExpandedSummoningRuleCapturePostfix", BindingFlags.NonPublic |
                 BindingFlags.Static);
             UnitEntityData[] result = null;
+            UnitEntityData[] before = ExpandedSummoningKmgUnitsIn(caster.HoldingState);
+            string[] expectedNames = variants.Select(value =>
+                ExpandedSummoningInternalName(ExpandedSummoningIdentityCatalog
+                    .UnitSymbol(value.Creature))).ToArray();
+            var executions = new List<string>();
             try
             {
                 _context.Harmony.Patch(summonRuleMethod, null,
@@ -3834,15 +3839,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally
                     {
+                        executions.Add(_expandedSummoningLastAbilityExecution);
                         if (caster.Descriptor.HasFact(ability))
                             caster.Descriptor.RemoveFact(ability);
                     }
                 }
-                if (ExpandedSummoningRuleCapture.Count != variants.Length)
-                    throw new InvalidOperationException(purpose +
-                        " did not create exactly " + variants.Length +
-                        " native summons; observed " +
-                        ExpandedSummoningRuleCapture.Count + ".");
                 // The guarded scenario executes the native UnitUseAbility command
                 // synchronously from Unity Mod Manager's update callback, after
                 // the game's entity-creation controller has already ticked for
@@ -3850,6 +3851,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // asking SaveGame to serialize the loaded area.
                 Game.Instance.EntityCreator.Tick();
                 result = ExpandedSummoningRuleCapture.ToArray();
+                // The rule capture is the primary witness; the units that
+                // appeared in the caster's area are the second. When only the
+                // second agrees with the request, it is the result and the
+                // disagreement is recorded; when neither does, everything the
+                // fixture knows goes into the failure.
+                UnitEntityData[] appeared = ExpandedSummoningKmgUnitsIn(
+                    caster.HoldingState).Where(value => !before.Any(prior =>
+                        ReferenceEquals(prior, value))).ToArray();
+                bool appearedExact = appeared.Length == variants.Length &&
+                    appeared.Select(value => value.Blueprint == null ? string.Empty :
+                        value.Blueprint.name).OrderBy(value => value, StringComparer.Ordinal)
+                        .SequenceEqual(expectedNames.OrderBy(value => value,
+                            StringComparer.Ordinal));
+                if (result.Length != variants.Length)
+                {
+                    if (!appearedExact)
+                        throw new InvalidOperationException(purpose +
+                            " did not create exactly " + variants.Length +
+                            " native summons; captured=" + result.Length +
+                            ";appeared=" + appeared.Length + "[" + string.Join(",",
+                                appeared.Select(value => value.Blueprint == null ?
+                                    "<null>" : value.Blueprint.name).ToArray()) +
+                            "];expected=[" + string.Join(",", expectedNames) +
+                            "];executions=[" + string.Join(" | ", executions.ToArray()) +
+                            "];paused=" + Game.Instance.IsPaused + ";casterInCombat=" +
+                            caster.IsInCombat + ";casterConscious=" +
+                            caster.Descriptor.State.IsConscious + ";casterInState=" +
+                            caster.IsInState + ";areaUnits=" + (caster.HoldingState == null ?
+                                -1 : caster.HoldingState.AllEntityData.OfType<
+                                    UnitEntityData>().Count()) + ".");
+                    _expandedSummoningLastAbilityExecution +=
+                        ";capturedBy=state;ruleCaptured=" + result.Length;
+                    result = appeared;
+                }
                 if (result.Any(value => value.HoldingState == null ||
                     !ReferenceEquals(value.HoldingState, caster.HoldingState)))
                     throw new InvalidOperationException(purpose +
@@ -3859,10 +3894,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 _expandedSummoningRuleCaptureActive = false;
                 ExpandedSummoningRuleCapture.Clear();
-                _context.Harmony.Unpatch(summonRuleMethod,
-                    HarmonyPatchType.All, _context.ModId);
+                // Only this fixture's postfix comes off; the mod's own
+                // same-turn-activation postfix on the same rule stays.
+                _context.Harmony.Unpatch(summonRuleMethod, capturePostfix);
             }
             return result;
+        }
+
+        private static UnitEntityData[] ExpandedSummoningKmgUnitsIn(
+            Kingmaker.EntitySystem.SceneEntitiesState state)
+        {
+            if (state == null) return Array.Empty<UnitEntityData>();
+            return state.AllEntityData.OfType<UnitEntityData>().Where(value =>
+                value != null && !value.Destroyed && value.Blueprint != null &&
+                value.Blueprint.name.StartsWith("KMG_Summoning_Unit_",
+                    StringComparison.Ordinal)).ToArray();
         }
 
         private static UnitEntityData[] ExpandedSummoningPersistentUnits(
@@ -15337,7 +15383,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sprintThreeNaturalsExact,
                     "pony and horse on their native summoned donors with hoof limbs, the magical-beast owlbear and the humanoid cyclops chassis against the checked-in profiles"),
                 Assertion("expanded-summoning-cyclops-flash-of-insight",
-                    "granted swift supernatural ability; one-use resource; one-round armed state with auto-hit/threat and one-attack removal; AI brain",
+                    "granted swift supernatural ability; one-use resource; one-round armed state with automatic critical hit and one-attack removal; AI brain",
                     cyclopsObserved, cyclopsExact,
                     "Cyclops special surface beside the natural chassis"),
                 Assertion("expanded-summoning-parent-placements",
@@ -17366,9 +17412,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         hostile.Descriptor.Buffs.GetBuff(dismantled));
 
                 // Sprint 3: Cyclops Flash of Insight. Armed, a natural 1 -
-                // otherwise an automatic miss - hits and threatens a critical;
-                // the state ends with that one attack, so the next natural 1
-                // misses again. The confirmation roll is left to the dice.
+                // otherwise an automatic miss - is an automatic critical hit
+                // (the automatic-hit path grants threat and confirmation
+                // together); the state ends with that one attack, so the next
+                // natural 1 misses again.
                 UnitEntityData cyclops = CastExpandedSummoningCombatUnit(
                     blueprints, caster, SummonFamily.NaturesAlly, "cyclops", 5,
                     created, result);
@@ -17651,8 +17698,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             var attack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
             Rulebook.Trigger(attack);
             bool hit = attack.AttackRoll != null && attack.AttackRoll.IsHit;
+            // The automatic-hit path skips the d20 and IsCriticalRoll and
+            // records the critical only through IsCriticalConfirmed.
             criticalThreat = attack.AttackRoll != null &&
-                attack.AttackRoll.IsCriticalRoll;
+                (attack.AttackRoll.IsCriticalRoll ||
+                    attack.AttackRoll.IsCriticalConfirmed);
             int damageAfter = target.Descriptor.Damage;
             detail = weapon.Blueprint.name + ":roll=" + naturalRoll + ";hit=" +
                 hit + ";threat=" + criticalThreat + ";damage=" +
