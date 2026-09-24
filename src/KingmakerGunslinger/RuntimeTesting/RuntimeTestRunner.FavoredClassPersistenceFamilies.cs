@@ -265,7 +265,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var result = new JObject
             {
                 ["unitId"] = unit.UniqueId,
-                ["abilityGuid"] = abilityGuid,
+                ["abilityGuid"] = abilityGuid == null ? JValue.CreateNull() : (JToken)abilityGuid,
                 ["census"] = FcbCensus(unit),
             };
             var areas = new JArray();
@@ -310,6 +310,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var copy = (JObject)subject.DeepClone();
             copy.Remove("unitId");
+            copy.Remove("abilityGuid");
             return copy;
         }
 
