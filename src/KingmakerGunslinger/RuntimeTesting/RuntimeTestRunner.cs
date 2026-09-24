@@ -3770,7 +3770,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "Monster", "pony", "1" },
             new[] { "NaturesAlly", "horse", "2" },
             new[] { "NaturesAlly", "owlbear", "4" },
-            new[] { "NaturesAlly", "cyclops", "5" }
+            new[] { "NaturesAlly", "cyclops", "5" },
+            // Sprint 4: the Large plant and the Gargantuan worm footprints
+            new[] { "NaturesAlly", "shambling-mound", "6" },
+            new[] { "NaturesAlly", "purple-worm", "8" }
         };
 
         private static int ExpandedSummoningPersistenceFixtureCount
@@ -15309,6 +15312,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             string cyclopsObserved;
             bool cyclopsExact = ExpandedSummoningCyclopsSpecialExact(all,
                 out cyclopsObserved);
+            string[] sprintFourKeys = { "shambling-mound", "giant-flytrap", "purple-worm" };
+            bool sprintFourNaturalsExact = sprintFourKeys.All(key =>
+                ExpandedSummoningNaturalUnitExact(all,
+                    ExpandedSummoningNaturalProfiles.For(key)));
+            string grappleObserved;
+            bool grappleExact = ExpandedSummoningGrappleSpecialExact(all,
+                out grappleObserved);
             int distinctDonors = ExpandedSummoningDonorCatalog.All
                 .Select(value => value.Guid).Distinct(StringComparer.Ordinal)
                 .Count();
@@ -15386,6 +15396,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "granted swift supernatural ability; one-use resource; one-round armed state with automatic critical hit and one-attack removal; AI brain",
                     cyclopsObserved, cyclopsExact,
                     "Cyclops special surface beside the natural chassis"),
+                Assertion("expanded-summoning-sprint-four-plants", "exact",
+                    sprintFourNaturalsExact ? "exact" : "mismatch",
+                    sprintFourNaturalsExact,
+                    "plant-class shambling mound and giant flytrap and the gargantuan magical-beast purple worm against the checked-in profiles"),
+                Assertion("expanded-summoning-grapple-lifecycle",
+                    "shared hold and grappled buffs; owlbear/mound/flytrap/worm grab carriers with exact weapons, +4 grapple bonus, mound constrict 2d6+7, worm swallow and lifecycle; swallowed state cloned from the native worm",
+                    grappleObserved, grappleExact,
+                    "Sprint 4 shared summon grapple lifecycle surface"),
                 Assertion("expanded-summoning-parent-placements",
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount.ToString(),
                     publishedPlacements.ToString(), publishedPlacements ==
@@ -17447,6 +17465,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     flashAfter == 0 && flashArmed && flashArmedHit && flashThreat &&
                     flashSpent && !flashSpentHit;
 
+                // Sprint 4: the shared summon grapple lifecycle, driven with
+                // known hits. Mound: grab starts the native hold with the
+                // project buffs and constricts; a maintained round deals
+                // damage; removing the hold buff - the summon's end path -
+                // releases the target and nothing else. Safeguard: a party
+                // member held by a KMG summon is released when the party
+                // leaves. Worm: grab swallows through the native part;
+                // removing the traits buff spits the target out.
+                string grappleDetail;
+                bool grappleLifecycle = ExerciseExpandedSummoningGrappleLifecycle(
+                    blueprints, caster, hostile, created, result, out grappleDetail);
+
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
                     salamanderAttack && succubusAttack && pixieAttack &&
@@ -17455,7 +17485,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     danceBefore == 1 && danceAfter == 0 && danceApplied &&
                     sleepBefore == 16 && sleepAfter == 15 && sleepApplied &&
                     bebelithFirst && bebelithSecond && dismantledApplied &&
-                    armorUnchanged && cyclopsFlash;
+                    armorUnchanged && cyclopsFlash && grappleLifecycle;
+                result.Diagnostics.Add("grapple[" + grappleDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -17559,6 +17590,174 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value => value.Creature.Key == creatureKey &&
                     value.ParentTier == parentTier &&
                     value.Multiplicity == multiplicity);
+        }
+
+        /// <summary>
+        /// The Sprint 4 live grapple case. Every step is checked against the
+        /// native parts, the project buffs and the unit conditions, and the
+        /// target is left exactly as it was found.
+        /// </summary>
+        private static bool ExerciseExpandedSummoningGrappleLifecycle(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            var steps = new List<string>();
+            bool ok = true;
+            int damageBefore = hostile.Descriptor.Damage;
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Grapple_Hold");
+            BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+            BlueprintBuff swallowed = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name == "KMG_Summoning_Special_PurpleWorm_Swallowed");
+            BlueprintBuff moundTraits = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Special_ShamblingMound_CombatTraits");
+            BlueprintBuff wormTraits = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name == "KMG_Summoning_Special_PurpleWorm_CombatTraits");
+            try
+            {
+                UnitEntityData mound = CastExpandedSummoningCombatUnit(blueprints,
+                    caster, SummonFamily.NaturesAlly, "shambling-mound", 6, created,
+                    evidence);
+                mound.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                SummonGrabComponent moundGrab = ExpandedSummoningRuntimeComponent<
+                    SummonGrabComponent>(mound, moundTraits);
+                BlueprintItemWeapon slam = moundGrab.GrabWeapons[0];
+                // A hit with the wrong weapon, or by a summon already holding,
+                // never grabs.
+                bool refusedWrongWeapon = !moundGrab.TryGrab(hostile,
+                    mound.Body.PrimaryHand.MaybeWeapon == null ? null :
+                        blueprints.OfType<BlueprintItemWeapon>().First(value =>
+                            !ReferenceEquals(value, slam)), true);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool grabbed = moundGrab.TryGrab(hostile, slam, true);
+                Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget heldPart =
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>();
+                bool holdParts = mound.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartGrappleInitiator>() != null &&
+                    heldPart != null && ReferenceEquals(heldPart.Initiator.Value, mound);
+                bool holdBuffs = mound.Descriptor.HasFact(hold) &&
+                    hostile.Descriptor.HasFact(grappled) &&
+                    hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    hostile.Descriptor.State.HasCondition(UnitCondition.Entangled) &&
+                    mound.Descriptor.State.HasCondition(UnitCondition.CantAct);
+                int afterGrab = hostile.Descriptor.Damage;
+                bool constricted = afterGrab > damageBefore;
+                bool refusedWhileHolding = !moundGrab.TryGrab(hostile, slam, true);
+                SummonHoldComponent holdComponent = ExpandedSummoningRuntimeComponent<
+                    SummonHoldComponent>(mound, hold);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                holdComponent.OnNewRound();
+                bool maintained = hostile.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartGrappleTarget>() != null &&
+                    hostile.Descriptor.Damage > afterGrab;
+                // The summon's end path: the hold buff turns off.
+                mound.Descriptor.Buffs.RemoveFact(mound.Descriptor.Buffs.GetBuff(hold));
+                bool released = hostile.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartGrappleTarget>() == null &&
+                    !hostile.Descriptor.HasFact(grappled) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.Entangled);
+                // The game's grapple controller drops the initiator part on
+                // its next tick; the fixture does it now and checks the
+                // holder is free again.
+                mound.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>();
+                bool holderFree = !mound.Descriptor.State.HasCondition(
+                        UnitCondition.CantAct) &&
+                    !mound.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    !mound.Descriptor.HasFact(hold);
+                // Safeguard: hold again, then the party-leave sweep over the
+                // held unit releases it and the holder.
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool regrabbed = moundGrab.TryGrab(hostile, slam, true);
+                int swept = SummonGrappleAreaSafeguard.Sweep(true, new[] { hostile });
+                bool safeguard = regrabbed && swept == 1 &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() ==
+                        null &&
+                    mound.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() ==
+                        null &&
+                    !hostile.Descriptor.HasFact(grappled) &&
+                    !mound.Descriptor.HasFact(hold) &&
+                    !mound.Descriptor.State.HasCondition(UnitCondition.CantAct);
+                steps.Add("mound:refusedWrongWeapon=" + refusedWrongWeapon +
+                    ";grabbed=" + grabbed + ";parts=" + holdParts + ";buffs=" +
+                    holdBuffs + ";constrict=" + damageBefore + "->" + afterGrab +
+                    ";refusedWhileHolding=" + refusedWhileHolding + ";maintained=" +
+                    maintained + ";released=" + released + ";holderFree=" +
+                    holderFree + ";safeguard=" + safeguard + "(swept=" + swept + ")");
+                ok = ok && refusedWrongWeapon && grabbed && holdParts && holdBuffs &&
+                    constricted && refusedWhileHolding && maintained && released &&
+                    holderFree && safeguard;
+
+                UnitEntityData worm = CastExpandedSummoningCombatUnit(blueprints,
+                    caster, SummonFamily.NaturesAlly, "purple-worm", 8, created,
+                    evidence);
+                worm.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                SummonGrabComponent wormGrab = ExpandedSummoningRuntimeComponent<
+                    SummonGrabComponent>(worm, wormTraits);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool wormGrabbed = wormGrab.TryGrab(hostile, wormGrab.GrabWeapons[0],
+                    true);
+                Kingmaker.UnitLogic.Parts.UnitPartSwallowed swallowedPart =
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>();
+                Kingmaker.UnitLogic.Parts.UnitPartSwallowWhole swallower =
+                    worm.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowWhole>();
+                bool swallowedState = swallowedPart != null &&
+                    ReferenceEquals(swallowedPart.Swallower.Value, worm) &&
+                    hostile.Descriptor.HasFact(swallowed) &&
+                    hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
+                    hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    swallower != null && swallower.SwallowedUnits.Count == 1 &&
+                    mound.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() ==
+                        null;
+                bool refusedWhileSwallowed = !wormGrab.TryGrab(hostile,
+                    wormGrab.GrabWeapons[0], true);
+                // The summon's end path: the worm's traits turn off.
+                worm.Descriptor.Buffs.RemoveFact(worm.Descriptor.Buffs.GetBuff(
+                    wormTraits));
+                bool spatOut = hostile.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartSwallowed>() == null &&
+                    !hostile.Descriptor.HasFact(swallowed) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    swallower.SwallowedUnits.Count == 0;
+                steps.Add("worm:grabbed=" + wormGrabbed + ";swallowed=" +
+                    swallowedState + ";refusedWhileSwallowed=" +
+                    refusedWhileSwallowed + ";spatOut=" + spatOut);
+                ok = ok && wormGrabbed && swallowedState && refusedWhileSwallowed &&
+                    spatOut;
+            }
+            catch (Exception exception)
+            {
+                steps.Add("exception=" + exception.GetType().Name + ":" +
+                    exception.Message.Replace(';', ','));
+                ok = false;
+            }
+            finally
+            {
+                hostile.Descriptor.Damage = damageBefore;
+            }
+            detail = string.Join(";", steps.ToArray());
+            return ok;
+        }
+
+        /// <summary>
+        /// The runtime instance of a component on the unit's buff of the given
+        /// blueprint - the instance that knows its owner and its fact.
+        /// </summary>
+        private static T ExpandedSummoningRuntimeComponent<T>(UnitEntityData unit,
+            BlueprintBuff blueprint) where T : BlueprintComponent
+        {
+            Buff buff = unit.Descriptor.Buffs.GetBuff(blueprint);
+            if (buff == null) throw new InvalidOperationException(
+                "Missing buff " + blueprint.name + " on " + unit.Blueprint.name + ".");
+            T component = buff.Components.OfType<T>().SingleOrDefault();
+            if (component == null) throw new InvalidOperationException(
+                "Missing runtime component " + typeof(T).Name + " on " +
+                blueprint.name + ".");
+            return component;
         }
 
         private static UnitEntityData CastExpandedSummoningCombatUnit(
@@ -19461,6 +19660,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "Talon2d6", all.OfType<BlueprintItemWeapon>().Single(value =>
                         value.name == "KMG_Summoning_Natural_Talon2d6").AssetGuid },
                     { "Gore2d8", "de42c58801037b84c9d992634ddd7220" },
+                    { "SlamPlant2d6", "27eee74857c42db499b3a6b20cfa6211" },
+                    { "BiteLarge1d8", "ec35ef997ed5a984280e1a6d87ae80a8" },
+                    { "PurpleWormBite", "7e4b9b41a9358264d9e3c69c183ca0a2" },
+                    { "PurpleWormSting", "287cd06241fdaf8408410b226f744093" },
                     { "Slam2d6", "c2ce7bc3559b2024ea91ddf5bb321f0a" },
                     { "Hoof1d3", "085547b82eded104ba7e1870dd0563bf" },
                     { "Hoof1d4", "b0e472a49ff2a294f93faa3ab757a4a5" },
@@ -19477,7 +19680,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
                 { 9, "da6417809bdedfa468dd2fd0cc74be92" },
                 { 12, "0b2d92c6aac8093489dfdadf1e448280" },
-                { 14, "209a2920891b580418b4e5e80466e134" }
+                { 10, "4179c5c08d606a6439a62bf178b738e1" },
+                { 14, "209a2920891b580418b4e5e80466e134" },
+                { 22, "eee672c8f6555b445a89dbbb91361d64" }
             };
             IDictionary<string, string> factGuids =
                 new Dictionary<string, string>(StringComparer.Ordinal) {
@@ -19503,7 +19708,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "PowerAttack", "9972f33f977fc724c838e59641b2fca5" },
                     { "IronWill", "175d1577bb6c9a04baf88eec99c66334" },
                     { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" },
-                    { "Cleave", "d809b6c4ff2aaff4fa70d712a70f7d7b" }
+                    { "Cleave", "d809b6c4ff2aaff4fa70d712a70f7d7b" },
+                    { "FireResistance10", "24700a71dd3dc844ea585345f6dd18f6" },
+                    { "ElectricityImmunity", "cd1e5ab641a833c49994aff99db98952" },
+                    { "WeaponFocusSlam", "8c046dfa8d1c64247af0e830a5909510" },
+                    { "AcidResistance20", "416386972c8de2e42953533c4946599a" },
+                    { "Blindsight", "236ec7f226d3d784884f066aa4be1570" },
+                    { "PurpleWormPoison", "728446b9d0bf47144a1b621169299c2a" },
+                    { "CriticalFocus", "8ac59959b1b23c347a0361dc97cc786d" }
                 };
             string[] expectedFacts = profile.Facts.Select(value =>
                 factGuids[value]).Concat(profile.NaturalArmor == 0
@@ -19605,6 +19817,94 @@ namespace KingmakerGunslinger.RuntimeTesting
                 resourceGrant && icon;
         }
 
+        private static bool ExpandedSummoningGrappleSpecialExact(
+            BlueprintScriptableObject[] all, out string observed)
+        {
+            BlueprintBuff hold = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Special_Grapple_Hold");
+            BlueprintBuff grappled = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+            BlueprintBuff swallowed = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Special_PurpleWorm_Swallowed");
+            BlueprintBuff nativeSwallowed = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.AssetGuid == "368d1df7c1d0267459a584bf23ccadc8");
+            if (hold == null || grappled == null || swallowed == null ||
+                nativeSwallowed == null)
+            {
+                observed = "missing:" + (hold == null ? "hold;" : "") +
+                    (grappled == null ? "grappled;" : "") +
+                    (swallowed == null ? "swallowed;" : "") +
+                    (nativeSwallowed == null ? "native-swallowed" : "");
+                return false;
+            }
+            bool holdExact = hold.ComponentsArray.Length == 1 &&
+                hold.ComponentsArray.OfType<SummonHoldComponent>().Count() == 1;
+            bool grappledExact = grappled.ComponentsArray.Length == 1 &&
+                grappled.ComponentsArray.OfType<Kingmaker.UnitLogic.FactLogic
+                    .AddCondition>().Count(value => value.Condition ==
+                        UnitCondition.Entangled) == 1;
+            bool swallowedExact = swallowed.ComponentsArray.Length ==
+                    nativeSwallowed.ComponentsArray.Length &&
+                swallowed.ComponentsArray.Select(value => value.GetType())
+                    .SequenceEqual(nativeSwallowed.ComponentsArray.Select(
+                        value => value.GetType())) &&
+                swallowed.ComponentsArray.All(value => !nativeSwallowed
+                    .ComponentsArray.Any(native => ReferenceEquals(native, value)));
+            var rows = new List<string>();
+            bool carriers = true;
+            foreach (string[] spec in new[] {
+                new[] { "Owlbear", "c76f72a862d168d44838206524366e1c", "0", "0", "hold" },
+                new[] { "ShamblingMound", "27eee74857c42db499b3a6b20cfa6211", "2", "7", "hold" },
+                new[] { "GiantFlytrap", "ec35ef997ed5a984280e1a6d87ae80a8", "0", "0", "hold" },
+                new[] { "PurpleWorm", "7e4b9b41a9358264d9e3c69c183ca0a2", "0", "0", "swallow" } })
+            {
+                BlueprintUnit unit = all.OfType<BlueprintUnit>().SingleOrDefault(
+                    value => value.name == "KMG_Summoning_Unit_" + spec[0]);
+                BlueprintBuff traits = all.OfType<BlueprintBuff>().SingleOrDefault(
+                    value => value.name == "KMG_Summoning_Special_" + spec[0] +
+                        "_CombatTraits");
+                if (unit == null || traits == null)
+                {
+                    rows.Add(spec[0] + "=missing");
+                    carriers = false;
+                    continue;
+                }
+                SummonGrabComponent grab = traits.ComponentsArray
+                    .OfType<SummonGrabComponent>().SingleOrDefault();
+                Kingmaker.Designers.Mechanics.Facts.ManeuverBonus bonus = traits
+                    .ComponentsArray.OfType<Kingmaker.Designers.Mechanics.Facts
+                        .ManeuverBonus>().SingleOrDefault();
+                bool swallower = spec[4] == "swallow";
+                bool lifecycle = traits.ComponentsArray.OfType<
+                    SummonSwallowLifecycleComponent>().Count() == (swallower ? 1 : 0);
+                bool grabExact = grab != null && grab.GrabWeapons != null &&
+                    grab.GrabWeapons.Length == 1 && grab.GrabWeapons[0] != null &&
+                    grab.GrabWeapons[0].AssetGuid == spec[1] &&
+                    ReferenceEquals(grab.HoldBuff, hold) &&
+                    ReferenceEquals(grab.GrappledBuff, grappled) &&
+                    (swallower ? ReferenceEquals(grab.SwallowedBuff, swallowed) :
+                        grab.SwallowedBuff == null) &&
+                    grab.ConstrictDiceCount == int.Parse(spec[2],
+                        System.Globalization.CultureInfo.InvariantCulture) &&
+                    grab.ConstrictBonus == int.Parse(spec[3],
+                        System.Globalization.CultureInfo.InvariantCulture);
+                bool bonusExact = bonus != null && bonus.Type == CombatManeuver.Grapple &&
+                    bonus.Bonus == ExpandedSummoningSpecialProfiles
+                        .SummonGrabManeuverBonus;
+                bool onUnit = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                    .Contains(traits);
+                bool row = grabExact && bonusExact && lifecycle && onUnit &&
+                    traits.ComponentsArray.Length == (swallower ? 3 : 2);
+                carriers = carriers && row;
+                rows.Add(spec[0] + "=" + (row ? "exact" : "grab=" + grabExact +
+                    ",bonus=" + bonusExact + ",lifecycle=" + lifecycle + ",onUnit=" +
+                    onUnit));
+            }
+            observed = "hold=" + holdExact + ";grappled=" + grappledExact +
+                ";swallowed=" + swallowedExact + ";" + string.Join(";", rows.ToArray());
+            return holdExact && grappledExact && swallowedExact && carriers;
+        }
+
         private static bool ExpandedSummoningIsForbiddenReference(
             BlueprintScriptableObject blueprint)
         {
@@ -19645,7 +19945,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Special_Cyclops_FlashOfInsightAi" ||
                 blueprint.name ==
-                    "KMG_Summoning_Special_Cyclops_Brain")
+                    "KMG_Summoning_Special_Cyclops_Brain" ||
+                blueprint.name == "KMG_Summoning_Special_Grapple_Hold" ||
+                blueprint.name == "KMG_Summoning_Special_Grapple_Grappled" ||
+                blueprint.name == "KMG_Summoning_Special_Owlbear_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_ShamblingMound_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_GiantFlytrap_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_PurpleWorm_CombatTraits" ||
+                blueprint.name == "KMG_Summoning_Special_PurpleWorm_Swallowed")
                 return false;
             return SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
                 blueprint.name);

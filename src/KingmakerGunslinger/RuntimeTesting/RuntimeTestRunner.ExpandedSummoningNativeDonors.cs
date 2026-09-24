@@ -123,6 +123,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     10);
             }
             document["deepGraphs"] = deep;
+            // Sprint 5 onward: exact blueprints looked up by name (the audit's
+            // keyword lists do not carry them), dumped the same way with their
+            // GUIDs so the mephit pack is wired from proven identities.
+            var named = new JObject();
+            var byName = BlueprintBootstrap.Library.GetAllBlueprints()
+                .Where(value => value != null && !string.IsNullOrEmpty(value.name))
+                .GroupBy(value => value.name, StringComparer.Ordinal)
+                .ToDictionary(group => group.Key, group => group.ToArray(),
+                    StringComparer.Ordinal);
+            foreach (string name in DeepGraphNames)
+            {
+                BlueprintScriptableObject[] matches;
+                if (!byName.TryGetValue(name, out matches) || matches.Length == 0)
+                {
+                    named[name] = "<missing>";
+                    continue;
+                }
+                var entry = new JObject();
+                entry["count"] = matches.Length;
+                entry["guids"] = new JArray(matches.Select(value => value.AssetGuid +
+                    ":" + value.GetType().Name).ToArray());
+                entry["graph"] = DescribeGraph(matches[0], 0,
+                    new HashSet<object>(NativeDonorReferenceComparer.Instance), 6);
+                named[name] = entry;
+            }
+            document["namedGraphs"] = named;
 
             string path = Path.Combine(_request.EvidenceDirectory,
                 "native-donor-audit.json");
@@ -319,6 +345,36 @@ namespace KingmakerGunslinger.RuntimeTesting
             "2131842b04b532f4c9cb662c9315a37a", // PujaWolfSprintBuff
             "4d0b2a0971ca8994a8af20940285da2f", // PujaWolfSuperSprintBuff
             "f957b4444b6fb404e84ae2a5765797bb", // TrippingBite
+        };
+
+        /// <summary>
+        /// Blueprint names Sprints 5-8 need exact identities for: the sickened
+        /// and nauseated conditions, the energy vulnerabilities, the mephit
+        /// commons, the native mephit brains, and the pounce/rake kit.
+        /// </summary>
+        private static readonly string[] DeepGraphNames = {
+            "Sickened", "Nauseated", "Sickened_ExtraplanarCurse", "Fatigued",
+            "ColdVulnerability", "FireVulnerability", "ElectricityVulnerability",
+            "AcidVulnerability", "DRMagic5", "AcidImmunity", "SubtypeEarth",
+            "SubtypeWater", "SubtypeAir", "SubtypeFire", "MephitAirBrain",
+            "MephitEarthBrain", "MephitFireBrain", "MephitWaterBrain",
+            "SummonedCreatureVisual", "Unlootable", "Airborne", "Web",
+            "WebBuff", "SpiderWebImmunity", "TrippingBite", "Rake",
+            "PounceFeature", "CheetahSprint", "Sprint", "SmilodonRakeFeature",
+            "LeopardRakeFeature", "LionRakeFeature", "TigerRake", "RakeFeature",
+            "DireTigerRake", "CR4_TigerStandard", "CR2_CheetahStandard",
+            "CR3_LeopardStandard", "CR5_DireLion", "CR8_SmilodonStandard",
+            "CR1_LionCub", "MonitorLizardPoisonFeature", "GiantSpiderWeb",
+            "GiantSpiderWebAbility", "WebAbility", "SpiderWebAbility",
+            "SpiderGiantWeb", "BlindsightFeature", "Blindsense", "Tremorsense",
+            "TremorsenseFeature", "Blindsense30Feet", "Blindsight60Feet",
+            "GrizzlyBearGrab", "BearGrab", "DireBearGrab", "Grab", "GrabFeature",
+            "MonitorLizardGrab", "LizardGrab", "MagmaFormBuff", "Pyrotechnics",
+            "WindWall", "ChillMetal", "AcidArrowBuff", "GlitterdustBuff",
+            "BlurBuff", "StinkingCloudArea", "StinkingCloudBuff", "MagicMissile",
+            "AcidArrow", "Glitterdust", "Blur", "MephitAirBlur",
+            "MephitWaterStinkingCloud", "ScorchingRay", "PixieSleepArrowBuff",
+            "IrresistibleDance", "PixieDance"
         };
 
         private static JToken DescribeGraph(object value, int depth, HashSet<object> seen)

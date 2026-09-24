@@ -412,6 +412,24 @@
       "displayName": "Cyclops",
       "subjectPrompt": "A brutal cyclops bust from a low viewpoint, single amber eye under a heavy brow, pointed ears and lower tusks, hide pauldrons and a chest strap, a greataxe over the right shoulder, storm-grey radial backdrop.",
       "generator": "blender-procedural"
+    },
+    {
+      "key": "shambling-mound",
+      "displayName": "Shambling Mound",
+      "subjectPrompt": "A hulking mound of rotting vegetation rearing up with both slam limbs raised, a hollow dark face with a faint marsh glow, vines and leaves hanging off the mass, swamp-green radial backdrop.",
+      "generator": "blender-procedural"
+    },
+    {
+      "key": "giant-flytrap",
+      "displayName": "Giant Flytrap",
+      "subjectPrompt": "A huge flytrap seen from the front, the main trap gaping red at the viewer and rimmed with pale spines, two smaller traps behind on thick stalks, tendrils curling from the base, dark teal-green radial backdrop.",
+      "generator": "blender-procedural"
+    },
+    {
+      "key": "purple-worm",
+      "displayName": "Purple Worm",
+      "subjectPrompt": "A gargantuan purple worm rearing from the lower right, banded segmented body curving up to a round maw that faces the viewer, lips and two rings of teeth around a black throat, a stinger tail behind, dark violet radial backdrop.",
+      "generator": "blender-procedural"
     }
   ]
 }

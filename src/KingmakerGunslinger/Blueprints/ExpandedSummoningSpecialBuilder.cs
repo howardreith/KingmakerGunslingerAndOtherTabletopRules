@@ -119,6 +119,29 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.Cyclops.FlashOfInsightAi";
         private const string CyclopsBrainSymbol =
             "KMG.Summoning.Special.Cyclops.Brain";
+        private const string GrappleHoldSymbol =
+            "KMG.Summoning.Special.Grapple.Hold";
+        private const string GrappleGrappledSymbol =
+            "KMG.Summoning.Special.Grapple.Grappled";
+        private const string OwlbearUnitSymbol = "KMG.Summoning.Unit.Owlbear";
+        private const string OwlbearCombatTraitsSymbol =
+            "KMG.Summoning.Special.Owlbear.CombatTraits";
+        private const string ShamblingMoundUnitSymbol =
+            "KMG.Summoning.Unit.ShamblingMound";
+        private const string ShamblingMoundCombatTraitsSymbol =
+            "KMG.Summoning.Special.ShamblingMound.CombatTraits";
+        private const string GiantFlytrapUnitSymbol =
+            "KMG.Summoning.Unit.GiantFlytrap";
+        private const string GiantFlytrapCombatTraitsSymbol =
+            "KMG.Summoning.Special.GiantFlytrap.CombatTraits";
+        private const string PurpleWormUnitSymbol =
+            "KMG.Summoning.Unit.PurpleWorm";
+        private const string PurpleWormCombatTraitsSymbol =
+            "KMG.Summoning.Special.PurpleWorm.CombatTraits";
+        private const string PurpleWormSwallowedSymbol =
+            "KMG.Summoning.Special.PurpleWorm.Swallowed";
+        private const string NativePurpleWormSwallowedGuid =
+            "368d1df7c1d0267459a584bf23ccadc8";
 
         private const string NativeRayGuid = "33e8997912cf76b4c99dca0445082804";
         private const string NativeRayAiGuid = "dcfc5e9aec5bea540b36caf754989164";
@@ -293,6 +316,136 @@ namespace KingmakerGunslinger.Blueprints
                 PixieUnitSymbol), pixieSleepBow, pixieDance, pixieBrain,
                 pixieTraits);
             ConfigureCyclops(bySymbol);
+            ConfigureGrapplers(library, bySymbol);
+        }
+
+        /// <summary>
+        /// Sprint 4: the shared summon grapple lifecycle. Two shared buffs
+        /// (the holder's hold, the target's grappled state) and one
+        /// combat-traits carrier per grabbing creature - Owlbear claws,
+        /// Shambling Mound slams with constrict, Giant Flytrap bites, Purple
+        /// Worm bite that swallows - each with the tabletop +4 grab bonus
+        /// through the game's own ManeuverBonus. The worm's swallowed state is
+        /// an exact clone of the native PurpleWormSwallowed components. Runs
+        /// after the natural builder and only appends to the units.
+        /// </summary>
+        private static void ConfigureGrapplers(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintBuff hold = Require<BlueprintBuff>(bySymbol, GrappleHoldSymbol);
+            BlueprintBuff grappled = Require<BlueprintBuff>(bySymbol,
+                GrappleGrappledSymbol);
+            BlueprintBuff swallowed = Require<BlueprintBuff>(bySymbol,
+                PurpleWormSwallowedSymbol);
+            hold.name = InternalName(GrappleHoldSymbol);
+            hold.Stacking = StackingType.Replace;
+            hold.IsClassFeature = false;
+            hold.ComponentsArray = new BlueprintComponent[] {
+                ScriptableObject.CreateInstance<SummonHoldComponent>() };
+            BlueprintUnitFactAccess.Resolve().Configure(hold,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Grapple.Hold.Name", "Holding"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Grapple.Hold.Description",
+                    "This summoned creature is holding a grappled foe. Each round it makes a grapple check to maintain the hold, dealing its natural attack damage on a success and releasing on a failure; the foe may attempt to break free each round."),
+                null);
+            var entangled = ScriptableObject.CreateInstance<AddCondition>();
+            entangled.Condition = UnitCondition.Entangled;
+            grappled.name = InternalName(GrappleGrappledSymbol);
+            grappled.Stacking = StackingType.Replace;
+            grappled.IsClassFeature = false;
+            grappled.ComponentsArray = new BlueprintComponent[] { entangled };
+            BlueprintUnitFactAccess.Resolve().Configure(grappled,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Grapple.Grappled.Name", "Held"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Grapple.Grappled.Description",
+                    "Held by a summoned creature: entangled and unable to move until the hold is broken."),
+                null);
+            BlueprintBuff nativeSwallowed = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativePurpleWormSwallowedGuid,
+                    "native purple worm swallowed state");
+            swallowed.name = InternalName(PurpleWormSwallowedSymbol);
+            swallowed.Stacking = StackingType.Replace;
+            swallowed.IsClassFeature = false;
+            swallowed.ComponentsArray = (nativeSwallowed.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value => value != null)
+                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            BlueprintUnitFactAccess.Resolve().Configure(swallowed,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.PurpleWorm.Swallowed.Name",
+                    "Swallowed Whole"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.PurpleWorm.Swallowed.Description",
+                    "Swallowed by a summoned purple worm: crushed each round, unable to act, with a break-free attempt each round."),
+                null);
+
+            ConfigureGrabber(library, bySymbol, OwlbearUnitSymbol,
+                OwlbearCombatTraitsSymbol, "Owlbear", "Owlbear Grab",
+                "A claw hit lets the owlbear attempt to grab its foe.",
+                new[] { LargeClawGuid }, hold, grappled, null, 0, 0);
+            ConfigureGrabber(library, bySymbol, ShamblingMoundUnitSymbol,
+                ShamblingMoundCombatTraitsSymbol, "ShamblingMound",
+                "Shambling Mound Grab and Constrict",
+                "A slam hit lets the mound attempt to grab its foe; a held foe is constricted for 2d6+7 as the grab lands and each round the hold is maintained.",
+                new[] { "27eee74857c42db499b3a6b20cfa6211" }, hold, grappled, null,
+                ExpandedSummoningSpecialProfiles.ShamblingMoundConstrictDice,
+                ExpandedSummoningSpecialProfiles.ShamblingMoundConstrictBonus);
+            ConfigureGrabber(library, bySymbol, GiantFlytrapUnitSymbol,
+                GiantFlytrapCombatTraitsSymbol, "GiantFlytrap", "Giant Flytrap Grab",
+                "A bite hit lets the flytrap attempt to grab its foe.",
+                new[] { LargeBiteGuid }, hold, grappled, null, 0, 0);
+            ConfigureGrabber(library, bySymbol, PurpleWormUnitSymbol,
+                PurpleWormCombatTraitsSymbol, "PurpleWorm",
+                "Purple Worm Swallow Whole",
+                "A bite hit lets the worm attempt to grab its foe; success swallows the foe whole.",
+                new[] { "7e4b9b41a9358264d9e3c69c183ca0a2" }, hold, grappled,
+                swallowed, 0, 0);
+        }
+
+        private static void ConfigureGrabber(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            string unitSymbol, string traitsSymbol, string token,
+            string displayName, string description, string[] weaponGuids,
+            BlueprintBuff hold, BlueprintBuff grappled, BlueprintBuff swallowed,
+            int constrictDice, int constrictBonus)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol, traitsSymbol);
+            if (unit.ComponentsArray == null ||
+                unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
+                throw new InvalidOperationException(
+                    "The " + token + " chassis must be configured before its grab.");
+            var grab = ScriptableObject.CreateInstance<SummonGrabComponent>();
+            grab.GrabWeapons = weaponGuids.Select(guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(library,
+                    guid, token + " grab weapon")).ToArray();
+            grab.HoldBuff = hold;
+            grab.GrappledBuff = grappled;
+            grab.SwallowedBuff = swallowed;
+            grab.ConstrictDiceCount = constrictDice;
+            grab.ConstrictDiceType = DiceType.D6;
+            grab.ConstrictBonus = constrictBonus;
+            var bonus = ScriptableObject.CreateInstance<ManeuverBonus>();
+            bonus.Type = CombatManeuver.Grapple;
+            bonus.Bonus = ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus;
+            var components = new List<BlueprintComponent> { grab, bonus };
+            if (swallowed != null)
+                components.Add(ScriptableObject.CreateInstance<
+                    SummonSwallowLifecycleComponent>());
+            traits.name = InternalName(traitsSymbol);
+            traits.Stacking = StackingType.Replace;
+            traits.IsClassFeature = true;
+            traits.ComponentsArray = components.ToArray();
+            BlueprintUnitFactAccess.Resolve().Configure(traits,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".CombatTraits.Name",
+                    displayName),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".CombatTraits.Description",
+                    description), null);
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { traits }).ToArray();
         }
 
         /// <summary>

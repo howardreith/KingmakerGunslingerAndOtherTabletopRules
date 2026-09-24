@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts and Phase 1 additions rendered procedurally in Blender; no source images or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  81,
+    "count":  84,
     "icons":  [
                   {
                       "key":  "dog",
@@ -2331,6 +2331,60 @@
                                                "KMG.Summoning.Ability.SNA.Tier8.Cyclops.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.Cyclops.OneD4PlusOne",
                                                "KMG.Summoning.Unit.Cyclops"
+                                           ]
+                  },
+                  {
+                      "key":  "shambling-mound",
+                      "displayName":  "Shambling Mound",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/shambling-mound.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/shambling-mound.png",
+                      "sourceSha256":  "ba02ab5f4c55ee6d59ae01d6f2b6f5485b88ad4b866d577b24341e33cc61d0e2",
+                      "outputSha256":  "ada7978d2a31da033809a5fb6bd25bc75ea77ee2b9d7712049abca195938ad5d",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier6.ShamblingMound.One",
+                                               "KMG.Summoning.Ability.SNA.Tier7.ShamblingMound.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier8.ShamblingMound.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.ShamblingMound.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.ShamblingMound"
+                                           ]
+                  },
+                  {
+                      "key":  "giant-flytrap",
+                      "displayName":  "Giant Flytrap",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/giant-flytrap.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/giant-flytrap.png",
+                      "sourceSha256":  "fe7d7b87439ee240cee49108422d0f038cf8f149ccb5884e72f9273c3481b992",
+                      "outputSha256":  "ac8efbf7cc54e781589b87b06f0dadff3082ab7d245709d6a36afbfa1d5e248c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier7.GiantFlytrap.One",
+                                               "KMG.Summoning.Ability.SNA.Tier8.GiantFlytrap.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier9.GiantFlytrap.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.GiantFlytrap"
+                                           ]
+                  },
+                  {
+                      "key":  "purple-worm",
+                      "displayName":  "Purple Worm",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/purple-worm.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/purple-worm.png",
+                      "sourceSha256":  "4bff30711f698099d91bcac9ea4ae00f7bb3d9c49e8c98898c45dc0b99bbd61a",
+                      "outputSha256":  "cb235f3f9fbb4e865b17982abad1df6faad5c0a7ce884e130027430763f8e20d",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier8.PurpleWorm.One",
+                                               "KMG.Summoning.Ability.SNA.Tier9.PurpleWorm.OneD3",
+                                               "KMG.Summoning.Unit.PurpleWorm"
                                            ]
                   }
               ]
