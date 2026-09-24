@@ -529,7 +529,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("The Ranger companion-armor route is incomplete.");
             var reserved = new HashSet<string>(StringComparer.Ordinal) { reward.AssetGuid };
             BlueprintFeature[] picks = { armor.Partial, armor.Partial, armor.Partial, armor.Full };
-            UnitEntityData master = SpawnFcbFixture(fixtures, "RespecRanger", fixtures.Origin + fixtures.Direction * 6f);
+            UnitEntityData master = SpawnFcbCompanionFixture(fixtures, "RespecRanger",
+                fixtures.Origin + fixtures.Direction * 6f);
             foreach (object step in WaitFcbUnit(master)) yield return step;
             LevelFcbRespecSubject(master, oread, picks, reserved, failures, "respec-pet", null, ranger, reward,
                 GrantsFcbPet);
@@ -788,6 +789,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             fixtures.Units.Add(unit);
             unit.Descriptor.State.Immortality.Retain();
             unit.Descriptor.Stats.HitPoints.BaseValue = 200;
+            if (!unit.Descriptor.IsTurnedOn) unit.Descriptor.TurnOn();
+            PlaceFcbUnit(unit, position);
+            return unit;
+        }
+
+        /// <summary>
+        /// A native custom companion (a mercenary) in the anchor's state: the
+        /// native respec lets exactly these change ancestry, and their
+        /// companion spawns because they are in a state.
+        /// </summary>
+        private UnitEntityData SpawnFcbCompanionFixture(FcbLifecycleFixtures fixtures, string label, Vector3 position)
+        {
+            UnitEntityData unit = Game.Instance.EntityCreator.SpawnUnit(BlueprintRoot.Instance.CustomCompanion,
+                position, Quaternion.identity, fixtures.Anchor.HoldingState);
+            Game.Instance.EntityCreator.Tick();
+            if (unit == null || !unit.Descriptor.IsCustomCompanion())
+                throw new InvalidOperationException("The lifecycle fixture " + label + " is not a native custom companion.");
+            fixtures.Units.Add(unit);
+            unit.Descriptor.CustomName = "KMG FCB " + label;
+            unit.Descriptor.State.Immortality.Retain();
             if (!unit.Descriptor.IsTurnedOn) unit.Descriptor.TurnOn();
             PlaceFcbUnit(unit, position);
             return unit;
