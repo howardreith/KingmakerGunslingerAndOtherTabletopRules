@@ -68,12 +68,19 @@ Favored Class ships nine custom JSON rewards in `ZFavoredClass\Custom\`.
   invalid gives the charter defaults, reported).
 - Test fixes (`4c9409ba4`): bomb probe above the native damage floor; the
   menus scenario checks each counter's own class selection.
-- Latest candidate with native runs: `f2db844c2` (package `f3dac054…`, DLL
-  `5a278b75…`, MVID `04b7fb78-5fd9-4080-ae7c-36ae87b727fe`). On it: contract,
-  Gunslinger mechanics, grit and the L01 fresh-process persistence
-  transaction PASS; the elemental core passes menus/progressions and every
-  mechanic except the (since fixed) bomb probe; the menus run fails only on
-  the (since fixed) publication check. See `FAVORED-CLASS-COVERAGE.md`.
+- Phase 5 (`cc0168d89`): four-race Mostly Human trait (Option A) and the
+  scoped host ancestry bridge.
+- Phase 3 advanced and Phase 4: O06-O08 (`94cb93919`), I08/S06
+  (`07c21f29b`), I06/S04 (`9b3db78bf`, walk fix `76e0a1f11`), O01
+  (`6db62e57d`); L04 host-state follows the profile (`fece33038`).
+- Phase 7 (`ef250f877`): icon dispositions for every favored-class and
+  Mostly Human identity, `docs/FAVORED-CLASS-TARGET-MANIFEST.md`, fail-safe
+  guards on the two new postfixes.
+- Final local candidate: `ef250f877` (DLL `fe451f35…`, MVID
+  `2c9d8c5f-c424-4179-91cd-72ca85438c54`, package `5947ea17…`). Its full
+  guarded regression, L01 persistence and working-save smoke are recorded in
+  `FAVORED-CLASS-IMPLEMENTATION-REPORT.md` and `FAVORED-CLASS-COVERAGE.json`.
+  Status: PARTIAL — NOT RELEASE QUALIFIED; owner review pending.
 
 Read-only audit reports (private, not committed):
 `C:\Dev\KingmakerGunslingerLab\private\favored-class-mission\audits\` A–G.
@@ -109,25 +116,29 @@ CallOfTheWild and RacesUnleashed files and settings are never written.
 | 20260924T0208433668788Z | `9ee86bfbe` | `7fb6b259…` | `20260924T0208386740818Z` |
 | 20260924T0336453212821Z | `11b488be3` | `77d5a6e8…` | `20260924T0336405726039Z` (holds `7fb6b259…`: nothing foreign changed the tree in between) |
 | 20260924T0347379474215Z | `f2db844c2` | `5a278b75…` | `20260924T0347332630857Z` |
+| 20260924T0417550988006Z | `cc0168d89` | `bf21df18…` | `20260924T0417505303610Z` |
+| 20260924T0438148659964Z | `94cb93919` | `5dcac0cc…` | `20260924T0438102353175Z` |
+| 20260924T0452445149702Z | `07c21f29b` | `93de2dee…` | `20260924T0452399299405Z` |
+| 20260924T0534033280786Z | `9b3db78bf` | `d4c9535f…` | `20260924T0533587963124Z` |
+| 20260924T0549439890701Z | `6db62e57d` | `245d3c65…` | `20260924T0549393364348Z` |
+| 20260924T0601504282380Z | `ef250f877` | `fe451f35…` | `20260924T0601455989736Z` (final candidate) |
 
 The isolated H01 profile run (`compat-20260924T014026Z-1da92b038b7e`) staged
 and restored its own Mods tree transactionally (restoration verified by the
 profile runner: FeatureModules and CotW settings bytes restored).
 
+Temporary settings profiles wrote `Mods\KingmakerGunslinger\FavoredClassIntegration.json`
+only for their own runs and removed it afterwards (verified absent after each).
+
+Restoration of the owner's pre-mission install: VERIFIED 2026-09-24T06:18Z. `Mods\KingmakerGunslinger` was restored from `20260924T0027014050156Z` with `scripts\Restore-Live-Mod.ps1`: DLL `c6cccdac…`, Info.json `f66de05d…` and FeatureModules.json `6e24b278…` match, all 238 files are identical to the backup (path and SHA-256), `FavoredClassIntegration.json` is absent, and the Favored Class, Call of the Wild and Races Unleashed settings are unchanged.
+
 ## Next concrete actions
 
-1. Phase 5: the four-race Mostly Human companion trait (separate identity
-   path; optional-form Heritage-phase selection with an explicit Standard
-   entry first; shared hidden identity granted by AddFacts; Option A type
-   model), the scoped host `PrerequisiteRace.Check` bridge for the tracked
-   human FCB leaves, icon catalog consumers (native text, painting pending
-   owner), manifest identities, domain tests and a native scenario (E05–E08,
-   twelve heritages).
-2. Re-run elemental core and menus on the next candidate (probe/check fixes).
-3. Phase 6 native: third-party profile ON (temporary live settings file,
-   removed afterwards and byte-checked) and integration OFF (L04/L05).
-4. Phase 3 advanced: O06 paladin auras, O07 companion and O08 eidolon natural
-   armor, O01 performance range; Phase 4 Oracle revelations and Sorcerer
-   bloodline powers from audits F and G.
-5. Phase 7: machine catalog, implementation report, docs, icon dispositions,
-   final gates and owner-install restoration with byte checks.
+1. Owner review of the local candidate and the owner decisions in
+   `FAVORED-CLASS-BLOCKERS.md` (OD-1 … OD-10, D1, D2).
+2. If requested: the NOT RUN families (E11, E16, L02, L03, L06 native),
+   fresh-process persistence for the non-Gunslinger counters, the CotW-only
+   profiles (needs the missing fixture root, B2) and art for the 127
+   placeholder choices.
+3. Nothing is pushed, merged, tagged or published; those remain separate
+   owner actions.

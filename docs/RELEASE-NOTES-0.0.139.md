@@ -30,10 +30,35 @@ favored-class choices appear.
 
 ## Status
 
-This section is updated as qualification evidence is recorded. Rows that are
-not implemented, not tested, deferred or excluded are listed in
-`FAVORED-CLASS-COVERAGE.md`; nothing listed there as NOT RUN has been observed
-in game.
+**PARTIAL — NOT RELEASE QUALIFIED** (local candidate, owner review pending).
+All 30 scheduled rows and every required infrastructure item are implemented,
+and each passes its domain tests and guarded native runs. The exceptions are
+G08 and G20, whose optional races have no playable provider. The Gunslinger
+counters also survive a fresh-process save reload. Details are in
+`FAVORED-CLASS-IMPLEMENTATION-REPORT.md`, `FAVORED-CLASS-COVERAGE.md` and
+`docs/FAVORED-CLASS-TARGET-MANIFEST.md`. Nothing listed there as NOT RUN has
+been observed in game.
+
+What a player gets with the qualified Favored Class and Call of the Wild
+profile:
+
+- The Gunslinger favored-class options for every race that has them. The Jon
+  Brazer Enterprises options stay off unless `thirdParty` is enabled.
+- Ifrit, Oread, Sylph and Undine favored-class options in the Alchemist,
+  Inquisitor, Rogue, Fighter, Monk, Cleric, Paladin, Ranger, Summoner,
+  Sorcerer, Oracle and Bard menus. These include per-revelation Oracle
+  counters (52 revelations), per-power Sorcerer counters and per-performance
+  Bard range counters (15 performances).
+- **Mostly Human**: an optional Heritage-phase choice for the four elemental
+  races. It opens the Favored Class mod's human options without changing the
+  character's race.
+- An optional `FavoredClassIntegration.json` (restart-required) that can turn
+  the integration or any profile off; see
+  `docs/FAVORED-CLASS-COMPATIBILITY.md`.
+
+Known limits: 127 new choices have no icon yet and show the game's text
+placeholder. A performance's range text and ring are not redrawn. Several
+design questions await the owner (`FAVORED-CLASS-BLOCKERS.md`).
 
 ## Other compatibility
 
@@ -56,6 +81,9 @@ level-up through the Favored Class mod's normal flow; this candidate never
 assigns historical favored-class rewards to existing characters.
 
 Before you uninstall this mod or the Favored Class mod, back up your saves.
-Characters that took these favored-class options keep them only while both
-mods are installed; removing either leaves those saved choices unresolved.
-Restore the removed mod rather than editing the save.
+KMG's own favored-class choices stay registered while this mod is installed,
+even without the Favored Class mod, but the favored-class progression itself
+belongs to the Favored Class mod. Removing either mod leaves those saved
+choices incomplete. Restore the removed mod rather than editing the save.
+Turning the integration off in `FavoredClassIntegration.json` is the
+supported way to suspend its effects without breaking saves.
