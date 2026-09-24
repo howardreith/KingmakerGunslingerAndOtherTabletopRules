@@ -146,10 +146,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 case 2:
                     if (!StepExpandedSummoningMotionReview(_creatureReviewUnits,
                             "summoned")) return;
+                    // Sprint 5: a creature with a registered visual variant
+                    // must show it applied on the reviewed view.
+                    bool variantRegistered = _creatureReviewUnits.Any(unit =>
+                        ExpandedSummoningVisualVariantPatch.RegisteredBlueprintNames
+                            .Contains(unit.Blueprint.name));
+                    string variantOutcome = string.Join("|", _creatureReviewUnits.Select(
+                        unit => ExpandedSummoningVisualVariantPatch.DescribeView(unit.View))
+                        .ToArray());
+                    bool variantValid = !variantRegistered || _creatureReviewUnits.All(
+                        unit => ExpandedSummoningVisualVariantPatch.DescribeView(unit.View)
+                            .StartsWith("variant:applied", StringComparison.Ordinal));
                     _creatureReviewAssertions.Add(Assertion(
                         "expanded-summoning-creature-review-" + key,
-                        "idle, moving-a, moving-b and attack captures in frame, lit, renderer enabled, intact",
-                        MotionReviewSummary, MotionReviewValid,
+                        "idle, moving-a, moving-b and attack captures in frame, lit, renderer enabled, intact" +
+                            (variantRegistered ? "; registered visual variant applied" : ""),
+                        MotionReviewSummary + ";visualVariant=" + variantOutcome,
+                        MotionReviewValid && variantValid,
                         (variant.Family == SummonFamily.Monster ? "Summon Monster " :
                             "Summon Nature's Ally ") + variant.ParentTier +
                         " single cast through the real parent chain; party-camera renders"));

@@ -15,7 +15,8 @@ is an input, so the renders are reproducible from the script alone. Rows in
 `prompts/icon-prompts.json` carrying `"generator": "blender-procedural"` are
 these; their `subjectPrompt` is the composition the script realises. Sprint 3
 added Pony, Horse, Owlbear and Cyclops this way; Sprint 4 added Shambling
-Mound, Giant Flytrap and Purple Worm.
+Mound, Giant Flytrap and Purple Worm; Sprint 5 added the six mephits from one
+parametrized mephit builder in six elemental dressings.
 
 `prompts/icon-prompts.json` records the shared art direction and the distinct
 subject prompt for every concept. `tools/New-ExpandedSummoningIcons.ps1`

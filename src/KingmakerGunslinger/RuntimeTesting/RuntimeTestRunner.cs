@@ -3773,7 +3773,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "NaturesAlly", "cyclops", "5" },
             // Sprint 4: the Large plant and the Gargantuan worm footprints
             new[] { "NaturesAlly", "shambling-mound", "6" },
-            new[] { "NaturesAlly", "purple-worm", "8" }
+            new[] { "NaturesAlly", "purple-worm", "8" },
+            // Sprint 5: a tinted mephit variant (the tint re-applies on load)
+            new[] { "Monster", "steam-mephit", "4" }
         };
 
         private static int ExpandedSummoningPersistenceFixtureCount
@@ -3946,13 +3948,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.HoldingState).Distinct())
                 CollectExpandedSummoningUnitReferences(state.AllEntityData,
                     unique, 0);
+            // Every KMG summon, whichever sprint added it: the persistence
+            // fixture rows, the stale summons a review clears first and the
+            // module-absent leg's "none" all read this one set.
             return unique
                 .Where(value => value.Blueprint != null &&
-                    (value.Blueprint.name ==
-                        "KMG_Summoning_Unit_SmallAirElemental" ||
-                     value.Blueprint.name == "KMG_Summoning_Unit_Wolf" ||
-                     value.Blueprint.name == ExpandedSummoningPteranodonViewPatch
-                        .PteranodonBlueprintName))
+                    value.Blueprint.name.StartsWith("KMG_Summoning_Unit_",
+                        StringComparison.Ordinal))
                 .OrderBy(value => value.Blueprint.name, StringComparer.Ordinal)
                 .ToArray();
         }
@@ -15319,6 +15321,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             string grappleObserved;
             bool grappleExact = ExpandedSummoningGrappleSpecialExact(all,
                 out grappleObserved);
+            string mephitObserved;
+            bool mephitExact = ExpandedSummoningMephitSpecialExact(all,
+                out mephitObserved);
             int distinctDonors = ExpandedSummoningDonorCatalog.All
                 .Select(value => value.Guid).Distinct(StringComparer.Ordinal)
                 .Count();
@@ -15407,6 +15412,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "shared hold and grappled buffs; owlbear/mound/flytrap/worm grab carriers with exact weapons, +4 grapple bonus, mound constrict 2d6+7, worm swallow and lifecycle; swallowed state cloned from the native worm",
                     grappleObserved, grappleExact,
                     "Sprint 4 shared summon grapple lifecycle surface"),
+                Assertion("expanded-summoning-sprint-five-mephits",
+                    "six variants on the native mephit clones: donor element facts dropped, own subtypes/immunities, breath with the variant's energy and dice, enemy-only effect and sickening rider, spell-like abilities with one-use resources or enemy-only bursts, traits, project brain, own name, registered visual variant",
+                    mephitObserved, mephitExact,
+                    "Sprint 5 mephit family surface"),
                 Assertion("expanded-summoning-parent-placements",
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount.ToString(),
                     publishedPlacements.ToString(), publishedPlacements ==
@@ -17480,6 +17489,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool grappleLifecycle = ExerciseExpandedSummoningGrappleLifecycle(
                     blueprints, caster, hostile, created, result, out grappleDetail);
 
+                // Sprint 5: the mephit pack. Steam Mephit breath on the
+                // hostile (Reflex -100, forced natural 1): damage lands and
+                // the sickening rider applies; the party caster, whatever the
+                // cone covers, is untouched. Salt Mephit dehydrate: the
+                // enemy-only burst damages the hostile, leaves the caster and
+                // the summons alone and spends its one use.
+                string mephitDetail;
+                bool mephitPack = ExerciseExpandedSummoningMephitPack(blueprints,
+                    caster, hostile, created, result, out mephitDetail);
+
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
                     salamanderAttack && succubusAttack && pixieAttack &&
@@ -17488,8 +17507,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     danceBefore == 1 && danceAfter == 0 && danceApplied &&
                     sleepBefore == 16 && sleepAfter == 15 && sleepApplied &&
                     bebelithFirst && bebelithSecond && dismantledApplied &&
-                    armorUnchanged && cyclopsFlash && grappleLifecycle;
+                    armorUnchanged && cyclopsFlash && grappleLifecycle && mephitPack;
                 result.Diagnostics.Add("grapple[" + grappleDetail + "]");
+                result.Diagnostics.Add("mephits[" + mephitDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -17625,6 +17645,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     caster, SummonFamily.NaturesAlly, "shambling-mound", 6, created,
                     evidence);
                 mound.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                // The native appearance buff keeps a fresh summon from acting
+                // and moving for its first moments; the holder's condition
+                // checks below must see only what the grapple parts add.
+                int appearanceBuffs = RemoveExpandedSummoningAppearanceBuffs(mound);
+                bool holderBaselineCantAct = mound.Descriptor.State.HasCondition(
+                    UnitCondition.CantAct);
+                bool holderBaselineCantMove = mound.Descriptor.State.HasCondition(
+                    UnitCondition.CantMove);
                 SummonGrabComponent moundGrab = ExpandedSummoningRuntimeComponent<
                     SummonGrabComponent>(mound, moundTraits);
                 BlueprintItemWeapon slam = moundGrab.GrabWeapons[0];
@@ -17684,13 +17712,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !hostile.Descriptor.HasFact(grappled) &&
                     !mound.Descriptor.HasFact(hold) &&
                     !mound.Descriptor.State.HasCondition(UnitCondition.CantAct);
-                steps.Add("mound:refusedWrongWeapon=" + refusedWrongWeapon +
+                steps.Add("mound:appearanceBuffsRemoved=" + appearanceBuffs +
+                    ";baselineCantAct=" + holderBaselineCantAct + ";baselineCantMove=" +
+                    holderBaselineCantMove + ";refusedWrongWeapon=" + refusedWrongWeapon +
                     ";grabbed=" + grabbed + ";parts=" + holdParts + ";buffs=" +
                     holdBuffs + ";constrict=" + damageBefore + "->" + afterGrab +
                     ";refusedWhileHolding=" + refusedWhileHolding + ";maintained=" +
                     maintained + ";released=" + released + ";holderFree=" +
                     holderFree + ";safeguard=" + safeguard + "(swept=" + swept + ")");
-                ok = ok && refusedWrongWeapon && grabbed && holdParts && holdBuffs &&
+                ok = ok && !holderBaselineCantAct && !holderBaselineCantMove &&
+                    refusedWrongWeapon && grabbed && holdParts && holdBuffs &&
                     constricted && refusedWhileHolding && maintained && released &&
                     holderFree && safeguard;
 
@@ -17741,6 +17772,112 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 hostile.Descriptor.Damage = damageBefore;
+            }
+            detail = string.Join(";", steps.ToArray());
+            return ok;
+        }
+
+        /// <summary>
+        /// Removes the native summoned-unit appearance buffs (the ones that
+        /// hold a fresh summon still while it materialises) from a fixture
+        /// unit and returns how many were removed.
+        /// </summary>
+        private static int RemoveExpandedSummoningAppearanceBuffs(UnitEntityData unit)
+        {
+            Buff[] appearance = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => value.Blueprint != null &&
+                    value.Blueprint.name == "SummonedUnitAppearBuff").ToArray();
+            foreach (Buff buff in appearance) unit.Descriptor.Buffs.RemoveFact(buff);
+            return appearance.Length;
+        }
+
+        /// <summary>
+        /// The Sprint 5 live mephit case: a variant breath and a project burst
+        /// against the hostile target, with the party caster and the summons
+        /// as the ally-safety witnesses. Damage and conditions are restored.
+        /// </summary>
+        private static bool ExerciseExpandedSummoningMephitPack(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            var steps = new List<string>();
+            bool ok = true;
+            int damageBefore = hostile.Descriptor.Damage;
+            int casterDamageBefore = caster.Descriptor.Damage;
+            BlueprintBuff sickened = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.AssetGuid == ExpandedSummoningSpecialBuilder.SickenedBuffGuid);
+            try
+            {
+                UnitEntityData steam = CastExpandedSummoningCombatUnit(blueprints,
+                    caster, SummonFamily.Monster, "steam-mephit", 4, created, evidence);
+                BlueprintAbility breath = blueprints.OfType<BlueprintAbility>().Single(
+                    value => value.name == "KMG_Summoning_Special_SteamMephit_Breath");
+                bool breathGranted = steam.Descriptor.Abilities.GetAbility(breath) != null;
+                bool sickenedBefore = hostile.Descriptor.HasFact(sickened);
+                TargetWrapper breathTarget = breath.CanTargetPoint ?
+                    new TargetWrapper(hostile.Position) : new TargetWrapper(hostile);
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                ExecuteExpandedSummoningRuntimeAbility(steam, breath, 2, breathTarget,
+                    false, hostile);
+                int afterBreath = hostile.Descriptor.Damage;
+                bool breathDamaged = afterBreath > damageBefore;
+                bool breathSickened = hostile.Descriptor.HasFact(sickened);
+                bool casterUntouched = caster.Descriptor.Damage == casterDamageBefore &&
+                    !caster.Descriptor.HasFact(sickened);
+                if (breathSickened)
+                    hostile.Descriptor.Buffs.RemoveFact(
+                        hostile.Descriptor.Buffs.GetBuff(sickened));
+                hostile.Descriptor.Damage = damageBefore;
+                steps.Add("steam:granted=" + breathGranted + ";damage=" + damageBefore +
+                    "->" + afterBreath + ";sickened=" + breathSickened + ";sickenedBefore=" +
+                    sickenedBefore + ";casterUntouched=" + casterUntouched +
+                    ";execution=" + _expandedSummoningLastAbilityExecution);
+                ok = ok && breathGranted && breathDamaged && breathSickened &&
+                    !sickenedBefore && casterUntouched;
+
+                UnitEntityData salt = CastExpandedSummoningCombatUnit(blueprints,
+                    caster, SummonFamily.NaturesAlly, "salt-mephit", 4, created, evidence);
+                BlueprintAbility dehydrate = blueprints.OfType<BlueprintAbility>().Single(
+                    value => value.name == "KMG_Summoning_Special_SaltMephit_SpellLikeTwo");
+                BlueprintAbilityResource dehydrateResource = blueprints.OfType<
+                    BlueprintAbilityResource>().Single(value => value.name ==
+                        "KMG_Summoning_Special_SaltMephit_SpellLikeTwoResource");
+                int usesBefore = salt.Descriptor.Resources.GetResourceAmount(
+                    dehydrateResource);
+                int saltBefore = salt.Descriptor.Damage;
+                int steamBefore = steam.Descriptor.Damage;
+                ExecuteExpandedSummoningRuntimeAbility(salt, dehydrate, 2,
+                    new TargetWrapper(salt), false);
+                int afterBurst = hostile.Descriptor.Damage;
+                int usesAfter = salt.Descriptor.Resources.GetResourceAmount(
+                    dehydrateResource);
+                bool burstDamaged = afterBurst > damageBefore;
+                bool alliesUntouched = caster.Descriptor.Damage == casterDamageBefore &&
+                    salt.Descriptor.Damage == saltBefore &&
+                    steam.Descriptor.Damage == steamBefore;
+                bool secondUseAvailable = new AbilityData(salt.Descriptor.Abilities
+                    .GetAbility(dehydrate)).IsAvailable;
+                hostile.Descriptor.Damage = damageBefore;
+                steps.Add("salt:dehydrate=" + damageBefore + "->" + afterBurst +
+                    ";uses=" + usesBefore + "->" + usesAfter + ";alliesUntouched=" +
+                    alliesUntouched + ";secondUseAvailable=" + secondUseAvailable +
+                    ";execution=" + _expandedSummoningLastAbilityExecution);
+                ok = ok && burstDamaged && usesBefore == 1 && usesAfter == 0 &&
+                    alliesUntouched && !secondUseAvailable;
+            }
+            catch (Exception exception)
+            {
+                steps.Add("exception=" + exception.GetType().Name + ":" +
+                    exception.Message.Replace(';', ','));
+                ok = false;
+            }
+            finally
+            {
+                hostile.Descriptor.Damage = damageBefore;
+                if (hostile.Descriptor.HasFact(sickened))
+                    hostile.Descriptor.Buffs.RemoveFact(
+                        hostile.Descriptor.Buffs.GetBuff(sickened));
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
@@ -19951,6 +20088,214 @@ namespace KingmakerGunslinger.RuntimeTesting
             return holdExact && grappledExact && swallowedExact && carriers;
         }
 
+        /// <summary>
+        /// Sprint 5: each mephit variant against its profile and the builder's
+        /// contract. A row per variant names every disagreeing part.
+        /// </summary>
+        private static bool ExpandedSummoningMephitSpecialExact(
+            BlueprintScriptableObject[] all, out string observed)
+        {
+            var rows = new List<string>();
+            bool exact = true;
+            BlueprintBuff sickened = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.AssetGuid == ExpandedSummoningSpecialBuilder.SickenedBuffGuid);
+            IReadOnlyList<string> registeredVariants =
+                ExpandedSummoningVisualVariantPatch.RegisteredBlueprintNames;
+            foreach (MephitVariantProfile profile in
+                ExpandedSummoningSpecialProfiles.MephitVariants)
+            {
+                string token = ExpandedSummoningSpecialBuilder.MephitToken(profile.Key);
+                string prefix = "KMG_Summoning_Special_" + token + "_";
+                BlueprintUnit unit = all.OfType<BlueprintUnit>().SingleOrDefault(
+                    value => value.name == "KMG_Summoning_Unit_" + token);
+                BlueprintAbility breath = all.OfType<BlueprintAbility>().SingleOrDefault(
+                    value => value.name == prefix + "Breath");
+                BlueprintBuff traits = all.OfType<BlueprintBuff>().SingleOrDefault(
+                    value => value.name == prefix + "CombatTraits");
+                if (unit == null || breath == null || traits == null || sickened == null)
+                {
+                    rows.Add(token + "=missing");
+                    exact = false;
+                    continue;
+                }
+                var failures = new List<string>();
+                BlueprintUnitFact[] facts = (unit.AddFacts ??
+                    Array.Empty<BlueprintUnitFact>()).Where(value => value != null)
+                    .ToArray();
+                string[] factGuids = facts.Select(value => value.AssetGuid).ToArray();
+                if (!ExpandedSummoningSpecialBuilder.MephitVariantFactGuids(profile.Key)
+                        .All(factGuids.Contains))
+                    failures.Add("element-facts");
+                if (factGuids.Any(ExpandedSummoningSpecialBuilder
+                        .MephitDonorElementFactGuids.Contains))
+                    failures.Add("donor-facts-retained");
+                if (!facts.Contains(breath) || !facts.Contains(traits))
+                    failures.Add("grants");
+                // The breath: the native cone delivery with the variant's
+                // projectile, an enemies-only conditional around the effect,
+                // the variant's damage, the sickening rider where the tabletop
+                // breath has one.
+                AbilityDeliverProjectile deliver = breath.ComponentsArray
+                    .OfType<AbilityDeliverProjectile>().SingleOrDefault();
+                AbilityEffectRunAction run = breath.ComponentsArray
+                    .OfType<AbilityEffectRunAction>().SingleOrDefault();
+                Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional
+                    enemiesOnly = run == null || run.Actions == null ||
+                        run.Actions.Actions == null ? null : run.Actions.Actions.OfType<
+                            Kingmaker.Designers.EventConditionActionSystem.Actions
+                                .Conditional>().SingleOrDefault();
+                Kingmaker.ElementsSystem.GameAction[] inner = enemiesOnly == null || enemiesOnly.IfTrue == null ||
+                    enemiesOnly.IfTrue.Actions == null ? Array.Empty<Kingmaker.ElementsSystem.GameAction>() :
+                    enemiesOnly.IfTrue.Actions;
+                ContextActionDealDamage damage = ExpandedSummoningMephitDamage(inner);
+                ContextActionConditionalSaved saved = inner
+                    .OfType<ContextActionConditionalSaved>().FirstOrDefault();
+                bool ooze = profile.Key == "ooze-mephit";
+                bool riderExact = ooze ?
+                    saved != null && damage != null && !damage.HalfIfSaved &&
+                        inner.Length == 1 && saved.Failed.Actions.Contains(damage) &&
+                        saved.Failed.Actions.OfType<ContextActionApplyBuff>().Any(
+                            value => ReferenceEquals(value.Buff, sickened)) :
+                    damage != null && damage.HalfIfSaved && inner.Contains(damage) &&
+                        (profile.BreathSickens ?
+                            saved != null && inner.Length == 2 &&
+                                saved.Failed.Actions.OfType<ContextActionApplyBuff>().Any(
+                                    value => ReferenceEquals(value.Buff, sickened)) :
+                            saved == null && inner.Length == 1);
+                bool breathExact = deliver != null && deliver.Projectiles != null &&
+                    deliver.Projectiles.Length == 1 && deliver.Projectiles[0] != null &&
+                    deliver.Projectiles[0].AssetGuid == ExpandedSummoningSpecialBuilder
+                        .MephitBreathProjectileGuid(profile.BreathEnergy) &&
+                    run != null && run.SavingThrowType == SavingThrowType.Reflex &&
+                    run.Actions.Actions.Length == 1 && enemiesOnly != null &&
+                    enemiesOnly.ConditionsChecker != null &&
+                    enemiesOnly.ConditionsChecker.Conditions != null &&
+                    enemiesOnly.ConditionsChecker.Conditions.Length == 1 &&
+                    enemiesOnly.ConditionsChecker.Conditions[0] is Kingmaker.UnitLogic
+                        .Mechanics.Conditions.ContextConditionIsEnemy &&
+                    !enemiesOnly.ConditionsChecker.Conditions[0].Not &&
+                    damage != null && ExpandedSummoningMephitDamageMatches(damage, profile) &&
+                    riderExact &&
+                    breath.ComponentsArray.OfType<SpellDescriptorComponent>().Count() == 1 &&
+                    breath.ComponentsArray.OfType<ContextCalculateAbilityParams>().Any(
+                        value => value.StatType == StatType.Constitution) &&
+                    breath.Icon != null;
+                if (!breathExact) failures.Add("breath");
+                // Spell-like abilities: one-use resources, no spell lists; the
+                // project bursts reach only enemies within 20 feet.
+                var expectedResources = new List<BlueprintAbilityResource>();
+                var expectedAbilities = new List<BlueprintAbility> { breath };
+                foreach (KeyValuePair<string, string> slot in
+                    ExpandedSummoningSpecialBuilder.MephitSpellLikeSlots(profile))
+                {
+                    BlueprintAbility ability = all.OfType<BlueprintAbility>()
+                        .SingleOrDefault(value => value.name == prefix + slot.Key);
+                    BlueprintAbilityResource resource = all.OfType<BlueprintAbilityResource>()
+                        .SingleOrDefault(value => value.name == prefix + slot.Key + "Resource");
+                    if (ability == null || resource == null)
+                    {
+                        failures.Add(slot.Key + "-missing");
+                        continue;
+                    }
+                    expectedResources.Add(resource);
+                    expectedAbilities.Add(ability);
+                    AbilityResourceLogic cost = ability.ComponentsArray
+                        .OfType<AbilityResourceLogic>().SingleOrDefault();
+                    bool slotExact = ability.Type == AbilityType.SpellLike && cost != null &&
+                        ReferenceEquals(cost.RequiredResource, resource) &&
+                        cost.IsSpendResource && cost.Amount == 1 &&
+                        !ability.ComponentsArray.OfType<SpellListComponent>().Any() &&
+                        facts.Contains(ability) && ability.Icon != null;
+                    if (slot.Value == "Dehydrate" || slot.Value == "BoilingRain")
+                    {
+                        bool fire = slot.Value == "BoilingRain";
+                        AbilityTargetsAround around = ability.ComponentsArray
+                            .OfType<AbilityTargetsAround>().SingleOrDefault();
+                        AbilityEffectRunAction burst = ability.ComponentsArray
+                            .OfType<AbilityEffectRunAction>().SingleOrDefault();
+                        ContextActionDealDamage burstDamage = burst == null ||
+                            burst.Actions == null || burst.Actions.Actions == null ? null :
+                            burst.Actions.Actions.OfType<ContextActionDealDamage>()
+                                .SingleOrDefault();
+                        slotExact = slotExact && ability.Range == AbilityRange.Personal &&
+                            around != null && around.Targets == TargetType.Enemy &&
+                            Math.Abs(around.AoERadius.Value -
+                                ExpandedSummoningSpecialProfiles.MephitBurstRadiusFeet) < 0.01f &&
+                            burst != null && burst.SavingThrowType == SavingThrowType.Fortitude &&
+                            burstDamage != null && burstDamage.HalfIfSaved &&
+                            burstDamage.Value.DiceType == (fire ? DiceType.D6 : DiceType.D8) &&
+                            burstDamage.Value.DiceCountValue.Value == 2 &&
+                            (fire ?
+                                burstDamage.DamageType.Type == DamageType.Energy &&
+                                    burstDamage.DamageType.Energy == DamageEnergyType.Fire :
+                                burstDamage.DamageType.Type == DamageType.Direct);
+                    }
+                    if (!slotExact) failures.Add(slot.Key + ":" + slot.Value);
+                }
+                BlueprintAbilityResource[] granted = traits.ComponentsArray.OfType<
+                    Kingmaker.Designers.Mechanics.Facts.AddAbilityResources>()
+                    .Select(value => value.Resource).ToArray();
+                if (traits.ComponentsArray.Length != expectedResources.Count ||
+                    !expectedResources.All(granted.Contains))
+                    failures.Add("traits");
+                Kingmaker.Controllers.Brain.Blueprints.BlueprintAiCastSpell[] actions =
+                    unit.Brain == null || unit.Brain.Actions == null ?
+                        Array.Empty<Kingmaker.Controllers.Brain.Blueprints.BlueprintAiCastSpell>() :
+                        unit.Brain.Actions.OfType<Kingmaker.Controllers.Brain.Blueprints
+                            .BlueprintAiCastSpell>().ToArray();
+                bool brainExact = unit.Brain != null && unit.Brain.name == prefix + "Brain" &&
+                    unit.Brain.Actions != null &&
+                    unit.Brain.Actions.Length == expectedAbilities.Count &&
+                    actions.Length == expectedAbilities.Count &&
+                    expectedAbilities.All(ability => actions.Any(value =>
+                        ReferenceEquals(value.Ability, ability))) &&
+                    actions.Single(value => ReferenceEquals(value.Ability, breath))
+                        .CooldownRounds == ExpandedSummoningSpecialProfiles
+                            .MephitBreathAiCooldownRounds;
+                if (!brainExact) failures.Add("brain");
+                if (unit.LocalizedName == null || unit.LocalizedName.String == null)
+                    failures.Add("name");
+                if (!registeredVariants.Contains(unit.name)) failures.Add("visual-variant");
+                AddClassLevels[] levels = unit.ComponentsArray.OfType<AddClassLevels>().ToArray();
+                if (unit.Size != Size.Small || levels.Length != 1 || levels[0].Levels != 3)
+                    failures.Add("chassis");
+                exact = exact && failures.Count == 0;
+                rows.Add(token + "=" + (failures.Count == 0 ? "exact" :
+                    string.Join(",", failures.ToArray())));
+            }
+            observed = string.Join(";", rows.ToArray());
+            return exact;
+        }
+
+        private static ContextActionDealDamage ExpandedSummoningMephitDamage(
+            Kingmaker.ElementsSystem.GameAction[] actions)
+        {
+            ContextActionDealDamage direct = actions.OfType<ContextActionDealDamage>()
+                .FirstOrDefault();
+            if (direct != null) return direct;
+            return actions.OfType<ContextActionConditionalSaved>()
+                .Where(value => value.Failed != null && value.Failed.Actions != null)
+                .SelectMany(value => value.Failed.Actions.OfType<ContextActionDealDamage>())
+                .FirstOrDefault();
+        }
+
+        private static bool ExpandedSummoningMephitDamageMatches(
+            ContextActionDealDamage damage, MephitVariantProfile profile)
+        {
+            bool type = profile.BreathEnergy == "Slashing" ?
+                damage.DamageType.Type == DamageType.Physical &&
+                    damage.DamageType.Physical != null &&
+                    damage.DamageType.Physical.Form == PhysicalDamageForm.Slashing :
+                damage.DamageType.Type == DamageType.Energy &&
+                    damage.DamageType.Energy == (profile.BreathEnergy == "Fire" ?
+                        DamageEnergyType.Fire : profile.BreathEnergy == "Cold" ?
+                        DamageEnergyType.Cold : DamageEnergyType.Acid);
+            return type && damage.IsAoE &&
+                damage.Value.DiceType == (profile.BreathDieSides == 8 ? DiceType.D8 :
+                    DiceType.D4) &&
+                damage.Value.DiceCountValue.Value == profile.BreathDice;
+        }
+
         private static bool ExpandedSummoningIsForbiddenReference(
             BlueprintScriptableObject blueprint)
         {
@@ -20002,6 +20347,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Special_PurpleWorm_CombatTraits" ||
                 blueprint.name == "KMG_Summoning_Special_PurpleWorm_Swallowed")
+                return false;
+            // Sprint 5: every mephit-variant special (breath, spell-like
+            // abilities, resources, cast actions, brains, traits).
+            if (ExpandedSummoningSpecialProfiles.MephitVariants.Any(profile =>
+                    blueprint.name.StartsWith("KMG_Summoning_Special_" +
+                        ExpandedSummoningSpecialBuilder.MephitToken(profile.Key) + "_",
+                        StringComparison.Ordinal)))
                 return false;
             return SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
                 blueprint.name);
