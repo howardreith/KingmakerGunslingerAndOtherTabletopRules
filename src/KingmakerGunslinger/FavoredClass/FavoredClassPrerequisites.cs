@@ -1,8 +1,10 @@
+using System;
 using System.Globalization;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Class.LevelUp;
+using Kingmaker.UnitLogic.Class.LevelUp.Actions;
 
 namespace KingmakerGunslinger.FavoredClass
 {
@@ -134,6 +136,46 @@ namespace KingmakerGunslinger.FavoredClass
     /// performance. Some belong to an optional provider that may create them
     /// after KMG registers, so they are matched by identity when checked.
     /// </summary>
+    /// <summary>
+    /// The native level-up replays its picks in priority order, and the
+    /// host's reward selection has an earlier priority than the bloodline, the
+    /// revelation or the power chosen in the same level-up. While a level-up
+    /// replays, its own later picks count as chosen, so a counter can target
+    /// what the same level-up gains; outside a replay nothing changes.
+    /// </summary>
+    internal static class FavoredClassPendingPicks
+    {
+        [ThreadStatic]
+        private static LevelUpController s_Replaying;
+
+        internal static void Begin(LevelUpController controller)
+        {
+            s_Replaying = controller;
+        }
+
+        internal static void End()
+        {
+            s_Replaying = null;
+        }
+
+        /// <summary>Whether the level-up replaying this exact state picks one of these features.</summary>
+        internal static bool Selects(LevelUpState state, string[] featureGuids)
+        {
+            LevelUpController controller = s_Replaying;
+            if (controller == null || state == null || featureGuids == null ||
+                !ReferenceEquals(controller.State, state) || controller.LevelUpActions == null)
+                return false;
+            foreach (ILevelUpAction action in controller.LevelUpActions)
+            {
+                var pick = action as SelectFeature;
+                BlueprintFeature feature = pick == null || pick.Item == null ? null : pick.Item.Feature;
+                if (feature != null && Array.IndexOf(featureGuids, feature.AssetGuid) >= 0)
+                    return true;
+            }
+            return false;
+        }
+    }
+
     public sealed class PrerequisiteFavoredClassOwnsAny : Prerequisite
     {
         public string[] FeatureGuids;
@@ -150,7 +192,9 @@ namespace KingmakerGunslinger.FavoredClass
                 if (feature != null && feature.Blueprint != null &&
                     System.Array.IndexOf(FeatureGuids, feature.Blueprint.AssetGuid) >= 0)
                     return true;
-            return false;
+            // The target chosen in this same level-up (its pick replays after
+            // the host's earlier-priority reward pick) is owned as well.
+            return FavoredClassPendingPicks.Selects(state, FeatureGuids);
         }
 
         public override string GetUIText()
