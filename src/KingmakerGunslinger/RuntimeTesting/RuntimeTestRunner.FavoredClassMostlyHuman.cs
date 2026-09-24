@@ -102,7 +102,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["graph"], graphFailures), graphFailures.Count == 0,
                 "live race Features, selection AllFeatures, BlueprintsByAssetId"));
             assertions.Add(Assertion("fcb-mostly-human-dual-identity",
-                "a committed Mostly Human geniekin differs from its standard control only by the trait and the hidden identity (same race and RaceId, native geniekin traits and scores, no OutsiderType removed or added, no HumanRace fact); native Hold, Charm, Enlarge and Reduce Person can target it (humanoid), and the same checks reject a unit that carries OutsiderType",
+                "a committed Mostly Human geniekin differs from its standard control only by the trait, the hidden identity and at most one of the human race traits that identity opens (the control has none) (same race and RaceId, native geniekin traits and scores, no OutsiderType removed or added, no HumanRace fact); native Hold, Charm, Enlarge and Reduce Person can target it (humanoid), and the same checks reject a unit that carries OutsiderType",
                 Describe(evidence["identity"], identityFailures), identityFailures.Count == 0,
                 "native chargen visits committed with LevelUpController.ApplyLevelup; Progression.Features; IAbilityTargetChecker"));
             assertions.Add(Assertion("fcb-mostly-human-host-bridge",
@@ -566,6 +566,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             List<string> traitFacts = facts(trait);
             List<string> added = Subtract(traitFacts, standardFacts);
             List<string> removed = Subtract(standardFacts, traitFacts);
+            // A genuine human identity opens the host's human race traits, so
+            // the deterministic filler may take one on the Mostly Human path;
+            // the standard control can never have one.
+            var humanTraits = new HashSet<string>(FavoredClassHostRaceBridge.Scope.OtherHumanPrerequisites
+                .Select(value => value.Substring(value.LastIndexOf(':') + 1)), StringComparer.Ordinal);
+            List<string> humanTraitsTaken = added.Where(humanTraits.Contains).ToList();
+            added = added.Where(value => !humanTraits.Contains(value)).ToList();
             var expectedAdded = new[] { ancestry.Trait.AssetGuid, identity.AssetGuid }
                 .OrderBy(value => value, StringComparer.Ordinal).ToList();
             StatType[] attributes = { StatType.Strength, StatType.Dexterity, StatType.Constitution,
@@ -578,6 +585,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var result = new JObject
             {
                 ["factsAdded"] = new JArray(added),
+                ["humanRaceTraitsTaken"] = new JArray(humanTraitsTaken),
                 ["factsRemoved"] = new JArray(removed),
                 ["race"] = trait.Descriptor.Progression.Race == null ? null :
                     trait.Descriptor.Progression.Race.name,
@@ -594,6 +602,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             if (!added.SequenceEqual(expectedAdded))
                 failures.Add(race + " added facts " + string.Join(",", added.ToArray()));
+            if (humanTraitsTaken.Count > 1)
+                failures.Add(race + " took more than one human race trait");
+            if (standardFacts.Any(humanTraits.Contains))
+                failures.Add(race + " standard control holds a human race trait");
             if (!removed.SequenceEqual(new[] { ancestry.Standard.AssetGuid }))
                 failures.Add(race + " removed facts " + string.Join(",", removed.ToArray()));
             if (!ReferenceEquals(trait.Descriptor.Progression.Race, ancestry.Race) ||

@@ -5,7 +5,7 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "27fc38209936b0aebf2e83f4b3e2ca464c0dd23d77dd6ed41fc3f89dfff73065",
+    "registrySha256": "bd60e62478d0e28bcc450deb94b9fcb89f846560158e6bd9968550c735782afa",
     "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
     "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes."
   },
@@ -9817,7 +9817,7 @@
       "currentArt": "fcb-provider-donor",
       "concept": "favored-class-improved-provider",
       "disposition": "intentional-family-share",
-      "reason": "Shares the art of Call of the Wild's eidolon natural armor feature (or its eidolon feature selection), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
+      "reason": "Shares the art of Call of the Wild's eidolon natural armor feature, its eidolon feature selection, else the Eidolon class's own art (the first with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Summoner.EidolonNaturalArmor.Full",
@@ -9830,7 +9830,7 @@
       "currentArt": "fcb-provider-donor",
       "concept": "favored-class-improved-provider",
       "disposition": "intentional-family-share",
-      "reason": "Shares the art of Call of the Wild's eidolon natural armor feature (or its eidolon feature selection), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
+      "reason": "Shares the art of Call of the Wild's eidolon natural armor feature, its eidolon feature selection, else the Eidolon class's own art (the first with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature",
@@ -11411,12 +11411,12 @@
       "type": "BlueprintFeature",
       "name": "Bard.PerformanceRange.StormCall (full)",
       "module": "FavoredClass",
-      "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
-      "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-native-PerformanceStormCall",
-      "concept": "favored-class-improved-native",
-      "disposition": "native-semantic-reuse",
-      "reason": "Shows the exact art of the native Storm Call performance it widens, so the counter names what it improves; no new painting."
+      "publication": "registered for identity stability; never published (excluded O01 target)",
+      "surface": "none; never offered",
+      "currentArt": "fcb-internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Excluded O01 target: its native text says 50 feet over a native 30-foot area, so no owner range can be displayed truthfully. Never shown."
     },
     {
       "symbol": "KMG.FavoredClass.Bard.PerformanceRange.FireDance.Full",
@@ -11463,12 +11463,12 @@
       "type": "BlueprintFeature",
       "name": "Bard.PerformanceRange.Mockery (full)",
       "module": "FavoredClass",
-      "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
-      "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-provider-donor",
-      "concept": "favored-class-improved-provider",
-      "disposition": "intentional-family-share",
-      "reason": "Shares the art of the Call of the Wild performance feature it improves, read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
+      "publication": "registered for identity stability; never published (excluded O01 target)",
+      "surface": "none; never offered",
+      "currentArt": "fcb-internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Excluded O01 target: its text names a single target while Call of the Wild implements a 30-foot area on every creature. Never shown."
     },
     {
       "symbol": "KMG.FavoredClass.Bard.PerformanceRange.GloriousEpic.Full",
@@ -11488,6 +11488,19 @@
       "guid": "485193cfb5254e21ad30db05f1d2cdaa",
       "type": "BlueprintFeature",
       "name": "Bard.PerformanceRange.Scandal (full)",
+      "module": "FavoredClass",
+      "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
+      "surface": "favored-class bonus selection / character-sheet feature / tooltip",
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the Call of the Wild performance feature it improves, read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.DanceOfTheDead.Full",
+      "guid": "7c7e7e8ded0847de9dfca9c6c74d0aaa",
+      "type": "BlueprintFeature",
+      "name": "Bard.PerformanceRange.DanceOfTheDead (full)",
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",

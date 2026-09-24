@@ -17017,6 +17017,14 @@
       "notes": "Favored class investment: +5 feet to the radius of Scandal per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
     },
     {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.DanceOfTheDead.Full",
+      "guid": "7c7e7e8ded0847de9dfca9c6c74d0aaa",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Dance of the Dead per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
       "symbol": "KMG.MostlyHuman.Identity",
       "guid": "d71a4b4250914a7aa6d4bec53dfc768f",
       "plannedType": "BlueprintFeature",

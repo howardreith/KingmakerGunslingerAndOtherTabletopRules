@@ -281,6 +281,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("favored-class.performance-leaves", FavoredClassPerformanceTests.PerformanceLeavesAreCappedCounters),
             Case("favored-class.performance-radius", FavoredClassPerformanceTests.RadiusFollowsTheEarnedSteps),
             Case("favored-class.performance-hook-scope", FavoredClassPerformanceTests.RangeHookIsCasterAndInstanceScoped),
+            Case("favored-class.performance-owner-text", FavoredClassPerformanceTests.OwnerTextStatesTheOwnersRange),
             Case("favored-class.runtime-scenarios-registered", FavoredClassSourceTests.RuntimeScenariosAreRegisteredEverywhere),
             Case("favored-class.source-invariants", FavoredClassSourceTests.IntegrationSourceInvariants),
             Case("better-vendors.catalog-fifty-entries", BetterVendorsProgressionTests.CatalogHasExactlyTheFiftyAuthorizedEntries),

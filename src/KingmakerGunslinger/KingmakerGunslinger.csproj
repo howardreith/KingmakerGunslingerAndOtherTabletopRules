@@ -232,6 +232,9 @@
     <Compile Include="FavoredClass\FavoredClassIconPolicy.cs" />
     <Compile Include="FavoredClass\FavoredClassLeafIcons.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassPerformanceRangePatch.cs" />
+    <Compile Include="FavoredClass\Hooks\FavoredClassPerformanceTextPatch.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassPerformanceRing.cs" />
+    <Compile Include="FavoredClass\FavoredClassPerformanceText.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassHostRaceBridge.cs" />
     <Compile Include="ElementalRaces\ElementalMostlyHumanPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalMostlyHumanBlueprints.cs" />

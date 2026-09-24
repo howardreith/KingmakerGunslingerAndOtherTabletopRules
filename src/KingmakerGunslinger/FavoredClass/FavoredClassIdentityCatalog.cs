@@ -369,6 +369,8 @@ namespace KingmakerGunslinger.FavoredClass
                 "0f8cf9ae1c874e089bf9b875384ed706", "BlueprintFeature"),
             new FavoredClassIdentity("KMG.FavoredClass.Bard.PerformanceRange.Scandal.Full",
                 "485193cfb5254e21ad30db05f1d2cdaa", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Bard.PerformanceRange.DanceOfTheDead.Full",
+                "7c7e7e8ded0847de9dfca9c6c74d0aaa", "BlueprintFeature"),
         };
 
         /// <summary>Owned helper identities that are not menu leaves.</summary>

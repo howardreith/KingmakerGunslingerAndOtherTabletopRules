@@ -45,6 +45,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(FavoredClassIconPolicy.EidolonNaturalArmorFeatureGuid,
                 FavoredClassIconPolicy.For(FavoredClassCatalog.EffectEidolonArmor, null).Guids[0],
                 "Eidolon armor shows the eidolon's natural armor.");
+            Assertions.Equal(FavoredClassIconPolicy.EidolonClassGuid,
+                FavoredClassIconPolicy.For(FavoredClassCatalog.EffectEidolonArmor, null).Guids.Last(),
+                "Eidolon armor falls back to the eidolon's own class art.");
         }
 
         // The icon catalog records the same donor the policy assigns, and no
@@ -66,7 +69,11 @@ namespace KingmakerGunslinger.DomainTests
                 FavoredClassIconDonor donor = FavoredClassIconPolicy.For(leaf.EffectId, leaf.TargetKey);
                 string disposition = (string)consumer["disposition"];
                 string source = (string)consumer["currentArt"];
-                if (donor.Source == FavoredClassIconSource.Native)
+                if (leaf.EffectId == FavoredClassCatalog.EffectPerformanceRange &&
+                    !FavoredClassPerformanceManifest.For(leaf.TargetKey).Published)
+                    Assertions.True(disposition == "hidden-internal" && source == "fcb-internal",
+                        leaf.Symbol + " is registered but never shown.");
+                else if (donor.Source == FavoredClassIconSource.Native)
                     Assertions.True(disposition == "native-semantic-reuse" &&
                         (string)art[source]["nativeDonorGuid"] == donor.Guids[0],
                         leaf.Symbol + " records its native donor.");

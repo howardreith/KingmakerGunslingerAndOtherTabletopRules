@@ -165,7 +165,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "KMG.FavoredClass.Bard.PerformanceRange.FrighteningTune.Full", "cfd8940869a304f4aa9077415f93febe" },
             new[] { "KMG.FavoredClass.Bard.PerformanceRange.InspireHeroics.Full", "199d6fa0de149d044a8ab622a542cc79" },
             new[] { "KMG.FavoredClass.Bard.PerformanceRange.InciteRage.Full", "35ac4bd7990fa0842bfc22e80665c2f9" },
-            new[] { "KMG.FavoredClass.Bard.PerformanceRange.StormCall.Full", "161db4d6c4a1f4640ab52c762e15c1af" },
             new[] { "KMG.FavoredClass.Bard.PerformanceRange.FireDance.Full", "3c10a0069e7f110499d2e810f4861a6e" },
         };
 
@@ -221,8 +220,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .ToDictionary(entry => (string)entry["guid"], entry => (string)entry["symbol"],
                 StringComparer.Ordinal);
             var failures = new List<string>();
-            if (inventory.Count != 465 || resourceEntries.Length != 28)
-                failures.Add("Expected 465 blueprint and 28 resource-cache identities.");
+            if (inventory.Count != 466 || resourceEntries.Length != 28)
+                failures.Add("Expected 466 blueprint and 28 resource-cache identities.");
             foreach (var pair in inventory)
             {
                 try
@@ -345,7 +344,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "donorIcon", DescribeIcon(expected) }
                 });
             }
-            bool reuseExact = reuse.Count == 59 && reuse.Count == NativeReuse.Length && reuse.All(row => (bool)row["sameSpriteReference"]);
+            bool reuseExact = reuse.Count == 58 && reuse.Count == NativeReuse.Length && reuse.All(row => (bool)row["sameSpriteReference"]);
             var exports = new JArray(OwnedIconAssignments.IconKeys.Concat(new[] { "rapid-reload" }).Distinct(StringComparer.Ordinal).Select(key => {
                 Sprite icon = ProjectAssetIcons.RequireIcon(key);
                 string path = Path.Combine(context.ModEntry.Path, "assets", "icons", key + ".png");
@@ -368,9 +367,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             RuntimeTestResultWriter.WriteAtomic(evidencePath, evidence.ToString(Formatting.Indented));
             files.Add(evidencePath);
-            Add(assertions, "icon-census-complete-inventory", inventory.Count == 494 &&
-                _before.Count(value => value.Symbol != null) == 465 && _resources.Count == 28,
-                "494 catalog identities: 465 blueprints, 28 appearance resources and one reserved diagnostic absence", inventory.Count.ToString(), evidencePath);
+            Add(assertions, "icon-census-complete-inventory", inventory.Count == 495 &&
+                _before.Count(value => value.Symbol != null) == 466 && _resources.Count == 28,
+                "495 catalog identities: 466 blueprints, 28 appearance resources and one reserved diagnostic absence", inventory.Count.ToString(), evidencePath);
             Add(assertions, "icon-reserved-diagnostic-absent", (bool)_immediate["reservedAbsent"] && (bool)late["reservedAbsent"],
                 "the request-local race probe stays absent before/after ordinary initialization",
                 inventory.Last.ToString(Formatting.None), evidencePath);
@@ -387,7 +386,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)observation["protectedExact"], "all other observed sprite references are unchanged across icon mapping",
                         observation["protectedFailures"].ToString(Formatting.None), evidencePath);
                     Add(assertions, "icon-owned-graphs-" + stage,
-                        (bool)observation["graphsExact"], "all 465 graphs/components are unchanged across icon mapping",
+                        (bool)observation["graphsExact"], "all 466 graphs/components are unchanged across icon mapping",
                         observation["graphFailures"].ToString(Formatting.None), evidencePath);
                 }
                 else
@@ -404,7 +403,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation["resourceFailures"].ToString(Formatting.None), evidencePath);
             }
             Add(assertions, "icon-native-semantic-reuse", reuseExact,
-                "59 native-equivalent feature/ability/delivery consumers retain exact donor sprites",
+                "58 native-equivalent feature/ability/delivery consumers retain exact donor sprites",
                 reuse.ToString(Formatting.None), evidencePath);
         }
 

@@ -205,7 +205,7 @@ namespace KingmakerGunslinger.FavoredClass
                 "Every value the chosen revelation computes from oracle level (damage dice, durations, bonuses and their level steps, uses per day, save DCs and caster level) uses your oracle level plus the earned steps. You must already have the revelation. Abilities it grants at later levels are still gained at your actual oracle level, and it never satisfies a level prerequisite or changes other revelations, spells, spell slots, BAB or saves. The Oracle is provided by Call of the Wild."),
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectPerformanceRange,
                 "Bard.PerformanceRange", "Performance Range", null,
-                "It widens only your own area of the chosen performance, from the next time you start it (and when a save is loaded); the visual ring keeps its standard size and the performance's other rules are unchanged. You must already have the performance; one-shot or targeted performances (Soothing Performance, Deadly Performance, Thunder Call), masterpieces and Discordant Voice are not choices."),
+                "It widens only your own area of the chosen performance, from the next time you start it and when a save is loaded; that area's ring and your performance's description show your range, and its other rules are unchanged. You must already have the performance. One-shot, personal and masterpiece performances, Discordant Voice, Storm Call (its text and area disagree) and Mockery (it names a single target) are not choices."),
         };
 
         /// <summary>
@@ -214,8 +214,11 @@ namespace KingmakerGunslinger.FavoredClass
         /// </summary>
         private static readonly FavoredClassTargetSpec[] PerformanceTargets = FavoredClassPerformanceManifest.All
             .Select(target => new FavoredClassTargetSpec(target.Key, target.Title,
-                "+5 feet to the radius of " + target.Title, null,
-                target.Provider ? "This performance is provided by Call of the Wild." : null))
+                "+5 feet to the radius of " + target.Title + " (" + target.BaseFeet.ToString(
+                    System.Globalization.CultureInfo.InvariantCulture) + " feet natively)", null,
+                target.Published
+                    ? (target.Provider ? "This performance is provided by Call of the Wild." : null)
+                    : "Not offered: " + target.Exclusion + "."))
             .ToArray();
 
         /// <summary>

@@ -1305,7 +1305,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableFavoredClassPerformanceRange)
                 {
-                    Complete(RunFavoredClassPerformanceRange());
+                    RuntimeTestResult range = PollFavoredClassPerformanceRange();
+                    if (range != null) Complete(range);
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
