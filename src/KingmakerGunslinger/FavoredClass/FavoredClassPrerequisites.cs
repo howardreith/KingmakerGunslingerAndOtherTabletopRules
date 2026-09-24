@@ -127,4 +127,35 @@ namespace KingmakerGunslinger.FavoredClass
                     feature => feature == null ? "?" : feature.Name)));
         }
     }
+
+    /// <summary>
+    /// I06/S04: the unit already has the chosen revelation (any one of its
+    /// selectable features; a Dragon revelation has one per colour). The
+    /// revelations belong to an optional provider that may create them after
+    /// KMG registers, so they are matched by identity when checked.
+    /// </summary>
+    public sealed class PrerequisiteFavoredClassOwnsAny : Prerequisite
+    {
+        public string[] FeatureGuids;
+
+        /// <summary>Player-facing name of what must be owned.</summary>
+        public string Title;
+
+        public override bool Check(FeatureSelectionState selectionState, UnitDescriptor unit,
+            LevelUpState state)
+        {
+            if (unit == null || unit.Progression == null || FeatureGuids == null || FeatureGuids.Length == 0)
+                return false;
+            foreach (Feature feature in unit.Progression.Features.Enumerable)
+                if (feature != null && feature.Blueprint != null &&
+                    System.Array.IndexOf(FeatureGuids, feature.Blueprint.AssetGuid) >= 0)
+                    return true;
+            return false;
+        }
+
+        public override string GetUIText()
+        {
+            return "Has the revelation " + (Title ?? "?");
+        }
+    }
 }

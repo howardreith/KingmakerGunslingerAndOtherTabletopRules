@@ -183,6 +183,8 @@ namespace KingmakerGunslinger.FavoredClass
                 return "class-not-scanned";
             if (FavoredClassRuntime.IsEffectUnavailable(pair.Effect.Id))
                 return "native-contract-unavailable";
+            if (FavoredClassRuntime.IsTargetUnavailable(pair.Effect.Id, pair.TargetKey))
+                return "native-contract-unavailable:" + pair.TargetKey;
             return null;
         }
 

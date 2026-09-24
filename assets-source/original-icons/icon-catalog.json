@@ -5,7 +5,7 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "b36415b2036e26fcd513a20d12f70b27dad7aa4949c0b32ef38518c4e19a9f39",
+    "registrySha256": "7c83581a5c73b3361c803f4ebc5b8ea5cd6647b67c2629d9d59d5c7f70a5fe4c",
     "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
     "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes."
   },
