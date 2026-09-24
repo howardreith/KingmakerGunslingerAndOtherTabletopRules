@@ -38,9 +38,9 @@ action`. Do not restart the project or rerun completed work.
 | D1 | Rig contract: attached animation ActionSet/clips/events | DONE |
 | D2 | Rig contract: per-bone rest transforms + bind matrices | DONE |
 | E1 | Deformation proof | DONE - drift 0.00000, control unmoved |
-| E2 | Finished Pteranodon mesh + textures | Body done; crest polish, UVs and texture remain |
-| E3 | Mesh data + instance-local loader + fallback | Loader DONE; fallback paths not yet exercised live |
-| F1-F7 | Seven live acceptance groups | TODO |
+| E2 | Finished Pteranodon mesh + textures | DONE - tip-apex crest, atlas UVs, painted albedo; internal visual review PASS |
+| E3 | Mesh data + instance-local loader + fallback | DONE - schema 2 loader; both fallback paths exercised live in the fault drill |
+| F1-F7 | Seven live acceptance groups | DONE on machine evidence (groups 1-7); HumanReview: NOT_PERFORMED_NONBLOCKING |
 | G | Reports, PR update, internal review closure | DONE |
 
 ## Verified facts (do not re-derive)
@@ -214,7 +214,40 @@ claimed.
    hung the game - frames stopped, so even the frame-budget guard could not
    fire. Disabled. The live 120/110 measurement is marked not run.
 
+## Sprint 2 finished creature (2026-09-23/24)
+
+- Asset commit `50004a65`: crest iteration 7 (tip apex, 1.05 back / 0.72 up
+  from `Head`, base half-width 0.06 to 0.012), five-region atlas UVs with a
+  belly-to-back fold, deterministic painter (`paint_pteranodon_albedo.py`,
+  1024 x 1024 RGB, same bytes on every run), mesh data schema 2 with the albedo
+  pinned by SHA-256, loader publishes mesh + albedo or neither, view patch
+  dresses a private copy of the donor material. 1734 domain tests; package
+  235/237 files; Build-Local now stages both Pteranodon files itself.
+- Rider commits `270545e9` (dev-only
+  `disposable-expanded-summoning-pteranodon-fault-drill`; isolation, crowding
+  and repeated-lifecycle assertions on the mechanical run; presentation and
+  motion-binding assertions on the visual-contracts run), `5ec5890f` (the
+  visual swapped onto the donor's own renderer; crowd casts as their own
+  list; the launcher waits for the previous game process) and `fafe1e26`
+  (the launcher releases its own stale lock between scenarios), and
+  `7cc80497` (the rig capture reads the pre-swap donor rig; the lifecycle
+  check asks for one view per cast).
+- Base runs on `50004a65` (each restored and verified to the 0.0.117 tree):
+  `20260923T2348000940057Z-observe-summon-pteranodon-view-contracts` 13/13 (`visual:published`, deformation proof unchanged:
+  drift 0.00000, control unmoved, BakeMesh agreement 0.00000);
+  `20260923T2353191705789Z-disposable-expanded-summoning` 14/14 (both single Pteranodon casts
+  `visual:attached;bones=46;vertices=682;albedo=1024x1024;shader=PF/StandardDynamic`);
+  `20260923T2356321457517Z-disposable-expanded-summoning-visual-contracts` 13/13.
+- Rider runs on `7cc80497`: `20260924T0112361790237Z-disposable-expanded-summoning-pteranodon-fault-drill` 18/18 PASS;
+  `20260924T0115460941403Z-disposable-expanded-summoning` 17/17 PASS; `20260924T0118557039123Z-disposable-expanded-summoning-visual-contracts` 15/15 PASS. Live tree restored
+  and verified after each batch; live install 0.0.117 / 136 files.
+- Material facts recorded live: the donor's `PF/StandardDynamic` declares
+  _BumpMap of the probed map slots; cleared <none>.
+
 ## Next executable action
 
-Finish E2: a crest that reads at silhouette scale, then UVs and a texture.
-Acceptance groups 1 and 2 depend on it; groups 4, 6 and 7 need new scenarios.
+Sprint 2 is complete on internal acceptance. Remaining, none of them
+implementation: owner human review of the finished creature in party-camera
+play (checklist section 2); the two owed compatibility mechanical runs; the
+projected-menu live measurement, which stays NOT RUN for the recorded reason.
+Do not start Sprint 3.
