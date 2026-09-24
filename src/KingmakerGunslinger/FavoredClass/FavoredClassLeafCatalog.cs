@@ -85,16 +85,27 @@ namespace KingmakerGunslinger.FavoredClass
     internal sealed class FavoredClassTargetSpec
     {
         internal FavoredClassTargetSpec(string key, string title, string stepText)
+            : this(key, title, stepText, null)
+        {
+        }
+
+        /// <param name="rowIds">
+        /// The source rows that open this target (null: every row of the
+        /// effect), e.g. fire powers only through the Ifrit row.
+        /// </param>
+        internal FavoredClassTargetSpec(string key, string title, string stepText, string[] rowIds)
         {
             Key = key;
             Title = title;
             StepText = stepText;
+            RowIds = rowIds;
         }
 
         /// <summary>Stable symbol segment; for firearms, the FirearmKind name.</summary>
         internal string Key { get; private set; }
         internal string Title { get; private set; }
         internal string StepText { get; private set; }
+        internal string[] RowIds { get; private set; }
     }
 
     /// <summary>
@@ -178,6 +189,26 @@ namespace KingmakerGunslinger.FavoredClass
                 "Summoner.EidolonNaturalArmor", "Eidolon Armor",
                 "+1 natural armor bonus for your eidolon",
                 "It applies to your current eidolon, stacks with its own natural armor and never changes your own AC. The Summoner is provided by Call of the Wild."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectSelectedBloodlinePower,
+                "Sorcerer.BloodlinePower", "Bloodline Power", null,
+                "Only the chosen power's own level-based values change: Elemental Ray's damage bonus, and Elemental Blast's damage dice, save DC and caster level checks. You must already have the power. It never grants a power early, and never changes other powers, spells, spell slots, other caster level checks, BAB, saves or Elemental Resistance's 9th-level step. The efreeti and djinni bloodlines do not exist in this game."),
+        };
+
+        /// <summary>
+        /// I08/S06 bloodline power targets with an implemented level-scaled
+        /// effect: fire powers through the Ifrit row, air powers through the
+        /// Sylph row (manifest in docs/FAVORED-CLASS-TARGET-MANIFEST.md).
+        /// </summary>
+        private static readonly FavoredClassTargetSpec[] BloodlinePowerTargets =
+        {
+            new FavoredClassTargetSpec("FireRay", "Elemental Ray (Fire)",
+                "+1 effective sorcerer level for Elemental Ray (Fire)", new[] { "I08" }),
+            new FavoredClassTargetSpec("FireBlast", "Elemental Blast (Fire)",
+                "+1 effective sorcerer level for Elemental Blast (Fire)", new[] { "I08" }),
+            new FavoredClassTargetSpec("AirRay", "Elemental Ray (Air)",
+                "+1 effective sorcerer level for Elemental Ray (Air)", new[] { "S06" }),
+            new FavoredClassTargetSpec("AirBlast", "Elemental Blast (Air)",
+                "+1 effective sorcerer level for Elemental Blast (Air)", new[] { "S06" }),
         };
 
         /// <summary>
@@ -211,6 +242,24 @@ namespace KingmakerGunslinger.FavoredClass
             if (family == null)
                 throw new KeyNotFoundException("No registered leaves for effect " + effectId);
             return family;
+        }
+
+        /// <summary>The source rows that open a target (all of the effect's rows when unrestricted).</summary>
+        internal static IList<string> TargetRows(string effectId, string targetKey)
+        {
+            FavoredClassEffectSpec effect = FavoredClassCatalog.Effect(effectId);
+            FavoredClassTargetSpec target = Targets(effect).FirstOrDefault(value =>
+                value != null && string.Equals(value.Key, targetKey, StringComparison.Ordinal));
+            return (target == null || target.RowIds == null ? effect.Rows.ToArray() : target.RowIds)
+                .ToList().AsReadOnly();
+        }
+
+        /// <summary>The player-facing title of a target (its leaf names carry it).</summary>
+        internal static string TargetTitle(string effectId, string targetKey)
+        {
+            FavoredClassTargetSpec target = Targets(FavoredClassCatalog.Effect(effectId)).FirstOrDefault(value =>
+                value != null && string.Equals(value.Key, targetKey, StringComparison.Ordinal));
+            return target == null ? null : target.Title;
         }
 
         /// <summary>Target keys of an effect; a single null key for an untargeted effect.</summary>
@@ -253,6 +302,8 @@ namespace KingmakerGunslinger.FavoredClass
                     return new FavoredClassTargetSpec[] { null };
                 case FavoredClassTargetKind.FirearmType:
                     return FirearmTargets;
+                case FavoredClassTargetKind.BloodlinePower:
+                    return BloodlinePowerTargets;
                 default:
                     throw new InvalidOperationException(effect.Id +
                         " needs a qualified target manifest before it can be published.");
@@ -289,7 +340,7 @@ namespace KingmakerGunslinger.FavoredClass
         {
             FavoredClassRate rate = effect.Rate;
             string step = target == null ? family.StepText : target.StepText;
-            string routes = RouteText(effect);
+            string routes = RouteText(effect, target == null ? null : target.RowIds);
             string cap = rate.CapSteps.HasValue
                 ? string.Format(CultureInfo.InvariantCulture,
                     " The bonus is limited to {0} steps; this choice closes when the limit is reached.",
@@ -297,7 +348,9 @@ namespace KingmakerGunslinger.FavoredClass
                 : string.Empty;
             string counter = target == null
                 ? string.Empty
-                : " Each firearm type keeps its own separate count of investments.";
+                : effect.TargetKind == FavoredClassTargetKind.FirearmType
+                    ? " Each firearm type keeps its own separate count of investments."
+                    : " Each bloodline power keeps its own separate count of investments.";
             string pick;
             if (!rate.HasPartial)
                 pick = "Each selection grants " + step + ".";
@@ -327,7 +380,13 @@ namespace KingmakerGunslinger.FavoredClass
 
         private static string RouteText(FavoredClassEffectSpec effect)
         {
-            IEnumerable<FavoredClassSourceRow> rows = effect.Rows.Select(FavoredClassCatalog.Row)
+            return RouteText(effect, null);
+        }
+
+        private static string RouteText(FavoredClassEffectSpec effect, string[] targetRows)
+        {
+            IEnumerable<FavoredClassSourceRow> rows = (targetRows ?? effect.Rows.ToArray())
+                .Select(FavoredClassCatalog.Row)
                 .Where(row => row.IsScheduled);
             List<string> parts = new List<string>();
             foreach (FavoredClassSourceRow row in rows)

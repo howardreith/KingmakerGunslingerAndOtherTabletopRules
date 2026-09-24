@@ -36,6 +36,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FcbCompanionWolfGuid = "67a9dc42b15d0954ca4689b13e8dedea";
         private const string FcbBarkskinBuffGuid = "533592a86adecda4e9fd5ed37a028432";
         private const string FcbAngelEidolonProgressionName = "AngelEidolonProgression";
+        private const string FcbSorcererClassGuid = "b3a505fb61437dc4097f43c3f8f9a4cf";
+        private const string FcbBloodlineSelectionGuid = "24bef8d1bee12274686f6da6ccbc8914";
+        private const string FcbFireBloodlineGuid = "17cc794d47408bc4986c55265475c06f";
+        private const string FcbAirBloodlineGuid = "cd788df497c6f10439c7025e87864ee4";
+        private const string FcbFireRaySelectionGuid = "057754c2149e4acfa0c2a11896d1d6f7";
+        private const string FcbAirRaySelectionGuid = "09a6540720424a798daf9e987420f624";
+        private const string FcbFireRayFeatureGuid = "ce0889b5c1b392e48baf1e004d1efd67";
+        private const string FcbAirRayFeatureGuid = "acf668c24dfbcdd499276eaf1881486e";
+        private const string FcbFireBlastFeatureGuid = "3022a5066a5604a498dd289b37dfd8aa";
+        private const string FcbFireRayAbilityGuid = "1b4989258e5964149a909e47c72b7f67";
+        private const string FcbFireBlastAbilityGuid = "b2d1d39cd406e0f4185c52fecc73c3b5";
 
         // Phase 3 advanced rows: O06 paladin auras, O07 companion and O08
         // eidolon natural armor, with archetype, two-owner, replacement and
@@ -68,12 +79,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var auraFailures = new List<string>();
             var companionFailures = new List<string>();
             var eidolonFailures = new List<string>();
+            var powerFailures = new List<string>();
             bool cleaned = false;
             try
             {
                 evidence["menus"] = RunAdvancedMenus(host, leaves, menuFailures);
                 evidence["auras"] = ObserveAuraBonuses(leaves, auraFailures);
                 evidence["pets"] = ObservePetArmor(leaves, companionFailures, eidolonFailures);
+                evidence["bloodlinePowers"] = ObserveBloodlinePowers(host, leaves, powerFailures);
             }
             catch (Exception exception)
             {
@@ -103,6 +116,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["pets"] == null ? null : evidence["pets"]["eidolon"], eidolonFailures),
                 eidolonFailures.Count == 0,
                 "native AddPet of Call of the Wild's eidolon progression in the save-free fixture scene"));
+            assertions.Add(Assertion("fcb-advanced-bloodline-powers",
+                "an Ifrit or Sylph Sorcerer is offered only its own element's owned powers; two steps in Elemental Blast raise exactly its caster level, dice and DC by the effective-level rule, two steps in Elemental Ray raise exactly its damage bonus rank, and the other power and an unrelated spell are unchanged",
+                Describe(evidence["bloodlinePowers"], powerFailures), powerFailures.Count == 0,
+                "level-1 native Sorcerer visits with the chosen bloodline; AbilityData.CreateExecutionContext params and ranks"));
             assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
                 "cleaned=" + cleaned, cleaned, "detached entity disposal and exact reference snapshots"));
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -199,6 +216,179 @@ namespace KingmakerGunslinger.RuntimeTesting
                 rows.Add(row);
             }
             return rows;
+        }
+
+        private JObject ObserveBloodlinePowers(FavoredClassHostHandles host, FavoredClassBlueprintSet leaves,
+            IList<string> failures)
+        {
+            var result = new JObject();
+            var library = BlueprintBootstrap.Library;
+            string effect = FavoredClassCatalog.EffectSelectedBloodlinePower;
+            BlueprintCharacterClass sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library,
+                FcbSorcererClassGuid, "Sorcerer");
+            BlueprintFeatureSelection bonus = host.BonusSelectionFor(sorcerer.AssetGuid);
+            FavoredClassLeafPair[] pairs = leaves.Pairs.Where(pair => pair.Effect.Id == effect).ToArray();
+            Func<string, BlueprintFeature> feature = guid =>
+            {
+                BlueprintScriptableObject value;
+                library.BlueprintsByAssetId.TryGetValue(guid, out value);
+                return value as BlueprintFeature;
+            };
+            // Native level-1 menus with the chosen bloodline and its first power.
+            var cases = new[]
+            {
+                Tuple.Create(FavoredClassAncestry.Ifrit, FcbFireBloodlineGuid, FcbFireRaySelectionGuid,
+                    FcbFireRayFeatureGuid, new[] { "FireRay" }),
+                Tuple.Create(FavoredClassAncestry.Sylph, FcbAirBloodlineGuid, FcbAirRaySelectionGuid,
+                    FcbAirRayFeatureGuid, new[] { "AirRay" }),
+                Tuple.Create(FavoredClassAncestry.Human, FcbFireBloodlineGuid, FcbFireRaySelectionGuid,
+                    FcbFireRayFeatureGuid, new string[0]),
+                Tuple.Create(FavoredClassAncestry.Ifrit, FcbAirBloodlineGuid, FcbAirRaySelectionGuid,
+                    FcbAirRayFeatureGuid, new string[0]),
+            };
+            var menus = new JArray();
+            foreach (var entry in cases)
+            {
+                var row = new JObject { ["ancestry"] = entry.Item1, ["bloodline"] = entry.Item2 };
+                UnitEntityData unit = FavoredClassLevelUpHarness.CreateUnit(14);
+                LevelUpController controller = null;
+                try
+                {
+                    BlueprintRace race = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
+                        FavoredClassRaceIdentities.ForAncestry(entry.Item1).RaceGuid, entry.Item1);
+                    controller = FavoredClassLevelUpHarness.Open(unit.Descriptor, race, sorcerer,
+                        "KMG FCB Bloodline Menu");
+                    FeatureSelectionState bloodlineState = FavoredClassLevelUpHarness.FindOpenState(controller,
+                        FcbBloodlineSelectionGuid);
+                    row["bloodlineSelected"] = bloodlineState != null && FavoredClassLevelUpHarness.Select(
+                        controller, bloodlineState, feature(entry.Item2));
+                    FeatureSelectionState rayState = FavoredClassLevelUpHarness.FindOpenState(controller,
+                        entry.Item3);
+                    row["raySelection"] = rayState == null ? "none" : "open";
+                    if (rayState != null)
+                        row["raySelected"] = FavoredClassLevelUpHarness.Select(controller, rayState,
+                            feature(entry.Item4));
+                    row["rayOwned"] = controller.Preview.HasFact(feature(entry.Item4));
+                    FavoredClassLevelUpHarness.ChooseFavoredClass(controller, sorcerer, row);
+                    FavoredClassLevelUpHarness.FillOthers(controller,
+                        new HashSet<string>(StringComparer.Ordinal) { bonus.AssetGuid });
+                    FeatureSelectionState fcb = FavoredClassLevelUpHarness.FindOpenState(controller,
+                        bonus.AssetGuid);
+                    string[] offered = fcb == null ? new string[0] : pairs.Where(pair =>
+                        FavoredClassLevelUpHarness.CanSelect(controller, fcb, pair.Full) ||
+                        (pair.Partial != null && FavoredClassLevelUpHarness.CanSelect(controller, fcb, pair.Partial)))
+                        .Select(pair => pair.TargetKey).ToArray();
+                    row["offered"] = new JArray(offered);
+                    if (!(bool)row["rayOwned"])
+                        failures.Add(entry.Item1 + " " + entry.Item2 + ": the first power was not gained");
+                    if (!offered.SequenceEqual(entry.Item5))
+                        failures.Add(entry.Item1 + " " + entry.Item2 + ": offered " + string.Join(",", offered) +
+                            " expected " + string.Join(",", entry.Item5));
+                }
+                catch (Exception exception)
+                {
+                    failures.Add(entry.Item1 + ": " + exception.GetType().Name + ": " + exception.Message);
+                }
+                finally
+                {
+                    FavoredClassLevelUpHarness.Close(controller);
+                    unit.Dispose();
+                }
+                menus.Add(row);
+            }
+            result["menus"] = menus;
+
+            // Level-9 probes: real Sorcerer levels and the native power features.
+            var units = new List<UnitEntityData>();
+            try
+            {
+                Func<UnitEntityData> create = () =>
+                {
+                    var unit = new Kingmaker.UI.LevelUp.ChargenUnit(BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                    units.Add(unit);
+                    return unit;
+                };
+                BlueprintFeature ray = feature(FcbFireRayFeatureGuid);
+                BlueprintFeature blast = feature(FcbFireBlastFeatureGuid);
+                var rayAbility = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
+                    library, FcbFireRayAbilityGuid, "fire Elemental Ray");
+                var blastAbility = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
+                    library, FcbFireBlastAbilityGuid, "fire Elemental Blast");
+                var fireball = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
+                    library, FcbFireballGuid, "Fireball");
+                UnitEntityData target = create();
+                Func<UnitEntityData> sorcererAtNine = () =>
+                {
+                    UnitEntityData unit = create();
+                    for (int added = 0; added < 9; added++)
+                        unit.Descriptor.Progression.AddClassLevel(sorcerer);
+                    unit.Descriptor.AddFact(ray);
+                    unit.Descriptor.AddFact(blast);
+                    return unit;
+                };
+                UnitEntityData control = sorcererAtNine();
+                UnitEntityData rayUnit = sorcererAtNine();
+                UnitEntityData blastUnit = sorcererAtNine();
+                GrantFavoredClassRanks(rayUnit, leaves.Pair(effect, "FireRay").Full, 2);
+                GrantFavoredClassRanks(blastUnit, leaves.Pair(effect, "FireBlast").Full, 2);
+                Func<UnitEntityData, Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility, JObject> probe =
+                    (caster, ability) =>
+                    {
+                        var data = new Kingmaker.UnitLogic.Abilities.AbilityData(ability, caster.Descriptor);
+                        var context = data.CreateExecutionContext(new TargetWrapper(target));
+                        context.Recalculate();
+                        return new JObject
+                        {
+                            ["casterLevel"] = context.Params.CasterLevel,
+                            ["dc"] = context.Params.DC,
+                            ["rankBonus"] = context.Params.RankBonus,
+                            ["damageDice"] = context[AbilityRankType.DamageDice],
+                            ["damageBonus"] = context[AbilityRankType.DamageBonus]
+                        };
+                    };
+                Func<JObject, JObject, string, int> delta = (after, before, key) => (int)after[key] - (int)before[key];
+                JObject blastControl = probe(control, blastAbility), blastInvested = probe(blastUnit, blastAbility),
+                    blastNeighbor = probe(rayUnit, blastAbility), rayControl = probe(control, rayAbility),
+                    rayInvested = probe(rayUnit, rayAbility), rayNeighbor = probe(blastUnit, rayAbility),
+                    fireballControl = probe(control, fireball), fireballInvested = probe(blastUnit, fireball);
+                result["sorcererLevel"] = control.Descriptor.Progression.GetClassLevel(sorcerer);
+                result["blastControl"] = blastControl;
+                result["blastInvested"] = blastInvested;
+                result["blastNeighbor"] = blastNeighbor;
+                result["rayControl"] = rayControl;
+                result["rayInvested"] = rayInvested;
+                result["rayNeighbor"] = rayNeighbor;
+                result["fireballControl"] = fireballControl;
+                result["fireballInvested"] = fireballInvested;
+                if (delta(blastInvested, blastControl, "casterLevel") != 2 ||
+                    delta(blastInvested, blastControl, "rankBonus") != 2 ||
+                    delta(blastInvested, blastControl, "damageDice") != 2)
+                    failures.Add("two Blast steps did not add exactly +2 caster level, rank bonus and dice");
+                int level = (int)result["sorcererLevel"];
+                int expectedDc = FavoredClassMechanicsPolicy.HalfLevelDelta(level, 2);
+                if (delta(blastInvested, blastControl, "dc") != expectedDc)
+                    failures.Add("the Blast DC changed by " + delta(blastInvested, blastControl, "dc") +
+                        ", expected " + expectedDc);
+                int expectedRay = (level + 2) / 2 - level / 2;
+                if (delta(rayInvested, rayControl, "damageBonus") != expectedRay ||
+                    delta(rayInvested, rayControl, "rankBonus") != 2)
+                    failures.Add("two Ray steps did not raise exactly the Ray's damage bonus rank");
+                foreach (var pair in new[] { Tuple.Create(blastNeighbor, blastControl), Tuple.Create(rayNeighbor, rayControl),
+                    Tuple.Create(fireballInvested, fireballControl) })
+                    foreach (string key in new[] { "casterLevel", "dc", "rankBonus", "damageDice", "damageBonus" })
+                        if (delta(pair.Item1, pair.Item2, key) != 0)
+                            failures.Add("an unchosen power or spell changed " + key);
+            }
+            catch (Exception exception)
+            {
+                failures.Add("probe: " + exception.GetType().Name + ": " + exception.Message);
+            }
+            finally
+            {
+                foreach (UnitEntityData unit in units)
+                    try { unit.Dispose(); } catch (Exception) { }
+            }
+            return result;
         }
 
         private static JObject ObserveAuraBonuses(FavoredClassBlueprintSet leaves, IList<string> failures)
@@ -394,7 +584,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failures.Add("the replacement companion did not gain the bonus exactly once");
             // Removing the investment (a respec) removes the projected bonus exactly.
             int withInvestment = second.Stats.AC.ModifiedValue;
-            ranger.Descriptor.RemoveFact(pair.Full);
+            // RemoveFact removes one rank of a ranked feature; remove them all.
+            for (int guard = 0; guard < 8 && ranger.Descriptor.HasFact(pair.Full); guard++)
+                ranger.Descriptor.RemoveFact(pair.Full);
+            row["investmentRemoved"] = !ranger.Descriptor.HasFact(pair.Full);
             row["removedInvestmentAcDelta"] = second.Stats.AC.ModifiedValue - withInvestment;
             row["removedInvestmentPetFeature"] = second.Descriptor.HasFact(petFeature);
             if ((int)row["removedInvestmentAcDelta"] != -3 || (bool)row["removedInvestmentPetFeature"])

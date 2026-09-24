@@ -140,6 +140,22 @@ namespace KingmakerGunslinger.FavoredClass
                 { FavoredClassCatalog.Cleric, "67819271767a9dd4fbfd4ae700befea0" },
                 { FavoredClassCatalog.Paladin, "bfa11238e7ae3544bbeb4d0b92e897ec" },
                 { FavoredClassCatalog.Ranger, "cda0615668a6df14eb36ba19ee881af6" },
+                { FavoredClassCatalog.Sorcerer, "b3a505fb61437dc4097f43c3f8f9a4cf" },
+            };
+
+        // I08/S06 bloodline power targets: the owned power feature (its own
+        // DC binding) and the ability whose parameters it scales.
+        private static readonly Dictionary<string, KeyValuePair<string, string>> BloodlinePowers =
+            new Dictionary<string, KeyValuePair<string, string>>(StringComparer.Ordinal)
+            {
+                { "FireRay", new KeyValuePair<string, string>(
+                    "ce0889b5c1b392e48baf1e004d1efd67", "1b4989258e5964149a909e47c72b7f67") },
+                { "FireBlast", new KeyValuePair<string, string>(
+                    "3022a5066a5604a498dd289b37dfd8aa", "b2d1d39cd406e0f4185c52fecc73c3b5") },
+                { "AirRay", new KeyValuePair<string, string>(
+                    "acf668c24dfbcdd499276eaf1881486e", "4729c2ac98d02004fb440d17f7786e28") },
+                { "AirBlast", new KeyValuePair<string, string>(
+                    "553d9802d5d9de04b941b55cb47d3096", "6d005cc9c3ad3f24e8769aad2fbfdf3f") },
             };
 
         // Classes of an optional provider (Call of the Wild), which may be
@@ -224,8 +240,8 @@ namespace KingmakerGunslinger.FavoredClass
                     BlueprintFeature full = registry.Register<BlueprintFeature>(fullSpec.Symbol,
                         () => CreateLeaf(fullSpec, icon));
                     RegisterAuxiliary(effect, full, registry, auxiliary);
-                    AttachPrerequisites(effect, full, partial, library, gunslinger);
-                    AttachMechanics(effect, full, partial, library, gunslinger, auxiliary);
+                    AttachPrerequisites(effect, targetKey, full, partial, library, gunslinger);
+                    AttachMechanics(effect, targetKey, full, partial, library, gunslinger, auxiliary);
                     pairs.Add(new FavoredClassLeafPair(effect, targetKey,
                         HostClassGuidFor(effect, gunslinger), full, partial));
                 }
@@ -365,6 +381,10 @@ namespace KingmakerGunslinger.FavoredClass
             string nativeSource;
             if (NativeIconSources.TryGetValue(effect.Id, out nativeSource))
                 return NativeIconSource(library, nativeSource, effect.Id).Icon;
+            KeyValuePair<string, string> power;
+            if (effect.Id == FavoredClassCatalog.EffectSelectedBloodlinePower &&
+                targetKey != null && BloodlinePowers.TryGetValue(targetKey, out power))
+                return NativeIconSource(library, power.Value, effect.Id).Icon;
             switch (effect.Id)
             {
                 case FavoredClassCatalog.EffectMisfire:
@@ -430,10 +450,18 @@ namespace KingmakerGunslinger.FavoredClass
             return feature;
         }
 
-        private static void AttachPrerequisites(FavoredClassEffectSpec effect,
+        private static void AttachPrerequisites(FavoredClassEffectSpec effect, string targetKey,
             BlueprintFeature full, BlueprintFeature partial, LibraryScriptableObject library,
             GunslingerClassBlueprintSet gunslinger)
         {
+            IList<string> targetRows = FavoredClassLeafCatalog.TargetRows(effect.Id, targetKey);
+            string[] restrictedRows = targetRows.Count == effect.Rows.Length ? null : targetRows.ToArray();
+            BlueprintFeature usablePower = null;
+            KeyValuePair<string, string> power;
+            if (effect.Id == FavoredClassCatalog.EffectSelectedBloodlinePower && targetKey != null &&
+                BloodlinePowers.TryGetValue(targetKey, out power))
+                usablePower = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, power.Key,
+                    "native bloodline power " + targetKey);
             IList<BlueprintArchetype> replacing = ReplacingArchetypes(effect, library, gunslinger);
             BlueprintFeature[] improved = ImprovedFeatures(effect, library);
             // An optional provider's class may not exist yet; it is read only
@@ -448,8 +476,17 @@ namespace KingmakerGunslinger.FavoredClass
                 var components = new List<BlueprintComponent>
                 {
                     Investment(effect, full, partial, ReferenceEquals(leaf, partial)),
-                    Ancestry(effect, leaf)
+                    Ancestry(effect, leaf, restrictedRows)
                 };
+                if (usablePower != null)
+                {
+                    // Only a power the character already has is a usable target.
+                    var owned = ScriptableObject.CreateInstance<PrerequisiteFeature>();
+                    owned.name = "$" + leaf.name + "_UsablePower";
+                    owned.Feature = usablePower;
+                    owned.Group = Prerequisite.GroupType.All;
+                    components.Add(owned);
+                }
                 for (int index = 0; index < replacing.Count; index++)
                     components.Add(NoArchetype(leaf, hostClass, replacing[index], index));
                 if (improved.Length > 0)
@@ -514,11 +551,12 @@ namespace KingmakerGunslinger.FavoredClass
         }
 
         private static PrerequisiteFavoredClassAncestry Ancestry(FavoredClassEffectSpec effect,
-            BlueprintFeature leaf)
+            BlueprintFeature leaf, string[] restrictedRows)
         {
             var prerequisite = ScriptableObject.CreateInstance<PrerequisiteFavoredClassAncestry>();
             prerequisite.name = "$" + leaf.name + "_Ancestry";
             prerequisite.EffectId = effect.Id;
+            prerequisite.RowIds = restrictedRows;
             prerequisite.Group = Prerequisite.GroupType.All;
             return prerequisite;
         }
@@ -535,11 +573,12 @@ namespace KingmakerGunslinger.FavoredClass
             return prerequisite;
         }
 
-        private static void AttachMechanics(FavoredClassEffectSpec effect, BlueprintFeature full,
-            BlueprintFeature partial, LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger,
-            IDictionary<string, BlueprintScriptableObject> auxiliary)
+        private static void AttachMechanics(FavoredClassEffectSpec effect, string targetKey,
+            BlueprintFeature full, BlueprintFeature partial, LibraryScriptableObject library,
+            GunslingerClassBlueprintSet gunslinger, IDictionary<string, BlueprintScriptableObject> auxiliary)
         {
-            BlueprintComponent mechanics = CreateMechanics(effect, full, library, gunslinger, auxiliary);
+            BlueprintComponent mechanics = CreateMechanics(effect, targetKey, full, library, gunslinger,
+                auxiliary);
             if (mechanics != null)
                 full.ComponentsArray = full.ComponentsArray.Concat(
                     new[] { mechanics }).ToArray();
@@ -567,7 +606,7 @@ namespace KingmakerGunslinger.FavoredClass
         /// full rank through <see cref="FavoredClassEarnedSteps"/> (misfire
         /// threshold, Gunslinger's Dodge, Gunslinger Initiative).
         /// </summary>
-        private static BlueprintComponent CreateMechanics(FavoredClassEffectSpec effect,
+        private static BlueprintComponent CreateMechanics(FavoredClassEffectSpec effect, string targetKey,
             BlueprintFeature full, LibraryScriptableObject library,
             GunslingerClassBlueprintSet gunslinger, IDictionary<string, BlueprintScriptableObject> auxiliary)
         {
@@ -685,6 +724,19 @@ namespace KingmakerGunslinger.FavoredClass
                     stunning.Resource = BlueprintLibraryLookup.RequireExact<BlueprintAbilityResource>(
                         library, StunningFistResourceGuid, "native Stunning Fist resource");
                     return stunning;
+                }
+                case FavoredClassCatalog.EffectSelectedBloodlinePower:
+                {
+                    KeyValuePair<string, string> power = BloodlinePowers[targetKey];
+                    var level = ScriptableObject.CreateInstance<FavoredClassSelectedPowerLevel>();
+                    level.name = "$" + full.name + "_EffectiveLevel";
+                    level.Divisor = divisor;
+                    level.CapSteps = cap;
+                    level.PowerFeature = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                        power.Key, "native bloodline power " + targetKey);
+                    level.Ability = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                        power.Value, "native bloodline power ability " + targetKey);
+                    return level;
                 }
                 case FavoredClassCatalog.EffectCompanionArmor:
                 case FavoredClassCatalog.EffectEidolonArmor:

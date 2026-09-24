@@ -223,6 +223,7 @@
     <Compile Include="FavoredClass\FavoredClassAuraPublication.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassEarnedStepsProperty.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassPetNaturalArmor.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassSelectedPowerLevel.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassHostRaceBridge.cs" />
     <Compile Include="ElementalRaces\ElementalMostlyHumanPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalMostlyHumanBlueprints.cs" />
