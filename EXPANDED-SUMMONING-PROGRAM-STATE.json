@@ -276,7 +276,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Phase 1 Sprint 3 guarded runtime qualification and creature review, then Sprints 4-8; see EXPANDED-SUMMONING-PHASE1-AUTONOMOUS-STATE.md.",
+  "nextConcreteAction": "Phase 1 Sprints 3-4 guarded runtime qualification and creature review, then Sprints 5-8; see EXPANDED-SUMMONING-PHASE1-AUTONOMOUS-STATE.md.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
@@ -317,6 +317,18 @@
         "cyclops",
         "frost-giant (SNA VII-IX wrappers, unit reused)"
       ]
+    },
+    "sprint4": {
+      "name": "Native Publication Pack II - Plants and Colossal Reuse",
+      "technicalStatus": "IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS",
+      "internalAcceptance": "PENDING",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "creatures": [
+        "shambling-mound",
+        "giant-flytrap",
+        "purple-worm"
+      ],
+      "sharedCapability": "summon grapple lifecycle: grab, hold, maintain, release, swallow, area safeguard"
     }
   }
 }

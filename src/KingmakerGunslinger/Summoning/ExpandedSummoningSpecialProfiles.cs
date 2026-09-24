@@ -131,6 +131,21 @@ namespace KingmakerGunslinger.Summoning
         internal const int CyclopsFlashOfInsightUses = 1;
         internal const int CyclopsFlashOfInsightRounds = 1;
 
+        /// <summary>
+        /// Shared summon grapple lifecycle (Sprint 4). A grab is the game's own
+        /// grapple check after a hit with a grab weapon, with the tabletop +4
+        /// grab bonus; the native hold parts carry the state. Each new round
+        /// the holder maintains with a grapple check at the tabletop +5,
+        /// dealing the grab weapon's damage (plus constrict) on success and
+        /// releasing on failure. Constrict is 1.5 x the Strength modifier on
+        /// top of its dice. The worm swallows on the grab check instead of
+        /// holding, as Kingmaker's own worm does.
+        /// </summary>
+        internal const int SummonGrabManeuverBonus = 4;
+        internal const int SummonHoldMaintainBonus = 5;
+        internal const int ShamblingMoundConstrictDice = 2;
+        internal const int ShamblingMoundConstrictBonus = 7;
+
         internal static bool ShouldAttemptBebelithDismantle(bool isClaw,
             bool isHit, bool targetHasArmor, int priorClawHits,
             bool alreadyAttempted)
@@ -155,6 +170,35 @@ namespace KingmakerGunslinger.Summoning
         internal static bool ShouldApplyFlashOfInsight(bool isOwnerAttackRoll,
             bool stateArmed)
         { return isOwnerAttackRoll && stateArmed; }
+
+        /// <summary>
+        /// A grab starts only from a hit with a grab weapon, by a summon that
+        /// neither holds nor has swallowed anyone, against a live target that
+        /// is neither held nor swallowed and is not the summon itself.
+        /// </summary>
+        internal static bool ShouldAttemptSummonGrab(bool isHit, bool isGrabWeapon,
+            bool ownerHolding, bool targetHeld, bool targetSwallowed,
+            bool selfTarget)
+        {
+            return isHit && isGrabWeapon && !ownerHolding && !targetHeld &&
+                !targetSwallowed && !selfTarget;
+        }
+
+        /// <summary>
+        /// A hold survives a new round only while the target is still the one
+        /// the summon owns and the maintain check succeeds; otherwise it is
+        /// released.
+        /// </summary>
+        internal static bool ShouldMaintainSummonHold(bool targetOwned,
+            bool maintainSuccess)
+        { return targetOwned && maintainSuccess; }
+
+        /// <summary>
+        /// Constrict adds one and a half times the Strength modifier to its
+        /// dice, the tabletop bonus for a constricting natural attack.
+        /// </summary>
+        internal static int ConstrictBonus(int strengthModifier)
+        { return strengthModifier + strengthModifier / 2; }
 
         internal static void Validate()
         {
@@ -181,9 +225,12 @@ namespace KingmakerGunslinger.Summoning
                 PixieSleepArrowWillDc != 15 || PixieSleepArrowRounds != 50 ||
                 PixieDanceUses != 1 || PixieDanceCasterLevel != 8 ||
                 CyclopsFlashOfInsightUses != 1 ||
-                CyclopsFlashOfInsightRounds != 1)
+                CyclopsFlashOfInsightRounds != 1 ||
+                SummonGrabManeuverBonus != 4 || SummonHoldMaintainBonus != 5 ||
+                ShamblingMoundConstrictDice != 2 ||
+                ShamblingMoundConstrictBonus != ConstrictBonus(5))
                 throw new InvalidOperationException(
-                    "Bebelith/Pixie/Cyclops bounded special profile changed.");
+                    "Bebelith/Pixie/Cyclops/grapple bounded special profile changed.");
         }
 
         private static string[] BuildElementalKeys()

@@ -69,14 +69,14 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(71, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(74, ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(82,
+            Assertions.Equal(85,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures must be 71 project-owned plus 11 native wrappers.");
-            Assertions.Equal(81,
+                "Represented creatures must be 74 project-owned plus 11 native wrappers.");
+            Assertions.Equal(84,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "81 creatures are published somewhere; Dire Bat is registered only.");
+                "84 creatures are published somewhere; Dire Bat is registered only.");
             Assertions.False(
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Contains("dire-bat"),
                 "Dire Bat must not count as published.");
@@ -84,8 +84,8 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(63, notRepresented,
-                "63 ideal-roster creatures are not represented in the summon roster yet.");
+            Assertions.Equal(60, notRepresented,
+                "60 ideal-roster creatures are not represented in the summon roster yet.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");
@@ -210,7 +210,7 @@ namespace KingmakerGunslinger.DomainTests
             }
 
             // The visible surface is unchanged by a bookkeeping correction.
-            Assertions.Equal(741,
+            Assertions.Equal(750,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Coverage derivation must not change the shipped visible surface.");

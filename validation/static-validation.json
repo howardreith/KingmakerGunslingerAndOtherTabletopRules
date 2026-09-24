@@ -1768,7 +1768,7 @@
   "betterVendorsProgression138": {
     "baselineCommit": "202a41815f7ca80303e33c2f694804e7926efd8b",
     "branch": "codex/better-vendors-progression",
-    "deterministicTestCount": 1779,
+    "deterministicTestCount": 1783,
     "publicReleaseAuthorized": true,
     "ownerAuthorizedRelease": true,
     "ownerReleaseInstruction": "Run the final tests. IF they have issues, please address them. If not, please proceeding with committing, merging, pushing to remote, incrementing the version number and cutting a new release.",
@@ -1867,21 +1867,21 @@
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
     "ownerDelegationGranted": true,
     "sprintsComplete": [],
-    "deterministicTestCount": 1779,
-    "uniqueCreatures": 71,
+    "deterministicTestCount": 1783,
+    "uniqueCreatures": 74,
     "summonMonsterEntries": 68,
     "summonMonsterPlacements": 378,
-    "summonNaturesAllyEntries": 61,
-    "summonNaturesAllyPlacements": 348,
-    "registeredLogicalPlacements": 726,
-    "publishedLogicalPlacements": 712,
+    "summonNaturesAllyEntries": 64,
+    "summonNaturesAllyPlacements": 357,
+    "registeredLogicalPlacements": 735,
+    "publishedLogicalPlacements": 721,
     "templatedPlacements": 199,
     "nativeExpansionWrappers": 29,
-    "naturalProfiles": 30,
-    "projectIcons": 81,
-    "foundationIdentities": 1276,
-    "appendedLedgerIdentities": 92,
-    "packageFileCountWithSoundBank": 241,
+    "naturalProfiles": 33,
+    "projectIcons": 84,
+    "foundationIdentities": 1295,
+    "appendedLedgerIdentities": 111,
+    "packageFileCountWithSoundBank": 244,
     "sprint3": {
       "creatures": [
         "pony",
@@ -1895,6 +1895,16 @@
         "SNA IX 1d4+1"
       ],
       "flashOfInsight": "bounded: once per summoning, swift action, next attack is an automatic critical hit (Kingmaker's automatic-hit path grants threat and confirmation together)",
+      "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
+      "internalAcceptance": "PENDING"
+    },
+    "sprint4": {
+      "creatures": [
+        "shambling-mound",
+        "giant-flytrap",
+        "purple-worm"
+      ],
+      "grappleLifecycle": "shared: grab through the game's grapple check with +4; native hold parts carry the project hold and grappled buffs; maintain each round at +5 dealing natural-attack damage (mound adds constrict 2d6+7) or release; the hold buff's end releases its own target; the worm swallows through the native swallow-whole part and its traits' end spits out; party members held or swallowed by a KMG summon are released on area leave and repaired on area load",
       "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
       "internalAcceptance": "PENDING"
     }
