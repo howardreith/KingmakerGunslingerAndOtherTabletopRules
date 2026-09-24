@@ -105,6 +105,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             document["nativeGrab"] = grab == null ? null :
                 DescribeGraph(grab, 0, new HashSet<object>(
                     NativeDonorReferenceComparer.Instance));
+            // Sprint 4 onward: the exact graphs behind the signature mechanics,
+            // ten levels deep. Blueprint references inside them are still
+            // recorded as name:guid:type only; nothing the game owns is copied.
+            var deep = new JObject();
+            foreach (string guid in DeepGraphGuids)
+            {
+                BlueprintScriptableObject blueprint;
+                if (!BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(
+                        guid, out blueprint) || blueprint == null)
+                {
+                    deep[guid] = "<missing>";
+                    continue;
+                }
+                deep[blueprint.name + ":" + guid] = DescribeGraph(blueprint, 0,
+                    new HashSet<object>(NativeDonorReferenceComparer.Instance),
+                    10);
+            }
+            document["deepGraphs"] = deep;
 
             string path = Path.Combine(_request.EvidenceDirectory,
                 "native-donor-audit.json");
@@ -244,14 +262,77 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// to see what the native Grab feature's actions wire to without
         /// copying anything the game owns.
         /// </summary>
+        /// <summary>
+        /// Native graphs Sprints 4-8 design against. Grab / constrict / swallow
+        /// (Shambling Mound, Purple Worm), plant and vermin poisons, web,
+        /// sleep, the mephit breath weapons, spell-like abilities and visual
+        /// buffs, pounce, fast healing, blindsight and life sense.
+        /// </summary>
+        private static readonly string[] DeepGraphGuids = {
+            "efc1e80fb41e06544be46604983806d6", // ShamblingMoundGrabFeature
+            "77106f698ef4cd54ba277de5e6d0e06d", // ShamblingMoundGrappledBuff
+            "fde59ce17ec392e46a33420219e85b23", // ShamblingMoundGrappledCantAttack
+            "a170aa8c9f462b14095dc1bde6e325cb", // ShamblingMoundPoisonFeature
+            "99d7bf176813e8b4ea4b0f95d3390248", // ShamblingMound_ElectricFortitudeImproved
+            "dee864aec4a0d344b913dd27a4b504cb", // PurpleWormSwallowWholeFeature
+            "368d1df7c1d0267459a584bf23ccadc8", // PurpleWormSwallowed
+            "728446b9d0bf47144a1b621169299c2a", // PurpleWormPoisonFeature
+            "1180eb46f39f0cd41a0b2e293d1502cb", // GiantFlytrapPoisonFeature
+            "0d1d262d3437ec143b16b47e24317bbc", // GolemAutumnGrabFeature
+            "077537d7c64aa4e44b559b914693d085", // GolemAutumnGrappledBuff
+            "e5f659cc84531124db31bb62aa1b7785", // MimicOozeGrappledBuff
+            "b5362f4dc554d2544921934b3a841efa", // GiantFrogTongueGrabTest
+            "134cb6d492269aa4f8662700ef57449f", // Web (spell)
+            "a719abac0ea0ce346b401060754cc1c0", // WebGrappled
+            "bb72a758112438e4a9c62f7637c974ae", // WebBuffSlowMovement
+            "3051e7002c803fc47a11bcfa381b9fbd", // SpiderWebImmunity
+            "094714bb08f4e1943a8e9d2384ebe573", // GiantSpiderPoisonFeature
+            "ef60cd888b834a549898824e6b684918", // HuntingSpiderPoisonFeature
+            "d88236a83413baa45ae9c8e5ddce5a6c", // MonitorLizardPoisonFeature
+            "5e0cd801bac0e95429bb7e4d1bc61a23", // Sleeping
+            "1a8149c09e0bdfc48a305ee6ac3729a8", // Pounce
+            "7ada82367e07da04f9421fa8d2818945", // FastHealing2
+            "236ec7f226d3d784884f066aa4be1570", // Blindsight
+            "bd69053b59fb92c438cc788d2dfd694e", // LifeSenseBuff
+            "6e668702fdc53c343a0363813683346e", // Tremorsense (class feature)
+            "1f08438786937954aaa6022c7f5ad286", // MephitAirBreathWeapon
+            "fa5ee5f4cd5c6394f8b497c773f8e14a", // MephitEarthBreathWeapon
+            "ab0616beb567c2c4d8d3f7447a01a0c8", // MephitFireBreathWeapon
+            "a54cd27999a5e8340976f3a40edfef3a", // MephitWaterBreathWeapon
+            "f98c9fd94b1be6947bd9637816226c1b", // MephitAirBlur
+            "65dfd0a5324a76145b38c03250c25a7b", // MephitEarthChangeSize
+            "34283d686f5f5a847b4d0d6470b52a65", // MephitWaterStinkingCloud
+            "e35ea268f6c8b0344b11c569973197c1", // MephitWaterImmunities
+            "14438d09e84e17744a2bc551e925beaa", // MephitAirVisualBuff
+            "dbd5b33cfba17d04b88cc5917e2575a5", // MephitEarthVisualBuff
+            "6b6aa4c7574cbed4cab96d2d5fa6e25f", // MephitFireVisualBuff
+            "a713733858adb1e4b9696e8e58f5f1bb", // MephitWaterVisualBuff
+            "50782bc4eb36aac4287023e20ee00808", // MephitAirSummoned (unit)
+            "46779f56cab2cb0438161fec0129790d", // MephitEarthSummoned (unit)
+            "10a820de0a417f345866f794324205ad", // MephitFireSummoned (unit)
+            "4615328295cd7e84bb2ef09d3dba8403", // MephitWaterSummoned (unit)
+            "9a46dfd390f943647ab4395fc997936d", // AcidArrow
+            "ce7dad2b25acf85429b6c9550787b2d9", // Glitterdust
+            "4ac47ddb9fa1eaf43a1b6809980cfbd2", // MagicMissile
+            "14ec7a4e52e90fa47a4c8d63c69fd5c1", // Blur
+            "cdb106d53c65bbc4086183d54c3b97c7", // ScorchingRay
+            "2131842b04b532f4c9cb662c9315a37a", // PujaWolfSprintBuff
+            "4d0b2a0971ca8994a8af20940285da2f", // PujaWolfSuperSprintBuff
+            "f957b4444b6fb404e84ae2a5765797bb", // TrippingBite
+        };
+
         private static JToken DescribeGraph(object value, int depth, HashSet<object> seen)
+        { return DescribeGraph(value, depth, seen, 4); }
+
+        private static JToken DescribeGraph(object value, int depth, HashSet<object> seen,
+            int maxDepth)
         {
             if (value == null) return null;
             var blueprint = value as BlueprintScriptableObject;
             if (blueprint != null && depth > 0)
                 return blueprint.name + ":" + blueprint.AssetGuid + ":" +
                     blueprint.GetType().Name;
-            if (depth > 4 || !seen.Add(value)) return value.GetType().Name;
+            if (depth > maxDepth || !seen.Add(value)) return value.GetType().Name;
             Type type = value.GetType();
             if (type.IsPrimitive || type.IsEnum || value is string) return value.ToString();
             var array = value as IEnumerable;
@@ -261,7 +342,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (object item in array)
                 {
                     if (items.Count >= 32) break;
-                    items.Add(DescribeGraph(item, depth + 1, seen));
+                    items.Add(DescribeGraph(item, depth + 1, seen, maxDepth));
                 }
                 return items;
             }
@@ -272,7 +353,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result["guid"] = blueprint.AssetGuid;
                 result["components"] = new JArray((blueprint.ComponentsArray ??
                     Array.Empty<BlueprintComponent>()).Where(c => c != null)
-                    .Select(c => DescribeGraph(c, depth + 1, seen)).ToArray());
+                    .Select(c => DescribeGraph(c, depth + 1, seen, maxDepth)).ToArray());
                 return result;
             }
             foreach (FieldInfo field in ExpandedSummoningFields(type))
@@ -286,7 +367,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (member == null) continue;
                 if (member is UnityEngine.Object && !(member is BlueprintScriptableObject) &&
                     !(member is BlueprintComponent)) continue;
-                result[field.Name] = DescribeGraph(member, depth + 1, seen);
+                result[field.Name] = DescribeGraph(member, depth + 1, seen, maxDepth);
             }
             return result;
         }
