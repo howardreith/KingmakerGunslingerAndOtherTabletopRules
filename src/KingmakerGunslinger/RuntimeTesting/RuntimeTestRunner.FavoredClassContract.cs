@@ -105,9 +105,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // counter is published when any of its scheduled routes is enabled
             // (third-party-only counters are withheld by default). Each
             // counter goes into its own class's host selection.
-            Func<FavoredClassLeafPair, bool> offered = pair => pair.Effect.Rows
-                .Select(FavoredClassCatalog.Row).Any(row => row.IsScheduled &&
-                    FavoredClassRuntime.Profile.Offers(row.Profile));
+            Func<FavoredClassLeafPair, bool> offered = FcbOfferedByProfile;
             string[] hostClasses = leaves.Pairs.Select(pair => pair.HostClassGuid)
                 .Distinct(StringComparer.Ordinal).ToArray();
             var selections = new Dictionary<string, BlueprintFeatureSelection>(StringComparer.Ordinal);
@@ -266,6 +264,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
             result.EvidenceFiles.Add(path);
             return result;
+        }
+
+        // A counter is published when any of its scheduled routes is enabled by
+        // the profile, unless the O01 manifest excludes its performance target.
+        private static bool FcbOfferedByProfile(FavoredClassLeafPair pair)
+        {
+            return pair.Effect.Rows.Select(FavoredClassCatalog.Row).Any(row => row.IsScheduled &&
+                    FavoredClassRuntime.Profile.Offers(row.Profile)) &&
+                !(pair.Effect.Id == FavoredClassCatalog.EffectPerformanceRange && pair.TargetKey != null &&
+                    !FavoredClassPerformanceManifest.For(pair.TargetKey).Published);
         }
 
         private static JObject DescribeFcbBinary(FavoredClassHostHandles host, IList<string> failures)
