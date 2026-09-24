@@ -41,15 +41,30 @@ Open a caster with a broad summon selection and check each parent spell.
 - [ ] Any third-party or Call of the Wild summon entries you normally see are
       still present and in their usual position.
 
-## 2. Pteranodon - confirm it is untouched
+## 2. Pteranodon - the finished creature
+
+This is the one thing that should look different. Every image inspected so
+far was rendered by the implementation thread; nobody else has seen it in the
+game, and only you can accept it.
 
 - [ ] Cast Summon Monster IV and Summon Nature's Ally IV for a single
-      Pteranodon. It looks exactly as it did before, with the same scale.
-- [ ] Its bite still lands at its usual reach and timing.
-- [ ] Higher-tier 1d3 and 1d4+1 Pteranodon casts behave as before.
+      Pteranodon. It is a pterosaur, not an eagle: long toothless beak, a
+      backswept crest with its tip as the highest point, leather wings with
+      no feathers, a short tail stub. The crest reads from the party camera.
+- [ ] Colours sit with the game's palette: countershaded brown-and-cream
+      body, paler throat, warm-red crest, horn beak, leathery tan wings with
+      fibres running across the chord.
+- [ ] Idle, walking, turning, biting, being hit and dying all move the whole
+      body - wings included - with nothing tearing, lagging or staying behind.
+- [ ] Its bite still lands at its usual reach and timing, and its scale is
+      unchanged against Eagle and Roc.
+- [ ] Higher-tier 1d3 and 1d4+1 Pteranodon casts show every unit with the
+      new body.
+- [ ] Eagle, Roc and (if you unhide it) Dire Bat look exactly as before.
+- [ ] Selection circle, shadow, hit flashes and death all behave as before.
+- [ ] Save, reload, dismiss, kill and let one expire - all as before.
 - [ ] Celestial/fiendish templating still applies as before for your caster's
       alignment.
-- [ ] Save, reload, dismiss, kill and let one expire - all as before.
 
 ## 3. Judgement calls I made that you may want to overrule
 
@@ -80,11 +95,13 @@ These are decisions, not findings. Each is reversible.
       proof. There is no in-game open/reopen timing, scrolling feel, memory
       behaviour, or screenshot at projected scale. If you want that before
       Sprint 3, it needs a development-only stress fixture and a guarded run.
-- [ ] **Sprint 2 is an audit, not an implementation.** No pterosaur asset
-      exists. The audit answers what the donor is and what must not be touched;
-      the remaining work is live donor inspection, mesh and texture authoring,
-      a Unity 2018.4.10f1 bundle, the runtime loader with fallback, and live
-      acceptance.
+- [ ] **The finished creature has had no human review.** Every acceptance
+      claim about it is machine evidence or the implementation thread's own
+      look at renders. Section 2 is the review; until it is done the creature
+      is internally accepted only.
+- [ ] **Two compatibility mechanical runs are still owed** (`gunslinger-only`
+      and `gunslinger-high-risk-combined`); both timed out in save load inside
+      the compatibility transaction and the same scenario passes outside it.
 
 ## 5. Two things worth knowing before Sprint 2 proceeds
 
@@ -129,13 +146,15 @@ Three things are tracked separately here and must not be conflated.
 | Compatibility mechanical | NOT ACCEPTED | both runs timed out in save load inside the transaction |
 | Rig contract | ACCEPTED | animation ActionSet, clips, events, anchors, 72-bone bind pose |
 | Deformation proof | ACCEPTED | zero drift, control wing unmoved, BakeMesh agrees to zero |
-| Loader and fallback | PARTIALLY ACCEPTED | implemented and validated; fallback paths not exercised live |
-| Finished creature | NOT ACCEPTED | body authored; crest does not read at silhouette scale, no UVs or textures |
+| Loader and fallback | ACCEPTED | schema 2 loader publishes mesh + albedo or neither; withdrawn-visual and post-swap-fault paths exercised on live summons in the fault drill |
+| Finished creature | ACCEPTED (internal) | tip-apex crest, atlas UVs, painted albedo; attached on every cast Pteranodon; HumanReview: NOT_PERFORMED_NONBLOCKING |
 | Projected menu, live | NOT RUN | no anchorable action-bar slot in the disposable save |
-| Live acceptance groups 1, 2, 4, 6, 7 | NOT PERFORMED | depend on the finished creature and on scenarios not built |
+| Live acceptance groups 1, 2, 4, 6, 7 | ACCEPTED (internal) | motion binding and presentation on the visual-contracts run; isolation, crowding, failure recovery and repeated lifecycle on the mechanical and fault-drill runs |
 
 ### What a human still needs to look at
 
-The finished creature, in party-camera play, once it has a crest that reads and
-a texture. No image in this mission has been reviewed by anyone but the
-implementation thread, and the renders inspected were untextured clay.
+The finished creature, in party-camera play - section 2 above. No image in
+this mission has been reviewed by anyone but the implementation thread. The
+renders it judged are the untextured clay and silhouette views of each crest
+iteration and the textured, unlit and studio-lit views of the accepted one; the
+game's own lighting has been seen by nobody.

@@ -167,8 +167,11 @@ waived.
 
 ## 5. Pteranodon
 
-No Pteranodon visual changed. Its identity, placements, stats, reach,
-alignment templating, AI, and persistence are untouched.
+The section below records the audit stage as it was written. The finished
+creature - crest, texture coordinates, painting, loader and live acceptance -
+is described under "Sprint 2 - the finished creature" further down. Identity,
+placements, stats, reach, alignment templating, AI and persistence are
+untouched throughout.
 
 Audit: `docs/EXPANDED-SUMMONING-PTERANODON-NATIVE-AUDIT.md`. Load-bearing
 findings:
@@ -404,11 +407,85 @@ not been activated with a valid License` / `Missing or bad username and
 password`. Only 2018.4.10f1 and a Hub-installed 6000.5.6f1 are present, and a
 6000.x bundle will not load in a 2018.4 game.
 
-Rather than stop, the Pteranodon ships as ~70 KB of mesh data the runtime builds
-a `Mesh` from. It carries strictly less than a bundle would, has no editor
-dependency, and is less code on both sides. The bundle builder is retained but
-is not on the shipping path. Re-activating the licence needs Unity account
-credentials; nothing in this delivery depends on it.
+Rather than stop, the Pteranodon ships as ~80 KB of mesh data the runtime builds
+a `Mesh` from, beside a 1024 x 1024 painted albedo the mesh data pins by hash.
+It carries strictly less than a bundle would, has no editor dependency, and is
+less code on both sides. The bundle builder is retained but is not on the
+shipping path. Re-activating the licence needs Unity account credentials;
+nothing in this delivery depends on it.
+
+### Sprint 2 - the finished creature
+
+**The crest took seven iterations, and the lesson is that the tip must be the
+apex.** Iterations 5 and 6 both peaked directly above the skull and trailed
+down behind it, and both read as a wedge sitting on the head - at any length.
+The accepted crest is a spike whose upper edge rises in one line from the brow
+to a tip 1.05 back and 0.72 up from the `Head` bone, about 34 degrees above the
+beak line and about the beak's own length, with a 0.06 half-width at the skull
+thinning to 0.012 at the tip so it survives the party camera's high angle. It
+was judged from clay, silhouette, textured, unlit and thumbnail renders in
+profile, from above, and from both game-camera angles.
+
+**Texture coordinates and painting.** The generator writes a five-region atlas:
+wings across the top half, and body, crest, beak and limbs in the four quarters
+below. Tubes map their length along u and a belly-to-back fold along v, so the
+two flanks share texels, the body has no seam anywhere and countershading is a
+plain gradient - the cost is mirrored flanks, invisible on a symmetrical
+animal. A deterministic painter under Blender's Python lays down the albedo
+from closed-form and seeded-noise functions of the atlas coordinates: leather
+wings with actinofibrils running across the chord, a countershaded pelt with a
+pale throat and a flushed head, a muted display red on the crest, horn-gradient
+beaks, scaled limbs. Two runs give identical bytes; the palette is recorded in
+`body-plan.md`.
+
+**Loader and material.** Mesh data schema 2 adds the coordinates to the
+payload and names the albedo by bare file name, SHA-256 and header dimensions.
+The loader publishes the visual only when the mesh validates *and* the bytes
+beside it hash to the recorded value; anything else is a named fallback,
+because a mesh without its painting is not the reviewed creature. The view
+patch puts the albedo in a private copy of the donor's `PF/StandardDynamic`
+material, clears whichever of a probed list of map slots the copy declares,
+and records what it did: on the live donor the shader declares _BumpMap of
+the probed slots and <none> were cleared. Unity 2018 cannot enumerate a
+shader's properties, so the probe list is stated rather than pretended to be
+exhaustive.
+
+**The swap rides the donor's own renderer.** The first live isolation check
+found every freshly summoned eagle, dire bat and roc with its donor renderer
+disabled - the game's `EntityFader` hides a summon until it fades in, and
+`UnitFxVisibilityManager` and the occlusion highlighter cache the renderer
+list by reference. A renderer added beside the donor's, which is what the
+first design did, sits outside all of that: visible through fog, opaque during
+the fade, untouched by a hit flash or the death dissolve. The visual now swaps
+the mesh, the 46-bone array and the material onto the donor's own
+`SkinnedMeshRenderer` component, on that one instance; root bone, bounds,
+shadow modes and the enabled state stay whatever the game sets, and the
+rollback puts the original references back on the same component.
+
+**Build gap closed.** `Build-Local.ps1` stages the Release tree by explicit
+copies and had never copied the Pteranodon files; the earlier mesh copy came
+from a prior MSBuild output. It now stages mesh and albedo itself, and the
+package count moves 234/236 to 235/237 with the source-contract tokens that
+pin it. The batch launcher, too, started a following scenario while the
+previous game process was still exiting and recorded ERROR for everything
+after the first; it now waits, bounded, as restoration already did.
+
+**Live acceptance.** On the asset commit, each restored and verified:
+`20260923T2348000940057Z-observe-summon-pteranodon-view-contracts` 13/13 with `visual:published` and the deformation proof
+unchanged; `20260923T2353191705789Z-disposable-expanded-summoning` 14/14, every cast Pteranodon reporting
+`visual:attached;bones=46;vertices=682;albedo=1024x1024`; `20260923T2356321457517Z-disposable-expanded-summoning-visual-contracts`
+13/13. On `7cc80497`, after the swap and the launcher fixes: `20260924T0112361790237Z-disposable-expanded-summoning-pteranodon-fault-drill` 18/18 PASS -
+the first Pteranodon cast with the visual withdrawn came up on the donor's own
+mesh and material, the second with a fault injected after the swap was rolled
+back to them on the same component in the same frame, and every later cast
+attached; `20260924T0115460941403Z-disposable-expanded-summoning` 17/17 PASS -
+eagle, dire bat and roc on the shared donor untouched, a 1d4+1 Pteranodon cast
+attached on every unit at once, 4 Pteranodon casts in one lifecycle
+each attached exactly once and cleaned to the exact snapshot; `20260924T0118557039123Z-disposable-expanded-summoning-visual-contracts`
+15/15 PASS - the Pteranodon mesh and material on the donor's own renderer,
+its 46 bones all on the view's skeleton with the root bone kept, the shader
+carrying the albedo at the catalog view scale, and the same state after the
+native locomotion, attack, hit and death paths had run.
 
 ## What is not complete, and why
 
@@ -422,22 +499,18 @@ layout policy is measured exhaustively at domain level instead (four viewports x
 200 option counts), the real menu remains covered by the supervised observation,
 and no live measurement at 120/110 entries is claimed anywhere.
 
-### The finished creature (E2)
+### Human review of the finished creature
 
-The body is authored and internally reviewed from renders: 680 vertices, span
-8.641 against length 3.223, ratio 2.68, inside a real Pteranodon's envelope. Two
-defects were found by looking at the renders and fixed - a tail stub detached
-from the torso, and a crest that read as a box. The crest still does not read
-unmistakably at silhouette scale, and there are no UVs or textures yet. It is
-accepted as the geometry that proves the pipeline, not as the finished creature.
+Every claim about the finished creature is machine evidence or the
+implementation thread's own look at renders. Nobody has seen it under the
+game's lighting. The owner review is checklist section 2; until it is done the
+creature is `InternalAcceptance` only, `HumanReview: NOT_PERFORMED_NONBLOCKING`.
 
-### Live acceptance groups
+### Two compatibility mechanical runs
 
-Group 3 (casting) and group 5 (persistence) are satisfied by scenarios that pass
-on this candidate. Groups 1, 2, 4, 6 and 7 - motion and contact, presentation,
-crowding and isolation, failure recovery, repeated lifecycle - are **not
-performed**. They depend on the finished textured creature and on new scenarios
-that were not built.
+`disposable-expanded-summoning` under `gunslinger-only` and
+`gunslinger-high-risk-combined` remain owed, for the recorded save-load timeout
+inside the compatibility transaction.
 
 ## Defects found and fixed in this mission's own tooling
 

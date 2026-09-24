@@ -240,6 +240,21 @@ shortfall, while an invisible or half-bound one is a defect. A failure after
 the swap puts the original mesh, bones and materials back on the same
 component in the same frame and destroys what was made.
 
+## Live qualification
+
+Four guarded scenarios carry the creature's machine evidence, each run through
+`scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1`, which snapshots the live
+mod tree, builds and deploys the candidate, runs, and restores the snapshot:
+
+| Scenario | What it proves |
+|---|---|
+| `observe-summon-pteranodon-view-contracts` | the loader published mesh and albedo (`visual:published`); the deformation proof on a detached, never-activated probe |
+| `disposable-expanded-summoning` | every cast Pteranodon reports `visual:attached`; eagle, dire bat and roc on the shared donor are untouched; a 1d3 and a 1d4+1 Pteranodon cast attach on every unit; several casts in one lifecycle each attach exactly once and clean to the exact snapshot |
+| `disposable-expanded-summoning-visual-contracts` | the Pteranodon mesh and material sit on the donor's own renderer, its 46 bones all on the view's skeleton with the root bone kept, the shader carrying the albedo at the catalog view scale, and the same state holds after the native locomotion, attack, hit and death paths |
+| `disposable-expanded-summoning-pteranodon-fault-drill` | development-only: the first Pteranodon cast with the visual withdrawn comes up on the donor's own mesh and material; the second, faulted after the swap, is restored to them in the same frame; later casts attach |
+
+Run identities are recorded in `EXPANDED-SUMMONING-PHASE0-AUTONOMOUS-STATE.md`.
+
 ## Scope
 
 This does not change identity, Summon Monster IV / Summon Nature's Ally IV
