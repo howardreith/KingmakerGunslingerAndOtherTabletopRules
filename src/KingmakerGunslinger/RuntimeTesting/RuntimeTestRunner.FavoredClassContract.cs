@@ -253,6 +253,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 ["selection"] = selection.name + ":" + selection.AssetGuid,
                 ["entries"] = new JArray(all.Select(value => value.name + ":" + value.AssetGuid)),
+                // Icon evidence for the menu's disposition: host leaves and
+                // owned leaves side by side (null renders the native monogram).
+                ["entryIcons"] = new JArray(all.Select(value => value.name + "=" +
+                    (value.Icon == null ? "<null>" : value.Icon.name))),
                 ["featuresEmpty"] = selection.Features == null || selection.Features.Length == 0
             };
             foreach (BlueprintFeature leaf in owned)
