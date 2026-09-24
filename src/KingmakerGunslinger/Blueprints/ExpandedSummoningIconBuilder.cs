@@ -45,6 +45,18 @@ namespace KingmakerGunslinger.Blueprints
             // action bar; the ability has no separate art of its own.
             Set(bySymbol, "KMG.Summoning.Special.Cyclops.FlashOfInsight",
                 ExpandedSummoningProjectIcons.Require("cyclops"));
+            // Sprint 5: the cloned native breaths and spells keep their native
+            // art; the two project bursts (Dehydrate, Boiling Rain) have none
+            // of their own and wear their mephit's summon icon.
+            foreach (MephitVariantProfile profile in
+                ExpandedSummoningSpecialProfiles.MephitVariants)
+                foreach (KeyValuePair<string, string> slot in
+                    ExpandedSummoningSpecialBuilder.MephitSpellLikeSlots(profile))
+                    if (slot.Value == "Dehydrate" || slot.Value == "BoilingRain")
+                        Set(bySymbol, "KMG.Summoning.Special." +
+                            ExpandedSummoningSpecialBuilder.MephitToken(profile.Key) +
+                            "." + slot.Key,
+                            ExpandedSummoningProjectIcons.Require(profile.Key));
         }
 
         private static void Set(IDictionary<string, BlueprintScriptableObject>

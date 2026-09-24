@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  84,
+    "count":  90,
     "icons":  [
                   {
                       "key":  "dog",
@@ -753,6 +753,60 @@
                       "key":  "purple-worm",
                       "file":  "purple-worm.png",
                       "sha256":  "cb235f3f9fbb4e865b17982abad1df6faad5c0a7ce884e130027430763f8e20d",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dust-mephit",
+                      "file":  "dust-mephit.png",
+                      "sha256":  "805eba6909b5ab087a39a027548058caba8a9a0a2dc3444cdbff975a5413f38b",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "ice-mephit",
+                      "file":  "ice-mephit.png",
+                      "sha256":  "075d04d41a82300aa25b2bb00b256fd99ba0e6c3f0f588f28ebf2240b2bc7037",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "magma-mephit",
+                      "file":  "magma-mephit.png",
+                      "sha256":  "b9bf70f00c90ca5f21a83dffa9d0a31aba2d21889f44109be6197927f027d10a",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "ooze-mephit",
+                      "file":  "ooze-mephit.png",
+                      "sha256":  "05b85958c8cf46930a65d79ba0cd406d2a851906536d7b2ac318fb7ebe0272f6",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "salt-mephit",
+                      "file":  "salt-mephit.png",
+                      "sha256":  "06dd69fadd0baf907e5d3084fb5d2ed20874902a00a5b17fb9c81ce2f1b6f778",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "steam-mephit",
+                      "file":  "steam-mephit.png",
+                      "sha256":  "10df7e50b2650cc661b5645c43ed28b5850b39dc44ab8590f36951fcd72f51a8",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

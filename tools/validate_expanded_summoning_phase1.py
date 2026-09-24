@@ -5,7 +5,9 @@ Phase 1 appends creature identities to the frozen ledger without changing the
 release version: Sprint 3 added Pony, Horse, Owlbear and Cyclops, the
 Nature's Ally Frost Giant wrappers and the Cyclops Flash of Insight specials;
 Sprint 4 added Shambling Mound, Giant Flytrap and Purple Worm and the shared
-summon grapple lifecycle specials. This module pins that append exactly -
+summon grapple lifecycle specials; Sprint 5 added the Dust, Ice, Magma, Ooze,
+Salt and Steam Mephits with their breath, spell-like ability, resource, cast
+action, brain and traits specials. This module pins that append exactly -
 symbol, GUID and planned type, in ledger order, directly after the Better
 Vendors progression block - and the current roster figures the catalogs,
 icons and package carry. It claims no runtime or visual acceptance; those
@@ -23,7 +25,7 @@ PRESERVED_ENTRIES = 1956  # 1913 preserved + 43 Better Vendors progression
 STATIC_KEY = "expandedSummoningPhase1"
 
 # Exact ordered (symbol, guid, plannedType) triples appended by Sprint 3, then
-# Sprint 4, in ledger order.
+# Sprint 4, then Sprint 5, in ledger order.
 APPENDED = (
     ("KMG.Summoning.Unit.Pony", "67a661d7b39e44bc811ad9ff59120110", "BlueprintUnit"),
     ("KMG.Summoning.Unit.Horse", "629fa53bf40d4b4b9828f57cf81194e9", "BlueprintUnit"),
@@ -135,24 +137,150 @@ APPENDED = (
     ("KMG.Summoning.Special.ShamblingMound.CombatTraits", "4ec446a8591a4f169e7c548c089bf63a", "BlueprintBuff"),
     ("KMG.Summoning.Special.GiantFlytrap.CombatTraits", "ea204a20924045ca856de5af350a7194", "BlueprintBuff"),
     ("KMG.Summoning.Special.PurpleWorm.CombatTraits", "ce031441c4fa4f41a142799bbbef3f36", "BlueprintBuff"),
-    ("KMG.Summoning.Special.PurpleWorm.Swallowed", "8a25b84199cd42319fa77b0b1d1d5bea", "BlueprintBuff")
+    ("KMG.Summoning.Special.PurpleWorm.Swallowed", "8a25b84199cd42319fa77b0b1d1d5bea", "BlueprintBuff"),
+    ("KMG.Summoning.Unit.DustMephit", "30f6615badf14d21b41d6468d5c93ac3", "BlueprintUnit"),
+    ("KMG.Summoning.Unit.IceMephit", "b37cdd78c8cc43be8799e9ffd6953ba2", "BlueprintUnit"),
+    ("KMG.Summoning.Unit.MagmaMephit", "ce9551f1413d4fdcb59941734d4546b1", "BlueprintUnit"),
+    ("KMG.Summoning.Unit.OozeMephit", "7cbf19a6c83f4b8e849d17b8a54e6d51", "BlueprintUnit"),
+    ("KMG.Summoning.Unit.SaltMephit", "8c8fe6eb536b450a9a2c10b8cbef9fbe", "BlueprintUnit"),
+    ("KMG.Summoning.Unit.SteamMephit", "047f68ee53554d8ab1702de189ecd85d", "BlueprintUnit"),
+    ("KMG.Summoning.Ability.SM.Tier4.DustMephit.One", "eff27d99ab3b476cbbd1d23e933a6391", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier4.IceMephit.One", "f7fb199319e0401ebe4a6d78f21b66d3", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier4.MagmaMephit.One", "7dcc9bc37ddd4b86af4fa448ab687376", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier4.OozeMephit.One", "24e332e41d8f41488096c18c54dcab65", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier4.SaltMephit.One", "371461a919fe43e79f3f9af1f9353069", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier4.SteamMephit.One", "dbd3825fc6684c9494ef99066acb714b", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier5.DustMephit.OneD3", "2119e7c0505e427f82e4fc83313ca0c2", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier5.IceMephit.OneD3", "7feeac5c68a14fd2be0fabb5ed0beb6a", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier5.MagmaMephit.OneD3", "428999d099e9440a9b1ae91d8638a720", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier5.OozeMephit.OneD3", "7eb49ca4d3b248caa57254cc36e19636", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier5.SaltMephit.OneD3", "3a5765e8bc304ca899d2f75d7347d896", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier5.SteamMephit.OneD3", "ed98e96706a94091a3c20be4919e1215", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier6.DustMephit.OneD4PlusOne", "aa55b6e8af2d417f827331ac5158eaff", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier6.IceMephit.OneD4PlusOne", "35ccb17c84614dbc803a3f01c1d8ee0a", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier6.MagmaMephit.OneD4PlusOne", "10f71ecb1ac745a8b281c4b824d494b1", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier6.OozeMephit.OneD4PlusOne", "238ed4eb12204a5a88b5860c75131363", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier6.SaltMephit.OneD4PlusOne", "afd91ab9c4824894b39f38b6ba78147b", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier6.SteamMephit.OneD4PlusOne", "8a9c2eea91724dbcb2d501306a4fe3b7", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier7.DustMephit.OneD4PlusOne", "353e8c264ae842338e6d78c58fbccd90", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier7.IceMephit.OneD4PlusOne", "b323c7e8f61648888903185e8229b043", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier7.MagmaMephit.OneD4PlusOne", "35a596b1345a444da4c5970cd93ea735", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier7.OozeMephit.OneD4PlusOne", "d9f924cd282c486d95a83cf149635b39", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier7.SaltMephit.OneD4PlusOne", "48123b1e26784cb18d4dae1edcc91c2e", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier7.SteamMephit.OneD4PlusOne", "515c1836e8dc419eb934642c2e2e32c8", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier8.DustMephit.OneD4PlusOne", "e23c829fd8cf426fb9c0c4500d8130d5", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier8.IceMephit.OneD4PlusOne", "7e847258944749b9b89884b91619ca8c", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier8.MagmaMephit.OneD4PlusOne", "0ea2d7c472a24fdcbf907bbfb38296b4", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier8.OozeMephit.OneD4PlusOne", "1b78444899be4226913c494d57c4af76", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier8.SaltMephit.OneD4PlusOne", "5b5eae63ef0740869438826c21741ab3", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier8.SteamMephit.OneD4PlusOne", "7954908b932c4a0c803d7a000d47861d", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier9.DustMephit.OneD4PlusOne", "ee0bd5e3a1854a75ac465e57c5cd8f09", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier9.IceMephit.OneD4PlusOne", "bc7409315f4f462dbef07534663c06c6", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier9.MagmaMephit.OneD4PlusOne", "f1eab7a23cd64ae39b6a05ee576f82d0", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier9.OozeMephit.OneD4PlusOne", "8a6a699f872d4442acef6f9b28811cbb", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier9.SaltMephit.OneD4PlusOne", "c461ccd8ff6a4afc994b0f71758bd4ca", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SM.Tier9.SteamMephit.OneD4PlusOne", "3f41f861e58f4c5b8738bbe10696cae2", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier4.DustMephit.One", "0124979771724bd8936584b8cc32f7a8", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier4.IceMephit.One", "09d795dca9c44933a1db09ef40a21e17", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier4.MagmaMephit.One", "aea3f06b4bcb423a91bd68916d3f6460", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier4.OozeMephit.One", "99c870fa6cf9489e845c76cbe902dbb1", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier4.SaltMephit.One", "acf1b770048a4e22a27ac4b2fd716373", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier4.SteamMephit.One", "b5e5a5d9f2f94ccd9c0d8afea6bb43ff", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier5.DustMephit.OneD3", "5a1ac2544fa44f55b9094832e4de4f97", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier5.IceMephit.OneD3", "f81a0239a7bb441b84478e56210b6562", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier5.MagmaMephit.OneD3", "418f04c5b8a74c969283bcbea5fc5691", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier5.OozeMephit.OneD3", "2ebc599086784fb7926cb0688399b48b", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier5.SaltMephit.OneD3", "eff8f3258b72427da6542b4caaf0a8df", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier5.SteamMephit.OneD3", "4d02ca7da65741d58732096f115d83a6", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier6.DustMephit.OneD4PlusOne", "dd061d12989b40908b85c881599592d7", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier6.IceMephit.OneD4PlusOne", "885de0ddb41e4ba8988c10fdde41f906", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier6.MagmaMephit.OneD4PlusOne", "3a5e545dda0f4515b5eeb41d813d8bab", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier6.OozeMephit.OneD4PlusOne", "53a0cfec253a4320963f3673178cc32a", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier6.SaltMephit.OneD4PlusOne", "9a3a0580c29742809c11447771ad2fb5", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier6.SteamMephit.OneD4PlusOne", "4c42d019e4af4040938114dd92eac207", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier7.DustMephit.OneD4PlusOne", "28edfd81307d4f36b36c9e4f5ac4f983", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier7.IceMephit.OneD4PlusOne", "2d447b0867ca41e98c4e4adb4c4c47d6", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier7.MagmaMephit.OneD4PlusOne", "efac552327fe4f088edbc29afad06b24", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier7.OozeMephit.OneD4PlusOne", "22260fe9e5cd4a2aa446403bc39ea33e", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier7.SaltMephit.OneD4PlusOne", "ce79472133de4c4282e5da261bb90c00", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier7.SteamMephit.OneD4PlusOne", "07b8c7f4937747348c5fe5accb498258", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.DustMephit.OneD4PlusOne", "15b787300ea34934bb7d05e56bc2eb47", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.IceMephit.OneD4PlusOne", "4f6ba3f16d65430b91c241cc05c03df2", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.MagmaMephit.OneD4PlusOne", "3908d0139371499f8d2da327f87b25bc", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.OozeMephit.OneD4PlusOne", "77906868a4764b248ad4373a28374db1", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.SaltMephit.OneD4PlusOne", "724fff9f684e41f9962cae6dc3df70f9", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.SteamMephit.OneD4PlusOne", "3ae72841e5f34705a5f8d0849c511f2e", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.DustMephit.OneD4PlusOne", "1d8b6f45ce644f52bcf0605d10fec3cc", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.IceMephit.OneD4PlusOne", "fdc107675cf34950961ac85c6691a7b2", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.MagmaMephit.OneD4PlusOne", "868445f8949b4093b5d310927375fe8f", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.OozeMephit.OneD4PlusOne", "b7775e03255849bdbeba34c35717833d", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.SaltMephit.OneD4PlusOne", "3b52c9eb1ae7483cbe16e55fa8fc668b", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.SteamMephit.OneD4PlusOne", "116328ca642d4e0997eac89a96d79ebe", "BlueprintAbility"),
+    ("KMG.Summoning.Special.DustMephit.Breath", "9bf56be04a0c452fa628136a7a454b22", "BlueprintAbility"),
+    ("KMG.Summoning.Special.DustMephit.BreathAi", "319e9603ece140a78dff1d8483cd6685", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.DustMephit.Brain", "176f06382dd347ba920c6ff482a0db5b", "BlueprintBrain"),
+    ("KMG.Summoning.Special.DustMephit.CombatTraits", "1692bbe558154adf8dedbc2e94cf8e7f", "BlueprintBuff"),
+    ("KMG.Summoning.Special.DustMephit.SpellLikeOne", "1b2d864de558462a86045a5c667ce296", "BlueprintAbility"),
+    ("KMG.Summoning.Special.DustMephit.SpellLikeOneResource", "3e8b23efde2e46bb96b405e45c6553ad", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.DustMephit.SpellLikeOneAi", "5d7472e16a72429f928da3caabc2349f", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.IceMephit.Breath", "fe4016ec0ea04b0da8bc2a08c984818c", "BlueprintAbility"),
+    ("KMG.Summoning.Special.IceMephit.BreathAi", "f6b453d55cb54806874f624da2aea1f2", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.IceMephit.Brain", "cf16af70f80f4f968fd5969356b19c0a", "BlueprintBrain"),
+    ("KMG.Summoning.Special.IceMephit.CombatTraits", "be63637c7ad646d7b35b52c2929bab5d", "BlueprintBuff"),
+    ("KMG.Summoning.Special.IceMephit.SpellLikeOne", "3694bb231deb4603bfe97601e308fe05", "BlueprintAbility"),
+    ("KMG.Summoning.Special.IceMephit.SpellLikeOneResource", "e464bb6d092143449c407564935e5bfe", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.IceMephit.SpellLikeOneAi", "2d69b4a35093498784ebdaaeaaa8c0cf", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.MagmaMephit.Breath", "512be3e38f524cc4ba045e4b3167c54c", "BlueprintAbility"),
+    ("KMG.Summoning.Special.MagmaMephit.BreathAi", "3708db4d4bfc4541b46618dae76212dd", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.MagmaMephit.Brain", "8963c494751644a2b07d8f2143dbcea0", "BlueprintBrain"),
+    ("KMG.Summoning.Special.MagmaMephit.CombatTraits", "cfb1de7a10b041888b8f9b8779e715d2", "BlueprintBuff"),
+    ("KMG.Summoning.Special.OozeMephit.Breath", "3d5cd0f7990646eaa6477247b60412dc", "BlueprintAbility"),
+    ("KMG.Summoning.Special.OozeMephit.BreathAi", "7da203b6e1a941c2a788a438cb78fdaa", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.OozeMephit.Brain", "1d17e755989b4075870279a9be161ab6", "BlueprintBrain"),
+    ("KMG.Summoning.Special.OozeMephit.CombatTraits", "c373f71f640543b094c4a77f8d2a92f4", "BlueprintBuff"),
+    ("KMG.Summoning.Special.OozeMephit.SpellLikeOne", "2c51d416aade4648a3b6a91b772aa66c", "BlueprintAbility"),
+    ("KMG.Summoning.Special.OozeMephit.SpellLikeOneResource", "e0b376a3992e4a6bac65a4c038afc8ce", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.OozeMephit.SpellLikeOneAi", "17bd5aee21d549b68626b412a9efca8a", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.OozeMephit.SpellLikeTwo", "2b78134358af447f8a874f13b6a25ef6", "BlueprintAbility"),
+    ("KMG.Summoning.Special.OozeMephit.SpellLikeTwoResource", "7572abb41b194e67af27c65250a36821", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.OozeMephit.SpellLikeTwoAi", "d8c2e71c889f483bb08cabb670bd2f92", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.SaltMephit.Breath", "0082eea8755740dc8a4de5308d9faff8", "BlueprintAbility"),
+    ("KMG.Summoning.Special.SaltMephit.BreathAi", "fc117113465e442fa66edb21bbcb4d84", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.SaltMephit.Brain", "04d2ec99fa334b16a2b116cf0843775e", "BlueprintBrain"),
+    ("KMG.Summoning.Special.SaltMephit.CombatTraits", "93880e0d35fb4ea7b5969f7c0a3a7a3d", "BlueprintBuff"),
+    ("KMG.Summoning.Special.SaltMephit.SpellLikeOne", "1e83c9cd30764c08b44b3e6e4dfb37fc", "BlueprintAbility"),
+    ("KMG.Summoning.Special.SaltMephit.SpellLikeOneResource", "5827a77fd35f4772ba053f7544364b2a", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.SaltMephit.SpellLikeOneAi", "129d7a6fb21b4a71af7de9e30803f68e", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.SaltMephit.SpellLikeTwo", "6db971113edf47e4ae4404ac71ba819e", "BlueprintAbility"),
+    ("KMG.Summoning.Special.SaltMephit.SpellLikeTwoResource", "9b4ce3e9fe1c4606a83d5c8864b4aae4", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.SaltMephit.SpellLikeTwoAi", "397c49078c3945858ca355775e72b2c5", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.SteamMephit.Breath", "146c6326b7c7430c9bf33cad288fceef", "BlueprintAbility"),
+    ("KMG.Summoning.Special.SteamMephit.BreathAi", "014bb50badae457998e17b708a3c1bfa", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.SteamMephit.Brain", "b72c6534a9234bb5b1a6ae63632b8ace", "BlueprintBrain"),
+    ("KMG.Summoning.Special.SteamMephit.CombatTraits", "0ea021251fa244228ca3ec54b36c46e8", "BlueprintBuff"),
+    ("KMG.Summoning.Special.SteamMephit.SpellLikeOne", "b4a135660e8e4023b58845b825f44228", "BlueprintAbility"),
+    ("KMG.Summoning.Special.SteamMephit.SpellLikeOneResource", "5c8f1dc087fc4e028095e6f21b074bc2", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.SteamMephit.SpellLikeOneAi", "aaa64536cc8345d78cc5109c055e1ae2", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.SteamMephit.SpellLikeTwo", "ab241b72756a49cab443ef5b1acd23de", "BlueprintAbility"),
+    ("KMG.Summoning.Special.SteamMephit.SpellLikeTwoResource", "d8bdd93b25bb45f9b5775ed90df5b61c", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.SteamMephit.SpellLikeTwoAi", "3ab58c5239174273892727aa25c6f5cb", "BlueprintAiCastSpell")
 )
 
 PHASE1 = {
-    "uniqueCreatures": 74,
-    "summonMonsterEntries": 68,
-    "summonMonsterPlacements": 378,
-    "summonNaturesAllyEntries": 64,
-    "summonNaturesAllyPlacements": 357,
-    "registeredLogicalPlacements": 735,
-    "publishedLogicalPlacements": 721,
+    "uniqueCreatures": 80,
+    "summonMonsterEntries": 74,
+    "summonMonsterPlacements": 414,
+    "summonNaturesAllyEntries": 70,
+    "summonNaturesAllyPlacements": 393,
+    "registeredLogicalPlacements": 807,
+    "publishedLogicalPlacements": 793,
     "templatedPlacements": 199,
     "nativeExpansionWrappers": 29,
     "naturalProfiles": 33,
-    "projectIcons": 84,
-    "foundationIdentities": 1295,
-    "appendedLedgerIdentities": 111,
-    "packageFileCountWithSoundBank": 244,
+    "projectIcons": 90,
+    "foundationIdentities": 1421,
+    "appendedLedgerIdentities": 237,
+    "packageFileCountWithSoundBank": 250,
 }
 SPRINT3 = PHASE1  # the pins below read the current figures
 
@@ -200,7 +328,10 @@ def validate(root: Path) -> None:
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
         'C("giant-flytrap","Giant Flytrap",null,false,7)',
-        'C("purple-worm","Purple Worm",null,false,8)')
+        'C("purple-worm","Purple Worm",null,false,8)',
+        'C("dust-mephit","Dust Mephit",4,false,4)', 'C("ice-mephit","Ice Mephit",4,false,4)',
+        'C("magma-mephit","Magma Mephit",4,false,4)', 'C("ooze-mephit","Ooze Mephit",4,false,4)',
+        'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = %d;" % SPRINT3["registeredLogicalPlacements"],
         "SuppressedLogicalPlacementCount = 14;")
@@ -219,15 +350,28 @@ def validate(root: Path) -> None:
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
         "Values.Length != %d" % SPRINT3["projectIcons"])
+    # Sprint 5: the mephit pack's charter boundaries stay in the code.
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
+        "MephitVariants.Length != 6", "MephitVisualTints.Length != 6",
+        "MephitSickenedRounds = 3", "MephitSpellLikeUses = 1", "MephitBurstRadiusFeet = 20")
+    require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+        "ConfigureMephitVariants(library, bySymbol)", "ContextConditionIsEnemy",
+        "TargetType.Enemy", "4e42460798665fd4cb9173ffa7ada323")
+    for path in (root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
+                 root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdealRosterCatalog.cs"):
+        if "Lightning" in path.read_text(encoding="utf-8-sig"):
+            raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
     if runtime_icons["count"] != SPRINT3["projectIcons"] or \
             len(runtime_icons["icons"]) != SPRINT3["projectIcons"] or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
-                 "purple-worm"} <= {row["key"] for row in runtime_icons["icons"]}:
+                 "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
+                 "salt-mephit", "steam-mephit"} <= {row["key"] for row in runtime_icons["icons"]}:
         raise AssertionError("Runtime icon manifest does not carry the Phase 1 icons")
     for key in ("pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
-                "purple-worm"):
+                "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
+                "salt-mephit", "steam-mephit"):
         if not (root / "assets/game/icons/expanded-summoning" / (key + ".png")).is_file() or \
                 not (root / "assets-source/original-icons/expanded-summoning/sources" / (key + ".png")).is_file():
             raise AssertionError("Phase 1 icon file missing: " + key)
@@ -261,7 +405,7 @@ def main() -> int:
     except AssertionError as error:
         print(f"Expanded Summoning Phase 1 validation failed: {error}", file=sys.stderr)
         return 1
-    print("Expanded Summoning Phase 1 validation PASS: %d appended identities; Sprint 3-4 pins exact."
+    print("Expanded Summoning Phase 1 validation PASS: %d appended identities; Sprint 3-5 pins exact."
           % len(APPENDED))
     return 0
 

@@ -67,7 +67,7 @@ and no future roster data is published.
 |---|---|---|
 | 3 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 3 record" |
 | 4 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 4 record" |
-| 5 | NOT STARTED | - |
+| 5 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 5 record" |
 | 6 | NOT STARTED | - |
 | 7 | NOT STARTED | - |
 | 8 | NOT STARTED | - |
@@ -292,6 +292,96 @@ Decisions (recorded here rather than asked):
 Runtime qualification (guarded, live installation restored after each
 batch): recorded below as it completes.
 
+## Sprint 5 record - Mephit Family Expansion
+
+Inputs: the deep native-donor audits (`20260924T2148497908566Z` and
+`20260924T2214377611148Z`, PASS, 79 named graphs) gave the four native
+summoned mephits' exact facts, breaths, spell-like abilities and brains, the
+sickened condition, the energy vulnerabilities and immunities, the subtype
+features and the three native breath cone projectiles; the game's own
+component fields were read from its assembly (IL listing, no decompiled
+source committed). The tabletop mephit family was checked against the public
+SRD stat blocks recorded in the implementation report's appendix.
+
+Decisions (recorded here rather than asked):
+
+- Donors: each variant rides the nearest native summoned mephit as its
+  body - Dust and Salt on the air mephit (`50782bc4eb36aac4287023e20ee00808`),
+  Ice, Ooze and Steam on the water mephit
+  (`4615328295cd7e84bb2ef09d3dba8403`), Magma on the fire mephit
+  (`10a820de0a417f345866f794324205ad`). The pale air and water rigs take
+  the light tints (a tint can only darken or shift a material); the earth
+  and fire subtypes the Salt and Magma mephits need are restored as facts.
+  No third-party Lightning Mephit exists anywhere in the catalogs (charter
+  out-of-scope line), and the domain suite and the Phase 1 validator both
+  refuse one.
+- Element facts: the donor's subtype, immunities, breath and spell-like
+  abilities are dropped (`MephitDonorElementFactGuids`); the variant's own
+  are added: Dust air; Ice air, cold immunity, fire vulnerability; Magma
+  earth and fire (the native fire subtype itself carries fire immunity and
+  cold vulnerability); Ooze water; Salt earth; Steam fire and water. Damage
+  reduction 5/magic, fast healing 2, natural armor, Dodge, Improved
+  Initiative, the two native claws and the 3 HD outsider chassis stay.
+- Breath: the donor's 15-foot cone (delivery, Reflex save, descriptor,
+  Constitution-based DC 10 + 2 + Con) rebuilt with the tabletop energy and
+  dice - Dust and Salt 1d4 slashing, Ice 1d4 cold, Magma 1d8 fire, Ooze 1d4
+  acid, Steam 1d4 fire - with the native cold, acid or fire cone visual, the
+  tabletop sickening rider (3 rounds on a failed save; Ooze: a Reflex save
+  negates damage and sickening together; Magma has no rider), and its whole
+  effect inside an enemies-of-the-caster conditional. That last clause is
+  the charter's "no mephit uses harmful area effects without ally-safe
+  targeting" applied to the breath: allies standing in the cone take
+  nothing.
+- Spell-like abilities, one use per summoning each (a named resource; the
+  tabletop once-per-hour and once-per-day both exceed a summoning): Dust
+  blur (the native mephit blur); Ice magic missile; Ooze acid arrow and
+  stinking cloud (the native mephit cloud); Salt glitterdust and dehydrate;
+  Steam blur and boiling rain. Dehydrate and boiling rain are project
+  bursts centred on the mephit (20 feet, enemies only by targeting,
+  Fortitude half, 2d8 and 2d6 fire). Wind wall, chill metal, pyrotechnics
+  and magma form have no native spell or form and are omitted. Spell-list
+  memberships are not carried on the clones.
+- Brains: a project brain per variant with one cast action per ability (the
+  breath on a four-round cooldown so the mephit also claws; the one-use
+  abilities without), the shape the Cyclops and Pixie actions already have.
+- Visuals: `ExpandedSummoningVisualVariantPatch` (a postfix on the view's
+  data attach) clones the view's renderer materials, tints the colour slot
+  by the variant's profile and, for Magma and Steam, sets an emission
+  glow; the clone is private to the view, the donor's shared material is
+  never written, and a view with no renderer or no colour slot is left
+  native with the reason recorded. Tint profiles are plain numbers in the
+  special profiles so the domain suite pins them; the runtime fixture and
+  the creature review read the applied outcome per view.
+- Icons: six Blender procedural renders from one parametrized mephit builder
+  (a small horned, bat-winged bust breathing) in six elemental dressings.
+- Pins moved with the roster: 80 creatures, SM 74/414, SNA 70/393, 807
+  logical placements (14 suppressed, 793 published), 199 templated, 90
+  icons, foundation identities 1421; the ledger gained exactly 126
+  appended, active identities (6 units, 72 placements, 48 specials; entries
+  2068-2193) allocated by `tools/expanded_summoning_manifest.py --allocate`
+  and activated; visible choices 750 -> 822; package 244 -> 250 files. The
+  Phase 1 validator pins the whole 237-identity append and the current
+  figures.
+- Domain suite: 1787 cases (four Sprint 5 regressions in
+  `ExpandedSummoningSprint5Tests`), all passing; repository validation PASS.
+- Runtime fixture: the inventory checks every variant part for part
+  (`expanded-summoning-sprint-five-mephits`); the mechanical scenario
+  breathes with the Steam Mephit (damage and the sickening rider on the
+  hostile, the party caster untouched) and casts the Salt Mephit's dehydrate
+  (the hostile damaged, the caster and the summons untouched, the one use
+  spent); the persistence fixture gains the Steam Mephit (ten units); the
+  creature review records the applied visual variant per reviewed view.
+- Grapple fixture correction (mechanical evidence
+  `20260924T2220326799940Z-disposable-expanded-summoning`): every link step
+  of the Sprint 4 live case passed, but the holder-free and safeguard checks
+  looked at CantAct/CantMove while the native `SummonedUnitAppearBuff` (which
+  holds a fresh summon still while it materialises) was still on the mound.
+  The fixture now removes that appearance buff before the case and records
+  the holder's condition baseline; the lifecycle code did not change.
+
+Runtime qualification (guarded, live installation restored after each
+batch): recorded below as it completes.
+
 ## Verified facts carried from Phase 0 (do not re-derive)
 
 - Catalog pins at the start of Phase 1: 67 creatures, SM 66 / 361, SNA 57 /
@@ -321,11 +411,12 @@ batch): recorded below as it completes.
 
 ## Next executable action
 
-Sprints 3-4 guarded runtime qualification on one build: structural
-inventory and deep donor audit, visual contracts (74 creatures), mechanical
+Sprints 3-5 guarded runtime qualification on one build: structural
+inventory and deep donor audit, visual contracts (80 creatures), mechanical
 casting (Flash of Insight as an automatic critical, the grapple lifecycle
-live case), the player-path matrix, the persistence trio (nine-unit
-fixture), the creature review of the seven new creatures and the two
-compatibility transactions, each batch alone on the machine; internal
-review of the review renders; then record the evidence, update the PR body
-and open Sprint 5.
+live case with the corrected holder checks, the mephit breath and burst
+case), the player-path matrix, the persistence trio (ten-unit fixture), the
+creature review of the thirteen new creatures beside the four native
+mephits and the two compatibility transactions, each batch alone on the
+machine; internal review of the review renders (tint legibility per
+element); then record the evidence, update the PR body and open Sprint 6.

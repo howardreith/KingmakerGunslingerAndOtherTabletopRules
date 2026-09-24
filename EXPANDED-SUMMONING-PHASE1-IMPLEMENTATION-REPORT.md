@@ -65,7 +65,23 @@ batches complete.
 
 ### Sprint 5 - Mephit Family Expansion
 
-Not started.
+| Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
+|---|---|---|---|---|---|
+| Dust Mephit | SM IV / SNA IV (1d3 at V, 1d4+1 at VI-IX) | native `MephitAirSummoned` `50782bc4eb36aac4287023e20ee00808`, dedicated summon | Outsider 3 HD, Small, 13/15/12/6/11/14, 40 ft, NA +3, two native 1d4 claws, DR 5/magic, fast healing 2, air subtype, Dodge, Improved Initiative | 15-ft enemies-only 1d4 slashing breath, sickened 3 rounds on a failed Reflex save; blur once per summoning; wind wall omitted (no native spell); tan tint | implemented; runtime qualification in progress |
+| Ice Mephit | SM IV / SNA IV | native `MephitWaterSummoned` `4615328295cd7e84bb2ef09d3dba8403`, dedicated summon | as above; air subtype, cold immunity, fire vulnerability | 15-ft enemies-only 1d4 cold breath, sickened rider; magic missile once per summoning; chill metal omitted (no native spell); pale blue tint | implemented; runtime qualification in progress |
+| Magma Mephit | SM IV / SNA IV | native `MephitFireSummoned` `10a820de0a417f345866f794324205ad`, dedicated summon | as above; earth and fire subtypes (fire immunity, cold vulnerability) | 15-ft enemies-only 1d8 fire breath (no rider); pyrotechnics and magma form omitted (no native spell or form); dark crust tint with an ember glow | implemented; runtime qualification in progress |
+| Ooze Mephit | SM IV / SNA IV | native `MephitWaterSummoned` `4615328295cd7e84bb2ef09d3dba8403`, dedicated summon | as above; water subtype | 15-ft enemies-only 1d4 acid breath, Reflex negates damage and sickening together; acid arrow and stinking cloud once per summoning each; murky green tint | implemented; runtime qualification in progress |
+| Salt Mephit | SM IV / SNA IV | native `MephitAirSummoned` `50782bc4eb36aac4287023e20ee00808`, dedicated summon | as above; earth subtype | 15-ft enemies-only 1d4 slashing breath, sickened rider; glitterdust once per summoning; dehydrate as a project 20-ft enemies-only burst (2d8, Fortitude half) once per summoning; pale salt tint | implemented; runtime qualification in progress |
+| Steam Mephit | SM IV / SNA IV | native `MephitWaterSummoned` `4615328295cd7e84bb2ef09d3dba8403`, dedicated summon | as above; fire and water subtypes (fire immunity, cold vulnerability) | 15-ft enemies-only 1d4 fire breath, sickened rider; blur once per summoning; boiling rain as a project 20-ft enemies-only burst (2d6 fire, Fortitude half) once per summoning; pale grey tint with a warm glow | implemented; runtime qualification in progress |
+| Shared visual variant | the six mephits (later sprints reuse) | native rig materials | `ExpandedSummoningVisualVariantPatch`: private tinted material clone per view on attach | never writes the donor's shared material; outcome recorded per view for the review | implemented; runtime qualification in progress |
+
+Placements propagate to the 1d3 / 1d4+1 tiers by construction (72 new
+logical placements across both families). Ledger: 126 identities appended
+and active (`blueprints/blueprints.json`, entries 2068-2193), pinned by
+`tools/validate_expanded_summoning_phase1.py`. Icons: six Blender
+procedural renders. Tests: four Sprint 5 domain regressions; suite
+1787/1787. Runtime evidence: recorded in the state file as the guarded
+batches complete.
 
 ### Sprint 6 - Existing Signature Mechanics Repair
 

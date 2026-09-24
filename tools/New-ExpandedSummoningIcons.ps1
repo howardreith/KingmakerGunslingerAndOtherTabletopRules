@@ -72,9 +72,9 @@ function Assert-MeaningfulImage([string]$Path, [int]$ExpectedWidth, [int]$Expect
 
 $prompts = Get-Content -LiteralPath $promptPath -Raw | ConvertFrom-Json
 $icons = @($prompts.icons)
-if ($prompts.schemaVersion -ne 1 -or $icons.Count -ne 84 -or
-    @($icons.key | Sort-Object -Unique).Count -ne 84) {
-    throw 'Expanded Summoning prompt catalog must contain exactly 84 unique keys.'
+if ($prompts.schemaVersion -ne 1 -or $icons.Count -ne 90 -or
+    @($icons.key | Sort-Object -Unique).Count -ne 90) {
+    throw 'Expanded Summoning prompt catalog must contain exactly 90 unique keys.'
 }
 $blueprints = (Get-Content -LiteralPath $blueprintPath -Raw | ConvertFrom-Json).entries
 $catalogKeys = @('redcap','axiomite','soul-eater','bogeyman','movanic-deva','frost-giant','thanadaemon')
@@ -143,10 +143,10 @@ if (@(Compare-Object $expectedOutputs $actualOutputs).Count -ne 0) {
 
 $provenance = [ordered]@{
     schemaVersion = 1; provenance = 'Project-owned original artwork: 77 AI-assisted roster-mission concepts and Phase 1 additions rendered procedurally in Blender; no source images or third-party pixels.'
-    generator = 'tools/New-ExpandedSummoningIcons.ps1'; count = 84; icons = $provenanceRows
+    generator = 'tools/New-ExpandedSummoningIcons.ps1'; count = 90; icons = $provenanceRows
 }
 $runtime = [ordered]@{
-    schemaVersion = 1; count = 84; icons = $runtimeRows
+    schemaVersion = 1; count = 90; icons = $runtimeRows
 }
 if (-not $VerifyOnly) {
     $provenance | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $provenancePath -Encoding UTF8
@@ -160,4 +160,4 @@ if (-not $VerifyOnly) {
     }
 }
 
-Write-Host "Expanded Summoning icons PASS: 84 distinct sources and 84 distinct 128x128 RGBA outputs."
+Write-Host "Expanded Summoning icons PASS: 90 distinct sources and 90 distinct 128x128 RGBA outputs."

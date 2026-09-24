@@ -95,6 +95,12 @@ SPECIAL_NOTES = {
     "shambling-mound": "Plant chassis with two slams; slam grab and constrict on the shared summon grapple lifecycle; fire resistance 10 and electricity immunity; the native poison aura is not carried.",
     "giant-flytrap": "Huge plant chassis with four bites; bite grab on the shared summon grapple lifecycle, one held target at a time; acid resistance 20; tremorsense as native blindsight; engulf omitted.",
     "purple-worm": "Gargantuan magical-beast chassis with bite and sting; bite grab swallows whole through the native swallow-whole part; native Constitution-scaled sting poison; burrow omitted.",
+    "dust-mephit": "Air mephit chassis retinted, air subtype; 15-foot enemy-only slashing breath that sickens; blur once per summoning; wind wall omitted (no native spell).",
+    "ice-mephit": "Water mephit chassis retinted, air subtype; 15-foot enemy-only cold breath that sickens; magic missile once per summoning; cold immunity, fire vulnerability; chill metal omitted (no native spell).",
+    "magma-mephit": "Fire mephit chassis retinted, earth and fire subtypes; 15-foot enemy-only 1d8 fire breath; fire immunity, cold vulnerability; pyrotechnics and magma form omitted (no native spell or form).",
+    "ooze-mephit": "Water mephit chassis retinted, water subtype; 15-foot enemy-only acid breath that sickens (Reflex negates both); acid arrow and stinking cloud once per summoning each.",
+    "salt-mephit": "Air mephit chassis retinted, earth subtype; 15-foot enemy-only slashing breath that sickens; glitterdust once per summoning; dehydrate as a project 20-foot burst (2d8, Fortitude half) once per summoning.",
+    "steam-mephit": "Water mephit chassis retinted, fire and water subtypes; 15-foot enemy-only fire breath that sickens; fire immunity, cold vulnerability; blur once per summoning; boiling rain as a project 20-foot burst (2d6 fire, Fortitude half) once per summoning.",
 }
 
 NATIVE_EXPANDED_OPTIONS = (
@@ -135,8 +141,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 74:
-        raise SystemExit(f"Expected 74 parsed creatures; observed {len(values)}")
+    if len(values) != 80:
+        raise SystemExit(f"Expected 80 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -214,6 +220,54 @@ def planned():
         ("KMG.Summoning.Special.GiantFlytrap.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.PurpleWorm.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.PurpleWorm.Swallowed", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DustMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.DustMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.DustMephit.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.DustMephit.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DustMephit.SpellLikeOne", "BlueprintAbility"),
+        ("KMG.Summoning.Special.DustMephit.SpellLikeOneResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.DustMephit.SpellLikeOneAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.IceMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.IceMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.IceMephit.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.IceMephit.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.IceMephit.SpellLikeOne", "BlueprintAbility"),
+        ("KMG.Summoning.Special.IceMephit.SpellLikeOneResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.IceMephit.SpellLikeOneAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.MagmaMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.MagmaMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.MagmaMephit.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.MagmaMephit.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.OozeMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.OozeMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.OozeMephit.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.OozeMephit.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.OozeMephit.SpellLikeOne", "BlueprintAbility"),
+        ("KMG.Summoning.Special.OozeMephit.SpellLikeOneResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.OozeMephit.SpellLikeOneAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.OozeMephit.SpellLikeTwo", "BlueprintAbility"),
+        ("KMG.Summoning.Special.OozeMephit.SpellLikeTwoResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.OozeMephit.SpellLikeTwoAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.SaltMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.SaltMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.SaltMephit.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.SaltMephit.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.SaltMephit.SpellLikeOne", "BlueprintAbility"),
+        ("KMG.Summoning.Special.SaltMephit.SpellLikeOneResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.SaltMephit.SpellLikeOneAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.SaltMephit.SpellLikeTwo", "BlueprintAbility"),
+        ("KMG.Summoning.Special.SaltMephit.SpellLikeTwoResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.SaltMephit.SpellLikeTwoAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.SteamMephit.Breath", "BlueprintAbility"),
+        ("KMG.Summoning.Special.SteamMephit.BreathAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.SteamMephit.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.SteamMephit.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.SteamMephit.SpellLikeOne", "BlueprintAbility"),
+        ("KMG.Summoning.Special.SteamMephit.SpellLikeOneResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.SteamMephit.SpellLikeOneAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.SteamMephit.SpellLikeTwo", "BlueprintAbility"),
+        ("KMG.Summoning.Special.SteamMephit.SpellLikeTwoResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.SteamMephit.SpellLikeTwoAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"),
@@ -222,7 +276,7 @@ def planned():
         ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1295 or len({symbol for symbol, _ in rows}) != 1295:
+    if len(rows) != 1421 or len({symbol for symbol, _ in rows}) != 1421:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -234,14 +288,14 @@ def generated_roster(manifest):
         for key, guid, dedicated in DONOR.findall(DONORS.read_text(encoding="utf-8"))
     }
     creatures = parsed_creatures()
-    if len(donors) != 74 or set(donors) != {value["key"] for value in creatures}:
+    if len(donors) != 80 or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
     lines = [
         "# Expanded Summoning roster and identity ledger",
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Frozen totals: 68 Summon Monster entries / 378 placements; 64 Summon Nature's Ally entries / 357 placements; 74 unique units; 735 logical placements (Phase 1 Sprint 3 added Pony, Horse, Owlbear and Cyclops; Sprint 4 added Shambling Mound, Giant Flytrap and Purple Worm; the Frost Giant is a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers).",
+        "Frozen totals: 74 Summon Monster entries / 414 placements; 70 Summon Nature's Ally entries / 393 placements; 80 unique units; 807 logical placements (Phase 1 Sprint 3 added Pony, Horse, Owlbear and Cyclops; Sprint 4 added Shambling Mound, Giant Flytrap and Purple Worm; Sprint 5 added the Dust, Ice, Magma, Ooze, Salt and Steam Mephits; the Frost Giant is a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers).",
         "",
         "Final native qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required final compatibility transactions PASS and restored their profiles.",
         "",
@@ -297,7 +351,7 @@ def generated_roster(manifest):
     lines.extend((
         "## Explicit exclusions",
         "",
-        "No aquatic-only entries, unapproved ants, apes, rhinoceroses, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
+        "No aquatic-only entries, unapproved ants, apes, rhinoceroses, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
         "",
     ))
     return "\n".join(lines)
