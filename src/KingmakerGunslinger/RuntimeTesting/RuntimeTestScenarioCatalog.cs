@@ -115,6 +115,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string DisposableExpandedSummoningProjectedMenu =
             "disposable-expanded-summoning-projected-menu";
+        /// <summary>
+        /// Development-only. The mechanical Expanded Summoning run with the
+        /// Pteranodon visual's two fallback paths exercised on live units: the
+        /// first Pteranodon cast runs with the visual withdrawn, the second
+        /// with a fault injected after the donor renderer is suppressed, and
+        /// the rest run clean. Every other creature is cast exactly as in the
+        /// plain run.
+        /// </summary>
+        internal const string DisposableExpandedSummoningPteranodonFaultDrill =
+            "disposable-expanded-summoning-pteranodon-fault-drill";
         internal const string SummonSameTurnActivation =
             "summon-same-turn-activation";
         internal const string SummonSameTurnAcadamae =
@@ -583,6 +593,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningPlayerPath,
                 DisposableExpandedSummoningProjectedMenu,
+                DisposableExpandedSummoningPteranodonFaultDrill,
                 SummonSameTurnActivation,
                 SummonSameTurnAcadamae,
                 SummonSameTurnMultiple,

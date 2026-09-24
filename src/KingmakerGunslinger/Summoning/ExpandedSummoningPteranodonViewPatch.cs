@@ -30,21 +30,37 @@ namespace KingmakerGunslinger.Summoning
     {
         internal const string PteranodonBlueprintName =
             "KMG_Summoning_Unit_Pteranodon";
-        private const string CustomChildName = "KMG_PteranodonMembrane";
+        internal const string CustomChildName = "KMG_PteranodonMembrane";
         private const string MainTexture = "_MainTex";
 
         /// <summary>
+        /// Fault injection for the guarded fallback drill. When set, it runs at
+        /// the one point where a failure is most expensive - after the donor
+        /// renderer has been disabled - so the rollback path is exercised on a
+        /// live unit. Only the runtime-testing fixture sets it, and it clears
+        /// it again in the same cast.
+        /// </summary>
+        internal static Action PostSuppressionFaultForTest;
+
+        /// <summary>
         /// Texture slots the donor's material may carry that the painting does
-        /// not: the eagle's normal, specular, occlusion, emission and detail
-        /// maps are indexed by the eagle's texture coordinates, which mean
-        /// nothing on this mesh. Each one present is cleared on the private
-        /// copy, and the shader falls back to its flat default for that slot.
+        /// not: the eagle's normal, specular, occlusion, emission, mask and
+        /// detail maps are indexed by the eagle's texture coordinates, which
+        /// mean nothing on this mesh. Each one present is cleared on the
+        /// private copy, and the shader falls back to its flat default for that
+        /// slot. Unity 2018 cannot enumerate a shader's properties at runtime,
+        /// so this is a probe list - the Standard shader's names plus the
+        /// spellings Owlcat's PF shaders use - and the outcome records which of
+        /// them the donor's shader actually declares.
         /// </summary>
         private static readonly string[] SuppressedMaps =
         {
-            "_BumpMap", "_SpecGlossMap", "_MetallicGlossMap", "_OcclusionMap",
-            "_EmissionMap", "_DetailAlbedoMap", "_DetailNormalMap", "_DetailMask",
-            "_ParallaxMap"
+            "_BumpMap", "_NormalMap", "_NormalTex", "_SpecGlossMap", "_SpecularMap",
+            "_SpecTex", "_MetallicGlossMap", "_OcclusionMap", "_EmissionMap",
+            "_EmissiveMap", "_EmissionTex", "_MaskMap", "_MaskTex", "_Mask",
+            "_DetailAlbedoMap", "_DetailNormalMap", "_DetailMask", "_ParallaxMap",
+            "_RampTex", "_ColorMask", "_TintMask", "_GlossMap", "_DecalTex",
+            "_DetailTex", "_DirtTex", "_SecondaryTex"
         };
 
         private sealed class Attachment
@@ -112,10 +128,10 @@ namespace KingmakerGunslinger.Summoning
             Mesh source;
             string[] boneNames;
             if (!PteranodonAssetRuntime.TryGetMembrane(out source, out boneNames))
-                return "donor-visual:" + PteranodonAssetRuntime.Status;
+                return Fallback(PteranodonAssetRuntime.Status);
             Texture2D albedo;
             if (!PteranodonAssetRuntime.TryGetAlbedo(out albedo))
-                return "donor-visual:" + PteranodonAssetRuntime.Status;
+                return Fallback(PteranodonAssetRuntime.Status);
 
             SkinnedMeshRenderer[] donors = view
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true)
@@ -189,6 +205,8 @@ namespace KingmakerGunslinger.Summoning
                 // stays active so anything else parented under it - effects,
                 // anchors, colliders - keeps working.
                 donor.enabled = false;
+                Action fault = PostSuppressionFaultForTest;
+                if (fault != null) fault();
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
                     albedo.width + "x" + albedo.height + ";" + dressing;
@@ -196,7 +214,10 @@ namespace KingmakerGunslinger.Summoning
             catch (Exception error)
             {
                 Revert(attachment);
-                if (child != null) UnityEngine.Object.Destroy(child);
+                // The child goes immediately, not at the end of the frame:
+                // the invariant is that a unit is never double-bodied, and an
+                // observer in this same frame must not find a corpse of it.
+                if (child != null) UnityEngine.Object.DestroyImmediate(child);
                 if (material != null) UnityEngine.Object.Destroy(material);
                 if (mesh != null) UnityEngine.Object.Destroy(mesh);
                 attachment.Child = null;
@@ -219,11 +240,13 @@ namespace KingmakerGunslinger.Summoning
             material.SetTextureScale(MainTexture, Vector2.one);
             material.SetTextureOffset(MainTexture, Vector2.zero);
 
+            var declared = new List<string>();
             var cleared = new List<string>();
             foreach (string name in SuppressedMaps)
             {
-                if (!material.HasProperty(name) || material.GetTexture(name) == null)
-                    continue;
+                if (!material.HasProperty(name)) continue;
+                declared.Add(name);
+                if (material.GetTexture(name) == null) continue;
                 material.SetTexture(name, null);
                 cleared.Add(name);
             }
@@ -244,7 +267,9 @@ namespace KingmakerGunslinger.Summoning
             }
 
             return "shader=" + (material.shader == null ? "<null>" :
-                material.shader.name) + ";cleared=" + (cleared.Count == 0 ?
+                material.shader.name) + ";declared=" + (declared.Count == 0 ?
+                "<none>" : string.Join(",", declared.ToArray())) +
+                ";cleared=" + (cleared.Count == 0 ?
                 "<none>" : string.Join(",", cleared.ToArray())) +
                 ";donorTint=" + tint + ";donorEmission=" + emission;
         }
@@ -258,6 +283,14 @@ namespace KingmakerGunslinger.Summoning
                 value.b.ToString("0.###", CultureInfo.InvariantCulture),
                 value.a.ToString("0.###", CultureInfo.InvariantCulture)
             });
+        }
+
+        /// <summary>The loader's own statuses already carry the prefix.</summary>
+        private static string Fallback(string status)
+        {
+            return status != null &&
+                status.StartsWith("donor-visual:", StringComparison.Ordinal)
+                ? status : "donor-visual:" + status;
         }
 
         /// <summary>Puts the donor back exactly as it was.</summary>

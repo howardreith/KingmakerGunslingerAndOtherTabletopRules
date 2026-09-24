@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Kingmaker.View;
+using KingmakerGunslinger.Assets;
+using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -41,6 +43,114 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// to hold; a fallback here is a fact to report, not a pass.
         /// </summary>
         private readonly List<string> _pteranodonVisualOutcomes = new List<string>();
+        private readonly List<string> _pteranodonVisualRenderers = new List<string>();
+        private readonly List<string> _pteranodonVisualSteps = new List<string>();
+        private readonly List<string> _pteranodonFaultDrill = new List<string>();
+        private readonly List<string> _donorIsolationDetail = new List<string>();
+        private IDisposable _pteranodonWithdrawal;
+        private int _pteranodonCastsSeen;
+        private int _pteranodonCrowdMax;
+        private int _donorIsolationChecked;
+        private int _donorIsolationClean;
+
+        /// <summary>
+        /// The creatures that share the Pteranodon's GiantEagle donor prefab.
+        /// They are the negative controls for instance isolation: the patch
+        /// must never touch them.
+        /// </summary>
+        private static readonly string[] PteranodonDonorSharers =
+        { "eagle", "dire-bat", "roc" };
+
+        /// <summary>
+        /// The two renderers that matter on a donor-sharing view: the donor's
+        /// own, and the Pteranodon child if one was attached.
+        /// </summary>
+        private static string DescribePteranodonRenderers(UnitEntityView view)
+        {
+            SkinnedMeshRenderer[] renderers = view
+                .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value != null && value.sharedMesh != null)
+                .ToArray();
+            SkinnedMeshRenderer child = renderers.FirstOrDefault(value =>
+                value.gameObject.name ==
+                    ExpandedSummoningPteranodonViewPatch.CustomChildName);
+            SkinnedMeshRenderer donor = renderers.FirstOrDefault(value =>
+                value.gameObject.name !=
+                    ExpandedSummoningPteranodonViewPatch.CustomChildName);
+            return "donorEnabled=" + (donor != null && donor.enabled ? "true" : "false") +
+                ";child=" + (child != null ? "true" : "false") +
+                ";childEnabled=" + (child != null && child.enabled ? "true" : "false") +
+                ";renderers=" + Number(renderers.Length);
+        }
+
+        /// <summary>
+        /// The presentation contract of the attached visual, measured against
+        /// the donor it replaced on the same view: it is the attached outcome,
+        /// the donor renderer is off and the child on, both share the root
+        /// bone, all 46 of the child's bones are the donor's animated
+        /// transforms, the child carries the donor's local bounds and shadow
+        /// modes, its private material uses the donor's shader with the albedo
+        /// while the donor's shared material is untouched, and the view scale
+        /// is the catalog multiplier.
+        /// </summary>
+        private static string DescribePteranodonPresentation(UnitEntityView view,
+            out bool satisfied)
+        {
+            string outcome = ExpandedSummoningPteranodonViewPatch.DescribeView(view);
+            SkinnedMeshRenderer[] renderers = view
+                .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value != null && value.sharedMesh != null)
+                .ToArray();
+            SkinnedMeshRenderer child = renderers.FirstOrDefault(value =>
+                value.gameObject.name ==
+                    ExpandedSummoningPteranodonViewPatch.CustomChildName);
+            SkinnedMeshRenderer donor = renderers.FirstOrDefault(value =>
+                value.gameObject.name !=
+                    ExpandedSummoningPteranodonViewPatch.CustomChildName);
+            bool attached = outcome.StartsWith("visual:attached;",
+                StringComparison.Ordinal) && child != null && donor != null &&
+                !donor.enabled && child.enabled;
+            bool sameRoot = child != null && donor != null &&
+                ReferenceEquals(child.rootBone, donor.rootBone);
+            int boneCount = child == null || child.bones == null ? 0 : child.bones.Length;
+            int bonesShared = 0;
+            if (child != null && donor != null && donor.bones != null && child.bones != null)
+            {
+                var donorBones = new HashSet<Transform>(donor.bones.Where(
+                    value => value != null));
+                bonesShared = child.bones.Count(value =>
+                    value != null && donorBones.Contains(value));
+            }
+            bool bonesBound = boneCount == 46 && bonesShared == 46;
+            bool boundsMatch = child != null && donor != null &&
+                (child.localBounds.center - donor.localBounds.center).sqrMagnitude < 1e-6f &&
+                (child.localBounds.size - donor.localBounds.size).sqrMagnitude < 1e-6f;
+            bool shadows = child != null && donor != null &&
+                child.shadowCastingMode == donor.shadowCastingMode &&
+                child.receiveShadows == donor.receiveShadows;
+            Material childMaterial = child == null ? null : child.sharedMaterial;
+            Material donorMaterial = donor == null ? null : donor.sharedMaterial;
+            bool shaded = childMaterial != null && donorMaterial != null &&
+                !ReferenceEquals(childMaterial, donorMaterial) &&
+                childMaterial.shader == donorMaterial.shader &&
+                childMaterial.mainTexture != null &&
+                childMaterial.mainTexture.name == "KMG_Pteranodon_Albedo" &&
+                (donorMaterial.mainTexture == null ||
+                    donorMaterial.mainTexture.name != "KMG_Pteranodon_Albedo");
+            float multiplier = SummonViewScaleCatalog.All.Single(value =>
+                value.CreatureKey == "pteranodon").Multiplier;
+            float scale = view.transform.localScale.x;
+            bool scaled = Mathf.Abs(scale - multiplier) < 0.001f;
+            Bounds world = child == null ? new Bounds() : child.bounds;
+            bool extent = child != null && world.size.sqrMagnitude > 0.0001f;
+            satisfied = attached && sameRoot && bonesBound && boundsMatch &&
+                shadows && shaded && scaled && extent;
+            return "outcome=" + outcome + ";attached=" + attached + ";sameRoot=" +
+                sameRoot + ";bones=" + Number(bonesShared) + "/" + Number(boneCount) +
+                ";boundsMatch=" + boundsMatch + ";shadows=" + shadows + ";shaded=" +
+                shaded + ";viewScale=" + Decimal(scale) + "/" + Decimal(multiplier) +
+                ";worldExtent=" + Decimal(world.size.magnitude);
+        }
 
         /// <summary>
         /// Everything Sprint 2 must preserve about a live Pteranodon's view:

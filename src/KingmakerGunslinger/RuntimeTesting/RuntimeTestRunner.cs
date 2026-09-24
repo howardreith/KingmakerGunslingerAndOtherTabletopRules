@@ -1829,6 +1829,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .DisposableExpandedSummoningProjectedMenu ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableExpandedSummoningPteranodonFaultDrill ||
                     RuntimeTestScenarioCatalog
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
@@ -1940,6 +1942,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                     _request.Scenario == RuntimeTestScenarioCatalog
                         .DisposableExpandedSummoningProjectedMenu ||
+                    _request.Scenario == RuntimeTestScenarioCatalog
+                        .DisposableExpandedSummoningPteranodonFaultDrill ||
                     RuntimeTestScenarioCatalog
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
@@ -2489,7 +2493,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_request.Scenario ==
                     RuntimeTestScenarioCatalog.DisposableExpandedSummoning)
                 {
-                    Complete(RunDisposableExpandedSummoning());
+                    Complete(RunDisposableExpandedSummoning(false));
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningPlayerPath)
@@ -2500,6 +2504,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningProjectedMenu)
                 {
                     RunExpandedSummoningProjectedMenu();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningPteranodonFaultDrill)
+                {
+                    Complete(RunDisposableExpandedSummoning(true));
                 }
                 else if (RuntimeTestScenarioCatalog
                     .IsSummonSameTurnWorkingSaveScenario(_request.Scenario))
@@ -5365,6 +5374,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningProjectedMenu ||
+                _request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningPteranodonFaultDrill ||
                 RuntimeTestScenarioCatalog
                     .IsSummonSameTurnWorkingSaveScenario(
                     _request.Scenario) ||
@@ -16275,8 +16286,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningPlayerPathEvents.Add("ContextActionSpawnMonster");
         }
 
-        private RuntimeTestResult RunDisposableExpandedSummoning()
+        private RuntimeTestResult RunDisposableExpandedSummoning(
+            bool pteranodonFaultDrill)
         {
+            int patchOutcomesBefore =
+                ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             IReadOnlyList<SummonVariantSpec> monster =
@@ -16291,6 +16305,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             SummonVariantSpec[] oneD4PlusOne =
                 SelectExpandedSummoningQuantityCoverage(monster, ally,
                     SummonMultiplicity.OneD4PlusOne);
+            // Sprint 2 crowding: the alphabetical quantity coverage above never
+            // picks the Pteranodon, so one 1d3 and one 1d4+1 Pteranodon cast
+            // join the run, and every unit of each must carry the visual.
+            SummonVariantSpec[] pteranodonCrowd = monster.Concat(ally)
+                .Where(value => value.Creature.Key == "pteranodon" &&
+                    value.Multiplicity != SummonMultiplicity.One)
+                .GroupBy(value => value.Multiplicity)
+                .Select(group => group.OrderBy(value => value.Family)
+                    .ThenBy(value => value.ParentTier).First())
+                .Where(value => !oneD3.Contains(value) &&
+                    !oneD4PlusOne.Contains(value))
+                .ToArray();
+            oneD3 = oneD3.Concat(pteranodonCrowd.Where(value =>
+                value.Multiplicity == SummonMultiplicity.OneD3)).ToArray();
+            oneD4PlusOne = oneD4PlusOne.Concat(pteranodonCrowd.Where(value =>
+                value.Multiplicity == SummonMultiplicity.OneD4PlusOne)).ToArray();
             SummonVariantSpec[] casts = oneCreature.Concat(oneD3)
                 .Concat(oneD4PlusOne).ToArray();
 
@@ -16371,6 +16401,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                         blueprints, variant);
                     object[] beforeCast = SnapshotReferences(sceneEntities);
                     ExpandedSummoningRuleCapture.Clear();
+                    // Sprint 2 fault drill: the first Pteranodon cast runs with
+                    // the visual withdrawn, the second with a fault injected
+                    // after the donor renderer is suppressed, and the rest run
+                    // clean, so both fallback paths and the recovery after them
+                    // are exercised on live units inside one proven lifecycle.
+                    string drillStep = null;
+                    if (pteranodonFaultDrill && variant.Creature.Key == "pteranodon")
+                    {
+                        if (_pteranodonCastsSeen == 0)
+                        {
+                            drillStep = "withdrawn";
+                            _pteranodonWithdrawal =
+                                PteranodonAssetRuntime.WithdrawForTest("fault-drill");
+                        }
+                        else if (_pteranodonCastsSeen == 1)
+                        {
+                            drillStep = "post-suppression-fault";
+                            ExpandedSummoningPteranodonViewPatch
+                                .PostSuppressionFaultForTest = () =>
+                                {
+                                    throw new InvalidOperationException("fault-drill");
+                                };
+                        }
+                        else drillStep = "recovered";
+                    }
                     caster.Descriptor.AddFact(ability);
                     try
                     {
@@ -16530,12 +16585,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // the donor visual names the reason in its outcome.
                     if (variant.Creature.Key == "pteranodon")
                     {
+                        _pteranodonCastsSeen++;
+                        if (count > _pteranodonCrowdMax) _pteranodonCrowdMax = count;
                         foreach (UnitEntityData unit in spawned)
                         {
                             if (unit == null || unit.View == null) continue;
-                            _pteranodonVisualOutcomes.Add(
-                                ExpandedSummoningPteranodonViewPatch.DescribeView(
-                                    unit.View));
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            _pteranodonVisualOutcomes.Add(outcome);
+                            _pteranodonVisualRenderers.Add(renderers);
+                            _pteranodonVisualSteps.Add(drillStep);
+                            if (drillStep != null)
+                                _pteranodonFaultDrill.Add(drillStep + "|" + outcome +
+                                    "|" + renderers);
+                        }
+                        ExpandedSummoningPteranodonViewPatch.PostSuppressionFaultForTest = null;
+                        if (_pteranodonWithdrawal != null)
+                        {
+                            _pteranodonWithdrawal.Dispose();
+                            _pteranodonWithdrawal = null;
+                        }
+                    }
+                    else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
+                    {
+                        // Isolation: the creatures that share the GiantEagle
+                        // donor must come up on the donor's own renderer with
+                        // nothing of the Pteranodon's on them.
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _donorIsolationChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            if (outcome == "not-attempted" && renderers.StartsWith(
+                                "donorEnabled=true;child=false", StringComparison.Ordinal))
+                                _donorIsolationClean++;
+                            else _donorIsolationDetail.Add(variant.Creature.Key +
+                                ":" + outcome + ":" + renderers);
                         }
                     }
 
@@ -16586,6 +16674,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                // The drill's hooks never outlive the cast they were set for;
+                // this is the backstop for a cast that threw mid-way.
+                ExpandedSummoningPteranodonViewPatch.PostSuppressionFaultForTest = null;
+                if (_pteranodonWithdrawal != null)
+                {
+                    _pteranodonWithdrawal.Dispose();
+                    _pteranodonWithdrawal = null;
+                }
                 _expandedSummoningRuleCaptureActive = false;
                 ExpandedSummoningRuleCapture.Clear();
                 if (summonRuleMethod != null)
@@ -16622,6 +16718,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 illegalPlacementRejected + ";mechanicalCasts=" +
                 (mechanics == null ? 0 : mechanics.AdditionalCasts) +
                 ";cleaned=" + cleaned;
+            // A Pteranodon view outside a scheduled drill step must be attached,
+            // with the donor renderer off and the child on.
+            int pteranodonAttachedCount = 0;
+            bool pteranodonAttachedClean = _pteranodonVisualOutcomes.Count > 0;
+            for (int index = 0; index < _pteranodonVisualOutcomes.Count; index++)
+            {
+                string step = _pteranodonVisualSteps[index];
+                if (step != null && step != "recovered") continue;
+                pteranodonAttachedCount++;
+                if (!_pteranodonVisualOutcomes[index].StartsWith("visual:attached;",
+                        StringComparison.Ordinal) ||
+                    !_pteranodonVisualRenderers[index].StartsWith(
+                        "donorEnabled=false;child=true;childEnabled=true",
+                        StringComparison.Ordinal))
+                    pteranodonAttachedClean = false;
+            }
+            if (pteranodonAttachedCount == 0) pteranodonAttachedClean = false;
+
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("expanded-summoning-all-one-creature-casts", "123/123",
@@ -16698,19 +16812,65 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // and painting attached through the donor's own material, the
                 // donor renderer disabled, on every Pteranodon this run cast.
                 Assertion("expanded-summoning-pteranodon-visual-attached",
-                    "every summoned Pteranodon carries the original mesh and albedo on a private material with the donor renderer disabled",
+                    "every summoned Pteranodon outside a scheduled drill step carries the original mesh and albedo on a private material with the donor renderer disabled",
                     _pteranodonVisualOutcomes.Count == 0 ? "<no pteranodon view observed>" :
+                        "views=" + _pteranodonVisualOutcomes.Count + ";" +
                         string.Join("|", _pteranodonVisualOutcomes
                             .Distinct(StringComparer.Ordinal).ToArray()),
-                    _pteranodonVisualOutcomes.Count > 0 &&
-                        _pteranodonVisualOutcomes.All(value => value.StartsWith(
-                            "visual:attached;", StringComparison.Ordinal)),
-                    "ExpandedSummoningPteranodonViewPatch.DescribeView on each spawned unit's view"),
+                    pteranodonAttachedCount > 0 && pteranodonAttachedClean,
+                    "ExpandedSummoningPteranodonViewPatch.DescribeView plus the live renderer states on each spawned unit's view"),
+                Assertion("expanded-summoning-pteranodon-donor-isolation",
+                    "eagle, dire bat and roc keep the donor visual: not-attempted, donor renderer enabled, no Pteranodon child",
+                    "checked=" + _donorIsolationChecked + ";clean=" + _donorIsolationClean +
+                        (_donorIsolationDetail.Count == 0 ? string.Empty :
+                            ";detail=" + string.Join("|", _donorIsolationDetail.ToArray())),
+                    _donorIsolationChecked > 0 &&
+                        _donorIsolationClean == _donorIsolationChecked,
+                    "the same GiantEagle donor prefab, observed on every unit of the three sharing creatures"),
+                Assertion("expanded-summoning-pteranodon-crowding",
+                    "a multi-unit Pteranodon cast attaches the visual to every unit at once",
+                    "maxSimultaneous=" + _pteranodonCrowdMax + ";casts=" +
+                        _pteranodonCastsSeen + ";views=" + _pteranodonVisualOutcomes.Count,
+                    _pteranodonCrowdMax >= 2 && pteranodonAttachedClean,
+                    "the 1d3 and 1d4+1 Pteranodon casts added to the quantity coverage"),
+                Assertion("expanded-summoning-pteranodon-repeated-lifecycle",
+                    "several Pteranodon casts in one lifecycle, each view attached exactly once, each cast cleaned to the exact snapshot",
+                    "casts=" + _pteranodonCastsSeen + ";views=" +
+                        _pteranodonVisualOutcomes.Count + ";patchOutcomes=" +
+                        (ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count -
+                            patchOutcomesBefore),
+                    _pteranodonCastsSeen >= 4 && _pteranodonVisualOutcomes.Count >= 6 &&
+                        ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count -
+                            patchOutcomesBefore == _pteranodonVisualOutcomes.Count &&
+                        pteranodonAttachedClean,
+                    "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            if (pteranodonFaultDrill)
+            {
+                string[] withdrawn = _pteranodonFaultDrill.Where(value =>
+                    value.StartsWith("withdrawn|", StringComparison.Ordinal)).ToArray();
+                string[] faulted = _pteranodonFaultDrill.Where(value =>
+                    value.StartsWith("post-suppression-fault|", StringComparison.Ordinal)).ToArray();
+                string[] recovered = _pteranodonFaultDrill.Where(value =>
+                    value.StartsWith("recovered|", StringComparison.Ordinal)).ToArray();
+                bool withdrawnOk = withdrawn.Length > 0 && withdrawn.All(value =>
+                    value.Contains("|donor-visual:withdrawn-for-test:fault-drill|donorEnabled=true;child=false"));
+                bool faultedOk = faulted.Length > 0 && faulted.All(value =>
+                    value.Contains("|donor-visual:attach-failed:InvalidOperationException|donorEnabled=true;child=false"));
+                bool recoveredOk = recovered.Length > 0 && recovered.All(value =>
+                    value.Contains("|visual:attached;") &&
+                    value.Contains("|donorEnabled=false;child=true;childEnabled=true"));
+                assertions.Insert(assertions.Count - 1, Assertion(
+                    "expanded-summoning-pteranodon-fault-drill",
+                    "withdrawn visual -> donor intact and untouched; fault after donor suppression -> donor re-enabled and the child gone in the same frame; later casts attached",
+                    string.Join("||", _pteranodonFaultDrill.ToArray()),
+                    withdrawnOk && faultedOk && recoveredOk,
+                    "PteranodonAssetRuntime.WithdrawForTest and ExpandedSummoningPteranodonViewPatch.PostSuppressionFaultForTest, one cast each, on live summoned units"));
+            }
             RuntimeTestResult result = CreateResult(assertions.All(value =>
                 value.Status == "PASS") ? "PASS" : "FAIL", assertions, null);
             result.Diagnostics.Add(observed);
@@ -17472,6 +17632,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             float mediumHumanoidHeight = -1f;
             Bounds mediumHumanoidBounds = new Bounds();
             string eagleComparisonEvidence = "missing";
+            string pteranodonPresentation = "<not observed>";
+            bool pteranodonPresented = false;
+            string pteranodonMotion = "<not observed>";
+            bool pteranodonMotionBound = false;
             MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
                 "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
             try
@@ -17608,6 +17772,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         scale.y <= 10f && scale.z <= 10f && maximumBound > 0.01f &&
                         maximumBound <= 25f && renderers.Length <= 256;
                     if (finiteBounded) bounded++;
+                    // Sprint 2 presentation: the attached visual measured against
+                    // the donor it replaced, before any animation is exercised.
+                    if (variant.Creature.Key == "pteranodon")
+                        pteranodonPresentation = DescribePteranodonPresentation(
+                            view, out pteranodonPresented);
 
                     IEnumerable colliderSequence = view == null ? null :
                         ReadExactMember(view, "Colliders") as IEnumerable;
@@ -17680,6 +17849,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .MarkedForDeath || unit.Descriptor.State.ForceKill;
                     bool deathReady = deathCallback && deathState;
                     if (deathReady) death++;
+                    // Sprint 2 motion binding: after locomotion, attack, hit and
+                    // death have all run through the native animation paths,
+                    // the visual must still be the attached one, bound to the
+                    // same animated bones, with the donor still off.
+                    if (variant.Creature.Key == "pteranodon")
+                        pteranodonMotion = DescribePteranodonPresentation(
+                            view, out pteranodonMotionBound);
 
                     diagnostics.Add(variant.Creature.Key + ":view=" + attached +
                         ";renderers=" + renderers.Length + ";bounds=" +
@@ -17817,6 +17993,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rangedReady + "/" + ranged,
                     ranged > 0 && rangedReady == ranged,
                     "live primary weapon visual parameters and CenterTorso fallback"),
+                Assertion("expanded-summoning-pteranodon-presentation",
+                    "attached visual: donor renderer off, child on, same root bone, all 46 bones on the donor's skeleton, donor bounds and shadow modes, donor shader with the albedo, catalog view scale",
+                    pteranodonPresentation, pteranodonPresented,
+                    "live SkinnedMeshRenderer pair on the summoned Pteranodon view"),
+                Assertion("expanded-summoning-pteranodon-motion-binding",
+                    "the same attached state holds after the native locomotion, attack, hit and death paths have run",
+                    pteranodonMotion, pteranodonMotionBound,
+                    "the presentation contract re-measured after the animation exercises"),
                 Assertion("expanded-summoning-view-cleanup", "67/67 and exact snapshots",
                     "detached=" + detachedViews + ";cleaned=" + cleaned,
                     detachedViews == 67 && cleaned,
