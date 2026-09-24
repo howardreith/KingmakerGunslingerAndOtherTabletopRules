@@ -14,12 +14,13 @@ import sys
 from pathlib import Path
 sys.dont_write_bytecode = True
 import validate_better_vendors138 as baseline
+import validate_sprint32
 
 VERSION = "0.0.139"
 INFORMATIONAL_VERSION = "0.0.139-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1772
+DETERMINISTIC_TEST_COUNT = 1779
 STATIC_KEY = "favoredClassIntegration139"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -27,6 +28,26 @@ STATIC_KEY = "favoredClassIntegration139"
 APPENDED = (
     ("KMG.FavoredClass.Gunslinger.Grit.Partial", "718289fb8ab945e48880961722a344fd"),
     ("KMG.FavoredClass.Gunslinger.Grit.Full", "cd8674400bea40adbd8489a08b14eeff"),
+    ("KMG.FavoredClass.Gunslinger.Misfire.Pistol.Partial", "115ab4b2b0174a708cb93adac7826079"),
+    ("KMG.FavoredClass.Gunslinger.Misfire.Pistol.Full", "6d125884d3f94f83a59ba57112a31ec6"),
+    ("KMG.FavoredClass.Gunslinger.Misfire.Musket.Partial", "103ecf217c6b4e93865a846a2c584f03"),
+    ("KMG.FavoredClass.Gunslinger.Misfire.Musket.Full", "a603feebd92b45c683be87fe17b084c2"),
+    ("KMG.FavoredClass.Gunslinger.Misfire.Blunderbuss.Partial", "7627279fc5ae4239b6ccaa51d3f55032"),
+    ("KMG.FavoredClass.Gunslinger.Misfire.Blunderbuss.Full", "8bf4dee4bb164d93bf22a3bbff946dd7"),
+    ("KMG.FavoredClass.Gunslinger.FirearmConfirmation.Partial", "b07889d80b5f48b285e364885a512815"),
+    ("KMG.FavoredClass.Gunslinger.FirearmConfirmation.Full", "9d8e1f609b2b47d2b9c80a3525022e69"),
+    ("KMG.FavoredClass.Gunslinger.PistolWhip.Partial", "e24c74437b88443298f1861c1eb2043e"),
+    ("KMG.FavoredClass.Gunslinger.PistolWhip.Full", "84639afbb1d14aba83dcf6630eb626c0"),
+    ("KMG.FavoredClass.Gunslinger.HalflingNimble.Partial", "40269699043e4fe3a512e5ee28dd93bd"),
+    ("KMG.FavoredClass.Gunslinger.HalflingNimble.Full", "29a320ea1af0499d9185fe8321d60cae"),
+    ("KMG.FavoredClass.Gunslinger.HalflingDodge.Partial", "b62476699d734b10bb1c124b549f634f"),
+    ("KMG.FavoredClass.Gunslinger.HalflingDodge.Full", "5400219fafad4780b440dee91788eb68"),
+    ("KMG.FavoredClass.Gunslinger.DrowNimble.Partial", "49359d21155e4741b6a1f438bf0db7ed"),
+    ("KMG.FavoredClass.Gunslinger.DrowNimble.Full", "efb83ae0fde04abb96dd1e7cce0211e7"),
+    ("KMG.FavoredClass.Gunslinger.Initiative.Partial", "385a62ab48214b32accaa2f5e7c86d66"),
+    ("KMG.FavoredClass.Gunslinger.Initiative.Full", "403489a552e5470bb720a8148c2b09ed"),
+    ("KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Partial", "422ad9a4bd294b84b2f6230856ecdd10"),
+    ("KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Full", "ece977845f1c4b40a6df5183b6caa7e4"),
 )
 
 HOST_SHA256 = "dcd3adf98d1a04c30d772381e7c56ce4beff35a98bcea165aff206a2f0aac26c"
@@ -36,6 +57,9 @@ COTW_MVID = "8caab254-aacf-4811-8093-44b9184e6e53"
 
 
 def validate(root: Path) -> None:
+    # Favored-class misfire reductions (G01/G18) made the scatter all-roll
+    # aggregate use the effective threshold that decided each native roll.
+    validate_sprint32.SCATTER_MISFIRE_AGGREGATE_TOKEN = "IsMisfire(misfireThreshold)"
     baseline.AUTHORIZED_APPENDED_AFTER = APPENDED
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
@@ -61,6 +85,14 @@ def validate(root: Path) -> None:
         HOST_SHA256, HOST_MVID, COTW_SHA256, COTW_MVID,
         '"binary-sha256"', '"binary-mvid"', '"dependency-sha256"', '"dependency-mvid"',
         '"core-load-incomplete"', '"gunslinger-not-scanned"')
+    baseline.require_tokens(
+        root / "src/KingmakerGunslinger/Scatter/ScatterAttackVolleyService.cs",
+        "return Evaluate(definition, plan, rolls, definition.MisfireValue);",
+        "if (roll.IsMisfire(misfireThreshold)) misfires++;")
+    baseline.require_tokens(
+        root / "src/KingmakerGunslinger/Misfires/EffectiveFirearmMisfireValuePolicy.cs",
+        "Math.Max(FavoredClassFloor, unclamped - favoredClassReduction)",
+        "if (unclamped <= MinimumEffectiveValue)")
     baseline.require_tokens(
         root / "docs/FAVORED-CLASS-COMPATIBILITY.md",
         HOST_SHA256, HOST_MVID, COTW_SHA256, COTW_MVID,

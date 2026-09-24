@@ -15671,6 +15671,166 @@
       "status": "active",
       "milestone": "Favored Class integration",
       "notes": "Favored class completing investment: +1 maximum grit per rank (G04/G07/G10/G14 grit counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Misfire.Pistol.Partial",
+      "guid": "115ab4b2b0174a708cb93adac7826079",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward -1 misfire value with pistols (G01/G18 pistol counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Misfire.Pistol.Full",
+      "guid": "6d125884d3f94f83a59ba57112a31ec6",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: -1 misfire value with pistols per rank, never below 1 (G01/G18 pistol counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Misfire.Musket.Partial",
+      "guid": "103ecf217c6b4e93865a846a2c584f03",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward -1 misfire value with muskets (G01/G18 musket counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Misfire.Musket.Full",
+      "guid": "a603feebd92b45c683be87fe17b084c2",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: -1 misfire value with muskets per rank, never below 1 (G01/G18 musket counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Misfire.Blunderbuss.Partial",
+      "guid": "7627279fc5ae4239b6ccaa51d3f55032",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward -1 misfire value with blunderbusses (G01/G18 blunderbuss counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Misfire.Blunderbuss.Full",
+      "guid": "8bf4dee4bb164d93bf22a3bbff946dd7",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: -1 misfire value with blunderbusses per rank, never below 1 (G01/G18 blunderbuss counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.FirearmConfirmation.Partial",
+      "guid": "b07889d80b5f48b285e364885a512815",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 firearm critical confirmation (G02/G08/G16 firearm confirmation counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.FirearmConfirmation.Full",
+      "guid": "9d8e1f609b2b47d2b9c80a3525022e69",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 on firearm critical confirmation rolls per rank (max 5), nonstacking with Critical Focus (G02/G08/G16 firearm confirmation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.PistolWhip.Partial",
+      "guid": "e24c74437b88443298f1861c1eb2043e",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 Pistol-Whip attack (G05/G20 Pistol-Whip counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.PistolWhip.Full",
+      "guid": "84639afbb1d14aba83dcf6630eb626c0",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 on the Pistol-Whip deed attack roll per rank (G05/G20 Pistol-Whip counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.HalflingNimble.Partial",
+      "guid": "40269699043e4fe3a512e5ee28dd93bd",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 Nimble dodge AC (G06 Halfling Nimble counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.HalflingNimble.Full",
+      "guid": "29a320ea1af0499d9185fe8321d60cae",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 Nimble dodge AC per rank (max 2) under Nimble's own conditions (G06 Halfling Nimble counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.HalflingDodge.Partial",
+      "guid": "b62476699d734b10bb1c124b549f634f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 Gunslinger's Dodge AC (G06 Halfling Gunslinger's Dodge counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.HalflingDodge.Full",
+      "guid": "5400219fafad4780b440dee91788eb68",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 to the Gunslinger's Dodge bonus per rank while the deed applies (G06 Halfling Gunslinger's Dodge counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.DrowNimble.Partial",
+      "guid": "49359d21155e4741b6a1f438bf0db7ed",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 Nimble dodge AC (G17 Jon Brazer Enterprises Drow Nimble counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.DrowNimble.Full",
+      "guid": "efb83ae0fde04abb96dd1e7cce0211e7",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 Nimble dodge AC per rank (max 2) under Nimble's own conditions (G17 Jon Brazer Enterprises Drow Nimble counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Initiative.Partial",
+      "guid": "385a62ab48214b32accaa2f5e7c86d66",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 Gunslinger Initiative bonus (G11/I04 Gunslinger Initiative counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Initiative.Full",
+      "guid": "403489a552e5470bb720a8148c2b09ed",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 to the Gunslinger Initiative bonus per rank while the deed applies (G11/I04 Gunslinger Initiative counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Partial",
+      "guid": "422ad9a4bd294b84b2f6230856ecdd10",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 dirty trick and trip CMB (G21 Jon Brazer Enterprises dirty trick and trip counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Full",
+      "guid": "ece977845f1c4b40a6df5183b6caa7e4",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 CMB for dirty trick and trip per rank (G21 Jon Brazer Enterprises dirty trick and trip counter)."
     }
   ]
 }
