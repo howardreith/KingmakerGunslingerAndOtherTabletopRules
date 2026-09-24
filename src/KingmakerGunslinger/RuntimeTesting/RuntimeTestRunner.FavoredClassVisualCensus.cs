@@ -121,7 +121,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["unrendered"] = new JArray(unrendered.Select(leaf => leaf.name)),
             };
             _fcbCensusAssertions.Add(Assertion("fcb-census-reward-selectors",
-                "every favored-class level of every published class and ancestry opens its reward selector in the actual level-up screen; every rendered row shows its own exact icon (never the acronym placeholder), no selector is empty, and every leaf the native backend offers is rendered",
+                "every favored-class level of every published class and ancestry opens its reward selector in the actual level-up screen; every rendered KMG row shows its own exact icon (never the acronym placeholder; the host's own rows are recorded), no selector is empty, and every leaf the native backend offers is rendered",
                 Describe(new JObject { ["levelUps"] = records.Count, ["visits"] = visits.Count }, failures),
                 failures.Count == 0 && visits.Count > 0, "CharBPhaseFeatures, CharBFeatureSelector and CharBuildSelectorItem rows"));
             _fcbCensusAssertions.Add(Assertion("fcb-census-coverage",
