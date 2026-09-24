@@ -149,6 +149,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "KMG.FavoredClass.Paladin.AuraAllyBonus.Full", "e45ab30f49215054e83b4ea12165409f" },
             new[] { "KMG.FavoredClass.Ranger.CompanionNaturalArmor.Partial", "ee63330662126374e8785cc901941ac7" },
             new[] { "KMG.FavoredClass.Ranger.CompanionNaturalArmor.Full", "ee63330662126374e8785cc901941ac7" },
+            new[] { "KMG.FavoredClass.Summoner.EidolonNaturalArmor.Partial", "5b77d7cc65b8ab74688e74a37fc2f553" },
+            new[] { "KMG.FavoredClass.Summoner.EidolonNaturalArmor.Full", "5b77d7cc65b8ab74688e74a37fc2f553" },
             new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Partial", "1b4989258e5964149a909e47c72b7f67" },
             new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Full", "1b4989258e5964149a909e47c72b7f67" },
             new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireBlast.Partial", "b2d1d39cd406e0f4185c52fecc73c3b5" },
@@ -344,7 +346,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "donorIcon", DescribeIcon(expected) }
                 });
             }
-            bool reuseExact = reuse.Count == 58 && reuse.Count == NativeReuse.Length && reuse.All(row => (bool)row["sameSpriteReference"]);
+            bool reuseExact = reuse.Count == 60 && reuse.Count == NativeReuse.Length && reuse.All(row => (bool)row["sameSpriteReference"]);
             var exports = new JArray(OwnedIconAssignments.IconKeys.Concat(new[] { "rapid-reload" }).Distinct(StringComparer.Ordinal).Select(key => {
                 Sprite icon = ProjectAssetIcons.RequireIcon(key);
                 string path = Path.Combine(context.ModEntry.Path, "assets", "icons", key + ".png");
@@ -403,7 +405,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation["resourceFailures"].ToString(Formatting.None), evidencePath);
             }
             Add(assertions, "icon-native-semantic-reuse", reuseExact,
-                "58 native-equivalent feature/ability/delivery consumers retain exact donor sprites",
+                "60 native-equivalent feature/ability/delivery consumers retain exact donor sprites",
                 reuse.ToString(Formatting.None), evidencePath);
         }
 

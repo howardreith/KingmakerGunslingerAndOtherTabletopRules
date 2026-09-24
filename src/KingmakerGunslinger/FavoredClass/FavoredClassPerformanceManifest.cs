@@ -8,7 +8,8 @@ namespace KingmakerGunslinger.FavoredClass
     internal sealed class FavoredClassPerformanceTarget
     {
         internal FavoredClassPerformanceTarget(string key, string title, string featureGuid, bool provider,
-            int baseFeet, string[] toggleGuids, string[] areaGuids, string ringAssetId, string exclusion)
+            int baseFeet, string[] toggleGuids, string[] areaGuids, string ringAssetId, bool ringSpawns,
+            string exclusion)
         {
             Key = key;
             Title = title;
@@ -18,6 +19,7 @@ namespace KingmakerGunslinger.FavoredClass
             ToggleGuids = toggleGuids;
             AreaGuids = areaGuids;
             RingAssetId = ringAssetId;
+            RingSpawns = ringSpawns;
             Exclusion = exclusion;
         }
 
@@ -40,11 +42,15 @@ namespace KingmakerGunslinger.FavoredClass
         /// <summary>The persistent performance areas whose per-instance radius the counter widens.</summary>
         internal string[] AreaGuids { get; private set; }
 
-        /// <summary>
-        /// The area's ring effect prefab (<c>BlueprintAbilityAreaEffect.Fx</c>), authored at the base
-        /// radius; null when the provider's link resolves to no effect.
-        /// </summary>
+        /// <summary>The area's ring effect link (<c>BlueprintAbilityAreaEffect.Fx.AssetId</c>).</summary>
         internal string RingAssetId { get; private set; }
+
+        /// <summary>
+        /// Whether that link spawns a ring (authored at the native radius).
+        /// Call of the Wild links Scandal's effect to an area blueprint GUID,
+        /// which spawns nothing for any bard.
+        /// </summary>
+        internal bool RingSpawns { get; private set; }
 
         /// <summary>Why the registered counter is never published; null for a published target.</summary>
         internal string Exclusion { get; private set; }
@@ -134,8 +140,9 @@ namespace KingmakerGunslinger.FavoredClass
                 new[] { "5fa0caff7bbe47399af61d16fb9620ab" }, new[] { "0d961603708c4db3abf178e26d32fb1b" }, DirgeRing),
             // Call of the Wild links Scandal's effect to an area GUID, so no
             // ring exists for any bard; its text states the range.
-            T("Scandal", "Scandal", "88d2e41984ea4c68968197b44ec2f445", true, 50,
-                new[] { "a13ad8cc3fc545278b41d652aa3c1ca9" }, new[] { "164dba1be13048eab380b302e4f25b7e" }, null),
+            new FavoredClassPerformanceTarget("Scandal", "Scandal", "88d2e41984ea4c68968197b44ec2f445", true, 50,
+                new[] { "a13ad8cc3fc545278b41d652aa3c1ca9" }, new[] { "164dba1be13048eab380b302e4f25b7e" },
+                "5d4308fa344af0243b2dd3b1e500b2cc", false, null),
             T("DanceOfTheDead", "Dance of the Dead", "92d80172888643328f1638a4293fb3d8", true, 50,
                 new[] { "06c88e8ce5be4235bb61d0d1c2655655" }, new[] { "86e88e1394694fa6953e1bb82c76bc40" },
                 "baa268c6db5723b4fa43c1b65f99bf0f"),
@@ -214,14 +221,14 @@ namespace KingmakerGunslinger.FavoredClass
             int baseFeet, string[] toggles, string[] areas, string ring)
         {
             return new FavoredClassPerformanceTarget(key, title, feature, provider, baseFeet, toggles, areas, ring,
-                null);
+                true, null);
         }
 
         private static FavoredClassPerformanceTarget X(string key, string title, string feature, bool provider,
             int baseFeet, string[] toggles, string[] areas, string ring, string exclusion)
         {
             return new FavoredClassPerformanceTarget(key, title, feature, provider, baseFeet, toggles, areas, ring,
-                exclusion);
+                true, exclusion);
         }
 
         private static FavoredClassPerformanceNonTarget N(string title, string feature, string reason)

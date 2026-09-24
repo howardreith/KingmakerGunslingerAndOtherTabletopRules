@@ -75,28 +75,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("No native level-up controller was created.");
             try
             {
-                CharGenRoot chargen = BlueprintRoot.Instance.CharGen;
-                if (controller.State.CanSelectRace && !controller.SelectRace(race))
-                    throw new InvalidOperationException("Native race selection rejected " + race.name);
-                if (controller.State.CanSelectGender)
-                    controller.SelectGender(unit.Gender);
-                if (controller.State.CanSelectName)
-                    controller.SelectName(name);
-                if (controller.State.CanSelectPortrait)
-                    controller.SelectPortrait(chargen.Portraits.First(value => value != null));
-                if (controller.State.CanSelectVoice)
-                    controller.SelectVoice((unit.Gender == Gender.Male ? chargen.MaleVoices :
-                        chargen.FemaleVoices).First(value => value != null));
-                if (archetype != null && unit.Progression.GetClassLevel(characterClass) == 0 &&
-                    !controller.AddArchetype(characterClass, archetype))
-                    throw new InvalidOperationException("Native archetype selection rejected " +
-                        archetype.name);
-                if (!controller.SelectClass(characterClass, false))
-                    throw new InvalidOperationException("Native class selection rejected " +
-                        characterClass.name);
-                controller.ApplyClassMechanics();
-                controller.ApplySpellbook();
-                controller.ApplySkillPoints();
+                Configure(controller, unit, race, characterClass, name, archetype);
                 return controller;
             }
             catch
@@ -104,6 +83,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try { controller.Cancel(); } catch (Exception) { }
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Settles one native visit of an existing controller (an ordinary
+        /// level-up or the native respec's): race and identity choices while
+        /// they are open, then the class and its mechanics.
+        /// </summary>
+        internal static void Configure(LevelUpController controller, UnitDescriptor unit, BlueprintRace race,
+            BlueprintCharacterClass characterClass, string name, BlueprintArchetype archetype)
+        {
+            CharGenRoot chargen = BlueprintRoot.Instance.CharGen;
+            if (controller.State.CanSelectRace && !controller.SelectRace(race))
+                throw new InvalidOperationException("Native race selection rejected " + race.name);
+            if (controller.State.CanSelectGender)
+                controller.SelectGender(unit.Gender);
+            if (controller.State.CanSelectName)
+                controller.SelectName(name);
+            if (controller.State.CanSelectPortrait)
+                controller.SelectPortrait(chargen.Portraits.First(value => value != null));
+            if (controller.State.CanSelectVoice)
+                controller.SelectVoice((unit.Gender == Gender.Male ? chargen.MaleVoices :
+                    chargen.FemaleVoices).First(value => value != null));
+            if (archetype != null && unit.Progression.GetClassLevel(characterClass) == 0 &&
+                !controller.AddArchetype(characterClass, archetype))
+                throw new InvalidOperationException("Native archetype selection rejected " +
+                    archetype.name);
+            if (!controller.SelectClass(characterClass, false))
+                throw new InvalidOperationException("Native class selection rejected " +
+                    characterClass.name);
+            controller.ApplyClassMechanics();
+            controller.ApplySpellbook();
+            controller.ApplySkillPoints();
         }
 
         internal static void Close(LevelUpController controller)
