@@ -210,7 +210,8 @@ namespace KingmakerGunslinger.DomainTests
             string hook = Source("Hooks", "FavoredClassRevelationRankPatch.cs");
             Assertions.True(hook.Contains("[HarmonyPatch(typeof(ContextRankConfig), \"GetBaseValue\")]") &&
                 hook.Contains("[HarmonyAfter(\"CallOfTheWild\")]") && hook.Contains("[HarmonyPriority(Priority.Last)]") &&
-                hook.Contains("FavoredClassRevelationScopes.RankBonus(__instance, context)"),
+                hook.Contains("FavoredClassRevelationScopes.RankBonus(__instance, context)") &&
+                hook.Contains("catch (Exception)"),
                 "The rank hook adds to the base value after Call of the Wild's postfix.");
             string coordinator = Source("FavoredClassIntegrationCoordinator.cs");
             Assertions.True(coordinator.Contains("FavoredClassRevelationScopes.Build(BlueprintBootstrap.Library, set)") &&

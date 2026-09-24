@@ -1,3 +1,4 @@
+using System;
 using Harmony12;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Components;
@@ -21,7 +22,17 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
         [HarmonyPriority(Priority.Last)]
         private static void Postfix(ContextRankConfig __instance, MechanicsContext context, ref int __result)
         {
-            int bonus = FavoredClassRevelationScopes.RankBonus(__instance, context);
+            int bonus;
+            try
+            {
+                bonus = FavoredClassRevelationScopes.RankBonus(__instance, context);
+            }
+            catch (Exception)
+            {
+                // Fail safe: an unexpected state adds nothing and never breaks
+                // the native rank evaluation.
+                return;
+            }
             if (bonus > 0)
                 __result += bonus;
         }
