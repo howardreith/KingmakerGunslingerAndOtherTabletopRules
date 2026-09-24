@@ -40,6 +40,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FcbPersuasionUseAbilityGuid = "7d2233c3b7a0b984ba058a83b736e6ac";
         private const string FcbMagicMissileGuid = "4ac47ddb9fa1eaf43a1b6809980cfbd2";
         private const string FcbLongswordGuid = "6fd0a849531617844b195f452661b2cd";
+        private const string FcbClawGuid = "118fdd03e569a66459ab01a20af6811a";
 
         /// <summary>Records every Intimidate skill check's final bonus.</summary>
         private sealed class FavoredClassSkillCheckObserver : IGlobalRulebookHandler<RuleSkillCheck>
@@ -373,10 +374,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             var fireball = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, FcbFireballGuid, "Fireball");
             Func<UnitEntityData, BlueprintScriptableObject, int> damage = (caster, blueprint) =>
             {
+                // Native ContextActionDealDamage runs inside its context's data
+                // scope; the rulebook takes the damage rule's reason (and so
+                // the associated blueprint) from that scope, because
+                // MechanicsContext.TriggerRule itself assigns no reason.
                 var context = new MechanicsContext(caster, caster.Descriptor, blueprint);
-                var deal = context.TriggerRule(new RuleDealDamage(caster, target, new DamageBundle(
-                    new EnergyDamage(DiceFormula.Zero, DamageEnergyType.Fire))));
-                return deal.Damage;
+                using (context.GetDataScope(new TargetWrapper(target)))
+                {
+                    var deal = context.TriggerRule(new RuleDealDamage(caster, target, new DamageBundle(
+                        new EnergyDamage(DiceFormula.Zero, DamageEnergyType.Fire))));
+                    return deal.Damage;
+                }
             };
             row["bombControl"] = damage(control, bomb);
             row["bombRank3"] = damage(bomber, bomb);
@@ -470,6 +478,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["unarmedRank5"] = confirm(monk, monk.Body.EmptyHandWeapon);
             var sword = new ItemEntityWeapon(longsword);
             row["longswordRank5"] = confirm(monk, sword);
+            var clawBlueprint = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(library, FcbClawGuid, "Claw1d4");
+            row["nativeUnarmedFlags"] = "category=" + monk.Body.EmptyHandWeapon.Blueprint.Category +
+                ",unarmed=" + monk.Body.EmptyHandWeapon.Blueprint.IsUnarmed +
+                ",natural=" + monk.Body.EmptyHandWeapon.Blueprint.IsNatural;
+            row["clawFlags"] = "category=" + clawBlueprint.Category + ",unarmed=" + clawBlueprint.IsUnarmed +
+                ",natural=" + clawBlueprint.IsNatural;
+            row["clawRank5"] = confirm(monk, new ItemEntityWeapon(clawBlueprint));
+            if (!clawBlueprint.IsNatural || clawBlueprint.IsUnarmed)
+                failures.Add("the natural-attack fixture is not a natural, non-unarmed weapon");
             monk.Descriptor.AddFact(criticalFocus);
             monkControl.Descriptor.AddFact(criticalFocus);
             row["unarmedFocusControl"] = confirm(monkControl, monkControl.Body.EmptyHandWeapon);
@@ -478,6 +495,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failures.Add("five unarmed steps did not add +5 confirmation");
             if ((int)row["longswordRank5"] != (int)row["unarmedControl"])
                 failures.Add("a longsword received the unarmed confirmation bonus");
+            if ((int)row["clawRank5"] != (int)row["unarmedControl"])
+                failures.Add("a natural claw received the unarmed confirmation bonus");
             int focus = (int)row["unarmedFocusControl"] - (int)row["unarmedControl"];
             if (focus <= 0 || (int)row["unarmedFocusRank5"] - (int)row["unarmedControl"] != Math.Max(5, focus))
                 failures.Add("with Critical Focus the unarmed total is not the better of the two");
