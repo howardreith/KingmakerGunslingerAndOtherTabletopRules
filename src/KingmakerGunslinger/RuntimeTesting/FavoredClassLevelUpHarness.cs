@@ -167,8 +167,52 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (controller.State.CanSelectRaceStat)
                 controller.SelectRaceStat(StatType.Strength);
-            if (controller.State.CanSelectAlignment)
-                controller.SelectAlignment(Alignment.TrueNeutral);
+            var resolved = new JArray();
+            // Feature choices such as a deity add alignment restrictions and
+            // may grant points, and the controller replays every action on each
+            // change, so an alignment chosen first can be dropped later. Settle
+            // alignment, points and features together until they are stable.
+            for (int pass = 0; pass < 3; pass++)
+            {
+                SettleAlignment(controller, resolved);
+                SpendPoints(controller);
+                FillFeatureSelections(controller, reserved, resolved);
+                if (!controller.State.CanSelectAlignment &&
+                    controller.State.StatsDistribution.IsComplete() &&
+                    controller.State.SkillPointsRemaining == 0 &&
+                    controller.State.AttributePoints == 0 &&
+                    !OpenUnreserved(controller, reserved))
+                    break;
+            }
+            return new JObject
+            {
+                ["skillPointsRemaining"] = controller.State.SkillPointsRemaining,
+                ["attributePoints"] = controller.State.AttributePoints,
+                ["resolved"] = resolved
+            };
+        }
+
+        private static readonly Alignment[] AlignmentOrder =
+        {
+            Alignment.TrueNeutral, Alignment.NeutralGood, Alignment.LawfulNeutral,
+            Alignment.ChaoticNeutral, Alignment.NeutralEvil, Alignment.LawfulGood,
+            Alignment.ChaoticGood, Alignment.LawfulEvil, Alignment.ChaoticEvil
+        };
+
+        private static void SettleAlignment(LevelUpController controller, JArray resolved)
+        {
+            foreach (Alignment alignment in AlignmentOrder)
+            {
+                if (!controller.State.CanSelectAlignment)
+                    return;
+                if (!controller.State.IsAlignmentRestricted(alignment) &&
+                    controller.SelectAlignment(alignment))
+                    resolved.Add("Alignment=" + alignment);
+            }
+        }
+
+        private static void SpendPoints(LevelUpController controller)
+        {
             int guard = 0;
             while (!controller.State.StatsDistribution.IsComplete() && guard++ < 200)
                 if (!StatTypeHelper.Attributes.Any(attribute => controller.AddStatPoint(attribute)))
@@ -187,8 +231,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!StatTypeHelper.Attributes.Any(attribute => controller.State.AttributePoints > 0 &&
                     controller.SpendAttributePoint(attribute)))
                     break;
-            var resolved = new JArray();
-            guard = 0;
+        }
+
+        private static void FillFeatureSelections(LevelUpController controller,
+            ICollection<string> reserved, JArray resolved)
+        {
+            int guard = 0;
             while (guard++ < 60)
             {
                 LevelUpState state = controller.State;
@@ -207,11 +255,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     break;
                 resolved.Add(Name(pending.Selection) + "=" + choice.Feature.name);
             }
+        }
+
+        private static bool OpenUnreserved(LevelUpController controller, ICollection<string> reserved)
+        {
+            LevelUpState state = controller.State;
+            UnitDescriptor preview = controller.Preview;
+            return state.Selections.Any(value => !value.Selected && value.Selection != null &&
+                !IsReserved(value, reserved) && value.CanSelectAnything(state, preview));
+        }
+
+        /// <summary>Every term of LevelUpState.IsComplete, for an incomplete visit.</summary>
+        internal static JObject Completion(LevelUpController controller)
+        {
+            LevelUpState state = controller.State;
+            UnitDescriptor preview = controller.Preview;
             return new JObject
             {
-                ["skillPointsRemaining"] = controller.State.SkillPointsRemaining,
-                ["attributePoints"] = controller.State.AttributePoints,
-                ["resolved"] = resolved
+                ["statsDistributionComplete"] = state.StatsDistribution.IsComplete(),
+                ["canSelectAlignment"] = state.CanSelectAlignment,
+                ["canSelectRace"] = state.CanSelectRace,
+                ["canSelectRaceStat"] = state.CanSelectRaceStat,
+                ["canSelectName"] = state.CanSelectName,
+                ["canSelectPortrait"] = state.CanSelectPortrait,
+                ["canSelectGender"] = state.CanSelectGender,
+                ["canSelectVoice"] = state.CanSelectVoice,
+                ["attributePoints"] = state.AttributePoints,
+                ["selectedClass"] = state.SelectedClass == null ? "<none>" : state.SelectedClass.name,
+                ["skillPointsComplete"] = state.IsSkillPointsComplete(),
+                ["openSelections"] = Blockers(controller),
+                ["openSpellSelections"] = state.SpellSelections.Count(data =>
+                    data.CanSelectAnything(preview))
             };
         }
 
@@ -237,6 +311,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!complete)
             {
                 evidence["blockers"] = Blockers(controller);
+                evidence["completion"] = Completion(controller);
                 return false;
             }
             ApplyLevelupMethod.Invoke(controller, new object[] { unit });

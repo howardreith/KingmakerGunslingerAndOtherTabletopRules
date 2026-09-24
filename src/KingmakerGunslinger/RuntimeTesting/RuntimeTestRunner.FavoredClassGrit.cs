@@ -64,6 +64,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var raceFailures = new List<string>();
             JObject fighterControl = null;
             var fighterFailures = new List<string>();
+            int refillChecks = 0;
+            bool progressionComplete = false;
+            bool closedAfterTwenty = false;
             UnitEntityData test = null;
             UnitEntityData control = null;
             bool cleaned = false;
@@ -115,6 +118,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         levelFailures.Add(Fmt("level {0}: control holds grit investment", level));
                     if (spentBefore >= 0)
                     {
+                        refillChecks++;
                         int after = test.Descriptor.Resources.GetResourceAmount(gritResource);
                         row["currentGritAfterLevelUp"] = after;
                         row["gritMaxBeforeLevelUp"] = testMaxBefore;
@@ -131,8 +135,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence["hitPointDeltaControlMinusTest"] = hpDelta;
                 if (hpDelta != 20)
                     levelFailures.Add("host hit-point reward delta=" + hpDelta + " expected 20");
-                bool closedFull = grit.Full.MeetsPrerequisites(null, test.Descriptor, null);
-                evidence["closedAfterTwenty"] = !closedFull;
+                // The closure and refill claims are meaningful only after the
+                // real progression reached level twenty with 5 full and 15
+                // partial investments; otherwise they are not observed.
+                progressionComplete = levels.Count == 20 &&
+                    test.Descriptor.Progression.GetClassLevel(gunslinger) == 20 &&
+                    FavoredClassLevelUpHarness.Rank(test.Descriptor, grit.Full) == 5 &&
+                    FavoredClassLevelUpHarness.Rank(test.Descriptor, grit.Partial) == 15;
+                bool openFull = grit.Full.MeetsPrerequisites(null, test.Descriptor, null);
+                bool openPartial = grit.Partial.MeetsPrerequisites(null, test.Descriptor, null);
+                closedAfterTwenty = progressionComplete && !openFull && !openPartial;
+                evidence["progressionComplete"] = progressionComplete;
+                evidence["fullOpenAfterTwenty"] = openFull;
+                evidence["partialOpenAfterTwenty"] = openPartial;
+                evidence["closedAfterTwenty"] = closedAfterTwenty;
 
                 foreach (FavoredClassRaceIdentity identity in FavoredClassRaceIdentities.All)
                     raceMatrix.Add(RunGritRaceRow(identity, gunslinger, grit, gunslingerSelection,
@@ -165,7 +181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "LevelUpController.SelectFeature + LevelUpState.IsComplete gate + ApplyLevelup; BlueprintAbilityResource.GetMaxAmount"));
             assertions.Add(Assertion("fcb-grit-no-refill",
                 "each completing pick raises maximum grit by one without refilling grit spent before the level-up",
-                Describe(levels, refillFailures), refillFailures.Count == 0,
+                "checks=" + refillChecks + ";" + Describe(levels, refillFailures),
+                refillChecks == 5 && refillFailures.Count == 0,
                 "UnitAbilityResourceCollection.GetResourceAmount before and after ApplyLevelup"));
             assertions.Add(Assertion("fcb-grit-cancel-no-leak",
                 "a completing pick selected in a cancelled visit leaves the real character's ranks and grit unchanged",
@@ -173,7 +190,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "LevelUpController.Cancel after SelectFeature"));
             assertions.Add(Assertion("fcb-grit-closed-at-twenty",
                 "after twenty investments no grit leaf is selectable",
-                "closed=" + evidence["closedAfterTwenty"], (bool?)evidence["closedAfterTwenty"] == true,
+                "progressionComplete=" + progressionComplete + ";closed=" + closedAfterTwenty,
+                closedAfterTwenty,
                 "native BlueprintFeature.MeetsPrerequisites on the committed unit"));
             assertions.Add(Assertion("fcb-grit-race-matrix",
                 "for every present source-addressable race the Gunslinger menu offers grit exactly to Human, Half-elf, Half-orc, Aasimar, Tiefling, Hobgoblin and Fetchling; absent optional races are reported as provider absence",
