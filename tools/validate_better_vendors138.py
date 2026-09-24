@@ -16,12 +16,13 @@ sys.dont_write_bytecode = True
 import validate_rapid_reload_combat_feat137 as baseline
 import validate_icon_overhaul132
 import validate_magic_circle
+import validate_expanded_summoning_phase1
 
 VERSION = "0.0.138"
 INFORMATIONAL_VERSION = "0.0.138-better-vendors-progression"
 PACKAGE = "KingmakerGunslinger-0.0.138-local-runtime.zip"
 PACKAGE_SUFFIX = "better-vendors-progression"
-DETERMINISTIC_TEST_COUNT = 1774
+DETERMINISTIC_TEST_COUNT = 1779
 STATIC_KEY = "betterVendorsProgression138"
 PRESERVED_MANIFEST_ENTRIES = 1913
 CATALOG = "docs/better-vendors-progression-catalog.json"
@@ -92,10 +93,14 @@ def forbid_tokens(path: Path, *tokens: str) -> None:
 def validate(root: Path) -> None:
     if len(APPENDED) != 43 or len({guid for _, guid in APPENDED}) != 43:
         raise AssertionError("The appended progression identity list is malformed")
-    # The Magic Circle block stays exact; only these identities may follow it.
-    validate_magic_circle.AUTHORIZED_APPENDED = APPENDED
-    validate_icon_overhaul132.MANIFEST_TOTAL = PRESERVED_MANIFEST_ENTRIES + len(APPENDED)
-    validate_icon_overhaul132.MANIFEST_ACTIVE = 1911 + len(APPENDED)
+    # The Magic Circle block stays exact; only these identities, and then the
+    # Expanded Summoning Phase 1 append that validate_expanded_summoning_phase1
+    # pins, may follow it.
+    phase1 = tuple((symbol, guid) for symbol, guid, _ in
+                   validate_expanded_summoning_phase1.APPENDED)
+    validate_magic_circle.AUTHORIZED_APPENDED = APPENDED + phase1
+    validate_icon_overhaul132.MANIFEST_TOTAL = PRESERVED_MANIFEST_ENTRIES + len(APPENDED) + len(phase1)
+    validate_icon_overhaul132.MANIFEST_ACTIVE = 1911 + len(APPENDED) + len(phase1)
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     baseline.PACKAGE = PACKAGE
@@ -105,9 +110,10 @@ def validate(root: Path) -> None:
 
     entries = json.loads((root / "blueprints/blueprints.json").read_text(
         encoding="utf-8"))["entries"]
-    tail = entries[PRESERVED_MANIFEST_ENTRIES:]
+    tail = entries[PRESERVED_MANIFEST_ENTRIES:PRESERVED_MANIFEST_ENTRIES + len(APPENDED)]
     if [(entry["symbol"], entry["guid"]) for entry in tail] != list(APPENDED):
         raise AssertionError("Better Vendors progression identities drifted")
+    validate_expanded_summoning_phase1.validate(root)
     if any(entry["plannedType"] != "BlueprintItemWeapon" or
            entry["status"] != "active" or
            entry["milestone"] != "Better Vendors progression" for entry in tail):

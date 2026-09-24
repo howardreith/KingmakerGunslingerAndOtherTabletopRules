@@ -92,15 +92,24 @@ def validate(root: Path, test_count: int = 865) -> None:
         if entry.get("milestone") == "Better Vendors progression"
         and entry.get("symbol", "").startswith("KMG.Firearms.")
         and entry.get("status") == "active")
+    # Expanded Summoning Phase 1 (charter Sprints 3-8) appends creature
+    # identities beyond the 1181 entries the frozen prefix carries under the
+    # "Expanded Summoning" milestone (the three alignment-mode identities are
+    # tagged as its first-playtest repair) without a release;
+    # validate_expanded_summoning_phase1.py pins the exact append.
+    expanded_summoning_phase1_count = sum(1 for entry in manifest["entries"]
+        if entry.get("milestone") == "Expanded Summoning") - 1181
+    if expanded_summoning_phase1_count < 0:
+        raise AssertionError("Expanded Summoning foundation identities are missing")
     active_count, ledger_count = ((1438 + midgame_count + elven_branched_spear_count +
         eastern_weapons_count + focused_weapon_count + brown_fur_active_count +
         martial_performance_active_count + urban_barbarian_active_count +
         bodyguard_active_count + elemental_races_active_count + teleportation_count + magic_circle_active_count +
-        progression_firearm_count,
+        progression_firearm_count + expanded_summoning_phase1_count,
         1439 + midgame_count + elven_branched_spear_count + eastern_weapons_count +
         focused_weapon_count + martial_performance_count + brown_fur_count +
         urban_barbarian_count + bodyguard_count + elemental_races_count + teleportation_count + magic_circle_count +
-        progression_firearm_count)
+        progression_firearm_count + expanded_summoning_phase1_count)
         if has_expanded_summoning_reservations else
         ((254, 255) if has_shield_other else
         ((252, 253) if current_version == "0.0.76" else (250, 251))))

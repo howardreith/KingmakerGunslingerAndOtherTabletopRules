@@ -155,6 +155,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             "working-save-expanded-summoning-verify-cleanup";
         internal const string WorkingSaveExpandedSummoningVerifyAbsent =
             "working-save-expanded-summoning-verify-absent";
+        /// <summary>
+        /// Phase 1 internal review: casts the creatures named by the request
+        /// one at a time into the working save and renders each from the
+        /// party camera idle, moving and attacking. Reads the save only.
+        /// </summary>
+        internal const string WorkingSaveExpandedSummoningCreatureReview =
+            "working-save-expanded-summoning-creature-review";
         internal const string DisposableShieldOther = "disposable-shield-other";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";
@@ -614,6 +621,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,
                 WorkingSaveExpandedSummoningVerifyAbsent,
+                WorkingSaveExpandedSummoningCreatureReview,
                 DisposableShieldOther,
                 ObserveOptionalModCompatibility,
                 ObserveCraftMagicItemsCompatibility,
