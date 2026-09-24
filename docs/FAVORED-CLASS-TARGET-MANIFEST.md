@@ -120,36 +120,79 @@ scaling); Elemental Resistance's 9th-level step and Blast's extra uses
 (thresholds, owner decision); Primal Elemental bloodlines (owner decision);
 efreeti and djinni bloodlines (absent from the game).
 
-## O01 — selected bardic performance range (+5 feet per investment, max +30 feet)
+## O01 - selected bardic performance range (+5 feet per investment, max +30 feet)
 
-Offered to Oread Bards for a performance they already have. One full-only
-counter per performance (6 ranks). Only the casting bard's own instance of the
-performance's cylinder widens (on spawn and when a save loads); the shared
-blueprint, other performers of the same area, other performances and the visual
-ring are unchanged.
+Offered to Oread Bards for a performance they already have: one full-only
+counter per performance (6 ranks, +30 feet). The manifest is classified by
+mechanics (`FavoredClassPerformanceManifest`): a published target is a
+maintained performance whose effect is a persistent cylinder area around the
+bard. 14 targets are published, 2 registered counters are never published and
+14 bardic entries are not targets.
 
-| Key | Performance | Feature | Areas | Provider |
+Exact read points, all owner-local (only the bard who casts that instance):
+
+- **Actual range:** an `AreaEffectView.InitAtRuntime` postfix
+  (`FavoredClassPerformanceRangePatch`) sets that one view's
+  `ScriptZoneCylinder.Radius` from the native `BlueprintAbilityAreaEffect.Size`
+  plus 5 feet per earned step, on spawn and again when a save recreates the view
+  (`AreaEffectEntityData.CreateViewForData`). Membership is the native
+  `Shape.Contains` test on that cylinder. The shared blueprint `Size` is never
+  written, and other performers of the same area keep the native radius.
+- **Visible boundary:** the same postfix scales that instance's spawned ring
+  (`AreaEffectView.m_SpawnedFx`) horizontally by owner radius / native radius
+  (`FavoredClassPerformanceRing`). A ring that the native attach spawns later
+  (an `AreaEffectView.SpawnFxs` postfix: a save load whose owner view was not
+  ready) receives the same scale once. A `GameObjectsPool.Release` prefix
+  restores the exact previous scales before the pooled effect is reused.
+- **Displayed range:** `Fact.SelectUIData` and
+  `MechanicActionBarSlotActivableAbility.GetDescription` postfixes
+  (`FavoredClassPerformanceTextPatch`) show the owner's range in that owner's
+  feature and toggle descriptions only (`FavoredClassPerformanceText`).
+- **Eligibility:** `PrerequisiteFavoredClassOwnsAny` on the performance feature.
+  Publication withholds the unpublished counters (`excluded-target:`).
+
+| Key | Performance | Feature | Toggles | Areas | Native radius | Ring (`Fx.AssetId`) | Provider |
+| --- | --- | --- | --- | --- | ---: | --- | --- |
+| InspireCourage | Inspire Courage | `acb4df34b25ca9043a6aba1a4c92bc69` | `5250fe10c377fdb49be449dfe050ba70` | `5d4308fa344af0243b2dd3b1e500b2cc` | 50 ft | `2f93a2909cb766f4d961aee34a3c84c2` | Kingmaker |
+| InspireCompetence | Inspire Competence | `6d3fcfab6d935754c918eb0e004b5ef7` | `430ab3bb57f2cfc46b7b3a68afd4f74e` | `c08bd33a377d5014a81be94e33ec8ce4` | 30 ft | `79665f3d500fdf44083feccf4cbfc00a` | Kingmaker |
+| Fascinate | Fascinate | `ddaec3a5845bc7d4191792529b687d65` | `993908ad3fb81f34ba0ed168b7c61f58` | `a4fc1c0798359974e99e1d790935501d` | 30 ft | `725b02acb7286094688c0d5da974dcdc` | Kingmaker |
+| DirgeOfDoom | Dirge of Doom | `1d48ab2bded57a74dad8af3da07d313a` | `d99d63f84e180d44e8f92b9a832c609d` | `4a15b95f8e173dc4fb56924fe5598dcf` | 30 ft | `20caf000cd4c3434da00a74f4a49dccc` | Kingmaker |
+| InspireGreatness | Inspire Greatness | `9ae0f32c72f8df84dab023d1b34641dc` | `be36959e44ac33641ba9e0204f3d227b` | `23ddd38738bd1d84595f3cdbb8512873` | 30 ft | `3a0228650295f6a40bc335385a929a07` | Kingmaker |
+| FrighteningTune | Frightening Tune | `cfd8940869a304f4aa9077415f93febe` | `ad8a93dfa2db7ac4e85133b5e4f14a5f` | `55c526a79761a3c48a3cc974a09bfef7` | 30 ft | `20caf000cd4c3434da00a74f4a49dccc` | Kingmaker |
+| InspireHeroics | Inspire Heroics | `199d6fa0de149d044a8ab622a542cc79` | `a4ce06371f09f504fa86fcf6d0e021e4` | `1be964f750eea8748a76e92744746efb` | 30 ft | `79665f3d500fdf44083feccf4cbfc00a` | Kingmaker |
+| InciteRage | Incite Rage | `35ac4bd7990fa0842bfc22e80665c2f9` | `dbd7c54ba43e1d54592e037d63117f7b`, `b1d8fdffd132bfd428a8045b7b8b363c`, `32d247b6e6b65794ab47fc372c444a96` | `8426523287601104085d71d410a6fc42`, `9c423eacfb7bb9f408757e651607e125`, `d63dce0f272ba2d4aa13000470398d63` | 30 ft | `20caf000cd4c3434da00a74f4a49dccc` | Kingmaker |
+| FireDance | Fire Dance | `3c10a0069e7f110499d2e810f4861a6e` | `1b28d456a5b1b4744a1d87cf24309ad1` | `0bd2c3ff0012e6b468497461448174c7` | 30 ft | `79665f3d500fdf44083feccf4cbfc00a` | Kingmaker |
+| SongOfFieryGaze | Song of Fiery Gaze | `edf5697b6ddc42fca14d20a03affd475` | `6f528fdd236b464795546db489d10f3b` | `b556833f0a0a45738863a02c78323fed` | 30 ft | `79665f3d500fdf44083feccf4cbfc00a` | Call of the Wild |
+| Satire | Satire | `867e67a274d94c44bf6859b810745b1d` | `c23fed3a6e4b4caa82199a847d1b3fa5` | `b1125eb8eae649bdb441f22e3c088535` | 50 ft | `2f93a2909cb766f4d961aee34a3c84c2` | Call of the Wild |
+| GloriousEpic | Glorious Epic | `d78e50c8ec9c436c82d3be6a028b4572` | `5fa0caff7bbe47399af61d16fb9620ab` | `0d961603708c4db3abf178e26d32fb1b` | 30 ft | `20caf000cd4c3434da00a74f4a49dccc` | Call of the Wild |
+| Scandal | Scandal | `88d2e41984ea4c68968197b44ec2f445` | `a13ad8cc3fc545278b41d652aa3c1ca9` | `164dba1be13048eab380b302e4f25b7e` | 50 ft | `5d4308fa344af0243b2dd3b1e500b2cc` (links an area GUID: no ring spawns for any bard) | Call of the Wild |
+| DanceOfTheDead | Dance of the Dead | `92d80172888643328f1638a4293fb3d8` | `06c88e8ce5be4235bb61d0d1c2655655` | `86e88e1394694fa6953e1bb82c76bc40` | 50 ft | `baa268c6db5723b4fa43c1b65f99bf0f` | Call of the Wild |
+
+Registered but never published (no truthful display exists):
+
+| Key | Performance | Feature | Areas | Reason |
 | --- | --- | --- | --- | --- |
-| InspireCourage | Inspire Courage | `acb4df34b25ca9043a6aba1a4c92bc69` | `5d4308fa344af0243b2dd3b1e500b2cc` | Kingmaker |
-| InspireCompetence | Inspire Competence | `6d3fcfab6d935754c918eb0e004b5ef7` | `c08bd33a377d5014a81be94e33ec8ce4` | Kingmaker |
-| Fascinate | Fascinate | `ddaec3a5845bc7d4191792529b687d65` | `a4fc1c0798359974e99e1d790935501d` | Kingmaker |
-| DirgeOfDoom | Dirge of Doom | `1d48ab2bded57a74dad8af3da07d313a` | `4a15b95f8e173dc4fb56924fe5598dcf` | Kingmaker |
-| InspireGreatness | Inspire Greatness | `9ae0f32c72f8df84dab023d1b34641dc` | `23ddd38738bd1d84595f3cdbb8512873` | Kingmaker |
-| FrighteningTune | Frightening Tune | `cfd8940869a304f4aa9077415f93febe` | `55c526a79761a3c48a3cc974a09bfef7` | Kingmaker |
-| InspireHeroics | Inspire Heroics | `199d6fa0de149d044a8ab622a542cc79` | `1be964f750eea8748a76e92744746efb` | Kingmaker |
-| InciteRage | Incite Rage | `35ac4bd7990fa0842bfc22e80665c2f9` | `8426523287601104085d71d410a6fc42`, `9c423eacfb7bb9f408757e651607e125`, `d63dce0f272ba2d4aa13000470398d63` | Kingmaker |
-| StormCall | Storm Call | `161db4d6c4a1f4640ab52c762e15c1af` | `85c1ea0021ce2714f8559fb618bf7ff6` | Kingmaker |
-| FireDance | Fire Dance | `3c10a0069e7f110499d2e810f4861a6e` | `0bd2c3ff0012e6b468497461448174c7` | Kingmaker |
-| SongOfFieryGaze | Song of Fiery Gaze | `edf5697b6ddc42fca14d20a03affd475` | `b556833f0a0a45738863a02c78323fed` | Call of the Wild |
-| Satire | Satire | `867e67a274d94c44bf6859b810745b1d` | `b1125eb8eae649bdb441f22e3c088535` | Call of the Wild |
-| Mockery | Mockery | `71a3c675a44d4a8a89c9a0840cb1d92a` | `eeb9c36c16be45dda7604b6120d1ab88` | Call of the Wild |
-| GloriousEpic | Glorious Epic | `d78e50c8ec9c436c82d3be6a028b4572` | `0d961603708c4db3abf178e26d32fb1b` | Call of the Wild |
-| Scandal | Scandal | `88d2e41984ea4c68968197b44ec2f445` | `164dba1be13048eab380b302e4f25b7e` | Call of the Wild |
+| StormCall | Storm Call | `161db4d6c4a1f4640ab52c762e15c1af` | `85c1ea0021ce2714f8559fb618bf7ff6` | its native description promises bolts on enemies within 50 feet, but its native area is 30 feet; no owner range can be displayed truthfully without rewriting the native text |
+| Mockery | Mockery | `71a3c675a44d4a8a89c9a0840cb1d92a` | `eeb9c36c16be45dda7604b6120d1ab88` | its description is a single selected target with no range, while Call of the Wild implements a 30-foot area on every creature; widening that area would change a target-count rule, not a range |
 
-Not targets (owner decisions): Soothing Performance (burst), Deadly Performance
-(targeted), Thunder Call (which range), Dance of the Dead, Call of the Wild
-masterpieces and Discordant Voice. Range-free: Archaeologist's Luck, Dance of 23
-Steps, move/swift/lingering performance features.
+Not targets (classified by mechanics):
+
+| Entry | Feature | Classification |
+| --- | --- | --- |
+| Soothing Performance | `546698146e02d1e4ea00581a3ea7fe58` | instantaneous: a one-shot mass cure burst, not a maintained performance area |
+| Deadly Performance | `a6e13797b0a20d2458a086a8a511fd8c` | instantaneous: a one-shot single-target ability |
+| Thunder Call | `5ebb5d1f76b602d44818a21e9b6e31b8` | instantaneous: a one-shot burst ability |
+| Archaeologist's Luck | `03bf87dd753cd4f48a47eaf0ea6da9fe` | personal: a self buff with no range |
+| Blazing Rondo | `6e1f8dd4e17b41808e9f49e5a71dd9fc` | masterpiece: a Call of the Wild masterpiece feat shared with Skalds, not a Bard performance |
+| Banshee's Requiem | `22602cf4d9954ba2ae0223bcc27ff744` | masterpiece: a Call of the Wild masterpiece feat shared with Skalds, not a Bard performance |
+| Symphony of the Elysian Heart | `3dc71cb4cbaf467f8ba5c4dbab401603` | masterpiece: a Call of the Wild masterpiece feat shared with Skalds, not a Bard performance |
+| Clamor of the Heavens | `4f1a14d4d9314fd49a42ff2cef1b542b` | masterpiece: a Call of the Wild masterpiece feat shared with Skalds, not a Bard performance |
+| Triple Time | `b6e876fbe9a84eaaa80dc64c077dea49` | masterpiece and instantaneous |
+| Dance of 23 Steps | `a8059b931829424c902777b70cd6fa84` | masterpiece and personal |
+| Discordant Voice | `8064adc641c74e4cb821ce048ecd83a2` | inert: a feat that adds damage to other performances, not a performance |
+| Bardic Performance (Move Action) | `36931765983e96d4bb07ce7844cd897e` | inert: action economy only |
+| Bardic Performance (Swift Action) | `fd4ec50bc895a614194df6b9232004b9` | inert: action economy only |
+| Lingering Performance | `17239b298065efc459cffe2220ecb559` | inert: duration only |
 
 ## O06/O07/O08 — auras and pets (1/4, uncapped)
 
