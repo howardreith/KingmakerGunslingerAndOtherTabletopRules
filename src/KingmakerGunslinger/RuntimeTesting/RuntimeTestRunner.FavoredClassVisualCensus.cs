@@ -434,7 +434,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.gameObject.activeInHierarchy && ReferenceEquals(value.FeatureSelection, state) &&
                 value.Feature != null && value.Feature.Feature != null).ToArray();
             var ours = new HashSet<BlueprintFeature>(visit.Pairs.SelectMany(pair => pair.Leaves));
+            var allOurs = new HashSet<BlueprintFeature>(BlueprintBootstrap.FavoredClassLeaves.Pairs
+                .SelectMany(pair => pair.Leaves));
             var rowRecords = new JArray();
+            var hostPlaceholders = new JArray();
             foreach (CharBuildSelectorItem row in rows)
             {
                 var icon = typeof(CharBuildSelectorItem).GetField("m_ItemIcon", FcbCensusMembers).GetValue(row)
@@ -445,7 +448,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool exact = row.Feature.Icon != null && icon != null && icon.isActiveAndEnabled &&
                     ReferenceEquals(icon.sprite, row.Feature.Icon) &&
                     (acronym == null || !acronym.gameObject.activeSelf);
-                bool kmg = ours.Contains(feature);
+                bool kmg = allOurs.Contains(feature);
                 rowRecords.Add(new JObject
                 {
                     ["feature"] = feature.name,
@@ -454,9 +457,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["exactIcon"] = exact,
                     ["selectable"] = row.Toggle.interactable,
                 });
-                if (!exact)
+                // KMG rows must show their own icon; the host's own rewards
+                // keep the host's presentation and are recorded.
+                if (!exact && kmg)
                     problems.Add("row " + feature.name + " shows no exact icon");
-                if (kmg && exact)
+                else if (!exact)
+                    hostPlaceholders.Add(feature.name);
+                if (kmg && exact && ours.Contains(feature))
                     rendered.Add(feature);
             }
             var offered = new JArray();
@@ -475,6 +482,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FcbCensusMembers).GetValue(switchItem) as TextMeshProUGUI;
             record["rows"] = rowRecords;
             record["offered"] = offered;
+            record["hostRowsWithoutIcon"] = hostPlaceholders;
             record["selector"] = new JObject
             {
                 ["selection"] = visit.Reward.name,
