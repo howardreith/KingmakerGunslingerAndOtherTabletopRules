@@ -37,7 +37,7 @@ namespace KingmakerGunslinger.Summoning
             ExpandedSummoningDonorCatalog.All.Select(value => value.Guid)
                 .Distinct(StringComparer.Ordinal).OrderBy(value => value,
                     StringComparer.Ordinal).ToArray();
-        private static readonly string[] CanonicalParentGuids = {
+        internal static readonly string[] CanonicalParentGuids = {
             "8fd74eddd9b6c224693d9ab241f25e84", "1724061e89c667045a6891179ee2e8e7",
             "5d61dde0020bbf54ba1521f7ca0229dc", "7ed74a3ec8c458d4fb50b192fd7be6ef",
             "630c8b85d9f07a64f917d79cb5905741", "e740afbab0147944dab35d83faa0ae1c",

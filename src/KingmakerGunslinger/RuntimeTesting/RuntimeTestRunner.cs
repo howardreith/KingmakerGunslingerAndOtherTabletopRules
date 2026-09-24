@@ -205,6 +205,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Stopwatch _expandedSummoningPersistenceSaveElapsed;
         private int _expandedSummoningPersistenceUnitCount;
         private bool _expandedSummoningPersistenceIdentityValid;
+        private string _expandedSummoningPersistencePteranodonVisual = "<not observed>";
+        private bool _expandedSummoningPersistencePteranodonVisualValid;
         private bool _expandedSummoningPersistenceContextValid;
         private bool _expandedSummoningPersistenceDurationValid;
         private bool _expandedSummoningPersistenceControlValid;
@@ -3603,6 +3605,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out _expandedSummoningPersistenceDurationValid,
                     out _expandedSummoningPersistenceControlValid,
                     out _expandedSummoningPersistenceDetail);
+                // The Pteranodon's visual on the unit as this phase found it:
+                // freshly spawned in prepare, freshly deserialized and
+                // re-attached in verify-cleanup, absent in verify-absent.
+                UnitEntityData[] pteranodons = units.Where(value =>
+                    value != null && value.Blueprint != null &&
+                    value.Blueprint.name == ExpandedSummoningPteranodonViewPatch
+                        .PteranodonBlueprintName).ToArray();
+                _expandedSummoningPersistencePteranodonVisual = pteranodons.Length == 0
+                    ? "pteranodons=0"
+                    : "pteranodons=" + pteranodons.Length + ";" + string.Join("|",
+                        pteranodons.Select(value => value.View == null
+                            ? "no-view"
+                            : ExpandedSummoningPteranodonViewPatch.DescribeView(value.View) +
+                                ";" + DescribePteranodonRenderers(value.View)).ToArray());
+                _expandedSummoningPersistencePteranodonVisualValid = prepare || verifyCleanup
+                    ? pteranodons.Length == 1 && pteranodons.All(value =>
+                        value.View != null && ExpandedSummoningPteranodonViewPatch
+                            .DescribeView(value.View).StartsWith("visual:attached;",
+                                StringComparison.Ordinal) &&
+                        IsPteranodonAttached(DescribePteranodonRenderers(value.View)))
+                    : pteranodons.Length == 0;
             }
 
             if (verifyCleanup)
@@ -3639,7 +3662,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     units.Length + ";postExpirationLive=" + liveUnits;
             }
             else if (prepare)
-                _expandedSummoningPersistenceCleanupValid = units.Length == 2;
+                _expandedSummoningPersistenceCleanupValid = units.Length == 3;
             else
             {
                 _expandedSummoningPersistenceIdentityValid = units.Length == 0;
@@ -3693,8 +3716,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
+            // The Pteranodon rides the persistence fixture too: its visual is
+            // attached when a view attaches, and a reload creates the view
+            // afresh, so the reloaded unit is the save/reload proof for it.
             SummonVariantSpec[] variants =
             {
+                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                    .Single(value => value.Creature.Key == "pteranodon" &&
+                        value.ParentTier == 4 &&
+                        value.Multiplicity == SummonMultiplicity.One),
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Single(value => value.Creature.Key ==
                         "small-air-elemental" && value.ParentTier == 2 &&
@@ -3734,9 +3764,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             caster.Descriptor.RemoveFact(ability);
                     }
                 }
-                if (ExpandedSummoningRuleCapture.Count != 2)
+                if (ExpandedSummoningRuleCapture.Count != 3)
                     throw new InvalidOperationException(
-                        "Persistence prepare did not create exactly two native summons.");
+                        "Persistence prepare did not create exactly three native summons.");
                 // The guarded scenario executes the native UnitUseAbility command
                 // synchronously from Unity Mod Manager's update callback, after
                 // the game's entity-creation controller has already ticked for
@@ -3795,7 +3825,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => value.Blueprint != null &&
                     (value.Blueprint.name ==
                         "KMG_Summoning_Unit_SmallAirElemental" ||
-                     value.Blueprint.name == "KMG_Summoning_Unit_Wolf"))
+                     value.Blueprint.name == "KMG_Summoning_Unit_Wolf" ||
+                     value.Blueprint.name == ExpandedSummoningPteranodonViewPatch
+                        .PteranodonBlueprintName))
                 .OrderBy(value => value.Blueprint.name, StringComparer.Ordinal)
                 .ToArray();
         }
@@ -3845,18 +3877,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             out bool context, out bool duration, out bool control,
             out string detail)
         {
-            string[] expected = { "KMG_Summoning_Unit_SmallAirElemental",
+            string[] expected = { "KMG_Summoning_Unit_Pteranodon",
+                "KMG_Summoning_Unit_SmallAirElemental",
                 "KMG_Summoning_Unit_Wolf" };
             BlueprintUnit[] registered = BlueprintBootstrap.Library
                 .GetAllBlueprints().OfType<BlueprintUnit>().Where(value =>
                     expected.Contains(value.name)).OrderBy(value => value.name,
                         StringComparer.Ordinal).ToArray();
-            identity = units.Length == 2 && registered.Length == 2 &&
-                units.Zip(registered, (unit, blueprint) =>
+            // Order-insensitive: a fresh load hands the units back in state
+            // order, which need not be spawn order.
+            UnitEntityData[] byName = units.OrderBy(value =>
+                value.Blueprint == null ? string.Empty : value.Blueprint.name,
+                StringComparer.Ordinal).ToArray();
+            identity = units.Length == 3 && registered.Length == 3 &&
+                byName.Zip(registered, (unit, blueprint) =>
                     ReferenceEquals(unit.Blueprint, blueprint)).All(value => value);
             var durations = new List<double>();
-            context = units.Length == 2;
-            duration = units.Length == 2;
+            context = units.Length == 3;
+            duration = units.Length == 3;
             foreach (UnitEntityData unit in units)
             {
                 Buff[] lifecycle = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
@@ -3880,7 +3918,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningFields(units[0].Blueprint.GetType())
                     .Single(value => value.Name == "Faction" ||
                         value.Name == "m_Faction").GetValue(units[0].Blueprint);
-            control = units.Length == 2 && faction != null && units.All(value =>
+            control = units.Length == 3 && faction != null && units.All(value =>
                 value.Commands != null && value.View != null &&
                 value.View.Data == value &&
                 ReferenceEquals(faction, ExpandedSummoningFields(
@@ -3929,7 +3967,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         evidence.DescriptorReferenceCorrelated,
                     "object-reference-correlated guarded load path"),
                 Assertion("expanded-summoning-persistent-identities",
-                    writes ? "two exact registered KMG units" : "zero KMG units",
+                    writes ? "three exact registered KMG units" : "zero KMG units",
                     _expandedSummoningPersistenceDetail,
                     _expandedSummoningPersistenceIdentityValid,
                     "fresh-load BlueprintUnit reference equality and cardinality"),
@@ -3955,12 +3993,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistenceDetail,
                     _expandedSummoningPersistencePublicationValid,
                     "required base parents with always-registered identities"),
+                Assertion("expanded-summoning-persistent-pteranodon-visual",
+                    writes ? "one Pteranodon whose view carries the original mesh and albedo on the donor's renderer" +
+                        (verifyCleanup ? ", re-attached on the freshly deserialized unit" : "")
+                        : "no Pteranodon after cleanup",
+                    _expandedSummoningPersistencePteranodonVisual,
+                    _expandedSummoningPersistencePteranodonVisualValid,
+                    "ExpandedSummoningPteranodonViewPatch.DescribeView and the renderer state on the persistent unit"),
                 Assertion(verifyCleanup || !writes ?
                         "expanded-summoning-cleaned" :
                         "expanded-summoning-prepared",
-                    verifyCleanup ? "two lifecycle-expired, destroyed, detached KMG units" :
+                    verifyCleanup ? "three lifecycle-expired, destroyed, detached KMG units" :
                         !writes ? "zero KMG units" :
-                        "two active KMG units",
+                        "three active KMG units",
                     _expandedSummoningPersistenceDetail,
                     _expandedSummoningPersistenceCleanupValid,
                     verifyCleanup ? "native SummonedUnitBuff removal and disposal" :
@@ -17639,6 +17684,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pteranodonPresented = false;
             string pteranodonMotion = "<not observed>";
             bool pteranodonMotionBound = false;
+            string pteranodonCaptureIdle = "<not captured>";
+            string pteranodonCaptureAfter = "<not captured>";
             MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
                 "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
             try
@@ -17778,8 +17825,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Sprint 2 presentation: the attached visual measured against
                     // the donor it replaced, before any animation is exercised.
                     if (variant.Creature.Key == "pteranodon")
+                    {
                         pteranodonPresentation = DescribePteranodonPresentation(
                             view, out pteranodonPresented);
+                        pteranodonCaptureIdle = WriteExpandedSummoningLiveCapture(
+                            unit, _request.EvidenceDirectory,
+                            "pteranodon-live-idle.png");
+                    }
 
                     IEnumerable colliderSequence = view == null ? null :
                         ReadExactMember(view, "Colliders") as IEnumerable;
@@ -17857,8 +17909,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // the visual must still be the attached one, bound to the
                     // same animated bones, with the donor still off.
                     if (variant.Creature.Key == "pteranodon")
+                    {
                         pteranodonMotion = DescribePteranodonPresentation(
                             view, out pteranodonMotionBound);
+                        pteranodonCaptureAfter = WriteExpandedSummoningLiveCapture(
+                            unit, _request.EvidenceDirectory,
+                            "pteranodon-live-after-exercises.png");
+                    }
 
                     diagnostics.Add(variant.Creature.Key + ":view=" + attached +
                         ";renderers=" + renderers.Length + ";bounds=" +
@@ -18004,6 +18061,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "the same attached state holds after the native locomotion, attack, hit and death paths have run",
                     pteranodonMotion, pteranodonMotionBound,
                     "the presentation contract re-measured after the animation exercises"),
+                Assertion("expanded-summoning-pteranodon-live-captures",
+                    "two offscreen renders of the live scene on the summoned Pteranodon, before and after the exercises",
+                    "idle=[" + pteranodonCaptureIdle + "];after=[" + pteranodonCaptureAfter + "]",
+                    pteranodonCaptureIdle.StartsWith("png=", StringComparison.Ordinal) &&
+                        pteranodonCaptureAfter.StartsWith("png=", StringComparison.Ordinal),
+                    "supporting visual evidence for internal review from a copy of the game camera; mechanical proof remains the presentation and motion-binding assertions"),
                 Assertion("expanded-summoning-view-cleanup", "67/67 and exact snapshots",
                     "detached=" + detachedViews + ";cleaned=" + cleaned,
                     detachedViews == 67 && cleaned,
