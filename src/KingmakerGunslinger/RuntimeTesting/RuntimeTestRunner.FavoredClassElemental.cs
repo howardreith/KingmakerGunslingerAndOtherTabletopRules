@@ -368,8 +368,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             GrantFavoredClassRanks(bomber, leaves.Pair(FavoredClassCatalog.EffectBombDamage, null).Full, 3);
             GrantFavoredClassRanks(bomberTwo, leaves.Pair(FavoredClassCatalog.EffectBombDamage, null).Full, 1);
             var bomb = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, FcbBombStandardGuid, "BombStandart");
-            var acidBuff = BlueprintLibraryLookup.RequireExact<BlueprintScriptableObject>(library, FcbAcidBombBuffGuid,
-                "AcidBombBuff");
+            var acidBuff = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(
+                library, FcbAcidBombBuffGuid, "AcidBombBuff");
             var fireball = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, FcbFireballGuid, "Fireball");
             Func<UnitEntityData, BlueprintScriptableObject, int> damage = (caster, blueprint) =>
             {
