@@ -305,14 +305,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        /// <summary>A detached Gunslinger whose counters are earned by native level-up picks.</summary>
+        /// <summary>
+        /// A detached custom companion (the native respec lets exactly these
+        /// change ancestry; story companions keep their race) whose counters
+        /// are earned by native level-up picks.
+        /// </summary>
         private UnitEntityData BuildFcbRespecSubject(string ancestry, BlueprintFeature mostlyHumanChoice,
             BlueprintFeature[] picks, HashSet<string> reserved)
         {
             var library = BlueprintBootstrap.Library;
             BlueprintRace race = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
                 FavoredClassRaceIdentities.ForAncestry(ancestry).RaceGuid, ancestry);
-            UnitEntityData unit = FavoredClassLevelUpHarness.CreateUnit(14);
+            UnitEntityData unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                Kingmaker.Blueprints.Root.BlueprintRoot.Instance.CustomCompanion).Unit;
+            unit.Stats.Wisdom.BaseValue = 14;
+            if (!unit.Descriptor.IsTurnedOn)
+                unit.Descriptor.TurnOn();
+            if (!unit.Descriptor.IsCustomCompanion())
+                throw new InvalidOperationException("The respec subject is not a native custom companion.");
             var failures = new List<string>();
             LevelFcbRespecSubject(unit, race, picks, reserved, failures, ancestry, mostlyHumanChoice);
             if (failures.Count != 0)
