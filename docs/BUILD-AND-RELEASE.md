@@ -72,7 +72,29 @@ dependency-free test suite, production compilation, strict build-output
 validation, SoundBank validation, deterministic ZIP creation, and strict UMM
 package validation.
 
-## Current 0.0.134 publication authorization
+## Current 0.0.138 publication authorization
+
+On 2026-09-23 the owner reviewed the Better Vendors progression candidate
+(PR #22), including its stated limits. The owner then wrote: "Run the final
+tests. IF they have issues, please address them. If not, please proceeding
+with committing, merging, pushing to remote, incrementing the version number
+and cutting a new release."
+
+The candidate already carries 0.0.138, one above the last published 0.0.137,
+so the release version is 0.0.138. After the final gates, `master` is
+fast-forwarded to the tested branch commit, so the released commit is the one
+the guarded runtime check exercised. The existing exact-reference publisher
+then runs from clean, pushed `master`.
+
+The five merchant and persistence acceptance areas in
+`docs/BETTER-VENDORS-COMPATIBILITY.md` were NOT RUN, because no kingdom-stage
+test save was authorized. Asked to confirm, the owner replied: "Yes confirm
+those are waived. I will test that in my main game and revisit this thread if
+it's broken." The owner also permitted updating the 0.0.138 validator from its
+candidate state to this release state. The five areas remain open and must not
+be reported as qualified. Save/load compatibility is unverified.
+
+## Historical 0.0.134 publication authorization
 
 The owner accepted Magic Circle PR #19, including the shared lease follow-up,
 and explicitly requested finalization, merge to master, push and a new release.

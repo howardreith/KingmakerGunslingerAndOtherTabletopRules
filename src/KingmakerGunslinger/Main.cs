@@ -131,6 +131,8 @@ namespace KingmakerGunslinger
                         context.Failure);
                 }
                 CraftMagicItemsOptionalExtensionCoordinator.Install(context);
+                Acquisition.BetterVendors.BetterVendorsCompatibilityCoordinator
+                    .Install(context);
 
                 logger.Info(
                     "firearms",

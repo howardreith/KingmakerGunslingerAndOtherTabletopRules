@@ -1,6 +1,24 @@
 # Kingmaker Gunslinger
 
-**0.0.136-rapid-reload-proficiency-gate** makes Rapid Reload require firearm
+The current full release, **0.0.138-better-vendors-progression**, adds
+optional Better Vendors compatibility. With the exact approved Better Vendors
+2.0.8 binary installed and its vendor progression on, the capital blacksmith
+stocks this mod's Pistol, Musket and Blunderbuss +1 to +5 and their Reliable
++1 to +5 variants. It also stocks Elven Branched Spear, Wakizashi, Katana and
+Nodachi +1 to +5. These arrive at the same Military ranks and quantities as
+Better Vendors' own weapons. Better Vendors remains optional. The release was
+owner authorized. In-game merchant stock and save/load behaviour were not
+observed, and the owner waived that qualification. See the
+[release notes](docs/RELEASE-NOTES-0.0.138.md) and
+[compatibility details](docs/BETTER-VENDORS-COMPATIBILITY.md).
+
+The previous **0.0.137-rapid-reload-combat-feat** classifies Rapid Reload as a combat feat,
+so a character with firearm proficiency can take it with a Fighter bonus combat
+feat. The firearm-proficiency requirement is unchanged. The guarded native
+scenario passed on the candidate; save/load compatibility is unverified. See
+[release notes](docs/RELEASE-NOTES-0.0.137.md).
+
+The previous **0.0.136-rapid-reload-proficiency-gate** makes Rapid Reload require firearm
 proficiency instead of relying only on its per-firearm choices. Any proficiency
 source satisfies it, whatever granted it; no Gunslinger class or archetype
 prerequisite was added, and the per-firearm restrictions are unchanged.
