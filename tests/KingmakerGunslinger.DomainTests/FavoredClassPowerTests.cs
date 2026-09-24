@@ -126,7 +126,7 @@ namespace KingmakerGunslinger.DomainTests
                 "\"acf668c24dfbcdd499276eaf1881486e\", \"4729c2ac98d02004fb440d17f7786e28\"",
                 "\"553d9802d5d9de04b941b55cb47d3096\", \"6d005cc9c3ad3f24e8769aad2fbfdf3f\"",
                 "{ FavoredClassCatalog.Sorcerer, \"b3a505fb61437dc4097f43c3f8f9a4cf\" },",
-                "owned.Feature = usablePower;",
+                "owned.FeatureGuids = new[] { usablePower.AssetGuid };",
                 "prerequisite.RowIds = restrictedRows;"
             })
                 Assertions.True(blueprints.Contains(token), "Bloodline power wiring token: " + token);
