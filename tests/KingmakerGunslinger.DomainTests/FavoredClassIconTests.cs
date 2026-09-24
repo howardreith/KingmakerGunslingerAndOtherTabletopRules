@@ -42,12 +42,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(FavoredClassIconPolicy.CriticalFocusGuid,
                 FavoredClassIconPolicy.For(FavoredClassCatalog.EffectFirearmConfirmation, null).Guids[0],
                 "Firearm confirmation shows Critical Focus.");
-            Assertions.Equal(FavoredClassIconPolicy.EidolonNaturalArmorFeatureGuid,
-                FavoredClassIconPolicy.For(FavoredClassCatalog.EffectEidolonArmor, null).Guids[0],
-                "Eidolon armor shows the eidolon's natural armor.");
-            Assertions.Equal(FavoredClassIconPolicy.EidolonClassGuid,
-                FavoredClassIconPolicy.For(FavoredClassCatalog.EffectEidolonArmor, null).Guids.Last(),
-                "Eidolon armor falls back to the eidolon's own class art.");
+            Assertions.Equal(FavoredClassIconPolicy.BarkskinGuid,
+                FavoredClassIconPolicy.For(FavoredClassCatalog.EffectEidolonArmor, null).Guids.Single(),
+                "Eidolon armor shows the native natural-armor bonus art (the provider's eidolon features have none).");
         }
 
         // The icon catalog records the same donor the policy assigns, and no

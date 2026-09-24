@@ -45,8 +45,8 @@ namespace KingmakerGunslinger.DomainTests
                     target.ToggleGuids.All(Guid.IsMatch) && target.AreaGuids.Length == target.ToggleGuids.Length &&
                     target.AreaGuids.All(Guid.IsMatch), target.Key + " has exact feature, toggle and area identities.");
                 Assertions.True(target.BaseFeet == 30 || target.BaseFeet == 50, target.Key + " native radius.");
-                Assertions.True(target.RingAssetId == null ? target.Key == "Scandal" : Guid.IsMatch(target.RingAssetId),
-                    target.Key + " names its ring effect (Scandal's provider link resolves to none).");
+                Assertions.True(Guid.IsMatch(target.RingAssetId) && target.RingSpawns == (target.Key != "Scandal"),
+                    target.Key + " names its exact ring link (Scandal's provider link spawns no ring).");
                 foreach (string area in target.AreaGuids)
                     Assertions.Equal(target.Published ? target.Key : null, FavoredClassPerformanceManifest.KeyForArea(area),
                         target.Key + " owns its area only when published.");
