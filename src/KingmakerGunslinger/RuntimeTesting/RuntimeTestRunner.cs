@@ -643,6 +643,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationPersistence &&
                     _request.Scenario != FcbPersistenceIdentity.Scenario &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationResources &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationCasting &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationInteraction &&
@@ -1921,6 +1922,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
@@ -2030,6 +2032,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
@@ -2151,6 +2154,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     .InHarmsWayHumanRepro
                             : null,
                     pauseOnLoadCompletion: _request.Scenario ==
+                        RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
+                        _request.Scenario ==
                         RuntimeTestScenarioCatalog
                             .ElementalRaceModuleDisabledPersistence ||
                         _request.Scenario == RuntimeTestScenarioCatalog
@@ -2634,6 +2639,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity)
                 {
                     PollTeleportationFamiliarity();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle)
+                {
+                    PollFcbLifecycle();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap)
                 {
@@ -5448,6 +5457,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||

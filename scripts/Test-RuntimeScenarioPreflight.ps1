@@ -71,6 +71,7 @@ $expected = @(
         'disposable-teleportation-coexistence-gamepad',
         'disposable-teleportation-persistence',
         'disposable-teleportation-familiarity',
+        'working-save-favored-class-lifecycle',
         'disposable-teleportation-resources',
         'disposable-teleportation-context',
         'disposable-teleportation-casting',
