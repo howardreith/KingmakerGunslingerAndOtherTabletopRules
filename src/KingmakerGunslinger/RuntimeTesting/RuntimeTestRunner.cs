@@ -3690,7 +3690,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     units.Length + ";postExpirationLive=" + liveUnits;
             }
             else if (prepare)
-                _expandedSummoningPersistenceCleanupValid = units.Length == 3;
+                _expandedSummoningPersistenceCleanupValid = units.Length ==
+                    ExpandedSummoningPersistenceFixtureCount;
             else
             {
                 _expandedSummoningPersistenceIdentityValid = units.Length == 0;
@@ -3707,7 +3708,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPersistenceControlValid &&
                 _expandedSummoningPersistenceCleanupValid &&
                 (prepare || verifyCleanup ?
-                    _expandedSummoningPersistenceUnitCount == 3 :
+                    _expandedSummoningPersistenceUnitCount ==
+                        ExpandedSummoningPersistenceFixtureCount :
                     units.Length == 0);
             _expandedSummoningPersistenceDetail += ";active=" + active +
                 ";published=" + publishedReferences + ";phaseValid=" +
@@ -3747,23 +3749,53 @@ namespace KingmakerGunslinger.RuntimeTesting
             // The Pteranodon rides the persistence fixture too: its visual is
             // attached when a view attaches, and a reload creates the view
             // afresh, so the reloaded unit is the save/reload proof for it.
-            SummonVariantSpec[] variants =
-            {
-                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
-                    .Single(value => value.Creature.Key == "pteranodon" &&
-                        value.ParentTier == 4 &&
-                        value.Multiplicity == SummonMultiplicity.One),
-                ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
-                    .Single(value => value.Creature.Key ==
-                        "small-air-elemental" && value.ParentTier == 2 &&
-                        value.Multiplicity == SummonMultiplicity.One),
-                ExpandedSummoningCatalog.GenerateVariants(
-                    SummonFamily.NaturesAlly).Single(value =>
-                        value.Creature.Key == "wolf" && value.ParentTier == 2 &&
-                        value.Multiplicity == SummonMultiplicity.One)
-            };
-            return SpawnExpandedSummoningVariants(blueprints, caster, variants,
+            // Phase 1 adds each sprint's creatures so their save/load and
+            // module-disabled deserialization are proven the same way.
+            return SpawnExpandedSummoningVariants(blueprints, caster,
+                ExpandedSummoningPersistenceFixtureVariants(),
                 "Persistence prepare");
+        }
+
+        /// <summary>
+        /// (family, key, own-tier single) of every creature the persistence
+        /// trio saves, reloads and expires. Order is spawn order; evaluation is
+        /// order-insensitive.
+        /// </summary>
+        private static readonly string[][] ExpandedSummoningPersistenceFixture =
+        {
+            new[] { "Monster", "pteranodon", "4" },
+            new[] { "Monster", "small-air-elemental", "2" },
+            new[] { "NaturesAlly", "wolf", "2" },
+            // Sprint 3
+            new[] { "Monster", "pony", "1" },
+            new[] { "NaturesAlly", "horse", "2" },
+            new[] { "NaturesAlly", "owlbear", "4" },
+            new[] { "NaturesAlly", "cyclops", "5" }
+        };
+
+        private static int ExpandedSummoningPersistenceFixtureCount
+        { get { return ExpandedSummoningPersistenceFixture.Length; } }
+
+        private static SummonVariantSpec[] ExpandedSummoningPersistenceFixtureVariants()
+        {
+            return ExpandedSummoningPersistenceFixture.Select(row =>
+            {
+                SummonFamily family = (SummonFamily)Enum.Parse(
+                    typeof(SummonFamily), row[0]);
+                int tier = int.Parse(row[2],
+                    System.Globalization.CultureInfo.InvariantCulture);
+                return ExpandedSummoningCatalog.GenerateVariants(family).Single(
+                    value => value.Creature.Key == row[1] &&
+                        value.ParentTier == tier &&
+                        value.Multiplicity == SummonMultiplicity.One);
+            }).ToArray();
+        }
+
+        private static string[] ExpandedSummoningPersistenceFixtureBlueprintNames()
+        {
+            return ExpandedSummoningPersistenceFixtureVariants().Select(value =>
+                ExpandedSummoningIdentityCatalog.UnitSymbol(value.Creature)
+                    .Replace('.', '_').Replace('-', '_')).ToArray();
         }
 
         /// <summary>
@@ -3921,9 +3953,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             out bool context, out bool duration, out bool control,
             out string detail)
         {
-            string[] expected = { "KMG_Summoning_Unit_Pteranodon",
-                "KMG_Summoning_Unit_SmallAirElemental",
-                "KMG_Summoning_Unit_Wolf" };
+            string[] expected = ExpandedSummoningPersistenceFixtureBlueprintNames();
+            int fixtureCount = ExpandedSummoningPersistenceFixtureCount;
             BlueprintUnit[] registered = BlueprintBootstrap.Library
                 .GetAllBlueprints().OfType<BlueprintUnit>().Where(value =>
                     expected.Contains(value.name)).OrderBy(value => value.name,
@@ -3933,12 +3964,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] byName = units.OrderBy(value =>
                 value.Blueprint == null ? string.Empty : value.Blueprint.name,
                 StringComparer.Ordinal).ToArray();
-            identity = units.Length == 3 && registered.Length == 3 &&
+            identity = units.Length == fixtureCount &&
+                registered.Length == fixtureCount &&
                 byName.Zip(registered, (unit, blueprint) =>
                     ReferenceEquals(unit.Blueprint, blueprint)).All(value => value);
             var durations = new List<double>();
-            context = units.Length == 3;
-            duration = units.Length == 3;
+            context = units.Length == fixtureCount;
+            duration = units.Length == fixtureCount;
             foreach (UnitEntityData unit in units)
             {
                 Buff[] lifecycle = unit.Descriptor.Buffs.RawFacts.OfType<Buff>()
@@ -3962,7 +3994,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningFields(units[0].Blueprint.GetType())
                     .Single(value => value.Name == "Faction" ||
                         value.Name == "m_Faction").GetValue(units[0].Blueprint);
-            control = units.Length == 3 && faction != null && units.All(value =>
+            control = units.Length == fixtureCount && faction != null && units.All(value =>
                 value.Commands != null && value.View != null &&
                 value.View.Data == value &&
                 ReferenceEquals(faction, ExpandedSummoningFields(
@@ -4011,7 +4043,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         evidence.DescriptorReferenceCorrelated,
                     "object-reference-correlated guarded load path"),
                 Assertion("expanded-summoning-persistent-identities",
-                    writes ? "three exact registered KMG units" : "zero KMG units",
+                    writes ? ExpandedSummoningPersistenceFixtureCount +
+                        " exact registered KMG units" : "zero KMG units",
                     _expandedSummoningPersistenceDetail,
                     _expandedSummoningPersistenceIdentityValid,
                     "fresh-load BlueprintUnit reference equality and cardinality"),
@@ -14644,7 +14677,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => value.name.StartsWith(
                     "KMG_Summoning_Ability_SNA_", StringComparison.Ordinal))
                 .ToArray();
-            bool allyAlignmentExact = allyExecutions.Length == 320 &&
+            bool allyAlignmentExact = allyExecutions.Length ==
+                    ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly).Count &&
                 allyExecutions.All(value =>
                     ExpandedSummoningSpawnActionCount(value) >= 1 &&
                     ExpandedSummoningAlignmentActionCount(value,
@@ -16473,6 +16508,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .ToArray();
             SummonVariantSpec[] casts = oneCreature.Concat(oneD3)
                 .Concat(oneD4PlusOne).Concat(pteranodonCrowd).ToArray();
+            // One own-tier single per roster entry in each family, plus the
+            // alphabetical 1d3 / 1d4+1 coverage samples; both move with the roster.
+            int rosterEntries = ExpandedSummoningCatalog.All.Count(value =>
+                value.MonsterTier.HasValue) + ExpandedSummoningCatalog.All.Count(
+                value => value.NaturesAllyTier.HasValue);
+            int coverageCasts = oneCreature.Length + oneD3.Length + oneD4PlusOne.Length;
 
             object state = ReadExactMember(Game.Instance, "State");
             object allUnits = ReadExactMember(state, "AllUnits");
@@ -16886,9 +16927,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("expanded-summoning-all-one-creature-casts", "123/123",
+                Assertion("expanded-summoning-all-one-creature-casts",
+                    rosterEntries + "/" + rosterEntries,
                     singleExact + "/" + oneCreature.Length,
-                    oneCreature.Length == 123 && singleExact == 123,
+                    oneCreature.Length == rosterEntries && singleExact == rosterEntries,
                     "actual UnitUseAbility commands for every SM and SNA roster entry"),
                 Assertion("expanded-summoning-d3-tier-coverage", "16/16",
                     oneD3Legal + "/" + oneD3.Length,
@@ -16902,8 +16944,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sameKind.ToString(), sameKind == casts.Length,
                     "spawned BlueprintUnit reference equality for every command"),
                 Assertion("expanded-summoning-command-total",
-                    "155: 153 coverage casts plus the two Pteranodon crowd casts",
-                    completed.ToString(), casts.Length == 153 + pteranodonCrowd.Length &&
+                    (coverageCasts + 2) + ": " + coverageCasts +
+                        " coverage casts plus the two Pteranodon crowd casts",
+                    completed.ToString(), casts.Length == coverageCasts + pteranodonCrowd.Length &&
                         pteranodonCrowd.Length == 2 && completed == casts.Length,
                     "native AbilityData, UnitUseAbility command, RuleCastSpell, and execution-process completion"),
                 Assertion("expanded-summoning-caster-level-duration",
@@ -17322,6 +17365,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hostile.Descriptor.Buffs.RemoveFact(
                         hostile.Descriptor.Buffs.GetBuff(dismantled));
 
+                // Sprint 3: Cyclops Flash of Insight. Armed, a natural 1 -
+                // otherwise an automatic miss - hits and threatens a critical;
+                // the state ends with that one attack, so the next natural 1
+                // misses again. The confirmation roll is left to the dice.
+                UnitEntityData cyclops = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.NaturesAlly, "cyclops", 5,
+                    created, result);
+                BlueprintAbility flash = blueprints.OfType<BlueprintAbility>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Cyclops_FlashOfInsight");
+                BlueprintAbilityResource flashResource = blueprints.OfType<
+                    BlueprintAbilityResource>().Single(value => value.name ==
+                        "KMG_Summoning_Special_Cyclops_FlashOfInsightResource");
+                BlueprintBuff flashState = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.name ==
+                        "KMG_Summoning_Special_Cyclops_FlashOfInsightState");
+                int flashBefore = cyclops.Descriptor.Resources.GetResourceAmount(
+                    flashResource);
+                bool flashGranted = cyclops.Descriptor.Abilities.GetAbility(flash) != null;
+                ExecuteExpandedSummoningRuntimeAbility(cyclops, flash, 1,
+                    new TargetWrapper(cyclops), false);
+                int flashAfter = cyclops.Descriptor.Resources.GetResourceAmount(
+                    flashResource);
+                bool flashArmed = cyclops.Descriptor.HasFact(flashState);
+                string flashArmedDetail;
+                bool flashArmedHit = ExerciseExpandedSummoningAttack(cyclops,
+                    hostile, out flashArmedDetail, true, 1, out bool flashThreat);
+                bool flashSpent = !cyclops.Descriptor.HasFact(flashState);
+                string flashSpentDetail;
+                bool flashSpentHit = ExerciseExpandedSummoningAttack(cyclops,
+                    hostile, out flashSpentDetail, false, 1, out bool spentThreat);
+                bool cyclopsFlash = flashGranted && flashBefore == 1 &&
+                    flashAfter == 0 && flashArmed && flashArmedHit && flashThreat &&
+                    flashSpent && !flashSpentHit;
+
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
                     salamanderAttack && succubusAttack && pixieAttack &&
@@ -17330,7 +17408,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     danceBefore == 1 && danceAfter == 0 && danceApplied &&
                     sleepBefore == 16 && sleepAfter == 15 && sleepApplied &&
                     bebelithFirst && bebelithSecond && dismantledApplied &&
-                    armorUnchanged;
+                    armorUnchanged && cyclopsFlash;
+                result.Diagnostics.Add("cyclops[granted=" + flashGranted +
+                    ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
+                    flashArmed + ";armedNatural1=" + flashArmedDetail +
+                    ";threat=" + flashThreat + ";stateSpent=" + flashSpent +
+                    ";spentNatural1=" + flashSpentDetail + ";spentThreat=" +
+                    spentThreat + "]");
                 result.Diagnostics.Add("combat=animal[" + animalDetail +
                     "];proxy[" + proxyDetail + "];elemental[" +
                     elementalDetail + "];stalker[" + stalkerDetail +
@@ -17539,6 +17623,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData attacker, UnitEntityData target, out string detail,
             bool requireDamage = true)
         {
+            bool ignored;
+            return ExerciseExpandedSummoningAttack(attacker, target, out detail,
+                requireDamage, 20, out ignored);
+        }
+
+        /// <summary>
+        /// One native weapon attack at a chosen natural d20 result. 20 is the
+        /// ordinary representative-combat roll; 1 is the automatic miss that
+        /// only an auto-hit rider (Flash of Insight) can turn into a hit.
+        /// </summary>
+        private static bool ExerciseExpandedSummoningAttack(
+            UnitEntityData attacker, UnitEntityData target, out string detail,
+            bool requireDamage, int naturalRoll, out bool criticalThreat)
+        {
+            criticalThreat = false;
             ItemEntityWeapon weapon = attacker == null || attacker.Body == null ?
                 null : attacker.Body.PrimaryHand.MaybeWeapon;
             if (weapon == null)
@@ -17548,12 +17647,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
             int damageBefore = target.Descriptor.Damage;
-            UnityEngine.Random.InitState(FindNativeD20Seed(20));
+            UnityEngine.Random.InitState(FindNativeD20Seed(naturalRoll));
             var attack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
             Rulebook.Trigger(attack);
             bool hit = attack.AttackRoll != null && attack.AttackRoll.IsHit;
+            criticalThreat = attack.AttackRoll != null &&
+                attack.AttackRoll.IsCriticalRoll;
             int damageAfter = target.Descriptor.Damage;
-            detail = weapon.Blueprint.name + ":hit=" + hit + ";damage=" +
+            detail = weapon.Blueprint.name + ":roll=" + naturalRoll + ";hit=" +
+                hit + ";threat=" + criticalThreat + ";damage=" +
                 damageBefore + "->" + damageAfter;
             target.Descriptor.Damage = damageBefore;
             return hit && (!requireDamage || damageAfter > damageBefore);
@@ -18907,7 +19009,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Key != "dire-bat").All(value => value.Value != null &&
                     value.Value.name == "KMG_SummonIcon_" + value.Key) &&
                 creatureIcons.Where(value => value.Key != "dire-bat")
-                    .Select(value => value.Value).Distinct().Count() == 66 &&
+                    .Select(value => value.Value).Distinct().Count() ==
+                    ExpandedSummoningCatalog.All.Count - 1 &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,
                     "dog", "wolf", "hyena", "goblin-dog") &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,

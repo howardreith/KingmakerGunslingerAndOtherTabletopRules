@@ -360,6 +360,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         renderer.sharedMesh.name) + ";dissolve=" +
                     DescribeDissolve(renderer) + ";intact=" +
                     (DissolveAmount(unit) <= MotionReviewIntactDissolve ? "true" : "false") +
+                    ";material=" + DescribeMaterialSlots(renderer) +
                     ";visual=" +
                     ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View)
                         .Split(';')[0];
@@ -379,6 +380,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (output != null) UnityEngine.Object.Destroy(output);
             }
+        }
+
+        /// <summary>
+        /// Shader name and the colour/tint slots the renderer's material
+        /// declares, so a creature-specific tint can be designed against the
+        /// slots that exist rather than guessed. Unity 2018 cannot enumerate
+        /// a shader's properties, so this is a probe list.
+        /// </summary>
+        private static string DescribeMaterialSlots(SkinnedMeshRenderer renderer)
+        {
+            if (renderer == null || renderer.sharedMaterial == null) return "<none>";
+            Material material = renderer.sharedMaterial;
+            var slots = new List<string>();
+            foreach (string slot in new[] { "_Color", "_MainColor", "_TintColor",
+                "_Tint", "_BaseColor", "_EmissionColor", "_Emissive",
+                "_ColorMask", "_TintMask", "_MainTex", "_DissolveColor",
+                "_Dissolve", "_Metallic", "_Glossiness", "_Smoothness" })
+                if (material.HasProperty(slot)) slots.Add(slot);
+            return (material.shader == null ? "<no-shader>" : material.shader.name)
+                .Replace(';', ',').Replace('|', '/') + "[" +
+                string.Join(",", slots.ToArray()) + "]";
         }
 
         /// <summary>
