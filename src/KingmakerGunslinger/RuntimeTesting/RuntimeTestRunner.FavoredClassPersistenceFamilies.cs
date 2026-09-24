@@ -276,11 +276,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var cylinder = area.View == null ? null : area.View.Shape as ScriptZoneCylinder;
                 GameObject ring = area.View == null ? null : typeof(Kingmaker.View.MapObjects.AreaEffectView)
                     .GetField("m_SpawnedFx", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(area.View) as GameObject;
+                // Doubles rounded to three places: the verify process compares
+                // them with the values its reloaded JSON reads back.
                 areas.Add(new JObject
                 {
                     ["area"] = area.Blueprint.name,
-                    ["radius"] = cylinder == null ? -1f : (float)Math.Round(cylinder.Radius, 3),
-                    ["ringFactor"] = ring == null ? 1f : (float)Math.Round(FavoredClassPerformanceRing.FactorOf(ring), 3),
+                    ["radius"] = cylinder == null ? -1d : Math.Round((double)cylinder.Radius, 3),
+                    ["ringFactor"] = ring == null ? 1d : Math.Round((double)FavoredClassPerformanceRing.FactorOf(ring), 3),
                 });
             }
             result["areas"] = areas;

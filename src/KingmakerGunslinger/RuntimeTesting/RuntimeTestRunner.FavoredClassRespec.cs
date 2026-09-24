@@ -7,15 +7,22 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Class.LevelUp;
+using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Development;
 using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.FavoredClass;
+using KingmakerGunslinger.FavoredClass.Mechanics;
 using KingmakerGunslinger.Gunsmithing;
 using Newtonsoft.Json.Linq;
 
@@ -110,6 +117,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var commitFailures = new List<string>();
             var ancestryFailures = new List<string>();
             var mostlyHumanFailures = new List<string>();
+            var powerFailures = new List<string>();
             var disposables = new List<UnitEntityData>();
             try
             {
@@ -257,6 +265,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (string)afterStandard["race"] != ifrit.Race.name)
                     mostlyHumanFailures.Add("the Standard Ifrit kept the identity or a counter: " +
                         afterStandard.ToString(Newtonsoft.Json.Formatting.None));
+
+                // L03 with a selected power: an Ifrit Sorcerer 6 of the
+                // Elemental (Fire) bloodline earned one effective level for
+                // Elemental Ray through native picks; the committed respec
+                // rebuilds Sorcerer 1 and the ray's arithmetic is native again.
+                BlueprintCharacterClass sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
+                    library, FcbSorcererClassGuid, "Sorcerer");
+                BlueprintFeatureSelection sorcererReward = host.BonusSelectionFor(sorcerer.AssetGuid);
+                FavoredClassLeafPair ray = leaves.Pair(FavoredClassCatalog.EffectSelectedBloodlinePower, "FireRay");
+                FavoredClassSelectedPowerLevel power = ray.Full.GetComponent<FavoredClassSelectedPowerLevel>();
+                if (sorcererReward == null || ray.Partial == null || power == null || power.Ability == null ||
+                    power.PowerFeature == null)
+                    throw new InvalidOperationException("The Sorcerer Fire Ray route is incomplete.");
+                var bloodlines = new HashSet<string>(FavoredClassLeafCatalog.EligibleBloodlines("FireRay").Value,
+                    StringComparer.Ordinal);
+                Func<BlueprintFeature, bool> fireBloodline = feature => bloodlines.Contains(feature.AssetGuid);
+                var sorcererReserved = new HashSet<string>(StringComparer.Ordinal) { sorcererReward.AssetGuid };
+                UnitEntityData caster = BuildFcbRespecSubject(FavoredClassAncestry.Ifrit, null, new[]
+                    { ray.Partial, ray.Partial, ray.Partial, ray.Partial, ray.Partial, ray.Full }, sorcererReserved,
+                    sorcerer, sorcererReward, fireBloodline);
+                disposables.Add(caster);
+                JObject powerBefore = DescribeFcbRespecPower(caster, sorcerer, power, ray);
+                JObject selectedPower = RunFcbRespec(caster, (controller, row) =>
+                {
+                    FavoredClassLevelUpHarness.Configure(controller, controller.Unit, race(FavoredClassAncestry.Ifrit),
+                        sorcerer, "KMG FCB Respec", null);
+                    if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, sorcerer, row) == null)
+                        throw new InvalidOperationException("the favored Sorcerer progression is unavailable");
+                    var preferred = new JArray();
+                    PreferFcbChoices(controller, sorcererReserved, fireBloodline, preferred);
+                    row["preferred"] = preferred;
+                    FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
+                    FeatureSelectionState state = FavoredClassLevelUpHarness.FindOpenState(controller,
+                        sorcererReward.AssetGuid);
+                    if (state == null || !FavoredClassLevelUpHarness.Select(controller, state, hitPoint))
+                        throw new InvalidOperationException("the Sorcerer respec could not take the hit point");
+                    FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
+                    FillFcbSpells(controller);
+                    FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
+                    return true;
+                }, powerFailures, "selected-power", sorcerer);
+                JObject powerAfter = DescribeFcbRespecPower(caster, sorcerer, power, ray);
+                selectedPower["before"] = powerBefore;
+                selectedPower["after"] = powerAfter;
+                evidence["selectedPower"] = selectedPower;
+                if ((int)powerBefore["level"] != 6 || (int)powerBefore["partial"] != 5 || (int)powerBefore["full"] != 1 ||
+                    !(bool)powerBefore["ownsPower"] || (int)powerBefore["casterLevel"] != 7)
+                    powerFailures.Add("the Sorcerer 6 source did not earn one effective level for its owned Fire Ray");
+                if (!(bool)selectedPower["committed"] || !(bool)selectedPower["callback"])
+                    powerFailures.Add("the Sorcerer respec did not commit through the native callback");
+                if ((int)powerAfter["level"] != 1 || (int)powerAfter["partial"] != 0 || (int)powerAfter["full"] != 0 ||
+                    !(bool)powerAfter["ownsPower"] || (int)powerAfter["casterLevel"] != 1)
+                    powerFailures.Add("after the respec the Fire Ray kept a counter or a raised level: " +
+                        powerAfter.ToString(Newtonsoft.Json.Formatting.None));
             }
             catch (Exception exception)
             {
@@ -294,6 +356,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "respeccing a Mostly Human Ifrit to Standard removes the hidden identity, the human grit access and its counter",
                 Describe(evidence["mostlyHuman"], mostlyHumanFailures), mostlyHumanFailures.Count == 0,
                 "Player.RespecCompanion; Mostly Human selection and identity fact"));
+            assertions.Add(Assertion("fcb-respec-selected-power",
+                "a committed native respec of an Ifrit Sorcerer 6 whose native picks raised its Elemental Ray (Fire) by one effective level rebuilds Sorcerer 1 with no counter and the ray's native level-1 arithmetic",
+                Describe(evidence["selectedPower"], powerFailures), powerFailures.Count == 0,
+                "Player.RespecCompanion; the ability's native execution context"));
             assertions.Add(Assertion("external-isolation",
                 "unchanged party, global units, inventory, character list and money after every respec",
                 "cleaned=" + cleaned, cleaned, "starter receipt and inventory rollback; detached unit disposal"));
@@ -311,7 +377,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// are earned by native level-up picks.
         /// </summary>
         private UnitEntityData BuildFcbRespecSubject(string ancestry, BlueprintFeature mostlyHumanChoice,
-            BlueprintFeature[] picks, HashSet<string> reserved)
+            BlueprintFeature[] picks, HashSet<string> reserved, BlueprintCharacterClass characterClass = null,
+            BlueprintFeatureSelection rewardSelection = null, Func<BlueprintFeature, bool> wanted = null)
         {
             var library = BlueprintBootstrap.Library;
             BlueprintRace race = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
@@ -324,7 +391,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!unit.Descriptor.IsCustomCompanion())
                 throw new InvalidOperationException("The respec subject is not a native custom companion.");
             var failures = new List<string>();
-            LevelFcbRespecSubject(unit, race, picks, reserved, failures, ancestry, mostlyHumanChoice);
+            LevelFcbRespecSubject(unit, race, picks, reserved, failures, ancestry, mostlyHumanChoice,
+                characterClass, rewardSelection, wanted);
             if (failures.Count != 0)
             {
                 unit.Dispose();
@@ -333,23 +401,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             return unit;
         }
 
+        /// <summary>
+        /// Levels the subject once per pick through native visits of one class
+        /// (the Gunslinger unless given), taking the pick in that class's
+        /// reward selection; choices the subject needs (a companion, the
+        /// bloodline of a power) are preferred before the deterministic filler.
+        /// </summary>
         private void LevelFcbRespecSubject(UnitEntityData unit, BlueprintRace race, BlueprintFeature[] picks,
-            HashSet<string> reserved, IList<string> failures, string label, BlueprintFeature mostlyHumanChoice = null)
+            HashSet<string> reserved, IList<string> failures, string label, BlueprintFeature mostlyHumanChoice = null,
+            BlueprintCharacterClass characterClass = null, BlueprintFeatureSelection rewardSelection = null,
+            Func<BlueprintFeature, bool> wanted = null)
         {
             FavoredClassHostHandles host = FavoredClassIntegrationCoordinator.Host;
-            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            BlueprintCharacterClass leveled = characterClass ?? BlueprintBootstrap.GunslingerClass.CharacterClass;
+            BlueprintFeatureSelection offered = rewardSelection ?? host.GunslingerSelection;
             foreach (BlueprintFeature pick in picks)
             {
                 var row = new JObject();
+                var preferred = new JArray();
                 LevelUpController controller = null;
                 try
                 {
-                    controller = FavoredClassLevelUpHarness.Open(unit.Descriptor, race, gunslinger,
+                    controller = FavoredClassLevelUpHarness.Open(unit.Descriptor, race, leveled,
                         "KMG FCB Respec " + label);
                     if (unit.Descriptor.Progression.CharacterLevel == 0)
                     {
-                        if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, gunslinger, row) == null)
-                            throw new InvalidOperationException("the favored Gunslinger progression is unavailable");
+                        if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, leveled, row) == null)
+                            throw new InvalidOperationException("the favored " + leveled.name +
+                                " progression is unavailable");
                         if (mostlyHumanChoice != null)
                         {
                             ElementalMostlyHumanRaceBlueprints ancestry = BlueprintBootstrap.MostlyHuman.Races.Single(
@@ -360,12 +439,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 throw new InvalidOperationException("the Mostly Human choice could not be taken");
                         }
                     }
+                    if (wanted != null)
+                        PreferFcbChoices(controller, reserved, wanted, preferred);
                     FavoredClassLevelUpHarness.FillOthers(controller, reserved);
                     FeatureSelectionState reward = FavoredClassLevelUpHarness.FindOpenState(controller,
-                        host.GunslingerSelection.AssetGuid);
+                        offered.AssetGuid);
                     if (reward == null || !FavoredClassLevelUpHarness.Select(controller, reward, pick))
                         throw new InvalidOperationException("level " + (unit.Descriptor.Progression.CharacterLevel + 1) +
                             " could not take " + pick.name);
+                    if (wanted != null)
+                        PreferFcbChoices(controller, reserved, wanted, preferred);
+                    FavoredClassLevelUpHarness.FillOthers(controller, reserved);
+                    FillFcbSpells(controller);
                     FavoredClassLevelUpHarness.FillOthers(controller, reserved);
                     if (!FavoredClassLevelUpHarness.Confirm(controller, unit.Descriptor, row))
                         throw new InvalidOperationException("the level is incomplete: " + row["completion"]);
@@ -382,17 +467,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        /// <summary>Runs one native respec and rolls back its inventory, starter and character-list effects.</summary>
+        /// <summary>
+        /// Runs one native respec and rolls back its inventory, starter and
+        /// character-list effects; the respecced class (the Gunslinger unless
+        /// given) grants no starting gold for the call.
+        /// </summary>
         private JObject RunFcbRespec(UnitEntityData source, Func<LevelUpController, JObject, bool> drive,
-            IList<string> failures, string label)
+            IList<string> failures, string label, BlueprintCharacterClass characterClass = null)
         {
             Player player = Game.Instance.Player;
-            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            BlueprintCharacterClass respecced = characterClass ?? BlueprintBootstrap.GunslingerClass.CharacterClass;
             var evidence = new JObject { ["case"] = label };
             List<object> inventoryBefore = EnumerateRuntimeInventory(player.Inventory);
-            BlueprintItem[] startingItems = gunslinger.StartingItems ?? new BlueprintItem[0];
+            BlueprintItem[] startingItems = respecced.StartingItems ?? new BlueprintItem[0];
             int[] startingCounts = startingItems.Select(item => player.Inventory.Count(item)).ToArray();
-            int startingGold = gunslinger.StartingGold;
+            int startingGold = respecced.StartingGold;
             long moneyBefore = player.Money;
             List<UnitEntityData> characters = player.AllCharacters;
             bool registered = !characters.Any(value => ReferenceEquals(value, source));
@@ -400,7 +489,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool subscribed = false, callback = false;
             try
             {
-                gunslinger.StartingGold = 0;
+                respecced.StartingGold = 0;
                 if (registered) characters.Add(source);
                 EventBus.Subscribe(handler);
                 subscribed = true;
@@ -409,7 +498,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (subscribed) EventBus.Unsubscribe(handler);
-                gunslinger.StartingGold = startingGold;
+                respecced.StartingGold = startingGold;
                 List<object> added = EnumerateRuntimeInventory(player.Inventory).Where(item =>
                     !inventoryBefore.Any(existing => ReferenceEquals(existing, item))).ToList();
                 foreach (ItemEntityWeapon firearm in added.OfType<ItemEntityWeapon>())
@@ -449,6 +538,109 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (player.Money != moneyBefore)
                 failures.Add(label + ": the respec changed the party's money by " + (player.Money - moneyBefore));
             return evidence;
+        }
+
+        /// <summary>
+        /// Picks, in any open unreserved selection, a selectable choice the
+        /// subject needs before the deterministic filler completes the rest.
+        /// </summary>
+        private static void PreferFcbChoices(LevelUpController controller, ICollection<string> reserved,
+            Func<BlueprintFeature, bool> wanted, JArray taken)
+        {
+            for (int guard = 0; guard < 8; guard++)
+            {
+                LevelUpState state = controller.State;
+                UnitDescriptor preview = controller.Preview;
+                bool picked = false;
+                foreach (FeatureSelectionState pending in state.Selections.Where(value => !value.Selected &&
+                    value.Selection != null).ToArray())
+                {
+                    var blueprint = pending.Selection as BlueprintScriptableObject;
+                    if (blueprint != null && reserved.Contains(blueprint.AssetGuid))
+                        continue;
+                    IFeatureSelectionItem choice = pending.Selection.ExtractSelectionItems(preview, preview)
+                        .Where(item => item != null && item.Feature != null && wanted(item.Feature) &&
+                            pending.Selection.CanSelect(preview, state, pending, item))
+                        .OrderBy(item => item.Feature.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+                    if (choice != null && controller.SelectFeature(pending, choice))
+                    {
+                        taken.Add(FavoredClassLevelUpHarness.Name(pending.Selection) + "=" + choice.Feature.name);
+                        picked = true;
+                        break;
+                    }
+                }
+                if (!picked)
+                    return;
+            }
+        }
+
+        /// <summary>A companion feature, or a selection that leads to one.</summary>
+        private static bool GrantsFcbPet(BlueprintFeature feature)
+        {
+            return GrantsFcbPet(feature, 0);
+        }
+
+        private static bool GrantsFcbPet(BlueprintFeature feature, int depth)
+        {
+            if (feature == null || depth > 3)
+                return false;
+            if (feature.GetComponent<AddPet>() != null)
+                return true;
+            var selection = feature as BlueprintFeatureSelection;
+            return selection != null && (selection.AllFeatures ?? new BlueprintFeature[0])
+                .Any(value => GrantsFcbPet(value, depth + 1));
+        }
+
+        /// <summary>Fills every open spells-known slot with the lowest-identity unknown spell.</summary>
+        private static void FillFcbSpells(LevelUpController controller)
+        {
+            for (int guard = 0; guard < 128; guard++)
+            {
+                bool selected = false;
+                foreach (SpellSelectionData selection in controller.State.SpellSelections.ToArray())
+                {
+                    Spellbook book = controller.Preview.GetSpellbook(selection.Spellbook);
+                    for (int level = 0; level < selection.LevelCount.Length && !selected; level++)
+                    {
+                        var slots = selection.LevelCount[level];
+                        if (slots == null)
+                            continue;
+                        int slot = Array.FindIndex(slots.SpellSelections, value => value == null);
+                        if (slot < 0)
+                            continue;
+                        BlueprintAbility spell = selection.SpellList.GetSpells(level)
+                            .Where(value => value != null && (book == null || !book.IsKnown(value)) &&
+                                !slots.SpellSelections.Contains(value))
+                            .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+                        if (spell != null)
+                            selected = controller.SelectSpell(selection.Spellbook, selection.SpellList, level, spell,
+                                slot);
+                    }
+                    if (selected)
+                        break;
+                }
+                if (!selected)
+                    return;
+            }
+        }
+
+        /// <summary>The class level, counters, ownership and native arithmetic of a selected power.</summary>
+        private static JObject DescribeFcbRespecPower(UnitEntityData unit, BlueprintCharacterClass characterClass,
+            FavoredClassSelectedPowerLevel power, FavoredClassLeafPair pair)
+        {
+            var data = new AbilityData(power.Ability, unit.Descriptor);
+            MechanicsContext context = data.CreateExecutionContext(new TargetWrapper(unit));
+            context.Recalculate();
+            return new JObject
+            {
+                ["level"] = unit.Descriptor.Progression.GetClassLevel(characterClass),
+                ["partial"] = FavoredClassLevelUpHarness.Rank(unit.Descriptor, pair.Partial),
+                ["full"] = FavoredClassLevelUpHarness.Rank(unit.Descriptor, pair.Full),
+                ["ownsPower"] = unit.Descriptor.HasFact(power.PowerFeature),
+                ["casterLevel"] = context.Params.CasterLevel,
+                ["rankBonus"] = context.Params.RankBonus,
+                ["default"] = context[AbilityRankType.Default],
+            };
         }
 
         private static void DescribeFcbRespecOffer(LevelUpController controller, FeatureSelectionState state,

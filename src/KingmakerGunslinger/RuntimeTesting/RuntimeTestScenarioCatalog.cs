@@ -42,6 +42,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string DisposableTeleportationCoexistenceGamepad = "disposable-teleportation-coexistence-gamepad";
         internal const string DisposableTeleportationPersistence = "disposable-teleportation-persistence";
         internal const string DisposableTeleportationFamiliarity = "disposable-teleportation-familiarity";
+        internal const string WorkingSaveFavoredClassVisualCensus = "working-save-favored-class-visual-census";
         internal const string WorkingSaveFavoredClassLifecycle = "working-save-favored-class-lifecycle";
         internal const string ObserveTeleportationWorldMap = "observe-teleportation-world-map";
         internal const string ObserveTeleportationNativeContracts = "observe-teleportation-native-contracts";
@@ -729,6 +730,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableTeleportationCoexistenceGamepad,
                 DisposableTeleportationPersistence,
                 DisposableTeleportationFamiliarity,
+                WorkingSaveFavoredClassVisualCensus,
                 WorkingSaveFavoredClassLifecycle,
                 DisposableTeleportationResources,
                 DisposableTeleportationContext,
