@@ -65,7 +65,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (unit == null) throw new ArgumentNullException("unit");
             _unit = unit;
             _screenshotDirectory = screenshotDirectory;
+            // The mod manager's IMGUI window covered the whole frame in the
+            // first screenshots. It is closed for the measurement and put
+            // back with the action bar.
+            _overlayWasOpen = RuntimeTestRunner.SetModManagerOverlay(false);
         }
+
+        private readonly bool _overlayWasOpen;
 
         internal sealed class Measurement
         {
@@ -81,7 +87,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool ScrollingRequired;
             internal bool ScrollingExact;
             internal bool FirstStartsVisible;
+            /// <summary>
+            /// The toggle call plus the frame that first draws the menu: the
+            /// widget's own cost, which is what the 250 ms budget is for.
+            /// </summary>
             internal long OpenMilliseconds;
+            /// <summary>The synchronous Toggle call: native fill and the layout applied inside it.</summary>
+            internal long ToggleMilliseconds;
+            /// <summary>From the end of the call to the next update, i.e. the frame that rendered the menu.</summary>
+            internal long FirstFrameMilliseconds;
+            /// <summary>The whole wait including the settle frames, which measure the host's frame pacing.</summary>
+            internal long SettleMilliseconds;
+            /// <summary>Mean unscaled frame time over the settle frames.</summary>
+            internal double FrameMilliseconds;
+            /// <summary>Slots the native fill created, read from the group itself.</summary>
+            internal int NativeSlots;
             internal long ManagedBytesDelta;
             internal int GroupSlotDelta;
             internal string Resolution = string.Empty;
@@ -95,13 +115,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return string.Format(CultureInfo.InvariantCulture,
                     "{0}/{1}/cycle{2}:rendered={3};slots={4};first={5};middle={6}" +
                     ";last={7};bounded={8};scrollNeeded={9};scrollExact={10}" +
-                    ";firstVisible={11};openMs={12};bytes={13};slotDelta={14}" +
+                    ";firstVisible={11};openMs={12};toggleMs={20};firstFrameMs={21}" +
+                    ";settleMs={22};frameMs={23:F1};nativeSlots={24}" +
+                    ";bytes={13};slotDelta={14}" +
                     ";resolution={15};uiScale={16:F3};tooltips={17};shot={18};{19}",
                     Family, Projected, Cycle, Rendered, SlotCount,
                     FirstReachable, MiddleReachable, LastReachable, Bounded,
                     ScrollingRequired, ScrollingExact, FirstStartsVisible,
                     OpenMilliseconds, ManagedBytesDelta, GroupSlotDelta,
-                    Resolution, UiScale, TooltipsPresent, Screenshot, Reason);
+                    Resolution, UiScale, TooltipsPresent, Screenshot, Reason,
+                    ToggleMilliseconds, FirstFrameMilliseconds, SettleMilliseconds,
+                    FrameMilliseconds, NativeSlots);
             }
         }
 
@@ -237,12 +261,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _pendingFamily = family;
                 _pendingCycle = cycle;
                 _pendingProjected = entries.Count;
+                _pendingFailuresBefore = ExpandedSummoningVariantMenuRuntime.Failures;
+                _pendingFrameSeconds.Clear();
                 ExpandedSummoningVariantMenuRuntime.CaptureSourceSlot(group, slot);
                 group.Toggle(_unit, entries, source);
+                // The call is synchronous: the native fill and the layout the
+                // shipped patch applies inside it have both run by now.
+                _pendingToggleMs = _pendingWatch.ElapsedMilliseconds;
                 settled++;
                 return false;
             }
 
+            // The first update after the toggle closes the frame that drew the
+            // menu; the ones after it only measure how fast this host runs
+            // frames, and are recorded as such.
+            if (settled == 1)
+                _pendingFirstFrameMs = _pendingWatch.ElapsedMilliseconds -
+                    _pendingToggleMs;
+            _pendingFrameSeconds.Add(Time.unscaledDeltaTime);
             if (settled <= SettleFrames) { settled++; return false; }
 
             _pendingWatch.Stop();
@@ -251,7 +287,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Family = _pendingFamily,
                 Projected = _pendingProjected,
                 Cycle = _pendingCycle,
-                OpenMilliseconds = _pendingWatch.ElapsedMilliseconds
+                OpenMilliseconds = _pendingToggleMs + _pendingFirstFrameMs,
+                ToggleMilliseconds = _pendingToggleMs,
+                FirstFrameMilliseconds = _pendingFirstFrameMs,
+                SettleMilliseconds = _pendingWatch.ElapsedMilliseconds,
+                FrameMilliseconds = _pendingFrameSeconds.Count == 0 ? 0d :
+                    _pendingFrameSeconds.Average() * 1000d,
+                NativeSlots = CountNativeSlots(group)
             };
 
             measurement.Resolution = Screen.width + "x" + Screen.height;
@@ -276,7 +318,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!ExpandedSummoningVariantMenuRuntime.TryGetSnapshot(group,
                 out snapshot) || snapshot == null)
             {
-                measurement.Reason = "no snapshot after toggle";
+                // The layout runtime records why it produced nothing; that is
+                // the diagnosis, so it travels with the measurement.
+                measurement.Reason = "no snapshot after toggle;layoutFailures=" +
+                    (ExpandedSummoningVariantMenuRuntime.Failures -
+                        _pendingFailuresBefore) + ";layout=" +
+                    ExpandedSummoningVariantMenuRuntime.LastResult;
             }
             else
             {
@@ -439,6 +486,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal void RestoreActionBar()
         {
+            if (_overlayWasOpen) RuntimeTestRunner.SetModManagerOverlay(true);
             if (_installedIndex < 0) return;
             try
             {
@@ -497,12 +545,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             return slots == null ? 0 : slots.Length;
         }
 
+        private static int CountNativeSlots(ActionBarSpellsGroup group)
+        {
+            FieldInfo field = typeof(ActionBarSpellsGroup).GetField("m_Slots",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            System.Collections.ICollection slots = field == null ? null :
+                field.GetValue(group) as System.Collections.ICollection;
+            return slots == null ? -1 : slots.Count;
+        }
+
         private SummonFamily _pendingFamily;
         private int _pendingCycle;
         private int _pendingProjected;
         private int _pendingSlotsBefore;
         private long _pendingBytesBefore;
         private Stopwatch _pendingWatch;
+        private long _pendingToggleMs;
+        private long _pendingFirstFrameMs;
+        private long _pendingFailuresBefore;
+        private readonly List<float> _pendingFrameSeconds = new List<float>();
 
         /// <summary>Set when the widget assumption fails, for reporting.</summary>
         private int _groupCount = -1;
