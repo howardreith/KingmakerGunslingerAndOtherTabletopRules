@@ -312,7 +312,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "true" : "false") + ";faderVisible=" + (EntityFadedIn(unit) ?
                         "true" : "false") + ";mesh=" + (renderer == null ||
                         renderer.sharedMesh == null ? "<none>" :
-                        renderer.sharedMesh.name) + ";visual=" +
+                        renderer.sharedMesh.name) + ";dissolve=" +
+                    DescribeDissolve(renderer) + ";visual=" +
                     ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View)
                         .Split(';')[0];
             }
@@ -331,6 +332,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (output != null) UnityEngine.Object.Destroy(output);
             }
+        }
+
+        /// <summary>
+        /// The renderer's material dissolve amount (1 is fully dissolved, i.e.
+        /// invisible) and whether the view's material controller lists that
+        /// material - the two facts that decide whether the game's fades
+        /// reach the visual.
+        /// </summary>
+        private static string DescribeDissolve(SkinnedMeshRenderer renderer)
+        {
+            if (renderer == null || renderer.sharedMaterial == null) return "<none>";
+            Material material = renderer.sharedMaterial;
+            string amount = material.HasProperty("_Dissolve")
+                ? material.GetFloat("_Dissolve").ToString("0.###",
+                    CultureInfo.InvariantCulture)
+                : "<no-property>";
+            var controller = renderer.GetComponentInParent<
+                Kingmaker.Visual.MaterialEffects.StandardMaterialController>();
+            IList<Material> materials =
+                ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller);
+            bool listed = materials != null && materials.Contains(material);
+            return amount + "/listed=" + (listed ? "true" : "false");
         }
 
         /// <summary>
