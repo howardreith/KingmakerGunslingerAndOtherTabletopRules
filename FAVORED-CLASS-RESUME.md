@@ -52,7 +52,49 @@ KingmakerBuffPlanner, KingmakerBugfixes, KingmakerDiceRoller,
 KingmakerLastAzlantiPreserver, ProperFlanking2, SkipIntro, TweakOrTreat.
 Favored Class ships nine custom JSON rewards in `ZFavoredClass\Custom\`.
 
-## Latest meaningful checkpoint
+## Continuation checkpoint (repair, qualification and evidence cleanup)
+
+The owner's continuation brief (2026-09-24) replaced the owner-decision list
+with charter rules and required tests. This pass, on the same branch and
+worktree, completed:
+
+- Mostly Human as a genuine dual identity (human humanoid for race-related
+  rules and the host's human prerequisites; native outsider identity, race,
+  RaceId, scores and geniekin routes kept; fail closed for other providers).
+  The identity is a class feature granted only by the trait, so a native
+  respec never carries it over on its own.
+- O01 redesign: owner-local actual range, ring and description; Storm Call
+  and Mockery excluded; the manifest classified by mechanics with exact read
+  points (`docs/FAVORED-CLASS-TARGET-MANIFEST.md`).
+- Donor icons for every published choice; domain census; native visual
+  census of every reward selector (the host routes it to the Determinator
+  phase) and of the four Mostly Human selectors in the actual creator.
+- E11 multiclass, E16/L03 respec (Gunslinger, Mostly Human, Sorcerer selected
+  power, Ranger with a companion), L02 lifecycle (two paladins, two bards,
+  death, polymorph, party area reload) and L01 fresh-process reload of one
+  subject per state/mechanic family, including a selected firearm target.
+- The older elemental creator (4 races) and native respec (Sylph, Oread)
+  lanes re-run with Mostly Human published.
+- B2: the CotW-only and CotW + Favored Class profiles staged from the
+  byte-verified 2026-09-08 capture
+  (`C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger\artifacts\teleportation\compatibility-references`).
+
+Shared-installation protocol with the KingmakerBuffPlanner lab: check its
+`runtime-state\deployment.lock` and `kbp-gate.active` markers, hold this lab's
+`compatibility.lock` for a whole batch, message that session at batch start
+and end, and never touch its files, saves or processes.
+
+Scratchpad drivers used by this pass (machine-local, not committed):
+`leased-batch.ps1` (`name[@Save][#k=v;...]`), `batch-and-persist.ps1`,
+`final-stage.ps1`, `leased-profiles.ps1` (temporary settings profiles),
+`compat-batch.ps1`, `restore-owner.ps1` and `post-stage.ps1`.
+
+Final local candidate of the continuation: `15c37695c` (package `4a7b5e2d...`, DLL `0261ebd3...`, MVID `613caf93-62bb-41e8-87fa-4a154cb4cfd6`). Its
+final cycle, settings profiles, persistence transaction, working-save smoke and
+compatibility profiles are recorded in `FAVORED-CLASS-IMPLEMENTATION-REPORT.md`.
+Status: PARTIAL - NOT RELEASE QUALIFIED; owner review pending.
+
+## First-pass checkpoint (superseded by the continuation checkpoint above)
 
 - Phase 1 (`68e6d9a8a`…`2cccec68b`): adapter, contained registry, grit
   leaves, transactional publication, coordinator; grit proven on the
@@ -132,13 +174,68 @@ only for their own runs and removed it afterwards (verified absent after each).
 
 Restoration of the owner's pre-mission install: VERIFIED 2026-09-24T06:18Z. `Mods\KingmakerGunslinger` was restored from `20260924T0027014050156Z` with `scripts\Restore-Live-Mod.ps1`: DLL `c6cccdac…`, Info.json `f66de05d…` and FeatureModules.json `6e24b278…` match, all 238 files are identical to the backup (path and SHA-256), `FavoredClassIntegration.json` is absent, and the Favored Class, Call of the Wild and Races Unleashed settings are unchanged.
 
+Continuation deployments (guarded `scripts\Deploy-Local.ps1`; each backed up the previous tree
+under `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\`; rows marked profile were
+deployed inside an isolated compatibility profile and restored by its transaction):
+
+| Deployment (UTC) | Commit | DLL SHA-256 | MVID | Backup of the previous tree |
+| --- | --- | --- | --- | --- |
+| 20260924T1231430167010Z | `0138d70b6` | `bab6aaf9...` | `30900fe0-e6d9-4582-87b7-bc857cddf8db` | `20260924T1231384662202Z` |
+| 20260924T1301193301166Z | `e97271392` | `adc29f04...` | `64f83a8c-f63e-4192-b553-d1a984501265` | `20260924T1301147516433Z` |
+| 20260924T1318030056407Z | `08ab4d17c` | `fbe7cdfa...` | `accc0ea9-28df-46ee-8b37-c8adaa582c2b` | `20260924T1317583962386Z` |
+| 20260924T1331590044054Z | `b2cf0cf81` | `1dfd0b02...` | `5cd47b62-78a0-4f9a-b204-ae8da64cb039` | `20260924T1331542631295Z` |
+| 20260924T1602289102359Z | `ff434c829` | `b4fdc828...` | `6ce95367-69d6-4c62-a0d8-f9bfa4be693a` | `20260924T1602239758431Z` |
+| 20260924T1625326651297Z | `1b2d4174d` | `e82dee2a...` | `dbb1a2e4-e490-4492-a1c7-2aad6e8a5064` | `20260924T1625279463297Z` |
+| 20260924T1710329170172Z | `1ebd83fa9` | `c44b3ada...` | `4e74b259-2e00-47b5-9c99-d19af21479cd` | `20260924T1710282766956Z` |
+| 20260924T1732404304962Z | `e3617e224` | `0b39f19d...` | `04098026-bf0c-44bb-8b12-b92e5851b1ea` | `20260924T1732355393019Z` |
+| 20260924T1820508011281Z | `e3617e224` | `0b39f19d...` | `04098026-bf0c-44bb-8b12-b92e5851b1ea` | `20260924T1820462973327Z` (profile) |
+| 20260924T1824157380471Z | `e3617e224` | `0b39f19d...` | `04098026-bf0c-44bb-8b12-b92e5851b1ea` | `20260924T1824112883998Z` (profile) |
+| 20260924T1827526231444Z | `e3617e224` | `0b39f19d...` | `04098026-bf0c-44bb-8b12-b92e5851b1ea` | `20260924T1827479363666Z` (profile) |
+| 20260924T1855251804593Z | `bd8f7c60c` | `6bda3905...` | `5267d7af-574d-4b8d-b683-db6b05b31ea2` | `20260924T1855205210682Z` |
+| 20260924T1910002412197Z | `77afdde62` | `03a28f95...` | `be1cfcaa-486d-47a0-a4ec-05e6bbe397ca` | `20260924T1909556042780Z` |
+| 20260924T1925499018311Z | `675b117b0` | `2ac5970f...` | `76077322-1702-46fe-bd83-5d13a13b8cd6` | `20260924T1925452180506Z` |
+| 20260924T2056272827946Z | `cacf3a002` | `e85660cc...` | `47c993a5-2e5e-48dd-83f0-a5402f55b6ba` | `20260924T2056225420585Z` |
+| 20260924T2155495526048Z | `cacf3a002` | `e85660cc...` | `47c993a5-2e5e-48dd-83f0-a5402f55b6ba` | `20260924T2155450157633Z` (profile) |
+| 20260924T2159057722985Z | `cacf3a002` | `e85660cc...` | `47c993a5-2e5e-48dd-83f0-a5402f55b6ba` | `20260924T2159010883330Z` (profile) |
+| 20260924T2202398694367Z | `cacf3a002` | `e85660cc...` | `47c993a5-2e5e-48dd-83f0-a5402f55b6ba` | `20260924T2202352148081Z` (profile) |
+| 20260924T2220560490337Z | `15c37695c` | `0261ebd3...` | `613caf93-62bb-41e8-87fa-4a154cb4cfd6` | `20260924T2220514938917Z` |
+| 20260924T2319493525825Z | `15c37695c` | `0261ebd3...` | `613caf93-62bb-41e8-87fa-4a154cb4cfd6` | `20260924T2319446874767Z` (profile) |
+| 20260924T2323061224769Z | `15c37695c` | `0261ebd3...` | `613caf93-62bb-41e8-87fa-4a154cb4cfd6` | `20260924T2323016112056Z` (profile) |
+| 20260924T2326399101015Z | `15c37695c` | `0261ebd3...` | `613caf93-62bb-41e8-87fa-4a154cb4cfd6` | `20260924T2326353817722Z` (profile) |
+
+Final restoration of the owner's install after the continuation:
+
+The owner's pre-mission KMG install (0.0.136, backup
+`C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z`)
+was restored through `scripts/Restore-Live-Mod.ps1` (under this lab's lease)
+after the last run, and verified byte for byte:
+
+- `Info.json` SHA-256 `f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17` (match True)
+- `FeatureModules.json` SHA-256 `6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0` (match True)
+- `KingmakerGunslinger.dll` SHA-256 `c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c` (match True)
+- whole tree: 238 backup files, 238 live files, 0 only in the backup, 0 only live
+- no `FavoredClassIntegration.json` remains (the default settings apply)
+- other mod settings unchanged: `CallOfTheWild\settings.json` SHA-256 `24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8` (match True)
+- other mod settings unchanged: `RacesUnleashed\Settings.json` SHA-256 `270899c3f6c3d29bfe777fc2b55a0bb0404ae50786dbac8f1dccf77e8b9cabbf` (match True)
+- other mod settings unchanged: `ZFavoredClass\settings.json` SHA-256 `bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b` (match True)
+- each temporary settings profile removed `FavoredClassIntegration.json` after
+  its own runs (verified absent after each profile and at the end)
+- the persistence transaction restored the settings and the complete Mods tree
+  (`20260924T2309101781279Z_bf24e45a425e4d8f857c7fb353530d5b`); each compatibility profile restored the exact original Mods tree
+  and FeatureModules bytes before releasing the lock.
+
+Restoration status: VERIFIED.
+
 ## Next concrete actions
 
-1. Owner review of the local candidate and the owner decisions in
-   `FAVORED-CLASS-BLOCKERS.md` (OD-1 … OD-10, D1, D2).
-2. If requested: the NOT RUN families (E11, E16, L02, L03, L06 native),
-   fresh-process persistence for the non-Gunslinger counters, the CotW-only
-   profiles (needs the missing fixture root, B2) and art for the 127
-   placeholder choices.
+1. Owner review of the local candidate `15c37695c` and of the two pre-existing KMG
+   defects D1 and D2 (`FAVORED-CLASS-BLOCKERS.md`).
+2. To reach COMPLETE, observe natively the partial families E10, E15, M07, M10, M12, M13, M14, M24, L07:
+   turn-based variants of the lanes (L07, M12), True Grit at level 20 (M13),
+   bomb splash and critical (M14), the misfire ammunition and condition
+   matrix (M07), the deed interruption path (M10), native auto-level (E15),
+   per-revelation values for all 52 revelations (M24) and an injected
+   permission cycle or duplicate fact (E10). H02, H04, H05 and L06 stay
+   domain tested unless the owner authorizes staging a host or dependency state.
 3. Nothing is pushed, merged, tagged or published; those remain separate
    owner actions.
