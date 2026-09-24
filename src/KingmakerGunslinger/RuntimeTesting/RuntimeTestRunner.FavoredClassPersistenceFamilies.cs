@@ -64,6 +64,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var performer = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, FcbInspireCompetenceBuffGuid,
                 "InspireCompetenceBuff");
             bard.Descriptor.AddBuff(performer, new MechanicsContext(bard, bard.Descriptor, performer));
+            // A native spawn queues its area until the entity creator ticks.
+            Game.Instance.EntityCreator.Tick();
             expected["bard"] = DescribeFcbFamilySubject(bard, null);
 
             // Aura: an invested paladin with Aura of Courage.
@@ -74,6 +76,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             paladin.Descriptor.AddFact(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
                 FcbAuraOfCourageFeatureGuid, "AuraOfCourageFeature"));
             GrantFavoredClassRanks(paladin, leaves.Pair(FavoredClassCatalog.EffectPaladinAuras, null).Full, 2);
+            Game.Instance.EntityCreator.Tick();
             expected["paladin"] = DescribeFcbFamilySubject(paladin, null);
 
             // Pet projection: a ranger's companion with projected armor.
@@ -155,7 +158,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (float)((JArray)subject("bard")["areas"])[0]["ringFactor"] > 1f &&
                 ((JArray)subject("paladin")["areas"]).Count >= 1 &&
                 subject("ranger")["census"]["pet"].Type == JTokenType.Object &&
-                (int)subject("ranger")["census"]["pet"]["petFeatureRank"] == 2 &&
+                (int)subject("ranger")["census"]["pet"]["petFeatureRank"] == 1 &&
+                (int)subject("ranger")["census"]["pet"]["petFeatureFacts"] == 1 &&
+                ((JArray)subject("ranger")["census"]["pet"]["ownedModifiers"]).Select(value => (string)value)
+                    .SequenceEqual(new[] { "AC|NaturalArmor|2" }) &&
                 ((JObject)subject("monk")["census"]["counters"]).Count >= 1 &&
                 subject("revelation")["ability"].Type == JTokenType.Object &&
                 subject("bloodline")["ability"].Type == JTokenType.Object &&
@@ -237,14 +243,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FcbCompanionWolfGuid, "AnimalCompanionFeatureWolf"));
                 Game.Instance.EntityCreator.Tick();
                 UnitEntityData second = ranger.Descriptor.Pet;
-                int copies = second == null ? -1 : second.Descriptor.Progression.Features.Enumerable.Count(value =>
-                    ReferenceEquals(value.Blueprint, petFeature));
-                int rank = second == null ? -1 : second.Descriptor.Progression.Features.GetRank(petFeature);
+                // The projection is one single-rank fact whose armor reads the
+                // master's counter: +1 per Full rank.
+                var projected = FcbCensus(ranger)["pet"] as JObject;
+                int copies = projected == null ? -1 : (int)projected["petFeatureFacts"];
+                int rank = projected == null ? -1 : (int)projected["petFeatureRank"];
+                string[] armor = projected == null ? new string[0] :
+                    ((JArray)projected["ownedModifiers"]).Select(value => (string)value).ToArray();
                 bool orphan = first != null && first.Descriptor.HasFact(petFeature);
                 FcbPersistenceAssert("family-ranger-replacement-after-reload",
-                    "replacing the reloaded companion gives the new companion the projected armor exactly once at the saved rank and leaves none on the old one",
-                    second != null && !ReferenceEquals(first, second) && copies == 1 && rank == 2 && !orphan,
-                    new { replaced = second != null && !ReferenceEquals(first, second), copies, rank, orphan });
+                    "replacing the reloaded companion gives the new companion the single projected armor fact carrying the master's +2 natural armor and leaves none on the old one",
+                    second != null && !ReferenceEquals(first, second) && copies == 1 && rank == 1 &&
+                    armor.SequenceEqual(new[] { "AC|NaturalArmor|2" }) && !orphan,
+                    new { replaced = second != null && !ReferenceEquals(first, second), copies, rank, armor, orphan });
             }
         }
 
@@ -338,6 +349,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         // disposes them (they belong to the disposable save only).
         private void DetachFcbFamilySubjects(Player player, bool dispose)
         {
+            if (dispose)
+            {
+                // Their performance and aura areas live in the cross-scene
+                // state too: end them natively, then let the destroyer remove
+                // them (its view destruction releases each ring to the pool).
+                var owners = new HashSet<UnitEntityData>(_fcbFamilySubjects.Where(value => value != null));
+                foreach (AreaEffectEntityData area in Game.Instance.State.AreaEffects.Where(value =>
+                    value != null && value.Context != null && owners.Contains(value.Context.MaybeCaster)).ToArray())
+                {
+                    area.ForceEnd();
+                    area.Tick();
+                }
+                Game.Instance.EntityDestroyer.Tick();
+            }
             foreach (UnitEntityData unit in _fcbFamilySubjects.ToArray())
             {
                 if (unit == null) continue;

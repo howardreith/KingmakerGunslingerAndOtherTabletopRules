@@ -93,6 +93,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly List<UnitEntityData> Units = new List<UnitEntityData>();
             internal readonly List<BlueprintUnit> Blueprints = new List<BlueprintUnit>();
             internal readonly List<AreaEffectEntityData> Areas = new List<AreaEffectEntityData>();
+            internal readonly HashSet<string> PartyMembers = new HashSet<string>(StringComparer.Ordinal);
             internal UnitEntityData Anchor;
             internal Vector3 Origin;
             internal Vector3 Direction;
@@ -155,7 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             paladinA.Descriptor.AddFact(courage);
             paladinB.Descriptor.AddFact(courage);
             yield return null;
-            AreaEffectEntityData auraA = OwnedArea(paladinA, area), auraB = OwnedArea(paladinB, area);
+            AreaEffectEntityData auraA = SpawnedFcbArea(paladinA, area), auraB = SpawnedFcbArea(paladinB, area);
             evidence["areas"] = new JObject { ["a"] = auraA != null, ["b"] = auraB != null };
             if (auraA == null || auraB == null)
             {
@@ -243,7 +244,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             GrantFavoredClassRanks(bardA, leaf, 2);
             Buff buffA = bardA.Descriptor.AddBuff(performer, new MechanicsContext(bardA, bardA.Descriptor, performer));
             yield return null;
-            AreaEffectEntityData areaA = OwnedArea(bardA, area);
+            AreaEffectEntityData areaA = SpawnedFcbArea(bardA, area);
             if (buffA == null || areaA == null)
             {
                 failures.Add("the invested bard's native performance area did not spawn");
@@ -273,7 +274,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Control: the uninvested bard's same performance at the same spot.
             Buff buffB = bardB.Descriptor.AddBuff(performer, new MechanicsContext(bardB, bardB.Descriptor, performer));
             yield return null;
-            AreaEffectEntityData areaB = OwnedArea(bardB, area);
+            AreaEffectEntityData areaB = SpawnedFcbArea(bardB, area);
             evidence["radius"] = new JObject { ["native"] = native, ["invested"] = radius(areaA),
                 ["control"] = radius(areaB) };
             evidence["membership"] = new JObject { ["insideWidened"] = insideWidened, ["afterLeaving"] = afterLeaving,
@@ -294,7 +295,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             PlaceFcbUnit(ally, bardAt + ray * 2f);
             Buff again = bardA.Descriptor.AddBuff(performer, new MechanicsContext(bardA, bardA.Descriptor, performer));
             yield return null;
-            AreaEffectEntityData areaA2 = OwnedArea(bardA, area);
+            AreaEffectEntityData areaA2 = SpawnedFcbArea(bardA, area);
             if (areaA2 != null) areaA2.Tick();
             if (areaB != null) areaB.Tick();
             foreach (object step in KillAndResurrect(bardA, evidence, "invested-bard")) yield return step;
@@ -423,16 +424,47 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             evidence["duringPolymorph"] = during;
             evidence["afterReturn"] = afterReturn;
-            // Area transition: the same area reloads; subjects are resolved
-            // again by identity and compared.
-            string[] ids = subjects.Select(unit => unit.UniqueId).ToArray();
-            JObject performanceBefore = DescribeOwnedAreas(fixtures);
+            // Area transition owners: an invested paladin's aura and an
+            // invested bard's performance.
+            UnitEntityData auraOwner = SpawnFcbFixture(fixtures, "TransitionPaladin",
+                fixtures.Origin + fixtures.Direction * 15f);
+            UnitEntityData performanceOwner = SpawnFcbFixture(fixtures, "TransitionBard",
+                fixtures.Origin + fixtures.Direction * 16f);
+            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
+            GrantFavoredClassRanks(auraOwner, full(FavoredClassCatalog.EffectPaladinAuras), 2);
+            auraOwner.Descriptor.AddFact(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                FcbAuraOfCourageFeatureGuid, "AuraOfCourageFeature"));
+            GrantFavoredClassRanks(performanceOwner, leaves.Pair(FavoredClassCatalog.EffectPerformanceRange,
+                FavoredClassPerformanceManifest.For("InspireCompetence").Key).Full, 2);
+            var performer = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                FcbInspireCompetenceBuffGuid, "InspireCompetenceBuff");
+            performanceOwner.Descriptor.AddBuff(performer,
+                new MechanicsContext(performanceOwner, performanceOwner.Descriptor, performer));
+            Game.Instance.EntityCreator.Tick();
+            // A native area unload destroys every cross-scene unit outside the
+            // party roster, so the transition subjects join the party exactly
+            // as companions do (in memory only: the lane never saves).
+            UnitEntityData[] travelers = subjects.Concat(new[] { auraOwner, performanceOwner }).ToArray();
+            foreach (UnitEntityData traveler in travelers)
+                JoinFcbParty(fixtures, traveler);
+            yield return null;
+            string[] ids = travelers.Select(unit => unit.UniqueId).ToArray();
+            var owners = new HashSet<string>(new[] { auraOwner.UniqueId, performanceOwner.UniqueId });
+            var beforeReload = travelers.ToDictionary(unit => unit.UniqueId, FcbCensus);
+            JObject performanceBefore = DescribeOwnedAreas(owners);
+            var performanceKey = performanceOwner.UniqueId + "|" + BlueprintLibraryLookup.RequireExact<
+                BlueprintAbilityAreaEffect>(library, FavoredClassPerformanceManifest.For("InspireCompetence")
+                .AreaGuids[0], "InspireCompetenceArea").name;
+            if (performanceBefore.Count != 2 || performanceBefore[performanceKey] == null ||
+                (float)performanceBefore[performanceKey]["ringFactor"] <= 1f)
+                failures.Add("the transition owners' aura and widened performance were not live before the reload");
             Game.Instance.ReloadArea();
             int guard = 0;
             while ((LoadingProcess.Instance.IsLoadingInProcess || Game.Instance.CurrentMode != Kingmaker.GameModes.GameModeType.Default) &&
                    guard++ < 3000)
                 yield return null;
             for (int wait = 0; wait < FcbSettleUpdates; wait++) yield return null;
+            Game.Instance.EntityCreator.Tick();
             var afterReload = new JObject();
             foreach (string id in ids)
             {
@@ -444,7 +476,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 JObject census = FcbCensus(unit);
                 afterReload[id] = census;
-                if (!JToken.DeepEquals(Comparable(baseline[id]), Comparable(census)))
+                if (!JToken.DeepEquals(Comparable(beforeReload[id]), Comparable(census)))
                     failures.Add(unit.Blueprint.name + ": the area reload changed its owned effects");
             }
             // Re-resolve the fixtures for cleanup after the reload.
@@ -455,7 +487,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData reloaded = Game.Instance.State.Units.FirstOrDefault(value => value.UniqueId == id);
                 if (reloaded != null) fixtures.Units[index] = reloaded;
             }
-            JObject performanceAfter = DescribeOwnedAreas(fixtures);
+            JObject performanceAfter = DescribeOwnedAreas(owners);
             evidence["afterReload"] = afterReload;
             evidence["areasBeforeReload"] = performanceBefore;
             evidence["areasAfterReload"] = performanceAfter;
@@ -575,10 +607,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             return copy;
         }
 
-        private JObject DescribeOwnedAreas(FcbLifecycleFixtures fixtures)
+        private JObject DescribeOwnedAreas(ICollection<string> ids)
         {
             var result = new JObject();
-            var ids = new HashSet<string>(fixtures.Units.Where(value => value != null).Select(value => value.UniqueId));
             foreach (AreaEffectEntityData area in Game.Instance.State.AreaEffects.Where(value => value != null &&
                 !value.IsEnded && value.Context != null && value.Context.MaybeCaster != null &&
                 ids.Contains(value.Context.MaybeCaster.UniqueId)).OrderBy(value => value.Context.MaybeCaster.UniqueId +
@@ -681,6 +712,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             throw new InvalidOperationException("No obstacle-free direction exists around the party anchor.");
         }
 
+        /// <summary>
+        /// A native spawn queues its area until the entity creator's next
+        /// tick; the paused lane ticks it once so the area enters the state.
+        /// </summary>
+        private static AreaEffectEntityData SpawnedFcbArea(UnitEntityData owner, BlueprintAbilityAreaEffect blueprint)
+        {
+            Game.Instance.EntityCreator.Tick();
+            return OwnedArea(owner, blueprint);
+        }
+
+        private static void JoinFcbParty(FcbLifecycleFixtures fixtures, UnitEntityData unit)
+        {
+            Player player = Game.Instance.Player;
+            if (!player.PartyCharacters.Any(value => value.UniqueId == unit.UniqueId))
+                player.PartyCharacters.Add(unit);
+            fixtures.PartyMembers.Add(unit.UniqueId);
+            player.InvalidateCharacterLists();
+            player.UpdateCharacterLists();
+        }
+
         private static AreaEffectEntityData OwnedArea(UnitEntityData owner, BlueprintAbilityAreaEffect blueprint)
         {
             return Game.Instance.State.AreaEffects.LastOrDefault(value => value != null && !value.IsEnded &&
@@ -707,6 +758,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void CleanupFcbLifecycle(FcbLifecycleFixtures fixtures)
         {
+            try
+            {
+                Player player = Game.Instance.Player;
+                player.PartyCharacters.RemoveAll(value => fixtures.PartyMembers.Contains(value.UniqueId));
+                player.InvalidateCharacterLists();
+                player.UpdateCharacterLists();
+            }
+            catch (Exception) { }
             foreach (AreaEffectEntityData area in fixtures.Areas.Where(value => value != null))
                 try { if (!area.IsEnded) area.ForceEnd(); } catch (Exception) { }
             foreach (UnitEntityData unit in fixtures.Units.Where(value => value != null))
