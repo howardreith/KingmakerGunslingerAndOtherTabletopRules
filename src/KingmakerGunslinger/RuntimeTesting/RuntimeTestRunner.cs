@@ -3594,6 +3594,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] units = prepare ?
                 _expandedSummoningPersistencePreparedUnits :
                 ExpandedSummoningPersistentUnits(gameState, party);
+            // The party-camera review of the Pteranodon rides here: on the
+            // freshly cast creature before prepare saves it, and on the freshly
+            // deserialized one before verify-cleanup expires it. A few frames
+            // each; the stage's own measurements follow untouched.
+            if ((prepare || verifyCleanup) &&
+                !_expandedSummoningPersistenceCleanupStarted &&
+                !StepExpandedSummoningMotionReview(units,
+                    prepare ? "prepare" : "reloaded"))
+                return;
             bool cleanupContinuation = verifyCleanup &&
                 _expandedSummoningPersistenceCleanupStarted;
             if (!cleanupContinuation)
@@ -3679,7 +3688,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPersistenceControlValid &&
                 _expandedSummoningPersistenceCleanupValid &&
                 (prepare || verifyCleanup ?
-                    _expandedSummoningPersistenceUnitCount == 2 :
+                    _expandedSummoningPersistenceUnitCount == 3 :
                     units.Length == 0);
             _expandedSummoningPersistenceDetail += ";active=" + active +
                 ";published=" + publishedReferences + ";phaseValid=" +
@@ -4000,6 +4009,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistencePteranodonVisual,
                     _expandedSummoningPersistencePteranodonVisualValid,
                     "ExpandedSummoningPteranodonViewPatch.DescribeView and the renderer state on the persistent unit"),
+                Assertion("expanded-summoning-pteranodon-motion-review",
+                    writes ? "four party-camera renders of the " + (prepare ? "freshly cast" : "freshly deserialized") +
+                        " Pteranodon - idle, moving twice, attacking - each with the creature in frame"
+                        : "not applicable after cleanup",
+                    MotionReviewSummary,
+                    writes ? MotionReviewValid : true,
+                    "the game camera rendered to file with the mod-manager overlay closed; supporting images for internal review, not the mechanical proof"),
                 Assertion(verifyCleanup || !writes ?
                         "expanded-summoning-cleaned" :
                         "expanded-summoning-prepared",
@@ -17684,8 +17700,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pteranodonPresented = false;
             string pteranodonMotion = "<not observed>";
             bool pteranodonMotionBound = false;
-            string pteranodonCaptureIdle = "<not captured>";
-            string pteranodonCaptureAfter = "<not captured>";
             MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
                 "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
             try
@@ -17825,13 +17839,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Sprint 2 presentation: the attached visual measured against
                     // the donor it replaced, before any animation is exercised.
                     if (variant.Creature.Key == "pteranodon")
-                    {
                         pteranodonPresentation = DescribePteranodonPresentation(
                             view, out pteranodonPresented);
-                        pteranodonCaptureIdle = WriteExpandedSummoningLiveCapture(
-                            unit, _request.EvidenceDirectory,
-                            "pteranodon-live-idle.png");
-                    }
 
                     IEnumerable colliderSequence = view == null ? null :
                         ReadExactMember(view, "Colliders") as IEnumerable;
@@ -17909,13 +17918,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // the visual must still be the attached one, bound to the
                     // same animated bones, with the donor still off.
                     if (variant.Creature.Key == "pteranodon")
-                    {
                         pteranodonMotion = DescribePteranodonPresentation(
                             view, out pteranodonMotionBound);
-                        pteranodonCaptureAfter = WriteExpandedSummoningLiveCapture(
-                            unit, _request.EvidenceDirectory,
-                            "pteranodon-live-after-exercises.png");
-                    }
 
                     diagnostics.Add(variant.Creature.Key + ":view=" + attached +
                         ";renderers=" + renderers.Length + ";bounds=" +
@@ -18061,12 +18065,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "the same attached state holds after the native locomotion, attack, hit and death paths have run",
                     pteranodonMotion, pteranodonMotionBound,
                     "the presentation contract re-measured after the animation exercises"),
-                Assertion("expanded-summoning-pteranodon-live-captures",
-                    "two offscreen renders of the live scene on the summoned Pteranodon, before and after the exercises",
-                    "idle=[" + pteranodonCaptureIdle + "];after=[" + pteranodonCaptureAfter + "]",
-                    pteranodonCaptureIdle.StartsWith("png=", StringComparison.Ordinal) &&
-                        pteranodonCaptureAfter.StartsWith("png=", StringComparison.Ordinal),
-                    "supporting visual evidence for internal review from a copy of the game camera; mechanical proof remains the presentation and motion-binding assertions"),
                 Assertion("expanded-summoning-view-cleanup", "67/67 and exact snapshots",
                     "detached=" + detachedViews + ";cleaned=" + cleaned,
                     detachedViews == 67 && cleaned,

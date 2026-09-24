@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Kingmaker.EntitySystem.Entities;
 using Kingmaker.View;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Summoning;
@@ -445,101 +444,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "0.###", CultureInfo.InvariantCulture) + ":" +
                         clipEvent.functionName);
                 }
-            }
-        }
-
-        /// <summary>
-        /// Renders the live scene from a copy of the game camera framed on one
-        /// unit, from the party camera's kind of angle, and writes the PNG.
-        ///
-        /// What this is: the scene's own materials, lighting and the unit's
-        /// pose at this frame, rendered offscreen. What it is not: the
-        /// player's frame. Effects that live on the live camera's own
-        /// components - fog of war, colour grading - are not copied, and a
-        /// fresh summon's renderers are hidden by the game's fader until it
-        /// fades in, so those renderers are enabled for the duration of this
-        /// one offscreen render and put back exactly as found. The record
-        /// says which were re-enabled. This is supporting visual evidence for
-        /// internal review; the mechanical proof stays in the assertions.
-        /// </summary>
-        private static string WriteExpandedSummoningLiveCapture(
-            UnitEntityData unit, string evidenceDirectory, string fileName)
-        {
-            if (unit == null || unit.View == null ||
-                string.IsNullOrWhiteSpace(evidenceDirectory))
-                return "capture-skipped:no-view";
-            Renderer[] renderers = unit.View
-                .GetComponentsInChildren<Renderer>(true)
-                .Where(value => value != null).ToArray();
-            if (renderers.Length == 0) return "capture-skipped:no-renderers";
-            Camera liveCamera = UnityEngine.Object.FindObjectsOfType<Camera>()
-                .Where(value => value != null && value.enabled)
-                .OrderByDescending(value => ReferenceEquals(value, Camera.main))
-                .ThenByDescending(value => value.depth)
-                .FirstOrDefault();
-            if (liveCamera == null) return "capture-skipped:no-camera";
-
-            const int width = 1280, height = 720;
-            var cameraObject = new GameObject("KMG_Runtime_LiveCaptureCamera");
-            RenderTexture renderTexture = null;
-            Texture2D output = null;
-            RenderTexture prior = RenderTexture.active;
-            var reenabled = new List<Renderer>();
-            try
-            {
-                foreach (Renderer renderer in renderers)
-                {
-                    if (renderer.enabled) continue;
-                    renderer.enabled = true;
-                    reenabled.Add(renderer);
-                }
-                Bounds bounds = renderers[0].bounds;
-                for (int index = 1; index < renderers.Length; index++)
-                    bounds.Encapsulate(renderers[index].bounds);
-                Camera camera = cameraObject.AddComponent<Camera>();
-                camera.CopyFrom(liveCamera);
-                camera.enabled = false;
-                float span = Mathf.Max(3f, bounds.size.magnitude);
-                camera.transform.position = bounds.center +
-                    new Vector3(0f, span * 1.05f, -span * 0.9f);
-                camera.transform.LookAt(bounds.center);
-                renderTexture = new RenderTexture(width, height, 24,
-                    RenderTextureFormat.ARGB32);
-                camera.targetTexture = renderTexture;
-                Vector3 viewport = camera.WorldToViewportPoint(bounds.center);
-                camera.Render();
-                RenderTexture.active = renderTexture;
-                output = new Texture2D(width, height, TextureFormat.RGBA32,
-                    false, false);
-                output.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-                output.Apply(false, false);
-                byte[] png = EncodeExpandedSummoningPng(output);
-                if (png == null || png.Length < 4096)
-                    return "capture-failed:empty-png";
-                File.WriteAllBytes(Path.Combine(evidenceDirectory, fileName), png);
-                return "png=" + fileName + ";bytes=" + Number(png.Length) +
-                    ";subjectViewport=" + Decimal(viewport.x) + "," +
-                    Decimal(viewport.y) + ";boundsSize=" +
-                    Decimal(bounds.size.magnitude) + ";renderersReenabledForRender=" +
-                    Number(reenabled.Count) + "/" + Number(renderers.Length) +
-                    ";method=copied-live-camera-offscreen-render";
-            }
-            catch (Exception error)
-            {
-                return "capture-failed:" + error.GetType().Name;
-            }
-            finally
-            {
-                foreach (Renderer renderer in reenabled)
-                    if (renderer != null) renderer.enabled = false;
-                RenderTexture.active = prior;
-                if (renderTexture != null)
-                {
-                    renderTexture.Release();
-                    UnityEngine.Object.Destroy(renderTexture);
-                }
-                if (output != null) UnityEngine.Object.Destroy(output);
-                UnityEngine.Object.Destroy(cameraObject);
             }
         }
 
