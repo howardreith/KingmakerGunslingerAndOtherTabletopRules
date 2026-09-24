@@ -193,8 +193,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FavoredClassRevelationManifest.OracleClassGuid, "Oracle");
             FavoredClassLeafPair[] pairs = leaves.Pairs.Where(pair =>
                 pair.Effect.Id == FavoredClassCatalog.EffectSelectedRevelation).ToArray();
+            // Mysteries are progressions and revelation lists are selections.
             Func<string, BlueprintFeature> feature = guid =>
-                BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, guid, guid);
+            {
+                BlueprintScriptableObject value;
+                library.BlueprintsByAssetId.TryGetValue(guid, out value);
+                if (!(value is BlueprintFeature))
+                    throw new InvalidOperationException("Missing provider feature " + guid);
+                return (BlueprintFeature)value;
+            };
             var cases = new[]
             {
                 Tuple.Create(FavoredClassAncestry.Ifrit, FcbFlameMysteryGuid, FcbFlameRevelationSelectionGuid,
