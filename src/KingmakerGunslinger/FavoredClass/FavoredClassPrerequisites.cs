@@ -71,12 +71,16 @@ namespace KingmakerGunslinger.FavoredClass
     {
         public string EffectId;
 
+        /// <summary>The rows that open this target; empty or null means every row.</summary>
+        public string[] RowIds;
+
         public override bool Check(FeatureSelectionState selectionState, UnitDescriptor unit,
             LevelUpState state)
         {
             if (unit == null || string.IsNullOrEmpty(EffectId))
                 return false;
-            return FavoredClassRuntime.IsEffectEligible(EffectId, unit);
+            return FavoredClassRuntime.IsEffectEligible(EffectId, unit,
+                RowIds == null || RowIds.Length == 0 ? null : RowIds);
         }
 
         public override string GetUIText()

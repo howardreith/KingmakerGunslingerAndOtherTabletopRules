@@ -115,6 +115,22 @@ namespace KingmakerGunslinger.FavoredClass
                 "02c00d3cf652431a93f0248c9a5d9c96", "BlueprintFeature"),
             new FavoredClassIdentity("KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature",
                 "563c6a25ff824d14a6bfc8012d62e46a", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Partial",
+                "917f52c439a14fa4ab27a38f3ed9c903", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Full",
+                "5a0698585272446aa1d382f248662347", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Sorcerer.BloodlinePower.FireBlast.Partial",
+                "d24a00e4558f4a8dacc00e30d519f829", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Sorcerer.BloodlinePower.FireBlast.Full",
+                "53c4743882314561822fe7b188ab5c25", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Sorcerer.BloodlinePower.AirRay.Partial",
+                "c914960ba2e24de68009307c87b6f3d5", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Sorcerer.BloodlinePower.AirRay.Full",
+                "4d43fea45ce1455ba6a9bfaa1e9d4524", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Sorcerer.BloodlinePower.AirBlast.Partial",
+                "2ab5c20220c746cfabb58e768a331590", "BlueprintFeature"),
+            new FavoredClassIdentity("KMG.FavoredClass.Sorcerer.BloodlinePower.AirBlast.Full",
+                "505a86ad1c104a8e890df0adbc48d8c3", "BlueprintFeature"),
         };
 
         /// <summary>Owned helper identities that are not menu leaves.</summary>
