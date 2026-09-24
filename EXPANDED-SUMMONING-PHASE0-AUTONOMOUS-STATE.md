@@ -214,6 +214,19 @@ claimed.
    hung the game - frames stopped, so even the frame-budget guard could not
    fire. Disabled. The live 120/110 measurement is marked not run.
 
+## Owner manual review of the Pteranodon candidate (2026-09-24)
+
+The owner stated on 2026-09-24 that their manual review of the Phase 0
+Pteranodon candidate passed, and activated the Phase 0 closeout and Sprints
+3-8 order. Recorded exactly as given: no revision, installation, or build was
+named by the owner, so the review is not linked to a deployment record; the
+last pushed head at the time was `ba37f4b6`, and the live installation rested
+at 0.0.117 throughout. The owner's approval closes the personal-review item
+for the candidate they saw and nothing else: it waives no compatibility
+mechanical run, no live menu measurement, and no other technical item.
+HumanReview for the Pteranodon candidate: PASSED (owner statement, revision
+unspecified). HumanReview for everything after it: NOT_PERFORMED_NONBLOCKING.
+
 ## Sprint 2 finished creature (2026-09-23/24)
 
 - Asset commit `50004a65`: crest iteration 7 (tip apex, 1.05 back / 0.72 up
