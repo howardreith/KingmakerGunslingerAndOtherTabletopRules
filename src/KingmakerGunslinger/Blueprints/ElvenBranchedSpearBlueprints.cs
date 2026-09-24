@@ -416,39 +416,58 @@ namespace KingmakerGunslinger.Blueprints
             ElvenBranchedSpearItemSpec spec,
             BlueprintWeaponEnchantment[] enchantments)
         {
-            string description = Describe(spec);
+            Configure(item, spec.Symbol, spec.DisplayName, spec.Cost,
+                spec.ColdIron, enchantments);
+        }
+
+        /// <summary>
+        /// Generic-item configuration shared by the catalog items and the
+        /// higher-enhancement progression variants of the same family.
+        /// </summary>
+        internal void Configure(BlueprintItemWeapon item, string symbol,
+            string displayName, int cost, bool coldIron,
+            BlueprintWeaponEnchantment[] enchantments)
+        {
+            string description = Describe();
             BlueprintItemAccess.Resolve().ConfigureWeapon(item,
-                LocalizationService.Create(spec.Symbol + ".Name", spec.DisplayName),
-                LocalizationService.Create(spec.Symbol + ".Description", description),
-                LocalizationService.Create(spec.Symbol + ".Flavor",
+                LocalizationService.Create(symbol + ".Name", displayName),
+                LocalizationService.Create(symbol + ".Description", description),
+                LocalizationService.Create(symbol + ".Flavor",
                     "Forward-angled leaf blades give this elegant elven spear its unmistakable silhouette."),
-                spec.Cost, ElvenBranchedSpearCatalog.WeightPounds);
+                cost, ElvenBranchedSpearCatalog.WeightPounds);
             _enchantments.SetValue(item, enchantments == null
                 ? Array.Empty<BlueprintWeaponEnchantment>()
                 : enchantments.ToArray());
-            _overrideDamageType.SetValue(item, spec.ColdIron);
-            _damageType.SetValue(item, PhysicalPiercing(spec.ColdIron));
+            _overrideDamageType.SetValue(item, coldIron);
+            _damageType.SetValue(item, PhysicalPiercing(coldIron));
         }
 
         internal void Validate(BlueprintItemWeapon item,
             ElvenBranchedSpearItemSpec spec)
         {
+            Validate(item, spec.DisplayName, spec.Cost, spec.Masterwork,
+                spec.ColdIron, spec.Enhancement);
+        }
+
+        internal void Validate(BlueprintItemWeapon item, string displayName,
+            int cost, bool masterwork, bool coldIron, int enhancement)
+        {
             BlueprintWeaponEnchantment[] enchantments =
                 (BlueprintWeaponEnchantment[])_enchantments.GetValue(item) ??
                 Array.Empty<BlueprintWeaponEnchantment>();
             DamageTypeDescription damage = (DamageTypeDescription)_damageType.GetValue(item);
-            if (item.Cost != spec.Cost || !item.Weight.Equals(10f) ||
+            if (item.Cost != cost || !item.Weight.Equals(10f) ||
                 item.IsActuallyStackable || item.IsMasterwork !=
-                    (spec.Masterwork && spec.Enhancement == 0) ||
-                (bool)_overrideDamageType.GetValue(item) != spec.ColdIron ||
+                    (masterwork && enhancement == 0) ||
+                (bool)_overrideDamageType.GetValue(item) != coldIron ||
                 damage == null || damage.Type != DamageType.Physical ||
                 damage.Physical.Form != PhysicalDamageForm.Piercing ||
-                damage.Physical.Material != (spec.ColdIron
+                damage.Physical.Material != (coldIron
                     ? PhysicalDamageMaterial.ColdIron : 0) ||
-                enchantments.Length != (spec.Enhancement == 1 || spec.Masterwork ? 1 : 0) ||
+                enchantments.Length != (enhancement >= 1 || masterwork ? 1 : 0) ||
                 item.Description.IndexOf("Brace", StringComparison.OrdinalIgnoreCase) >= 0)
                 throw new InvalidOperationException("Spear item contract is invalid: " +
-                    spec.DisplayName + ";cost=" + item.Cost + ";weight=" +
+                    displayName + ";cost=" + item.Cost + ";weight=" +
                     item.Weight + ";stackable=" + item.IsActuallyStackable +
                     ";nativeMasterworkFlag=" + item.IsMasterwork +
                     ";overrideDamage=" + _overrideDamageType.GetValue(item) +
@@ -500,7 +519,7 @@ namespace KingmakerGunslinger.Blueprints
                     spec.DisplayName + ".");
         }
 
-        private static string Describe(ElvenBranchedSpearItemSpec spec)
+        private static string Describe()
         {
             return "Usable with Weapon Finesse. Grants a +2 bonus on attacks of opportunity triggered by enemy movement.";
         }

@@ -17,7 +17,9 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["plannedType"] == "BlueprintItemWeapon" &&
                 (string)value["status"] == "active").ToArray();
             JToken[] actual = audit["items"].ToArray();
-            Assertions.Equal(70, expected.Length,
+            // 70 pre-existing weapons plus the 43 Better Vendors progression variants.
+            Assertions.Equal(70 + KingmakerGunslinger.Acquisition
+                    .ProgressionWeaponCatalog.NewBlueprintCount, expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
                 "The visual audit does not cover every active custom weapon.");
@@ -59,7 +61,8 @@ namespace KingmakerGunslinger.DomainTests
                         (string)item["symbolicIdentity"] +
                         " lacks required audit field " + field + ".");
 
-            Assertions.Equal(58, audit["items"].Count(value =>
+            Assertions.Equal(58 + KingmakerGunslinger.Acquisition
+                    .ProgressionWeaponCatalog.NewBlueprintCount, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "equipped project weapon"),
                 "Equipped custom-weapon audit scope changed.");
             Assertions.Equal(2, audit["items"].Count(value =>
@@ -82,10 +85,12 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["mappingScope"] == "equipped project weapon").ToArray();
             var expectedCounts = new Dictionary<string, int>(StringComparer.Ordinal)
             {
-                { "Pistol", 5 }, { "Musket", 6 }, { "Blunderbuss", 3 },
+                // Pre-existing counts plus the Better Vendors progression
+                // variants (firearms +9 each, melee +4 each).
+                { "Pistol", 5 + 9 }, { "Musket", 6 + 9 }, { "Blunderbuss", 3 + 9 },
                 { "Rifle", 1 }, { "Revolver", 1 },
-                { "Elven Branched Spear", 12 }, { "Wakizashi", 10 },
-                { "Katana", 10 }, { "Nodachi", 10 }
+                { "Elven Branched Spear", 12 + 4 }, { "Wakizashi", 10 + 4 },
+                { "Katana", 10 + 4 }, { "Nodachi", 10 + 4 }
             };
             foreach (KeyValuePair<string, int> pair in expectedCounts)
                 Assertions.Equal(pair.Value, equipped.Count(value =>
@@ -127,7 +132,7 @@ namespace KingmakerGunslinger.DomainTests
             JToken[] spears = audit["items"].Where(value =>
                 (string)value["familyOrFirearmKind"] ==
                     "Elven Branched Spear").ToArray();
-            Assertions.Equal(12, spears.Length,
+            Assertions.Equal(12 + 4, spears.Length,
                 "The approved spear item mapping count changed.");
             foreach (JToken spear in spears)
             {
@@ -149,7 +154,7 @@ namespace KingmakerGunslinger.DomainTests
             string[] families = { "Wakizashi", "Katana", "Nodachi" };
             JToken[] items = audit["items"].Where(value => families.Contains(
                 (string)value["familyOrFirearmKind"])).ToArray();
-            Assertions.Equal(30, items.Length,
+            Assertions.Equal(30 + 12, items.Length,
                 "The approved Eastern item mapping count changed.");
             foreach (JToken item in items)
             {
@@ -179,7 +184,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Revolver" };
             JToken[] items = audit["items"].Where(value => families.Contains(
                 (string)value["familyOrFirearmKind"])).ToArray();
-            Assertions.Equal(16, items.Length,
+            Assertions.Equal(16 + 27, items.Length,
                 "The approved equipped firearm item count changed.");
             foreach (JToken item in items)
             {

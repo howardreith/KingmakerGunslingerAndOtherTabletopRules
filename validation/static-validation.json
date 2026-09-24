@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.136-rapid-reload-proficiency-gate",
+  "milestone": "0.0.138-better-vendors-progression",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.136",
+  "version": "0.0.138",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -1641,7 +1641,7 @@
   "magicCircleFollowup": {
     "baselineCommit": "c2446fc5cb1cfd568b3f3bcaa4a5375396a0a4ca",
     "branch": "codex/magic-circle-followup-polish",
-    "deterministicTestCount": 1734,
+    "deterministicTestCount": 1702,
     "publicReleaseAuthorized": false,
     "nativeQualification": "PASS: candidate 11; seven guarded scenarios, 428 assertions; exact fixture cleanup and fresh absence; normal-play restoration verified",
     "nativeEvidence": "reports/magic-circle/FOLLOWUP-QUALIFICATION.json",
@@ -1658,7 +1658,7 @@
   "rapidReloadProficiencyGate": {
     "baselineCommit": "0e62a78e1238a2d46e447bb307ee1e83f93ed178",
     "branch": "codex/rapid-reload-proficiency-gate",
-    "deterministicTestCount": 1734,
+    "deterministicTestCount": 1702,
     "publicReleaseAuthorized": true,
     "liveTestCountDelta": "1683 -> 1702; four Rapid Reload gate policy cases plus fifteen scenario evidence and visit-cleanup cases added to the shared suite",
     "parentPrerequisiteGrouping": "Prerequisite.GroupType.Any",
@@ -1707,5 +1707,154 @@
     "qualifiedPackageSha256": "9749EC38ABD9FCFBDD54EB825E7FC0A5F6D6D33CFFC81FAE4AB95D026FBDD58A",
     "artifactNote": "Static/build/package gates only. These hashes identify the built 0.0.136 candidate; no native runtime qualification was performed against them.",
     "versionNote": "0.0.135 was already published on 2026-09-21 from the Magic Circle follow-up line (commit a7cd0041); this release advanced to 0.0.136 rather than replacing it."
+  },
+  "rapidReloadCombatFeatFollowup": {
+    "baselineCommit": "35555a8d8b4bd8df5a6868a60d3ca1fbb9cd366b",
+    "branch": "codex/rapid-reload-combat-feat-classification",
+    "deterministicTestCount": 1704,
+    "publicReleaseAuthorized": false,
+    "liveTestCountDelta": "1702 -> 1704; parent classification source regression plus classification and Fighter bonus-slot evidence scoring",
+    "parentGroups": [
+      "Feat",
+      "CombatFeat"
+    ],
+    "genericSelectionHelperChanged": false,
+    "publicationChanged": false,
+    "proficiencyGateChanged": false,
+    "ownerWaiverApplies": false,
+    "nativeQualification": "PARTIAL, overall FAIL: run 20260923T1504537002644Z on commit 40710b6f (installed DLL 077169c47c98bc1d78c700d609f7c55061c5bfdb3a82a9a897adacce4e1b0fc0); combat-feat classification, publication, prerequisites, all acquisition rows including Gunslinger 1 to Fighter 1 bonus slot, Musket Master and class-identity PASS; three pre-existing harness expectations fail (preview parent rank while empty, defensive-probe banking, pending-class skill points); see TESTING.md",
+    "scope": [
+      "Rapid Reload parent classified as Feat and CombatFeat through BlueprintFeature.Groups",
+      "Fighter combat-feat route exercised for scoped refusal, scoped acquisition and a natively built Gunslinger 1 taking Fighter 1"
+    ]
+  },
+  "rapidReloadCombatFeat137": {
+    "baselineCommit": "35555a8d8b4bd8df5a6868a60d3ca1fbb9cd366b",
+    "branch": "codex/rapid-reload-combat-feat-classification",
+    "deterministicTestCount": 1704,
+    "publicReleaseAuthorized": true,
+    "ownerAuthorizedRelease": true,
+    "parentGroups": [
+      "Feat",
+      "CombatFeat"
+    ],
+    "genericSelectionHelperChanged": false,
+    "publicationChanged": false,
+    "proficiencyGateChanged": false,
+    "nativeScenarioExecuted": true,
+    "nativeScenarioOverallPass": true,
+    "classificationAssertionPassed": true,
+    "fighterBonusSlotAcquisitionPassed": true,
+    "harnessExpectationsCorrectedByOwnerDirection": true,
+    "harnessCorrections": [
+      "scoped refusal: the native preview parent rank is allowed; the refused firearm must hold no rank",
+      "empty-selection probe: the probe-applied parent is allowed; no firearm may be banked",
+      "pending class change: overspent skill points refunded through native UnspendSkillPoint"
+    ],
+    "nativeQualification": "PASS: disposable-rapid-reload-proficiency-gate run 20260923T1545397015359Z on commit 0eee3be9 (0.0.136-labelled candidate, installed DLL c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c), 11 of 11 assertions",
+    "compatibilityRuntimeQualificationPending": true,
+    "saveLoadCompatibilityVerified": false,
+    "releaseVersion": "0.0.137",
+    "releaseInformationalVersion": "0.0.137-rapid-reload-combat-feat",
+    "versionNote": "0.0.136 was already published; the classification change advances to 0.0.137. The release build differs from the natively qualified candidate only in version identity.",
+    "publishedTag": "v0.0.137",
+    "publishedAtUtc": "2026-09-23T15:58:22Z",
+    "publishedCommit": "90510353e619bc9064cf31fb6c1a28c95ba125da",
+    "publishedPackage": "KingmakerGunslinger-0.0.137-rapid-reload-combat-feat.zip",
+    "publishedPackageSha256": "c2a78d5b100f25daf5bc24d648014fc504f6fdc56a8ff10749c4e327bc39f866",
+    "publishedDllSha256": "90cf7659c44ced848a1bbd9443ecf9b544794c67ae76297acd190c046e4bf64a",
+    "publishedArtifactNote": "Publish-Release.ps1 produced two identical deterministic builds from master; the downloaded public asset matches packageSha256. Native qualification ran on the 0.0.136-labelled candidate at 0eee3be9, which differs only in version identity."
+  },
+  "betterVendorsProgression138": {
+    "baselineCommit": "202a41815f7ca80303e33c2f694804e7926efd8b",
+    "branch": "codex/better-vendors-progression",
+    "deterministicTestCount": 1774,
+    "publicReleaseAuthorized": true,
+    "ownerAuthorizedRelease": true,
+    "ownerReleaseInstruction": "Run the final tests. IF they have issues, please address them. If not, please proceeding with committing, merging, pushing to remote, incrementing the version number and cutting a new release.",
+    "releaseVersion": "0.0.138",
+    "releaseInformationalVersion": "0.0.138-better-vendors-progression",
+    "candidateOnly": false,
+    "progressionEntries": 50,
+    "reusedCanonicalEntries": 7,
+    "newBlueprints": 43,
+    "betterVendorsVerifiedVersion": "2.0.8",
+    "betterVendorsVerifiedAssembly": "BetterVendors 1.0.0.39014",
+    "betterVendorsVerifiedMvid": "04fc03cf-853f-46c8-b6d5-1404180451fb",
+    "betterVendorsVerifiedFileSha256": "8843509852964d9016d2996a3050bfbe6f068360c4f2f6b8ff7f6440ca712009",
+    "betterVendorsPublicSourceCompared": "github thehambeard/BetterVendors 3cb12966 (tag 1.0.7): Harmony12, arcane stock at Arsinoe, no AddStock try/catch; Military schedule identical",
+    "betterVendorsRequired": false,
+    "hooks": [
+      "ProgressionLogic.AddStock postfix (pass scope end)",
+      "ProgressionLogic.AddMilitaryStock prefix/postfix (tier mirror)",
+      "ProgressionLogic.GetFilterWeapons postfix (read-only observation)",
+      "VendorLogic.BeginTrading postfix (one-time catch-up, Military destination only)"
+    ],
+    "saveLocalLedger": "UnitPartBetterVendorsProgressionGrants",
+    "betterVendorsGate": "exact approved binary: whole-file SHA-256 and loaded-module MVID",
+    "ledgerPolicy": "write-ahead claim; released only on a confirmed no-op; uncertain outcomes keep the claim",
+    "ordinaryVendorPublicationChanged": false,
+    "mergeBlocked": false,
+    "acceptanceWaivedByOwner": true,
+    "ownerWaiverConfirmation": "Yes confirm those are waived. I will test that in my main game and revisit this thread if it's broken.",
+    "pendingAcceptance": [
+      "actual stocking and purchase at a known Military rank",
+      "persistence and bought-out stock across a full restart",
+      "native event coordination in both orderings",
+      "progression and module settings with shared outdoor/throne-room stock",
+      "purchased Reliable firearm mechanics after save and load"
+    ],
+    "craftMagicItemsInteractionTested": false,
+    "nativeRuntimeQualified": false,
+    "nativeRuntimeEvidence": null,
+    "nativeRuntimeScopeNote": "Merchant stock needs a kingdom-stage save; the only authorized disposable fixture predates kingdom creation.",
+    "workingSaveSmoke": {
+      "runId": "20260923T2118072933978Z-e4a9ec9367e44db2a380826b98f42488",
+      "status": "PASS",
+      "assertions": 11,
+      "commit": "a0cae195c7627b2e067c7d295b08904b51de232e",
+      "packageSha256": "b9910f845d9a0a851dc7037abed70ca5babfda6050fa1dd812d768686dde2b63",
+      "dllSha256": "bef123dbffd0b00a3808b3bd1e04a5b292fca42203a59f68585d4c8f7eb8f27b",
+      "dllMvid": "40edc1e4-8691-424d-9cf1-650a3fd2aaba",
+      "artifactNote": "Built from the release commit in the feature worktree; the published build of the same commit was compiled in the main checkout, so its bytes and MVID differ.",
+      "betterVendorsAdapterStatus": "Ready",
+      "exactBinaryGateAccepted": true,
+      "progressionCatalogReady": "entries=50;reused=7;registered=43;firearms=30;melee=20;publishedToVendors=false",
+      "progressionCatalogDegraded": false,
+      "liveInstallationRestored": true,
+      "earlierRuns": [
+        {
+          "runId": "20260923T2036170490182Z-e8ae7b5631174645a40db7ccb7b89a38",
+          "status": "PASS",
+          "commit": "c9427faa5eb772d7744fbcce6dc71f1e64e3b636",
+          "dllSha256": "461183e8f4f193dbdba96068ab97a502ea7846dc2191f88b33ceb8861b81adca",
+          "dllMvid": "2d98ffc8-6c2b-4c06-bd3e-31d81f820211"
+        },
+        {
+          "runId": "20260923T1810242389403Z-1bf61c4530d14e879a16919b182a9602",
+          "status": "PASS",
+          "commit": "060df1d428f33a759106720e7e1c1fb384e1c450",
+          "dllSha256": "285cc5bb39652b95858129be87d8be96b1e710c142f755ef05748e1cfc2b1fdd",
+          "dllMvid": "d49f0f7d-c1be-43dd-970b-64a2b5fb58bf"
+        },
+        {
+          "runId": "20260923T1845318979451Z-503bdaa28b564297b19a1c2a9763c8d1",
+          "status": "PASS",
+          "commit": "cca27056128d636b9f0736b86254010ba043c639",
+          "dllSha256": "34fe16ad05527cba5caad37a4d7ce7727d0b1553ec38511675017c6d2776d4fe",
+          "dllMvid": "c7ccdfcf-42a8-4b82-a241-bcc3a0310ac8"
+        }
+      ]
+    },
+    "compatibilityRuntimeQualificationPending": true,
+    "saveLoadCompatibilityVerified": false,
+    "publishedTag": "v0.0.138",
+    "publishedAtUtc": "2026-09-23T21:24:56Z",
+    "publishedCommit": "a0cae195c7627b2e067c7d295b08904b51de232e",
+    "publishedPackage": "KingmakerGunslinger-0.0.138-better-vendors-progression.zip",
+    "publishedPackageSha256": "2b4d9415668c497fd970601c84e602702df18b7050c7ed12409e6a0bf3df05de",
+    "publishedDllSha256": "1fa29d08ceb09552a07c4dd7c5a79500d1c5809d7989b85ca549d38a0301dede",
+    "publishedDllMvid": "ffaada2b-a792-4045-804b-b5dafe4a3713",
+    "publishedArtifactNote": "Publish-Release.ps1 produced two identical deterministic exact-reference builds from master at a0cae195. The downloaded public asset matches packageSha256 and passes strict package validation. The guarded smoke ran on the same commit built in the feature worktree, so it exercised identical source, not these exact bytes."
   }
 }

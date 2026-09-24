@@ -830,3 +830,31 @@ known-choice refund. A view-owned LineRenderer marks the area's actual radius;
 the native moving area owns movement, persistence reconstruction and destruction.
 The accepted PR19 records remain in reports/magic-circle; follow-up status and
 qualification are tracked separately in planning/MAGIC-CIRCLE-FOLLOWUP.md.
+
+### Better Vendors progression candidate 0.0.138
+
+Forty-three generic magic weapon variants extend the append-only ledger to
+1956 stable IDs: 1954 active and 2 reserved. They complete an explicit
+50-entry progression catalog (`Acquisition/ProgressionWeaponCatalog`): Pistol,
+Musket and Blunderbuss ordinary +1..+5 and Reliable +1..+5, and Elven Branched
+Spear, Wakizashi, Katana and Nodachi +1..+5. The seven existing canonical +1
+items are reused by identity. Every variant is a clone of its canonical family
+item (firearms through the shared `MagicFirearmBlueprints.RegisterItem`, spear
+and Eastern variants through their existing item adapters), keeps the family
+weapon type, firearm definition, proficiency and presentation, and shares its
++1 sibling's icon and visual. Registration is unconditional and publishes no
+stock: no vendor table, loot table or existing catalog consumer sees these
+items.
+
+Stock comes only from the optional Better Vendors adapter
+(`Acquisition/BetterVendors`). After a reflection and method-body fingerprint
+check of the installed Better Vendors 2.0.8 contract, four hooks are installed:
+`ProgressionLogic.AddStock` (postfix, ends a thread-local pass scope),
+`AddMilitaryStock` (prefix/postfix, classifies the call and mirrors the
+ordinary tier with Better Vendors' own verified quantity), `GetFilterWeapons`
+(read-only observation for de-duplication) and `VendorLogic.BeginTrading`
+(one-time catch-up for the shared capital blacksmith table). A save-local
+`UnitPartBetterVendorsProgressionGrants` on the main character records each
+entry's one-time grant; merchant inventory never decides eligibility. The
+contract, lifecycle and limits are in
+[BETTER-VENDORS-COMPATIBILITY.md](BETTER-VENDORS-COMPATIBILITY.md).

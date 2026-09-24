@@ -1,7 +1,21 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.136-rapid-reload-proficiency-gate` (UMM version `0.0.136`).
-The installable archive is `KingmakerGunslinger-0.0.136-rapid-reload-proficiency-gate.zip`.
+Full release: `0.0.138-better-vendors-progression` (UMM version `0.0.138`).
+The installable archive is
+`KingmakerGunslinger-0.0.138-better-vendors-progression.zip`. It adds the
+optional Better Vendors progression integration described
+[below](#optional-better-vendors-integration). It was published under explicit
+owner authorization. In-game merchant stock and save/load behaviour were NOT
+RUN, and the owner waived them. See
+[its release notes](docs/RELEASE-NOTES-0.0.138.md).
+
+The previous full release was `0.0.137-rapid-reload-combat-feat` (UMM version
+`0.0.137`, archive `KingmakerGunslinger-0.0.137-rapid-reload-combat-feat.zip`).
+Rapid Reload is now a combat feat and can be taken with a Fighter bonus combat
+feat; the guarded native scenario passed and save/load compatibility is
+unverified. See [its release notes](docs/RELEASE-NOTES-0.0.137.md).
+The previous full release was `0.0.136-rapid-reload-proficiency-gate`
+(archive `KingmakerGunslinger-0.0.136-rapid-reload-proficiency-gate.zip`).
 Rapid Reload now requires firearm proficiency. Native runtime qualification for
 this release is NOT RUN and was waived by the owner, and save/load compatibility
 is unverified; the exact limits are recorded in
@@ -604,6 +618,51 @@ The guarded mechanical qualification is recorded in
 `docs/CRAFT-MAGIC-ITEMS-COMPATIBILITY-REPORT.md`. The original acceptance is
 human evidence; future regression results must likewise not be inferred from
 mechanical logs alone.
+
+## Optional Better Vendors integration
+
+Release 0.0.138 adds this integration. It activates only when all of the
+following hold:
+
+- the Unity Mod Manager entry `BetterVendors` is installed, loaded, active and
+  enabled;
+- its vendor progression toggle is on;
+- it is the exact approved 2.0.8 binary: file SHA-256
+  `8843509852964d9016d2996a3050bfbe6f068360c4f2f6b8ff7f6440ca712009` and
+  MVID `04fc03cf-853f-46c8-b6d5-1404180451fb`.
+
+There is no assembly or UMM requirement. When Better Vendors is absent, only
+this integration stays inactive. Any other or rebuilt Better Vendors binary
+disables only this integration, with one warning in the UMM log (phase
+`better-vendors`). Better Vendors itself is never modified.
+
+While it is active, the capital blacksmith's shared table (`SmithVendorTable`)
+receives this mod's 50 generic progression weapons. They arrive at Better
+Vendors' Military ranks and quantities, restock only when Better Vendors
+restocks its current tier, and follow the Gunslinger, Eastern Weapons and
+Elven Branched Spear module settings. Existing campaigns get a one-time
+catch-up the first time that merchant opens trade. A save-local ledger claims
+each first grant before stock changes, so a grant is never repeated
+automatically.
+
+Disabling Better Vendors, its progression or a module stops this
+integration's future additions, and the integration itself never removes
+merchandise. Separately, turning a content module off can still reduce a
+reused +1 weapon's merchant stock by one through the existing vendor-row
+reconciliation. Removing *this* mod still removes every weapon it owns,
+including stocked ones; see [Removal warning](#removal-warning). To roll back
+to 0.0.137, use a save made before 0.0.138 was installed.
+
+The new weapons register on every load, with or without Better Vendors. If one
+of the integration's own contract checks fails, for example because another mod
+changed a native enhancement enchantment, the weapons stay registered and only
+merchant progression is disabled. The failure is logged once as
+`progression-catalog.degraded`.
+
+The contract, catalog, stock rules, verification limits, known limitations and
+the acceptance requirements that still block release are in
+[docs/BETTER-VENDORS-COMPATIBILITY.md](docs/BETTER-VENDORS-COMPATIBILITY.md).
+
 # Custom firearm SoundBank
 
 The release audio asset is copied only to

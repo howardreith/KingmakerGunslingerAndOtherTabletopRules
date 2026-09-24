@@ -6,7 +6,7 @@ param(
 
     [string]$ReferenceBundleDir,
 
-    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.136.md',
+    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.138.md',
 
     [string]$ReleaseBranch = 'master',
 

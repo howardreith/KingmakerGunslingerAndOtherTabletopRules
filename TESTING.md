@@ -84,6 +84,61 @@ pairs after live view attachment rather than inferring scale from blueprint
 metadata.
 
 
+## Better Vendors progression (0.0.138 candidate)
+
+The optional Better Vendors integration is covered by 38 dependency-free
+`better-vendors.*` domain cases in
+`tests/KingmakerGunslinger.DomainTests/BetterVendorsProgressionTests.cs`. They
+cover:
+
+- the exact 50-entry catalog, reused identities, manifest append, pricing,
+  exclusions, module ownership and visual mappings;
+- the verified Military schedule;
+- stock-call classification and pass-scope unwinding;
+- ordinary-query recognition;
+- grant planning for current-tier, catch-up, native-selection, module,
+  milestone and catalog-expansion cases;
+- the write-ahead ledger. Claims are written before stock changes and released
+  only on a confirmed no-op. A grant whose outcome is uncertain is never
+  granted again by a later catch-up, and a failed claim or count leaves the
+  grant eligible;
+- a model of the native fixed-row reconciliation, which pins the one-copy
+  module-off effect on reused +1 stacks;
+- a simulated campaign lifecycle: fresh, existing, both event orders, Better
+  Vendors' own first pass, disabling and campaign switching;
+- the exact-binary contract gate (file SHA-256 and MVID) and one-time status
+  reporting;
+- source checks that the hooks stay narrow and read-only, that the only
+  removal is the ledger's claim release, that other acquisition paths exclude
+  the variants, and that bootstrap registration is unconditional.
+
+These cases model the rules with a dictionary shop and an in-memory ledger.
+They do not serialize a save, reconstruct the ledger part, drive the real
+trading hook or buy anything, so they are not merchant or persistence
+evidence.
+
+The machine-readable catalog must match the code. After building the domain
+tests, regenerate it with:
+
+```powershell
+.\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe `
+  --write-better-vendors-catalog docs\better-vendors-progression-catalog.json
+```
+
+The in-game stock behaviour is not yet qualified. The owner waived it for the
+0.0.138 release, and it remains open. It needs a save whose kingdom has
+reached Military I or higher. The only authorized disposable fixture,
+`KMG_AUTOMATION_WORKING`, predates kingdom creation, so Better Vendors'
+progression never runs in it. Qualifying the merchant, purchase,
+event-coordination, settings and persistence paths needs an owner-authorized,
+disposable kingdom-stage fixture. Never fabricate one or reuse a real campaign
+save. The acceptance areas are listed in
+[docs/BETTER-VENDORS-COMPATIBILITY.md](docs/BETTER-VENDORS-COMPATIBILITY.md#merchant-and-persistence-acceptance-not-run-waived-for-00138).
+The canonical `working-save-smoke` scenario can still show that the build
+loads, registers the 43 new blueprints and accepts the installed Better
+Vendors binary. Read the `better-vendors` lines in the UMM log for that.
+
+
 ## Rapid Reload proficiency gate
 
 `disposable-rapid-reload-proficiency-gate` is the guarded scenario for the
@@ -173,6 +228,73 @@ Coverage:
   compatibility-only Rifle/Revolver choices unpublished, the legacy wrapper
   unpublished but still satisfying the gate, and independent proficiency grants
   on non-Gunslingers qualifying through the ordinary feat route.
+- **Combat-feat classification.** The `rapid-reload-combat-feat-classification`
+  assertion reads native `BlueprintFeature.HasGroup` on the registered parent
+  and every official child, next to native Combat Reflexes. All of them must be
+  both `Feat` and `CombatFeat`, and the parent must not be hidden from feat
+  menus. Catalog membership alone never satisfies it. A selection's own
+  `Group`/`Group2` do not classify it: they only name the category it offers.
+- **Fighter combat-feat route.** Scoped refusal (one-handed refuses Musket,
+  two-handed refuses Pistol) and scoped acquisition (one-handed Pistol,
+  two-handed Musket) also run through the Fighter bonus combat-feat slot.
+- **Gunslinger 1 takes Fighter 1.** A Gunslinger level is built and confirmed
+  natively, and its class package is the only proficiency source. The next
+  visit takes Fighter 1. It must have no ordinary feat slot, and it must offer
+  the parent from the reserved Fighter slot's own `ExtractSelectionItems`.
+  Pistol is then chosen, the Fighter slot (and no ordinary slot) must hold the
+  parent, and the level is confirmed through the native completion gate.
+
+Status of the classification follow-up: domain coverage passes, including a
+source regression that fails if the parent's classification is removed or
+moved into the generic selection helper.
+
+Native run on commit `40710b6f` (evidence
+`runtime-evidence/20260923T1504537002644Z-disposable-rapid-reload-proficiency-gate`,
+loaded 0.0.136, installed DLL SHA-256
+`077169c47c98bc1d78c700d609f7c55061c5bfdb3a82a9a897adacce4e1b0fc0`) reported
+overall **FAIL**. The assertions for this change passed:
+
+- `rapid-reload-combat-feat-classification`, `rapid-reload-catalog-publication`,
+  `rapid-reload-parent-proficiency-prerequisites`, the native prerequisite
+  matrix, Musket Master and duplicates, the class-identity control, visit
+  cleanup, isolation and loaded version all PASS.
+- Every acquisition row passes, including the combat-route rows
+  `D.combat-one-handed-pistol` and `E.combat-two-handed-musket`, and row J.
+  In row J a natively confirmed Gunslinger 1 takes Fighter 1 with no ordinary
+  slot. The Fighter slot's own menu offers Rapid Reload and it can be selected.
+  Pistol is taken, and only the Fighter slot holds the parent. The level
+  confirms natively and grants the child.
+
+That run had three failures. They were pre-existing expectations in the
+earlier harness, and at the owner's direction they were corrected in
+`0eee3be9`:
+
+- B rows (`empty-selection-granted-a-fact`). Every refusal behavior passed, but
+  `parentRankWhileEmpty` was 1, because the engine applies a chosen selection's
+  own feature to the preview at once. The check now requires that the refused
+  firearm has no rank (`empty-selection-granted-a-firearm`). The empty choice
+  must still block completion, and the parent rank stays recorded.
+- `B.empty-selection-blocked` (`empty-choice-was-banked`). Native completion
+  refused the empty build, and the parent was only banked by the deliberate
+  `ApplyLevelup` probe that bypasses that gate. The probe now has to show that
+  no firearm is banked (`empty-choice-banked-a-firearm`).
+- `pending-class-change`. Final confirmation failed with
+  `skillPointsRemaining = -3`, because the fixture spent Gunslinger skill
+  points before switching the pending class to Fighter. The shared resolver
+  now refunds overspent points through native
+  `LevelUpController.UnspendSkillPoint` and records `skillPointsRefunded`.
+
+Passing native run on commit `0eee3be9` (evidence
+`runtime-evidence/20260923T1545397015359Z-disposable-rapid-reload-proficiency-gate`,
+loaded 0.0.136, installed DLL SHA-256
+`c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c`): status
+**PASS**, all eleven assertions. The pending class change refunded three
+points, confirmed natively, and left the Fighter without Rapid Reload.
+
+The first runs found two general fixture defects, now fixed. Independent
+proficiency fixtures were unregistered, so native `ReapplyFeaturesOnLevelUp`
+threw on the rebuilt preview. Disposable character-creation visits also never
+settled race, name, portrait, gender or voice, so no build could complete.
 
 Every claimed successful confirmation records `LevelUpState.IsComplete()`
 immediately before the level is applied, and the harness refuses to apply an
