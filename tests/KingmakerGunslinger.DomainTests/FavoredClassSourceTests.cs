@@ -9,7 +9,9 @@ namespace KingmakerGunslinger.DomainTests
         private static readonly string[] Scenarios =
         {
             "observe-favored-class-contract",
-            "disposable-favored-class-grit"
+            "disposable-favored-class-grit",
+            "disposable-favored-class-gunslinger-menus",
+            "disposable-favored-class-gunslinger-mechanics"
         };
 
         private static string Read(params string[] parts)
@@ -33,10 +35,15 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(preflight.Contains("'" + scenario + "',"), scenario + " preflight list.");
             }
             Assertions.True(catalog.Contains("                ObserveFavoredClassContract,") &&
-                catalog.Contains("                DisposableFavoredClassGrit,"),
-                "Both scenarios are allowlisted.");
+                catalog.Contains("                DisposableFavoredClassGrit,") &&
+                catalog.Contains("                DisposableFavoredClassGunslingerMenus,") &&
+                catalog.Contains("                DisposableFavoredClassGunslingerMechanics,"),
+                "Every favored-class scenario is allowlisted.");
             Assertions.True(runner.Contains("Complete(RunFavoredClassContract());") &&
-                runner.Contains("Complete(RunFavoredClassGrit());"), "Both scenarios dispatch.");
+                runner.Contains("Complete(RunFavoredClassGrit());") &&
+                runner.Contains("Complete(RunFavoredClassGunslingerMenus());") &&
+                runner.Contains("Complete(RunFavoredClassGunslingerMechanics());"),
+                "Every favored-class scenario dispatches.");
         }
 
         // The integration never executes host code, never repeats the host's

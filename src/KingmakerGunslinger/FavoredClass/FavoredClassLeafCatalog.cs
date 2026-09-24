@@ -41,6 +41,49 @@ namespace KingmakerGunslinger.FavoredClass
         internal string Description { get; private set; }
     }
 
+    /// <summary>Player-facing text and symbol stem of one implemented effect.</summary>
+    internal sealed class FavoredClassLeafFamily
+    {
+        internal FavoredClassLeafFamily(string effectId, string symbolKey, string title,
+            string stepText, string conditions)
+        {
+            EffectId = effectId;
+            SymbolKey = symbolKey;
+            Title = title;
+            StepText = stepText;
+            Conditions = conditions;
+        }
+
+        internal string EffectId { get; private set; }
+        internal string SymbolKey { get; private set; }
+        internal string Title { get; private set; }
+
+        /// <summary>One whole benefit step; null when each target states its own.</summary>
+        internal string StepText { get; private set; }
+
+        /// <summary>
+        /// When the earned bonus applies, including a dormant investment made
+        /// before the improved feature is gained; null when unconditional.
+        /// </summary>
+        internal string Conditions { get; private set; }
+    }
+
+    /// <summary>One canonical target of a targeted effect (its own counter).</summary>
+    internal sealed class FavoredClassTargetSpec
+    {
+        internal FavoredClassTargetSpec(string key, string title, string stepText)
+        {
+            Key = key;
+            Title = title;
+            StepText = stepText;
+        }
+
+        /// <summary>Stable symbol segment; for firearms, the FirearmKind name.</summary>
+        internal string Key { get; private set; }
+        internal string Title { get; private set; }
+        internal string StepText { get; private set; }
+    }
+
     /// <summary>
     /// Stable menu-leaf identities and player-facing text. Every symbol here
     /// has a committed identity-manifest entry; nothing is generated at
@@ -51,49 +94,91 @@ namespace KingmakerGunslinger.FavoredClass
     {
         internal const string SymbolPrefix = "KMG.FavoredClass.";
 
-        private static readonly Dictionary<string, string> Titles =
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                { FavoredClassCatalog.EffectGrit, "Grit" },
-            };
+        private static readonly FavoredClassLeafFamily[] Families =
+        {
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectGrit, "Gunslinger.Grit",
+                "Grit", "+1 maximum grit", null),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectMisfire, "Gunslinger.Misfire",
+                "Misfire", null,
+                "The reduction applies to every firearm of the chosen type, including replacements, and never lowers a misfire value below 1; a value another rule already reduced to 0 stays 0."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectFirearmConfirmation,
+                "Gunslinger.FirearmConfirmation", "Firearm Critical Confirmation",
+                "+1 on rolls to confirm critical hits with firearm attacks",
+                "It does not stack with Critical Focus: only the amount by which this bonus exceeds Critical Focus's bonus is added. It never changes threat range, critical multipliers or ordinary attack rolls."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectPistolWhip, "Gunslinger.PistolWhip",
+                "Pistol-Whip", "+1 on the Pistol-Whip attack roll",
+                "Pistol-Whip is a 3rd-level deed; earlier investments take effect when it is gained. It does not affect firearm shots, damage or the trip attempt."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectHalflingNimble,
+                "Gunslinger.HalflingNimble", "Nimble", "+1 Nimble dodge bonus to AC",
+                "The bonus follows Nimble's own conditions (light or no armor; lost whenever the Dexterity bonus to AC is lost). Nimble is gained at Gunslinger level 2; earlier investments take effect then. Not available to a Mysterious Stranger, whose archetype replaces Nimble."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectHalflingDodge,
+                "Gunslinger.HalflingDodge", "Gunslinger's Dodge",
+                "+1 to the dodge bonus granted by Gunslinger's Dodge",
+                "It applies only while Gunslinger's Dodge grants its own bonus. Not available to a Musket Master, whose archetype replaces Gunslinger's Dodge."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectDrowNimble,
+                "Gunslinger.DrowNimble", "Nimble (Drow)", "+1 Nimble dodge bonus to AC",
+                "The bonus follows Nimble's own conditions (light or no armor; lost whenever the Dexterity bonus to AC is lost). Nimble is gained at Gunslinger level 2; earlier investments take effect then. Not available to a Mysterious Stranger, whose archetype replaces Nimble."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectInitiative,
+                "Gunslinger.Initiative", "Gunslinger Initiative",
+                "+1 to the Gunslinger Initiative bonus",
+                "It applies only while Gunslinger Initiative applies (at least 1 grit, or its True Grit option). Gunslinger Initiative is a 3rd-level deed; earlier investments take effect when it is gained."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectDirtyTrickTrip,
+                "Gunslinger.DirtyTrickTrip", "Dirty Trick and Trip",
+                "+1 CMB for dirty trick and trip combat maneuvers",
+                "It applies to every dirty trick and trip attempt, not only firearm-delivered maneuvers."),
+        };
 
-        private static readonly Dictionary<string, string> SymbolKeys =
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                { FavoredClassCatalog.EffectGrit, "Gunslinger.Grit" },
-            };
+        /// <summary>
+        /// The mod's canonical player-facing firearm types. Legacy Rifle and
+        /// Revolver identities stay readable for saves but are not targets.
+        /// </summary>
+        private static readonly FavoredClassTargetSpec[] FirearmTargets =
+        {
+            new FavoredClassTargetSpec("Pistol", "Pistol", "-1 misfire value with pistols"),
+            new FavoredClassTargetSpec("Musket", "Musket", "-1 misfire value with muskets"),
+            new FavoredClassTargetSpec("Blunderbuss", "Blunderbuss",
+                "-1 misfire value with blunderbusses"),
+        };
 
-        private static readonly Dictionary<string, string> StepText =
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                { FavoredClassCatalog.EffectGrit, "+1 maximum grit" },
-            };
-
-        /// <summary>Effects whose leaves this candidate registers.</summary>
+        /// <summary>Effects whose leaves this candidate registers, in registration order.</summary>
         internal static IList<string> ImplementedEffects
         {
-            get { return SymbolKeys.Keys.OrderBy(key => key, StringComparer.Ordinal).ToList(); }
+            get { return Families.Select(family => family.EffectId).ToList().AsReadOnly(); }
         }
 
         internal static bool IsImplemented(string effectId)
         {
-            return SymbolKeys.ContainsKey(effectId);
+            return Families.Any(family => string.Equals(family.EffectId, effectId,
+                StringComparison.Ordinal));
+        }
+
+        internal static FavoredClassLeafFamily Family(string effectId)
+        {
+            FavoredClassLeafFamily family = Families.FirstOrDefault(value =>
+                string.Equals(value.EffectId, effectId, StringComparison.Ordinal));
+            if (family == null)
+                throw new KeyNotFoundException("No registered leaves for effect " + effectId);
+            return family;
+        }
+
+        /// <summary>Target keys of an effect; a single null key for an untargeted effect.</summary>
+        internal static IList<string> TargetKeys(string effectId)
+        {
+            return Targets(FavoredClassCatalog.Effect(effectId))
+                .Select(target => target == null ? null : target.Key).ToList().AsReadOnly();
         }
 
         internal static IList<FavoredClassLeafSpec> LeavesFor(string effectId)
         {
-            string key;
-            if (!SymbolKeys.TryGetValue(effectId, out key))
-                throw new KeyNotFoundException("No registered leaves for effect " + effectId);
+            FavoredClassLeafFamily family = Family(effectId);
             FavoredClassEffectSpec effect = FavoredClassCatalog.Effect(effectId);
-            if (effect.TargetKind != FavoredClassTargetKind.None)
-                throw new InvalidOperationException(effectId + " needs a target manifest.");
-            List<FavoredClassLeafSpec> leaves = new List<FavoredClassLeafSpec>
+            var leaves = new List<FavoredClassLeafSpec>();
+            foreach (FavoredClassTargetSpec target in Targets(effect))
             {
-                Leaf(effect, key, null, FavoredClassInvestmentRole.Full)
-            };
-            if (effect.Rate.HasPartial)
-                leaves.Add(Leaf(effect, key, null, FavoredClassInvestmentRole.Partial));
+                if (effect.Rate.HasPartial)
+                    leaves.Add(Leaf(effect, family, target, FavoredClassInvestmentRole.Partial));
+                leaves.Add(Leaf(effect, family, target, FavoredClassInvestmentRole.Full));
+            }
             return leaves.AsReadOnly();
         }
 
@@ -108,31 +193,59 @@ namespace KingmakerGunslinger.FavoredClass
                 (role == FavoredClassInvestmentRole.Full ? ".Full" : ".Partial");
         }
 
-        private static FavoredClassLeafSpec Leaf(FavoredClassEffectSpec effect, string key,
-            string targetKey, FavoredClassInvestmentRole role)
+        private static IList<FavoredClassTargetSpec> Targets(FavoredClassEffectSpec effect)
+        {
+            switch (effect.TargetKind)
+            {
+                case FavoredClassTargetKind.None:
+                    return new FavoredClassTargetSpec[] { null };
+                case FavoredClassTargetKind.FirearmType:
+                    return FirearmTargets;
+                default:
+                    throw new InvalidOperationException(effect.Id +
+                        " needs a qualified target manifest before it can be published.");
+            }
+        }
+
+        private static FavoredClassLeafSpec Leaf(FavoredClassEffectSpec effect,
+            FavoredClassLeafFamily family, FavoredClassTargetSpec target,
+            FavoredClassInvestmentRole role)
         {
             FavoredClassRate rate = effect.Rate;
             int ranks = role == FavoredClassInvestmentRole.Full
                 ? FavoredClassRankPolicy.FullCapacity(rate)
                 : FavoredClassRankPolicy.PartialCapacity(rate);
-            string title = Titles[effect.Id];
+            string title = target == null ? family.Title : family.Title + ": " + target.Title;
             string name = "Favored Class: " + title +
                 (role == FavoredClassInvestmentRole.Partial ? " (partial)" : string.Empty);
-            return new FavoredClassLeafSpec(Symbol(key, targetKey, role), effect.Id, targetKey,
-                role, ranks, name, Describe(effect, role));
+            return new FavoredClassLeafSpec(
+                Symbol(family.SymbolKey, target == null ? null : target.Key, role), effect.Id,
+                target == null ? null : target.Key, role, ranks, name,
+                Describe(effect, family, target, role));
         }
 
         /// <summary>Tooltip text: routes, rate, cap and what this pick does.</summary>
         internal static string Describe(FavoredClassEffectSpec effect, FavoredClassInvestmentRole role)
         {
+            FavoredClassLeafFamily family = Family(effect.Id);
+            FavoredClassTargetSpec target = Targets(effect).FirstOrDefault();
+            return Describe(effect, family, target, role);
+        }
+
+        private static string Describe(FavoredClassEffectSpec effect, FavoredClassLeafFamily family,
+            FavoredClassTargetSpec target, FavoredClassInvestmentRole role)
+        {
             FavoredClassRate rate = effect.Rate;
-            string step = StepText[effect.Id];
+            string step = target == null ? family.StepText : target.StepText;
             string routes = RouteText(effect);
             string cap = rate.CapSteps.HasValue
                 ? string.Format(CultureInfo.InvariantCulture,
                     " The bonus is limited to {0} steps; this choice closes when the limit is reached.",
                     rate.CapSteps.Value)
                 : string.Empty;
+            string counter = target == null
+                ? string.Empty
+                : " Each firearm type keeps its own separate count of investments.";
             string pick;
             if (!rate.HasPartial)
                 pick = "Each selection grants " + step + ".";
@@ -144,11 +257,12 @@ namespace KingmakerGunslinger.FavoredClass
                 pick = string.Format(CultureInfo.InvariantCulture,
                     "This selection is one investment toward the next {0}; every {1} investments complete a step. A partial investment grants nothing by itself, and its rank counts every partial investment made.",
                     step, OrdinalWord(rate.Divisor));
+            string conditions = family.Conditions == null ? string.Empty : " " + family.Conditions;
             string adaptation = effect.OmittedPortion == null
                 ? string.Empty
                 : " CRPG adaptation: " + effect.OmittedPortion;
-            return "Favored class bonus (" + routes + "): " + effect.Summary + " " + pick + cap +
-                adaptation;
+            return "Favored class bonus (" + routes + "): " + effect.Summary + " " + pick + counter +
+                cap + conditions + adaptation;
         }
 
         private static string RouteText(FavoredClassEffectSpec effect)
