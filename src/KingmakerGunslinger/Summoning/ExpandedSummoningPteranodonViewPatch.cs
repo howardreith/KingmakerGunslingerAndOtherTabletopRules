@@ -243,7 +243,7 @@ namespace KingmakerGunslinger.Summoning
                 // pass this material by, and a clone taken while the donor was
                 // fully dissolved stays invisible. So the clone starts intact
                 // and the controller re-reads the renderer's materials.
-                string controller = AdoptByMaterialController(view, material);
+                string controller = AdoptByMaterialController(view, donor, material);
 
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
@@ -354,7 +354,7 @@ namespace KingmakerGunslinger.Summoning
         /// renderers, so the game's own fades and tints include it.
         /// </summary>
         private static string AdoptByMaterialController(UnitEntityView view,
-            Material material)
+            SkinnedMeshRenderer donor, Material material)
         {
             string dissolve = "<none>";
             if (material.HasProperty(DissolveProperty))
@@ -368,13 +368,20 @@ namespace KingmakerGunslinger.Summoning
             if (controller == null)
                 return "clonedDissolve=" + dissolve + ";materialController=absent";
             bool reinitialized = ReinitMaterials(controller);
+            // The controller instantiates what it drives, so the renderer's
+            // material after the reinit is an instance of the clone; that is
+            // the one the game's fades reach, and the one to test for.
             IList<Material> materials = ControllerMaterials(controller);
+            Material driven = donor.sharedMaterial;
             int count = materials == null ? -1 : materials.Count;
-            bool adopted = materials != null && materials.Contains(material);
+            bool adopted = materials != null && driven != null &&
+                materials.Contains(driven) && driven.name.StartsWith(
+                    CustomVisualName, StringComparison.Ordinal);
             return "clonedDissolve=" + dissolve + ";materialController=" +
                 (reinitialized ? "reinitialized" : "reinit-unavailable") +
                 ";controllerMaterials=" + count + ";adopted=" +
-                (adopted ? "true" : "false");
+                (adopted ? "true" : "false") + ";driven=" +
+                (driven == null ? "<none>" : driven.name);
         }
 
         /// <summary>The materials the controller currently drives (its private list).</summary>
