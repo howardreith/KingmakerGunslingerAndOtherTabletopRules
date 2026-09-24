@@ -139,7 +139,7 @@ first Unity Mod Manager update after the host initialized:
 | --- | --- | --- |
 | I06/S04 revelations | Call of the Wild Oracle `32c02466b2364c8a906e6e4761175099`, Demon Hunter archetype `3b3b5950e8264819b69d9aaeffe179da`, the 52 manifest revelations | Bounded walk of each revelation's live graph at publication; the Oracle engine's class-level rank configs, its ability-parameter calculator (by type name and Oracle class) and oracle-level resources |
 | O08 eidolon armor | Call of the Wild eidolon class `e3b3ad6decb14cdba2e7e14982d90035` | Identity of the current pet's class |
-| O01 performances | Song of Fiery Gaze and the Court Bard performances (five features and areas) | Feature and area identities |
+| O01 performances | Song of Fiery Gaze, Satire, Glorious Epic, Scandal and Dance of the Dead (five published provider targets; Mockery is registered but not published) | Feature, toggle and area identities |
 | Summoner and Oracle bonus selections | the host's scan of Call of the Wild classes | `host.BonusSelectionFor(class)`; a class the host did not scan publishes nothing |
 
 The rank read point is a KMG postfix on `ContextRankConfig.GetBaseValue` that
@@ -151,6 +151,15 @@ configs scoped to a revelation the caster invested in, keyed by the config
 instance and the context's own blueprint. Rank bonus (`AddBonusCasterLevel`)
 is deliberately not used, because Call of the Wild counts it again in every
 Oracle-engine rank.
+
+O01 is read inside each performance area's own view and never in a shared
+blueprint: an `AreaEffectView.InitAtRuntime` postfix widens that instance's
+cylinder and scales that instance's ring, an `AreaEffectView.SpawnFxs` postfix
+scales a ring the native attach spawns later, a `GameObjectsPool.Release`
+prefix restores the exact ring scales before a pooled effect is reused, and
+`Fact.SelectUIData` and `MechanicActionBarSlotActivableAbility.GetDescription`
+postfixes show the owner's range in the owner's own descriptions
+(`docs/FAVORED-CLASS-TARGET-MANIFEST.md`).
 
 ## Settings file
 
@@ -175,6 +184,13 @@ need a restart.
   working.
 - **Mostly Human OFF**: the choice is no longer offered to new characters. A
   character who has the trait keeps it and its identity.
+- **Respec (native `Player.RespecCompanion`)**: a committed respec removes
+  every favored-class counter once; the rebuilt character earns new ones
+  normally. The Mostly Human identity is a class feature granted only by the
+  trait, so it never survives a respec to the standard ancestry on its own. A
+  companion whose master is respecced is destroyed natively and keeps no
+  projected armor; a new companion receives the projection once. A cancelled
+  respec changes nothing.
 - **Host removed or not qualified**: no choices are offered, and the O06 aura
   and I06/S04 revelation read points are not committed. Other earned counters
   keep their component effects. The host's own favored-class progression is

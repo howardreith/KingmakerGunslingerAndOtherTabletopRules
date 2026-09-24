@@ -3,9 +3,10 @@
   "mission": "gunslinger-favored-class-integration",
   "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
   "finalCandidate": {
-    "commit": "ef250f877cda322f75b499b0dec8fbe155e14ce2",
-    "dllSha256": "fe451f35dff61c26bb96fd9ff9d8c7eb23bffe177788899e74a57662e10de8bf",
-    "dllMvid": "2c9d8c5f-c424-4179-91cd-72ca85438c54"
+    "commit": "15c37695c267522ce35cbc021168514d6fb058fc",
+    "packageSha256": "4a7b5e2d29a9a8ace9ac70bb56061f0618251273a3981700cdb1f2edf04e77f0",
+    "dllSha256": "0261ebd3d776d1a74f0a5d9e5364cff79cb5def8c2c5f117b192cd6ca2022189",
+    "dllMvid": "613caf93-62bb-41e8-87fa-4a154cb4cfd6"
   },
   "statusLadder": [
     "NOT STARTED",
@@ -15,353 +16,983 @@
     "SAVE TESTED",
     "QUALIFIED"
   ],
-  "finalRuns": {
-    "contract": "20260924T0603184328859Z PASS",
-    "hostState": "20260924T0604015343603Z PASS",
-    "grit": "20260924T0604457833407Z PASS",
-    "menus": "20260924T0605443253994Z PASS",
-    "mechanics": "20260924T0606461797306Z PASS",
-    "initiative": "20260924T0607291357025Z PASS",
-    "elementalCore": "20260924T0608135881312Z PASS",
-    "mostlyHuman": "20260924T0609003356634Z PASS",
-    "advanced": "20260924T0609525254026Z PASS",
-    "oracle": "20260924T0601519001416Z PASS",
-    "performance": "20260924T0602359332310Z PASS"
-  },
+  "finalRuns": [
+    {
+      "scenario": "disposable-favored-class-respec",
+      "run": "20260924T2220569492544Z-disposable-favored-class-respec",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING",
+      "run": "20260924T2221475158335Z-working-save-favored-class-lifecycle",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING",
+      "run": "20260924T2222538555754Z-working-save-favored-class-visual-census",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "observe-favored-class-contract",
+      "run": "20260924T2225191670410Z-observe-favored-class-contract",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "observe-favored-class-host-state",
+      "run": "20260924T2226027077620Z-observe-favored-class-host-state",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-grit",
+      "run": "20260924T2226448919430Z-disposable-favored-class-grit",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-gunslinger-menus",
+      "run": "20260924T2227387192205Z-disposable-favored-class-gunslinger-menus",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-gunslinger-mechanics",
+      "run": "20260924T2228377987947Z-disposable-favored-class-gunslinger-mechanics",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-initiative-timing",
+      "run": "20260924T2229202813247Z-disposable-favored-class-initiative-timing",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-elemental-core",
+      "run": "20260924T2230008474164Z-disposable-favored-class-elemental-core",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-mostly-human",
+      "run": "20260924T2230465320618Z-disposable-favored-class-mostly-human",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-elemental-advanced",
+      "run": "20260924T2231378092098Z-disposable-favored-class-elemental-advanced",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-oracle-revelations",
+      "run": "20260924T2232222685811Z-disposable-favored-class-oracle-revelations",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-performance-range",
+      "run": "20260924T2233041003087Z-disposable-favored-class-performance-range",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "observe-favored-class-performance-visuals",
+      "run": "20260924T2233465837647Z-observe-favored-class-performance-visuals",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-multiclass",
+      "run": "20260924T2234289449508Z-disposable-favored-class-multiclass",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING",
+      "run": "20260924T2235098039182Z-working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "note": "parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit"
+    },
+    {
+      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING",
+      "run": "20260924T2240280151837Z-working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "note": "parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread"
+    },
+    {
+      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING",
+      "run": "20260924T2245332372339Z-working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "note": "parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph"
+    },
+    {
+      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING",
+      "run": "20260924T2250450430459Z-working-save-elemental-character-creation-regression",
+      "status": "PASS",
+      "note": "parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine"
+    },
+    {
+      "scenario": "working-save-elemental-native-respec@KMG_AUTOMATION_WORKING",
+      "run": "20260924T2255050397924Z-working-save-elemental-native-respec",
+      "status": "PASS",
+      "note": "parameters class=Fighter;allocation=point-buy;race=Sylph"
+    },
+    {
+      "scenario": "working-save-elemental-native-respec@KMG_AUTOMATION_WORKING",
+      "run": "20260924T2301546644666Z-working-save-elemental-native-respec",
+      "status": "PASS",
+      "note": "parameters class=Fighter;allocation=point-buy;race=Oread"
+    },
+    {
+      "scenario": "working-save-smoke@KMG_AUTOMATION_WORKING",
+      "run": "20260924T2311475004961Z-working-save-smoke",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "observe-favored-class-contract",
+      "run": "20260924T2313089848830Z-observe-favored-class-contract",
+      "status": "PASS",
+      "note": "settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent"
+    },
+    {
+      "scenario": "disposable-favored-class-gunslinger-menus",
+      "run": "20260924T2313502108487Z-disposable-favored-class-gunslinger-menus",
+      "status": "PASS",
+      "note": "settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent"
+    },
+    {
+      "scenario": "observe-favored-class-contract",
+      "run": "20260924T2314436934489Z-observe-favored-class-contract",
+      "status": "PASS",
+      "note": "settings profile Mostly Human OFF (the trait not offered; identities registered); the settings file was removed and verified absent"
+    },
+    {
+      "scenario": "observe-favored-class-host-state",
+      "run": "20260924T2315245411188Z-observe-favored-class-host-state",
+      "status": "PASS",
+      "note": "settings profile integration OFF (L04; mechanics suppressed, identities registered); the settings file was removed and verified absent"
+    },
+    {
+      "scenario": "observe-favored-class-contract",
+      "run": "20260924T2316046934476Z-observe-favored-class-contract",
+      "status": "PASS",
+      "note": "settings profile invalid file (schema 2; charter defaults applied and reported); the settings file was removed and verified absent"
+    },
+    {
+      "scenario": "L01 fresh-process persistence (prepare)",
+      "run": "20260924T2309157060004Z-disposable-word-of-recall-favored-class-persistence",
+      "status": "PASS",
+      "note": "transaction 20260924T2309101781279Z_bf24e45a425e4d8f857c7fb353530d5b"
+    },
+    {
+      "scenario": "L01 fresh-process persistence (verify)",
+      "run": "20260924T2310166908088Z-disposable-word-of-recall-favored-class-persistence",
+      "status": "PASS",
+      "note": "one subject per state/mechanic family reloaded, with native firearm shots and the paladin aura after the reload; settings and Mods tree restored"
+    },
+    {
+      "scenario": "profile gunslinger-only / observe-favored-class-host-state",
+      "run": "20260924T2319494086008Z-observe-favored-class-host-state",
+      "status": "PASS",
+      "note": "compatibility transaction compat-20260924T231747Z-dcf3953a3add"
+    },
+    {
+      "scenario": "profile gunslinger-call-of-the-wild / observe-favored-class-host-state",
+      "run": "20260924T2323061576141Z-observe-favored-class-host-state",
+      "status": "PASS",
+      "note": "compatibility transaction compat-20260924T232119Z-4b08e222f897"
+    },
+    {
+      "scenario": "profile gunslinger-call-of-the-wild-favored-class / observe-favored-class-host-state",
+      "run": "20260924T2326399456937Z-observe-favored-class-host-state",
+      "status": "PASS",
+      "note": "compatibility transaction compat-20260924T232452Z-bdadf725cfa8"
+    }
+  ],
   "scenarioFamilies": {
     "H01": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0140349022134Z PASS (cf8a66d21, isolated gunslinger-only profile)",
-      "note": "host physically absent: class, firearms and races work; no favored-class UI"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "gunslinger-only isolated profile: host absent, KMG class/firearms/races load, no FCB UI"
     },
     "H02": {
-      "status": "DOMAIN TESTED",
-      "evidence": "favored-class.host-* domain cases; IntegrationDisabled observed natively (07c21f29b: third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z (all PASS; settings file restored absent))",
-      "note": "native host-disabled/unsupported/partial states NOT RUN (would require altering the host)"
+      "status": "DOMAIN TESTED; NATIVE BLOCKED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "no",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "AbsentDisabledAndUnloadedHostsAreInactive, ReadinessRequiresCompleteInitializationAndGunslinger; a disabled or partial host cannot be staged without altering the host or UMM settings"
     },
     "H03": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0603184328859Z PASS",
-      "note": "one Gunslinger progression and bonus selection, 20 levels"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "contract and host-state: one Gunslinger favored progression and one reward per qualifying level"
     },
     "H04": {
-      "status": "DOMAIN TESTED",
-      "evidence": "gunslinger-not-ready skip reason (domain)",
-      "note": "native NOT RUN"
+      "status": "DOMAIN TESTED; NATIVE BLOCKED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "no",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "ReadinessRequiresCompleteInitializationAndGunslinger; removing the Gunslinger from the host map would alter the host"
     },
     "H05": {
-      "status": "DOMAIN TESTED",
-      "evidence": "exact SHA-256/MVID/IL fingerprint gate (domain); positive identity natively in every contract run",
-      "note": "changed-binary native NOT RUN (not authorized to alter host binaries)"
+      "status": "DOMAIN TESTED; NATIVE BLOCKED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "no",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "SameVersionDifferentBinaryIsRejected; a changed host binary is never staged (charter: never modify host binaries)"
     },
     "H06": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0603184328859Z PASS",
-      "note": "repeat publication is a no-op"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "contract: repeat publication is a no-op; stable GUID sets, order and component counts"
     },
     "H07": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS; 20260924T0601519001416Z PASS",
-      "note": "absent Goblin/Orc routes only; unfound revelation targets are withheld per target"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "AbsentProvidersRemoveOnlyTheirRoute; G08/G20 routes absent natively (no playable Goblin/Orc)"
     },
     "H08": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0603184328859Z PASS",
-      "note": "injected fault rolls back exactly"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "contract: injected fault restores the owned arrays exactly; foreign entries unchanged"
     },
     "H09": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0603184328859Z PASS",
-      "note": "host custom rewards preserved as foreign entries; no foreign file writes"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "contract/host-state: host JSON rewards preserved; no foreign file writes"
     },
     "H10": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0603184328859Z PASS",
-      "note": "generic HP/skill rewards unchanged; no second HP patch"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "grit/menus: host HP/skill rewards unchanged; no second automatic-HP patch"
     },
     "E01": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS",
-      "note": "race matrix incl. expected provider absences"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "menus race matrix; explicit provider absence for Goblin and Orc"
     },
     "E02": {
-      "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS",
-      "note": ""
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "menus; respec Half-elf source; L01"
     },
     "E03": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "menus: human grit and native Pistol-Whip"
     },
     "E04": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS; 20260924T0538189215967Z PASS (9b3db78bf, third-party profile ON)",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "menus; Mostly Human bridge (Aasimar keeps host policy)"
     },
     "E05": {
-      "status": "NATIVE TESTED",
-      "evidence": "20260924T0609003356634Z PASS; 07c21f29b: third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z (all PASS; settings file restored absent)",
-      "note": ""
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "Mostly Human lane; settings profile OFF run; L01 families"
     },
     "E06": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0609003356634Z PASS",
-      "note": "twelve heritages"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "Mostly Human heritages; elemental core/advanced"
     },
     "E07": {
-      "status": "NATIVE TESTED",
-      "evidence": "20260924T0609003356634Z PASS",
-      "note": "fact diff, unchanged race/scores, humanoid-targeting check"
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "Mostly Human dual identity and bridge; lifecycle; L01 families"
     },
     "E08": {
-      "status": "DOMAIN TESTED",
-      "evidence": "eligibility reads the actual race blueprint and verified facts only",
-      "note": "native NOT RUN"
+      "status": "NATIVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "ancestry from race GUID only (RaceIdentitiesAreExactAndComplete); the host bridge stays closed to a human-looking standard geniekin natively"
     },
     "E09": {
       "status": "OUT OF SCOPE",
-      "evidence": "charter excludes Racial/Planar Heritage feat systems",
-      "note": "no verified provider"
+      "code": "n/a",
+      "domain": "n/a",
+      "native": "n/a",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "OUT OF SCOPE: no qualified provider installed"
     },
     "E10": {
-      "status": "DOMAIN TESTED",
-      "evidence": "favored-class.eligibility-* (bounded graph)",
-      "note": ""
+      "status": "PARTIAL (native)",
+      "code": "yes",
+      "domain": "yes",
+      "native": "partial",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "UnknownCyclicAndDuplicateEvidenceIsBounded; Races Unleashed Suli Mostly Human stays closed natively"
     },
     "E11": {
-      "status": "NOT RUN",
-      "evidence": "",
-      "note": "favored-class levels are the host's; multiclass flow not observed natively"
+      "status": "NATIVE TESTED",
+      "code": "yes",
+      "domain": "n/a",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "disposable-favored-class-multiclass"
     },
     "E12": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS; 20260924T0609525254026Z PASS; 20260924T0602359332310Z PASS",
-      "note": "replaced features not offered; dormant investment legal"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "ImprovedFeatureRuleExcludesOnlyFullReplacement; advanced/menus archetype exclusions"
     },
     "E13": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0604457833407Z PASS",
-      "note": "level-up cancel leaves no leak; respec NOT RUN"
+      "status": "NATIVE TESTED",
+      "code": "yes",
+      "domain": "n/a",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "respec cancel; lifecycle pet respec cancel; grit cancel"
     },
     "E14": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS",
-      "note": "capped counters close; host generic choices remain"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "menus: capped counters close; host HP/skill fallback remains"
     },
     "E15": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0609525254026Z PASS",
-      "note": "fresh characters observed; pets get only their hidden armor feature; mercenary/companion/auto-level NOT RUN"
+      "status": "PARTIAL (native)",
+      "code": "yes",
+      "domain": "n/a",
+      "native": "partial",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "custom-companion respec and fresh characters natively; pets never get favored-class progressions; auto-level not exercised"
     },
     "E16": {
-      "status": "NOT RUN",
-      "evidence": "",
-      "note": ""
+      "status": "NATIVE TESTED",
+      "code": "yes",
+      "domain": "n/a",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "respec Half-elf -> Human -> Dwarf; Mostly Human -> Standard"
     },
     "M01": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0604457833407Z PASS; 20260924T0605443253994Z PASS",
-      "note": "domain oracle for every divisor; native d = 2, 3, 4, 6"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "rank policy; grit 20 levels; menus"
     },
     "M02": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "UncappedDivisorSixDoesNotStopAtEighteen; menus caps"
     },
     "M03": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS",
-      "note": "per-type counters stay independent"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "oracle/performance per-target ledgers"
     },
     "M04": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS",
-      "note": "one ledger per canonical effect"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "AliasRoutesNeverDuplicateOrMultiply; menus one counter"
     },
     "M05": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0604457833407Z PASS",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "grit lane"
     },
     "M06": {
-      "status": "NATIVE TESTED",
-      "evidence": "20260924T0604457833407Z PASS; 20260924T0612102884372Z (prepare) + 20260924T0613092420246Z (verify) PASS; transaction word-of-recall-fcb-persistence-20260924T0612076008434Z_556ce961a4974babba75ab6c3145bb78 (settings and complete Mods tree restored)",
-      "note": "no refill; current grit persists"
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "fcb-grit-no-refill; L01 spent grit"
     },
     "M07": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0606461797306Z PASS",
-      "note": "types and floor; ammunition/conditions/reliability not exhaustively observed"
+      "status": "PARTIAL (native)",
+      "code": "yes",
+      "domain": "yes",
+      "native": "partial",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "mechanics: per-type threshold and floor; not every ammo/condition combination"
     },
     "M08": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0606461797306Z PASS; 20260924T0608135881312Z PASS",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "mechanics; ConfirmationPreservesTheBetterBonus"
     },
     "M09": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0606461797306Z PASS; 20260924T0608135881312Z PASS",
-      "note": "firearm, unarmed, claw, longsword, Pistol-Whip surrogate"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "mechanics: firearm/unarmed/other categories"
     },
     "M10": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0606461797306Z PASS",
-      "note": "deed attack only; interrupted/custom paths NOT RUN"
+      "status": "PARTIAL (native)",
+      "code": "yes",
+      "domain": "yes",
+      "native": "partial",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "mechanics: Pistol-Whip surrogate attack only; interruption path not exercised"
     },
     "M11": {
-      "status": "NATIVE TESTED",
-      "evidence": "20260924T0606461797306Z PASS",
-      "note": ""
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "mechanics; lifecycle; L01 Nimble"
     },
     "M12": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0606461797306Z PASS",
-      "note": "inside the deed buff; both combat modes not separately observed"
+      "status": "PARTIAL (native)",
+      "code": "yes",
+      "domain": "yes",
+      "native": "partial",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "mechanics: deed buff; turn-based timing not separately exercised"
     },
     "M13": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0607291357025Z PASS",
-      "note": "real-time and turn-based; zero-grit and True Grit variants NOT RUN"
+      "status": "PARTIAL (native)",
+      "code": "yes",
+      "domain": "yes",
+      "native": "partial",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "initiative timing in real-time and turn-based entry; True Grit not exercised"
     },
     "M14": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0608135881312Z PASS",
-      "note": "flat bonus on bomb context; splash/critical variants not separately observed"
+      "status": "PARTIAL (native)",
+      "code": "yes",
+      "domain": "yes",
+      "native": "partial",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "elemental core: flat bonus on a direct hit; splash/critical not exercised"
     },
     "M15": {
-      "status": "NATIVE TESTED",
-      "evidence": "20260924T0602359332310Z PASS",
-      "note": "owner-local radius; another performer unchanged"
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "performance range; lifecycle membership; L01 bard"
     },
     "M16": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0602359332310Z PASS",
-      "note": "separate counters and +30-ft cap; shared native range text and ring are unchanged (disclosed)"
+      "status": "NATIVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "performance range: per-target caps, owner text, ring; exclusions"
     },
     "M17": {
-      "status": "NATIVE TESTED",
-      "evidence": "20260924T0609525254026Z PASS",
-      "note": "each paladin's own bonus; overlap keeps the game's higher morale bonus"
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "lifecycle aura overlap; L01 paladin"
     },
     "M18": {
-      "status": "NATIVE TESTED",
-      "evidence": "20260924T0609525254026Z PASS",
-      "note": "replacement, Barkskin, removal; death/resummon NOT RUN"
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "advanced; lifecycle; respec pet; L01 replacement"
     },
     "M19": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0606461797306Z PASS; 20260924T0608135881312Z PASS",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "elemental core"
     },
     "M20": {
-      "status": "NATIVE TESTED",
-      "evidence": "20260924T0608135881312Z PASS",
-      "note": "lockstep native level-ups"
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "UndineMonkMixedRateBundle; elemental core; L01 monk"
     },
     "M21": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0608135881312Z PASS",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "elemental core"
     },
     "M22": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0608135881312Z PASS",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "elemental core"
     },
     "M23": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0608135881312Z PASS",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "elemental core"
     },
     "M24": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0601519001416Z PASS; 20260924T0609525254026Z PASS",
-      "note": "every manifest target scoped with its audited families; values probed for representative targets"
+      "status": "PARTIAL (native)",
+      "code": "yes",
+      "domain": "yes",
+      "native": "partial",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "oracle: all 52 scoped, values for Fire Breath and neighbors; advanced: four bloodline powers; L01 revelation and bloodline arithmetic"
     },
     "M25": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0601519001416Z PASS; 20260924T0609525254026Z PASS",
-      "note": "neighbor powers/revelations and Fireball unchanged"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "oracle/advanced neighbors and Fireball unchanged"
     },
     "M26": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0601519001416Z PASS",
-      "note": "held tiers and gates unmoved; effective level above 20 NOT RUN"
+      "status": "NATIVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "oracle thresholds; FCB virtual levels never unlock a power"
     },
     "M27": {
-      "status": "CODE COMPLETE",
-      "evidence": "docs/FAVORED-CLASS-TARGET-MANIFEST.md",
-      "note": "no-scaling and unsupported branches are not offered"
+      "status": "DOMAIN TESTED (native n/a)",
+      "code": "yes",
+      "domain": "yes",
+      "native": "n/a",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "manifest dispositions (not offered)"
     },
     "M28": {
       "status": "NATIVE TESTED",
-      "evidence": "20260924T0605443253994Z PASS; 20260924T0538189215967Z PASS (9b3db78bf, third-party profile ON)",
-      "note": "1/4 Halfling vs 1/6 Drow Nimble"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "DistinctVariantsKeepTheirOwnRatesAndProfiles; menus"
     },
     "L01": {
       "status": "SAVE TESTED",
-      "evidence": "20260924T0612102884372Z (prepare) + 20260924T0613092420246Z (verify) PASS; transaction word-of-recall-fcb-persistence-20260924T0612076008434Z_556ce961a4974babba75ab6c3145bb78 (settings and complete Mods tree restored); earlier 20260924T0352059750938Z + 20260924T0353099892035Z (f2db844c2)",
-      "note": "Gunslinger counters; other counters NOT RUN"
+      "code": "yes",
+      "domain": "n/a",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "Word of Recall FCB transaction: one subject per state/mechanic family, including a selected firearm target with native shots after the reload; the own persistence cases of G05, G06 (Dodge), G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04 and S06 are NOT RUN"
     },
     "L02": {
-      "status": "NOT RUN",
-      "evidence": "",
-      "note": ""
+      "status": "NATIVE TESTED",
+      "code": "yes",
+      "domain": "n/a",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "working-save-favored-class-lifecycle"
     },
     "L03": {
-      "status": "NOT RUN",
-      "evidence": "",
-      "note": ""
+      "status": "NATIVE TESTED",
+      "code": "yes",
+      "domain": "n/a",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "respec lane (Gunslinger, Mostly Human, Sorcerer); lifecycle pet respec"
     },
     "L04": {
       "status": "NATIVE TESTED",
-      "evidence": "07c21f29b: third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z (all PASS; settings file restored absent)",
-      "note": "integration OFF suppresses mechanics and keeps identities; ON restores"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "settings profiles integration OFF/ON"
     },
     "L05": {
       "status": "NATIVE TESTED",
-      "evidence": "07c21f29b: third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z (all PASS; settings file restored absent); 20260924T0606461797306Z PASS",
-      "note": "profile OFF withholds new choices; earned choices keep working"
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "third-party ON/OFF menus and mechanics"
     },
     "L06": {
-      "status": "CODE COMPLETE",
-      "evidence": "identities register independently of host/provider; publication fails closed",
-      "note": "native NOT RUN"
+      "status": "CODE COMPLETE; NATIVE BLOCKED",
+      "code": "yes",
+      "domain": "partial",
+      "native": "no",
+      "save": "no",
+      "qualified": "no",
+      "evidence": "documented recovery; identity retention domain tested; not staged (the mission forbids loading a host-dependent campaign with its dependency removed)"
     },
     "L07": {
-      "status": "PARTIAL",
-      "evidence": "20260924T0607291357025Z PASS",
-      "note": "initiative in both modes; other effects NOT RUN"
+      "status": "PARTIAL (native)",
+      "code": "yes",
+      "domain": "n/a",
+      "native": "partial",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "initiative both modes; other families real-time"
     },
     "L08": {
-      "status": "DOMAIN TESTED",
-      "evidence": "identity manifest validators; blueprint-only component fields",
-      "note": ""
+      "status": "SAVE TESTED",
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "yes",
+      "qualified": "no",
+      "evidence": "manifest tests; the L01 fresh-process reload deserializes the components of every reloaded family subject"
     },
     "L09": {
       "status": "NATIVE TESTED",
-      "evidence": "launcher deployment manifest (DLL hash/MVID/commit) checked on every run",
-      "note": ""
+      "code": "yes",
+      "domain": "yes",
+      "native": "yes",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "every guarded run checks commit, package, DLL and MVID"
     },
     "L10": {
-      "status": "CODE COMPLETE",
-      "evidence": "docs/FAVORED-CLASS-COMPATIBILITY.md scope statement",
-      "note": ""
+      "status": "DOMAIN TESTED (native n/a)",
+      "code": "yes",
+      "domain": "yes",
+      "native": "n/a",
+      "save": "n/a",
+      "qualified": "no",
+      "evidence": "explicit scope statement; no broad compatibility claim"
     }
   },
-  "extraFinalRuns": {
-    "L01 fresh-process persistence (`Invoke-WordOfRecallFavoredClassPersistence.ps1`)": "20260924T0612102884372Z (prepare) + 20260924T0613092420246Z (verify) PASS; transaction word-of-recall-fcb-persistence-20260924T0612076008434Z_556ce961a4974babba75ab6c3145bb78 (settings and complete Mods tree restored)",
-    "`working-save-smoke` (KMG_AUTOMATION_WORKING, 11/11)": "20260924T0615397121565Z PASS"
-  },
   "restoration": {
-    "verifiedUtc": "2026-09-24T06:18Z",
-    "source": "runtime-backups/live-mod/20260924T0027014050156Z",
-    "kmgDll": "c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c",
-    "infoJson": "f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17",
-    "featureModules": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
-    "tree": "238/238 files identical (path and SHA-256)",
-    "settingsFile": "absent",
-    "hostAndProviderSettings": "unchanged (ZFavoredClass, CallOfTheWild, RacesUnleashed)"
-  }
+    "verified": true,
+    "backup": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20260924T0027014050156Z",
+    "restoredVersion": "0.0.136",
+    "files": {
+      "Info.json": "f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17",
+      "FeatureModules.json": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "KingmakerGunslinger.dll": "c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c"
+    },
+    "tree": {
+      "backupFiles": 238,
+      "liveFiles": 238,
+      "onlyInBackup": 0,
+      "onlyInLive": 0
+    },
+    "otherModSettings": {
+      "CallOfTheWild\\settings.json": "24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8",
+      "RacesUnleashed\\Settings.json": "270899c3f6c3d29bfe777fc2b55a0bb0404ae50786dbac8f1dccf77e8b9cabbf",
+      "ZFavoredClass\\settings.json": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
+    },
+    "integrationSettingsFilePresent": false
+  },
+  "finalDeployment": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\deployments\\20260924T2220560490337Z\\deployment.json",
+  "continuationDeployments": [
+    {
+      "id": "20260924T1231430167010Z",
+      "commit": "0138d70b6",
+      "dll": "bab6aaf9",
+      "mvid": "30900fe0-e6d9-4582-87b7-bc857cddf8db",
+      "backup": "20260924T1231384662202Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1301193301166Z",
+      "commit": "e97271392",
+      "dll": "adc29f04",
+      "mvid": "64f83a8c-f63e-4192-b553-d1a984501265",
+      "backup": "20260924T1301147516433Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1318030056407Z",
+      "commit": "08ab4d17c",
+      "dll": "fbe7cdfa",
+      "mvid": "accc0ea9-28df-46ee-8b37-c8adaa582c2b",
+      "backup": "20260924T1317583962386Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1331590044054Z",
+      "commit": "b2cf0cf81",
+      "dll": "1dfd0b02",
+      "mvid": "5cd47b62-78a0-4f9a-b204-ae8da64cb039",
+      "backup": "20260924T1331542631295Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1602289102359Z",
+      "commit": "ff434c829",
+      "dll": "b4fdc828",
+      "mvid": "6ce95367-69d6-4c62-a0d8-f9bfa4be693a",
+      "backup": "20260924T1602239758431Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1625326651297Z",
+      "commit": "1b2d4174d",
+      "dll": "e82dee2a",
+      "mvid": "dbb1a2e4-e490-4492-a1c7-2aad6e8a5064",
+      "backup": "20260924T1625279463297Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1710329170172Z",
+      "commit": "1ebd83fa9",
+      "dll": "c44b3ada",
+      "mvid": "4e74b259-2e00-47b5-9c99-d19af21479cd",
+      "backup": "20260924T1710282766956Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1732404304962Z",
+      "commit": "e3617e224",
+      "dll": "0b39f19d",
+      "mvid": "04098026-bf0c-44bb-8b12-b92e5851b1ea",
+      "backup": "20260924T1732355393019Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1820508011281Z",
+      "commit": "e3617e224",
+      "dll": "0b39f19d",
+      "mvid": "04098026-bf0c-44bb-8b12-b92e5851b1ea",
+      "backup": "20260924T1820462973327Z",
+      "profile": true
+    },
+    {
+      "id": "20260924T1824157380471Z",
+      "commit": "e3617e224",
+      "dll": "0b39f19d",
+      "mvid": "04098026-bf0c-44bb-8b12-b92e5851b1ea",
+      "backup": "20260924T1824112883998Z",
+      "profile": true
+    },
+    {
+      "id": "20260924T1827526231444Z",
+      "commit": "e3617e224",
+      "dll": "0b39f19d",
+      "mvid": "04098026-bf0c-44bb-8b12-b92e5851b1ea",
+      "backup": "20260924T1827479363666Z",
+      "profile": true
+    },
+    {
+      "id": "20260924T1855251804593Z",
+      "commit": "bd8f7c60c",
+      "dll": "6bda3905",
+      "mvid": "5267d7af-574d-4b8d-b683-db6b05b31ea2",
+      "backup": "20260924T1855205210682Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1910002412197Z",
+      "commit": "77afdde62",
+      "dll": "03a28f95",
+      "mvid": "be1cfcaa-486d-47a0-a4ec-05e6bbe397ca",
+      "backup": "20260924T1909556042780Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T1925499018311Z",
+      "commit": "675b117b0",
+      "dll": "2ac5970f",
+      "mvid": "76077322-1702-46fe-bd83-5d13a13b8cd6",
+      "backup": "20260924T1925452180506Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T2056272827946Z",
+      "commit": "cacf3a002",
+      "dll": "e85660cc",
+      "mvid": "47c993a5-2e5e-48dd-83f0-a5402f55b6ba",
+      "backup": "20260924T2056225420585Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T2155495526048Z",
+      "commit": "cacf3a002",
+      "dll": "e85660cc",
+      "mvid": "47c993a5-2e5e-48dd-83f0-a5402f55b6ba",
+      "backup": "20260924T2155450157633Z",
+      "profile": true
+    },
+    {
+      "id": "20260924T2159057722985Z",
+      "commit": "cacf3a002",
+      "dll": "e85660cc",
+      "mvid": "47c993a5-2e5e-48dd-83f0-a5402f55b6ba",
+      "backup": "20260924T2159010883330Z",
+      "profile": true
+    },
+    {
+      "id": "20260924T2202398694367Z",
+      "commit": "cacf3a002",
+      "dll": "e85660cc",
+      "mvid": "47c993a5-2e5e-48dd-83f0-a5402f55b6ba",
+      "backup": "20260924T2202352148081Z",
+      "profile": true
+    },
+    {
+      "id": "20260924T2220560490337Z",
+      "commit": "15c37695c",
+      "dll": "0261ebd3",
+      "mvid": "613caf93-62bb-41e8-87fa-4a154cb4cfd6",
+      "backup": "20260924T2220514938917Z",
+      "profile": false
+    },
+    {
+      "id": "20260924T2319493525825Z",
+      "commit": "15c37695c",
+      "dll": "0261ebd3",
+      "mvid": "613caf93-62bb-41e8-87fa-4a154cb4cfd6",
+      "backup": "20260924T2319446874767Z",
+      "profile": true
+    },
+    {
+      "id": "20260924T2323061224769Z",
+      "commit": "15c37695c",
+      "dll": "0261ebd3",
+      "mvid": "613caf93-62bb-41e8-87fa-4a154cb4cfd6",
+      "backup": "20260924T2323016112056Z",
+      "profile": true
+    },
+    {
+      "id": "20260924T2326399101015Z",
+      "commit": "15c37695c",
+      "dll": "0261ebd3",
+      "mvid": "613caf93-62bb-41e8-87fa-4a154cb4cfd6",
+      "backup": "20260924T2326353817722Z",
+      "profile": true
+    }
+  ]
 }

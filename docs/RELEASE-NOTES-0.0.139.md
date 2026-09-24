@@ -31,10 +31,18 @@ favored-class choices appear.
 ## Status
 
 **PARTIAL — NOT RELEASE QUALIFIED** (local candidate, owner review pending).
-All 30 scheduled rows and every required infrastructure item are implemented,
-and each passes its domain tests and guarded native runs. The exceptions are
-G08 and G20, whose optional races have no playable provider. The Gunslinger
-counters also survive a fresh-process save reload. Details are in
+All 30 scheduled rows are implemented and pass their domain tests and guarded
+native runs, except G08 and G20, whose optional races have no playable
+provider. Every required infrastructure item is implemented; the lifecycle
+policy is still partial and the migration guidance is documented only (see
+the report). A fresh-process save reload keeps one subject of every state and mechanic
+family: partial and full investment, spent grit with its raised maximum, the
+selected firearm, performance, revelation and bloodline targets, Nimble, the
+Undine Monk, owner-local performance and aura areas, companion armor and its
+replacement, and Mostly Human. The lifecycle lane keeps the affected families
+through death, polymorph and area transition, and a native respec removes
+the counters cleanly. Fourteen rows have no persistence case of their own yet
+(see the report). Details are in
 `FAVORED-CLASS-IMPLEMENTATION-REPORT.md`, `FAVORED-CLASS-COVERAGE.md` and
 `docs/FAVORED-CLASS-TARGET-MANIFEST.md`. Nothing listed there as NOT RUN has
 been observed in game.
@@ -48,17 +56,24 @@ profile:
   Inquisitor, Rogue, Fighter, Monk, Cleric, Paladin, Ranger, Summoner,
   Sorcerer, Oracle and Bard menus. These include per-revelation Oracle
   counters (52 revelations), per-power Sorcerer counters and per-performance
-  Bard range counters (15 performances).
+  Bard range counters (14 performances). A widened performance shows its
+  bard's own range: the area, its ring and the performance's description
+  agree, for that bard only.
 - **Mostly Human**: an optional Heritage-phase choice for the four elemental
-  races. It opens the Favored Class mod's human options without changing the
-  character's race.
+  races. The character counts as both a human (humanoid) and its elemental
+  race (native outsider) for effects related to race, such as the Favored
+  Class mod's human options and human race traits. Its race, racial traits
+  and ability scores are unchanged, and it still receives one favored-class
+  bonus per level.
 - An optional `FavoredClassIntegration.json` (restart-required) that can turn
   the integration or any profile off; see
   `docs/FAVORED-CLASS-COMPATIBILITY.md`.
 
-Known limits: 127 new choices have no icon yet and show the game's text
-placeholder. A performance's range text and ring are not redrawn. Several
-design questions await the owner (`FAVORED-CLASS-BLOCKERS.md`).
+Every published KMG favored-class choice and the Mostly Human selectors use
+an appropriate existing icon (original art is optional later polish); the
+Favored Class mod's own reward menus keep that mod's presentation. Open
+questions for the owner are limited to two pre-existing KMG defects and are
+listed in `FAVORED-CLASS-BLOCKERS.md`.
 
 ## Other compatibility
 
