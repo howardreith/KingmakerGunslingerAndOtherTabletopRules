@@ -53,10 +53,12 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// Racial hit-die classes the natural builder can bind. Sprint 3 added
         /// the magical beast (Owlbear) and humanoid (Cyclops) classes to the
-        /// animal and vermin classes of the earlier tiers.
+        /// animal and vermin classes of the earlier tiers; Sprint 4 added the
+        /// plant class (Shambling Mound, Giant Flytrap), whose progression
+        /// carries the plant traits.
         /// </summary>
         internal static readonly string[] SupportedHitDieClasses = {
-            "Animal", "Vermin", "MagicalBeast", "Humanoid"
+            "Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"
         };
         private static readonly NaturalSummonProfile[] Values = Build();
         internal static IReadOnlyList<NaturalSummonProfile> All
@@ -67,7 +69,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 30 || Values.Select(value => value.Key)
+            if (Values.Length != 33 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -268,13 +270,40 @@ namespace KingmakerGunslinger.Summoning
                     A("Claw1d6", "Claw1d6"),
                     A("ReducedReach", "ImprovedInitiative", "GreatFortitude",
                         "SkillFocusPerception"),
-                    "Claw grab is deferred to the shared summon grapple lifecycle that Sprint 4 introduces; the installed generic Grab feature carries unrelated Shambling Mound constrict and target-state behavior."),
+                    "Claw grab rides the shared summon grapple lifecycle (Sprint 4): a claw hit attempts the game's own grapple check, success starts the native hold, each new round the owlbear maintains with a grapple check that deals claw damage or releases, and the hold ends with the target's escape or the summon's end."),
                 P("cyclops", "Cyclops", "Humanoid", 10, "Large",
                     21, 8, 15, 10, 13, 8, 30, 7, "Greataxe",
                     Array.Empty<string>(),
                     A("Ferocity", "PowerAttack", "Cleave"),
                     "Flash of Insight is bounded to one use per summoning: a swift action after which the next attack in the round is an automatic critical hit, in place of choosing an exact die result; Kingmaker's automatic-hit path grants the threat and its confirmation together.",
-                    "The +4 hide armor bonus and the heavy crossbow are omitted because the summon carries no equipment beyond its greataxe; Alertness, Great Cleave and Improved Bull Rush are omitted because exact final-live feature identities were not proven.")
+                    "The +4 hide armor bonus and the heavy crossbow are omitted because the summon carries no equipment beyond its greataxe; Alertness, Great Cleave and Improved Bull Rush are omitted because exact final-live feature identities were not proven."),
+                // Sprint 4 (Phase 1): native publication pack II - plants and
+                // the colossal worm, on the shared summon grapple lifecycle.
+                P("shambling-mound", "Shambling Mound", "Plant", 9, "Large",
+                    21, 10, 17, 7, 10, 9, 20, 10, "SlamPlant2d6",
+                    A("SlamPlant2d6"),
+                    A("FireResistance10", "ElectricityImmunity", "PowerAttack",
+                        "IronWill", "LightningReflexes", "Cleave", "WeaponFocusSlam"),
+                    "Slam grab and constrict ride the shared summon grapple lifecycle: a slam hit attempts the game's own grapple check, success starts the native hold and deals constrict damage, and each maintained round deals slam and constrict damage or releases.",
+                    "Electric Fortitude keeps its electricity immunity; the temporary Constitution gain has no bounded native representation and is omitted. Swim movement is omitted; the native unit's poison aura is not tabletop and is not carried.",
+                    "Both slams are carried as primary limbs, as the native unit carries them."),
+                P("giant-flytrap", "Giant Flytrap", "Plant", 13, "Huge",
+                    25, 18, 25, 1, 12, 6, 10, 10, "BiteLarge1d8",
+                    A("BiteLarge1d8", "BiteLarge1d8", "BiteLarge1d8"),
+                    A("AcidResistance20", "Blindsight", "TripImmune", "Cleave",
+                        "GreatFortitude", "ImprovedInitiative", "PowerAttack",
+                        "SkillFocusStealth", "WeaponFocusBite"),
+                    "Bite grab rides the shared summon grapple lifecycle; the native hold takes one target at a time, so the tabletop four simultaneous grabs are bounded to one held target while the other bites continue.",
+                    "Engulf is omitted because no summon-safe native representation was proven. Tremorsense 60 feet is represented by the native 60-foot blindsight. Vital Strike is omitted because no exact final-live feature identity was proven.",
+                    "Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used."),
+                P("purple-worm", "Purple Worm", "MagicalBeast", 16, "Gargantuan",
+                    35, 6, 25, 1, 8, 8, 20, 22, "PurpleWormBite",
+                    A("PurpleWormSting"),
+                    A("TripImmune", "PurpleWormPoison", "CriticalFocus",
+                        "ImprovedCriticalBite", "PowerAttack", "WeaponFocusBite"),
+                    "Grab and swallow whole follow Kingmaker's own worm: a bite hit attempts the game's grapple check and success swallows the target through the native swallow-whole part, which handles break-free attempts, the per-round crushing damage and the spit-out on the worm's death or end; the separate tabletop grab-then-swallow step has no native hold-and-swallow path.",
+                    "Burrow and swim movement are omitted; the native summoned worm's burrowing kit is not carried, as the charter's bounded combat adaptation directs. The sting poison is the exact native Constitution-scaled graph.",
+                    "Awesome Blow, Improved Bull Rush, Staggering Critical and Weapon Focus (sting) are omitted because exact final-live feature identities were not proven; Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used.")
             };
         }
 

@@ -136,8 +136,8 @@ namespace KingmakerGunslinger.DomainTests
                 cyclops.Deviations.Any(value => value.Contains("hide armor")),
                 "Cyclops deviations must record the bounded insight and the omitted armor.");
             Assertions.True(ExpandedSummoningNaturalProfiles.SupportedHitDieClasses
-                .SequenceEqual(new[] { "Animal", "Vermin", "MagicalBeast", "Humanoid" }),
-                "Supported hit-die classes changed.");
+                .Take(4).SequenceEqual(new[] { "Animal", "Vermin", "MagicalBeast", "Humanoid" }),
+                "The Sprint 3 hit-die classes changed.");
 
             string builder = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints",
@@ -259,16 +259,22 @@ namespace KingmakerGunslinger.DomainTests
             var entries = Newtonsoft.Json.Linq.JObject.Parse(ledger)["entries"]
                 .Select(value => (string)value["symbol"]).ToArray();
             string[] appended = entries.Where(value =>
-                value.Contains(".Pony") || value.Contains(".Horse") ||
+                (value.Contains(".Pony") || value.Contains(".Horse") ||
                 value.Contains(".Owlbear") || value.Contains(".Cyclops") ||
                 value.Contains(".SNA.Tier7.FrostGiant") ||
                 value.Contains(".SNA.Tier8.FrostGiant") ||
-                value.Contains(".SNA.Tier9.FrostGiant")).ToArray();
+                value.Contains(".SNA.Tier9.FrostGiant")) &&
+                !value.StartsWith("KMG.Summoning.Special.Owlbear.", StringComparison.Ordinal))
+                .ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 3 must append exactly its own identities to the ledger.");
-            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities)
+            // Append-only: the Sprint 3 block sits directly before the Sprint 4
+            // block at the ledger's tail.
+            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+                    ExpandedSummoningSprint4Tests.AppendedLedgerIdentities)
+                .Take(AppendedLedgerIdentities)
                 .All(value => appended.Contains(value)),
-                "The ledger is append-only: Sprint 3 identities sit at its tail.");
+                "The ledger is append-only: Sprint 3 identities sit directly before Sprint 4's.");
             foreach (string symbol in new[] {
                 "KMG.Summoning.Unit.Pony", "KMG.Summoning.Unit.Horse",
                 "KMG.Summoning.Unit.Owlbear", "KMG.Summoning.Unit.Cyclops",

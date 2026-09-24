@@ -3,11 +3,13 @@
 
 Phase 1 appends creature identities to the frozen ledger without changing the
 release version: Sprint 3 added Pony, Horse, Owlbear and Cyclops, the
-Nature's Ally Frost Giant wrappers and the Cyclops Flash of Insight specials.
-This module pins that append exactly - symbol, GUID and planned type, in
-ledger order, directly after the Better Vendors progression block - and the
-Sprint 3 roster figures the catalogs, icons and package carry. It claims no
-runtime or visual acceptance; those live in the Phase 1 state file.
+Nature's Ally Frost Giant wrappers and the Cyclops Flash of Insight specials;
+Sprint 4 added Shambling Mound, Giant Flytrap and Purple Worm and the shared
+summon grapple lifecycle specials. This module pins that append exactly -
+symbol, GUID and planned type, in ledger order, directly after the Better
+Vendors progression block - and the current roster figures the catalogs,
+icons and package carry. It claims no runtime or visual acceptance; those
+live in the Phase 1 state file.
 """
 from __future__ import annotations
 import json
@@ -20,7 +22,8 @@ import expanded_summoning_manifest
 PRESERVED_ENTRIES = 1956  # 1913 preserved + 43 Better Vendors progression
 STATIC_KEY = "expandedSummoningPhase1"
 
-# Exact ordered (symbol, guid, plannedType) triples appended by Sprint 3.
+# Exact ordered (symbol, guid, plannedType) triples appended by Sprint 3, then
+# Sprint 4, in ledger order.
 APPENDED = (
     ("KMG.Summoning.Unit.Pony", "67a661d7b39e44bc811ad9ff59120110", "BlueprintUnit"),
     ("KMG.Summoning.Unit.Horse", "629fa53bf40d4b4b9828f57cf81194e9", "BlueprintUnit"),
@@ -113,25 +116,45 @@ APPENDED = (
     ("KMG.Summoning.Special.Cyclops.FlashOfInsightResource", "a07046042da74c388c312d7ef5d4bb4a", "BlueprintAbilityResource"),
     ("KMG.Summoning.Special.Cyclops.CombatTraits", "559b9a9a3c53423b87c7281ecc88fbc0", "BlueprintBuff"),
     ("KMG.Summoning.Special.Cyclops.FlashOfInsightAi", "591b2ddf91244a4da1dbb5586550e1a6", "BlueprintAiCastSpell"),
-    ("KMG.Summoning.Special.Cyclops.Brain", "22dc52d0dfba4c3d8b9c6f49ea6037de", "BlueprintBrain")
+    ("KMG.Summoning.Special.Cyclops.Brain", "22dc52d0dfba4c3d8b9c6f49ea6037de", "BlueprintBrain"),
+    ("KMG.Summoning.Unit.ShamblingMound", "c0680a67c42f4d17b3b55c011a8f9c56", "BlueprintUnit"),
+    ("KMG.Summoning.Unit.GiantFlytrap", "287490e71bed46bd92adef60489ecb4c", "BlueprintUnit"),
+    ("KMG.Summoning.Unit.PurpleWorm", "8739fe771e5b4f3fa3acbb10dd969892", "BlueprintUnit"),
+    ("KMG.Summoning.Ability.SNA.Tier6.ShamblingMound.One", "d9df6491b93b4b97a15014bbc43dcf36", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier7.ShamblingMound.OneD3", "cab9fbcc770a4ce39020ecaf544937e4", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier7.GiantFlytrap.One", "085adbcd4ba540f7b73802bb114c6bbf", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.ShamblingMound.OneD4PlusOne", "42c2f703eeb74d84be9614e6cffcd01c", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.GiantFlytrap.OneD3", "2172cc7b9b0e485fa0fa1a0d8d794c93", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.PurpleWorm.One", "ac4f08e655f34b86865d19b4f86cb45f", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.ShamblingMound.OneD4PlusOne", "121d2ae2dc42456bbb789e7ae6095ff8", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.GiantFlytrap.OneD4PlusOne", "2d15592c70ed4969bbaa5df5e13d082f", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.PurpleWorm.OneD3", "4a8be5f2b72f4cc88b781cfdf51b1e18", "BlueprintAbility"),
+    ("KMG.Summoning.Special.Grapple.Hold", "5af4e99c8e5744a6b978412b126d25f0", "BlueprintBuff"),
+    ("KMG.Summoning.Special.Grapple.Grappled", "e49fc099e63b4392bb262f1fefa3301b", "BlueprintBuff"),
+    ("KMG.Summoning.Special.Owlbear.CombatTraits", "1ab3a4951af443409b9eaa190d55f69d", "BlueprintBuff"),
+    ("KMG.Summoning.Special.ShamblingMound.CombatTraits", "4ec446a8591a4f169e7c548c089bf63a", "BlueprintBuff"),
+    ("KMG.Summoning.Special.GiantFlytrap.CombatTraits", "ea204a20924045ca856de5af350a7194", "BlueprintBuff"),
+    ("KMG.Summoning.Special.PurpleWorm.CombatTraits", "ce031441c4fa4f41a142799bbbef3f36", "BlueprintBuff"),
+    ("KMG.Summoning.Special.PurpleWorm.Swallowed", "8a25b84199cd42319fa77b0b1d1d5bea", "BlueprintBuff")
 )
 
-SPRINT3 = {
-    "uniqueCreatures": 71,
+PHASE1 = {
+    "uniqueCreatures": 74,
     "summonMonsterEntries": 68,
     "summonMonsterPlacements": 378,
-    "summonNaturesAllyEntries": 61,
-    "summonNaturesAllyPlacements": 348,
-    "registeredLogicalPlacements": 726,
-    "publishedLogicalPlacements": 712,
+    "summonNaturesAllyEntries": 64,
+    "summonNaturesAllyPlacements": 357,
+    "registeredLogicalPlacements": 735,
+    "publishedLogicalPlacements": 721,
     "templatedPlacements": 199,
     "nativeExpansionWrappers": 29,
-    "naturalProfiles": 30,
-    "projectIcons": 81,
-    "foundationIdentities": 1276,
-    "appendedLedgerIdentities": 92,
-    "packageFileCountWithSoundBank": 241,
+    "naturalProfiles": 33,
+    "projectIcons": 84,
+    "foundationIdentities": 1295,
+    "appendedLedgerIdentities": 111,
+    "packageFileCountWithSoundBank": 244,
 }
+SPRINT3 = PHASE1  # the pins below read the current figures
 
 
 def require_tokens(path: Path, *tokens: str) -> None:
@@ -153,12 +176,15 @@ def validate(root: Path) -> None:
         raise AssertionError("Expanded Summoning Phase 1 identities drifted")
     if any(e["status"] != "active" or e["milestone"] != "Expanded Summoning" for e in tail):
         raise AssertionError("Phase 1 identities must be active Expanded Summoning entries")
-    # The append is exactly the manifest plan minus the preserved prefix, in
-    # plan order: nothing planned is missing and nothing unplanned was added.
+    # The append is exactly the manifest plan minus the preserved prefix:
+    # nothing planned is missing and nothing unplanned was added. Order is
+    # pinned by APPENDED itself (each sprint appends its own block, so the
+    # ledger order is sprint order, not the plan's category order).
     plan = expanded_summoning_manifest.planned()
     prefix = {e["symbol"] for e in entries[:PRESERVED_ENTRIES]}
-    expected = [(symbol, planned_type) for symbol, planned_type in plan if symbol not in prefix]
-    if expected != [(symbol, planned_type) for symbol, _, planned_type in APPENDED]:
+    expected = sorted((symbol, planned_type) for symbol, planned_type in plan
+                      if symbol not in prefix)
+    if expected != sorted((symbol, planned_type) for symbol, _, planned_type in APPENDED):
         raise AssertionError("Phase 1 append is not the manifest plan minus the preserved prefix")
     if len(plan) != SPRINT3["foundationIdentities"]:
         raise AssertionError("Expanded Summoning foundation identity count changed")
@@ -171,7 +197,10 @@ def validate(root: Path) -> None:
         "ValidateFamily(SummonFamily.NaturesAlly, %d, %d)" % (
             SPRINT3["summonNaturesAllyEntries"], SPRINT3["summonNaturesAllyPlacements"]),
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
-        'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)')
+        'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
+        'C("shambling-mound","Shambling Mound",null,false,6)',
+        'C("giant-flytrap","Giant Flytrap",null,false,7)',
+        'C("purple-worm","Purple Worm",null,false,8)')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = %d;" % SPRINT3["registeredLogicalPlacements"],
         "SuppressedLogicalPlacementCount = 14;")
@@ -187,19 +216,21 @@ def validate(root: Path) -> None:
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
         "Values.Length != %d" % SPRINT3["naturalProfiles"],
-        '"Animal", "Vermin", "MagicalBeast", "Humanoid"')
+        '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
         "Values.Length != %d" % SPRINT3["projectIcons"])
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
     if runtime_icons["count"] != SPRINT3["projectIcons"] or \
             len(runtime_icons["icons"]) != SPRINT3["projectIcons"] or \
-            {row["key"] for row in runtime_icons["icons"]} < {"pony", "horse", "owlbear", "cyclops"}:
-        raise AssertionError("Runtime icon manifest does not carry the Sprint 3 icons")
-    for key in ("pony", "horse", "owlbear", "cyclops"):
+            not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
+                 "purple-worm"} <= {row["key"] for row in runtime_icons["icons"]}:
+        raise AssertionError("Runtime icon manifest does not carry the Phase 1 icons")
+    for key in ("pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
+                "purple-worm"):
         if not (root / "assets/game/icons/expanded-summoning" / (key + ".png")).is_file() or \
                 not (root / "assets-source/original-icons/expanded-summoning/sources" / (key + ".png")).is_file():
-            raise AssertionError("Sprint 3 icon file missing: " + key)
+            raise AssertionError("Phase 1 icon file missing: " + key)
     require_tokens(root / "scripts/Build-Local.ps1",
         "{ %d } else { %d }" % (SPRINT3["packageFileCountWithSoundBank"],
                                 SPRINT3["packageFileCountWithSoundBank"] - 2))
@@ -230,7 +261,7 @@ def main() -> int:
     except AssertionError as error:
         print(f"Expanded Summoning Phase 1 validation failed: {error}", file=sys.stderr)
         return 1
-    print("Expanded Summoning Phase 1 validation PASS: %d appended identities; Sprint 3 pins exact."
+    print("Expanded Summoning Phase 1 validation PASS: %d appended identities; Sprint 3-4 pins exact."
           % len(APPENDED))
     return 0
 

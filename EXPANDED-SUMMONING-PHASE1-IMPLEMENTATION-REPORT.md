@@ -46,9 +46,22 @@ procedural renders (see the state file). Tests: five Sprint 3 domain
 regressions; suite 1779/1779. Runtime evidence: recorded in the state file
 as the guarded batches complete.
 
-### Sprint 4 - Native Publication Pack II
+### Sprint 4 - Native Publication Pack II - Plants and Colossal Reuse
 
-Not started.
+| Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
+|---|---|---|---|---|---|
+| Shambling Mound | SNA VI (1d3 at VII, 1d4+1 at VIII-IX) | `CR6_ShamblingMound` `b98ae409beb5e8543a75b82ecda082a7`, sanitized body | Plant 9 HD, Large, 21/10/17/7/10/9, 20 ft, NA +10, two native 2d6 slams, fire resistance 10, electricity immunity, Power Attack, Iron Will, Lightning Reflexes, Cleave, Weapon Focus (slam) | slam grab and constrict 2d6+7 on the shared lifecycle; Electric Fortitude's Constitution gain, swim and the native poison aura omitted | implemented; runtime qualification in progress |
+| Giant Flytrap | SNA VII (1d3 at VIII, 1d4+1 at IX) | `CR10_GiantFlytrapStandard` `fb824352b7968fb4d8103ac439644633`, sanitized body | Plant 13 HD, Huge, 25/18/25/1/12/6, 10 ft, NA +10, four native 1d8 bites, acid resistance 20, native 60-ft blindsight (tremorsense), trip immunity, Cleave, Great Fortitude, Improved Initiative, Power Attack, Skill Focus (Stealth), Weapon Focus (bite) | bite grab on the shared lifecycle, one held target at a time; engulf and Vital Strike omitted | implemented; runtime qualification in progress |
+| Purple Worm | SNA VIII (1d3 at IX) | native `PurpleWormSummoned` `bf2216f48b3f4d24c9c502007649340d`, dedicated summon, rebuilt on the natural builder | Magical beast 16 HD, Gargantuan, 35/6/25/1/8/8, 20 ft, NA +22, native bite and sting, exact native sting poison, trip immunity, Critical Focus, Improved Critical (bite), Power Attack, Weapon Focus (bite) | bite grab swallows whole through the native part (swallowed state cloned from the native worm); burrow, swim, the native brain, Awesome Blow, Improved Bull Rush, Staggering Critical, Weapon Focus (sting) omitted | implemented; runtime qualification in progress |
+| Shared grapple lifecycle | Owlbear, Shambling Mound, Giant Flytrap, Purple Worm (Sprints 6-8 reuse) | native `UnitPartGrappleInitiator` / `UnitPartGrappleTarget` / `UnitPartSwallowWhole` | `SummonGrabComponent`, `SummonHoldComponent`, `SummonSwallowLifecycleComponent`, `SummonGrappleAreaSafeguard`; shared `Grapple.Hold` and `Grapple.Grappled` buffs | grab +4 through the game's check; maintain +5 each round or release; hold-buff end releases its own target; swallow spit-out on traits end; area leave/load safeguard | implemented; runtime qualification in progress |
+
+Placements propagate to the 1d3 / 1d4+1 tiers by construction (9 new
+logical placements). Ledger: 19 identities appended and active
+(`blueprints/blueprints.json`, entries 2049-2067), pinned by
+`tools/validate_expanded_summoning_phase1.py`. Icons: three Blender
+procedural renders. Tests: four Sprint 4 domain regressions; suite
+1783/1783. Runtime evidence: recorded in the state file as the guarded
+batches complete.
 
 ### Sprint 5 - Mephit Family Expansion
 

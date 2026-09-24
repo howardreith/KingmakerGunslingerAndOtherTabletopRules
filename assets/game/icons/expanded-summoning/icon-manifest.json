@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  81,
+    "count":  84,
     "icons":  [
                   {
                       "key":  "dog",
@@ -726,6 +726,33 @@
                       "key":  "cyclops",
                       "file":  "cyclops.png",
                       "sha256":  "67b2301b61ee0e645717e6801449626850b18b10e4d24a4594f18aeccc9f9ddb",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "shambling-mound",
+                      "file":  "shambling-mound.png",
+                      "sha256":  "ada7978d2a31da033809a5fb6bd25bc75ea77ee2b9d7712049abca195938ad5d",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "giant-flytrap",
+                      "file":  "giant-flytrap.png",
+                      "sha256":  "ac8efbf7cc54e781589b87b06f0dadff3082ab7d245709d6a36afbfa1d5e248c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "purple-worm",
+                      "file":  "purple-worm.png",
+                      "sha256":  "cb235f3f9fbb4e865b17982abad1df6faad5c0a7ce884e130027430763f8e20d",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

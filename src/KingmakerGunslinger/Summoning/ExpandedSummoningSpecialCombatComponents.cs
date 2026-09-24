@@ -1,18 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Linq;
+using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums.Damage;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Parts;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -175,6 +183,329 @@ namespace KingmakerGunslinger.Summoning
         }
 
         public override void OnEventDidTrigger(RuleAttackRoll evt) { }
+    }
+
+    /// <summary>
+    /// Shared summon grab (Sprint 4). After a hit with one of the grab
+    /// weapons the summon attempts a grapple maneuver through the game's own
+    /// rule. Success either starts the native hold - the initiator and target
+    /// unit parts, carrying the project's hold and grappled buffs - and deals
+    /// any constrict damage, or, for a swallower, swallows the target whole
+    /// through the native swallow-whole part. Nothing starts while the summon
+    /// already holds or has swallowed someone, while the target is already
+    /// held or swallowed, or against the summon itself. No per-unit state is
+    /// kept on this shared blueprint component: the native parts and the
+    /// buffs they carry are the state.
+    /// </summary>
+    [Serializable]
+    public sealed class SummonGrabComponent :
+        RuleInitiatorLogicComponent<RuleAttackWithWeapon>
+    {
+        public BlueprintItemWeapon[] GrabWeapons;
+        public BlueprintBuff HoldBuff;
+        public BlueprintBuff GrappledBuff;
+        /// <summary>Set only for a swallower: a successful grab swallows.</summary>
+        public BlueprintBuff SwallowedBuff;
+        public int ConstrictDiceCount;
+        public DiceType ConstrictDiceType;
+        public int ConstrictBonus;
+
+        public override void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+
+        public override void OnEventDidTrigger(RuleAttackWithWeapon evt)
+        {
+            if (evt == null || evt.AttackRoll == null || evt.Weapon == null ||
+                evt.Target == null) return;
+            TryGrab(evt.Target, evt.Weapon.Blueprint, evt.AttackRoll.IsHit);
+        }
+
+        /// <summary>
+        /// The whole decision and its consequences, callable by the guarded
+        /// runtime fixture with a known hit so the hold and the swallow can be
+        /// proven without a second attack roll.
+        /// </summary>
+        internal bool TryGrab(UnitEntityData target, BlueprintItemWeapon weapon,
+            bool isHit)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (owner == null || target == null || target.Descriptor == null)
+                return false;
+            bool isGrabWeapon = weapon != null && GrabWeapons != null &&
+                GrabWeapons.Any(value => ReferenceEquals(value, weapon));
+            UnitPartSwallowWhole swallower = owner.Get<UnitPartSwallowWhole>();
+            bool ownerHolding = owner.Get<UnitPartGrappleInitiator>() != null ||
+                (swallower != null && swallower.SwallowedUnits != null &&
+                    swallower.SwallowedUnits.Any(value => value.Value != null));
+            if (!ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(isHit,
+                    isGrabWeapon, ownerHolding,
+                    target.Get<UnitPartGrappleTarget>() != null,
+                    target.Get<UnitPartSwallowed>() != null,
+                    ReferenceEquals(owner, target)))
+                return false;
+            if (SwallowedBuff == null && (HoldBuff == null || GrappledBuff == null))
+                return false;
+            MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
+            var maneuver = new RuleCombatManeuver(owner, target,
+                CombatManeuver.Grapple);
+            if (context != null) context.TriggerRule(maneuver);
+            else Rulebook.Trigger(maneuver);
+            if (!maneuver.Success) return false;
+            if (SwallowedBuff != null)
+            {
+                owner.Ensure<UnitPartSwallowWhole>().Swallow(target, SwallowedBuff);
+                return true;
+            }
+            owner.Ensure<UnitPartGrappleInitiator>().Init(target, HoldBuff, context);
+            target.Ensure<UnitPartGrappleTarget>().Init(owner, GrappledBuff, context);
+            DealConstrict(owner, target, context);
+            return true;
+        }
+
+        internal void DealConstrict(UnitEntityData owner, UnitEntityData target,
+            MechanicsContext context)
+        {
+            if (ConstrictDiceCount <= 0 || owner == null || target == null) return;
+            var damage = new PhysicalDamage(new DiceFormula(ConstrictDiceCount,
+                ConstrictDiceType), PhysicalDamageForm.Bludgeoning);
+            damage.AddBonus(ConstrictBonus);
+            var rule = new RuleDealDamage(owner, target, damage);
+            if (context != null) context.TriggerRule(rule);
+            else Rulebook.Trigger(rule);
+        }
+    }
+
+    /// <summary>
+    /// The summon's side of a hold (Sprint 4), carried by the hold buff the
+    /// native initiator part applies. Each new round the holder makes a
+    /// grapple check to maintain, at the tabletop +5: success deals the grab
+    /// weapon's damage plus any constrict; failure releases the target. When
+    /// the hold state ends for any reason - the target broke free, the holder
+    /// fell, the summon expired or was dismissed, the buff was dispelled -
+    /// the target this summon holds is released too, and only that target:
+    /// the link is owned here and never inferred from the target's side.
+    /// </summary>
+    [Serializable]
+    public sealed class SummonHoldComponent : BuffLogic, ITickEachRound,
+        IInitiatorRulebookHandler<RuleCalculateCMB>
+    {
+        public void OnNewRound()
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            UnitEntityData target = HeldTarget(owner);
+            if (target == null) return;
+            MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
+            var maneuver = new RuleCombatManeuver(owner, target,
+                CombatManeuver.Grapple);
+            if (context != null) context.TriggerRule(maneuver);
+            else Rulebook.Trigger(maneuver);
+            if (!ExpandedSummoningSpecialProfiles.ShouldMaintainSummonHold(true,
+                    maneuver.Success))
+            {
+                Release(owner, target);
+                return;
+            }
+            SummonGrabComponent grab = FindGrab(owner);
+            BlueprintItemWeapon weapon = grab == null || grab.GrabWeapons == null ?
+                null : grab.GrabWeapons.FirstOrDefault(value => value != null);
+            if (weapon != null)
+            {
+                DiceFormula dice = weapon.BaseDamage;
+                var damage = new PhysicalDamage(dice, PhysicalForm(weapon));
+                damage.AddBonus(owner.Stats.Strength.Bonus);
+                var rule = new RuleDealDamage(owner, target, damage);
+                if (context != null) context.TriggerRule(rule);
+                else Rulebook.Trigger(rule);
+            }
+            if (grab != null) grab.DealConstrict(owner, target, context);
+        }
+
+        public void OnEventAboutToTrigger(RuleCalculateCMB evt)
+        {
+            if (evt == null || evt.Type != CombatManeuver.Grapple || Owner == null ||
+                Owner.Unit == null || !ReferenceEquals(evt.Initiator, Owner.Unit))
+                return;
+            UnitEntityData target = HeldTarget(Owner.Unit);
+            if (target == null || !ReferenceEquals(evt.Target, target)) return;
+            evt.AddBonus(ExpandedSummoningSpecialProfiles.SummonHoldMaintainBonus,
+                Fact);
+        }
+
+        public void OnEventDidTrigger(RuleCalculateCMB evt) { }
+
+        public override void OnTurnOff()
+        {
+            base.OnTurnOff();
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            UnitEntityData target = HeldTarget(owner);
+            if (target != null) Release(owner, target);
+        }
+
+        /// <summary>
+        /// The unit this summon's native initiator part names, provided that
+        /// unit's own target part points back at the summon.
+        /// </summary>
+        internal static UnitEntityData HeldTarget(UnitEntityData owner)
+        {
+            if (owner == null) return null;
+            UnitPartGrappleInitiator part = owner.Get<UnitPartGrappleInitiator>();
+            UnitEntityData target = part == null ? null : part.Target.Value;
+            if (target == null) return null;
+            UnitPartGrappleTarget held = target.Get<UnitPartGrappleTarget>();
+            return held != null && ReferenceEquals(held.Initiator.Value, owner) ?
+                target : null;
+        }
+
+        /// <summary>
+        /// Removes the target's native part (which removes its grappled buff
+        /// and condition). The summon's own initiator part is left to the
+        /// game's grapple controller, which drops it once the target is no
+        /// longer grappled, and to the summon's own disposal; removing it
+        /// here would re-enter this buff's removal.
+        /// </summary>
+        internal static void Release(UnitEntityData owner, UnitEntityData target)
+        {
+            if (owner == null || target == null) return;
+            UnitPartGrappleTarget held = target.Get<UnitPartGrappleTarget>();
+            if (held != null && ReferenceEquals(held.Initiator.Value, owner))
+                target.Remove<UnitPartGrappleTarget>();
+        }
+
+        private static SummonGrabComponent FindGrab(UnitEntityData owner)
+        {
+            if (owner == null || owner.Descriptor == null) return null;
+            foreach (Buff buff in owner.Descriptor.Buffs.RawFacts.OfType<Buff>())
+            {
+                if (buff == null || buff.Blueprint == null ||
+                    buff.Blueprint.ComponentsArray == null) continue;
+                SummonGrabComponent grab = buff.Blueprint.ComponentsArray
+                    .OfType<SummonGrabComponent>().FirstOrDefault();
+                if (grab != null) return grab;
+            }
+            return null;
+        }
+
+        private static PhysicalDamageForm PhysicalForm(BlueprintItemWeapon weapon)
+        {
+            if (weapon != null && weapon.Type != null &&
+                weapon.Type.DamageType != null &&
+                weapon.Type.DamageType.Physical != null)
+                return weapon.Type.DamageType.Physical.Form;
+            return PhysicalDamageForm.Bludgeoning;
+        }
+    }
+
+    /// <summary>
+    /// The swallower's side (Sprint 4), carried by the worm's combat-traits
+    /// buff. The game's own swallow-whole part spits everyone out when the
+    /// swallower dies or is destroyed; this component spits out when the buff
+    /// turns off for any other reason - the summon disposed, the traits
+    /// dispelled - so no unit is ever left inside a worm that is gone.
+    /// </summary>
+    [Serializable]
+    public sealed class SummonSwallowLifecycleComponent : BuffLogic
+    {
+        public override void OnTurnOff()
+        {
+            base.OnTurnOff();
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            UnitPartSwallowWhole part = owner == null ? null :
+                owner.Get<UnitPartSwallowWhole>();
+            if (part != null) part.SpitOut(true);
+        }
+    }
+
+    /// <summary>
+    /// Area-transition safeguard for the shared summon grapple lifecycle
+    /// (Sprint 4). When the party leaves an area, every party member held or
+    /// swallowed by a KMG summon is released before the summon is left
+    /// behind; when an area finishes loading, any party member whose native
+    /// hold or swallow points at a unit that no longer exists is released.
+    /// Subscribed once at load; inert while the module is off.
+    /// </summary>
+    internal sealed class SummonGrappleAreaSafeguard : IPartyLeaveAreaHandler,
+        IAreaLoadingStagesHandler, IGlobalSubscriber
+    {
+        private static SummonGrappleAreaSafeguard _instance;
+
+        internal static void Attach()
+        {
+            if (_instance != null) return;
+            _instance = new SummonGrappleAreaSafeguard();
+            EventBus.Subscribe(_instance);
+        }
+
+        public void HandlePartyLeaveArea(BlueprintArea currentArea,
+            BlueprintAreaEnterPoint targetArea)
+        { Sweep(true); }
+
+        public void OnAreaScenesLoaded() { }
+
+        public void OnAreaLoadingComplete() { Sweep(false); }
+
+        /// <summary>
+        /// Releases party members held or swallowed by a KMG summon (always
+        /// when leaving; when loading only if the holder is gone). Returns the
+        /// number released, for the runtime fixture.
+        /// </summary>
+        internal static int Sweep(bool leaving)
+        {
+            if (Game.Instance == null || Game.Instance.Player == null) return 0;
+            return Sweep(leaving, Game.Instance.Player.Party);
+        }
+
+        /// <summary>The same sweep over an explicit set of units (the runtime
+        /// fixture's held target stands in for a party member).</summary>
+        internal static int Sweep(bool leaving, IEnumerable<UnitEntityData> units)
+        {
+            int released = 0;
+            if (units == null) return 0;
+            foreach (UnitEntityData unit in units.Where(
+                value => value != null && value.Descriptor != null).ToArray())
+            {
+                UnitPartGrappleTarget held = unit.Get<UnitPartGrappleTarget>();
+                if (held != null)
+                {
+                    UnitEntityData holder = held.Initiator.Value;
+                    if (ShouldRelease(leaving, holder))
+                    {
+                        unit.Remove<UnitPartGrappleTarget>();
+                        if (holder != null &&
+                            holder.Get<UnitPartGrappleInitiator>() != null &&
+                            ReferenceEquals(holder.Get<UnitPartGrappleInitiator>()
+                                .Target.Value, unit))
+                            holder.Remove<UnitPartGrappleInitiator>();
+                        released++;
+                    }
+                }
+                UnitPartSwallowed swallowed = unit.Get<UnitPartSwallowed>();
+                if (swallowed != null)
+                {
+                    UnitEntityData swallower = swallowed.Swallower.Value;
+                    if (ShouldRelease(leaving, swallower))
+                    {
+                        UnitPartSwallowWhole part = swallower == null ? null :
+                            swallower.Get<UnitPartSwallowWhole>();
+                        if (part != null) part.Free(unit);
+                        else unit.Remove<UnitPartSwallowed>();
+                        released++;
+                    }
+                }
+            }
+            return released;
+        }
+
+        private static bool ShouldRelease(bool leaving, UnitEntityData holder)
+        {
+            if (holder == null || holder.Destroyed) return true;
+            return leaving && IsKmgSummon(holder);
+        }
+
+        internal static bool IsKmgSummon(UnitEntityData unit)
+        {
+            return unit != null && unit.Blueprint != null &&
+                unit.Blueprint.name.StartsWith("KMG_Summoning_Unit_",
+                    StringComparison.Ordinal);
+        }
     }
 
     [Serializable]

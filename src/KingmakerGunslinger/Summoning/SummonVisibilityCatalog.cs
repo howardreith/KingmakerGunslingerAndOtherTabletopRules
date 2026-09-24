@@ -13,7 +13,7 @@ namespace KingmakerGunslinger.Summoning
         private static readonly HashSet<string> SuppressedCreatureKeys =
             new HashSet<string>(new[] { "dire-bat" }, StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 726;
+        internal const int RegisteredLogicalPlacementCount = 735;
         internal const int SuppressedLogicalPlacementCount = 14;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;

@@ -23,6 +23,7 @@ import math
 import sys
 
 import bpy  # noqa: E402
+import mathutils  # noqa: E402
 from mathutils import Vector, Euler  # noqa: E402
 
 
@@ -456,6 +457,187 @@ def cyclops():
     box("Socket", (1.8, -0.75, 1.9), (0.34, 0.22, 0.56), steel, (0, -5, 0), bevel=0.03)
 
 
+
+def torus(name, location, major, minor, mat, rotation=(0, 0, 0)):
+    bpy.ops.mesh.primitive_torus_add(major_radius=major, minor_radius=minor,
+                                     major_segments=64, minor_segments=24,
+                                     location=location)
+    obj = bpy.context.active_object
+    obj.name = name
+    obj.rotation_euler = Euler([math.radians(v) for v in rotation], "XYZ")
+    smooth(obj, 0)
+    assign(obj, mat)
+    return obj
+
+
+def shambling_mound():
+    """A hulking mound of rotting vegetation rearing up, two heavy slam limbs
+    raised, a hollow dark face with a faint marsh glow, vines and leaves
+    hanging off the mass."""
+    moss = material("Moss", (0.13, 0.21, 0.07), 0.92, noise=(5.0, 0.8, (0.05, 0.08, 0.025)))
+    rot = material("Rot", (0.24, 0.17, 0.07), 0.95, noise=(9.0, 0.55, (0.1, 0.07, 0.03)))
+    leaf = material("Leaf", (0.26, 0.44, 0.12), 0.7, noise=(14.0, 0.4, (0.12, 0.22, 0.06)))
+    vine = material("Vine", (0.13, 0.17, 0.06), 0.85)
+    hollow = material("Hollow", (0.02, 0.025, 0.015), 0.9)
+    glow = material("Glow", (0.55, 0.85, 0.35), 0.3, emission=(0.45, 0.8, 0.25),
+                    emission_strength=1.6)
+    body = Blob("Body", moss, 0.05)
+    body.ball((0.0, 0.6, -1.05), 2.0, (1.5, 1.05, 0.8), axis=(1, 0, 0))      # base mass
+    body.ball((0.0, 0.3, 0.15), 1.35, (1.25, 1.0, 0.9), axis=(1, 0, 0))      # upper mass
+    body.ball((0.0, 0.0, 1.05), 0.95)                                        # crown
+    for s in (-1, 1):
+        body.ball((s * 1.55, 0.2, 0.05), 0.85)                               # shoulders
+        body.chain((s * 1.7, -0.1, 0.1), (s * 2.15, -0.9, 1.15), 0.55, 0.62, 6)
+        body.ball((s * 2.2, -0.95, 1.25), 0.6, (1.0, 1.15, 0.9), axis=(1, 0, 0))
+    decay = Blob("Rot", rot, 0.05)
+    decay.ball((0.35, -0.55, -0.5), 0.85, (1.3, 0.8, 0.9), axis=(1, 0, 0))
+    decay.ball((-0.6, -0.4, -1.2), 0.9)
+    decay.ball((0.2, -0.3, 0.55), 0.55)
+    decay.ball((-1.3, -0.5, 0.3), 0.5)
+    for s in (-1, 1):
+        sphere("Socket%d" % s, (s * 0.34, -0.84, 1.12), (0.15, 0.1, 0.13), hollow)
+        sphere("Ember%d" % s, (s * 0.34, -0.9, 1.12), (0.05, 0.03, 0.05), glow)
+    sphere("Mouth", (0.0, -0.86, 0.7), (0.3, 0.08, 0.1), hollow)
+    # small separate leaves scattered over the front of the mass, clear of the
+    # face, and vines hanging from the raised limbs
+    for index in range(34):
+        a = index * 2.399
+        r = 0.5 + 1.6 * ((index * 37) % 10) / 10.0
+        x = r * math.cos(a) * 1.15
+        z = -1.5 + 2.7 * ((index * 53) % 10) / 10.0
+        if abs(x) < 0.7 and z > 0.45:
+            continue
+        y = -0.9 - 0.3 * max(0.0, 1.0 - abs(x) / 2.2) + 0.2 * abs(z)
+        sphere("Foliage%d" % index, (x, y, z),
+               (0.22 + 0.08 * ((index * 7) % 3), 0.14, 0.05), leaf,
+               (30 * math.sin(a * 1.3), 20 * math.cos(a), math.degrees(a)))
+    for s in (-1, 1):
+        for index in range(4):
+            start = (s * (1.7 + 0.25 * index), -0.85 - 0.1 * index, 1.0 - 0.18 * index)
+            cone_along("ArmVine%d%d" % (s, index), start, (s * 0.1, -0.15, -1.0),
+                       1.4 + 0.5 * ((index * 5) % 3), 0.06, vine, 0.015)
+    for index in range(14):
+        a = index * 0.45 + 0.2
+        x = 1.9 * math.cos(a)
+        y = max(-0.1, 0.55 + 0.9 * math.sin(a))
+        cone_along("Vine%d" % index, (x * 0.9, y * 0.7 - 0.3, -0.2 - 0.05 * index),
+                   (0.15 * math.cos(a), -0.3, -1.0),
+                   1.3 + 0.35 * ((index * 7) % 3), 0.07, vine, 0.02)
+    for index in range(10):
+        a = index * 0.63
+        sphere("Leaf%d" % index,
+               (1.6 * math.cos(a), 0.2 + 0.6 * math.sin(a), 0.4 + 0.5 * math.sin(a * 1.7)),
+               (0.34, 0.22, 0.05), leaf, (35 * math.sin(a), 0, math.degrees(a)))
+
+
+def giant_flytrap():
+    """A huge flytrap from the front: the main trap gaping at the viewer, red
+    inside and rimmed with pale spines, two smaller traps behind it on thick
+    stalks, tendrils curling out of the base."""
+    stalk = material("Stalk", (0.2, 0.36, 0.1), 0.6, noise=(8.0, 0.45, (0.1, 0.2, 0.05)))
+    lobe = material("Lobe", (0.28, 0.5, 0.14), 0.55, subsurface=0.2,
+                    noise=(10.0, 0.4, (0.16, 0.3, 0.08)))
+    inner = material("Inner", (0.72, 0.12, 0.1), 0.45, subsurface=0.3,
+                     emission=(0.5, 0.06, 0.04), emission_strength=0.25)
+    spine = material("Spine", (0.85, 0.82, 0.55), 0.5)
+    tendril = material("Tendril", (0.15, 0.28, 0.08), 0.75)
+    base = Blob("Base", stalk, 0.05)
+    base.ball((0.0, 0.8, -1.9), 1.9, (1.6, 1.0, 0.6), axis=(1, 0, 0))
+    base.ball((0.9, 0.3, -1.6), 0.9)
+    base.ball((-1.1, 0.5, -1.7), 0.85)
+
+    def trap(name, hinge, direction, length, width, gape, spines):
+        """Two lobes hinged at `hinge`, opening toward `direction` by `gape`
+        degrees each; the inside is red and the far rim carries spines."""
+        direction = Vector(direction).normalized()
+        side = direction.cross(UP).normalized()
+        up = side.cross(direction).normalized()
+        for sign, tag in ((1, "Upper"), (-1, "Lower")):
+            tilt = Euler((0.0, 0.0, 0.0))
+            q = mathutils.Quaternion(side, math.radians(sign * gape))
+            axis = q @ direction
+            normal = q @ up
+            centre = Vector(hinge) + axis * (length * 0.5)
+            rotation = axis.to_track_quat("Y", "Z")
+            # "Y" tracks the lobe length; roll so local Z follows the normal
+            euler = rotation.to_euler()
+            obj = sphere(name + tag, centre, (width, length * 0.55, 0.18), lobe)
+            obj.rotation_euler = euler
+            lining = sphere(name + tag + "Inner", centre - normal * (sign * 0.13),
+                            (width * 0.9, length * 0.5, 0.07), inner)
+            lining.rotation_euler = euler
+            for k in range(spines):
+                t = (k + 0.5) / spines
+                arc = (t - 0.5) * math.pi
+                rim = Vector(hinge) + axis * (length * (0.55 + 0.45 * math.cos(arc))) + \
+                    side * (width * 0.95 * math.sin(arc))
+                point = (-normal * sign * 0.7 + axis * 0.35).normalized()
+                cone_along(name + tag + "Spine%d" % k, rim, point, 0.42, 0.045, spine)
+
+    cylinder("MainStalk", (0.0, 0.2, -0.7), 0.42, 2.3, stalk, (12, 0, 0))
+    trap("Main", (0.0, -0.25, 0.55), (0.0, -0.75, 0.45), 2.3, 1.35, 34, 9)
+    cylinder("LeftStalk", (-1.6, 0.9, -0.6), 0.28, 2.4, stalk, (10, 0, 35))
+    trap("Left", (-2.2, 0.35, 0.7), (-0.55, -0.6, 0.5), 1.5, 0.85, 30, 7)
+    cylinder("RightStalk", (1.7, 1.0, -0.5), 0.28, 2.5, stalk, (10, 0, -35))
+    trap("Right", (2.35, 0.4, 0.85), (0.55, -0.6, 0.45), 1.5, 0.85, 30, 7)
+    for index in range(8):
+        a = index * 0.8 + 0.3
+        start = (1.9 * math.cos(a), 0.7 + 0.5 * math.sin(a), -1.4)
+        cone_along("Tendril%d" % index, start,
+                   (0.6 * math.cos(a), -0.4, 0.9 + 0.3 * math.sin(a * 2.0)),
+                   1.1 + 0.4 * ((index * 5) % 3), 0.06, tendril, 0.015)
+
+
+def purple_worm():
+    """A gargantuan worm rearing out of the lower right, its segmented purple
+    body curving up to a round maw that faces the viewer, ringed with lips and
+    two circles of teeth around a black throat."""
+    skin = material("Skin", (0.36, 0.14, 0.42), 0.55, subsurface=0.15,
+                    noise=(7.0, 0.5, (0.2, 0.07, 0.25)))
+    band = material("Band", (0.2, 0.07, 0.26), 0.7, noise=(9.0, 0.4, (0.12, 0.04, 0.16)))
+    lip = material("Lip", (0.5, 0.18, 0.5), 0.5, subsurface=0.2)
+    gum = material("Gum", (0.36, 0.06, 0.12), 0.5, subsurface=0.2)
+    throat = material("Throat", (0.04, 0.01, 0.025), 0.85)
+    tooth = material("Tooth", (0.9, 0.86, 0.72), 0.4)
+    path = [Vector(v) for v in ((3.0, 1.6, -2.6), (2.35, 1.2, -1.5), (1.55, 0.85, -0.55),
+                                (0.85, 0.55, 0.2), (0.35, 0.45, 0.65))]
+    radii = (1.05, 1.18, 1.22, 1.15, 1.05)
+    body = Blob("Body", skin, 0.05)
+    for index in range(len(path) - 1):
+        body.chain(path[index], path[index + 1], radii[index], radii[index + 1], 6)
+    # darker bands ring the body every so often along the curve
+    for index in range(1, 12):
+        t = index / 12.0
+        seg = min(int(t * (len(path) - 1)), len(path) - 2)
+        local = t * (len(path) - 1) - seg
+        centre = path[seg].lerp(path[seg + 1], local)
+        axis = (path[seg + 1] - path[seg]).normalized()
+        radius = radii[seg] + (radii[seg + 1] - radii[seg]) * local
+        ring = torus("Band%d" % index, centre, radius * 0.98, 0.09, band)
+        ring.rotation_euler = axis.to_track_quat("Z", "Y").to_euler()
+    head = Vector((0.05, -0.55, 1.0))
+    facing = Vector((0.0, -1.0, 0.3)).normalized()
+    u = facing.cross(UP).normalized()
+    v = u.cross(facing).normalized()
+    body.ball(head - facing * 1.15, 1.0)
+    lips = torus("Lips", head, 0.95, 0.34, lip)
+    lips.rotation_euler = facing.to_track_quat("Z", "Y").to_euler()
+    gums = torus("Gums", head + facing * 0.06, 0.66, 0.15, gum)
+    gums.rotation_euler = facing.to_track_quat("Z", "Y").to_euler()
+    hole = sphere("Throat", head - facing * 0.3, (0.7, 0.7, 0.45), throat)
+    hole.rotation_euler = facing.to_track_quat("Z", "Y").to_euler()
+    for ring_index, (radius, count, length) in enumerate(((0.8, 16, 0.5), (0.52, 10, 0.36))):
+        for k in range(count):
+            a = k * 2.0 * math.pi / count + ring_index * 0.2
+            point = head + facing * (0.12 - ring_index * 0.14) + \
+                (u * math.cos(a) + v * math.sin(a)) * radius
+            inward = ((-(u * math.cos(a) + v * math.sin(a))) * 0.7 + facing * 0.3).normalized()
+            cone_along("Tooth%d_%d" % (ring_index, k), point, inward, length + 0.08, 0.09, tooth)
+    # a stinger tail tip rising behind the body on the left
+    cone_along("Tail", (-1.6, 1.4, -1.9), (-0.5, -0.2, 1.0), 1.7, 0.42, skin, 0.05)
+    cone_along("Stinger", (-2.3, 1.1, -0.45), (-0.5, -0.2, 1.0), 0.6, 0.12, tooth)
+
+
 CREATURES = {
     "pony": dict(build=lambda: equine(True),
                  inner=(0.5, 0.38, 0.16), outer=(0.05, 0.04, 0.025),
@@ -473,6 +655,18 @@ CREATURES = {
                     inner=(0.24, 0.28, 0.34), outer=(0.015, 0.015, 0.025),
                     key=(1.0, 0.8, 0.55), rim=(0.55, 0.7, 1.0),
                     camera=((0.4, -7.8, 0.3), (0.35, 0.0, 0.7), 55.0)),
+    "shambling-mound": dict(build=shambling_mound,
+                            inner=(0.10, 0.20, 0.10), outer=(0.012, 0.02, 0.012),
+                            key=(0.95, 0.9, 0.7), rim=(0.5, 0.85, 0.7),
+                            camera=((0.0, -8.8, 1.3), (0.0, 0.0, 0.3), 55.0)),
+    "giant-flytrap": dict(build=giant_flytrap,
+                          inner=(0.08, 0.2, 0.16), outer=(0.01, 0.02, 0.018),
+                          key=(0.95, 0.92, 0.75), rim=(0.45, 0.85, 0.75),
+                          camera=((0.0, -9.0, 1.0), (0.0, 0.0, 0.1), 52.0)),
+    "purple-worm": dict(build=purple_worm,
+                        inner=(0.22, 0.12, 0.3), outer=(0.02, 0.012, 0.03),
+                        key=(1.0, 0.85, 0.7), rim=(0.6, 0.5, 1.0),
+                        camera=((0.6, -9.0, 1.1), (0.7, 0.0, 0.0), 55.0)),
 }
 
 

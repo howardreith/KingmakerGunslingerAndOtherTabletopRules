@@ -36,6 +36,9 @@ DONOR_NAMES = {
     "33bb90ffd13c87b4c8e45d920313752a": "SummonedAirElementalElder",
     "3764b43791a00e1468257adbca43ce9b": "SummonedAirElementalLarge",
     "394610e32cfbc4f43a0efaab16faae49": "CR1_Nixie",
+    "b98ae409beb5e8543a75b82ecda082a7": "CR6_ShamblingMound",
+    "bf2216f48b3f4d24c9c502007649340d": "PurpleWormSummoned",
+    "fb824352b7968fb4d8103ac439644633": "CR10_GiantFlytrapStandard",
     "3f95557fc806db741b500a5735990841": "PonySummoned",
     "3b86a449e7264174eaccef9b8f02fe20": "SummonedEarthElementalHuge",
     "3bd31a0b4d800f04a8c5b7b1a6d7061e": "SummonedWaterElementalElder",
@@ -88,7 +91,10 @@ SPECIAL_NOTES = {
     "bebelith": "Demon hunting and DC 25 bounded one-round armor dismantle; rot and permanent item damage omitted.",
     "pixie": "Sixteen no-damage sleep arrows and one bounded irresistible dance; no ammunition or loot.",
     "cyclops": "Greataxe, ferocity, Power Attack and Cleave on a humanoid chassis; Flash of Insight bounded to one swift-action automatic critical hit per summoning; armor and crossbow omitted.",
-    "owlbear": "Magical-beast chassis with bite and two claws; claw grab deferred to the shared grapple lifecycle of Sprint 4.",
+    "owlbear": "Magical-beast chassis with bite and two claws; claw grab on the shared summon grapple lifecycle (Sprint 4).",
+    "shambling-mound": "Plant chassis with two slams; slam grab and constrict on the shared summon grapple lifecycle; fire resistance 10 and electricity immunity; the native poison aura is not carried.",
+    "giant-flytrap": "Huge plant chassis with four bites; bite grab on the shared summon grapple lifecycle, one held target at a time; acid resistance 20; tremorsense as native blindsight; engulf omitted.",
+    "purple-worm": "Gargantuan magical-beast chassis with bite and sting; bite grab swallows whole through the native swallow-whole part; native Constitution-scaled sting poison; burrow omitted.",
 }
 
 NATIVE_EXPANDED_OPTIONS = (
@@ -129,8 +135,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 71:
-        raise SystemExit(f"Expected 71 parsed creatures; observed {len(values)}")
+    if len(values) != 74:
+        raise SystemExit(f"Expected 74 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -201,6 +207,13 @@ def planned():
         ("KMG.Summoning.Special.Cyclops.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Cyclops.FlashOfInsightAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.Cyclops.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.Grapple.Hold", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Grapple.Grappled", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Owlbear.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.ShamblingMound.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.GiantFlytrap.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.PurpleWorm.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.PurpleWorm.Swallowed", "BlueprintBuff"),
         ("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"),
@@ -209,7 +222,7 @@ def planned():
         ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1276 or len({symbol for symbol, _ in rows}) != 1276:
+    if len(rows) != 1295 or len({symbol for symbol, _ in rows}) != 1295:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -221,14 +234,14 @@ def generated_roster(manifest):
         for key, guid, dedicated in DONOR.findall(DONORS.read_text(encoding="utf-8"))
     }
     creatures = parsed_creatures()
-    if len(donors) != 71 or set(donors) != {value["key"] for value in creatures}:
+    if len(donors) != 74 or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
     lines = [
         "# Expanded Summoning roster and identity ledger",
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Frozen totals: 68 Summon Monster entries / 378 placements; 61 Summon Nature's Ally entries / 348 placements; 71 unique units; 726 logical placements (Phase 1 Sprint 3 added Pony, Horse, Owlbear and Cyclops; the Frost Giant is a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers).",
+        "Frozen totals: 68 Summon Monster entries / 378 placements; 64 Summon Nature's Ally entries / 357 placements; 74 unique units; 735 logical placements (Phase 1 Sprint 3 added Pony, Horse, Owlbear and Cyclops; Sprint 4 added Shambling Mound, Giant Flytrap and Purple Worm; the Frost Giant is a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers).",
         "",
         "Final native qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required final compatibility transactions PASS and restored their profiles.",
         "",
@@ -284,7 +297,7 @@ def generated_roster(manifest):
     lines.extend((
         "## Explicit exclusions",
         "",
-        "No aquatic-only entries, unapproved ants, apes, rhinoceroses, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3 and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
+        "No aquatic-only entries, unapproved ants, apes, rhinoceroses, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
         "",
     ))
     return "\n".join(lines)
