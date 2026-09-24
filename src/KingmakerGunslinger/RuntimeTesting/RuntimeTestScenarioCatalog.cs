@@ -98,6 +98,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "working-save-brown-fur-off-verify-cleanup";
         internal const string ObserveShieldOtherInventory =
             "observe-shield-other-inventory";
+        /// <summary>
+        /// Phase 1 native-donor audit. At mod load, records as metadata only
+        /// which native units, classes, facts, buffs and abilities the
+        /// installed library offers for the Sprint 3-8 creatures, and what
+        /// the native Grab feature's action graph wires to.
+        /// </summary>
+        internal const string ObserveExpandedSummoningNativeDonors =
+            "observe-expanded-summoning-native-donors";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
         internal const string ObserveExpandedSummoningVariantMenu =
@@ -588,6 +596,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveMagicCircleCleanup,
                 WorkingSaveMagicCircleAbsent,
                 WorkingSaveMagicCircleScene,
+                ObserveExpandedSummoningNativeDonors,
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,

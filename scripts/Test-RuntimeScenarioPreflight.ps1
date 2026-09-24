@@ -136,6 +136,7 @@ $expected = @(
     'working-save-brown-fur-verify-cleanup',
     'working-save-brown-fur-off-verify-cleanup',
     'observe-shield-other-inventory',
+    'observe-expanded-summoning-native-donors',
     'observe-expanded-summoning-inventory',
     'observe-expanded-summoning-variant-menu',
     'disposable-expanded-summoning',
