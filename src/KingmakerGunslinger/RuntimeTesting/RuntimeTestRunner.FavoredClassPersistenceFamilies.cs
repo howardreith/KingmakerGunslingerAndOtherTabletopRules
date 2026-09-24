@@ -6,8 +6,10 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Items;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -19,11 +21,13 @@ using Kingmaker.UnitLogic.Class.LevelUp;
 using Kingmaker.Utility;
 using Kingmaker.View.MapObjects.SriptZones;
 using Kingmaker.Visual.CharacterSystem;
+using KingmakerGunslinger.Ammunition;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.FavoredClass;
 using KingmakerGunslinger.FavoredClass.Mechanics;
+using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Spells.Teleportation;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -141,14 +145,35 @@ namespace KingmakerGunslinger.RuntimeTesting
             LevelFcbRespecSubject(halfling, race(FavoredClassAncestry.Halfling), nimble.Partial == null
                 ? new[] { nimble.Full, nimble.Full } : new[] { nimble.Partial, nimble.Partial, nimble.Partial, nimble.Full },
                 reserved, failures, "persistence-nimble");
+            // Selected firearm target: a Dwarf Gunslinger's misfire step for
+            // the pistol only (one counter per firearm type).
+            FavoredClassLeafPair pistol = leaves.Pair(FavoredClassCatalog.EffectMisfire, "Pistol");
+            UnitEntityData dwarf = SpawnFcbPartyUnit(anchor, player, race(FavoredClassAncestry.Dwarf),
+                gunslinger.CharacterClass, "KMG FCB Persistence Firearm");
+            LevelFcbRespecSubject(dwarf, race(FavoredClassAncestry.Dwarf), pistol.Partial == null
+                ? new[] { pistol.Full } : new[] { pistol.Partial, pistol.Partial, pistol.Partial, pistol.Full },
+                reserved, failures, "persistence-firearm");
             if (failures.Count != 0)
                 throw new InvalidOperationException(string.Join("; ", failures.ToArray()));
             expected["mostlyHuman"] = DescribeFcbFamilySubject(mostlyHuman, null);
             expected["nimble"] = DescribeFcbFamilySubject(halfling, null);
+            expected["firearm"] = DescribeFcbFamilySubject(dwarf, null);
+            expected["firearm"]["misfireReduction"] = DescribeFcbMisfireTargets(dwarf);
             FcbPersistenceAssert("families-prepare-committed",
-                "every family subject was built: a performing invested bard, an invested paladin, a ranger with a projected companion, a mixed-rate Undine Monk, an invested Fire Breath Oracle, an invested Fire Ray Sorcerer, a Mostly Human Ifrit with human grit and a Halfling with a Nimble step",
+                "every family subject was built: a performing invested bard, an invested paladin, a ranger with a projected companion, a mixed-rate Undine Monk, an invested Fire Breath Oracle, an invested Fire Ray Sorcerer, a Mostly Human Ifrit with human grit, a Halfling with a Nimble step and a Dwarf with a pistol misfire step",
                 FcbFamiliesMeaningful(expected), expected);
             return expected;
+        }
+
+        /// <summary>The misfire reduction the production misfire path reads for each official firearm type.</summary>
+        private static JObject DescribeFcbMisfireTargets(UnitEntityData unit)
+        {
+            return new JObject
+            {
+                ["Pistol"] = FavoredClassEarnedSteps.MisfireReduction(unit, FirearmKind.Pistol),
+                ["Musket"] = FavoredClassEarnedSteps.MisfireReduction(unit, FirearmKind.Musket),
+                ["Blunderbuss"] = FavoredClassEarnedSteps.MisfireReduction(unit, FirearmKind.Blunderbuss),
+            };
         }
 
         private static bool FcbFamiliesMeaningful(JObject expected)
@@ -167,7 +192,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 subject("bloodline")["ability"].Type == JTokenType.Object &&
                 (bool)subject("mostlyHuman")["census"]["mostlyHumanIdentity"] &&
                 (bool)subject("mostlyHuman")["census"]["hostHumanAccess"] &&
-                ((JArray)subject("nimble")["census"]["modifiers"]).Count >= 1;
+                ((JArray)subject("nimble")["census"]["modifiers"]).Count >= 1 &&
+                (int)subject("firearm")["misfireReduction"]["Pistol"] == 1 &&
+                (int)subject("firearm")["misfireReduction"]["Musket"] == 0 &&
+                (int)subject("firearm")["misfireReduction"]["Blunderbuss"] == 0;
         }
 
         private void VerifyFcbFamilySubjects(JObject expected, Player player)
@@ -186,6 +214,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 _fcbFamilySubjects.Add(unit);
                 JObject observed = DescribeFcbFamilySubject(unit, (string)saved["abilityGuid"]);
+                if (saved["misfireReduction"] != null)
+                    observed["misfireReduction"] = DescribeFcbMisfireTargets(unit);
                 FcbPersistenceAssert("family-" + entry.Name + "-reload",
                     "the fresh-process reload restores the exact counters, owned modifiers, resource maxima and spent amounts, pet projection, identity, owner-local areas and selected-power arithmetic",
                     JToken.DeepEquals(Normalize(saved), Normalize(observed)),
@@ -256,6 +286,59 @@ namespace KingmakerGunslinger.RuntimeTesting
                     second != null && !ReferenceEquals(first, second) && copies == 1 && rank == 1 &&
                     armor.SequenceEqual(new[] { "AC|NaturalArmor|2" }) && !orphan,
                     new { replaced = second != null && !ReferenceEquals(first, second), copies, rank, armor, orphan });
+            }
+            // The reloaded pistol step still lowers only the pistol's native
+            // misfire threshold: seeded native attack rolls with paper
+            // cartridges (pistol 1 + 1 = 2, musket 2 + 1 = 3); the reloaded
+            // Halfling Gunslinger, with no misfire step, is the control.
+            string firearmId = (string)expected["firearm"]["unitId"];
+            string controlId = (string)expected["nimble"]["unitId"];
+            UnitEntityData dwarf = _fcbFamilySubjects.FirstOrDefault(value => value.UniqueId == firearmId);
+            UnitEntityData control = _fcbFamilySubjects.FirstOrDefault(value => value.UniqueId == controlId);
+            if (dwarf != null && control != null)
+            {
+                var shots = new JObject();
+                UnitEntityData target = null;
+                BlueprintUnit blueprint = null;
+                try
+                {
+                    blueprint = UnityEngine.Object.Instantiate(BlueprintRoot.Instance.DefaultPlayerCharacter);
+                    blueprint.name = "KMG_Runtime_FcbPersistence_FirearmTarget";
+                    target = Game.Instance.EntityCreator.SpawnUnit(blueprint, dwarf.Position, Quaternion.identity,
+                        Game.Instance.State.LoadedAreaState.MainState);
+                    Game.Instance.EntityCreator.Tick();
+                    if (target != null)
+                    {
+                        target.Descriptor.State.Immortality.Retain();
+                        AmmunitionId paper = ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
+                        Func<UnitEntityData, BlueprintItemWeapon, int, string> fire = (attacker, item, roll) =>
+                        {
+                            var weapon = new ItemEntityWeapon(item);
+                            TriggerReliableMatrixAttack(attacker, target, weapon, roll, FirearmCondition.Normal, paper);
+                            FirearmCondition after = FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State
+                                .Condition;
+                            FirearmRuntimeState.Service.Forget(weapon);
+                            attacker.Body.PrimaryHand.RemoveItem(false);
+                            return after.ToString();
+                        };
+                        BlueprintItemWeapon pistolItem = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+                        BlueprintItemWeapon musketItem = BlueprintBootstrap.ProductionFirearms.Musket.Item;
+                        shots["controlPistolRoll2"] = fire(control, pistolItem, 2);
+                        shots["investedPistolRoll2"] = fire(dwarf, pistolItem, 2);
+                        shots["investedPistolRoll1"] = fire(dwarf, pistolItem, 1);
+                        shots["investedMusketRoll3"] = fire(dwarf, musketItem, 3);
+                    }
+                }
+                finally
+                {
+                    if (target != null) { target.Destroy(); Game.Instance.EntityDestroyer.Tick(); }
+                    if (blueprint != null) UnityEngine.Object.Destroy(blueprint);
+                }
+                FcbPersistenceAssert("family-firearm-target-after-reload",
+                    "after the fresh-process reload the Dwarf's pistol step still lowers only the pistol's native misfire threshold: a natural 2 misfires for the control and not for the Dwarf, a natural 1 still misfires (floor 1) and the Dwarf's musket still misfires on a natural 3",
+                    (string)shots["controlPistolRoll2"] == "Broken" && (string)shots["investedPistolRoll2"] == "Normal" &&
+                    (string)shots["investedPistolRoll1"] == "Broken" && (string)shots["investedMusketRoll3"] == "Broken",
+                    shots);
             }
         }
 

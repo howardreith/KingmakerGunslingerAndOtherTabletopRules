@@ -118,5 +118,33 @@ namespace KingmakerGunslinger.DomainTests
                 publication.Contains("return \"profile-disabled\";"),
                 "Missing classes and disabled profiles publish nothing (never an unrestricted fallback).");
         }
+
+        // The fresh-process persistence lane keeps one reloaded subject per
+        // state/mechanic family, including the selected firearm target and
+        // its native misfire shots after the reload.
+        internal static void PersistenceFamiliesCoverEveryMechanicFamily()
+        {
+            string families = Read("src", "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.FavoredClassPersistenceFamilies.cs");
+            foreach (string token in new[] {
+                "expected[\"bard\"]",
+                "expected[\"paladin\"]",
+                "expected[\"ranger\"]",
+                "expected[\"monk\"]",
+                "expected[\"revelation\"]",
+                "expected[\"bloodline\"]",
+                "expected[\"mostlyHuman\"]",
+                "expected[\"nimble\"]",
+                "expected[\"firearm\"]",
+                "leaves.Pair(FavoredClassCatalog.EffectMisfire, \"Pistol\")",
+                "expected[\"firearm\"][\"misfireReduction\"] = DescribeFcbMisfireTargets(dwarf);",
+                "observed[\"misfireReduction\"] = DescribeFcbMisfireTargets(unit);",
+                "\"family-paladin-aura-reload\"",
+                "\"family-ranger-replacement-after-reload\"",
+                "\"family-firearm-target-after-reload\"",
+                "(string)shots[\"investedPistolRoll2\"] == \"Normal\"",
+                "(string)shots[\"investedMusketRoll3\"] == \"Broken\"" })
+                Assertions.True(families.Contains(token), "The persistence families lane lacks: " + token);
+        }
     }
 }
