@@ -57,14 +57,24 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             BlueprintFeatureSelection gunslinger = host.GunslingerSelection;
             BlueprintFeature[] owned = leaves.Pairs.SelectMany(pair => pair.Leaves).ToArray();
+            // The current profile decides which counters are offered: a
+            // counter is published when any of its scheduled routes is enabled
+            // (third-party-only counters are withheld by default).
+            BlueprintFeature[] expectedPublished = leaves.Pairs.Where(pair => pair.Effect.Rows
+                .Select(FavoredClassCatalog.Row).Any(row => row.IsScheduled &&
+                    FavoredClassRuntime.Profile.Offers(row.Profile)))
+                .SelectMany(pair => pair.Leaves).ToArray();
+            BlueprintFeature[] withheld = owned.Where(leaf => !expectedPublished.Contains(leaf)).ToArray();
+            evidence["withheldLeaves"] = new JArray(withheld.Select(leaf => leaf.name));
             BlueprintFeature[] published = gunslinger.AllFeatures;
             BlueprintFeature[] foreign = published.Where(value =>
                 !owned.Contains(value)).ToArray();
             var graphFailures = new List<string>();
-            JObject graph = DescribeFcbPublishedGraph(gunslinger, owned, host, graphFailures);
+            JObject graph = DescribeFcbPublishedGraph(gunslinger, expectedPublished, withheld, host,
+                graphFailures);
             evidence["graph"] = graph;
             assertions.Add(Assertion("fcb-publication-graph",
-                "every owned grit leaf appears exactly once after the host's untouched generic leaves, with identical full/partial ancestry and investment prerequisites, hidden when unavailable",
+                "every owned leaf of an enabled profile appears exactly once, in registration order, after the host's untouched generic leaves; withheld (profile-off) leaves appear nowhere; full/partial prerequisites match; hidden when unavailable",
                 Describe(graph, graphFailures), graphFailures.Count == 0,
                 "live host Gunslinger bonus selection AllFeatures and leaf components"));
 
@@ -121,7 +131,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FavoredClassIntegrationCoordinator.AdoptQualificationRepublication(fresh);
                 fault["afterRepublish"] = gunslinger.AllFeatures.Length;
                 if (!SameFeatureReferences(gunslinger.AllFeatures.Take(foreign.Length).ToArray(), foreign) ||
-                    gunslinger.AllFeatures.Length != foreign.Length + owned.Length)
+                    gunslinger.AllFeatures.Length != foreign.Length + expectedPublished.Length ||
+                    !gunslinger.AllFeatures.Skip(foreign.Length).SequenceEqual(expectedPublished))
                     faultFailures.Add("re-publication did not restore the exact graph");
             }
             catch (Exception exception)
@@ -246,7 +257,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static JObject DescribeFcbPublishedGraph(BlueprintFeatureSelection selection,
-            BlueprintFeature[] owned, FavoredClassHostHandles host, IList<string> failures)
+            BlueprintFeature[] owned, BlueprintFeature[] withheld, FavoredClassHostHandles host,
+            IList<string> failures)
         {
             BlueprintFeature[] all = selection.AllFeatures;
             var row = new JObject
@@ -268,9 +280,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!leaf.HideNotAvailibleInUI)
                     failures.Add(leaf.name + " is shown when unavailable");
             }
+            foreach (BlueprintFeature leaf in withheld)
+                if (all.Any(value => ReferenceEquals(value, leaf) || value.AssetGuid == leaf.AssetGuid))
+                    failures.Add(leaf.name + " is published although its profile is off");
             int firstOwned = Array.FindIndex(all, value => owned.Contains(value));
-            if (firstOwned < 0 || all.Skip(firstOwned).Any(value => !owned.Contains(value)))
-                failures.Add("owned leaves are not a contiguous suffix after the foreign entries");
+            if (firstOwned < 0 || !all.Skip(firstOwned).SequenceEqual(owned))
+                failures.Add("owned leaves are not the exact contiguous suffix in registration order");
             BlueprintFeature[] expectedHost = { host.GenericHitPoint, host.GenericSkillPartial,
                 host.GenericSkillFull };
             if (firstOwned < 0 || !all.Take(firstOwned).SequenceEqual(expectedHost))

@@ -45,6 +45,8 @@ $expected = @(
     'disposable-magic-circle-profile',
     'disposable-firearm-higher-feat-roots',
     'disposable-rapid-reload-proficiency-gate',
+    'observe-favored-class-host-state',
+    'disposable-favored-class-initiative-timing',
     'disposable-favored-class-gunslinger-mechanics',
     'disposable-favored-class-gunslinger-menus',
     'disposable-favored-class-grit',

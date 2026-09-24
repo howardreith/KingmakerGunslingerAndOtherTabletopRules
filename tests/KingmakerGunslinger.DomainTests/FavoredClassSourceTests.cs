@@ -11,7 +11,9 @@ namespace KingmakerGunslinger.DomainTests
             "observe-favored-class-contract",
             "disposable-favored-class-grit",
             "disposable-favored-class-gunslinger-menus",
-            "disposable-favored-class-gunslinger-mechanics"
+            "disposable-favored-class-gunslinger-mechanics",
+            "disposable-favored-class-initiative-timing",
+            "observe-favored-class-host-state"
         };
 
         private static string Read(params string[] parts)
