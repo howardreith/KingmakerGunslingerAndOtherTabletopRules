@@ -46,12 +46,19 @@ namespace KingmakerGunslinger.FavoredClass
     {
         internal FavoredClassLeafFamily(string effectId, string symbolKey, string title,
             string stepText, string conditions)
+            : this(effectId, symbolKey, title, stepText, conditions, null)
+        {
+        }
+
+        internal FavoredClassLeafFamily(string effectId, string symbolKey, string title,
+            string stepText, string conditions, string immediateText)
         {
             EffectId = effectId;
             SymbolKey = symbolKey;
             Title = title;
             StepText = stepText;
             Conditions = conditions;
+            ImmediateText = immediateText;
         }
 
         internal string EffectId { get; private set; }
@@ -66,6 +73,12 @@ namespace KingmakerGunslinger.FavoredClass
         /// before the improved feature is gained; null when unconditional.
         /// </summary>
         internal string Conditions { get; private set; }
+
+        /// <summary>
+        /// For a mixed-rate bundle, the portion every investment (full or
+        /// partial) grants at once; null when a partial pick grants nothing.
+        /// </summary>
+        internal string ImmediateText { get; private set; }
     }
 
     /// <summary>One canonical target of a targeted effect (its own counter).</summary>
@@ -126,6 +139,33 @@ namespace KingmakerGunslinger.FavoredClass
                 "Gunslinger.DirtyTrickTrip", "Dirty Trick and Trip",
                 "+1 CMB for dirty trick and trip combat maneuvers",
                 "It applies to every dirty trick and trip attempt, not only firearm-delivered maneuvers."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectBombDamage,
+                "Alchemist.BombDamage", "Bomb Damage", "+1 damage with bombs",
+                "It is added once to each damage roll of a bomb, where the bomb's own Intelligence bonus applies (direct hit and splash), never per die or to lingering acid or explosive follow-up damage. Not available to archetypes that replace bombs (Vivisectionist; Call of the Wild's Toxicant)."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectFireIntimidate,
+                "Inquisitor.FireIntimidate", "Intimidate (Fire Creatures)",
+                "+1 on Intimidate checks against creatures of the fire subtype",
+                "It applies only to Intimidate checks made against a specific creature that has the fire subtype, such as demoralizing it; dialogue checks and other creatures are unaffected."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectDemoralize,
+                "Rogue.Demoralize", "Demoralize",
+                "+1 on Intimidate checks made to demoralize",
+                "It applies only to the Intimidate check of a demoralize action; other Intimidate checks are unaffected."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectBullRushDragDefense,
+                "Fighter.BullRushDefense", "Bull Rush Defense", "+1 CMD against bull rush",
+                "It applies only when this character is the target of a bull rush."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectUnarmedConfirmation,
+                "Monk.UnarmedConfirmation", "Unarmed Critical Confirmation",
+                "+1 on rolls to confirm critical hits with unarmed strikes",
+                "It does not stack with Critical Focus: only the amount by which this bonus exceeds Critical Focus's bonus is added. Natural attacks and weapons are not unarmed strikes, and threat range and multipliers never change."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectAquaticPenetration,
+                "Cleric.AquaticPenetration", "Spell Penetration (Water Creatures)",
+                "+1 on checks to overcome the spell resistance of aquatic or water-subtype creatures",
+                "It changes nothing else: caster level, spell DCs and checks against other creatures are unaffected."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectGrappleStunning,
+                "Monk.GrappleStunning", "Grapple Defense and Stunning Fist",
+                "+1 additional Stunning Fist attempt per day",
+                "Stunning Fist attempts are added only while this character has Stunning Fist (an archetype that replaces it, such as Call of the Wild's Zen Archer, gains none); grabs that make no combat maneuver check are unaffected.",
+                "+1 CMD against grapple"),
         };
 
         /// <summary>
@@ -249,10 +289,18 @@ namespace KingmakerGunslinger.FavoredClass
             string pick;
             if (!rate.HasPartial)
                 pick = "Each selection grants " + step + ".";
+            else if (role == FavoredClassInvestmentRole.Full && family.ImmediateText != null)
+                pick = string.Format(CultureInfo.InvariantCulture,
+                    "This selection grants {0} at once and completes {1} investments, granting {2}. The number of completed steps equals this feature's rank.",
+                    family.ImmediateText, rate.Divisor, step);
             else if (role == FavoredClassInvestmentRole.Full)
                 pick = string.Format(CultureInfo.InvariantCulture,
                     "This selection completes {0} investments and grants {1}. The number of completed steps equals this feature's rank.",
                     rate.Divisor, step);
+            else if (family.ImmediateText != null)
+                pick = string.Format(CultureInfo.InvariantCulture,
+                    "This selection grants {0} at once and is one investment toward the next {1}; every {2} investments complete that step. Its rank counts every partial investment made.",
+                    family.ImmediateText, step, OrdinalWord(rate.Divisor));
             else
                 pick = string.Format(CultureInfo.InvariantCulture,
                     "This selection is one investment toward the next {0}; every {1} investments complete a step. A partial investment grants nothing by itself, and its rank counts every partial investment made.",

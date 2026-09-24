@@ -1296,6 +1296,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableFavoredClassElementalCore)
+                {
+                    Complete(RunFavoredClassElementalCore());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveFavoredClassHostState)
                 {
                     Complete(RunFavoredClassHostState());

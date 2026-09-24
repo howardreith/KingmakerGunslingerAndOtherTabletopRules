@@ -40,7 +40,7 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
             int earned = FavoredClassRankPolicy.BenefitSteps(
                 new FavoredClassRate(Divisor, CapSteps > 0 ? CapSteps : (int?)null), fact.GetRank());
             int contribution = FavoredClassMechanicsPolicy.ConfirmationContribution(earned,
-                CriticalFocusBonus(evt));
+                FavoredClassCriticalFocus.Contribution(Owner, CriticalFocus, evt));
             if (contribution > 0)
                 evt.CriticalConfirmationBonus += contribution;
         }
@@ -57,27 +57,6 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
                 return false;
             return weapon.Blueprint.Type.ComponentsArray
                 .OfType<FirearmDefinitionComponent>().Count() == 1;
-        }
-
-        /// <summary>Critical Focus's native contribution to this roll (zero without the feat).</summary>
-        private int CriticalFocusBonus(RuleAttackRoll evt)
-        {
-            if (CriticalFocus == null)
-                return 0;
-            var feature = Owner.Progression.Features.GetFact(CriticalFocus) as Feature;
-            if (feature == null || !feature.Active)
-                return 0;
-            int total = 0;
-            foreach (CriticalConfirmationBonus component in
-                CriticalFocus.ComponentsArray.OfType<CriticalConfirmationBonus>())
-            {
-                int value = component.Value.Calculate(feature.Context) + component.Bonus;
-                bool range = !component.CheckWeaponRangeType ||
-                    AttackTypeAttackBonus.CheckRangeType(evt.Weapon.Blueprint, component.Type);
-                if ((!component.OnlyPositiveValue || value > component.Bonus) && range)
-                    total = checked(total + value);
-            }
-            return total;
         }
     }
 }

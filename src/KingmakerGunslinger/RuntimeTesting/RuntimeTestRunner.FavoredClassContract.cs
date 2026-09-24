@@ -59,44 +59,81 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintFeature[] owned = leaves.Pairs.SelectMany(pair => pair.Leaves).ToArray();
             // The current profile decides which counters are offered: a
             // counter is published when any of its scheduled routes is enabled
-            // (third-party-only counters are withheld by default).
-            BlueprintFeature[] expectedPublished = leaves.Pairs.Where(pair => pair.Effect.Rows
+            // (third-party-only counters are withheld by default). Each
+            // counter goes into its own class's host selection.
+            Func<FavoredClassLeafPair, bool> offered = pair => pair.Effect.Rows
                 .Select(FavoredClassCatalog.Row).Any(row => row.IsScheduled &&
-                    FavoredClassRuntime.Profile.Offers(row.Profile)))
-                .SelectMany(pair => pair.Leaves).ToArray();
-            BlueprintFeature[] withheld = owned.Where(leaf => !expectedPublished.Contains(leaf)).ToArray();
-            evidence["withheldLeaves"] = new JArray(withheld.Select(leaf => leaf.name));
-            BlueprintFeature[] published = gunslinger.AllFeatures;
-            BlueprintFeature[] foreign = published.Where(value =>
-                !owned.Contains(value)).ToArray();
+                    FavoredClassRuntime.Profile.Offers(row.Profile));
+            string[] hostClasses = leaves.Pairs.Select(pair => pair.HostClassGuid)
+                .Distinct(StringComparer.Ordinal).ToArray();
+            var selections = new Dictionary<string, BlueprintFeatureSelection>(StringComparer.Ordinal);
+            var expectedBy = new Dictionary<string, BlueprintFeature[]>(StringComparer.Ordinal);
+            var withheldBy = new Dictionary<string, BlueprintFeature[]>(StringComparer.Ordinal);
+            var foreignBy = new Dictionary<string, BlueprintFeature[]>(StringComparer.Ordinal);
+            var publishedBy = new Dictionary<string, BlueprintFeature[]>(StringComparer.Ordinal);
             var graphFailures = new List<string>();
-            JObject graph = DescribeFcbPublishedGraph(gunslinger, expectedPublished, withheld, host,
-                graphFailures);
-            evidence["graph"] = graph;
+            var graphs = new JObject();
+            foreach (string classGuid in hostClasses)
+            {
+                BlueprintFeatureSelection selection = host.BonusSelectionFor(classGuid);
+                FavoredClassLeafPair[] classPairs = leaves.Pairs.Where(pair =>
+                    pair.HostClassGuid == classGuid).ToArray();
+                if (selection == null)
+                {
+                    graphFailures.Add("host class " + classGuid + " has no bonus selection for " +
+                        string.Join(",", classPairs.Select(pair => pair.Effect.Id).Distinct().ToArray()));
+                    continue;
+                }
+                selections[classGuid] = selection;
+                expectedBy[classGuid] = classPairs.Where(offered).SelectMany(pair => pair.Leaves).ToArray();
+                withheldBy[classGuid] = classPairs.Where(pair => !offered(pair))
+                    .SelectMany(pair => pair.Leaves).ToArray();
+                publishedBy[classGuid] = selection.AllFeatures;
+                foreignBy[classGuid] = selection.AllFeatures.Where(value => !owned.Contains(value)).ToArray();
+                graphs[selection.name] = ReferenceEquals(selection, gunslinger)
+                    ? DescribeFcbPublishedGraph(selection, expectedBy[classGuid], withheldBy[classGuid],
+                        host, graphFailures)
+                    : DescribeFcbSelectionGraph(selection, expectedBy[classGuid], withheldBy[classGuid],
+                        graphFailures);
+            }
+            try
+            {
+                FavoredClassIntegrationCoordinator.Publication.Validate();
+                graphs["foreignPrefixesValidated"] = true;
+            }
+            catch (Exception exception)
+            {
+                graphFailures.Add("live publication validation: " + exception.Message);
+            }
+            BlueprintFeature[] expectedPublished = hostClasses.Where(expectedBy.ContainsKey)
+                .SelectMany(guid => expectedBy[guid]).ToArray();
+            evidence["withheldLeaves"] = new JArray(withheldBy.Values.SelectMany(value => value)
+                .Select(leaf => leaf.name));
+            evidence["graph"] = graphs;
             assertions.Add(Assertion("fcb-publication-graph",
-                "every owned leaf of an enabled profile appears exactly once, in registration order, after the host's untouched generic leaves; withheld (profile-off) leaves appear nowhere; full/partial prerequisites match; hidden when unavailable",
-                Describe(graph, graphFailures), graphFailures.Count == 0,
-                "live host Gunslinger bonus selection AllFeatures and leaf components"));
+                "in every host class selection, each owned leaf of an enabled profile appears exactly once, in registration order, as a suffix after the untouched foreign entries (for the Gunslinger, exactly the host's generic rewards); withheld (profile-off) leaves appear nowhere; full/partial prerequisites match; hidden when unavailable",
+                Describe(graphs, graphFailures), graphFailures.Count == 0,
+                "live host bonus selections AllFeatures, leaf components and FavoredClassPublication.Validate"));
 
             // H06: repeated publication is idempotent.
             var idempotentFailures = new List<string>();
             FavoredClassIntegrationCoordinator.TryResolveAndPublish("qualification-repeat");
-            if (!ReferenceEquals(published, gunslinger.AllFeatures))
-                idempotentFailures.Add("repeat publication replaced the array");
+            foreach (KeyValuePair<string, BlueprintFeatureSelection> entry in selections)
+                if (!ReferenceEquals(publishedBy[entry.Key], entry.Value.AllFeatures))
+                    idempotentFailures.Add("repeat publication replaced " + entry.Value.name);
             FavoredClassPublication repeat = FavoredClassPublication.Plan(leaves, host,
                 FavoredClassRuntime.Profile, _context.FeatureModules.Active.Gunslinger, null);
             repeat.Commit();
-            if (!ReferenceEquals(published, gunslinger.AllFeatures) ||
+            if (selections.Any(entry => !ReferenceEquals(publishedBy[entry.Key], entry.Value.AllFeatures)) ||
                 // Surface records carry ";action="; the summary record
                 // "transaction=committed" must not be mistaken for one.
                 !repeat.Evidence.Where(value => value.Contains(";action=")).All(value =>
                     value.Contains(";action=unchanged")) ||
-                repeat.Evidence.Count(value => value.Contains(";action=")) !=
-                    owned.Count(leaf => published.Contains(leaf)))
+                repeat.Evidence.Count(value => value.Contains(";action=")) != expectedPublished.Length)
                 idempotentFailures.Add("second transaction was not a no-op: " +
                     string.Join("|", repeat.Evidence.ToArray()));
             assertions.Add(Assertion("fcb-publication-idempotent",
-                "repeating readiness and publication leaves the same array reference, identities, order and counts",
+                "repeating readiness and publication leaves every selection's array reference, identities, order and counts unchanged",
                 string.Join("|", repeat.Evidence.ToArray()) + ";failures=" +
                     string.Join(",", idempotentFailures.ToArray()),
                 idempotentFailures.Count == 0, "coordinator repeat + second FavoredClassPublication"));
@@ -105,12 +142,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var faultFailures = new List<string>();
             JObject fault = new JObject();
             BlueprintComponent[][] hostComponentsBefore = SnapshotHostComponents(host);
+            Func<bool> foreignOnly = () => selections.All(entry =>
+                SameFeatureReferences(entry.Value.AllFeatures, foreignBy[entry.Key]));
             try
             {
                 FavoredClassIntegrationCoordinator.Publication.Rollback();
-                fault["afterRollback"] = gunslinger.AllFeatures.Length;
-                if (!SameFeatureReferences(gunslinger.AllFeatures, foreign))
-                    faultFailures.Add("rollback did not restore the exact foreign array");
+                fault["afterRollback"] = selections.Sum(entry => entry.Value.AllFeatures.Length);
+                if (!foreignOnly())
+                    faultFailures.Add("rollback did not restore every exact foreign array");
                 FavoredClassPublication faulty = FavoredClassPublication.Plan(leaves, host,
                     FavoredClassRuntime.Profile, _context.FeatureModules.Active.Gunslinger, 1);
                 try
@@ -122,18 +161,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     fault["injected"] = injected.Message;
                 }
-                fault["afterFault"] = gunslinger.AllFeatures.Length;
-                if (!SameFeatureReferences(gunslinger.AllFeatures, foreign))
+                fault["afterFault"] = selections.Sum(entry => entry.Value.AllFeatures.Length);
+                if (!foreignOnly())
                     faultFailures.Add("the failed transaction left owned entries or changed foreign ones");
                 FavoredClassPublication fresh = FavoredClassPublication.Plan(leaves, host,
                     FavoredClassRuntime.Profile, _context.FeatureModules.Active.Gunslinger, null);
                 fresh.Commit();
                 FavoredClassIntegrationCoordinator.AdoptQualificationRepublication(fresh);
-                fault["afterRepublish"] = gunslinger.AllFeatures.Length;
-                if (!SameFeatureReferences(gunslinger.AllFeatures.Take(foreign.Length).ToArray(), foreign) ||
-                    gunslinger.AllFeatures.Length != foreign.Length + expectedPublished.Length ||
-                    !gunslinger.AllFeatures.Skip(foreign.Length).SequenceEqual(expectedPublished))
-                    faultFailures.Add("re-publication did not restore the exact graph");
+                fault["afterRepublish"] = selections.Sum(entry => entry.Value.AllFeatures.Length);
+                foreach (KeyValuePair<string, BlueprintFeatureSelection> entry in selections)
+                {
+                    BlueprintFeature[] all = entry.Value.AllFeatures;
+                    BlueprintFeature[] foreignEntries = foreignBy[entry.Key];
+                    if (!SameFeatureReferences(all.Take(foreignEntries.Length).ToArray(), foreignEntries) ||
+                        !all.Skip(foreignEntries.Length).SequenceEqual(expectedBy[entry.Key]))
+                        faultFailures.Add("re-publication did not restore the exact graph of " +
+                            entry.Value.name);
+                }
             }
             catch (Exception exception)
             {
@@ -143,7 +187,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 faultFailures.Add("host generic leaf prerequisites/components changed");
             evidence["fault"] = fault;
             assertions.Add(Assertion("fcb-publication-fault-rollback",
-                "on the live host graph, rollback restores the exact foreign array, a transaction failing midway leaves no owned entry and no changed foreign entry, and a fresh transaction re-publishes the identical graph; host leaf components are untouched",
+                "on the live host graph, rollback restores every exact foreign array, a transaction failing midway leaves no owned entry and no changed foreign entry, and a fresh transaction re-publishes the identical graph in every selection; host leaf components are untouched",
                 Describe(fault, faultFailures), faultFailures.Count == 0,
                 "production FavoredClassPublication with an injected surface fault"));
 
@@ -302,6 +346,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fullAncestry.Group != partialAncestry.Group)
                     failures.Add(pair.Effect.Id + " full and partial ancestry restrictions differ");
             }
+            return row;
+        }
+
+        // A native class selection: the host's own entries stay an untouched
+        // prefix (proved by FavoredClassPublication.Validate); owned leaves
+        // are exactly the registration-order suffix; withheld leaves absent.
+        private static JObject DescribeFcbSelectionGraph(BlueprintFeatureSelection selection,
+            BlueprintFeature[] owned, BlueprintFeature[] withheld, IList<string> failures)
+        {
+            BlueprintFeature[] all = selection.AllFeatures ?? new BlueprintFeature[0];
+            var row = new JObject
+            {
+                ["selection"] = selection.name + ":" + selection.AssetGuid,
+                ["foreignCount"] = all.Count(value => !owned.Contains(value)),
+                ["owned"] = new JArray(all.Where(owned.Contains).Select(value => value.name)),
+                ["ownedIcons"] = new JArray(all.Where(owned.Contains).Select(value => value.name + "=" +
+                    (value.Icon == null ? "<null>" : value.Icon.name)))
+            };
+            foreach (BlueprintFeature leaf in owned)
+                if (all.Count(value => ReferenceEquals(value, leaf)) != 1 ||
+                    all.Count(value => value.AssetGuid == leaf.AssetGuid) != 1 || !leaf.HideNotAvailibleInUI)
+                    failures.Add(selection.name + ": " + leaf.name + " is not exactly once and hidden when unavailable");
+            foreach (BlueprintFeature leaf in withheld)
+                if (all.Any(value => ReferenceEquals(value, leaf) || value.AssetGuid == leaf.AssetGuid))
+                    failures.Add(selection.name + ": " + leaf.name + " is published although its profile is off");
+            int firstOwned = Array.FindIndex(all, value => owned.Contains(value));
+            if (owned.Length > 0 && (firstOwned < 0 || !all.Skip(firstOwned).SequenceEqual(owned)))
+                failures.Add(selection.name + ": owned leaves are not the exact registration-order suffix");
             return row;
         }
 

@@ -15831,6 +15831,102 @@
       "status": "active",
       "milestone": "Favored Class integration",
       "notes": "Favored class completing investment: +1 CMB for dirty trick and trip per rank (G21 Jon Brazer Enterprises dirty trick and trip counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Alchemist.BombDamage.Partial",
+      "guid": "6d101f4776294ec78ac07b2bf8b1ace7",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 bomb damage (I01 Ifrit Alchemist bomb damage counter); published only into the Favored Class host's Alchemist bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Alchemist.BombDamage.Full",
+      "guid": "c98af1a0630a452e8af968684e285183",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 flat damage on bomb damage rolls per rank (I01 Ifrit Alchemist bomb damage counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Inquisitor.FireIntimidate.Partial",
+      "guid": "96c9cb2bc89941b2a37f126aafccf3ca",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 Intimidate against fire-subtype creatures (I05 Ifrit Inquisitor adaptation counter); published only into the Favored Class host's Inquisitor bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Inquisitor.FireIntimidate.Full",
+      "guid": "98847fc06c1c4f53a1da0ce0df78f266",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 on Intimidate checks against fire-subtype creatures per rank (I05 Ifrit Inquisitor adaptation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Rogue.Demoralize.Partial",
+      "guid": "a9f9782987db4b518ccc6726039f56fc",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 Intimidate to demoralize (I07 Ifrit Rogue adaptation counter); published only into the Favored Class host's Rogue bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Rogue.Demoralize.Full",
+      "guid": "bf08007130b24072b50fa165e640ffa1",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 on Intimidate checks made to demoralize per rank (I07 Ifrit Rogue adaptation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Fighter.BullRushDefense.Full",
+      "guid": "429de527d5dc46039e9d5a2311901374",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 CMD against bull rush per rank (O04 Oread Fighter adaptation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Monk.UnarmedConfirmation.Partial",
+      "guid": "8b3453ed61fe489a9f120c773215b68e",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 unarmed critical confirmation (O05 Oread Monk counter); published only into the Favored Class host's Monk bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Monk.UnarmedConfirmation.Full",
+      "guid": "c76759e1e881420a9248ce8fe74b5004",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 on unarmed-strike critical confirmation rolls per rank (max 5), nonstacking with Critical Focus (O05 Oread Monk counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Cleric.AquaticPenetration.Full",
+      "guid": "189538fd7b67433e8d0cea5e691dd8eb",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 on checks to overcome the spell resistance of aquatic or water-subtype creatures per rank (U02 Undine Cleric counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Monk.GrappleStunning.Partial",
+      "guid": "9c56579186ef4fdba0f07d956b1cb9a5",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 CMD against grapple now and the next Stunning Fist attempt (U04 Undine Monk mixed-rate counter); published only into the Favored Class host's Monk bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Monk.GrappleStunning.Full",
+      "guid": "ca51bd6d19b241e48f05e6acf892a5f1",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 CMD against grapple per rank and +1 Stunning Fist attempt per day per rank (U04 Undine Monk mixed-rate counter)."
     }
   ]
 }
