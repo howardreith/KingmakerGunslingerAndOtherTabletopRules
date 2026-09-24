@@ -22,6 +22,7 @@ DONOR_NAMES = {
     "03dd28e92faf2e44eb9564a6ba01fdd0": "DireWolfSummon",
     "04944455200bc224d955a8e9bbd64f3f": "SummonedAirElementalSmall",
     "0b214d8e81a563549ba0be37cd1c16d0": "CR4_BearStandard",
+    "124f1c45ef24d654e9cd420fe84f7f36": "CR5_CyclopStandard",
     "0cc7a2526e4557945b1d8eb277d1fb3a": "CR7_Nymph",
     "10a820de0a417f345866f794324205ad": "MephitFireSummoned",
     "1832be68f9814254dbbdab6df7fd5d0b": "SoulEaterSummoned",
@@ -35,6 +36,7 @@ DONOR_NAMES = {
     "33bb90ffd13c87b4c8e45d920313752a": "SummonedAirElementalElder",
     "3764b43791a00e1468257adbca43ce9b": "SummonedAirElementalLarge",
     "394610e32cfbc4f43a0efaab16faae49": "CR1_Nixie",
+    "3f95557fc806db741b500a5735990841": "PonySummoned",
     "3b86a449e7264174eaccef9b8f02fe20": "SummonedEarthElementalHuge",
     "3bd31a0b4d800f04a8c5b7b1a6d7061e": "SummonedWaterElementalElder",
     "406c1e1af5400ac4881e330502ccbd9e": "CR3_GiantEagleStandard",
@@ -46,6 +48,7 @@ DONOR_NAMES = {
     "51c66b0783a748c4b9538f0f0678c4d7": "CR7_GiantSpiderDoombringing",
     "56372b0a2749c224392a5ee74105c534": "SummonedWaterElementalSmall",
     "58574e8d1d4dc464c976f396d9115b1a": "AzataBralaniSummoned",
+    "5bb9579fdb2b26b48bb10d61c81cfdfb": "HorseSummoned",
     "5f968d63d756f994ebff0d774e88e4ab": "CR2_BoarStandard",
     "62a3e860e6e72e6499c38bb8b2fe303e": "SummonedWaterElementalMedium",
     "640fb7efb7c916945837bbcab995267e": "SummonedFireElementalHuge",
@@ -68,6 +71,7 @@ DONOR_NAMES = {
     "c3524f96954a1d94f8525b86e7626633": "CR6_HodagStandard",
     "cda7013db24f4c547b79bfc5c617066b": "SummonedEarthElementalGreater",
     "d3d9ab560534bd948b10ac00abbff083": "SummonedEarthElementalLarge",
+    "d6e0acbdbdb56114898922063ae2cba0": "CR8_OwlbearStandard",
     "e770cfbb96b528c4db258d7d03fe6533": "SummonedAirElementalGreater",
     "e8276e28b2234a745900fed80670bfdb": "CR1_LizardfolkStandard",
     "ea0f0bbc6e5e471428d535501b21eb26": "SummonedFireElementalElder",
@@ -83,6 +87,8 @@ SPECIAL_NOTES = {
     "succubus": "Bounded domination and one-round temporary energy drain; profane gift omitted.",
     "bebelith": "Demon hunting and DC 25 bounded one-round armor dismantle; rot and permanent item damage omitted.",
     "pixie": "Sixteen no-damage sleep arrows and one bounded irresistible dance; no ammunition or loot.",
+    "cyclops": "Greataxe, ferocity, Power Attack and Cleave on a humanoid chassis; Flash of Insight bounded to one swift-action automatic hit and critical threat per summoning; armor and crossbow omitted.",
+    "owlbear": "Magical-beast chassis with bite and two claws; claw grab deferred to the shared grapple lifecycle of Sprint 4.",
 }
 
 NATIVE_EXPANDED_OPTIONS = (
@@ -102,6 +108,8 @@ NATIVE_EXPANDED_OPTIONS = (
     ("SNA", 7, "Manticore", "OneD4PlusOne"),
     ("SNA", 8, "Nereid", "One"), ("SNA", 9, "Nereid", "OneD3"),
     ("SNA", 9, "Hamadryad", "One"),
+    ("SNA", 7, "FrostGiant", "One"), ("SNA", 8, "FrostGiant", "OneD3"),
+    ("SNA", 9, "FrostGiant", "OneD4PlusOne"),
 )
 
 
@@ -121,8 +129,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 67:
-        raise SystemExit(f"Expected 67 parsed creatures; observed {len(values)}")
+    if len(values) != 71:
+        raise SystemExit(f"Expected 71 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -187,6 +195,12 @@ def planned():
         ("KMG.Summoning.Special.Pixie.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Pixie.IrresistibleDanceAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.Pixie.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.Cyclops.FlashOfInsight", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Cyclops.FlashOfInsightState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Cyclops.FlashOfInsightResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.Cyclops.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Cyclops.FlashOfInsightAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.Cyclops.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"),
@@ -195,7 +209,7 @@ def planned():
         ("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1184 or len({symbol for symbol, _ in rows}) != 1184:
+    if len(rows) != 1276 or len({symbol for symbol, _ in rows}) != 1276:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -207,14 +221,14 @@ def generated_roster(manifest):
         for key, guid, dedicated in DONOR.findall(DONORS.read_text(encoding="utf-8"))
     }
     creatures = parsed_creatures()
-    if len(donors) != 67 or set(donors) != {value["key"] for value in creatures}:
+    if len(donors) != 71 or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
     lines = [
         "# Expanded Summoning roster and identity ledger",
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Frozen totals: 66 Summon Monster entries / 361 placements; 57 Summon Nature's Ally entries / 320 placements; 67 unique units; 681 logical placements.",
+        "Frozen totals: 68 Summon Monster entries / 378 placements; 61 Summon Nature's Ally entries / 348 placements; 71 unique units; 726 logical placements (Phase 1 Sprint 3 added Pony, Horse, Owlbear and Cyclops; the Frost Giant is a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers).",
         "",
         "Final native qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required final compatibility transactions PASS and restored their profiles.",
         "",
@@ -270,7 +284,7 @@ def generated_roster(manifest):
     lines.extend((
         "## Explicit exclusions",
         "",
-        "No aquatic-only entries, horses or ponies, unapproved ants, apes, rhinoceroses, giants, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. Existing vanilla and third-party entries are preserved by reference and order.",
+        "No aquatic-only entries, unapproved ants, apes, rhinoceroses, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3 and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
         "",
     ))
     return "\n".join(lines)

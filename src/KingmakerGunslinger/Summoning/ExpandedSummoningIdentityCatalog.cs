@@ -20,15 +20,15 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 67;
-        internal const int LogicalAbilityCount = 681;
-        internal const int TemplatedPlacementCount = 182;
+        internal const int UnitCount = 71;
+        internal const int LogicalAbilityCount = 726;
+        internal const int TemplatedPlacementCount = 199;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 33;
+        internal const int SpecialIdentityCount = 39;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
-        internal const int NativeExpandedOptionIdentityCount = 26;
+        internal const int NativeExpandedOptionIdentityCount = 29;
         internal const int FoundationIdentityCount = UnitCount + LogicalAbilityCount +
             TemplateExecutionAbilityCount + TemplateBuffCount + SpecialIdentityCount +
             NativePreservationIdentityCount + AlignmentModeIdentityCount +
@@ -104,6 +104,12 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.CombatTraits", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.IrresistibleDanceAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Pixie.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cyclops.FlashOfInsight", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cyclops.FlashOfInsightState", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cyclops.FlashOfInsightResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cyclops.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cyclops.FlashOfInsightAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cyclops.Brain", "BlueprintBrain"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"));

@@ -120,6 +120,16 @@ namespace KingmakerGunslinger.Summoning
         internal const int PixieDanceCasterLevel = 8;
         internal const int PixieDanceSpellLevel = 6;
 
+        /// <summary>
+        /// Cyclops Flash of Insight, bounded (Sprint 3). Tabletop: once per
+        /// day, as an immediate action, the cyclops chooses the exact result
+        /// of one of its own die rolls. Here: once per summoning, as a swift
+        /// action, its next attack roll in the round is an automatic hit and
+        /// critical threat. The confirmation roll stays ordinary.
+        /// </summary>
+        internal const int CyclopsFlashOfInsightUses = 1;
+        internal const int CyclopsFlashOfInsightRounds = 1;
+
         internal static bool ShouldAttemptBebelithDismantle(bool isClaw,
             bool isHit, bool targetHasArmor, int priorClawHits,
             bool alreadyAttempted)
@@ -135,6 +145,15 @@ namespace KingmakerGunslinger.Summoning
         internal static bool ShouldSpendPixieSleepArrow(bool isSleepBow,
             bool isHit, int remainingUses)
         { return isSleepBow && isHit && remainingUses > 0; }
+
+        /// <summary>
+        /// The armed Flash of Insight state converts exactly the owner's own
+        /// attack rolls; rolls it merely witnesses (a defender's, an ally's)
+        /// are untouched.
+        /// </summary>
+        internal static bool ShouldApplyFlashOfInsight(bool isOwnerAttackRoll,
+            bool stateArmed)
+        { return isOwnerAttackRoll && stateArmed; }
 
         internal static void Validate()
         {
@@ -159,9 +178,11 @@ namespace KingmakerGunslinger.Summoning
                 BebelithDismantleAcPenalty < 1 || BebelithDismantleRounds != 1 ||
                 PixieHitDice != 4 || PixieSleepArrowUses != 16 ||
                 PixieSleepArrowWillDc != 15 || PixieSleepArrowRounds != 50 ||
-                PixieDanceUses != 1 || PixieDanceCasterLevel != 8)
+                PixieDanceUses != 1 || PixieDanceCasterLevel != 8 ||
+                CyclopsFlashOfInsightUses != 1 ||
+                CyclopsFlashOfInsightRounds != 1)
                 throw new InvalidOperationException(
-                    "Bebelith/Pixie bounded special profile changed.");
+                    "Bebelith/Pixie/Cyclops bounded special profile changed.");
         }
 
         private static string[] BuildElementalKeys()

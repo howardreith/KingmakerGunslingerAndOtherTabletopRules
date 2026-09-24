@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  77,
+    "count":  81,
     "icons":  [
                   {
                       "key":  "dog",
@@ -694,6 +694,42 @@
                       "height":  128,
                       "format":  "RGBA PNG",
                       "scope":  "preserved-native"
+                  },
+                  {
+                      "key":  "pony",
+                      "file":  "pony.png",
+                      "sha256":  "9283971ef0e33c5600bcc95ea7f6c53d8f3c236be69531597a5e65cfdab4a212",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "horse",
+                      "file":  "horse.png",
+                      "sha256":  "c52d920b00a6dfc0f00763df3cc0a03d340d709f69351b8e0adcd4d459a31ea1",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "owlbear",
+                      "file":  "owlbear.png",
+                      "sha256":  "3b43da63e97f4f57c1987fe8fea1ffcaecfa78f1068b04caa63c637d6cdbe699",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "cyclops",
+                      "file":  "cyclops.png",
+                      "sha256":  "67b2301b61ee0e645717e6801449626850b18b10e4d24a4594f18aeccc9f9ddb",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
                   }
               ]
 }

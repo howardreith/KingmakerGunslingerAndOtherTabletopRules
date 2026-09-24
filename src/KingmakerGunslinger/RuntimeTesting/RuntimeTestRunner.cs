@@ -660,6 +660,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationDisabled &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationContext &&
                     !IsExpandedSummoningPersistenceScenario() &&
+                    !IsExpandedSummoningCreatureReviewScenario() &&
                     !IsElvenBranchedSpearPersistenceScenario() &&
                     !IsEasternWeaponsPersistenceScenario() &&
                     !IsCraftMagicItemsPersistenceScenario() &&
@@ -1876,6 +1877,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
+                    IsExpandedSummoningCreatureReviewScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
                     IsCraftMagicItemsPersistenceScenario() ||
@@ -1989,6 +1991,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationDisabled ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     IsExpandedSummoningPersistenceScenario() ||
+                    IsExpandedSummoningCreatureReviewScenario() ||
                     IsElvenBranchedSpearPersistenceScenario() ||
                     IsEasternWeaponsPersistenceScenario() ||
                     IsCraftMagicItemsPersistenceScenario() ||
@@ -2448,6 +2451,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     StartExpandedSummoningPersistence();
                 }
+                else if (IsExpandedSummoningCreatureReviewScenario())
+                {
+                    StepExpandedSummoningCreatureReview();
+                }
                 else if (IsCraftMagicItemsPersistenceScenario())
                 {
                     StartCraftMagicItemsPersistence();
@@ -2853,6 +2860,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .WorkingSaveExpandedSummoningVerifyCleanup ||
                 _request.Scenario == RuntimeTestScenarioCatalog
                     .WorkingSaveExpandedSummoningVerifyAbsent;
+        }
+
+        private bool IsExpandedSummoningCreatureReviewScenario()
+        {
+            return _request.Scenario == RuntimeTestScenarioCatalog
+                .WorkingSaveExpandedSummoningCreatureReview;
         }
 
         private bool IsElvenBranchedSpearPersistenceScenario()
@@ -3749,6 +3762,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Creature.Key == "wolf" && value.ParentTier == 2 &&
                         value.Multiplicity == SummonMultiplicity.One)
             };
+            return SpawnExpandedSummoningVariants(blueprints, caster, variants,
+                "Persistence prepare");
+        }
+
+        /// <summary>
+        /// Casts each variant through its real execution ability on the
+        /// caster and returns the native summons that resulted, one per
+        /// variant, inside the caster's loaded area state. Shared by the
+        /// persistence prepare stage and the creature review.
+        /// </summary>
+        private UnitEntityData[] SpawnExpandedSummoningVariants(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            SummonVariantSpec[] variants, string purpose)
+        {
             MethodInfo summonRuleMethod = typeof(RuleSummonUnit).GetMethod(
                 "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
             if (summonRuleMethod == null) throw new MissingMethodException(
@@ -3779,9 +3806,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             caster.Descriptor.RemoveFact(ability);
                     }
                 }
-                if (ExpandedSummoningRuleCapture.Count != 3)
-                    throw new InvalidOperationException(
-                        "Persistence prepare did not create exactly three native summons.");
+                if (ExpandedSummoningRuleCapture.Count != variants.Length)
+                    throw new InvalidOperationException(purpose +
+                        " did not create exactly " + variants.Length +
+                        " native summons; observed " +
+                        ExpandedSummoningRuleCapture.Count + ".");
                 // The guarded scenario executes the native UnitUseAbility command
                 // synchronously from Unity Mod Manager's update callback, after
                 // the game's entity-creation controller has already ticked for
@@ -3791,8 +3820,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result = ExpandedSummoningRuleCapture.ToArray();
                 if (result.Any(value => value.HoldingState == null ||
                     !ReferenceEquals(value.HoldingState, caster.HoldingState)))
-                    throw new InvalidOperationException(
-                        "Persistence prepare summons did not enter the caster's exact loaded-area state.");
+                    throw new InvalidOperationException(purpose +
+                        " summons did not enter the caster's exact loaded-area state.");
             }
             finally
             {
@@ -4003,7 +4032,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "native summoned-unit control surfaces"),
                 Assertion("expanded-summoning-publication-state",
                     _context.FeatureModules.Active.ExpandedSummoning ?
-                        "681 exact required-parent references" :
+                        SummonVisibilityCatalog.RegisteredLogicalPlacementCount +
+                            " exact required-parent references" :
                         "zero required-parent references",
                     _expandedSummoningPersistenceDetail,
                     _expandedSummoningPersistencePublicationValid,
@@ -14570,14 +14600,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility[] fiendishExecutions = all.OfType<BlueprintAbility>()
                 .Where(value => value.name.EndsWith("_Fiendish",
                     StringComparison.Ordinal)).ToArray();
-            bool templateChoicesExact = templateChoices.Length == 182 &&
+            bool templateChoicesExact = templateChoices.Length ==
+                    ExpandedSummoningIdentityCatalog.TemplatedPlacementCount &&
                 templateChoices.All(value => !value.ComponentsArray
                     .OfType<AbilityVariants>().Any() && value.ComponentsArray
                     .OfType<AbilityEffectRunAction>().Count() == 1 &&
                     ExpandedSummoningSpawnActionCount(value) >= 1 &&
                     ExpandedSummoningTemplateByCasterCount(value) ==
                         ExpandedSummoningSpawnActionCount(value));
-            bool celestialExact = celestialExecutions.Length == 182 &&
+            bool celestialExact = celestialExecutions.Length ==
+                    ExpandedSummoningIdentityCatalog.TemplatedPlacementCount &&
                 celestialExecutions.All(value =>
                     ExpandedSummoningSpawnActionCount(value) >= 1 &&
                     value.ComponentsArray
@@ -14592,7 +14624,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ExpandedSummoningSpawnActionCount(value) &&
                     ExpandedSummoningSmiteApplyCount(value) ==
                         ExpandedSummoningSpawnActionCount(value));
-            bool fiendishExact = fiendishExecutions.Length == 182 &&
+            bool fiendishExact = fiendishExecutions.Length ==
+                    ExpandedSummoningIdentityCatalog.TemplatedPlacementCount &&
                 fiendishExecutions.All(value =>
                     ExpandedSummoningSpawnActionCount(value) >= 1 &&
                     value.ComponentsArray
@@ -14713,8 +14746,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             int expectedContractNodes = logicalVariants.Length;
-            bool abilityContractsExact = logicalVariants.Length == 681 &&
-                expectedContractNodes == 681 && exactParentMappings ==
+            bool abilityContractsExact = logicalVariants.Length ==
+                    SummonVisibilityCatalog.RegisteredLogicalPlacementCount &&
+                expectedContractNodes ==
+                    SummonVisibilityCatalog.RegisteredLogicalPlacementCount &&
+                exactParentMappings ==
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
                 nativeContractNodes == expectedContractNodes &&
                 acadamaeClassifiedNodes == expectedContractNodes &&
@@ -15185,6 +15221,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 tierFiveSevenKeys.All(key =>
                     ExpandedSummoningNaturalUnitExact(all,
                         ExpandedSummoningNaturalProfiles.For(key)));
+            string[] sprintThreeKeys = { "pony", "horse", "owlbear", "cyclops" };
+            bool sprintThreeNaturalsExact = sprintThreeKeys.All(key =>
+                ExpandedSummoningNaturalUnitExact(all,
+                    ExpandedSummoningNaturalProfiles.For(key)));
+            string cyclopsObserved;
+            bool cyclopsExact = ExpandedSummoningCyclopsSpecialExact(all,
+                out cyclopsObserved);
+            int distinctDonors = ExpandedSummoningDonorCatalog.All
+                .Select(value => value.Guid).Distinct(StringComparer.Ordinal)
+                .Count();
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -15193,10 +15239,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("summon-unit-donor-candidates", ">=40",
                     observation.UnitCount.ToString(), observation.UnitCount >= 40,
                     "final-live BlueprintUnit roster-term inventory"),
-                Assertion("expanded-summoning-exact-donor-inventory", "55;missing=0",
+                Assertion("expanded-summoning-exact-donor-inventory",
+                    distinctDonors + ";missing=0",
                     observation.ExactDonorCount + ";missing=" +
                         observation.MissingDonorCount,
-                    observation.ExactDonorCount == 55 &&
+                    observation.ExactDonorCount == distinctDonors &&
                         observation.MissingDonorCount == 0,
                     "all distinct frozen chosen donor GUIDs with component/body/view graphs"),
                 Assertion("expanded-summoning-special-mechanic-candidates", ">=1",
@@ -15204,11 +15251,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation.SpecialCandidateCount >= 1,
                     "exact final-live Will-o'-Wisp, archon, light-ray, and aura candidates"),
                 Assertion("expanded-summoning-registered-identities",
-                    "units=67;abilities=" + expectedKmgAbilities + ";registry=" +
+                    "units=" + ExpandedSummoningCatalog.All.Count + ";abilities=" +
+                        expectedKmgAbilities + ";registry=" +
                         BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "units=" + kmgUnits + ";abilities=" + kmgAbilities +
                         ";registry=" + BlueprintBootstrap.RegisteredBlueprintCount,
-                    kmgUnits == 67 && kmgAbilities == expectedKmgAbilities &&
+                    kmgUnits == ExpandedSummoningCatalog.All.Count &&
+                        kmgAbilities == expectedKmgAbilities &&
                         BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "exact final-live KMG blueprint identity scan"),
                 Assertion("expanded-summoning-lantern-archon", "exact",
@@ -15248,12 +15297,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     tierFiveSevenNaturalsExact ? "exact" : "mismatch",
                     tierFiveSevenNaturalsExact,
                     "seven exact animal-HD chassis with proxy-only views, frozen large-die weapons, native pounce and feats, and bounded documented deviations"),
-                Assertion("expanded-summoning-parent-placements", "667",
+                Assertion("expanded-summoning-sprint-three-naturals", "exact",
+                    sprintThreeNaturalsExact ? "exact" : "mismatch",
+                    sprintThreeNaturalsExact,
+                    "pony and horse on their native summoned donors with hoof limbs, the magical-beast owlbear and the humanoid cyclops chassis against the checked-in profiles"),
+                Assertion("expanded-summoning-cyclops-flash-of-insight",
+                    "granted swift supernatural ability; one-use resource; one-round armed state with auto-hit/threat and one-attack removal; AI brain",
+                    cyclopsObserved, cyclopsExact,
+                    "Cyclops special surface beside the natural chassis"),
+                Assertion("expanded-summoning-parent-placements",
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount.ToString(),
                     publishedPlacements.ToString(), publishedPlacements ==
                         SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                     "18 canonical AbilityVariants surfaces"),
                 Assertion("expanded-summoning-native-ability-contracts",
-                    "roots=681 registered;parents=667 visible;all 681 executable contracts exact",
+                    "roots=" + SummonVisibilityCatalog.RegisteredLogicalPlacementCount +
+                        " registered;parents=" +
+                        SummonVisibilityCatalog.PublishedLogicalPlacementCount +
+                        " visible;all " +
+                        SummonVisibilityCatalog.RegisteredLogicalPlacementCount +
+                        " executable contracts exact",
                     abilityContractObserved, abilityContractsExact,
                     "exact final-live parent mapping and native school, summoning descriptor, casting time, range, target mode, metamagic, material-data, and action-bar contracts"),
                 Assertion("expanded-summoning-native-tier-one-preservation",
@@ -15306,26 +15369,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "final-live exact candidate scan outside all 18 canonical parent GUIDs"),
                 Assertion("expanded-summoning-donor-component-isolation", "0",
                     sharedComponents.ToString(), sharedComponents == 0,
-                    "all 67 KMG units versus frozen donor component references"),
+                    "all " + ExpandedSummoningCatalog.All.Count +
+                        " KMG units versus frozen donor component references"),
                 Assertion("expanded-summoning-prohibited-references", "0",
                     prohibitedReferences.ToString(), prohibitedReferences == 0,
                     "direct facts and component blueprint-array grants"),
-                Assertion("expanded-summoning-extraplanar-markers", "67",
-                    extraplanarMarkers.ToString(), extraplanarMarkers == 67,
+                Assertion("expanded-summoning-extraplanar-markers",
+                    ExpandedSummoningCatalog.All.Count.ToString(),
+                    extraplanarMarkers.ToString(),
+                    extraplanarMarkers == ExpandedSummoningCatalog.All.Count,
                     "one exact hidden KMG marker per custom summon unit"),
                 Assertion("expanded-summoning-inherited-class-spells", "0",
                     inheritedSpellArrays.ToString(), inheritedSpellArrays == 0,
                     "AddClassLevels MemorizeSpells and SelectSpells arrays"),
                 Assertion("expanded-summoning-starting-inventory", "0",
                     nonemptyInventories.ToString(), nonemptyInventories == 0,
-                    "all 67 KMG unit StartingInventory arrays"),
-                Assertion("expanded-summoning-template-logical-choices", "182",
+                    "all " + ExpandedSummoningCatalog.All.Count +
+                        " KMG unit StartingInventory arrays"),
+                Assertion("expanded-summoning-template-logical-choices",
+                    ExpandedSummoningIdentityCatalog.TemplatedPlacementCount.ToString(),
                     templateChoices.Length.ToString(), templateChoicesExact,
                     "direct executable roots with one caster-selected post-spawn template action"),
-                Assertion("expanded-summoning-celestial-executions", "182",
+                Assertion("expanded-summoning-celestial-executions",
+                    ExpandedSummoningIdentityCatalog.TemplatedPlacementCount.ToString(),
                     celestialExecutions.Length.ToString(), celestialExact,
                     "non-evil mask, Good descriptor, and child template application"),
-                Assertion("expanded-summoning-fiendish-executions", "182",
+                Assertion("expanded-summoning-fiendish-executions",
+                    ExpandedSummoningIdentityCatalog.TemplatedPlacementCount.ToString(),
                     fiendishExecutions.Length.ToString(), fiendishExact,
                     "non-good mask, Evil descriptor, and child template application"),
                 Assertion("expanded-summoning-template-buffs", "6",
@@ -15335,7 +15405,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     smiteMarkers.Length.ToString(), smiteMarkersExact,
                     "unit-local opposed-alignment once-per-summon attack handlers"),
                 Assertion("expanded-summoning-runtime-alignments",
-                    "celestial=182;fiendish=182;sna=320",
+                    "celestial=" + ExpandedSummoningIdentityCatalog.TemplatedPlacementCount +
+                        ";fiendish=" + ExpandedSummoningIdentityCatalog.TemplatedPlacementCount +
+                        ";sna=" + ExpandedSummoningCatalog.GenerateVariants(
+                            SummonFamily.NaturesAlly).Count,
                     "celestial=" + celestialExecutions.Length + ";fiendish=" +
                     fiendishExecutions.Length + ";sna=" + allyExecutions.Length,
                     celestialExact && fiendishExact && allyAlignmentExact,
@@ -15689,7 +15762,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     WriteLifecycleStage(stage + "-complete");
                 }
 
-                stage = "all-667-visible-logical-roots";
+                stage = "all-" + SummonVisibilityCatalog.PublishedLogicalPlacementCount +
+                    "-visible-logical-roots";
                 SummonVariantSpec[] broadVariants = ExpandedSummoningCatalog
                     .GenerateVariants(SummonFamily.Monster).Concat(
                         ExpandedSummoningCatalog.GenerateVariants(
@@ -15777,7 +15851,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
                 broadCases.All(value => value.LiveContract &&
                     value.SlotContract && value.QuantityContract);
-            bool allNativeExpandedPaths = nativeExpansionCases.Count == 26 &&
+            bool allNativeExpandedPaths = nativeExpansionCases.Count ==
+                    SummonNativeExpansionCatalog.All.Count &&
                 nativeExpansionCases.All(value => value.LiveContract &&
                     value.SlotContract && value.QuantityContract);
             var assertions = new List<RuntimeTestAssertion>
@@ -15815,13 +15890,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join(" | ", cases.Select(value => value.Describe()).ToArray()),
                     allPlayerPaths, "native spellbook selected-variant AbilityData chain"),
                 Assertion("expanded-summoning-all-logical-player-paths",
-                    "667/667 visible roots live with one-slot and quantity contracts; 14 Dire Bat identities registered but unpublished",
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount + "/" +
+                        SummonVisibilityCatalog.PublishedLogicalPlacementCount +
+                        " visible roots live with one-slot and quantity contracts; " +
+                        SummonVisibilityCatalog.SuppressedLogicalPlacementCount +
+                        " Dire Bat identities registered but unpublished",
                     broadCases.Count(value => value.LiveContract &&
                         value.SlotContract && value.QuantityContract) + "/" +
                         broadCases.Count, allBroadPlayerPaths,
                     "all published SM/SNA logical placements through native spellbook parents"),
                 Assertion("expanded-summoning-distinct-native-player-paths",
-                    "26/26 visible creature-named native/preservation wrappers live with one-slot and quantity contracts",
+                    SummonNativeExpansionCatalog.All.Count + "/" +
+                        SummonNativeExpansionCatalog.All.Count +
+                        " visible creature-named native/preservation wrappers live with one-slot and quantity contracts",
                     nativeExpansionCases.Count(value => value.LiveContract &&
                         value.SlotContract && value.QuantityContract) + "/" +
                         nativeExpansionCases.Count,
@@ -17716,9 +17797,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "OnTrigger", BindingFlags.Public | BindingFlags.Instance);
             try
             {
-                if (variants.Length != 67)
+                if (variants.Length != ExpandedSummoningCatalog.All.Count)
                     throw new InvalidOperationException(
-                        "Visual matrix did not resolve exactly 67 unique creatures.");
+                        "Visual matrix did not resolve exactly " +
+                        ExpandedSummoningCatalog.All.Count + " unique creatures.");
                 if (summonRuleMethod == null) throw new MissingMethodException(
                     typeof(RuleSummonUnit).FullName, "OnTrigger");
                 MethodInfo capturePostfix = typeof(RuntimeTestRunner).GetMethod(
@@ -18019,17 +18101,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool eagleVersusHumanoid = eagleHeight > 0.01f &&
                 mediumHumanoidHeight > 0.01f &&
                 eagleHeight < mediumHumanoidHeight;
+            int total = ExpandedSummoningCatalog.All.Count;
+            string totalPair = total + "/" + total;
             var assertions = new List<RuntimeTestAssertion>
             {
-                Assertion("expanded-summoning-visual-instances", "67/67",
+                Assertion("expanded-summoning-visual-instances", totalPair,
                     instantiated + "/" + variants.Length,
-                    variants.Length == 67 && instantiated == 67,
+                    variants.Length == total && instantiated == total,
                     "actual native summon views attached to exact unit data"),
-                Assertion("expanded-summoning-renderable-geometry", "67/67",
-                    renderable + "/" + variants.Length, renderable == 67,
+                Assertion("expanded-summoning-renderable-geometry", totalPair,
+                    renderable + "/" + variants.Length, renderable == total,
                     "runtime Renderer materials and nonzero combined bounds"),
-                Assertion("expanded-summoning-bounded-footprints", "67/67",
-                    bounded + "/" + variants.Length, bounded == 67,
+                Assertion("expanded-summoning-bounded-footprints", totalPair,
+                    bounded + "/" + variants.Length, bounded == total,
                     "corpulence, world scale, renderer bounds, and renderer-count limits"),
                 Assertion("expanded-summoning-relative-visual-scales",
                     string.Join(";", scalePairs), scaleDetail,
@@ -18050,19 +18134,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     eagleComparisonEvidence,
                     eagleComparisonEvidence.StartsWith("png=", StringComparison.Ordinal),
                     "supporting visual evidence rendered from the live Eagle and Medium fixture; mechanical proof remains bounds/state assertions"),
-                Assertion("expanded-summoning-selection-navigation", "67/67",
+                Assertion("expanded-summoning-selection-navigation", totalPair,
                     selectionReady + "/" + variants.Length,
-                    selectionReady == 67,
+                    selectionReady == total,
                     "selection colliders, torso origin, movement agent, and exact area membership"),
-                Assertion("expanded-summoning-locomotion-events", "67/67",
-                    locomotion + "/" + variants.Length, locomotion == 67,
+                Assertion("expanded-summoning-locomotion-events", totalPair,
+                    locomotion + "/" + variants.Length, locomotion == total,
                     "native movement-start/interruption and locomotion clip path"),
-                Assertion("expanded-summoning-attack-animations", "67/67",
-                    attack + "/" + variants.Length, attack == 67,
+                Assertion("expanded-summoning-attack-animations", totalPair,
+                    attack + "/" + variants.Length, attack == total,
                     "native main-hand or creature-special action handle execution"),
-                Assertion("expanded-summoning-hit-and-death", "67/67 each",
+                Assertion("expanded-summoning-hit-and-death", totalPair + " each",
                     "hit=" + hit + ";death=" + death,
-                    hit == 67 && death == 67,
+                    hit == total && death == total,
                     "native damage plus exact UnitEntityView hit/death callbacks"),
                 Assertion("expanded-summoning-projectile-origins",
                     "every detected ranged weapon has projectile and torso origin",
@@ -18077,9 +18161,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "the same attached state holds after the native locomotion, attack, hit and death paths have run",
                     pteranodonMotion, pteranodonMotionBound,
                     "the presentation contract re-measured after the animation exercises"),
-                Assertion("expanded-summoning-view-cleanup", "67/67 and exact snapshots",
+                Assertion("expanded-summoning-view-cleanup", totalPair + " and exact snapshots",
                     "detached=" + detachedViews + ";cleaned=" + cleaned,
-                    detachedViews == 67 && cleaned,
+                    detachedViews == total && cleaned,
                     "disposed unit/view detachment and exact party/global snapshots"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
@@ -19224,14 +19308,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "Talon2d6", all.OfType<BlueprintItemWeapon>().Single(value =>
                         value.name == "KMG_Summoning_Natural_Talon2d6").AssetGuid },
                     { "Gore2d8", "de42c58801037b84c9d992634ddd7220" },
-                    { "Slam2d6", "c2ce7bc3559b2024ea91ddf5bb321f0a" }
+                    { "Slam2d6", "c2ce7bc3559b2024ea91ddf5bb321f0a" },
+                    { "Hoof1d3", "085547b82eded104ba7e1870dd0563bf" },
+                    { "Hoof1d4", "b0e472a49ff2a294f93faa3ab757a4a5" },
+                    { "Greataxe", "6efea466862f014469cec6c3f2b85cb7" }
                 };
             IDictionary<int, string> armorGuids = new Dictionary<int, string> {
                 { 1, "10c7c5e3c5806bc4ca676e22d6fbf17e" },
                 { 2, "45a52ce762f637f4c80cc741c91f58b7" },
                 { 3, "f6e106931f95fec4eb995f0d0629fb84" },
                 { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
+                { 5, "7661741dbb9604842a642457456fd0e4" },
                 { 6, "987ba44303e88054c9504cb3083ba0c9" },
+                { 7, "e73864391ccf0894997928443a29d755" },
                 { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
                 { 9, "da6417809bdedfa468dd2fd0cc74be92" },
                 { 12, "0b2d92c6aac8093489dfdadf1e448280" },
@@ -19260,7 +19349,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "ImprovedCriticalClaw", "76a335b7d69691c4e8376f9379338778" },
                     { "PowerAttack", "9972f33f977fc724c838e59641b2fca5" },
                     { "IronWill", "175d1577bb6c9a04baf88eec99c66334" },
-                    { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" }
+                    { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" },
+                    { "Cleave", "d809b6c4ff2aaff4fa70d712a70f7d7b" }
                 };
             string[] expectedFacts = profile.Facts.Select(value =>
                 factGuids[value]).Concat(profile.NaturalArmor == 0
@@ -19269,14 +19359,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Concat(new[] { all.OfType<BlueprintFeature>().Single(value =>
                     value.name == "KMG_Summoning_Subtype_Extraplanar").AssetGuid })
                 .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            // Project-owned special traits (the Cyclops's Flash of Insight
+            // carrier) sit beside the profile's facts; the profile check is
+            // about the chassis and the special builder proves its own work.
             string[] actualFacts = (unit.AddFacts ??
-                Array.Empty<BlueprintUnitFact>()).Where(value => value != null)
+                Array.Empty<BlueprintUnitFact>()).Where(value => value != null &&
+                    !value.name.StartsWith("KMG_Summoning_Special_",
+                        StringComparison.Ordinal))
                 .Select(value => value.AssetGuid).OrderBy(value => value,
                     StringComparer.Ordinal).ToArray();
             return levels.Length == 1 && levels[0].Levels == profile.HitDice &&
                 levels[0].CharacterClass != null &&
                 levels[0].CharacterClass.AssetGuid ==
-                    "4cd1757a0eea7694ba5c933729a53920" &&
+                    ExpandedSummoningNaturalBuilder.HitDieClassGuid(
+                        profile.HitDieClass) &&
                 unit.Size == expectedSize && unit.Alignment == Alignment.TrueNeutral &&
                 unit.Strength == profile.Strength &&
                 unit.Dexterity == profile.Dexterity &&
@@ -19294,6 +19390,66 @@ namespace KingmakerGunslinger.RuntimeTesting
                         weaponGuids[value])) &&
                 actualFacts.SequenceEqual(expectedFacts) &&
                 unit.StartingInventory.Length == 0;
+        }
+
+        private static bool ExpandedSummoningCyclopsSpecialExact(
+            BlueprintScriptableObject[] all, out string observed)
+        {
+            BlueprintUnit unit = all.OfType<BlueprintUnit>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Unit_Cyclops");
+            BlueprintAbility flash = all.OfType<BlueprintAbility>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Special_Cyclops_FlashOfInsight");
+            BlueprintBuff state = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Special_Cyclops_FlashOfInsightState");
+            BlueprintBuff traits = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Special_Cyclops_CombatTraits");
+            BlueprintAbilityResource resource = all.OfType<BlueprintAbilityResource>()
+                .SingleOrDefault(value => value.name ==
+                    "KMG_Summoning_Special_Cyclops_FlashOfInsightResource");
+            if (unit == null || flash == null || state == null || traits == null ||
+                resource == null)
+            {
+                observed = "missing:" + (unit == null ? "unit;" : "") +
+                    (flash == null ? "ability;" : "") + (state == null ? "state;" : "") +
+                    (traits == null ? "traits;" : "") + (resource == null ? "resource" : "");
+                return false;
+            }
+            bool granted = unit.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
+                .Any(value => value.Abilities != null && value.Abilities.Contains(flash));
+            bool traitsOnUnit = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Contains(traits);
+            bool brain = unit.Brain != null &&
+                unit.Brain.name == "KMG_Summoning_Special_Cyclops_Brain" &&
+                unit.Brain.Actions != null && unit.Brain.Actions.OfType<
+                    Kingmaker.Controllers.Brain.Blueprints.BlueprintAiCastSpell>()
+                    .Any(value => value.Ability == flash);
+            AbilityResourceLogic cost = flash.ComponentsArray
+                .OfType<AbilityResourceLogic>().SingleOrDefault();
+            AbilityEffectRunAction effect = flash.ComponentsArray
+                .OfType<AbilityEffectRunAction>().SingleOrDefault();
+            ContextActionApplyBuff arm = effect == null || effect.Actions == null ?
+                null : effect.Actions.Actions.OfType<ContextActionApplyBuff>()
+                    .SingleOrDefault();
+            bool ability = flash.Type == AbilityType.Supernatural &&
+                flash.ActionType == UnitCommand.CommandType.Swift &&
+                flash.Range == AbilityRange.Personal && !flash.Hidden &&
+                cost != null && cost.RequiredResource == resource &&
+                cost.IsSpendResource && cost.Amount == 1 && arm != null &&
+                arm.Buff == state && arm.DurationValue != null &&
+                arm.DurationValue.Rate == DurationRate.Rounds;
+            bool armed = state.ComponentsArray.OfType<
+                    CyclopsFlashOfInsightComponent>().Count() == 1 &&
+                state.ComponentsArray.OfType<
+                    Kingmaker.Designers.Mechanics.Facts.RemoveBuffOnAttack>().Count() == 1;
+            bool resourceGrant = traits.ComponentsArray.OfType<
+                    Kingmaker.Designers.Mechanics.Facts.AddAbilityResources>()
+                .Any(value => value.Resource == resource);
+            bool icon = flash.Icon != null;
+            observed = "granted=" + granted + ";traits=" + traitsOnUnit + ";brain=" +
+                brain + ";ability=" + ability + ";armedState=" + armed +
+                ";resourceGrant=" + resourceGrant + ";icon=" + icon;
+            return granted && traitsOnUnit && brain && ability && armed &&
+                resourceGrant && icon;
         }
 
         private static bool ExpandedSummoningIsForbiddenReference(
@@ -19324,7 +19480,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Special_Pixie_IrresistibleDanceState" ||
                 blueprint.name ==
-                    "KMG_Summoning_Special_Pixie_CombatTraits")
+                    "KMG_Summoning_Special_Pixie_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Cyclops_FlashOfInsight" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Cyclops_FlashOfInsightState" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Cyclops_FlashOfInsightResource" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Cyclops_CombatTraits" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Cyclops_FlashOfInsightAi" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Cyclops_Brain")
                 return false;
             return SummonUnitSanitizationPolicy.IsForbiddenRuntimeMemberKey(
                 blueprint.name);

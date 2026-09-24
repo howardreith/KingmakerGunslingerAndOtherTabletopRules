@@ -66,10 +66,11 @@ namespace KingmakerGunslinger.Blueprints
                     manifestPath)); }
             catch (JsonException exception) { throw new InvalidDataException(
                 "Expanded Summoning icon manifest is invalid.", exception); }
+            int expected = SummonIconCatalog.All.Count;
             if (manifest == null || manifest.schemaVersion != 1 ||
-                manifest.count != 77 || manifest.icons == null ||
-                manifest.icons.Length != 77 || manifest.icons.Select(row =>
-                    row.key).Distinct(StringComparer.Ordinal).Count() != 77)
+                manifest.count != expected || manifest.icons == null ||
+                manifest.icons.Length != expected || manifest.icons.Select(row =>
+                    row.key).Distinct(StringComparer.Ordinal).Count() != expected)
                 throw new InvalidDataException(
                     "Expanded Summoning icon manifest contract failed: " +
                     "manifest=" + (manifest == null ? "null" : "present") +
@@ -112,7 +113,7 @@ namespace KingmakerGunslinger.Blueprints
                 sprite.hideFlags = HideFlags.DontUnloadUnusedAsset;
                 Textures.Add(texture); Icons.Add(spec.Key, sprite);
             }
-            if (Icons.Values.Distinct().Count() != 77)
+            if (Icons.Values.Distinct().Count() != expected)
                 throw new InvalidOperationException(
                     "Every summon icon concept requires one distinct sprite.");
         }

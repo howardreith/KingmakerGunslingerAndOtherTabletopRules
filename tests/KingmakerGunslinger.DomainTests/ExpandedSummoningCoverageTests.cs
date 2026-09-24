@@ -69,14 +69,14 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(67, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(71, ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(78,
+            Assertions.Equal(82,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures must be 67 project-owned plus 11 native wrappers.");
-            Assertions.Equal(77,
+                "Represented creatures must be 71 project-owned plus 11 native wrappers.");
+            Assertions.Equal(81,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "77 creatures are published somewhere; Dire Bat is registered only.");
+                "81 creatures are published somewhere; Dire Bat is registered only.");
             Assertions.False(
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Contains("dire-bat"),
                 "Dire Bat must not count as published.");
@@ -84,18 +84,19 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(67, notRepresented,
-                "67 ideal-roster creatures are not represented in the summon roster yet.");
+            Assertions.Equal(63, notRepresented,
+                "63 ideal-roster creatures are not represented in the summon roster yet.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");
         }
 
         /// <summary>
-        /// Frost Giant is the required regression case. Its unit exists and is
-        /// published at Summon Monster VIII through a retained wrapper, while
-        /// its Summon Nature's Ally VII placement is still only planned.
-        /// Neither half may be collapsed into the other.
+        /// Frost Giant is the required regression case. Its unit exists only
+        /// as a retained native wrapper; it was published at Summon Monster
+        /// VIII by Phase 0 and at Summon Nature's Ally VII by Phase 1 Sprint 3,
+        /// through wrappers that reuse the same native unit. Neither family
+        /// may be collapsed into the other and no second identity may appear.
         /// </summary>
         internal static void FrostGiantSplitsAcrossFamilies()
         {
@@ -104,28 +105,38 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(frostGiant != null, "Frost Giant must be in the roster.");
             Assertions.Equal(8, frostGiant.MonsterTier, "Frost Giant is Summon Monster VIII.");
             Assertions.Equal(7, frostGiant.NaturesAllyTier,
-                "Frost Giant is planned for Summon Nature's Ally VII.");
+                "Frost Giant is Summon Nature's Ally VII.");
 
-            // Its unit exists - it must never be classified as nonexistent.
+            // Its unit exists - it must never be classified as nonexistent,
+            // and it must never become project-owned as well.
             Assertions.Equal(SummonUnitProvenance.NativeWrapper,
                 ExpandedSummoningCoveragePolicy.Provenance("frost-giant"),
                 "Frost Giant's unit exists as a retained native wrapper.");
+            Assertions.False(ExpandedSummoningCatalog.All.Any(value =>
+                    value.Key == "frost-giant"),
+                "Frost Giant must not gain a project-owned duplicate identity.");
 
-            // Published in one family...
+            // Published in both families, each through its own wrappers.
             Assertions.Equal(SummonFamilyCoverage.Published,
                 ExpandedSummoningCoveragePolicy.Coverage("frost-giant",
                     SummonFamily.Monster, frostGiant.MonsterTier),
-                "Frost Giant is already selectable in Summon Monster.");
-
-            // ...and only planned in the other. Claiming this shipped would be
-            // the mirror-image error to claiming the unit does not exist.
-            Assertions.Equal(SummonFamilyCoverage.Planned,
+                "Frost Giant is selectable in Summon Monster.");
+            Assertions.Equal(SummonFamilyCoverage.Published,
                 ExpandedSummoningCoveragePolicy.Coverage("frost-giant",
                     SummonFamily.NaturesAlly, frostGiant.NaturesAllyTier),
-                "Frost Giant's Nature's Ally placement is not shipped.");
-            Assertions.False(ExpandedSummoningCoveragePolicy.HasNativeWrapper(
+                "Frost Giant is selectable in Summon Nature's Ally since Sprint 3.");
+            Assertions.True(ExpandedSummoningCoveragePolicy.HasNativeWrapper(
                     "frost-giant", SummonFamily.NaturesAlly),
-                "No Nature's Ally wrapper exists for Frost Giant.");
+                "The Nature's Ally Frost Giant wrappers exist.");
+
+            // One native unit behind every wrapper in both families.
+            string[] units = SummonNativeExpansionCatalog.All
+                .Where(value => value.CreatureKey == "FrostGiant")
+                .Select(value => value.UnitGuid).Distinct().ToArray();
+            Assertions.Equal(1, units.Length,
+                "Every Frost Giant wrapper must reuse the one retained native unit.");
+            Assertions.Equal("590cd3d5e76fdc649a5f97bc984cd3c4", units[0],
+                "Frost Giant's retained native unit changed.");
         }
 
         /// <summary>
@@ -188,7 +199,7 @@ namespace KingmakerGunslinger.DomainTests
             SummonNativeExpansionCatalog.Validate();
             SummonVisibilityCatalog.Validate();
 
-            Assertions.Equal(26, SummonNativeExpansionCatalog.All.Count,
+            Assertions.Equal(29, SummonNativeExpansionCatalog.All.Count,
                 "Native wrapper placements must be preserved exactly.");
             foreach (SummonNativeExpansionSpec wrapper in SummonNativeExpansionCatalog.All)
             {
@@ -199,10 +210,10 @@ namespace KingmakerGunslinger.DomainTests
             }
 
             // The visible surface is unchanged by a bookkeeping correction.
-            Assertions.Equal(693,
+            Assertions.Equal(741,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
-                "Correcting coverage must not change the shipped visible surface.");
+                "Coverage derivation must not change the shipped visible surface.");
         }
     }
 }

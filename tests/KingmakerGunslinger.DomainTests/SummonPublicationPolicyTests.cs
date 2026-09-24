@@ -50,7 +50,7 @@ namespace KingmakerGunslinger.DomainTests
                     "6c7915c9dc494849918e958618f61db0")
                     .IsSemanticDuplicate,
                 "Native SM I preservation child must reconcile to KMG Dog.");
-            Assertions.Equal(26, SummonNativeExpansionCatalog.All.Count,
+            Assertions.Equal(29, SummonNativeExpansionCatalog.All.Count,
                 "Native individual-option expansion count changed.");
             Assertions.True(SummonNativeExpansionCatalog.Replaces(
                     SummonFamily.Monster, 8,
@@ -74,7 +74,7 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(667,
+            Assertions.Equal(712,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
@@ -114,7 +114,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(77, SummonIconCatalog.All.Count,
+            Assertions.Equal(81, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Smilodon", SummonIconCatalog.For("dire-tiger")
                 .DisplayName, "Smilodon icon identity changed.");

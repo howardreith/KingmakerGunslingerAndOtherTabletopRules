@@ -30,7 +30,21 @@ satisfied) is the standing reason.
 
 ### Sprint 3 - Native Publication Pack I
 
-Not started.
+| Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
+|---|---|---|---|---|---|
+| Pony | SM I (templated), SNA I | `PonySummoned` `3f95557fc806db741b500a5735990841`, dedicated summon | Animal 2 HD, Medium, 13/13/14/2/11/4, 40 ft, two 1d3 hooves (native `SmallHoof1d3`) | Endurance/Run omitted; hooves primary as on the native summon | implemented; runtime qualification in progress |
+| Horse | SM II (templated), SNA II | `HorseSummoned` `5bb9579fdb2b26b48bb10d61c81cfdfb`, dedicated summon | Animal 2 HD, Large, 16/14/17/2/13/7, 50 ft, two 1d4 hooves (native `Hoof1d4`), reduced reach | Endurance/Run omitted | implemented; runtime qualification in progress |
+| Owlbear | SNA IV | `CR8_OwlbearStandard` `d6e0acbdbdb56114898922063ae2cba0`, sanitized body | Magical beast 5 HD, Large, 19/12/18/2/12/10, 30 ft, NA +5, bite 1d6, two 1d6 claws, Improved Initiative, Great Fortitude, Skill Focus (Perception), reduced reach | claw grab deferred to Sprint 4's shared grapple lifecycle | implemented; runtime qualification in progress |
+| Cyclops | SNA V | `CR5_CyclopStandard` `124f1c45ef24d654e9cd420fe84f7f36`, sanitized body | Humanoid 10 HD, Large, 21/8/15/10/13/8, 30 ft, NA +7, greataxe (Large 3d6), Ferocity, Power Attack, Cleave | Flash of Insight bounded (one swift use per summoning: next attack roll auto-hit and threat; confirmation ordinary); hide armor, crossbow, Alertness, Great Cleave, Improved Bull Rush omitted | implemented; runtime qualification in progress |
+| Frost Giant | SNA VII / VIII (1d3) / IX (1d4+1) | retained native unit `590cd3d5e76fdc649a5f97bc984cd3c4`, no new identity | native wrappers carved from the Mastodon options (`6d8d59aa…`, `256739c1…`, `9bd8cb61…`), spawn unit replaced | identity reused (charter D-01); SM VIII wrapper unchanged | implemented; runtime qualification in progress |
+
+Placements propagate to the 1d3 / 1d4+1 tiers by construction (45 new
+logical placements, 34 template executions). Ledger: 92 identities appended
+and active (`blueprints/blueprints.json`, entries 1957-2048), pinned by
+`tools/validate_expanded_summoning_phase1.py`. Icons: four Blender
+procedural renders (see the state file). Tests: five Sprint 3 domain
+regressions; suite 1779/1779. Runtime evidence: recorded in the state file
+as the guarded batches complete.
 
 ### Sprint 4 - Native Publication Pack II
 
