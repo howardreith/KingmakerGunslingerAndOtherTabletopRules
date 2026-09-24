@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.EntitySystem.Entities;
@@ -453,6 +454,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "KMG FCB Respec " + label);
                     if (unit.Descriptor.Progression.CharacterLevel == 0)
                     {
+                        // Class choices first (the order the advanced lane proves).
+                        if (firstLevel != null)
+                            firstLevel(controller);
                         if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, leveled, row) == null)
                             throw new InvalidOperationException("the favored " + leveled.name +
                                 " progression is unavailable");
@@ -465,8 +469,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (state == null || !FavoredClassLevelUpHarness.Select(controller, state, mostlyHumanChoice))
                                 throw new InvalidOperationException("the Mostly Human choice could not be taken");
                         }
-                        if (firstLevel != null)
-                            firstLevel(controller);
                     }
                     if (wanted != null)
                         PreferFcbChoices(controller, reserved, wanted, preferred);
@@ -479,7 +481,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (FavoredClassLevelUpHarness.Item(controller, reward, pick) == null ? "not listed" :
                                 "listed but not selectable")) + "; race " + (controller.Preview.Progression.Race == null ?
                             "none" : controller.Preview.Progression.Race.name) + "; preferred " +
-                            string.Join(",", preferred.Select(value => (string)value).ToArray()) + ")");
+                            string.Join(",", preferred.Select(value => (string)value).ToArray()) + "; " +
+                            (reward == null ? "no prerequisites checked" : string.Join(",", (pick.ComponentsArray ??
+                                new BlueprintComponent[0]).OfType<Prerequisite>().Select(value => value.GetType().Name +
+                                "=" + value.Check(reward, controller.Preview, controller.State)).ToArray())) + ")");
                     if (wanted != null)
                         PreferFcbChoices(controller, reserved, wanted, preferred);
                     FavoredClassLevelUpHarness.FillOthers(controller, reserved);
