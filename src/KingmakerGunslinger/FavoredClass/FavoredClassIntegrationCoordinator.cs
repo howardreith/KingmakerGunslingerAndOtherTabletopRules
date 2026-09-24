@@ -26,6 +26,7 @@ namespace KingmakerGunslinger.FavoredClass
         private static int _pendingRetries;
         private static FavoredClassPublication _publication;
         private static FavoredClassHostHandles _host;
+        private static FavoredClassSettingsResult _settings;
 
         internal static FavoredClassPublication Publication
         {
@@ -37,6 +38,12 @@ namespace KingmakerGunslinger.FavoredClass
             get { lock (Gate) return _host; }
         }
 
+        /// <summary>The settings resolution the effective profile came from.</summary>
+        internal static FavoredClassSettingsResult Settings
+        {
+            get { lock (Gate) return _settings; }
+        }
+
         internal static void AttachFirstUpdate(ModContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
@@ -46,6 +53,16 @@ namespace KingmakerGunslinger.FavoredClass
                 if (_attached || _publication != null) return;
                 _attached = true;
             }
+            // Restart-required: the optional FavoredClassIntegration.json is
+            // read once, before anything is published, and never written.
+            FavoredClassSettingsResult settings = FavoredClassSettings.Load(context.ModEntry.Path);
+            FavoredClassRuntime.ConfigureProfile(settings.Profile);
+            lock (Gate) _settings = settings;
+            if (settings.Source == FavoredClassSettingsSource.Invalid)
+                context.Logger.Warning(Phase, "settings.invalid", settings.ToString() +
+                    ";using=charter-defaults");
+            else
+                context.Logger.Info(Phase, "settings.loaded", settings.ToString());
             context.ModEntry.OnUpdate += FirstUpdate;
             context.Logger.Info(Phase, "late-publication.attached",
                 "phase=first-umm-update-after-LoadDictionary-postfix-chain");

@@ -40,6 +40,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "the loaded Favored Class and Call of the Wild assemblies are exactly the qualified files (SHA-256, MVID, member shapes and method fingerprints)",
                 Describe(binary, binaryFailures), binaryFailures.Count == 0,
                 "reflection over the live UMM entries and loaded assemblies"));
+            // L04/L05: the effective profile is exactly the one resolved from
+            // the optional restart-required settings file when the
+            // integration attached (the charter defaults when it is absent).
+            FavoredClassSettingsResult settings = FavoredClassIntegrationCoordinator.Settings;
+            FavoredClassProfileState effective = FavoredClassRuntime.Profile;
+            bool settingsFilePresent = System.IO.File.Exists(System.IO.Path.Combine(
+                _context.ModEntry.Path, FavoredClassSettings.FileName));
+            evidence["settings"] = new JObject
+            {
+                ["file"] = FavoredClassSettings.FileName,
+                ["filePresent"] = settingsFilePresent,
+                ["resolution"] = settings == null ? null : settings.ToString(),
+                ["effectiveProfile"] = effective.ToString()
+            };
+            assertions.Add(Assertion("fcb-settings-profile",
+                "the effective profile is the one resolved once from the optional FavoredClassIntegration.json at attach (charter defaults when absent; a present file is read, never written)",
+                (settings == null ? "unresolved" : settings.ToString()) + ";filePresent=" + settingsFilePresent +
+                    ";effective=" + effective,
+                settings != null && ReferenceEquals(settings.Profile, effective) &&
+                    (settingsFilePresent ? settings.Source != FavoredClassSettingsSource.Defaults
+                        : settings.Source == FavoredClassSettingsSource.Defaults),
+                "FavoredClassIntegrationCoordinator.Settings and FavoredClassRuntime.Profile"));
             var readinessFailures = new List<string>();
             JObject readiness = DescribeFcbReadiness(host, readinessFailures);
             evidence["readiness"] = readiness;
