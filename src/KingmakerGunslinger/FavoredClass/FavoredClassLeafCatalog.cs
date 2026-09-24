@@ -94,11 +94,18 @@ namespace KingmakerGunslinger.FavoredClass
         /// effect), e.g. fire powers only through the Ifrit row.
         /// </param>
         internal FavoredClassTargetSpec(string key, string title, string stepText, string[] rowIds)
+            : this(key, title, stepText, rowIds, null)
+        {
+        }
+
+        /// <param name="note">A target-specific tooltip sentence (null when none).</param>
+        internal FavoredClassTargetSpec(string key, string title, string stepText, string[] rowIds, string note)
         {
             Key = key;
             Title = title;
             StepText = stepText;
             RowIds = rowIds;
+            Note = note;
         }
 
         /// <summary>Stable symbol segment; for firearms, the FirearmKind name.</summary>
@@ -106,6 +113,7 @@ namespace KingmakerGunslinger.FavoredClass
         internal string Title { get; private set; }
         internal string StepText { get; private set; }
         internal string[] RowIds { get; private set; }
+        internal string Note { get; private set; }
     }
 
     /// <summary>
@@ -192,7 +200,22 @@ namespace KingmakerGunslinger.FavoredClass
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectSelectedBloodlinePower,
                 "Sorcerer.BloodlinePower", "Bloodline Power", null,
                 "Only the chosen power's own level-based values change: Elemental Ray's damage bonus, and Elemental Blast's damage dice, save DC and caster level checks. You must already have the power. It never grants a power early, and never changes other powers, spells, spell slots, other caster level checks, BAB, saves or Elemental Resistance's 9th-level step. The efreeti and djinni bloodlines do not exist in this game."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectSelectedRevelation,
+                "Oracle.Revelation", "Revelation", null,
+                "The chosen revelation's own values that it computes from oracle level (damage dice, durations, bonuses, uses per day, save DCs and caster level) use your oracle level plus the earned steps. You must already have the revelation. Levels at which it gains a new ability or effect, and single-level extra uses, still follow your actual oracle level; it never satisfies a level prerequisite and never changes other revelations, spells, spell slots, BAB or saves. The Oracle is provided by Call of the Wild."),
         };
+
+        /// <summary>
+        /// I06/S04 revelation targets: every revelation the read-only audit of
+        /// the installed provider marked implementable (the generated
+        /// FavoredClassRevelationManifest; docs/FAVORED-CLASS-TARGET-MANIFEST.md).
+        /// </summary>
+        private static readonly FavoredClassTargetSpec[] RevelationTargets = FavoredClassRevelationManifest.All
+            .Select(target => new FavoredClassTargetSpec(target.Key, RevelationTitle(target),
+                "+1 effective oracle level for " + RevelationTitle(target), null,
+                target.HeldBack == null ? null :
+                    "These still follow your actual oracle level: " + target.HeldBack + "."))
+            .ToArray();
 
         /// <summary>
         /// I08/S06 bloodline power targets with an implemented level-scaled
@@ -304,6 +327,8 @@ namespace KingmakerGunslinger.FavoredClass
                     return FirearmTargets;
                 case FavoredClassTargetKind.BloodlinePower:
                     return BloodlinePowerTargets;
+                case FavoredClassTargetKind.Revelation:
+                    return RevelationTargets;
                 default:
                     throw new InvalidOperationException(effect.Id +
                         " needs a qualified target manifest before it can be published.");
@@ -346,11 +371,7 @@ namespace KingmakerGunslinger.FavoredClass
                     " The bonus is limited to {0} steps; this choice closes when the limit is reached.",
                     rate.CapSteps.Value)
                 : string.Empty;
-            string counter = target == null
-                ? string.Empty
-                : effect.TargetKind == FavoredClassTargetKind.FirearmType
-                    ? " Each firearm type keeps its own separate count of investments."
-                    : " Each bloodline power keeps its own separate count of investments.";
+            string counter = target == null ? string.Empty : CounterText(effect.TargetKind);
             string pick;
             if (!rate.HasPartial)
                 pick = "Each selection grants " + step + ".";
@@ -371,11 +392,33 @@ namespace KingmakerGunslinger.FavoredClass
                     "This selection is one investment toward the next {0}; every {1} investments complete a step. A partial investment grants nothing by itself, and its rank counts every partial investment made.",
                     step, OrdinalWord(rate.Divisor));
             string conditions = family.Conditions == null ? string.Empty : " " + family.Conditions;
+            string note = target == null || target.Note == null ? string.Empty : " " + target.Note;
             string adaptation = effect.OmittedPortion == null
                 ? string.Empty
                 : " CRPG adaptation: " + effect.OmittedPortion;
             return "Favored class bonus (" + routes + "): " + effect.Summary + " " + pick + counter +
-                cap + conditions + adaptation;
+                cap + conditions + note + adaptation;
+        }
+
+        private static string CounterText(FavoredClassTargetKind kind)
+        {
+            switch (kind)
+            {
+                case FavoredClassTargetKind.FirearmType:
+                    return " Each firearm type keeps its own separate count of investments.";
+                case FavoredClassTargetKind.Revelation:
+                    return " Each revelation keeps its own separate count of investments.";
+                default:
+                    return " Each bloodline power keeps its own separate count of investments.";
+            }
+        }
+
+        /// <summary>A revelation's title, with its mystery where two mysteries share the name.</summary>
+        private static string RevelationTitle(FavoredClassRevelationTarget target)
+        {
+            bool shared = FavoredClassRevelationManifest.All.Count(value =>
+                string.Equals(value.Title, target.Title, StringComparison.Ordinal)) > 1;
+            return shared ? target.Title + " (" + target.Mystery + ")" : target.Title;
         }
 
         private static string RouteText(FavoredClassEffectSpec effect)

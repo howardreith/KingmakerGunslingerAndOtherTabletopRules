@@ -224,6 +224,10 @@
     <Compile Include="FavoredClass\Mechanics\FavoredClassEarnedStepsProperty.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassPetNaturalArmor.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassSelectedPowerLevel.cs" />
+    <Compile Include="FavoredClass\FavoredClassRevelationManifest.cs" />
+    <Compile Include="FavoredClass\FavoredClassRevelationScopes.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassSelectedRevelationLevel.cs" />
+    <Compile Include="FavoredClass\Hooks\FavoredClassRevelationRankPatch.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassHostRaceBridge.cs" />
     <Compile Include="ElementalRaces\ElementalMostlyHumanPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalMostlyHumanBlueprints.cs" />
@@ -1137,6 +1141,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassElemental.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassMostlyHuman.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassAdvanced.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassOracle.cs" />
     <Compile Include="RuntimeTesting\RapidReloadGateEvidenceRules.cs" />
     <Compile Include="RuntimeTesting\RapidReloadVisitCleanupRules.cs" />
     <Compile Include="RuntimeTesting\FirearmHigherFeatRootsRules.cs" />

@@ -16,7 +16,8 @@ namespace KingmakerGunslinger.DomainTests
             "observe-favored-class-host-state",
             "disposable-favored-class-elemental-core",
             "disposable-favored-class-mostly-human",
-            "disposable-favored-class-elemental-advanced"
+            "disposable-favored-class-elemental-advanced",
+            "disposable-favored-class-oracle-revelations"
         };
 
         private static string Read(params string[] parts)
@@ -76,6 +77,13 @@ namespace KingmakerGunslinger.DomainTests
                         !text.Contains("[HarmonyPatch") && !text.Contains("ZFavoredClass") &&
                         !text.Contains("CallOfTheWild"),
                         name + " must patch only the adapter-resolved host race prerequisite.");
+                else if (hook && name == "FavoredClassRevelationRankPatch.cs")
+                    // Names the provider only to order its postfix after the
+                    // provider's own assignment of the same native value.
+                    Assertions.True(text.Contains("[HarmonyPatch(typeof(ContextRankConfig), \"GetBaseValue\")]") &&
+                        !text.Contains("ZFavoredClass") &&
+                        !text.Replace("[HarmonyAfter(\"CallOfTheWild\")]", string.Empty).Contains("CallOfTheWild"),
+                        name + " must patch only the native rank base value, ordered after the provider.");
                 else if (hook)
                     Assertions.True(text.Contains("[HarmonyPatch(typeof(") && !text.Contains("ZFavoredClass") &&
                         !text.Contains("CallOfTheWild"), name + " must patch a native game type only.");

@@ -47,8 +47,9 @@ namespace KingmakerGunslinger.FavoredClass
         private static HashSet<string> _unavailableEffects = new HashSet<string>(StringComparer.Ordinal);
 
         /// <summary>
-        /// Effects withheld from publication because their exact native read
-        /// point failed validation in this process (only that counter).
+        /// Effects (or "effect|target" counters) withheld from publication
+        /// because their exact native read point failed validation or was not
+        /// found in this process (only that counter).
         /// </summary>
         internal static void SetUnavailableEffects(IEnumerable<string> effectIds)
         {
@@ -60,6 +61,21 @@ namespace KingmakerGunslinger.FavoredClass
         {
             lock (Gate)
                 return effectId != null && _unavailableEffects.Contains(effectId);
+        }
+
+        /// <summary>The key that withholds one target counter of an effect.</summary>
+        internal static string TargetKey(string effectId, string targetKey)
+        {
+            return effectId + "|" + targetKey;
+        }
+
+        /// <summary>Whether one target's native read points were not found in this process.</summary>
+        internal static bool IsTargetUnavailable(string effectId, string targetKey)
+        {
+            if (effectId == null || targetKey == null)
+                return false;
+            lock (Gate)
+                return _unavailableEffects.Contains(TargetKey(effectId, targetKey));
         }
 
         internal static void ConfigureMostlyHumanIdentity(BlueprintFeature identity)

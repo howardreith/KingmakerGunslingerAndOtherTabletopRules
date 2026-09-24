@@ -48,7 +48,10 @@ namespace KingmakerGunslinger.DomainTests
                 Tuple.Create(FavoredClassCatalog.EffectSelectedBloodlinePower, "FireBlast", 2, 10),
                 Tuple.Create(FavoredClassCatalog.EffectSelectedBloodlinePower, "AirRay", 2, 10),
                 Tuple.Create(FavoredClassCatalog.EffectSelectedBloodlinePower, "AirBlast", 2, 10),
-            };
+            }.Concat(
+                // Selected revelations (1/6, uncapped): one counter per manifest target.
+                FavoredClassRevelationManifest.All.Select(target => Tuple.Create(
+                    FavoredClassCatalog.EffectSelectedRevelation, target.Key, 3, 17))).ToArray();
             IList<FavoredClassLeafSpec> leaves = FavoredClassLeafCatalog.AllLeaves();
             Assertions.Equal(expected.Sum(counter => counter.Item4 > 0 ? 2 : 1), leaves.Count,
                 "Published counter leaf count.");
