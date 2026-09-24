@@ -7,6 +7,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.UnitLogic;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.FavoredClass;
 using Newtonsoft.Json.Linq;
@@ -16,10 +17,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        // H01/H02/H04 across compatibility profiles: the integration state
-        // follows the actual host presence exactly; owned leaves always stay
-        // registered for saved investments; without a ready host no owned
-        // leaf reaches any selection; the core mod is unaffected.
+        // H01/H02/H04 and L04 across compatibility and settings profiles:
+        // the integration state follows the actual host presence and the
+        // restart-required integration control exactly; owned identities
+        // always stay registered for saved investments; without a ready,
+        // enabled host no owned leaf reaches any selection; owned mechanics
+        // apply only while the integration is enabled; the core mod is
+        // unaffected.
         private RuntimeTestResult RunFavoredClassHostState()
         {
             var assertions = new List<RuntimeTestAssertion>();
@@ -42,12 +46,17 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             FavoredClassIntegrationStatus status = FavoredClassIntegrationStatusRegistry.Current;
             evidence["status"] = status.ToString();
-            FavoredClassIntegrationAvailability expected = host == null
-                ? FavoredClassIntegrationAvailability.HostAbsent
+            FavoredClassProfileState profile = FavoredClassRuntime.Profile;
+            evidence["profile"] = profile.ToString();
+            evidence["settings"] = FavoredClassIntegrationCoordinator.Settings == null ? null :
+                FavoredClassIntegrationCoordinator.Settings.ToString();
+            FavoredClassIntegrationAvailability expected = !profile.IntegrationEnabled
+                ? FavoredClassIntegrationAvailability.IntegrationDisabled
+                : host == null ? FavoredClassIntegrationAvailability.HostAbsent
                 : !host.Enabled ? FavoredClassIntegrationAvailability.HostDisabled
                 : FavoredClassIntegrationAvailability.Published;
             assertions.Add(Assertion("fcb-host-state-matches-environment",
-                "the integration availability is exactly HostAbsent without a Favored Class UMM entry, HostDisabled for a disabled entry, and Published for the enabled qualified host",
+                "the integration availability is exactly IntegrationDisabled when the settings disable it, otherwise HostAbsent without a Favored Class UMM entry, HostDisabled for a disabled entry, and Published for the enabled qualified host",
                 "expected=" + expected + ";observed=" + status.Availability + ";detail=" + status.Detail,
                 status.Availability == expected, "UMM modEntries and FavoredClassIntegrationStatusRegistry"));
 
@@ -61,12 +70,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     BlueprintScriptableObject blueprint;
                     BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(identity.Guid, out blueprint);
-                    if (blueprint is BlueprintFeature) resolved++;
+                    if (blueprint != null && blueprint.GetType().Name == identity.PlannedType) resolved++;
                     else missing.Add(identity.Symbol);
                 }
             evidence["registeredIdentities"] = resolved + "/" + FavoredClassIdentityCatalog.IdentityCount;
             assertions.Add(Assertion("fcb-owned-leaves-registered",
-                "every committed favored-class identity resolves as a BlueprintFeature whatever the host state, so saved investments load",
+                "every committed favored-class identity resolves with its planned type whatever the host or settings state, so saved investments load",
                 evidence["registeredIdentities"] + ";missing=" + string.Join(",", missing.ToArray()),
                 missing.Count == 0, "LibraryScriptableObject.BlueprintsByAssetId"));
 
@@ -84,14 +93,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     publishedIn.Add(selection.name + "=" + count);
             }
             evidence["selectionsContainingOwnedLeaves"] = new JArray(publishedIn);
+            FavoredClassHostHandles handles = FavoredClassIntegrationCoordinator.Host;
+            HashSet<string> hostSelections = new HashSet<string>(handles == null ? new string[0] :
+                handles.BonusSelections.Where(value => value.Value != null).Select(value => value.Value.name),
+                StringComparer.Ordinal);
             bool publicationConsistent = expected == FavoredClassIntegrationAvailability.Published
-                ? publishedIn.Count == 1 && publishedIn[0].StartsWith("FavoredClassKMG_Gunslinger_", StringComparison.Ordinal)
+                ? publishedIn.Count > 0 && publishedIn.Any(value =>
+                        value.StartsWith("FavoredClassKMG_Gunslinger_", StringComparison.Ordinal)) &&
+                    publishedIn.All(value => hostSelections.Contains(value.Substring(0, value.LastIndexOf('='))))
                 : publishedIn.Count == 0;
             assertions.Add(Assertion("fcb-publication-follows-host",
-                "without a ready host no owned leaf appears in any selection; with the host only the host's Gunslinger bonus selection holds them",
+                "without a ready, enabled host no owned leaf appears in any selection; with it, owned leaves appear only in the host's per-class bonus selections, including the Gunslinger's",
                 string.Join(",", publishedIn.ToArray()), publicationConsistent,
                 "every BlueprintFeatureSelection AllFeatures/Features in the library"));
 
+            MechanicsFollowIntegrationProbe(evidence, assertions, leaves, profile);
             GunslingerClassBlueprintSetProbe(evidence, assertions);
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
                 _context.ModEntry.Info.Version,
@@ -102,6 +118,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
             result.EvidenceFiles.Add(evidencePath);
             return result;
+        }
+
+        // L04: an already-earned choice keeps its identity and rank; its
+        // owned numerical effect applies while the integration is enabled
+        // and is suppressed (not refunded) while it is disabled.
+        private void MechanicsFollowIntegrationProbe(JObject evidence, List<RuntimeTestAssertion> assertions,
+            FavoredClassBlueprintSet leaves, FavoredClassProfileState profile)
+        {
+            var row = new JObject();
+            bool pass = false;
+            var units = new List<Kingmaker.EntitySystem.Entities.UnitEntityData>();
+            try
+            {
+                var gunslinger = BlueprintBootstrap.GunslingerClass;
+                FavoredClassLeafPair grit = leaves == null ? null : leaves.Pair(FavoredClassCatalog.EffectGrit, null);
+                if (gunslinger != null && grit != null)
+                {
+                    Func<Kingmaker.EntitySystem.Entities.UnitEntityData> create = () =>
+                    {
+                        var unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                            BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                        units.Add(unit);
+                        unit.Descriptor.Stats.Wisdom.BaseValue = 14;
+                        unit.Descriptor.AddFact(gunslinger.Grit.Feature);
+                        return unit;
+                    };
+                    var control = create();
+                    var invested = create();
+                    int rank = GrantFavoredClassRanks(invested, grit.Full, 2);
+                    int delta = gunslinger.Grit.Resource.GetMaxAmount(invested.Descriptor) -
+                        gunslinger.Grit.Resource.GetMaxAmount(control.Descriptor);
+                    int expectedDelta = profile.IntegrationEnabled ? 2 : 0;
+                    row["mechanicsEnabled"] = FavoredClassRuntime.MechanicsEnabled;
+                    row["savedRank"] = rank;
+                    row["gritMaximumDelta"] = delta;
+                    row["expectedDelta"] = expectedDelta;
+                    pass = rank == 2 && delta == expectedDelta &&
+                        FavoredClassRuntime.MechanicsEnabled == profile.IntegrationEnabled;
+                }
+                else
+                    row["unavailable"] = "gunslinger or grit counter not registered";
+            }
+            catch (Exception exception)
+            {
+                row["exception"] = exception.GetType().Name + ": " + exception.Message;
+            }
+            finally
+            {
+                foreach (var unit in units)
+                    try { unit.Dispose(); } catch (Exception) { }
+            }
+            evidence["mechanicsFollowIntegration"] = row;
+            assertions.Add(Assertion("fcb-mechanics-follow-integration",
+                "an earned counter keeps its rank; its owned effect (two grit steps) applies while the integration is enabled and is suppressed, not refunded, while it is disabled",
+                row.ToString(Newtonsoft.Json.Formatting.None), pass,
+                "ChargenUnit with the native grit feature; BlueprintAbilityResource.GetMaxAmount"));
         }
 
         private void GunslingerClassBlueprintSetProbe(JObject evidence, List<RuntimeTestAssertion> assertions)
