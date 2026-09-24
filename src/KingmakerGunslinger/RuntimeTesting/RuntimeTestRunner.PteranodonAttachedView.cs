@@ -91,10 +91,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private static bool IsPteranodonAttached(string renderers)
         {
-            return renderers.StartsWith("mesh=" +
-                ExpandedSummoningPteranodonViewPatch.CustomVisualName + ";material=" +
-                ExpandedSummoningPteranodonViewPatch.CustomVisualName + ";bones=46;",
-                StringComparison.Ordinal);
+            // Once the unit lives across frames the game's fader takes the
+            // renderer's material instance, which Unity names with an
+            // " (Instance)" suffix. The instance is cloned from the swapped
+            // material and carries the painting, so it is the same visual.
+            string name = ExpandedSummoningPteranodonViewPatch.CustomVisualName;
+            return renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    ";bones=46;", StringComparison.Ordinal) ||
+                renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    " (Instance);bones=46;", StringComparison.Ordinal);
         }
 
         /// <summary>
