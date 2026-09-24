@@ -430,6 +430,42 @@
       "displayName": "Purple Worm",
       "subjectPrompt": "A gargantuan purple worm rearing from the lower right, banded segmented body curving up to a round maw that faces the viewer, lips and two rings of teeth around a black throat, a stinger tail behind, dark violet radial backdrop.",
       "generator": "blender-procedural"
+    },
+    {
+      "key": "dust-mephit",
+      "displayName": "Dust Mephit",
+      "subjectPrompt": "A small horned, bat-winged mephit bust of dry tan dust facing the viewer, mouth open mid-breath with a spray of pale motes, dusty ochre radial backdrop.",
+      "generator": "blender-procedural"
+    },
+    {
+      "key": "ice-mephit",
+      "displayName": "Ice Mephit",
+      "subjectPrompt": "A small horned, bat-winged mephit bust of pale blue ice, icicle crystals on its shoulders, mouth open with a plume of frost motes, deep blue radial backdrop.",
+      "generator": "blender-procedural"
+    },
+    {
+      "key": "magma-mephit",
+      "displayName": "Magma Mephit",
+      "subjectPrompt": "A small horned, bat-winged mephit bust of black crust cracked with glowing orange magma, embers on its shoulders, mouth open with a spray of fire motes, dark red radial backdrop.",
+      "generator": "blender-procedural"
+    },
+    {
+      "key": "ooze-mephit",
+      "displayName": "Ooze Mephit",
+      "subjectPrompt": "A small horned, bat-winged mephit bust of dripping green-brown ooze, slime running off its shoulders, mouth open with a spray of acid motes, murky green radial backdrop.",
+      "generator": "blender-procedural"
+    },
+    {
+      "key": "salt-mephit",
+      "displayName": "Salt Mephit",
+      "subjectPrompt": "A small horned, bat-winged mephit bust of white crystalline salt, cubic crystals on its shoulders, mouth open with a spray of white motes, grey radial backdrop.",
+      "generator": "blender-procedural"
+    },
+    {
+      "key": "steam-mephit",
+      "displayName": "Steam Mephit",
+      "subjectPrompt": "A small horned, bat-winged mephit bust of pale grey vapour with a warm inner glow, mouth open with a plume of steam motes, slate-grey radial backdrop.",
+      "generator": "blender-procedural"
     }
   ]
 }

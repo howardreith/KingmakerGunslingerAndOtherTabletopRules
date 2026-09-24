@@ -9,6 +9,7 @@ using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Brain.Blueprints;
+using Kingmaker.Designers.EventConditionActionSystem.Actions;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.ElementsSystem;
@@ -29,6 +30,7 @@ using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
+using Kingmaker.UnitLogic.Mechanics.Conditions;
 using Kingmaker.Utility;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Summoning;
@@ -142,6 +144,44 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.PurpleWorm.Swallowed";
         private const string NativePurpleWormSwallowedGuid =
             "368d1df7c1d0267459a584bf23ccadc8";
+        // Sprint 5: exact identities from the deep native-donor audits
+        // (20260924T2148497908566Z and 20260924T2214377611148Z).
+        internal const string SickenedBuffGuid = "4e42460798665fd4cb9173ffa7ada323";
+        private const string ColdVulnerabilityGuid = "b8bbe8f713da9ad44a899aa551ca6b5b";
+        private const string FireVulnerabilityGuid = "8e934134fec60ab4c8972c85a7b62f89";
+        private const string EarthSubtypeGuid = "e147258e5b7c40643893d80c9f2816e8";
+        private const string WaterSubtypeGuid = "bf7ee56ec9e43c14fa17727997e91993";
+        private const string AcidImmunityGuid = "c994f1a0dfce1c54f94420588da61617";
+        private const string MephitAirBreathGuid = "1f08438786937954aaa6022c7f5ad286";
+        private const string MephitEarthBreathGuid = "fa5ee5f4cd5c6394f8b497c773f8e14a";
+        private const string MephitFireBreathGuid = "ab0616beb567c2c4d8d3f7447a01a0c8";
+        private const string MephitWaterBreathGuid = "a54cd27999a5e8340976f3a40edfef3a";
+        private const string MephitAirBlurGuid = "f98c9fd94b1be6947bd9637816226c1b";
+        private const string MephitEarthChangeSizeGuid = "65dfd0a5324a76145b38c03250c25a7b";
+        private const string MephitWaterStinkingCloudGuid = "34283d686f5f5a847b4d0d6470b52a65";
+        private const string MephitWaterImmunitiesGuid = "e35ea268f6c8b0344b11c569973197c1";
+        private const string ScorchingRayGuid = "cdb106d53c65bbc4086183d54c3b97c7";
+        private const string AcidArrowGuid = "9a46dfd390f943647ab4395fc997936d";
+        private const string MagicMissileGuid = "4ac47ddb9fa1eaf43a1b6809980cfbd2";
+        private const string GlitterdustGuid = "ce7dad2b25acf85429b6c9550787b2d9";
+        internal const string ColdConeProjectileGuid = "5af8b717a209fd444a1e4d077ed776f0";
+        internal const string AcidConeProjectileGuid = "f6544caac8fe528489327cd86a84b025";
+        internal const string FireConeProjectileGuid = "6dfc5e4c7d9ae3048984744222dbd0fa";
+        /// <summary>
+        /// Native facts a mephit donor carries that belong to its element
+        /// (subtype, immunities, breath, spell-like abilities), dropped from
+        /// the variant before its own are added. Damage reduction, fast
+        /// healing, natural armor, Dodge, Improved Initiative, the empty
+        /// visual buff and the extraplanar subtype stay.
+        /// </summary>
+        internal static readonly string[] MephitDonorElementFactGuids = {
+            MephitAirBreathGuid, MephitEarthBreathGuid, MephitFireBreathGuid,
+            MephitWaterBreathGuid, MephitAirBlurGuid, MephitEarthChangeSizeGuid,
+            MephitWaterStinkingCloudGuid, MephitWaterImmunitiesGuid,
+            ScorchingRayGuid, AcidArrowGuid, ElectricityImmunityGuid,
+            AcidImmunityGuid, ColdImmunityGuid, AirSubtypeGuid, EarthSubtypeGuid,
+            WaterSubtypeGuid, FireSubtypeGuid
+        };
 
         private const string NativeRayGuid = "33e8997912cf76b4c99dca0445082804";
         private const string NativeRayAiGuid = "dcfc5e9aec5bea540b36caf754989164";
@@ -317,6 +357,475 @@ namespace KingmakerGunslinger.Blueprints
                 pixieTraits);
             ConfigureCyclops(bySymbol);
             ConfigureGrapplers(library, bySymbol);
+            ConfigureMephitVariants(library, bySymbol);
+        }
+
+        /// <summary>
+        /// Sprint 5: the six mephit variants. Each unit is the sanitized clone
+        /// of its nearest native summoned mephit; here its element facts are
+        /// swapped for the variant's, its breath is rebuilt from the donor's
+        /// breath (energy, dice, cone visual, an enemy-only effect and the
+        /// sickening rider), its spell-like abilities are native spells with
+        /// one-use resources or project bursts, its brain is a project brain
+        /// with one cast action per ability, its display name is its own and
+        /// its visual variant (a tint on the shared rig) is registered.
+        /// </summary>
+        private static void ConfigureMephitVariants(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintBuff sickened = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, SickenedBuffGuid, "native sickened condition");
+            foreach (MephitVariantProfile profile in
+                ExpandedSummoningSpecialProfiles.MephitVariants)
+            {
+                string token = MephitToken(profile.Key);
+                string prefix = "KMG.Summoning.Special." + token + ".";
+                BlueprintUnit unit = Require<BlueprintUnit>(bySymbol,
+                    "KMG.Summoning.Unit." + token);
+                BlueprintAbility nativeBreath = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(library, MephitDonorBreathGuid(profile.DonorKey),
+                        "native mephit breath");
+                BlueprintAbility breath = Require<BlueprintAbility>(bySymbol,
+                    prefix + "Breath");
+                ConfigureMephitBreath(library, breath, nativeBreath, profile, sickened,
+                    prefix + "Breath", token);
+                var grants = new List<BlueprintUnitFact> { breath };
+                var aiActions = new List<BlueprintAiAction> {
+                    ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(bySymbol,
+                        prefix + "BreathAi"), prefix + "BreathAi", breath,
+                        ExpandedSummoningSpecialProfiles.MephitBreathAiCooldownRounds)
+                };
+                var resources = new List<BlueprintAbilityResource>();
+                foreach (KeyValuePair<string, string> slot in MephitSpellLikeSlots(profile))
+                {
+                    BlueprintAbility ability = Require<BlueprintAbility>(bySymbol,
+                        prefix + slot.Key);
+                    BlueprintAbilityResource resource = Require<BlueprintAbilityResource>(
+                        bySymbol, prefix + slot.Key + "Resource");
+                    ConfigureMephitSpellLike(library, ability, resource, slot.Value,
+                        prefix + slot.Key, token);
+                    resources.Add(resource);
+                    grants.Add(ability);
+                    aiActions.Add(ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(
+                        bySymbol, prefix + slot.Key + "Ai"), prefix + slot.Key + "Ai",
+                        ability, 0));
+                }
+                BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
+                    prefix + "CombatTraits");
+                traits.name = InternalName(prefix + "CombatTraits");
+                traits.Stacking = StackingType.Replace;
+                traits.IsClassFeature = true;
+                traits.ComponentsArray = resources.Select(value =>
+                    (BlueprintComponent)AddResource(value)).ToArray();
+                BlueprintUnitFactAccess.Resolve().Configure(traits,
+                    LocalizationService.Create("KMG.ExpandedSummoning." + token +
+                        ".CombatTraits.Name", MephitDisplayName(profile.Key) + " Traits"),
+                    LocalizationService.Create("KMG.ExpandedSummoning." + token +
+                        ".CombatTraits.Description",
+                        "One use of each spell-like ability for this summoning."),
+                    null);
+                grants.Add(traits);
+                BlueprintBrain brain = Require<BlueprintBrain>(bySymbol, prefix + "Brain");
+                brain.name = InternalName(prefix + "Brain");
+                brain.Actions = aiActions.ToArray();
+                unit.Brain = brain;
+                // Element facts: drop the donor's, add the variant's.
+                List<BlueprintUnitFact> facts = (unit.AddFacts ??
+                    Array.Empty<BlueprintUnitFact>()).Where(value => value != null &&
+                        !MephitDonorElementFactGuids.Contains(value.AssetGuid)).ToList();
+                foreach (string guid in MephitVariantFactGuids(profile.Key))
+                    facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
+                        library, guid, profile.Key + " element fact"));
+                facts.AddRange(grants);
+                unit.AddFacts = facts.ToArray();
+                var name = ScriptableObject.CreateInstance<SharedStringAsset>();
+                name.String = LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".Unit.Name",
+                    MephitDisplayName(profile.Key));
+                unit.LocalizedName = name;
+                ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
+                    unit.name, ExpandedSummoningSpecialProfiles.MephitVisualTint(
+                        profile.Key)));
+            }
+        }
+
+        internal static string MephitToken(string key)
+        {
+            return string.Concat(key.Split('-').Select(part =>
+                char.ToUpperInvariant(part[0]) + part.Substring(1)).ToArray());
+        }
+
+        internal static string MephitDisplayName(string key)
+        {
+            return string.Join(" ", key.Split('-').Select(part =>
+                char.ToUpperInvariant(part[0]) + part.Substring(1)).ToArray());
+        }
+
+        internal static IEnumerable<KeyValuePair<string, string>> MephitSpellLikeSlots(
+            MephitVariantProfile profile)
+        {
+            if (!string.IsNullOrEmpty(profile.SpellLikeOne))
+                yield return new KeyValuePair<string, string>("SpellLikeOne",
+                    profile.SpellLikeOne);
+            if (!string.IsNullOrEmpty(profile.SpellLikeTwo))
+                yield return new KeyValuePair<string, string>("SpellLikeTwo",
+                    profile.SpellLikeTwo);
+        }
+
+        private static string MephitDonorBreathGuid(string donorKey)
+        {
+            switch (donorKey)
+            {
+                case "air-mephit": return MephitAirBreathGuid;
+                case "earth-mephit": return MephitEarthBreathGuid;
+                case "fire-mephit": return MephitFireBreathGuid;
+                case "water-mephit": return MephitWaterBreathGuid;
+            }
+            throw new InvalidOperationException("Unknown mephit donor " + donorKey + ".");
+        }
+
+        /// <summary>
+        /// The native cone visual for the variant's breath energy: the cold
+        /// cone for the physical dust and salt breaths and the ice breath, the
+        /// acid cone for the ooze, the fire cone for magma and steam.
+        /// </summary>
+        internal static string MephitBreathProjectileGuid(string energy)
+        {
+            if (energy == "Fire") return FireConeProjectileGuid;
+            if (energy == "Acid") return AcidConeProjectileGuid;
+            return ColdConeProjectileGuid;
+        }
+
+        /// <summary>
+        /// The variant's own element facts: its subtypes and, where the
+        /// tabletop creature has them, its immunity and vulnerability. The
+        /// native fire subtype carries fire immunity and cold vulnerability
+        /// itself.
+        /// </summary>
+        internal static string[] MephitVariantFactGuids(string key)
+        {
+            switch (key)
+            {
+                case "dust-mephit": return new[] { AirSubtypeGuid };
+                case "ice-mephit": return new[] { AirSubtypeGuid, ColdImmunityGuid,
+                    FireVulnerabilityGuid };
+                case "magma-mephit": return new[] { EarthSubtypeGuid, FireSubtypeGuid };
+                case "ooze-mephit": return new[] { WaterSubtypeGuid };
+                case "salt-mephit": return new[] { EarthSubtypeGuid };
+                case "steam-mephit": return new[] { FireSubtypeGuid, WaterSubtypeGuid };
+            }
+            throw new InvalidOperationException("Unknown mephit variant " + key + ".");
+        }
+
+        /// <summary>
+        /// The breath: the donor's 15-foot cone (delivery, save, descriptor and
+        /// Constitution-based DC all kept) with the variant's energy and dice,
+        /// its effect wrapped so only the caster's enemies in the cone are
+        /// touched (the charter's ally-safe rule for every mephit area
+        /// effect), and the tabletop sickening rider on a failed save.
+        /// </summary>
+        private static void ConfigureMephitBreath(LibraryScriptableObject library,
+            BlueprintAbility breath, BlueprintAbility nativeBreath,
+            MephitVariantProfile profile, BlueprintBuff sickened, string symbol,
+            string token)
+        {
+            ExpandedSummoningAbilityBuilder.CopyFields(nativeBreath, breath);
+            breath.name = InternalName(symbol);
+            breath.ComponentsArray = (nativeBreath.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value => value != null)
+                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AbilityDeliverProjectile deliver = breath.ComponentsArray
+                .OfType<AbilityDeliverProjectile>().Single();
+            deliver.Projectiles = new[] { BlueprintLibraryLookup.RequireExact<
+                BlueprintProjectile>(library, MephitBreathProjectileGuid(
+                    profile.BreathEnergy), "native breath cone projectile") };
+            AbilityEffectRunAction run = breath.ComponentsArray
+                .OfType<AbilityEffectRunAction>().Single();
+            ContextActionDealDamage damage = FindDamage(new BlueprintComponent[] { run });
+            damage.DamageType = MephitBreathDamageType(profile.BreathEnergy);
+            damage.Value = new ContextDiceValue {
+                DiceType = profile.BreathDieSides == 8 ? DiceType.D8 : DiceType.D4,
+                DiceCountValue = Simple(profile.BreathDice),
+                BonusValue = Simple(0)
+            };
+            damage.IsAoE = true;
+            var actions = new List<GameAction>();
+            if (profile.Key == "ooze-mephit")
+            {
+                // The tabletop ooze breath: a Reflex save negates the damage
+                // and the sickening together.
+                damage.HalfIfSaved = false;
+                var saved = ScriptableObject.CreateInstance<ContextActionConditionalSaved>();
+                saved.Succeed = new ActionList { Actions = Array.Empty<GameAction>() };
+                saved.Failed = new ActionList { Actions = new GameAction[] { damage,
+                    MephitSickenAction(sickened) } };
+                actions.Add(saved);
+            }
+            else
+            {
+                damage.HalfIfSaved = true;
+                actions.Add(damage);
+                if (profile.BreathSickens)
+                {
+                    var saved = ScriptableObject.CreateInstance<
+                        ContextActionConditionalSaved>();
+                    saved.Succeed = new ActionList { Actions = Array.Empty<GameAction>() };
+                    saved.Failed = new ActionList { Actions = new GameAction[] {
+                        MephitSickenAction(sickened) } };
+                    actions.Add(saved);
+                }
+            }
+            var enemy = ScriptableObject.CreateInstance<ContextConditionIsEnemy>();
+            enemy.Not = false;
+            var enemiesOnly = ScriptableObject.CreateInstance<Conditional>();
+            enemiesOnly.Comment = "KMG mephit breath: enemies of the caster only";
+            enemiesOnly.ConditionsChecker = new ConditionsChecker {
+                Operation = Operation.And, Conditions = new Condition[] { enemy } };
+            enemiesOnly.IfTrue = new ActionList { Actions = actions.ToArray() };
+            enemiesOnly.IfFalse = new ActionList { Actions = Array.Empty<GameAction>() };
+            run.Actions = new ActionList { Actions = new GameAction[] { enemiesOnly } };
+            SpellDescriptorComponent descriptor = breath.ComponentsArray
+                .OfType<SpellDescriptorComponent>().Single();
+            descriptor.Descriptor = new SpellDescriptorWrapper(
+                MephitBreathDescriptor(profile.BreathEnergy));
+            BlueprintUnitFactAccess.Resolve().Configure(breath,
+                LocalizationService.Create("KMG.ExpandedSummoning." + token +
+                    ".Breath.Name", MephitDisplayName(profile.Key) + " Breath"),
+                LocalizationService.Create("KMG.ExpandedSummoning." + token +
+                    ".Breath.Description", MephitBreathDescription(profile)),
+                null);
+        }
+
+        private static ContextActionApplyBuff MephitSickenAction(BlueprintBuff sickened)
+        {
+            var apply = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            apply.Buff = sickened;
+            apply.ToCaster = false;
+            apply.DurationValue = new ContextDurationValue {
+                Rate = DurationRate.Rounds,
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
+                BonusValue = Simple(ExpandedSummoningSpecialProfiles.MephitSickenedRounds)
+            };
+            apply.IsFromSpell = false;
+            apply.IsNotDispelable = false;
+            return apply;
+        }
+
+        internal static DamageTypeDescription MephitBreathDamageType(string energy)
+        {
+            if (energy == "Slashing")
+                return new DamageTypeDescription {
+                    Type = DamageType.Physical,
+                    Physical = new DamageTypeDescription.PhysicalData {
+                        Form = PhysicalDamageForm.Slashing }
+                };
+            return new DamageTypeDescription {
+                Type = DamageType.Energy,
+                Energy = energy == "Fire" ? DamageEnergyType.Fire :
+                    energy == "Cold" ? DamageEnergyType.Cold : DamageEnergyType.Acid
+            };
+        }
+
+        private static SpellDescriptor MephitBreathDescriptor(string energy)
+        {
+            switch (energy)
+            {
+                case "Fire": return SpellDescriptor.Fire;
+                case "Cold": return SpellDescriptor.Cold;
+                case "Acid": return SpellDescriptor.Acid;
+            }
+            return SpellDescriptor.None;
+        }
+
+        private static string MephitBreathDescription(MephitVariantProfile profile)
+        {
+            string damage = profile.BreathDice + "d" + profile.BreathDieSides + " " +
+                (profile.BreathEnergy == "Slashing" ? "slashing" :
+                    profile.BreathEnergy.ToLowerInvariant()) + " damage";
+            if (profile.Key == "ooze-mephit")
+                return "A 15-foot cone of acid that touches only enemies: " + damage +
+                    " and sickened for 3 rounds; a Reflex save negates both.";
+            return "A 15-foot cone that touches only enemies: " + damage +
+                (profile.BreathSickens ?
+                    " (Reflex half) and, on a failed save, sickened for 3 rounds." :
+                    " (Reflex half).");
+        }
+
+        /// <summary>
+        /// A spell-like ability: a native spell (or the native mephit's own
+        /// version of it) cloned with a one-use resource, or one of the two
+        /// project bursts. Spell-list memberships are not carried.
+        /// </summary>
+        private static void ConfigureMephitSpellLike(LibraryScriptableObject library,
+            BlueprintAbility ability, BlueprintAbilityResource resource, string kind,
+            string symbol, string token)
+        {
+            string displayName;
+            string description;
+            switch (kind)
+            {
+                case "Blur":
+                    CloneMephitSpell(library, ability, MephitAirBlurGuid, "native mephit blur");
+                    displayName = "Blur";
+                    description = "Blur, once per summoning.";
+                    break;
+                case "MagicMissile":
+                    CloneMephitSpell(library, ability, MagicMissileGuid, "native magic missile");
+                    displayName = "Magic Missile";
+                    description = "Magic missile, once per summoning.";
+                    break;
+                case "AcidArrow":
+                    CloneMephitSpell(library, ability, AcidArrowGuid, "native acid arrow");
+                    displayName = "Acid Arrow";
+                    description = "Acid arrow, once per summoning.";
+                    break;
+                case "StinkingCloud":
+                    CloneMephitSpell(library, ability, MephitWaterStinkingCloudGuid,
+                        "native mephit stinking cloud");
+                    displayName = "Stinking Cloud";
+                    description = "Stinking cloud, once per summoning.";
+                    break;
+                case "Glitterdust":
+                    CloneMephitSpell(library, ability, GlitterdustGuid, "native glitterdust");
+                    displayName = "Glitterdust";
+                    description = "Glitterdust, once per summoning.";
+                    break;
+                case "Dehydrate":
+                    ConfigureMephitBurst(ability, null,
+                        ExpandedSummoningSpecialProfiles.DehydrateDice,
+                        ExpandedSummoningSpecialProfiles.DehydrateDieSides);
+                    displayName = "Dehydrate";
+                    description = "Every enemy within 20 feet takes 2d8 damage (Fortitude half), once per summoning.";
+                    break;
+                case "BoilingRain":
+                    ConfigureMephitBurst(ability, DamageEnergyType.Fire,
+                        ExpandedSummoningSpecialProfiles.BoilingRainDice,
+                        ExpandedSummoningSpecialProfiles.BoilingRainDieSides);
+                    displayName = "Boiling Rain";
+                    description = "Every enemy within 20 feet takes 2d6 fire damage (Fortitude half), once per summoning.";
+                    break;
+                default:
+                    throw new InvalidOperationException(
+                        "Unknown mephit spell-like ability " + kind + ".");
+            }
+            ability.name = InternalName(symbol);
+            ability.Type = AbilityType.SpellLike;
+            ConfigureNamedResource(resource, symbol + "Resource",
+                "KMG.ExpandedSummoning." + token + "." + kind + ".Resource", displayName,
+                "Uses remaining for this summoned mephit.",
+                ExpandedSummoningSpecialProfiles.MephitSpellLikeUses);
+            var cost = ScriptableObject.CreateInstance<AbilityResourceLogic>();
+            cost.RequiredResource = resource;
+            cost.IsSpendResource = true;
+            cost.CostIsCustom = false;
+            cost.Amount = 1;
+            ability.ComponentsArray = ability.ComponentsArray.Concat(
+                new BlueprintComponent[] { cost }).ToArray();
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create("KMG.ExpandedSummoning." + token + "." +
+                    kind + ".Name", displayName),
+                LocalizationService.Create("KMG.ExpandedSummoning." + token + "." +
+                    kind + ".Description", description), null);
+        }
+
+        private static void CloneMephitSpell(LibraryScriptableObject library,
+            BlueprintAbility ability, string nativeGuid, string role)
+        {
+            BlueprintAbility native = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                library, nativeGuid, role);
+            ExpandedSummoningAbilityBuilder.CopyFields(native, ability);
+            ability.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value => value != null &&
+                    !(value is SpellListComponent))
+                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+        }
+
+        /// <summary>
+        /// A project burst centred on the mephit: enemies within 20 feet take
+        /// the dice (Fortitude half, Constitution-based DC as the breath).
+        /// Ally-safe by targeting, as the charter requires of every mephit
+        /// area effect.
+        /// </summary>
+        private static void ConfigureMephitBurst(BlueprintAbility ability,
+            DamageEnergyType? energy, int dice, int dieSides)
+        {
+            ability.Type = AbilityType.SpellLike;
+            ability.Parent = null;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.Range = AbilityRange.Personal;
+            ability.CanTargetEnemies = false;
+            ability.CanTargetSelf = true;
+            ability.CanTargetFriends = false;
+            ability.CanTargetPoint = false;
+            ability.SpellResistance = false;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.None;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Omni;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
+            SetField(around, "m_Radius", new Feet(
+                ExpandedSummoningSpecialProfiles.MephitBurstRadiusFeet));
+            SetField(around, "m_TargetType",
+                Kingmaker.UnitLogic.Abilities.Components.TargetType.Enemy);
+            SetField(around, "m_IncludeDead", false);
+            SetField(around, "m_Condition", new ConditionsChecker {
+                Operation = Operation.And, Conditions = Array.Empty<Condition>() });
+            SetField(around, "m_SpreadSpeed", new Feet(0));
+            var damage = ScriptableObject.CreateInstance<ContextActionDealDamage>();
+            damage.DamageType = energy.HasValue ?
+                new DamageTypeDescription { Type = DamageType.Energy, Energy = energy.Value } :
+                new DamageTypeDescription { Type = DamageType.Direct };
+            damage.Value = new ContextDiceValue {
+                DiceType = dieSides == 8 ? DiceType.D8 : DiceType.D6,
+                DiceCountValue = Simple(dice), BonusValue = Simple(0)
+            };
+            damage.Duration = new ContextDurationValue {
+                Rate = DurationRate.Rounds, DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0), BonusValue = Simple(0) };
+            damage.IsAoE = true;
+            damage.HalfIfSaved = true;
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Fortitude;
+            run.Actions = new ActionList { Actions = new GameAction[] { damage } };
+            var parameters = ScriptableObject.CreateInstance<ContextCalculateAbilityParams>();
+            parameters.StatType = StatType.Constitution;
+            parameters.ReplaceCasterLevel = true;
+            parameters.CasterLevel = Simple(3);
+            parameters.ReplaceSpellLevel = true;
+            parameters.SpellLevel = Simple(2);
+            var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            descriptor.Descriptor = new SpellDescriptorWrapper(energy.HasValue ?
+                SpellDescriptor.Fire : SpellDescriptor.None);
+            ability.ComponentsArray = new BlueprintComponent[] { around, run, parameters,
+                descriptor };
+        }
+
+        /// <summary>
+        /// A cast action for the variant's brain, the shape the Cyclops and
+        /// Pixie actions have. The breath keeps a cooldown so the mephit also
+        /// claws; a one-use spell-like ability needs none.
+        /// </summary>
+        private static BlueprintAiCastSpell ConfigureMephitAiAction(
+            BlueprintAiCastSpell ai, string symbol, BlueprintAbility ability,
+            int cooldownRounds)
+        {
+            ai.name = InternalName(symbol);
+            ai.Ability = ability;
+            ai.Variant = null;
+            ai.BaseScore = 3;
+            ai.CooldownRounds = cooldownRounds;
+            ai.StartCooldownRounds = 0;
+            ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.Locators = Array.Empty<EntityReference>();
+            return ai;
         }
 
         /// <summary>

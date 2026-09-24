@@ -1768,7 +1768,7 @@
   "betterVendorsProgression138": {
     "baselineCommit": "202a41815f7ca80303e33c2f694804e7926efd8b",
     "branch": "codex/better-vendors-progression",
-    "deterministicTestCount": 1783,
+    "deterministicTestCount": 1787,
     "publicReleaseAuthorized": true,
     "ownerAuthorizedRelease": true,
     "ownerReleaseInstruction": "Run the final tests. IF they have issues, please address them. If not, please proceeding with committing, merging, pushing to remote, incrementing the version number and cutting a new release.",
@@ -1867,21 +1867,21 @@
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
     "ownerDelegationGranted": true,
     "sprintsComplete": [],
-    "deterministicTestCount": 1783,
-    "uniqueCreatures": 74,
-    "summonMonsterEntries": 68,
-    "summonMonsterPlacements": 378,
-    "summonNaturesAllyEntries": 64,
-    "summonNaturesAllyPlacements": 357,
-    "registeredLogicalPlacements": 735,
-    "publishedLogicalPlacements": 721,
+    "deterministicTestCount": 1787,
+    "uniqueCreatures": 80,
+    "summonMonsterEntries": 74,
+    "summonMonsterPlacements": 414,
+    "summonNaturesAllyEntries": 70,
+    "summonNaturesAllyPlacements": 393,
+    "registeredLogicalPlacements": 807,
+    "publishedLogicalPlacements": 793,
     "templatedPlacements": 199,
     "nativeExpansionWrappers": 29,
     "naturalProfiles": 33,
-    "projectIcons": 84,
-    "foundationIdentities": 1295,
-    "appendedLedgerIdentities": 111,
-    "packageFileCountWithSoundBank": 244,
+    "projectIcons": 90,
+    "foundationIdentities": 1421,
+    "appendedLedgerIdentities": 237,
+    "packageFileCountWithSoundBank": 250,
     "sprint3": {
       "creatures": [
         "pony",
@@ -1906,6 +1906,22 @@
       ],
       "grappleLifecycle": "shared: grab through the game's grapple check with +4; native hold parts carry the project hold and grappled buffs; maintain each round at +5 dealing natural-attack damage (mound adds constrict 2d6+7) or release; the hold buff's end releases its own target; the worm swallows through the native swallow-whole part and its traits' end spits out; party members held or swallowed by a KMG summon are released on area leave and repaired on area load",
       "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
+      "internalAcceptance": "PENDING"
+    },
+    "sprint5": {
+      "creatures": [
+        "dust-mephit",
+        "ice-mephit",
+        "magma-mephit",
+        "ooze-mephit",
+        "salt-mephit",
+        "steam-mephit"
+      ],
+      "donors": "nearest native summoned mephit body: air (dust, salt), water (ice, ooze, steam), fire (magma); no Lightning Mephit",
+      "breath": "the donor's 15-foot cone rebuilt with the tabletop energy and dice (dust/salt slashing 1d4, ice cold 1d4, magma fire 1d8, ooze acid 1d4, steam fire 1d4), an enemies-only effect, and the sickening rider on a failed Reflex save (ooze: Reflex negates both); Constitution-based DC as the native breaths",
+      "spellLikeAbilities": "one use per summoning each: dust blur; ice magic missile; ooze acid arrow and stinking cloud; salt glitterdust and dehydrate (project 20-foot enemies-only burst 2d8, Fortitude half); steam blur and boiling rain (project 20-foot enemies-only burst 2d6 fire, Fortitude half); wind wall, chill metal, pyrotechnics and magma form omitted (no native spell)",
+      "visuals": "a private tinted clone of the shared rig's materials per view (magma and steam with an emission glow), applied on view attach and never written to the donor's shared material",
+      "icons": "Blender 4.5 procedural renders from one parametrized mephit builder in six elemental dressings",
       "internalAcceptance": "PENDING"
     }
   }

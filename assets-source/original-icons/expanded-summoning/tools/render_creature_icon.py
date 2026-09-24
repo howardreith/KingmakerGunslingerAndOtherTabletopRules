@@ -638,6 +638,113 @@ def purple_worm():
     cone_along("Stinger", (-2.3, 1.1, -0.45), (-0.5, -0.2, 1.0), 0.6, 0.12, tooth)
 
 
+
+MEPHIT_DRESSINGS = {
+    "dust": dict(skin=(0.55, 0.45, 0.28), dark=(0.3, 0.24, 0.13), wing=(0.42, 0.34, 0.2),
+                 eye=(0.95, 0.85, 0.5), breath=(0.7, 0.6, 0.35), motes=(0.75, 0.66, 0.4),
+                 crust=None, glow=None, drip=None, crystal=None,
+                 inner=(0.32, 0.26, 0.14), outer=(0.03, 0.025, 0.015),
+                 key=(1.0, 0.9, 0.7), rim=(0.9, 0.8, 0.6)),
+    "ice": dict(skin=(0.6, 0.75, 0.9), dark=(0.25, 0.4, 0.6), wing=(0.5, 0.65, 0.85),
+                eye=(0.6, 0.9, 1.0), breath=(0.75, 0.9, 1.0), motes=(0.9, 0.97, 1.0),
+                crust=None, glow=None, drip=None, crystal=(0.85, 0.95, 1.0),
+                inner=(0.12, 0.22, 0.34), outer=(0.01, 0.015, 0.03),
+                key=(0.85, 0.92, 1.0), rim=(0.6, 0.8, 1.0)),
+    "magma": dict(skin=(0.12, 0.06, 0.05), dark=(0.06, 0.03, 0.03), wing=(0.16, 0.07, 0.05),
+                  eye=(1.0, 0.7, 0.2), breath=(1.0, 0.45, 0.1), motes=(1.0, 0.55, 0.15),
+                  crust=(0.09, 0.05, 0.04), glow=(1.0, 0.35, 0.05), drip=None, crystal=None,
+                  inner=(0.3, 0.1, 0.04), outer=(0.03, 0.01, 0.005),
+                  key=(1.0, 0.75, 0.5), rim=(1.0, 0.5, 0.3)),
+    "ooze": dict(skin=(0.3, 0.42, 0.14), dark=(0.15, 0.24, 0.07), wing=(0.24, 0.34, 0.11),
+                 eye=(0.85, 0.95, 0.3), breath=(0.55, 0.75, 0.2), motes=(0.6, 0.8, 0.25),
+                 crust=None, glow=None, drip=(0.45, 0.6, 0.18), crystal=None,
+                 inner=(0.12, 0.2, 0.07), outer=(0.012, 0.02, 0.008),
+                 key=(0.95, 0.95, 0.75), rim=(0.6, 0.9, 0.5)),
+    "salt": dict(skin=(0.85, 0.84, 0.8), dark=(0.55, 0.54, 0.5), wing=(0.75, 0.74, 0.7),
+                 eye=(0.95, 0.9, 0.75), breath=(0.9, 0.9, 0.88), motes=(1.0, 1.0, 0.98),
+                 crust=None, glow=None, drip=None, crystal=(0.95, 0.95, 0.92),
+                 inner=(0.3, 0.3, 0.28), outer=(0.03, 0.03, 0.028),
+                 key=(1.0, 0.98, 0.9), rim=(0.8, 0.85, 0.95)),
+    "steam": dict(skin=(0.7, 0.72, 0.75), dark=(0.4, 0.42, 0.46), wing=(0.6, 0.62, 0.66),
+                  eye=(1.0, 0.85, 0.6), breath=(0.9, 0.9, 0.9), motes=(0.95, 0.95, 0.95),
+                  crust=None, glow=(0.9, 0.5, 0.3), drip=None, crystal=None,
+                  inner=(0.25, 0.27, 0.3), outer=(0.02, 0.022, 0.026),
+                  key=(1.0, 0.9, 0.8), rim=(0.7, 0.8, 0.95)),
+}
+
+
+def mephit(element):
+    """A small, sharp-featured winged mephit bust facing the viewer with its
+    mouth open mid-breath, dressed for its element."""
+    d = MEPHIT_DRESSINGS[element]
+    skin = material("Skin", d["skin"], 0.6, subsurface=0.1, noise=(9.0, 0.5, d["dark"]))
+    wing = material("Wing", d["wing"], 0.7, noise=(6.0, 0.35, d["dark"]))
+    horn = material("Horn", d["dark"], 0.45)
+    eye = material("Eye", d["eye"], 0.2, emission=d["eye"], emission_strength=1.4)
+    mouth = material("Mouth", (0.04, 0.02, 0.02), 0.8)
+    breath = material("Breath", d["breath"], 0.9, emission=d["breath"], emission_strength=0.35)
+    motes = material("Motes", d["motes"], 0.5, emission=d["motes"], emission_strength=0.9)
+    body = Blob("Body", skin, 0.045)
+    body.ball((0.0, 0.5, -1.2), 1.15, (1.1, 0.9, 1.0), axis=(1, 0, 0))     # chest
+    body.ball((0.0, 0.3, -0.35), 0.62)                                       # neck
+    body.ball((0.0, 0.0, 0.55), 0.92, (1.0, 0.95, 1.05), axis=(1, 0, 0))    # head
+    body.ball((0.0, -0.35, 0.15), 0.62, (1.1, 0.8, 0.7), axis=(1, 0, 0))    # jaw
+    for s in (-1, 1):
+        body.ball((s * 0.95, 0.35, -0.75), 0.48)                             # shoulders
+        body.chain((s * 1.0, 0.1, -0.85), (s * 1.35, -0.75, -1.35), 0.32, 0.26, 5)  # arms
+        body.ball((s * 1.4, -0.85, -1.4), 0.3)                               # hands
+        cone_along("Horn%d" % s, (s * 0.5, 0.1, 1.2), (s * 0.55, 0.1, 1.0), 0.75, 0.16, horn, 0.02)
+        cone_along("Ear%d" % s, (s * 0.85, 0.15, 0.55), (s * 1.0, 0.1, 0.45), 0.7, 0.17, skin)
+        sphere("Eye%d" % s, (s * 0.36, -0.78, 0.7), (0.17, 0.1, 0.17), eye)
+        # a large bat wing rising behind each shoulder: a fan of spars and a membrane
+        for k in range(4):
+            angle = 25 + k * 22
+            cone_along("Spar%d%d" % (s, k), (s * 1.0, 0.85, -0.55),
+                       (s * math.cos(math.radians(angle)), 0.2, math.sin(math.radians(angle))),
+                       2.6 - 0.25 * k, 0.07, wing, 0.015)
+        membrane = sphere("Membrane%d" % s, (s * 2.05, 0.95, 0.55), (1.35, 0.06, 1.25), wing,
+                          (0, 0, s * -25))
+    sphere("MouthHole", (0.0, -0.9, 0.12), (0.32, 0.12, 0.18), mouth)
+    for k in range(6):
+        cone_along("Fang%d" % k, (-0.25 + 0.1 * k, -0.92, 0.28 if k % 2 == 0 else -0.02),
+                   (0.0, -0.1, -1.0 if k % 2 == 0 else 1.0), 0.14, 0.03, horn)
+    # the breath: a cone of motes leaving the mouth toward the lower left
+    for k in range(18):
+        t = k / 17.0
+        spread = 0.15 + 0.9 * t
+        x = -0.15 - 2.2 * t + spread * math.sin(k * 2.1) * 0.35
+        z = 0.0 - 0.9 * t + spread * math.cos(k * 1.7) * 0.35
+        y = -1.1 - 0.6 * t
+        sphere("Mote%d" % k, (x, y, z), (0.05 + 0.07 * t,) * 3, motes if k % 3 else breath)
+    if d["crust"]:
+        crust = material("Crust", d["crust"], 0.95, noise=(12.0, 0.5, (0.02, 0.01, 0.01)))
+        glow = material("Glow", d["glow"], 0.4, emission=d["glow"], emission_strength=2.5)
+        for k in range(12):
+            a = k * 2.399
+            sphere("Crust%d" % k, (1.0 * math.cos(a), -0.6 + 0.3 * math.sin(a * 0.7),
+                                    -0.4 + 0.9 * math.sin(a)),
+                   (0.28, 0.12, 0.2), crust, (20 * math.sin(a), 0, math.degrees(a)))
+            sphere("Ember%d" % k, (0.95 * math.cos(a + 0.3), -0.75, -0.3 + 0.8 * math.sin(a + 0.3)),
+                   (0.05, 0.03, 0.05), glow)
+    if d["glow"] and not d["crust"]:
+        glow = material("Glow", d["glow"], 0.4, emission=d["glow"], emission_strength=1.2)
+        sphere("Core", (0.0, -0.3, -1.05), (0.45, 0.2, 0.5), glow)
+    if d["crystal"]:
+        crystal = material("Crystal", d["crystal"], 0.15, emission=d["crystal"], emission_strength=0.2)
+        for k in range(10):
+            a = k * 2.399
+            cone_along("Crystal%d" % k, (0.9 * math.cos(a), -0.35 + 0.3 * math.sin(a * 0.5),
+                                         -0.7 + 0.9 * math.sin(a)),
+                       (0.6 * math.cos(a), -0.5, 0.4 + 0.5 * math.sin(a)),
+                       0.35 + 0.2 * ((k * 5) % 3), 0.07, crystal, 0.0)
+    if d["drip"]:
+        drip = material("Drip", d["drip"], 0.2, subsurface=0.3)
+        for k in range(9):
+            a = k * 2.399
+            cone_along("Drip%d" % k, (1.0 * math.cos(a), -0.55, -0.6 + 0.7 * math.sin(a)),
+                       (0.0, 0.0, -1.0), 0.5 + 0.3 * ((k * 7) % 3), 0.07, drip, 0.02)
+
+
 CREATURES = {
     "pony": dict(build=lambda: equine(True),
                  inner=(0.5, 0.38, 0.16), outer=(0.05, 0.04, 0.025),
@@ -667,6 +774,30 @@ CREATURES = {
                         inner=(0.22, 0.12, 0.3), outer=(0.02, 0.012, 0.03),
                         key=(1.0, 0.85, 0.7), rim=(0.6, 0.5, 1.0),
                         camera=((0.6, -9.0, 1.1), (0.7, 0.0, 0.0), 55.0)),
+    "dust-mephit": dict(build=lambda: mephit("dust"),
+                     inner=MEPHIT_DRESSINGS["dust"]["inner"], outer=MEPHIT_DRESSINGS["dust"]["outer"],
+                     key=MEPHIT_DRESSINGS["dust"]["key"], rim=MEPHIT_DRESSINGS["dust"]["rim"],
+                     camera=((0.3, -7.4, 0.9), (-0.1, 0.0, 0.1), 55.0)),
+    "ice-mephit": dict(build=lambda: mephit("ice"),
+                     inner=MEPHIT_DRESSINGS["ice"]["inner"], outer=MEPHIT_DRESSINGS["ice"]["outer"],
+                     key=MEPHIT_DRESSINGS["ice"]["key"], rim=MEPHIT_DRESSINGS["ice"]["rim"],
+                     camera=((0.3, -7.4, 0.9), (-0.1, 0.0, 0.1), 55.0)),
+    "magma-mephit": dict(build=lambda: mephit("magma"),
+                     inner=MEPHIT_DRESSINGS["magma"]["inner"], outer=MEPHIT_DRESSINGS["magma"]["outer"],
+                     key=MEPHIT_DRESSINGS["magma"]["key"], rim=MEPHIT_DRESSINGS["magma"]["rim"],
+                     camera=((0.3, -7.4, 0.9), (-0.1, 0.0, 0.1), 55.0)),
+    "ooze-mephit": dict(build=lambda: mephit("ooze"),
+                     inner=MEPHIT_DRESSINGS["ooze"]["inner"], outer=MEPHIT_DRESSINGS["ooze"]["outer"],
+                     key=MEPHIT_DRESSINGS["ooze"]["key"], rim=MEPHIT_DRESSINGS["ooze"]["rim"],
+                     camera=((0.3, -7.4, 0.9), (-0.1, 0.0, 0.1), 55.0)),
+    "salt-mephit": dict(build=lambda: mephit("salt"),
+                     inner=MEPHIT_DRESSINGS["salt"]["inner"], outer=MEPHIT_DRESSINGS["salt"]["outer"],
+                     key=MEPHIT_DRESSINGS["salt"]["key"], rim=MEPHIT_DRESSINGS["salt"]["rim"],
+                     camera=((0.3, -7.4, 0.9), (-0.1, 0.0, 0.1), 55.0)),
+    "steam-mephit": dict(build=lambda: mephit("steam"),
+                     inner=MEPHIT_DRESSINGS["steam"]["inner"], outer=MEPHIT_DRESSINGS["steam"]["outer"],
+                     key=MEPHIT_DRESSINGS["steam"]["key"], rim=MEPHIT_DRESSINGS["steam"]["rim"],
+                     camera=((0.3, -7.4, 0.9), (-0.1, 0.0, 0.1), 55.0)),
 }
 
 
