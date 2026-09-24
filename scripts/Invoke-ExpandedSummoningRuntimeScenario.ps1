@@ -78,6 +78,18 @@ try {
     # happens exactly once, in the finally below.
     $first = $true
     foreach ($name in $Scenario) {
+        # The harness returns while Kingmaker is still shutting down. The
+        # restoration below already waits for the process to go; a following
+        # scenario must wait the same way, or its launcher refuses on the
+        # previous scenario's exiting process and the whole batch after it
+        # records ERROR without ever running.
+        if (-not $first) {
+            $nextDeadline = [DateTime]::UtcNow.AddSeconds(180)
+            while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
+                [DateTime]::UtcNow -lt $nextDeadline) {
+                Start-Sleep -Milliseconds 500
+            }
+        }
         Write-Host "=== scenario: $name ==="
         $run = [ordered]@{ scenario = $name; startedAtUtc = [DateTime]::UtcNow.ToString('o') }
         try {
