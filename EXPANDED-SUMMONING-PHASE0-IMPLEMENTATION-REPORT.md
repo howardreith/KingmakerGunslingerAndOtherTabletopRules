@@ -487,7 +487,50 @@ its 46 bones all on the view's skeleton with the root bone kept, the shader
 carrying the albedo at the catalog view scale, and the same state after the
 native locomotion, attack, hit and death paths had run.
 
-## What is not complete, and why
+## Closeout, 2026-09-24
+
+The three items below were completed after the owner's manual review of the
+Pteranodon candidate passed; nothing was waived.
+
+- **Projected menu, live** (`20260924T1647492722669Z-disposable-expanded-summoning-projected-menu`): PASS 3/3 on `02bc5c47`: Summon Monster at 120 entries and Nature's Ally at 110 both render every entry (120 and 110 slots), first, middle and last reachable, the popup inside the safe area (550 x 550 and 550 x 500 canvas units against a 1910 x 1070 safe rectangle, so no scrolling is needed at this size and none is installed), the first entry visible on open, no slot growth across three cycles; warm toggle 119-120 ms and 103-110 ms, the cold first open 3334 ms (slot instantiation, reported, not gated), this host at 425-1500 ms per frame under the harness. The earlier
+  fixture installed an action-bar slot by hand and hung the UI rebuild; the
+  measurement now selects a party member through the game's own selection
+  path and anchors to the group slots its action bar already has. The first
+  live attempt found two things the fixture had hidden: the Monster cycles ran
+  while the loading screen was still up and every one faulted, and the settle
+  frames measured this host's frame pacing (400-1000 ms per frame under the
+  harness), not the widget. Criterion 8 is therefore scored on the synchronous
+  toggle - native fill plus the layout applied inside it - and the run's first
+  open, which instantiates the slot widgets, is reported as the cold open.
+- **Compatibility mechanical** (record `20260924T1203525961325Z`): `gunslinger-only`
+  `20260924T1208085331010Z-disposable-expanded-summoning` PASS 17/17, `gunslinger-high-risk-combined`
+  `20260924T1213545977986Z-disposable-expanded-summoning` PASS 17/17. The timeouts were the working
+  save's foreign serialized types; the driver stages a fixture derived from the
+  protected baseline under the working name and restores the working save byte
+  for byte afterwards.
+- **In-game review images**: the persistence stages now render the party
+  camera to file on the Pteranodon - idle, moving, attacking - after the load
+  and creature fades complete (eight party-camera renders on `00195475` (four per writing stage: idle, twice moving, attacking), each with the creature in frame, the screen lit, the renderer enabled and the material intact (dissolve 0.008 at idle, 0 after); the reloaded creature renders as a pterosaur - brown leather wings spread, red crest, long beak - beside the party at Large scale, moving across the room and biting, with the summoned Wolf and Small Air Elemental in the same frames. Internal review of the images: PASS.). The reloaded creature
+  carries the attached visual (`20260924T1628426382345Z-working-save-expanded-summoning-verify-cleanup`).
+- **Two defects found by that evidence and repaired** (`b7a0b6da`), each
+  bounded to its seam: the swapped material had been cloned in the donor's
+  dissolve state and was never adopted by the view's material controller, so
+  every game-driven fade and tint passed it by and a clone taken fully
+  dissolved stayed invisible - the first review images showed the party and
+  no creature while every mechanical observer was satisfied; and the menu's
+  scrolling installer measured the popup's preferred size in local units
+  against canvas units, so 120 entries at 1280 x 720 engaged a viewport they
+  did not need, and that viewport put three layout groups on one object
+  where Unity allows one, faulted, and once past that drew a panel four
+  times its grid; both halves of that one repair are in `b7a0b6da` and
+  `02bc5c47`. The order's visual
+  approval is recorded against an unspecified revision; the repaired build
+  has internal review only.
+
+Platform: Windows 10 Pro 10.0.19045 only. Linux/Proton was not available and is
+not claimed.
+
+## What was not complete before the closeout, and why
 
 ### The live projected-menu measurement (C2/C3)
 
