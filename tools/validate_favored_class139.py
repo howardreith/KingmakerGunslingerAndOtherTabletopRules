@@ -20,7 +20,7 @@ VERSION = "0.0.139"
 INFORMATIONAL_VERSION = "0.0.139-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1797
+DETERMINISTIC_TEST_COUNT = 1801
 STATIC_KEY = "favoredClassIntegration139"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -181,6 +181,21 @@ APPENDED = (
     ("KMG.FavoredClass.Oracle.Revelation.SoulSiphon.Full", "d10cdbc8903e49fe8662355abacaa38b"),
     ("KMG.FavoredClass.Oracle.Revelation.UndeadServitude.Partial", "152cb9741f1f45da8dc82055a09aec4d"),
     ("KMG.FavoredClass.Oracle.Revelation.UndeadServitude.Full", "0b1f716e9e974e70b22a6c04de41cbaa"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.InspireCourage.Full", "16205a81e0d04f68b55282e6a13cc97d"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.InspireCompetence.Full", "ea9809fdf1a944c3a442028a07d8862c"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.Fascinate.Full", "4cd2b01519d946db9c6bf65efaf244cf"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.DirgeOfDoom.Full", "613f8dc6bc3c4ec6a8c9e4274de90ca2"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.InspireGreatness.Full", "639a9524faf9421482c5e1cbeadc79f2"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.FrighteningTune.Full", "40da51168d684fc4ae303cd89daa1280"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.InspireHeroics.Full", "aad05815f7eb44f98521ad7abb18743f"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.InciteRage.Full", "07a4a190ac4e4a3980578bc37a38d0a5"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.StormCall.Full", "43753f2f0c5641ec838fb3f38009c617"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.FireDance.Full", "a4709cf1ef224d2ca624715d549b4de8"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.SongOfFieryGaze.Full", "5abb7971618c4164a2a0f60e796d0ee0"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.Satire.Full", "6d06672bc4d84a34837620e1135320b4"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.Mockery.Full", "a29d90d2b0e64569b64e92aac02a61b2"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.GloriousEpic.Full", "0f8cf9ae1c874e089bf9b875384ed706"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.Scandal.Full", "485193cfb5254e21ad30db05f1d2cdaa"),
     ("KMG.MostlyHuman.Identity", "d71a4b4250914a7aa6d4bec53dfc768f"),
     ("KMG.MostlyHuman.Ifrit.Selection", "c0485fc76e514ad38c09961dbdc6efc7"),
     ("KMG.MostlyHuman.Ifrit.Standard", "7c508ee3415942bb91f584306d70bf70"),

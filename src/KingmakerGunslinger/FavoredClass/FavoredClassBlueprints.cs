@@ -141,6 +141,7 @@ namespace KingmakerGunslinger.FavoredClass
                 { FavoredClassCatalog.Paladin, "bfa11238e7ae3544bbeb4d0b92e897ec" },
                 { FavoredClassCatalog.Ranger, "cda0615668a6df14eb36ba19ee881af6" },
                 { FavoredClassCatalog.Sorcerer, "b3a505fb61437dc4097f43c3f8f9a4cf" },
+                { FavoredClassCatalog.Bard, FavoredClassPerformanceManifest.BardClassGuid },
             };
 
         // I08/S06 bloodline power targets: the owned power feature (its own
@@ -386,6 +387,14 @@ namespace KingmakerGunslinger.FavoredClass
             if (effect.Id == FavoredClassCatalog.EffectSelectedBloodlinePower &&
                 targetKey != null && BloodlinePowers.TryGetValue(targetKey, out power))
                 return NativeIconSource(library, power.Value, effect.Id).Icon;
+            // A game performance shows its own icon; a provider performance
+            // may not exist yet at registration and uses the native monogram.
+            if (effect.Id == FavoredClassCatalog.EffectPerformanceRange && targetKey != null)
+            {
+                FavoredClassPerformanceTarget performance = FavoredClassPerformanceManifest.For(targetKey);
+                return performance.Provider ? null :
+                    NativeIconSource(library, performance.FeatureGuid, effect.Id).Icon;
+            }
             switch (effect.Id)
             {
                 case FavoredClassCatalog.EffectMisfire:
@@ -495,7 +504,18 @@ namespace KingmakerGunslinger.FavoredClass
                     var owned = ScriptableObject.CreateInstance<PrerequisiteFavoredClassOwnsAny>();
                     owned.name = "$" + leaf.name + "_OwnedRevelation";
                     owned.FeatureGuids = revelation.FeatureGuids.ToArray();
-                    owned.Title = FavoredClassLeafCatalog.TargetTitle(effect.Id, targetKey);
+                    owned.Title = "the revelation " + FavoredClassLeafCatalog.TargetTitle(effect.Id, targetKey);
+                    owned.Group = Prerequisite.GroupType.All;
+                    components.Add(owned);
+                }
+                if (effect.Id == FavoredClassCatalog.EffectPerformanceRange)
+                {
+                    // Only a performance the character already has is a target.
+                    FavoredClassPerformanceTarget performance = FavoredClassPerformanceManifest.For(targetKey);
+                    var owned = ScriptableObject.CreateInstance<PrerequisiteFavoredClassOwnsAny>();
+                    owned.name = "$" + leaf.name + "_OwnedPerformance";
+                    owned.FeatureGuids = new[] { performance.FeatureGuid };
+                    owned.Title = "the performance " + performance.Title;
                     owned.Group = Prerequisite.GroupType.All;
                     components.Add(owned);
                 }
@@ -773,7 +793,9 @@ namespace KingmakerGunslinger.FavoredClass
                 case FavoredClassCatalog.EffectHalflingDodge:
                 case FavoredClassCatalog.EffectInitiative:
                 case FavoredClassCatalog.EffectPaladinAuras:
-                    // O06 is read inside the native aura buffs (FavoredClassAuraPublication).
+                case FavoredClassCatalog.EffectPerformanceRange:
+                    // O06 is read inside the native aura buffs (FavoredClassAuraPublication);
+                    // O01 inside each performance area's own view (the range hook).
                     return null;
                 default:
                     throw new InvalidOperationException("No mechanics are implemented for " + effect.Id);
@@ -838,6 +860,14 @@ namespace KingmakerGunslinger.FavoredClass
                     pair.Leaves.Any(leaf => leaf.ComponentsArray.OfType<PrerequisiteFavoredClassOwnsAny>()
                         .Count(owned => owned.FeatureGuids.SequenceEqual(guids)) != 1))
                     throw new InvalidOperationException("Revelation counter graph is malformed: " + pair.TargetKey);
+            }
+            foreach (FavoredClassLeafPair pair in set.Pairs.Where(value =>
+                value.Effect.Id == FavoredClassCatalog.EffectPerformanceRange))
+            {
+                string feature = FavoredClassPerformanceManifest.For(pair.TargetKey).FeatureGuid;
+                if (pair.Partial != null || pair.Full.ComponentsArray.OfType<PrerequisiteFavoredClassOwnsAny>()
+                        .Count(owned => owned.FeatureGuids.Length == 1 && owned.FeatureGuids[0] == feature) != 1)
+                    throw new InvalidOperationException("Performance counter graph is malformed: " + pair.TargetKey);
             }
         }
     }
