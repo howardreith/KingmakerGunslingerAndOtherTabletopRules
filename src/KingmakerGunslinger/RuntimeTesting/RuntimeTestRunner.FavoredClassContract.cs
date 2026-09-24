@@ -77,8 +77,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FavoredClassRuntime.Profile, _context.FeatureModules.Active.Gunslinger, null);
             repeat.Commit();
             if (!ReferenceEquals(published, gunslinger.AllFeatures) ||
-                !repeat.Evidence.Where(value => value.Contains("action=")).All(value =>
-                    value.Contains("action=unchanged")))
+                // Surface records carry ";action="; the summary record
+                // "transaction=committed" must not be mistaken for one.
+                !repeat.Evidence.Where(value => value.Contains(";action=")).All(value =>
+                    value.Contains(";action=unchanged")) ||
+                repeat.Evidence.Count(value => value.Contains(";action=")) !=
+                    owned.Count(leaf => published.Contains(leaf)))
                 idempotentFailures.Add("second transaction was not a no-op: " +
                     string.Join("|", repeat.Evidence.ToArray()));
             assertions.Add(Assertion("fcb-publication-idempotent",
