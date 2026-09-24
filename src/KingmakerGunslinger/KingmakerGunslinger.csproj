@@ -1116,6 +1116,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGunslinger.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassInitiative.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassHostState.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPersistence.cs" />
     <Compile Include="RuntimeTesting\RapidReloadGateEvidenceRules.cs" />
     <Compile Include="RuntimeTesting\RapidReloadVisitCleanupRules.cs" />
     <Compile Include="RuntimeTesting\FirearmHigherFeatRootsRules.cs" />

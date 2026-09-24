@@ -12,9 +12,21 @@ namespace KingmakerGunslinger.Classes
 {
     public sealed class GunslingerInitiativeBonus :
         OwnedGameLogicComponent<UnitDescriptor>, IUnitInitiativeHandler,
-        IGlobalSubscriber
+        IGlobalSubscriber, IInitiatorRulebookHandler<RuleInitiativeRoll>
     {
         public BlueprintAbilityResource GritResource;
+
+        // The native combat-entry controller stores RuleInitiativeRoll.Result
+        // into the unit's combat state and orders the combatants before it
+        // raises IUnitInitiativeHandler, so the deed applies while the rule
+        // itself resolves (after OnTrigger snapshots the Initiative stat).
+        // The handler stays as a duplicate-guarded fallback.
+        public void OnEventAboutToTrigger(RuleInitiativeRoll evt) { }
+
+        public void OnEventDidTrigger(RuleInitiativeRoll evt)
+        {
+            HandleUnitRollsInitiative(evt);
+        }
 
         public void HandleUnitRollsInitiative(RuleInitiativeRoll rule)
         {
