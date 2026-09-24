@@ -184,3 +184,76 @@ a pass; the unattended matrix scheduled a supervised scenario; a batch would not
 release its own compatibility lock; and a new scenario was absent from the
 runner's working-save chains. A fifth problem - a fixture that hung the game -
 was diagnosed and disabled rather than shipped.
+
+## 2026-09-23/24 - the finished creature
+
+The session resumed at crest iteration 6, generated in the last minute before
+the machine went down and never looked at. Rendered, it had the same fault as
+iteration 5 in a longer coat: the crest peaked directly above the skull and
+trailed down behind it, and read as a wedge on the head. The fix was not more
+length or more height but the apex: a Pteranodon's crest is a spike whose tip
+is its highest point, the upper edge rising in one line from the brow. With
+the tip 1.05 back and 0.72 up and a thick base thinning to a blade, iteration
+7 read as a pterosaur in profile, from both game-camera angles and at
+thumbnail size, and was accepted on internal review.
+
+Texture coordinates went into the generator as a fixed atlas the painter
+shares. Folding the ring angle belly-to-back instead of unwrapping it removed
+every seam from the body at the price of mirrored flanks, which a symmetrical
+animal hides. The painter runs under Blender's Python because that is the
+interpreter with numpy here; every mark is a function of the coordinates and
+a fixed seed, and two runs hashed identical. The first painting's wing fibres
+ran along the span; actinofibrils run across the chord, so the fan's origin
+moved below the leading edge. The Blender "textured" preview rendered the
+painting far darker than the file; an unlit render at the texture's own
+values settled that the darkness was studio lighting, not the albedo.
+
+The mesh data moved to schema 2 - coordinates in the payload, the albedo named
+by file, hash and header - and the loader now publishes both or neither. The
+material copy takes the albedo in `_MainTex`; the donor's `PF/StandardDynamic`
+declared none of the Standard shader's map names, which the first live run
+recorded as `cleared=<none>`, so the probe list was widened to the spellings
+Owlcat's shaders use and the outcome now records which slots the shader
+declares as well as which were cleared.
+
+Build-Local had never staged the Pteranodon files; the mesh copy in the
+Release tree came from an earlier MSBuild output, so the first gate on the
+albedo failed on a missing file. It stages both files itself now. Three
+source-contract tests pin the package count and moved with it.
+
+The guarded launcher refused `-Confirm:$false` passed through
+`powershell.exe -File` - the switch arrives as a string - and nothing ran;
+invoking the launcher in-process fixed it. The three base scenarios then
+passed on the asset commit.
+
+The first rider batch taught two things. The launcher started its second
+scenario while the first's game process was still exiting, so the second and
+third recorded ERROR without ever running; restoration already waited for the
+process to go, and the loop now waits the same way before each following
+scenario. And the isolation check, written to expect the untouched eagle,
+dire bat and roc to show an enabled donor renderer, found every one of them
+disabled: the game's `EntityFader` hides a fresh summon until it fades in, and
+its FX visibility manager and occlusion highlighter cache the renderer list by
+reference. The sibling renderer the first design added therefore sat outside
+the fade, the fog and the hit and death handling - a presentation defect the
+charter names explicitly. The visual now swaps the mesh, the 46-bone array and
+the material onto the donor's own `SkinnedMeshRenderer` instance, the rollback
+restores its original references, and the observers judge the swap by the
+names on the component rather than by an enabled flag the game owns. The
+crowd casts had also been appended to the tier-coverage arrays and moved three
+hard-pinned counts; they are their own list now, and the command total states
+155 as 153 plus 2.
+
+The second rider batch ran all three scenarios once the launcher also
+released its own stale lock between them - the drill's 155 casts take 160
+seconds inside the game against the default 120-second result budget, so the
+harness had timed out and kept its lease while the game finished by itself.
+Two observers were then wrong about the swap rather than the swap being
+wrong: the attached-rig capture read the swapped renderer's 46 bones where it
+exists to record the donor's 72, so it now takes the pre-swap references the
+patch keeps; and the repeated-lifecycle check demanded at least six views
+where the dice legitimately gave five, so it now asks for at least one view
+per cast, each attached exactly once. The riders then passed on their final
+commit; every batch restored the live tree to its pre-run fingerprint.
+Details and run identities are in the state file and the implementation
+report.
