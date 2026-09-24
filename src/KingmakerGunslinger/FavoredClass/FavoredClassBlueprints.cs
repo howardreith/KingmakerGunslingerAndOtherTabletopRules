@@ -198,21 +198,6 @@ namespace KingmakerGunslinger.FavoredClass
         private const string VivisectionistArchetypeGuid = "68cbcd9fbf1fb1d489562f829bb97e38";
         private const string ToxicantArchetypeGuid = "ad9d36a0e5d7499498c6cc59f43b3afe";
 
-        // Icons of the exact native features each counter improves.
-        private static readonly Dictionary<string, string> NativeIconSources =
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                { FavoredClassCatalog.EffectBombDamage, "c59b2f256f5a70a4d896568658315b7d" },
-                { FavoredClassCatalog.EffectFireIntimidate, "7d2233c3b7a0b984ba058a83b736e6ac" },
-                { FavoredClassCatalog.EffectDemoralize, "7d2233c3b7a0b984ba058a83b736e6ac" },
-                { FavoredClassCatalog.EffectBullRushDragDefense, "b3614622866fe7046b787a548bbd7f59" },
-                { FavoredClassCatalog.EffectUnarmedConfirmation, "7812ad3672a4b9a4fb894ea402095167" },
-                { FavoredClassCatalog.EffectAquaticPenetration, "ee7dc126939e4d9438357fbd5980d459" },
-                { FavoredClassCatalog.EffectGrappleStunning, "a29a582c3daa4c24bb0e991c596ccb28" },
-                { FavoredClassCatalog.EffectPaladinAuras, AuraOfCourageFeatureGuid },
-                { FavoredClassCatalog.EffectCompanionArmor, "ee63330662126374e8785cc901941ac7" },
-            };
-
         internal static FavoredClassBlueprintSet Register(BlueprintRegistry registry,
             LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger,
             ProductionFirearmBlueprintCatalog firearms)
@@ -371,33 +356,21 @@ namespace KingmakerGunslinger.FavoredClass
         }
 
         /// <summary>
-        /// Each leaf shows the icon of the exact KMG feature or firearm type it
-        /// improves (the host's own favored-class leaves likewise reuse related
-        /// feature art); null renders the native monogram. Read after the
-        /// project icon stage has assigned those icons.
+        /// Each leaf shows the icon of the exact thing it improves
+        /// (<see cref="FavoredClassIconPolicy"/>): the KMG feature, deed or
+        /// firearm type, or the native feature, ability, power or performance,
+        /// read after the project icon stage has assigned KMG icons. An
+        /// optional provider's donor may not exist yet; its icon is assigned by
+        /// <see cref="FavoredClassLeafIcons"/> when the publication commits.
         /// </summary>
         private static Sprite IconFor(FavoredClassEffectSpec effect, string targetKey,
             LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger,
             ProductionFirearmBlueprintCatalog firearms)
         {
-            string nativeSource;
-            if (NativeIconSources.TryGetValue(effect.Id, out nativeSource))
-                return NativeIconSource(library, nativeSource, effect.Id).Icon;
-            KeyValuePair<string, string> power;
-            if (effect.Id == FavoredClassCatalog.EffectSelectedBloodlinePower &&
-                targetKey != null && BloodlinePowers.TryGetValue(targetKey, out power))
-                return NativeIconSource(library, power.Value, effect.Id).Icon;
-            // A game performance shows its own icon; a provider performance
-            // may not exist yet at registration and uses the native monogram.
-            if (effect.Id == FavoredClassCatalog.EffectPerformanceRange && targetKey != null)
+            FavoredClassIconDonor donor = FavoredClassIconPolicy.For(effect.Id, targetKey);
+            switch (donor.Source)
             {
-                FavoredClassPerformanceTarget performance = FavoredClassPerformanceManifest.For(targetKey);
-                return performance.Provider ? null :
-                    NativeIconSource(library, performance.FeatureGuid, effect.Id).Icon;
-            }
-            switch (effect.Id)
-            {
-                case FavoredClassCatalog.EffectMisfire:
+                case FavoredClassIconSource.KmgFirearm:
                     switch (targetKey)
                     {
                         case "Pistol": return firearms.Pistol.Item.Icon;
@@ -405,17 +378,24 @@ namespace KingmakerGunslinger.FavoredClass
                         case "Blunderbuss": return firearms.Blunderbuss.Item.Icon;
                         default: throw new InvalidOperationException("Unknown firearm target " + targetKey);
                     }
-                case FavoredClassCatalog.EffectGrit:
+                case FavoredClassIconSource.KmgGrit:
                     return gunslinger.Grit.Feature.Icon;
-                case FavoredClassCatalog.EffectPistolWhip:
+                case FavoredClassIconSource.KmgPistolWhip:
                     return gunslinger.PistolWhip.Feature.Icon;
-                case FavoredClassCatalog.EffectHalflingDodge:
+                case FavoredClassIconSource.KmgDodge:
                     return gunslinger.Dodge.Feature.Icon;
-                case FavoredClassCatalog.EffectInitiative:
+                case FavoredClassIconSource.KmgInitiative:
                     return gunslinger.Initiative.Icon;
-                case FavoredClassCatalog.EffectHalflingNimble:
-                case FavoredClassCatalog.EffectDrowNimble:
+                case FavoredClassIconSource.KmgNimble:
                     return gunslinger.Nimble.Features[0].Icon;
+                case FavoredClassIconSource.Native:
+                    foreach (string guid in donor.Guids)
+                    {
+                        Sprite icon = NativeIconSource(library, guid, effect.Id).Icon;
+                        if (icon != null)
+                            return icon;
+                    }
+                    throw new InvalidOperationException("No native icon donor of " + effect.Id + " has an icon.");
                 default:
                     return null;
             }
@@ -496,6 +476,14 @@ namespace KingmakerGunslinger.FavoredClass
                     owned.Feature = usablePower;
                     owned.Group = Prerequisite.GroupType.All;
                     components.Add(owned);
+                    // ...and only through an eligible bloodline identity.
+                    KeyValuePair<string, string[]> bloodlines = FavoredClassLeafCatalog.EligibleBloodlines(targetKey);
+                    var bloodline = ScriptableObject.CreateInstance<PrerequisiteFavoredClassOwnsAny>();
+                    bloodline.name = "$" + leaf.name + "_EligibleBloodline";
+                    bloodline.FeatureGuids = bloodlines.Value;
+                    bloodline.Title = bloodlines.Key;
+                    bloodline.Group = Prerequisite.GroupType.All;
+                    components.Add(bloodline);
                 }
                 if (effect.Id == FavoredClassCatalog.EffectSelectedRevelation)
                 {

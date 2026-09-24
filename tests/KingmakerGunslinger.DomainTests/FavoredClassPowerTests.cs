@@ -65,6 +65,31 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
+        // Charter 8.10: exactly the fire and air elemental bloodline identities
+        // and their proven Seeker/Crossblooded copies; never a Primal copy.
+        internal static void EligibleBloodlinesAreExact()
+        {
+            string[] primal = { "3bb24b6f1cd741f78e585485b163dc45", "248fc512bb12418ebd5f2bd10917bf7a" };
+            foreach (string target in new[] { "FireRay", "FireBlast", "AirRay", "AirBlast" })
+            {
+                System.Collections.Generic.KeyValuePair<string, string[]> eligible =
+                    FavoredClassLeafCatalog.EligibleBloodlines(target);
+                bool fire = target.StartsWith("Fire", StringComparison.Ordinal);
+                Assertions.Equal(fire ? "the fire elemental bloodline" : "the air elemental bloodline", eligible.Key,
+                    target + " bloodline name.");
+                Assertions.True(eligible.Value.SequenceEqual(fire
+                    ? new[] { "17cc794d47408bc4986c55265475c06f", "3950cf0cafa5c6ba1d1fc840d2682837",
+                        "ae4f8d4d7f23c49929b4f4b88757524c" }
+                    : new[] { "cd788df497c6f10439c7025e87864ee4", "e3e43bb57f23bc7abcb49f38019ba6bc",
+                        "74fb79f4afa5be59881fa3c054a4dcc7" }), target + " eligible identities.");
+                Assertions.False(eligible.Value.Intersect(primal).Any(), target + " excludes Primal copies.");
+            }
+            string blueprints = Source("FavoredClassBlueprints.cs");
+            Assertions.True(blueprints.Contains("FavoredClassLeafCatalog.EligibleBloodlines(targetKey);") &&
+                blueprints.Contains("bloodline.FeatureGuids = bloodlines.Value;"),
+                "Bloodline power leaves require an eligible bloodline identity.");
+        }
+
         // One chosen power's own ability only; exact DC delta from its own binding.
         internal static void EffectiveLevelIsScopedToTheChosenPower()
         {

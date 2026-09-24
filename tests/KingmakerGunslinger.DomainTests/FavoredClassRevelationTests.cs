@@ -27,7 +27,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(52, all.Count, "Audited implementable revelations.");
             Assertions.Equal(52, all.Select(target => target.Key).Distinct(StringComparer.Ordinal).Count(),
                 "Unique target keys.");
-            Assertions.Equal(22, all.Count(target => target.HeldBack != null), "Targets with held-back thresholds.");
+            Assertions.Equal(13, all.Count(target => target.HeldBack != null),
+                "Targets with a feature-granting gate or the possession BAB at the actual level.");
             foreach (FavoredClassRevelationTarget target in all)
             {
                 Assertions.True(Regex.IsMatch(target.Key, "^[A-Z][A-Za-z]+$"), target.Key + " is a symbol segment.");
@@ -36,8 +37,8 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(target.Families.Length > 0 && target.Families.Trim().Length > 0 &&
                     (target.HasFamily('A') || target.HasFamily('B') || target.HasFamily('C')),
                     target.Key + " has an audited adapter family.");
-                Assertions.True(target.ExtraRoots.All(Guid.IsMatch) && target.ExcludedRanks.All(RankRead.IsMatch) &&
-                    target.IncludedTiers.All(RankRead.IsMatch), target.Key + " scope overrides are exact.");
+                Assertions.True(target.ExtraRoots.All(Guid.IsMatch) && target.ExcludedRanks.All(RankRead.IsMatch),
+                    target.Key + " scope overrides are exact.");
             }
             Assertions.Equal(10, FavoredClassRevelationManifest.For("BreathWeapon").FeatureGuids.Length,
                 "Breath Weapon: one feature per dragon colour.");
@@ -47,14 +48,9 @@ namespace KingmakerGunslinger.DomainTests
                 "The Life channel's derived channels execute its own channel.");
             Assertions.True(all.Where(target => target.Key != "Channel").All(target => target.ExtraRoots.Length == 0),
                 "Only the channel has further roots.");
-            Assertions.True(FavoredClassRevelationManifest.For("Battlecry").ExcludedRanks.Length == 1 &&
-                FavoredClassRevelationManifest.For("SpiritOfTheWarrior").ExcludedRanks.Length == 1 &&
-                all.Count(target => target.ExcludedRanks.Length > 0) == 2,
-                "The +2 breakpoint and the possession BAB are held back explicitly.");
-            Assertions.True(FavoredClassRevelationManifest.For("GiftOfClawAndHorn").IncludedTiers.Length == 3 &&
-                FavoredClassRevelationManifest.For("RaiseTheDead").IncludedTiers.Length == 1 &&
-                all.Count(target => target.IncludedTiers.Length > 0) == 2,
-                "Only the audited enhancement and undead tiers scale.");
+            Assertions.True(FavoredClassRevelationManifest.For("SpiritOfTheWarrior").ExcludedRanks.Length == 1 &&
+                all.Count(target => target.ExcludedRanks.Length > 0) == 1,
+                "Only the possession BAB read is excluded (the charter never raises BAB).");
             Assertions.False(all.Any(target => target.Key == "Fortune" || target.Key == "Misfortune"),
                 "Dual-Cursed Fortune is an owner decision, not a published target.");
             Assertions.Equal("32c02466b2364c8a906e6e4761175099", FavoredClassRevelationManifest.OracleClassGuid,
@@ -81,11 +77,11 @@ namespace KingmakerGunslinger.DomainTests
                     leaf.Symbol + " has a committed identity.");
                 Assertions.True(leaf.Description.Contains("Each revelation keeps its own separate count") &&
                     leaf.Description.Contains("Ifrit") && leaf.Description.Contains("Sylph") &&
-                    leaf.Description.Contains("still follow your actual oracle level") &&
+                    leaf.Description.Contains("still gained at your actual oracle level") &&
                     !leaf.Description.Contains("limited to"),
                     leaf.Symbol + " discloses its counter, routes and actual-level thresholds.");
                 FavoredClassRevelationTarget target = FavoredClassRevelationManifest.For(leaf.TargetKey);
-                Assertions.Equal(target.HeldBack != null, leaf.Description.Contains("These still follow"),
+                Assertions.Equal(target.HeldBack != null, leaf.Description.Contains("Still at your actual oracle level:"),
                     leaf.Symbol + " lists its own held-back thresholds exactly when it has some.");
             }
             Assertions.Equal("Combat Healer (Battle)", FavoredClassLeafCatalog.TargetTitle(effect, "BattleCombatHealer"),
@@ -132,13 +128,27 @@ namespace KingmakerGunslinger.DomainTests
             // RES-LVL(1) = L minutes (Ancestral Weapon, Time Flicker).
             Assertions.Equal(2, FavoredClassMechanicsPolicy.ResourceDelta(perLevel(1), 9, 0, 9, 0, 2),
                 "Per-level resources gain exactly the steps.");
-            // One-threshold amounts (Erase From Time, Iron Skin, Scaled Toughness, Raise the Dead) never move.
-            foreach (FavoredClassResourceAmount threshold in new[] { sds(1, 11, 1, 100, 0), sds(1, 15, 1, 10, 0),
-                sds(1, 13, 1, 13, 0), sds(1, 10, 1, 10, 0) })
+            // One-threshold amounts of the revelation's own resource (Erase From Time @11,
+            // Iron Skin @15, Scaled Toughness @13, Raise the Dead @10) move with the
+            // effective level (charter 8.10: the owned power's thresholds are traced).
+            var thresholds = new[]
             {
-                Assertions.False(threshold.ScalesWithOracle, "A single threshold is not a scaling resource.");
-                Assertions.Equal(0, FavoredClassMechanicsPolicy.ResourceDelta(threshold, 10, 10, 10, 0, 3),
-                    "A single threshold never moves.");
+                Tuple.Create(sds(1, 11, 1, 100, 0), 11), Tuple.Create(sds(1, 15, 1, 10, 0), 15),
+                Tuple.Create(sds(1, 13, 1, 13, 0), 13), Tuple.Create(sds(1, 10, 1, 10, 0), 10)
+            };
+            foreach (var threshold in thresholds)
+            {
+                FavoredClassResourceAmount amount = threshold.Item1;
+                int level = threshold.Item2;
+                Assertions.True(amount.ScalesWithOracle, "A single threshold of the owned resource is traced.");
+                Assertions.Equal(1, at(amount, level - 1), "Below the threshold: one use.");
+                Assertions.Equal(2, at(amount, level), "At the threshold: two uses.");
+                Assertions.Equal(1, FavoredClassMechanicsPolicy.ResourceDelta(amount, level - 1, level - 1,
+                    level - 1, 0, 1), "One step reaches the threshold one level early.");
+                Assertions.Equal(0, FavoredClassMechanicsPolicy.ResourceDelta(amount, level - 3, level - 3,
+                    level - 3, 0, 1), "One step short of the threshold adds nothing.");
+                Assertions.Equal(0, FavoredClassMechanicsPolicy.ResourceDelta(amount, level, level, level, 0, 3),
+                    "Past the threshold nothing more is added.");
             }
             Assertions.True(breath.ScalesWithOracle && rewind.ScalesWithOracle && walk.ScalesWithOracle &&
                 perLevel(1).ScalesWithOracle, "Scaling resources are recognized.");
@@ -180,7 +190,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ReferenceEquals(RankArchetype.GetValue(config), hunter)",
                 "== ContextRankProgression.Custom",
                 "scope.Target.ExcludedRanks.Contains(key)",
-                "tierRanks.Contains(key) && !scope.Target.IncludedTiers.Contains(key)",
+                "scope.Evidence.Add(\"tier:\" + label);",
+                "scope.Evidence.Add(\"breakpoint-table:\" + label);",
                 "if (actionsOnly || value is BlueprintFeatureSelection)",
                 "component is IInitiatorRulebookSubscriber",
                 "IsRuleReaction(current.Value)",

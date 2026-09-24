@@ -202,7 +202,7 @@ namespace KingmakerGunslinger.FavoredClass
                 "Only the chosen power's own level-based values change: Elemental Ray's damage bonus, and Elemental Blast's damage dice, save DC and caster level checks. You must already have the power. It never grants a power early, and never changes other powers, spells, spell slots, other caster level checks, BAB, saves or Elemental Resistance's 9th-level step. The efreeti and djinni bloodlines do not exist in this game."),
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectSelectedRevelation,
                 "Oracle.Revelation", "Revelation", null,
-                "The chosen revelation's own values that it computes from oracle level (damage dice, durations, bonuses, uses per day, save DCs and caster level) use your oracle level plus the earned steps. You must already have the revelation. Levels at which it gains a new ability or effect, and single-level extra uses, still follow your actual oracle level; it never satisfies a level prerequisite and never changes other revelations, spells, spell slots, BAB or saves. The Oracle is provided by Call of the Wild."),
+                "Every value the chosen revelation computes from oracle level (damage dice, durations, bonuses and their level steps, uses per day, save DCs and caster level) uses your oracle level plus the earned steps. You must already have the revelation. Abilities it grants at later levels are still gained at your actual oracle level, and it never satisfies a level prerequisite or changes other revelations, spells, spell slots, BAB or saves. The Oracle is provided by Call of the Wild."),
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectPerformanceRange,
                 "Bard.PerformanceRange", "Performance Range", null,
                 "It widens only your own area of the chosen performance, from the next time you start it (and when a save is loaded); the visual ring keeps its standard size and the performance's other rules are unchanged. You must already have the performance; one-shot or targeted performances (Soothing Performance, Deadly Performance, Thunder Call), masterpieces and Discordant Voice are not choices."),
@@ -227,7 +227,7 @@ namespace KingmakerGunslinger.FavoredClass
             .Select(target => new FavoredClassTargetSpec(target.Key, RevelationTitle(target),
                 "+1 effective oracle level for " + RevelationTitle(target), null,
                 target.HeldBack == null ? null :
-                    "These still follow your actual oracle level: " + target.HeldBack + "."))
+                    "Still at your actual oracle level: " + target.HeldBack + "."))
             .ToArray();
 
         /// <summary>
@@ -246,6 +246,39 @@ namespace KingmakerGunslinger.FavoredClass
             new FavoredClassTargetSpec("AirBlast", "Elemental Blast (Air)",
                 "+1 effective sorcerer level for Elemental Blast (Air)", new[] { "S06" }),
         };
+
+        /// <summary>
+        /// I08/S06 eligible bloodlines (charter 8.10): exactly the fire and air
+        /// elemental bloodlines and their proven aliases, Call of the Wild's
+        /// Seeker and Crossblooded copies of the same bloodline. Call of the
+        /// Wild's Primal copies are a differently named bloodline with other
+        /// powers, and no efreeti or djinni bloodline exists in the game.
+        /// </summary>
+        private static readonly string[] FireElementalBloodlines =
+        {
+            "17cc794d47408bc4986c55265475c06f", // BloodlineElementalFireProgression
+            "3950cf0cafa5c6ba1d1fc840d2682837", // SeekerBloodlineElementalFireProgression
+            "ae4f8d4d7f23c49929b4f4b88757524c", // CrossbloodedBloodlineElementalFireProgression
+        };
+
+        private static readonly string[] AirElementalBloodlines =
+        {
+            "cd788df497c6f10439c7025e87864ee4", // BloodlineElementalAirProgression
+            "e3e43bb57f23bc7abcb49f38019ba6bc", // SeekerBloodlineElementalAirProgression
+            "74fb79f4afa5be59881fa3c054a4dcc7", // CrossbloodedBloodlineElementalAirProgression
+        };
+
+        /// <summary>The bloodline identities that make a power target eligible, and their name.</summary>
+        internal static KeyValuePair<string, string[]> EligibleBloodlines(string targetKey)
+        {
+            if (targetKey == "FireRay" || targetKey == "FireBlast")
+                return new KeyValuePair<string, string[]>("the fire elemental bloodline",
+                    (string[])FireElementalBloodlines.Clone());
+            if (targetKey == "AirRay" || targetKey == "AirBlast")
+                return new KeyValuePair<string, string[]>("the air elemental bloodline",
+                    (string[])AirElementalBloodlines.Clone());
+            throw new KeyNotFoundException("No bloodline power target " + targetKey);
+        }
 
         /// <summary>
         /// The mod's canonical player-facing firearm types. Legacy Rifle and

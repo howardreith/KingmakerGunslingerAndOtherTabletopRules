@@ -12,14 +12,39 @@ using Kingmaker.UnitLogic.Class.LevelUp;
 
 namespace KingmakerGunslinger.FavoredClass.Hooks
 {
+    /// <summary>The exact host human prerequisites a bridge scope covers.</summary>
+    internal sealed class FavoredClassBridgeScope
+    {
+        internal FavoredClassBridgeScope(int favoredClassLeafPrerequisites, IList<string> otherHumanPrerequisites)
+        {
+            FavoredClassLeafPrerequisites = favoredClassLeafPrerequisites;
+            OtherHumanPrerequisites = otherHumanPrerequisites;
+        }
+
+        /// <summary>Human race prerequisites on leaves of the host's bonus selections.</summary>
+        internal int FavoredClassLeafPrerequisites { get; private set; }
+
+        /// <summary>Owners of every other exact human race prerequisite (the host's human race traits).</summary>
+        internal IList<string> OtherHumanPrerequisites { get; private set; }
+
+        internal int Total
+        {
+            get { return FavoredClassLeafPrerequisites + OtherHumanPrerequisites.Count; }
+        }
+    }
+
     /// <summary>
-    /// Narrow ancestry bridge (charter section 6.5). The host's
-    /// <c>PrerequisiteRace.Check</c> uses exact race equality. Only the exact
-    /// human prerequisite instances on leaves of the host's own favored-class
-    /// bonus selections are tracked, and for those only the verified Mostly
-    /// Human permission of a geniekin parent is added: every native exact-race
-    /// result stays, every other prerequisite (and every other race, trait or
-    /// host policy) is untouched, and nothing changes the unit's race.
+    /// Narrow ancestry bridge (charter sections 5.2 and 6.5) of the Mostly
+    /// Human racial trait. The host's <c>PrerequisiteRace.Check</c> uses exact
+    /// race equality; in the installed stack every race-related Human
+    /// prerequisite is one of its instances (the human favored-class leaves
+    /// and the host's human race traits). Exactly those Human instances are
+    /// tracked, and for those only the verified Mostly Human identity of a
+    /// geniekin parent is added: every native exact-race result stays, every
+    /// other prerequisite, race and host policy is untouched, and nothing
+    /// changes the unit's race. The scope belongs to the racial trait, so it
+    /// is prepared whenever the exact host is ready, independently of the
+    /// favored-class integration switch.
     /// </summary>
     internal static class FavoredClassHostRaceBridge
     {
@@ -30,9 +55,17 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
         private static bool _installed;
         private static volatile HashSet<object> _tracked = new HashSet<object>(ReferenceComparer.Instance);
 
+        private static FavoredClassBridgeScope _scope;
+
         internal static int TrackedCount
         {
             get { return _tracked.Count; }
+        }
+
+        /// <summary>The prepared scope, or null before preparation.</summary>
+        internal static FavoredClassBridgeScope Scope
+        {
+            get { lock (Gate) return _scope; }
         }
 
         /// <summary>Whether this exact prerequisite instance is in the bridge scope.</summary>
@@ -45,14 +78,16 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
         /// Records the exact scope and installs the postfix once. Must run
         /// before publication commits (ancestry scopes before exposure).
         /// </summary>
-        internal static int Prepare(HarmonyInstance harmony, FavoredClassHostHandles host,
-            BlueprintRace human)
+        internal static FavoredClassBridgeScope Prepare(HarmonyInstance harmony, FavoredClassHostHandles host,
+            BlueprintRace human, LibraryScriptableObject library)
         {
             if (harmony == null) throw new ArgumentNullException("harmony");
             if (host == null || !host.Decision.IsReady || host.PrerequisiteRaceType == null ||
                 host.PrerequisiteRaceField == null)
                 throw new InvalidOperationException("The ancestry bridge needs a ready exact host.");
             if (human == null) throw new ArgumentNullException("human");
+            if (library == null || library.BlueprintsByAssetId == null)
+                throw new ArgumentNullException("library");
             var tracked = new HashSet<object>(ReferenceComparer.Instance);
             foreach (KeyValuePair<string, BlueprintFeatureSelection> entry in host.BonusSelections)
             {
@@ -63,11 +98,24 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
                     if (leaf == null)
                         continue;
                     foreach (BlueprintComponent component in leaf.ComponentsArray ?? new BlueprintComponent[0])
-                        if (component != null && component.GetType() == host.PrerequisiteRaceType &&
-                            ReferenceEquals(host.PrerequisiteRaceField.GetValue(component), human))
+                        if (IsHumanPrerequisite(component, host, human))
                             tracked.Add(component);
                 }
             }
+            int leafPrerequisites = tracked.Count;
+            // Every other exact human race prerequisite of the host (its human
+            // race traits), each recorded by its owner for the evidence.
+            var others = new List<string>();
+            foreach (BlueprintScriptableObject blueprint in library.BlueprintsByAssetId.Values.Distinct())
+            {
+                if (blueprint == null)
+                    continue;
+                foreach (BlueprintComponent component in blueprint.ComponentsArray ?? new BlueprintComponent[0])
+                    if (IsHumanPrerequisite(component, host, human) && tracked.Add(component))
+                        others.Add(blueprint.name + ":" + blueprint.AssetGuid);
+            }
+            others.Sort(StringComparer.Ordinal);
+            var scope = new FavoredClassBridgeScope(leafPrerequisites, others.AsReadOnly());
             lock (Gate)
             {
                 if (!_installed)
@@ -85,15 +133,26 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
                     _installed = true;
                 }
                 _tracked = tracked;
+                _scope = scope;
             }
-            return tracked.Count;
+            return scope;
         }
 
-        /// <summary>Empties the scope (publication rollback or disable).</summary>
+        /// <summary>Empties the scope (a failed attachment).</summary>
         internal static void Clear()
         {
             lock (Gate)
+            {
                 _tracked = new HashSet<object>(ReferenceComparer.Instance);
+                _scope = null;
+            }
+        }
+
+        private static bool IsHumanPrerequisite(BlueprintComponent component, FavoredClassHostHandles host,
+            BlueprintRace human)
+        {
+            return component != null && component.GetType() == host.PrerequisiteRaceType &&
+                ReferenceEquals(host.PrerequisiteRaceField.GetValue(component), human);
         }
 
         private static void CheckPostfix(object __instance, UnitDescriptor __1, ref bool __result)

@@ -108,8 +108,10 @@ namespace KingmakerGunslinger.DomainTests
                 "Registered in a contained registry, identity configured, published only when enabled.");
         }
 
-        // Charter 6.5: only the exact host human prerequisites of the host's
-        // own leaves, only the verified Mostly Human permission, fail closed.
+        // Charter 5.2/6.5: exactly the host's own Human race prerequisite
+        // instances (its human favored-class leaves and human race traits),
+        // only the verified Mostly Human permission, fail closed, and owned by
+        // the racial trait rather than the favored-class integration switch.
         internal static void HostBridgeIsExactlyScoped()
         {
             string bridge = Read("src", "KingmakerGunslinger", "FavoredClass", "Hooks",
@@ -117,6 +119,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[]
             {
                 "foreach (KeyValuePair<string, BlueprintFeatureSelection> entry in host.BonusSelections)",
+                "foreach (BlueprintScriptableObject blueprint in library.BlueprintsByAssetId.Values.Distinct())",
                 "component.GetType() == host.PrerequisiteRaceType &&",
                 "ReferenceEquals(host.PrerequisiteRaceField.GetValue(component), human)",
                 "if (__result || __1 == null || !IsTracked(__instance))",
@@ -125,16 +128,18 @@ namespace KingmakerGunslinger.DomainTests
             })
                 Assertions.True(bridge.Contains(token), "Bridge scope token: " + token);
             foreach (string forbidden in new[] { "SetRace", "Progression.Race =", "__result = false",
-                "ZFavoredClass", "[HarmonyPatch" })
+                "ZFavoredClass", "[HarmonyPatch", ".name.Contains(", "Appearance", "Doll" })
                 Assertions.False(bridge.Contains(forbidden), "Bridge must not: " + forbidden);
             string coordinator = Read("src", "KingmakerGunslinger", "FavoredClass",
                 "FavoredClassIntegrationCoordinator.cs");
-            int prepare = coordinator.IndexOf("Hooks.FavoredClassHostRaceBridge.Prepare(", StringComparison.Ordinal);
+            int prepare = coordinator.IndexOf("PrepareAncestryBridge(context, host);", StringComparison.Ordinal);
+            int disabled = coordinator.IndexOf("if (!profile.IntegrationEnabled)\n", StringComparison.Ordinal);
             int commit = coordinator.IndexOf("publication.Commit();", StringComparison.Ordinal);
-            Assertions.True(prepare > 0 && commit > prepare,
-                "Ancestry scopes are registered before the publication commits.");
-            Assertions.True(coordinator.Contains("Hooks.FavoredClassHostRaceBridge.Clear();"),
-                "A failed publication empties the bridge scope.");
+            Assertions.True(prepare > 0 && disabled > prepare && commit > prepare,
+                "The racial bridge is scoped before the integration switch and before any publication commits.");
+            Assertions.True(coordinator.Contains("Hooks.FavoredClassHostRaceBridge.Prepare(context.Harmony,") &&
+                coordinator.Contains("Hooks.FavoredClassHostRaceBridge.Clear();"),
+                "A failed bridge preparation empties only the bridge scope.");
         }
 
         internal static void HostBridgeAddsOnlyMostlyHumanGeniekin()

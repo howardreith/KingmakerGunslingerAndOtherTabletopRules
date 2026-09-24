@@ -30,17 +30,20 @@ namespace KingmakerGunslinger.FavoredClass
         internal bool DivScalesWithOracle;
 
         /// <summary>
-        /// Whether a higher effective oracle level raises this maximum by
-        /// scaling rather than by crossing one level threshold. Resources that
-        /// mix in other classes' character levels are never scaled.
+        /// Whether the maximum depends on oracle level at all (per level, per
+        /// step, or through a single start-level threshold): the charter
+        /// traces every level-dependent value of an owned power, including
+        /// its thresholds. Resources that mix in other classes' character
+        /// levels are never scaled.
         /// </summary>
         internal bool ScalesWithOracle
         {
             get
             {
                 bool perLevel = IncreasedByLevel && LevelScalesWithOracle && LevelIncrease > 0;
-                bool perStep = IncreasedByLevelStartPlusDivStep && DivScalesWithOracle &&
-                    PerStepIncrease > 0 && LevelStep > 0 && OtherClassesModifier == 0f;
+                bool perStep = IncreasedByLevelStartPlusDivStep && DivScalesWithOracle && LevelStep > 0 &&
+                    OtherClassesModifier == 0f &&
+                    (PerStepIncrease > 0 || StartingIncrease > 0 || MinClassLevelIncrease > 0);
                 return perLevel || perStep;
             }
         }
@@ -68,9 +71,9 @@ namespace KingmakerGunslinger.FavoredClass
         /// I06/S04: the native maximum of an ability resource before handler
         /// bonuses (BlueprintAbilityResource.GetMaxAmount), with the unit's
         /// counted class-level sums raised by <paramref name="effective"/>
-        /// wherever the amount scales with oracle level. A start-plus-step
-        /// amount without a per-step increase is a single level threshold,
-        /// which never moves. Mirrors the native integer arithmetic exactly.
+        /// wherever the amount depends on oracle level, including a single
+        /// start-level threshold of the owned revelation's own resource.
+        /// Mirrors the native integer arithmetic exactly.
         /// </summary>
         internal static int ResourceMaximum(FavoredClassResourceAmount amount, int levelSum, int divSum,
             int characterLevel, int statBonus, int effective)
@@ -85,8 +88,7 @@ namespace KingmakerGunslinger.FavoredClass
                 result += statBonus;
             if (amount.IncreasedByLevelStartPlusDivStep)
             {
-                bool steps = amount.DivScalesWithOracle && amount.PerStepIncrease != 0 &&
-                    amount.OtherClassesModifier == 0f;
+                bool steps = amount.DivScalesWithOracle && amount.OtherClassesModifier == 0f;
                 int counted = divSum + (steps ? shift : 0) +
                     (int)((float)(characterLevel - divSum) * amount.OtherClassesModifier);
                 if (amount.StartingLevel <= counted)

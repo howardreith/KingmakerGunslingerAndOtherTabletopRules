@@ -57,6 +57,8 @@
     <Compile Include="FavoredClassPowerTests.cs" />
     <Compile Include="FavoredClassRevelationTests.cs" />
     <Compile Include="FavoredClassPerformanceTests.cs" />
+    <Compile Include="FavoredClassIconTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassIconPolicy.cs"><Link>FavoredClass\FavoredClassIconPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassPerformanceManifest.cs"><Link>FavoredClass\FavoredClassPerformanceManifest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassRevelationManifest.cs"><Link>FavoredClass\FavoredClassRevelationManifest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalMostlyHumanPolicy.cs"><Link>ElementalRaces\ElementalMostlyHumanPolicy.cs</Link></Compile>

@@ -125,6 +125,7 @@ namespace KingmakerGunslinger.FavoredClass
             }
             if (context == null)
                 return true;
+            CompleteMostlyHumanIcons(context);
             FavoredClassPublication publication = null;
             try
             {
@@ -145,14 +146,6 @@ namespace KingmakerGunslinger.FavoredClass
                     return true;
                 }
                 FavoredClassProfileState profile = FavoredClassRuntime.Profile;
-                if (!profile.IntegrationEnabled)
-                {
-                    Report(context, new FavoredClassIntegrationStatus(
-                        FavoredClassIntegrationAvailability.IntegrationDisabled,
-                        "The favored-class integration is disabled; owned identities stay registered for saves.",
-                        0, null), checkpoint);
-                    return true;
-                }
                 FavoredClassHostHandles host = FavoredClassHostAdapter.Resolve(context.ModEntry,
                     set.GunslingerClassGuid);
                 lock (Gate) _host = host;
@@ -161,9 +154,25 @@ namespace KingmakerGunslinger.FavoredClass
                     bool pending = host.Decision.State == FavoredClassHostState.IncompleteInitialization &&
                         host.Decision.Reason == "library-unassigned";
                     Report(context, new FavoredClassIntegrationStatus(
-                        FavoredClassIntegrationStatus.FromHostState(host.Decision.State),
-                        host.Decision.ToString(), 0, null), checkpoint);
+                        profile.IntegrationEnabled
+                            ? FavoredClassIntegrationStatus.FromHostState(host.Decision.State)
+                            : FavoredClassIntegrationAvailability.IntegrationDisabled,
+                        profile.IntegrationEnabled ? host.Decision.ToString() :
+                            "The favored-class integration is disabled; owned identities stay registered for saves.",
+                        0, null), checkpoint);
                     return !pending;
+                }
+                // The Mostly Human racial trait's human access is part of the
+                // trait, not of the favored-class integration: its scope is
+                // prepared whenever the exact host is ready.
+                PrepareAncestryBridge(context, host);
+                if (!profile.IntegrationEnabled)
+                {
+                    Report(context, new FavoredClassIntegrationStatus(
+                        FavoredClassIntegrationAvailability.IntegrationDisabled,
+                        "The favored-class integration is disabled; owned identities stay registered for saves.",
+                        0, null), checkpoint);
+                    return true;
                 }
                 // O06's native read point is validated before planning: a
                 // drifted aura contract withholds only that counter.
@@ -203,18 +212,19 @@ namespace KingmakerGunslinger.FavoredClass
                             revelationException.Message);
                     }
                 }
+                // Every published choice has a real icon: provider donors are
+                // resolved now; a counter still without one is withheld.
+                var iconEvidence = new System.Collections.Generic.List<string>();
+                foreach (string withheldIcon in FavoredClassLeafIcons.Complete(BlueprintBootstrap.Library, set,
+                    iconEvidence))
+                    unavailable.Add(withheldIcon);
+                context.Logger.Info(Phase, "leaf-icons.completed", string.Format(CultureInfo.InvariantCulture,
+                    "assigned={0};withheld={1}", iconEvidence.Count(value => value.StartsWith("icon:",
+                        StringComparison.Ordinal)), string.Join(",", iconEvidence.Where(value =>
+                        value.StartsWith("icon-missing:", StringComparison.Ordinal)).ToArray())));
                 FavoredClassRuntime.SetUnavailableEffects(unavailable);
                 publication = FavoredClassPublication.Plan(set, host, profile,
                     context.FeatureModules.Active.Gunslinger, null);
-                // Ancestry scopes are registered before the publication
-                // commits: the exact host human prerequisites of the host's
-                // own leaves, for the verified Mostly Human permission only.
-                BlueprintRace human = BlueprintLibraryLookup.RequireExact<BlueprintRace>(
-                    BlueprintBootstrap.Library, FavoredClassRaceIdentities.ForAncestry(
-                        FavoredClassAncestry.Human).RaceGuid, "native Human race");
-                int bridged = Hooks.FavoredClassHostRaceBridge.Prepare(context.Harmony, host, human);
-                context.Logger.Info(Phase, "ancestry-bridge.scoped",
-                    "trackedHumanPrerequisites=" + bridged + ";permission=mostly-human-geniekin-only");
                 publication.Commit();
                 FavoredClassAuraPublication aura = null;
                 if (auraProblem == null && set.AuraStepsProperty != null)
@@ -234,7 +244,6 @@ namespace KingmakerGunslinger.FavoredClass
             }
             catch (Exception exception)
             {
-                Hooks.FavoredClassHostRaceBridge.Clear();
                 FavoredClassRevelationScopes.Clear();
                 FavoredClassAuraPublication committedAura;
                 lock (Gate)
@@ -265,6 +274,81 @@ namespace KingmakerGunslinger.FavoredClass
                     ";the favored-class integration failed closed and rolled back; unrelated KMG modules remain active.",
                     exception);
                 return true;
+            }
+        }
+
+        private static bool _mostlyHumanIconsChecked;
+
+        /// <summary>
+        /// The Mostly Human racial trait's icons are completed after the
+        /// project icon stage, with or without the host; if a visible choice
+        /// would stay blank, its race-feature publication is rolled back (the
+        /// identities stay registered, so saved choices resolve).
+        /// </summary>
+        private static void CompleteMostlyHumanIcons(ModContext context)
+        {
+            KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanBlueprintSet set = BlueprintBootstrap.MostlyHuman;
+            lock (Gate)
+            {
+                if (_mostlyHumanIconsChecked || set == null || BlueprintBootstrap.Library == null)
+                    return;
+                _mostlyHumanIconsChecked = true;
+            }
+            var evidence = new System.Collections.Generic.List<string>();
+            try
+            {
+                bool complete = KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanIcons.Complete(set,
+                    BlueprintBootstrap.Library, evidence);
+                if (!complete && set.Publication != null)
+                {
+                    set.Publication.Rollback();
+                    set.Publication = null;
+                    context.Logger.Warning("elemental-races", "mostly-human.icons-incomplete",
+                        "A Mostly Human choice has no icon; the trait is not offered. " +
+                        string.Join("|", evidence.ToArray()));
+                    return;
+                }
+                context.Logger.Info("elemental-races", "mostly-human.icons", string.Join("|", evidence.ToArray()));
+            }
+            catch (Exception exception)
+            {
+                if (set.Publication != null)
+                    try
+                    {
+                        set.Publication.Rollback();
+                        set.Publication = null;
+                    }
+                    catch (Exception) { }
+                context.Logger.Failure("elemental-races", "mostly-human.icons-failed",
+                    "Mostly Human icons could not be completed; the trait is not offered.", exception);
+            }
+        }
+
+        /// <summary>
+        /// Scopes the Mostly Human bridge to every exact host human race
+        /// prerequisite (the host's human favored-class leaves and human race
+        /// traits). A failure clears only the bridge, so geniekin keep their
+        /// native access and nothing is widened.
+        /// </summary>
+        private static void PrepareAncestryBridge(ModContext context, FavoredClassHostHandles host)
+        {
+            try
+            {
+                BlueprintRace human = BlueprintLibraryLookup.RequireExact<BlueprintRace>(
+                    BlueprintBootstrap.Library, FavoredClassRaceIdentities.ForAncestry(
+                        FavoredClassAncestry.Human).RaceGuid, "native Human race");
+                Hooks.FavoredClassBridgeScope scope = Hooks.FavoredClassHostRaceBridge.Prepare(context.Harmony,
+                    host, human, BlueprintBootstrap.Library);
+                context.Logger.Info(Phase, "ancestry-bridge.scoped", string.Format(CultureInfo.InvariantCulture,
+                    "favoredClassLeafPrerequisites={0};otherHumanPrerequisites={1}:{2};permission=mostly-human-geniekin-only",
+                    scope.FavoredClassLeafPrerequisites, scope.OtherHumanPrerequisites.Count,
+                    string.Join(",", scope.OtherHumanPrerequisites.ToArray())));
+            }
+            catch (Exception exception)
+            {
+                Hooks.FavoredClassHostRaceBridge.Clear();
+                context.Logger.Warning(Phase, "ancestry-bridge.unavailable",
+                    exception.GetType().Name + ": " + exception.Message);
             }
         }
 
