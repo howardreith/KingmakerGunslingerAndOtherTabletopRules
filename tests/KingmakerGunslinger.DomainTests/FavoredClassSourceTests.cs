@@ -13,7 +13,8 @@ namespace KingmakerGunslinger.DomainTests
             "disposable-favored-class-gunslinger-menus",
             "disposable-favored-class-gunslinger-mechanics",
             "disposable-favored-class-initiative-timing",
-            "observe-favored-class-host-state"
+            "observe-favored-class-host-state",
+            "disposable-favored-class-elemental-core"
         };
 
         private static string Read(params string[] parts)
@@ -61,8 +62,14 @@ namespace KingmakerGunslinger.DomainTests
             {
                 string text = File.ReadAllText(file);
                 string name = Path.GetFileName(file);
-                Assertions.False(text.Contains("[HarmonyPatch") || text.Contains("HarmonyPatch("),
-                    name + " must not install Harmony patches.");
+                // Hooks may patch native game code only (never host or CotW
+                // code), from the dedicated Hooks folder.
+                bool hook = Path.GetFileName(Path.GetDirectoryName(file)) == "Hooks";
+                Assertions.False(!hook && (text.Contains("[HarmonyPatch") || text.Contains("HarmonyPatch(")),
+                    name + " must not install Harmony patches outside FavoredClass/Hooks.");
+                if (hook)
+                    Assertions.True(text.Contains("[HarmonyPatch(typeof(") && !text.Contains("ZFavoredClass") &&
+                        !text.Contains("CallOfTheWild"), name + " must patch a native game type only.");
                 Assertions.False(text.Contains(".Invoke("), name + " must not invoke host methods.");
                 Assertions.False(text.Contains("using ZFavoredClass") || text.Contains("using CallOfTheWild"),
                     name + " must not reference host namespaces.");

@@ -31,20 +31,30 @@ namespace KingmakerGunslinger.DomainTests
                 Tuple.Create(FavoredClassCatalog.EffectDrowNimble, (string)null, 2, 10),
                 Tuple.Create(FavoredClassCatalog.EffectInitiative, (string)null, 10, 10),
                 Tuple.Create(FavoredClassCatalog.EffectDirtyTrickTrip, (string)null, 10, 10),
+                // Phase 3 (divisor one has no partial leaf: 0 below).
+                Tuple.Create(FavoredClassCatalog.EffectBombDamage, (string)null, 10, 10),
+                Tuple.Create(FavoredClassCatalog.EffectFireIntimidate, (string)null, 10, 10),
+                Tuple.Create(FavoredClassCatalog.EffectDemoralize, (string)null, 10, 10),
+                Tuple.Create(FavoredClassCatalog.EffectBullRushDragDefense, (string)null, 20, 0),
+                Tuple.Create(FavoredClassCatalog.EffectUnarmedConfirmation, (string)null, 5, 10),
+                Tuple.Create(FavoredClassCatalog.EffectAquaticPenetration, (string)null, 20, 0),
+                Tuple.Create(FavoredClassCatalog.EffectGrappleStunning, (string)null, 6, 14),
             };
             IList<FavoredClassLeafSpec> leaves = FavoredClassLeafCatalog.AllLeaves();
-            Assertions.Equal(expected.Length * 2, leaves.Count, "Gunslinger leaf count.");
+            Assertions.Equal(expected.Sum(counter => counter.Item4 > 0 ? 2 : 1), leaves.Count,
+                "Published counter leaf count.");
             foreach (Tuple<string, string, int, int> counter in expected)
             {
                 FavoredClassLeafSpec full = leaves.Single(leaf => leaf.EffectId == counter.Item1 &&
                     leaf.TargetKey == counter.Item2 && leaf.Role == FavoredClassInvestmentRole.Full);
-                FavoredClassLeafSpec partial = leaves.Single(leaf => leaf.EffectId == counter.Item1 &&
+                FavoredClassLeafSpec partial = leaves.SingleOrDefault(leaf => leaf.EffectId == counter.Item1 &&
                     leaf.TargetKey == counter.Item2 && leaf.Role == FavoredClassInvestmentRole.Partial);
                 string label = counter.Item1 + "/" + (counter.Item2 ?? "-");
                 Assertions.Equal(counter.Item3, full.Ranks, label + " full capacity.");
-                Assertions.Equal(counter.Item4, partial.Ranks, label + " partial capacity.");
+                Assertions.Equal(counter.Item4, partial == null ? 0 : partial.Ranks, label + " partial capacity.");
                 Assertions.True(full.Symbol.EndsWith(".Full", StringComparison.Ordinal) &&
-                    partial.Symbol.EndsWith(".Partial", StringComparison.Ordinal), label + " roles.");
+                    (partial == null || partial.Symbol.EndsWith(".Partial", StringComparison.Ordinal)),
+                    label + " roles.");
                 if (counter.Item2 != null)
                 {
                     Assertions.True(full.Symbol.Contains("." + counter.Item2 + "."),
@@ -54,7 +64,7 @@ namespace KingmakerGunslinger.DomainTests
                     Assertions.True(full.Name.Contains(counter.Item2), label + " names its target.");
                 }
             }
-            Assertions.Equal(expected.Length * 2, leaves.Select(leaf => leaf.Symbol)
+            Assertions.Equal(leaves.Count, leaves.Select(leaf => leaf.Symbol)
                 .Distinct(StringComparer.Ordinal).Count(), "Leaf symbols are unique.");
             // Legacy Rifle/Revolver identities stay readable but are never targets.
             Assertions.False(leaves.Any(leaf => leaf.TargetKey == "Rifle" || leaf.TargetKey == "Revolver"),
@@ -87,6 +97,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(text(FavoredClassCatalog.EffectDirtyTrickTrip).Contains("Jon Brazer Enterprises") &&
                 text(FavoredClassCatalog.EffectDrowNimble).Contains("Jon Brazer Enterprises"),
                 "Third-party effects attribute their publisher.");
+            Assertions.True(text(FavoredClassCatalog.EffectBombDamage).Contains("never per die") &&
+                text(FavoredClassCatalog.EffectBombDamage).Contains("Vivisectionist"),
+                "Bomb damage discloses its scope and the replacing archetypes.");
+            Assertions.True(text(FavoredClassCatalog.EffectFireIntimidate).Contains("CRPG adaptation") &&
+                text(FavoredClassCatalog.EffectDemoralize).Contains("CRPG adaptation") &&
+                text(FavoredClassCatalog.EffectBullRushDragDefense).Contains("CRPG adaptation"),
+                "The three adaptations disclose their omitted portion.");
+            string partialU04 = FavoredClassLeafCatalog.LeavesFor(FavoredClassCatalog.EffectGrappleStunning)
+                .Single(leaf => leaf.Role == FavoredClassInvestmentRole.Partial).Description;
+            Assertions.True(partialU04.Contains("+1 CMD against grapple at once") &&
+                !partialU04.Contains("grants nothing by itself"),
+                "The mixed-rate partial leaf discloses its immediate grapple defense.");
         }
 
         // M07: the favored-class reduction applies last, floors at 1, never
