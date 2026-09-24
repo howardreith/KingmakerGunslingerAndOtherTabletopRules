@@ -282,14 +282,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException("The Sorcerer Fire Ray route is incomplete.");
                     var bloodlines = new HashSet<string>(FavoredClassLeafCatalog.EligibleBloodlines("FireRay").Value,
                         StringComparer.Ordinal);
-                    // The bloodline, then its Fire Ray (Call of the Wild opens a
-                    // selection between the ray and the blast).
-                    Func<BlueprintFeature, bool> fireBloodline = feature => bloodlines.Contains(feature.AssetGuid) ||
-                        ReferenceEquals(feature, power.PowerFeature);
+                    // The native Elemental (Fire) bloodline, then its Fire Ray
+                    // (Call of the Wild opens a selection between the ray and
+                    // the blast): the sequence the advanced lane proves.
+                    Action<LevelUpController> fireBloodline = controller =>
+                    {
+                        FeatureSelectionState bloodline = FavoredClassLevelUpHarness.FindOpenState(controller,
+                            FcbBloodlineSelectionGuid);
+                        if (bloodline == null || !FavoredClassLevelUpHarness.Select(controller, bloodline,
+                            BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, FcbFireBloodlineGuid,
+                                "Elemental (Fire) bloodline")))
+                            throw new InvalidOperationException("the Elemental (Fire) bloodline could not be taken");
+                        FeatureSelectionState rayChoice = FavoredClassLevelUpHarness.FindOpenState(controller,
+                            FcbFireRaySelectionGuid);
+                        if (rayChoice != null && !FavoredClassLevelUpHarness.Select(controller, rayChoice,
+                            power.PowerFeature))
+                            throw new InvalidOperationException("the Fire Ray could not be taken");
+                        if (!controller.Preview.HasFact(power.PowerFeature) ||
+                            !bloodlines.Any(guid => controller.Preview.Progression.Features.Enumerable.Any(value =>
+                                value.Blueprint != null && value.Blueprint.AssetGuid == guid)))
+                            throw new InvalidOperationException("the Fire Ray and its bloodline are not owned");
+                    };
                     var sorcererReserved = new HashSet<string>(StringComparer.Ordinal) { sorcererReward.AssetGuid };
                     UnitEntityData caster = BuildFcbRespecSubject(FavoredClassAncestry.Ifrit, null, new[]
                         { ray.Partial, ray.Partial, ray.Partial, ray.Partial, ray.Partial, ray.Full }, sorcererReserved,
-                        sorcerer, sorcererReward, fireBloodline);
+                        sorcerer, sorcererReward, null, fireBloodline);
                     disposables.Add(caster);
                     JObject powerBefore = DescribeFcbRespecPower(caster, sorcerer, power, ray);
                     JObject selectedPower = RunFcbRespec(caster, (controller, row) =>
@@ -298,9 +315,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             sorcerer, "KMG FCB Respec", null);
                         if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, sorcerer, row) == null)
                             throw new InvalidOperationException("the favored Sorcerer progression is unavailable");
-                        var preferred = new JArray();
-                        PreferFcbChoices(controller, sorcererReserved, fireBloodline, preferred);
-                        row["preferred"] = preferred;
+                        fireBloodline(controller);
                         FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
                         FeatureSelectionState state = FavoredClassLevelUpHarness.FindOpenState(controller,
                             sorcererReward.AssetGuid);
@@ -389,7 +404,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private UnitEntityData BuildFcbRespecSubject(string ancestry, BlueprintFeature mostlyHumanChoice,
             BlueprintFeature[] picks, HashSet<string> reserved, BlueprintCharacterClass characterClass = null,
-            BlueprintFeatureSelection rewardSelection = null, Func<BlueprintFeature, bool> wanted = null)
+            BlueprintFeatureSelection rewardSelection = null, Func<BlueprintFeature, bool> wanted = null,
+            Action<LevelUpController> firstLevel = null)
         {
             var library = BlueprintBootstrap.Library;
             BlueprintRace race = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
@@ -403,7 +419,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("The respec subject is not a native custom companion.");
             var failures = new List<string>();
             LevelFcbRespecSubject(unit, race, picks, reserved, failures, ancestry, mostlyHumanChoice,
-                characterClass, rewardSelection, wanted);
+                characterClass, rewardSelection, wanted, firstLevel);
             if (failures.Count != 0)
             {
                 unit.Dispose();
@@ -421,7 +437,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void LevelFcbRespecSubject(UnitEntityData unit, BlueprintRace race, BlueprintFeature[] picks,
             HashSet<string> reserved, IList<string> failures, string label, BlueprintFeature mostlyHumanChoice = null,
             BlueprintCharacterClass characterClass = null, BlueprintFeatureSelection rewardSelection = null,
-            Func<BlueprintFeature, bool> wanted = null)
+            Func<BlueprintFeature, bool> wanted = null, Action<LevelUpController> firstLevel = null)
         {
             FavoredClassHostHandles host = FavoredClassIntegrationCoordinator.Host;
             BlueprintCharacterClass leveled = characterClass ?? BlueprintBootstrap.GunslingerClass.CharacterClass;
@@ -449,6 +465,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (state == null || !FavoredClassLevelUpHarness.Select(controller, state, mostlyHumanChoice))
                                 throw new InvalidOperationException("the Mostly Human choice could not be taken");
                         }
+                        if (firstLevel != null)
+                            firstLevel(controller);
                     }
                     if (wanted != null)
                         PreferFcbChoices(controller, reserved, wanted, preferred);
@@ -457,7 +475,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         offered.AssetGuid);
                     if (reward == null || !FavoredClassLevelUpHarness.Select(controller, reward, pick))
                         throw new InvalidOperationException("level " + (unit.Descriptor.Progression.CharacterLevel + 1) +
-                            " could not take " + pick.name);
+                            " could not take " + pick.name + " (reward " + (reward == null ? "not open" : "open, " +
+                            (FavoredClassLevelUpHarness.Item(controller, reward, pick) == null ? "not listed" :
+                                "listed but not selectable")) + "; race " + (controller.Preview.Progression.Race == null ?
+                            "none" : controller.Preview.Progression.Race.name) + "; preferred " +
+                            string.Join(",", preferred.Select(value => (string)value).ToArray()) + ")");
                     if (wanted != null)
                         PreferFcbChoices(controller, reserved, wanted, preferred);
                     FavoredClassLevelUpHarness.FillOthers(controller, reserved);
