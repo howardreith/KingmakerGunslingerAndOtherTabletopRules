@@ -54,11 +54,57 @@ Favored Class ships nine custom JSON rewards in `ZFavoredClass\Custom\`.
 
 ## Latest meaningful checkpoint
 
-Phase 0 started. See `FAVORED-CLASS-STATE.json` for task status.
+- `7cb2cab92` pure policy, catalog, eligibility, host contract, 0.0.139 plumbing.
+- `68e6d9a8a` Phase 1 code: adapter, contained registry, grit leaves,
+  publication, coordinator, two guarded scenarios.
+- `5fd8ef951` explicit fingerprint serialization; playable-race scoring.
+- `c6c748f6d` chargen alignment settled around feature choices; grit claims
+  fail closed; idempotency observer substring fix.
+- `2cccec68b` grit proven on the Pistolero progression (base class dead-ends
+  at level 17, blocker D1) plus a Mysterious Stranger pair; menu icon evidence.
+  Build-Local: 1772/1772 domain tests; package `5121e2d8…`, DLL `5e256ab2…`,
+  MVID `c65c50f2-f0d3-401c-a591-c644adcad711`.
+- Native PASS on `2cccec68b`:
+  `runtime-evidence60924T0102047921088Z-observe-favored-class-contract`
+  and `runtime-evidence60924T0101128312625Z-disposable-favored-class-grit`.
+
+Read-only audit reports (private, not committed):
+`C:\Dev\KingmakerGunslingerLab\privateavored-class-missionudits\` A–G.
+
+## Shared-environment change log (restore obligations)
+
+Deployments use `scripts\Deploy-Local.ps1` (backs up the live mod tree,
+preserves `FeatureModules.json` bytes). The owner's pre-mission install
+(0.0.136, DLL `c6cccdac…`, Info `f66de05d…`, FeatureModules `6e24b278…`) is
+held byte-identically in two verified backups:
+`C:\Dev\KingmakerGunslingerLabuntime-backups\live-mod60923T2118026258530Z`
+(pre-mission lab operation) and
+`C:\Dev\KingmakerGunslingerLabuntime-backups\live-mod60924T0027014050156Z`
+(first mission deployment). Restore at the end with:
+
+```powershell
+.\scripts\Restore-Live-Mod.ps1 -BackupDirectory C:\Dev\KingmakerGunslingerLabuntime-backups\live-mod60924T0027014050156Z -Confirm:$false
+```
+
+then byte-check DLL/Info.json/FeatureModules.json against the table above.
+Only `Mods\KingmakerGunslinger` is changed by this mission; ZFavoredClass,
+CallOfTheWild and RacesUnleashed files and settings are never written.
+
+| Deployment (UTC) | Commit | DLL SHA-256 | Backup of the previous tree |
+| --- | --- | --- | --- |
+| 20260924T0027061224719Z | `68e6d9a8a` | `4f1ad2d8…` | `20260924T0027014050156Z` (owner pre-mission) |
+| 20260924T0043533213527Z | `5fd8ef951` | `c03a15a4…` | `20260924T0043487547075Z` |
+| 20260924T0053135459911Z | `c6c748f6d` | `a53e53c9…` | `20260924T0053085191115Z` |
+| 20260924T0101047085831Z | `2cccec68b` | `5e256ab2…` | `20260924T0101000748327Z` |
 
 ## Next concrete actions
 
-1. Finish Phase 0 audits (host contract, KMG hook points, runtime harness,
-   elemental framework, game rules, selected-power providers).
-2. Assign every catalog row a capability disposition in the coverage ledger.
-3. Begin Phase 1 (optional adapter + Human G07 grit vertical slice).
+1. Phase 2 code: per-type misfire (policy applied last, floor 1; scatter
+   aggregate on the effective threshold), firearm confirmation (better of
+   Critical Focus), Pistol-Whip attack, Halfling Nimble and Gunslinger's Dodge
+   counters, Gunslinger Initiative (verify and fix the deed timing first, D3),
+   Drow Nimble and dirty trick/trip (third-party profile OFF); manifest
+   identities, icon dispositions, domain tests.
+2. Native: menu/eligibility per ancestry, native combat events in the
+   save-free PortalHarness + ElementalNativeTurnScope, initiative timing.
+3. Phase 1 remainder: H01 host-absent clean launch, H02/H04, L01 save/load.

@@ -9,32 +9,108 @@
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
   "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
-  "currentPhase": "phase-0",
+  "currentPhase": "phase-2",
   "phases": {
-    "phase-0": { "status": "IN PROGRESS", "gate": "every row has a capability disposition; exact binary identities recorded; load-order and advanced-target discovery supported by source/IL evidence" },
-    "phase-1": { "status": "NOT STARTED", "gate": "H01-H10, basic E/M/L vertical slice for Human G07, actual artifact identity" },
-    "phase-2": { "status": "NOT STARTED", "gate": "every available first-party Gunslinger target: positive, negative, fraction/cap, native event, preview, persistence" },
-    "phase-3": { "status": "NOT STARTED", "gate": "no broad leakage; usable target menus; two-owner and negative-target runtime controls" },
-    "phase-4": { "status": "NOT STARTED", "gate": "each selected-power row has qualified targets when provider exists; complete manifest; neighbors unchanged" },
-    "phase-5": { "status": "NOT STARTED", "gate": "human access neither missing nor overbroad; prerequisites survive; no multiplied rewards; real Mostly Human" },
-    "phase-6": { "status": "NOT STARTED", "gate": "third-party profile toggles across restarts without corruption; G19/G22 unpublished" },
-    "phase-7": { "status": "NOT STARTED", "gate": "all intended available I/A/O targets and infrastructure qualified on the exact final artifact" }
+    "phase-0": {
+      "status": "COMPLETE",
+      "gate": "every row has a capability disposition; exact binary identities recorded; load-order and advanced-target discovery supported by source/IL evidence"
+    },
+    "phase-1": {
+      "status": "IN PROGRESS",
+      "gate": "H01-H10, basic E/M/L vertical slice for Human G07, actual artifact identity",
+      "evidence": {
+        "candidateCommit": "2cccec68bd1651cda4ccadf01829441564db2b64",
+        "dllSha256": "5e256ab23f92cf8663859b410276659e1a6121b0c81cec835b84062c38a77d0c",
+        "dllMvid": "c65c50f2-f0d3-401c-a591-c644adcad711",
+        "packageSha256": "5121e2d8b9c4ce0173d6e5599ee19adcbece27523c4706e28f6dd548147335e3",
+        "nativeRuns": {
+          "observe-favored-class-contract": "20260924T0102047921088Z PASS",
+          "disposable-favored-class-grit": "20260924T0101128312625Z PASS"
+        },
+        "remaining": [
+          "H01 host-absent clean launch",
+          "H02/H04 negative host states",
+          "L01 fresh-process save/load"
+        ]
+      }
+    },
+    "phase-2": {
+      "status": "IN PROGRESS",
+      "gate": "every available first-party Gunslinger target: positive, negative, fraction/cap, native event, preview, persistence"
+    },
+    "phase-3": {
+      "status": "NOT STARTED",
+      "gate": "no broad leakage; usable target menus; two-owner and negative-target runtime controls"
+    },
+    "phase-4": {
+      "status": "NOT STARTED",
+      "gate": "each selected-power row has qualified targets when provider exists; complete manifest; neighbors unchanged"
+    },
+    "phase-5": {
+      "status": "NOT STARTED",
+      "gate": "human access neither missing nor overbroad; prerequisites survive; no multiplied rewards; real Mostly Human"
+    },
+    "phase-6": {
+      "status": "NOT STARTED",
+      "gate": "third-party profile toggles across restarts without corruption; G19/G22 unpublished"
+    },
+    "phase-7": {
+      "status": "NOT STARTED",
+      "gate": "all intended available I/A/O targets and infrastructure qualified on the exact final artifact"
+    }
   },
   "installedIdentities": {
-    "game": { "assembly": "Assembly-CSharp.dll", "version": "2.1.7b", "sha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb", "mvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7" },
-    "favoredClass": { "ummId": "ZFavoredClass", "version": "1.3.1", "sha256": "dcd3adf98d1a04c30d772381e7c56ce4beff35a98bcea165aff206a2f0aac26c", "mvid": "3efd38e7-8682-4b4d-8d53-e368a3664919" },
-    "callOfTheWild": { "ummId": "CallOfTheWild", "version": "1.14.4c-2.1", "sha256": "4ebf8e1ed3e66ffed72ea33ea325595629423dacd5bffa23e3c9109144b26915", "mvid": "8caab254-aacf-4811-8093-44b9184e6e53" },
-    "racesUnleashed": { "ummId": "RacesUnleashed", "version": "1.0.11", "sha256": "6d18168cb90ffe60931addc8ee11e42b3ef647ef0e6d4b7ce8980d44659f4cb0", "mvid": "e9b9acb5-9b3f-41ad-bbd7-74494d5d7680" },
-    "kmgInstalledPreMission": { "version": "0.0.136", "sha256": "c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c", "mvid": "7dce994f-ae50-443b-b893-2b3afaf11574" }
+    "game": {
+      "assembly": "Assembly-CSharp.dll",
+      "version": "2.1.7b",
+      "sha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "mvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7"
+    },
+    "favoredClass": {
+      "ummId": "ZFavoredClass",
+      "version": "1.3.1",
+      "sha256": "dcd3adf98d1a04c30d772381e7c56ce4beff35a98bcea165aff206a2f0aac26c",
+      "mvid": "3efd38e7-8682-4b4d-8d53-e368a3664919"
+    },
+    "callOfTheWild": {
+      "ummId": "CallOfTheWild",
+      "version": "1.14.4c-2.1",
+      "sha256": "4ebf8e1ed3e66ffed72ea33ea325595629423dacd5bffa23e3c9109144b26915",
+      "mvid": "8caab254-aacf-4811-8093-44b9184e6e53"
+    },
+    "racesUnleashed": {
+      "ummId": "RacesUnleashed",
+      "version": "1.0.11",
+      "sha256": "6d18168cb90ffe60931addc8ee11e42b3ef647ef0e6d4b7ce8980d44659f4cb0",
+      "mvid": "e9b9acb5-9b3f-41ad-bbd7-74494d5d7680"
+    },
+    "kmgInstalledPreMission": {
+      "version": "0.0.136",
+      "sha256": "c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c",
+      "mvid": "7dce994f-ae50-443b-b893-2b3afaf11574"
+    }
   },
   "hostFacts": {
-    "gunslingerHostProgression": { "name": "FavoredClassKMG_Gunslinger_ClassProgression", "guid": "cbe4e1941a5f0fa8229919016a6b283b", "evidence": "ZFavoredClass loaded_blueprints.txt dump of 2026-09-23 17:18 (static; runtime confirmation pending)" },
-    "gunslingerHostBonusSelection": { "name": "FavoredClassKMG_Gunslinger_ClassFeatureSelecion", "guid": "5ffbec509d160a812695bef00c968c9b", "evidence": "same dump" },
+    "gunslingerHostProgression": {
+      "name": "FavoredClassKMG_Gunslinger_ClassProgression",
+      "guid": "cbe4e1941a5f0fa8229919016a6b283b",
+      "evidence": "native observe-favored-class-contract 20260924T0102047921088Z"
+    },
+    "gunslingerHostBonusSelection": {
+      "name": "FavoredClassKMG_Gunslinger_ClassFeatureSelecion",
+      "guid": "5ffbec509d160a812695bef00c968c9b",
+      "evidence": "native observe-favored-class-contract 20260924T0102047921088Z"
+    },
     "investmentModel": "N = fullRank + partialRank; next pick is full iff (N+1) % d == 0 (CotW PrerequisiteFeatureFullRank.Check); benefit floor(N/d)",
     "hostPartialCapacity": "partial.Ranks = full.Ranks * (d-1) (ZFavoredClass Core.addFavoredClassBonus)",
     "raceCheck": "ZFavoredClass.NewMechanics.PrerequisiteRace.Check: race == unit.Progression.Race; Group=Any",
     "customJsonParseOutsideTry": true
   },
   "candidates": [],
-  "blockers": []
+  "blockers": [],
+  "preExistingDefects": [
+    "D1 Gun Training level-17 dead end",
+    "D2 Dead Shot confirmation unreachable",
+    "D3 Gunslinger Initiative timing (suspected)"
+  ]
 }
