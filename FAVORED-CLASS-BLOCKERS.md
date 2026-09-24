@@ -20,6 +20,18 @@ or a reproducible defect. Nothing here is a completed qualification.
 - Status: MITIGATED (fail-closed); a concurrent launch can still invalidate a
   run, which then counts as a failure and is repeated.
 
+### B2 — CotW-only and CotW+FCB compatibility profiles cannot be staged
+
+- `scripts\compatibility\Invoke-KingmakerCompatibilityProfile.ps1` stages the
+  `gunslinger-call-of-the-wild` and `gunslinger-call-of-the-wild-favored-class`
+  profiles from the reference root `C:\Dev\KingmakerGunslingerLab\examples`,
+  which does not exist on this machine. Both runs failed before staging
+  anything; the live Mods tree was verified intact afterwards.
+- The isolated `gunslinger-only` profile (H01, host physically absent) PASSED.
+- Status: BLOCKED (missing fixture). The full-install run already exercises
+  the Favored Class + CotW stack; the missing profiles only add a CotW-without-
+  host observation (H02 "installed but not ready" is domain tested).
+
 ## Pre-existing KMG defects found by this mission (owner decisions)
 
 These are outside the adopted charter rows. They are recorded, not redesigned.
@@ -59,16 +71,25 @@ These are outside the adopted charter rows. They are recorded, not redesigned.
 - Owner decision needed: whether Dead Shot should threaten and confirm, and with
   which confirmation bonuses.
 
-### D3 — Gunslinger Initiative timing (to verify natively; affects G11)
+### D3 — Gunslinger Initiative timing (FIXED; affects G11)
 
 - Native `UnitCombatPrepareController` stores `RuleInitiativeRoll.Result` into
   `UnitCombatState.Initiative` and sorts the turn order before it raises
-  `IUnitInitiativeHandler`. The Sprint 38 deed adds its +2 in that handler, so
-  the bonus may never reach the stored initiative. The Sprint 38 qualification
-  raised the handler manually and observed only `RuleInitiativeRoll.Modifier`.
-- Status: SUSPECTED from decompiled source; a native combat-entry observation
-  is scheduled before any change. G11 depends on the deed actually changing
-  initiative.
+  `IUnitInitiativeHandler`, so the Sprint 38 deed's +2 (added in that handler)
+  never reached the stored initiative.
+- Reproduced natively: `runtime-evidence/20260924T0137282472516Z-disposable-favored-class-initiative-timing`
+  (`cf8a66d21`): stored 11 against an expected 17.
+- Fixed in `732cddae3`: the deed now also handles
+  `IInitiatorRulebookHandler<RuleInitiativeRoll>` and adds its bonus (and the
+  G11 earned steps) inside the rule, before the result is stored; the global
+  handler remains as a duplicate-guarded fallback.
+- Native PASS: `runtime-evidence/20260924T0154493048526Z-disposable-favored-class-initiative-timing`
+  (stored 22 = d20 16 + Initiative 0 + deed 2 + 4 earned Ifrit steps in both
+  real-time and turn-based entry;
+  the turn-based order puts the Gunslinger first) and the Sprint 38 regression
+  `runtime-evidence/20260924T0155347348333Z-disposable-gunslinger-initiative`.
+- `docs/SPRINT-38-GUNSLINGER-INITIATIVE-QUALIFICATION.md` carries a correction
+  section; the earlier qualification observed only the rule modifier.
 
 ## Suspected host defects (Favored Class 1.3.1; recorded, not patched)
 
