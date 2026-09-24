@@ -62,8 +62,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         { "eagle", "dire-bat", "roc" };
 
         /// <summary>
-        /// The two renderers that matter on a donor-sharing view: the donor's
-        /// own, and the Pteranodon child if one was attached.
+        /// The one skinned renderer on a GiantEagle-donor view, as the swap
+        /// leaves it: the Pteranodon's mesh, material and 46 bones when
+        /// attached; the eagle's own mesh, material and 72 bones when not. The
+        /// component's enabled state is the game's to set - the fader hides a
+        /// fresh summon until it fades in - so it is recorded, not judged.
         /// </summary>
         private static string DescribePteranodonRenderers(UnitEntityView view)
         {
@@ -71,27 +74,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value != null && value.sharedMesh != null)
                 .ToArray();
-            SkinnedMeshRenderer child = renderers.FirstOrDefault(value =>
-                value.gameObject.name ==
-                    ExpandedSummoningPteranodonViewPatch.CustomChildName);
-            SkinnedMeshRenderer donor = renderers.FirstOrDefault(value =>
-                value.gameObject.name !=
-                    ExpandedSummoningPteranodonViewPatch.CustomChildName);
-            return "donorEnabled=" + (donor != null && donor.enabled ? "true" : "false") +
-                ";child=" + (child != null ? "true" : "false") +
-                ";childEnabled=" + (child != null && child.enabled ? "true" : "false") +
+            SkinnedMeshRenderer donor = renderers.FirstOrDefault();
+            return "mesh=" + (donor == null || donor.sharedMesh == null ? "<none>" :
+                    donor.sharedMesh.name) +
+                ";material=" + (donor == null || donor.sharedMaterial == null ? "<none>" :
+                    donor.sharedMaterial.name) +
+                ";bones=" + Number(donor == null || donor.bones == null ? 0 :
+                    donor.bones.Length) +
+                ";enabled=" + (donor != null && donor.enabled ? "true" : "false") +
                 ";renderers=" + Number(renderers.Length);
         }
 
         /// <summary>
-        /// The presentation contract of the attached visual, measured against
-        /// the donor it replaced on the same view: it is the attached outcome,
-        /// the donor renderer is off and the child on, both share the root
-        /// bone, all 46 of the child's bones are the donor's animated
-        /// transforms, the child carries the donor's local bounds and shadow
-        /// modes, its private material uses the donor's shader with the albedo
-        /// while the donor's shared material is untouched, and the view scale
-        /// is the catalog multiplier.
+        /// The swap is in place: the Pteranodon's mesh and material on the
+        /// donor's component, bound to the 46 bones its weights index.
+        /// </summary>
+        private static bool IsPteranodonAttached(string renderers)
+        {
+            return renderers.StartsWith("mesh=" +
+                ExpandedSummoningPteranodonViewPatch.CustomVisualName + ";material=" +
+                ExpandedSummoningPteranodonViewPatch.CustomVisualName + ";bones=46;",
+                StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// The donor exactly as the prefab gives it: its own mesh and material
+        /// on the 72-bone rig, and one renderer.
+        /// </summary>
+        private static bool IsDonorUntouched(string renderers)
+        {
+            return renderers.IndexOf("mesh=" +
+                    ExpandedSummoningPteranodonViewPatch.CustomVisualName,
+                    StringComparison.Ordinal) < 0 &&
+                renderers.IndexOf("material=" +
+                    ExpandedSummoningPteranodonViewPatch.CustomVisualName,
+                    StringComparison.Ordinal) < 0 &&
+                renderers.IndexOf(";bones=72;", StringComparison.Ordinal) >= 0 &&
+                renderers.EndsWith(";renderers=1", StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// The presentation contract of the attached visual on the donor's own
+        /// component: the attached outcome and state, every one of the 46
+        /// installed bones a transform of this view's own skeleton with the
+        /// root bone kept, nonzero bounds, the material carrying the albedo on
+        /// a shader, and the view scale at the catalog multiplier.
         /// </summary>
         private static string DescribePteranodonPresentation(UnitEntityView view,
             out bool satisfied)
@@ -101,55 +128,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value != null && value.sharedMesh != null)
                 .ToArray();
-            SkinnedMeshRenderer child = renderers.FirstOrDefault(value =>
-                value.gameObject.name ==
-                    ExpandedSummoningPteranodonViewPatch.CustomChildName);
-            SkinnedMeshRenderer donor = renderers.FirstOrDefault(value =>
-                value.gameObject.name !=
-                    ExpandedSummoningPteranodonViewPatch.CustomChildName);
+            SkinnedMeshRenderer donor = renderers.FirstOrDefault();
+            string state = DescribePteranodonRenderers(view);
             bool attached = outcome.StartsWith("visual:attached;",
-                StringComparison.Ordinal) && child != null && donor != null &&
-                !donor.enabled && child.enabled;
-            bool sameRoot = child != null && donor != null &&
-                ReferenceEquals(child.rootBone, donor.rootBone);
-            int boneCount = child == null || child.bones == null ? 0 : child.bones.Length;
-            int bonesShared = 0;
-            if (child != null && donor != null && donor.bones != null && child.bones != null)
-            {
-                var donorBones = new HashSet<Transform>(donor.bones.Where(
-                    value => value != null));
-                bonesShared = child.bones.Count(value =>
-                    value != null && donorBones.Contains(value));
-            }
-            bool bonesBound = boneCount == 46 && bonesShared == 46;
-            bool boundsMatch = child != null && donor != null &&
-                (child.localBounds.center - donor.localBounds.center).sqrMagnitude < 1e-6f &&
-                (child.localBounds.size - donor.localBounds.size).sqrMagnitude < 1e-6f;
-            bool shadows = child != null && donor != null &&
-                child.shadowCastingMode == donor.shadowCastingMode &&
-                child.receiveShadows == donor.receiveShadows;
-            Material childMaterial = child == null ? null : child.sharedMaterial;
-            Material donorMaterial = donor == null ? null : donor.sharedMaterial;
-            bool shaded = childMaterial != null && donorMaterial != null &&
-                !ReferenceEquals(childMaterial, donorMaterial) &&
-                childMaterial.shader == donorMaterial.shader &&
-                childMaterial.mainTexture != null &&
-                childMaterial.mainTexture.name == "KMG_Pteranodon_Albedo" &&
-                (donorMaterial.mainTexture == null ||
-                    donorMaterial.mainTexture.name != "KMG_Pteranodon_Albedo");
+                StringComparison.Ordinal) && IsPteranodonAttached(state) &&
+                renderers.Length == 1;
+            int boneCount = donor == null || donor.bones == null ? 0 : donor.bones.Length;
+            int bonesOwned = donor == null || donor.bones == null ? 0 :
+                donor.bones.Count(value => value != null &&
+                    value.IsChildOf(view.transform));
+            bool bonesBound = donor != null && boneCount == 46 && bonesOwned == 46 &&
+                donor.rootBone != null && donor.rootBone.IsChildOf(view.transform);
+            bool bounded = donor != null && donor.localBounds.size.sqrMagnitude > 0.0001f;
+            Material material = donor == null ? null : donor.sharedMaterial;
+            bool shaded = material != null && material.shader != null &&
+                material.mainTexture != null &&
+                material.mainTexture.name == "KMG_Pteranodon_Albedo";
             float multiplier = SummonViewScaleCatalog.All.Single(value =>
                 value.CreatureKey == "pteranodon").Multiplier;
             float scale = view.transform.localScale.x;
             bool scaled = Mathf.Abs(scale - multiplier) < 0.001f;
-            Bounds world = child == null ? new Bounds() : child.bounds;
-            bool extent = child != null && world.size.sqrMagnitude > 0.0001f;
-            satisfied = attached && sameRoot && bonesBound && boundsMatch &&
-                shadows && shaded && scaled && extent;
-            return "outcome=" + outcome + ";attached=" + attached + ";sameRoot=" +
-                sameRoot + ";bones=" + Number(bonesShared) + "/" + Number(boneCount) +
-                ";boundsMatch=" + boundsMatch + ";shadows=" + shadows + ";shaded=" +
-                shaded + ";viewScale=" + Decimal(scale) + "/" + Decimal(multiplier) +
-                ";worldExtent=" + Decimal(world.size.magnitude);
+            Bounds world = donor == null ? new Bounds() : donor.bounds;
+            bool extent = donor != null && world.size.sqrMagnitude > 0.0001f;
+            satisfied = attached && bonesBound && bounded && shaded && scaled && extent;
+            return "outcome=" + outcome + ";" + state + ";attached=" + attached +
+                ";bonesOwned=" + Number(bonesOwned) + "/" + Number(boneCount) +
+                ";rootBone=" + (donor == null || donor.rootBone == null ? "<null>" :
+                    donor.rootBone.name) +
+                ";bounded=" + bounded + ";shader=" + (material == null ||
+                    material.shader == null ? "<null>" : material.shader.name) +
+                ";shaded=" + shaded + ";viewScale=" + Decimal(scale) + "/" +
+                Decimal(multiplier) + ";worldExtent=" + Decimal(world.size.magnitude);
         }
 
         /// <summary>

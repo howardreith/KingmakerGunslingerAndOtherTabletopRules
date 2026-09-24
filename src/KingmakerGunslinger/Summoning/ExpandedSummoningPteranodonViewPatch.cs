@@ -19,26 +19,42 @@ namespace KingmakerGunslinger.Summoning
     /// touched, and eagle, dire bat and roc are the negative controls that prove
     /// it.
     ///
+    /// The visual rides the donor's own <see cref="SkinnedMeshRenderer"/>
+    /// component, on this one instance: its mesh, bone array and material are
+    /// swapped for the Pteranodon's, and nothing else about the view changes.
+    /// That is deliberate. The game drives a unit's renderers by reference -
+    /// <c>EntityFader</c> hides and fades them in on summon, the FX visibility
+    /// manager and the occlusion highlighter cache them, hit flashes and the
+    /// death dissolve write to their materials - and a renderer added beside
+    /// the donor's would sit outside every one of those, visible through fog,
+    /// opaque during the fade, untouched by a hit. The first live isolation
+    /// check found exactly that: freshly summoned units had their donor
+    /// renderer disabled by the fader while a sibling would have stayed on.
+    ///
     /// The invariant is that a unit is always either custom-visual-attached or
     /// donor-visual-intact. It is never invisible, never double-bodied and never
-    /// half-initialised. Any failure before the donor renderer is suppressed
-    /// simply leaves the donor alone; any failure after it re-enables the donor
-    /// and destroys what was added.
+    /// half-initialised. Any failure before the swap simply leaves the donor
+    /// alone; any failure after it puts the original mesh, bones and materials
+    /// back on the same component and destroys what was made.
     /// </summary>
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]
     internal static class ExpandedSummoningPteranodonViewPatch
     {
         internal const string PteranodonBlueprintName =
             "KMG_Summoning_Unit_Pteranodon";
-        internal const string CustomChildName = "KMG_PteranodonMembrane";
+        /// <summary>
+        /// The name carried by the private mesh and material the swap installs;
+        /// observers recognise the attached state by it.
+        /// </summary>
+        internal const string CustomVisualName = "KMG_PteranodonMembrane";
         private const string MainTexture = "_MainTex";
 
         /// <summary>
         /// Fault injection for the guarded fallback drill. When set, it runs at
-        /// the one point where a failure is most expensive - after the donor
-        /// renderer has been disabled - so the rollback path is exercised on a
-        /// live unit. Only the runtime-testing fixture sets it, and it clears
-        /// it again in the same cast.
+        /// the one point where a failure is most expensive - after the swap has
+        /// been made - so the rollback path is exercised on a live unit. Only
+        /// the runtime-testing fixture sets it, and it clears it again in the
+        /// same cast.
         /// </summary>
         internal static Action PostSuppressionFaultForTest;
 
@@ -66,8 +82,10 @@ namespace KingmakerGunslinger.Summoning
         private sealed class Attachment
         {
             internal string Outcome;
-            internal GameObject Child;
             internal SkinnedMeshRenderer Donor;
+            internal Mesh OriginalMesh;
+            internal Transform[] OriginalBones;
+            internal Material[] OriginalMaterials;
             internal Material Material;
             internal Mesh Mesh;
         }
@@ -120,7 +138,7 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
-        /// Everything is validated before the donor renderer is suppressed, so
+        /// Everything is validated before the donor renderer is touched, so
         /// the common failure is a no-op rather than a rollback.
         /// </summary>
         private static string Attach(UnitEntityView view, Attachment attachment)
@@ -148,8 +166,7 @@ namespace KingmakerGunslinger.Summoning
                 out bones, out bindposes, out reason))
                 return "donor-visual:" + reason;
 
-            Transform rootBone = donor.rootBone;
-            if (rootBone == null) return "donor-visual:donor-root-bone-missing";
+            if (donor.rootBone == null) return "donor-visual:donor-root-bone-missing";
             Material donorMaterial = donor.sharedMaterial;
             if (donorMaterial == null)
                 return "donor-visual:donor-material-missing";
@@ -159,68 +176,56 @@ namespace KingmakerGunslinger.Summoning
             if (!donorMaterial.HasProperty(MainTexture))
                 return "donor-visual:donor-material-has-no-main-texture";
 
-            GameObject child = null;
+            // What the rollback puts back: the references this instance's
+            // component holds right now. The shared assets behind them are
+            // never modified, so restoring the references restores the donor.
+            attachment.Donor = donor;
+            attachment.OriginalMesh = donor.sharedMesh;
+            attachment.OriginalBones = donor.bones;
+            attachment.OriginalMaterials = donor.sharedMaterials;
+
             Material material = null;
             Mesh mesh = null;
+            bool swapped = false;
             try
             {
                 // A copy, so the cached asset keeps its identity bind poses and
                 // a second unit binds from the same clean source.
                 mesh = UnityEngine.Object.Instantiate(source);
-                mesh.name = CustomChildName;
+                mesh.name = CustomVisualName;
                 mesh.bindposes = bindposes;
 
                 // Cloned from the donor's material so the creature is shaded by
                 // the game's own pipeline rather than a bundled stand-in; then
                 // the eagle's textures are replaced by the painting.
                 material = new Material(donorMaterial);
-                material.name = CustomChildName;
+                material.name = CustomVisualName;
                 string dressing = DressMaterial(material, albedo);
 
-                child = new GameObject(CustomChildName);
-                child.transform.SetParent(donor.transform.parent, false);
-                child.transform.localPosition = Vector3.zero;
-                child.transform.localRotation = Quaternion.identity;
-                child.transform.localScale = Vector3.one;
+                // The swap, on this one instance's renderer component: the
+                // Pteranodon's mesh, the 46 bones its weights index, and its
+                // material. Root bone, bounds, shadow modes, quality and the
+                // component's enabled state stay whatever the game set.
+                swapped = true;
+                donor.sharedMesh = mesh;
+                donor.bones = bones;
+                donor.sharedMaterials = new[] { material };
 
-                SkinnedMeshRenderer renderer =
-                    child.AddComponent<SkinnedMeshRenderer>();
-                renderer.sharedMesh = mesh;
-                renderer.bones = bones;
-                renderer.rootBone = rootBone;
-                renderer.sharedMaterial = material;
-                renderer.localBounds = donor.localBounds;
-                renderer.updateWhenOffscreen = donor.updateWhenOffscreen;
-                renderer.quality = donor.quality;
-                renderer.shadowCastingMode = donor.shadowCastingMode;
-                renderer.receiveShadows = donor.receiveShadows;
-
-                attachment.Child = child;
                 attachment.Material = material;
                 attachment.Mesh = mesh;
-                attachment.Donor = donor;
 
-                // Only now is anything about the donor changed, and only the
-                // component's enabled flag on this one instance. The GameObject
-                // stays active so anything else parented under it - effects,
-                // anchors, colliders - keeps working.
-                donor.enabled = false;
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
-                    albedo.width + "x" + albedo.height + ";" + dressing;
+                    albedo.width + "x" + albedo.height + ";rendererEnabled=" +
+                    (donor.enabled ? "true" : "false") + ";" + dressing;
             }
             catch (Exception error)
             {
-                Revert(attachment);
-                // The child goes immediately, not at the end of the frame:
-                // the invariant is that a unit is never double-bodied, and an
-                // observer in this same frame must not find a corpse of it.
-                if (child != null) UnityEngine.Object.DestroyImmediate(child);
+                if (swapped) Revert(attachment);
                 if (material != null) UnityEngine.Object.Destroy(material);
                 if (mesh != null) UnityEngine.Object.Destroy(mesh);
-                attachment.Child = null;
                 attachment.Material = null;
                 attachment.Mesh = null;
                 return "donor-visual:attach-failed:" + error.GetType().Name;
@@ -230,9 +235,9 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// Puts the painting on the private material copy and takes the
         /// eagle's own maps off it. Returns what was done, for the evidence
-        /// record: which slots existed and were cleared, and the tint the
-        /// donor material carried, which is reset to white so the albedo
-        /// renders as painted.
+        /// record: which slots the shader declares, which were cleared, and
+        /// the tint the donor material carried, which is reset to white so the
+        /// albedo renders as painted.
         /// </summary>
         private static string DressMaterial(Material material, Texture2D albedo)
         {
@@ -293,10 +298,17 @@ namespace KingmakerGunslinger.Summoning
                 ? status : "donor-visual:" + status;
         }
 
-        /// <summary>Puts the donor back exactly as it was.</summary>
+        /// <summary>
+        /// Puts the donor back exactly as it was: the same component, the
+        /// references it held before the swap.
+        /// </summary>
         private static void Revert(Attachment attachment)
         {
-            if (attachment.Donor != null) attachment.Donor.enabled = true;
+            SkinnedMeshRenderer donor = attachment.Donor;
+            if (donor == null) return;
+            donor.sharedMesh = attachment.OriginalMesh;
+            donor.bones = attachment.OriginalBones;
+            donor.sharedMaterials = attachment.OriginalMaterials;
         }
     }
 }
