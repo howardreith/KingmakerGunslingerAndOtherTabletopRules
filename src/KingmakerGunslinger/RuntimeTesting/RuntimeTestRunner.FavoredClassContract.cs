@@ -181,7 +181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["hostMvid"] = observed.HostModuleVersionId,
                 ["cotwSha256"] = observed.CallOfTheWildFileSha256,
                 ["cotwMvid"] = observed.CallOfTheWildModuleVersionId,
-                ["fingerprints"] = JObject.FromObject(observed.MethodIlSha256)
+                ["fingerprints"] = new JObject(observed.MethodIlSha256.OrderBy(value => value.Key,
+                    StringComparer.Ordinal).Select(value => new JProperty(value.Key, value.Value)))
             };
             if (!host.Decision.IsReady)
                 failures.Add("host decision " + host.Decision);
