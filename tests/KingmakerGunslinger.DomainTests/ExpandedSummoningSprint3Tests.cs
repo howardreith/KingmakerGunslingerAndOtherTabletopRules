@@ -227,12 +227,17 @@ namespace KingmakerGunslinger.DomainTests
             string components = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Summoning",
                 "ExpandedSummoningSpecialCombatComponents.cs"));
+            // Kingmaker's automatic-hit path never rolls the d20 and decides the
+            // critical only from AutoCriticalThreat and AutoCriticalConfirmation
+            // together (round-2 mechanical evidence), so the bounded insight is
+            // an automatic critical hit rather than a threat with a rolled
+            // confirmation.
             Assertions.True(components.Contains("class CyclopsFlashOfInsightComponent") &&
                 components.Contains("RuleInitiatorLogicComponent<RuleAttackRoll>") &&
                 components.Contains("evt.AutoHit = true;") &&
                 components.Contains("evt.AutoCriticalThreat = true;") &&
-                !components.Contains("evt.AutoCriticalConfirmation = true;"),
-                "The armed state converts the hit and the threat, never the confirmation.");
+                components.Contains("evt.AutoCriticalConfirmation = true;"),
+                "The armed state grants the hit, the threat and the confirmation together on the automatic-hit path.");
             string builder = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints",
                 "ExpandedSummoningSpecialBuilder.cs"));

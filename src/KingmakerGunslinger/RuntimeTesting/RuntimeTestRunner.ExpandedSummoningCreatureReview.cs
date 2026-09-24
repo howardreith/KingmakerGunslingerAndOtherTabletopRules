@@ -115,7 +115,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _creatureReviewIndex = 0;
                 _creatureReviewPhase = 0;
                 WriteLifecycleStage("creature-review-start");
-                return;
+                // Fall through: the first cast happens in the same guarded
+                // update as the setup, exactly as the persistence prepare
+                // casts its fixture.
             }
             if (_creatureReviewIndex >= _creatureReviewQueue.Count)
             {
