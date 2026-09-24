@@ -49,6 +49,11 @@
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassRaceIdentity.cs"><Link>FavoredClass\FavoredClassRaceIdentity.cs</Link></Compile>
     <Compile Include="FavoredClassHostContractTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassHostContract.cs"><Link>FavoredClass\FavoredClassHostContract.cs</Link></Compile>
+    <Compile Include="FavoredClassLeafCatalogTests.cs" />
+    <Compile Include="FavoredClassSourceTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassLeafCatalog.cs"><Link>FavoredClass\FavoredClassLeafCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassIdentityCatalog.cs"><Link>FavoredClass\FavoredClassIdentityCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassIntegrationStatus.cs"><Link>FavoredClass\FavoredClassIntegrationStatus.cs</Link></Compile>
     <Compile Include="BetterVendorsProgressionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\MagicWeaponPricing.cs"><Link>Acquisition\MagicWeaponPricing.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\ProgressionWeaponCatalog.cs"><Link>Acquisition\ProgressionWeaponCatalog.cs</Link></Compile>

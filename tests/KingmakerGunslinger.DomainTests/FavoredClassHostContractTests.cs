@@ -110,6 +110,14 @@ namespace KingmakerGunslinger.DomainTests
                 FavoredClassHostState.GunslingerMissing, "gunslinger-progression-not-offered");
             AssertReadiness(r => r.GunslingerProgressionLevels = 10,
                 FavoredClassHostState.GunslingerMissing, "gunslinger-progression-shape");
+            FavoredClassHostReadinessObservation noGunslinger = Ready();
+            noGunslinger.GunslingerProgressionGuid = null;
+            noGunslinger.GunslingerBonusSelectionGuid = null;
+            noGunslinger.GenericHitPointLeafPresent = false;
+            noGunslinger.GenericSkillLeavesPresent = false;
+            Assertions.Equal(FavoredClassHostState.Ready, FavoredClassHostContract.EvaluateHost(
+                FavoredClassHostContract.EvaluateBinary(Qualified()), noGunslinger).State,
+                "A missing Gunslinger scan must not block other class families.");
             FavoredClassHostObservation unsupported = Qualified();
             unsupported.HostFileSha256 = new string('3', 64);
             Assertions.Equal(FavoredClassHostState.UnsupportedBinary,

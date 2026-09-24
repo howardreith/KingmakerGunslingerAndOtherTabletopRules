@@ -75,6 +75,8 @@ namespace KingmakerGunslinger.Bootstrap
         internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }
         internal static TeleportationScrollVendorPublication TeleportationScrollVendors { get { return _teleportationScrollVendors; } }
         internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }
+        private static KingmakerGunslinger.FavoredClass.FavoredClassBlueprintSet _favoredClass;
+        internal static KingmakerGunslinger.FavoredClass.FavoredClassBlueprintSet FavoredClassLeaves { get { return _favoredClass; } }
         private static MagicCircleBlueprintSet[] _magicCircles;
         private static MagicCircleSpellListPublication _magicCirclePublication;
         internal static MagicCircleBlueprintSet[] MagicCircles { get { return _magicCircles; } }
@@ -743,6 +745,7 @@ namespace KingmakerGunslinger.Bootstrap
             BodyguardFeatCatalogPublication bodyguardFeatPublication = null;
             var magicCircleRegistry = new BlueprintRegistry(library, manifest, context.Logger);
             var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);
+            var favoredClassRegistry = new BlueprintRegistry(library, manifest, context.Logger);
             TeleportationSpellBlueprintSet teleportation = null;
             TeleportationSpellListPublication teleportationPublication = null;
             ShieldOtherSpellListPublication shieldOtherPublication = null;
@@ -1130,6 +1133,30 @@ namespace KingmakerGunslinger.Bootstrap
                     ProgressionWeaponBlueprints.Register(library, registry,
                         productionFirearms, magicFirearms, easternWeapons,
                         elvenBranchedSpears, context.Logger);
+                // Optional Favored Class integration: owned leaves are always
+                // registered (saved investments resolve with or without the
+                // host) in a contained registry; host publication is a
+                // separate first-update transaction.
+                try
+                {
+                    _favoredClass = KingmakerGunslinger.FavoredClass.FavoredClassBlueprints.Register(
+                        favoredClassRegistry, gunslingerClassBlueprints);
+                    context.Logger.Info("favored-class", "registration.complete",
+                        "leaves=" + _favoredClass.LeafCount + ";pairs=" + _favoredClass.Pairs.Count);
+                }
+                catch (Exception favoredClassException)
+                {
+                    _favoredClass = null;
+                    try { favoredClassRegistry.RollbackAll(); }
+                    catch (Exception favoredClassRollbackException) {
+                        context.Logger.Failure("favored-class", "registration.rollback-failed",
+                            "Exact favored-class identity rollback could not complete; the integration stays disabled.",
+                            favoredClassRollbackException);
+                    }
+                    context.Logger.Failure("favored-class", "registration.failed",
+                        "Favored-class identities failed validation; the integration is disabled and other modules continue.",
+                        favoredClassException);
+                }
                 PlayerFacingPresentation.ApplyArchetypes(
                     gunslingerClassBlueprints.CharacterClass,
                     gunslingerClassBlueprints.CharacterClass.Icon);
@@ -1241,8 +1268,10 @@ namespace KingmakerGunslinger.Bootstrap
                     elementalFeats,
                     elementalFeatPublication,
                     martialPerformancePublication,
-                    registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount,
-                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount);
+                    registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount +
+                        favoredClassRegistry.RegisteredCount,
+                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount +
+                        favoredClassRegistry.RegisteredCount);
             }
             catch (Exception initializationException)
             {
@@ -1255,6 +1284,15 @@ namespace KingmakerGunslinger.Bootstrap
                 catch (Exception circleRollbackException) {
                     context.Logger.Failure("magic-circle", "bootstrap.rollback-failed",
                         "Core initialization failed; exact Magic Circle rollback was refused.", circleRollbackException);
+                }
+
+                try {
+                    _favoredClass = null;
+                    favoredClassRegistry.RollbackAll();
+                }
+                catch (Exception favoredClassRollbackException) {
+                    context.Logger.Failure("favored-class", "bootstrap.rollback-failed",
+                        "Core initialization failed; favored-class exact rollback was refused.", favoredClassRollbackException);
                 }
 
                 try {
