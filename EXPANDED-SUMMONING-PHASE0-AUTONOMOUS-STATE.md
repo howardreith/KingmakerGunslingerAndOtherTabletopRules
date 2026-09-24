@@ -29,18 +29,18 @@ action`. Do not restart the project or rerun completed work.
 | B1 | Sprint 0 structural baseline at 0.0.136 | DONE - PASS 38/38 |
 | B2 | Sprint 0 mechanical (`disposable-expanded-summoning`) | DONE - PASS 13/13 |
 | B3 | Sprint 0 player-path | DONE - PASS 10/10 |
-| B4 | Sprint 0 persistence trio | DONE - PASS 9/9 x3 |
+| B4 | Sprint 0 persistence trio | DONE - PASS 9/9 x3 at 0.0.136; closeout PASS 11/11 x3 with the Pteranodon in the fixture and the party-camera review |
 | B5 | Sprint 0 visual contracts | DONE - PASS 13/13 |
-| B6 | Compatibility / feature-boundary profiles | DONE except two owed mechanical runs |
+| B6 | Compatibility / feature-boundary profiles | DONE - the two mechanical runs PASS on the baseline-derived fixture (closeout) |
 | C1 | Sprint 1 corrections verified in current code | DONE |
-| C2 | Dev-only projected-menu fixture | BUILT; live measurement NOT OBTAINED |
-| C3 | Menu rubric + measurements | Rubric written and enforced; live claim narrowed |
+| C2 | Dev-only projected-menu fixture | DONE - live measurement obtained at 120 / 110 entries (closeout) |
+| C3 | Menu rubric + measurements | DONE - rubric applied to the live measurement; criterion 8 refined to the widget's own cost (see rubric) |
 | D1 | Rig contract: attached animation ActionSet/clips/events | DONE |
 | D2 | Rig contract: per-bone rest transforms + bind matrices | DONE |
 | E1 | Deformation proof | DONE - drift 0.00000, control unmoved |
 | E2 | Finished Pteranodon mesh + textures | DONE - tip-apex crest, atlas UVs, painted albedo; internal visual review PASS |
 | E3 | Mesh data + instance-local loader + fallback | DONE - schema 2 loader; both fallback paths exercised live in the fault drill |
-| F1-F7 | Seven live acceptance groups | DONE on machine evidence (groups 1-7); HumanReview: NOT_PERFORMED_NONBLOCKING |
+| F1-F7 | Seven live acceptance groups | DONE on machine evidence (groups 1-7); HumanReview: PASSED for the Pteranodon candidate (owner statement 2026-09-24, revision unspecified); internal review of the party-camera captures PASS |
 | G | Reports, PR update, internal review closure | DONE |
 
 ## Verified facts (do not re-derive)
@@ -212,7 +212,9 @@ claimed.
    ships as mesh data.
 2. **Projected-menu anchor.** Installing an action-bar slot to anchor the popup
    hung the game - frames stopped, so even the frame-budget guard could not
-   fire. Disabled. The live 120/110 measurement is marked not run.
+   fire. Disabled. Lifted in the closeout: the anchor is a group slot the
+   game itself gave a party member selected through its own selection path,
+   and the live 120/110 measurement was obtained (see the closeout section).
 
 ## Owner manual review of the Pteranodon candidate (2026-09-24)
 
@@ -259,10 +261,64 @@ unspecified). HumanReview for everything after it: NOT_PERFORMED_NONBLOCKING.
 - Material facts recorded live: the donor's `PF/StandardDynamic` declares
   _BumpMap of the probed map slots; cleared <none>.
 
+## Phase 0 closeout (2026-09-24)
+
+Closeout runs on `02bc5c47` (the integrated tree: `master` @ `996105ed`
+merged in `9702d319`), every batch restored and verified to the 0.0.117 tree:
+
+- Projected menu, live: `20260924T1647492722669Z-disposable-expanded-summoning-projected-menu`. PASS 3/3 on `02bc5c47`: Summon Monster at 120 entries and Nature's Ally at 110 both render every entry (120 and 110 slots), first, middle and last reachable, the popup inside the safe area (550 x 550 and 550 x 500 canvas units against a 1910 x 1070 safe rectangle, so no scrolling is needed at this size and none is installed), the first entry visible on open, no slot growth across three cycles; warm toggle 119-120 ms and 103-110 ms, the cold first open 3334 ms (slot instantiation, reported, not gated), this host at 425-1500 ms per frame under the harness. The subject is a
+  party member selected through the game's own selection path (Hedwirg, 42
+  active group slots); nothing installs an action-bar slot. Criterion 8 is
+  scored on the synchronous toggle, with the run's first open reported as
+  the cold open; the rubric records why.
+- Persistence trio with the Pteranodon: prepare `20260924T1625111025628Z-working-save-expanded-summoning-prepare`
+  PASS 11/11, verify-cleanup `20260924T1628426382345Z-working-save-expanded-summoning-verify-cleanup` PASS 11/11, verify-absent
+  `20260924T1632136753152Z-working-save-expanded-summoning-verify-absent` PASS 11/11. The reloaded Pteranodon carries the attached
+  visual on the freshly deserialized unit; the game's fader instantiates the
+  renderer's material (Unity's " (Instance)" suffix) once a unit lives across
+  frames, and the instance keeps the painting.
+- Party-camera review (internal): eight party-camera renders on `00195475` (four per writing stage: idle, twice moving, attacking), each with the creature in frame, the screen lit, the renderer enabled and the material intact (dissolve 0.008 at idle, 0 after); the reloaded creature renders as a pterosaur - brown leather wings spread, red crest, long beak - beside the party at Large scale, moving across the room and biting, with the summoned Wolf and Small Air Elemental in the same frames. Internal review of the images: PASS.
+- Two defects the closeout found and repaired, each bounded to the seam that
+  failed (`b7a0b6da`): the Pteranodon's material clone was taken in the
+  donor's dissolve state and never adopted by the view's material controller,
+  so the game's fades and tints passed it by and a clone taken fully
+  dissolved stayed invisible in the party camera - the review images on
+  `6dec9738` showed no creature while every mechanical observer was
+  satisfied; and the variant menu's scrolling installer measured the popup's
+  preferred size in the root's local units against canvas-unit rectangles,
+  so a 550-unit popup asked for 1100 and 120 entries engaged a viewport they
+  did not need - a viewport that added three layout groups to one object
+  where Unity allows one, faulted on the null second and, once past that,
+  drew a panel four times its grid. The clone now starts intact and the
+  controller re-reads the renderer's materials; the content carries one
+  layout group of the native type and the sizes convert to canvas units
+  (`02bc5c47`).
+- HumanReview: the owner's passed review (2026-09-24, revision unspecified)
+  stands as recorded; it predates the repair above, whose build has been
+  reviewed internally from the party camera only - HumanReview for it:
+  NOT_PERFORMED_NONBLOCKING.
+- Compatibility mechanical on the baseline-derived fixture (record
+  `20260924T1203525961325Z`): `gunslinger-only` `20260924T1208085331010Z-disposable-expanded-summoning` PASS 17/17;
+  `gunslinger-high-risk-combined` `20260924T1213545977986Z-disposable-expanded-summoning` PASS 17/17.
+  Fixture `269a9beda2b736f5` derived from the protected baseline `cc7cbb0d08581873`
+  with only its header name changed and no foreign serialized types; the
+  working save `d832bcfcbbd31ac2` restored byte for byte with its timestamps after
+  each transaction. The earlier timeouts were the working save's 465
+  TweakOrTreat and 32 Call of the Wild `$type` entries, unresolvable inside a
+  profile that stages neither mod.
+- Regression on the integrated tree: mechanical `20260924T1616435094695Z-disposable-expanded-summoning (17/17 on 00195475; every Pteranodon `adopted=true`; 17/17 again inside each compatibility transaction on fd31a0e5)`, visual contracts
+  `20260924T1619405601959Z-disposable-expanded-summoning-visual-contracts (15/15 on 00195475)`, fault drill `20260924T1622134839883Z-disposable-expanded-summoning-pteranodon-fault-drill (18/18 on 00195475)`, player path `20260924T1305336453485Z-disposable-expanded-summoning-player-path`
+  PASS 10/10 (6dec9738; lease released cleanly with the scaled exit wait), inventory `20260924T1219459315268Z-observe-expanded-summoning-inventory (38/38 on fd31a0e5)`, probe `20260924T1637399702201Z-observe-summon-pteranodon-view-contracts (13/13 on 00195475)`,
+  same-turn family `20260924T0505196230195Z` activation 10/10, `20260924T0511162702784Z` acadamae 11/11, `20260924T0517130971040Z` multiple 10/10, `20260924T0523309103824Z` native-control 7/7, `20260924T0529318624492Z` rtwp-control 5/5 (22b0d72c), and `20260924T1236387538486Z-disposable-acadamae-graduate` 20/20, `20260924T1238286248628Z-disposable-shield-other` 23/23, `20260924T1240184174861Z-disposable-elemental-race-mechanics` 27/27 (fd31a0e5).
+- Platform: qualified on Windows 10 Pro 10.0.19045 with the installed Steam
+  build only. Linux/Proton was not available and is not claimed.
+- Recorded separately: HumanReview PASSED for the Pteranodon candidate (owner
+  statement, revision unspecified) and NOT_PERFORMED_NONBLOCKING for the
+  closeout work; InternalAcceptance per item above; technical qualification
+  is the runtime evidence listed here.
+
 ## Next executable action
 
-Sprint 2 is complete on internal acceptance. Remaining, none of them
-implementation: owner human review of the finished creature in party-camera
-play (checklist section 2); the two owed compatibility mechanical runs; the
-projected-menu live measurement, which stays NOT RUN for the recorded reason.
-Do not start Sprint 3.
+Phase 0 is finalized: merge PR #21 at its reviewed head, verify the integrated
+master build and package, then open the Sprints 3-8 worktree, branch and draft
+PR under the 2026-09-24 order. Sprint 3 starts there, not here.
