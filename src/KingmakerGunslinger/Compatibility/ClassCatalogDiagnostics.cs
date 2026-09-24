@@ -157,7 +157,7 @@ namespace KingmakerGunslinger.Compatibility
                 set.MysteriousStranger.Archetype.name;
         }
 
-        private static string DescribeUmmOrder(UnityModManager.ModEntry current)
+        internal static string DescribeUmmOrder(UnityModManager.ModEntry current)
         {
             Type manager = current == null ? null : current.GetType().DeclaringType;
             FieldInfo field = manager == null ? null : manager.GetField("modEntries",
@@ -173,7 +173,7 @@ namespace KingmakerGunslinger.Compatibility
             return string.Join("|", values.ToArray());
         }
 
-        private static string DescribeLoadDictionaryPatches(ModContext context)
+        internal static string DescribeLoadDictionaryPatches(ModContext context)
         {
             MethodInfo target = typeof(LibraryScriptableObject).GetMethod("LoadDictionary",
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,

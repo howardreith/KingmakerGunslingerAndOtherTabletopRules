@@ -1296,6 +1296,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableFavoredClassGrit)
+                {
+                    Complete(RunFavoredClassGrit());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveFavoredClassContract)
+                {
+                    Complete(RunFavoredClassContract());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableEmptyFirearmCommand)
                 {
                     Complete(RunDisposableEmptyFirearmCommand());

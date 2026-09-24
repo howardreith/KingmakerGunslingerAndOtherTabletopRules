@@ -15655,6 +15655,22 @@
       "status": "active",
       "milestone": "Better Vendors progression",
       "notes": "+5 Nodachi; canonical-family clone; Better Vendors progression stock only."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Grit.Partial",
+      "guid": "718289fb8ab945e48880961722a344fd",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 maximum grit (G04/G07/G10/G14 grit counter); published only into the Favored Class host's Gunslinger bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Gunslinger.Grit.Full",
+      "guid": "cd8674400bea40adbd8489a08b14eeff",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 maximum grit per rank (G04/G07/G10/G14 grit counter)."
     }
   ]
 }

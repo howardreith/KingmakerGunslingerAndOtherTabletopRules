@@ -5,7 +5,7 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "2657089571ab3b6ea2a2fdcab44541eb54b276b766fb1edb18ca308f45bb8f4d",
+    "registrySha256": "9c6173d125d98976d0630697163e21b9e8fcb65d7cf386f652ab790a4a768a23",
     "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
     "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes."
   },
@@ -9453,6 +9453,31 @@
       "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline.",
       "authorizedFeatureEdits": [
         {
+          "before": "                        \"Core initialization failed; exact Magic Circle rollback was refused.\", circleRollbackException);\n                }",
+          "after": "                        \"Core initialization failed; exact Magic Circle rollback was refused.\", circleRollbackException);\n                }\n\n                try {\n                    _favoredClass = null;\n                    favoredClassRegistry.RollbackAll();\n                }\n                catch (Exception favoredClassRollbackException) {\n                    context.Logger.Failure(\"favored-class\", \"bootstrap.rollback-failed\",\n                        \"Core initialization failed; favored-class exact rollback was refused.\", favoredClassRollbackException);\n                }",
+          "mission": "favored-class-integration"
+        },
+        {
+          "before": "                    martialPerformancePublication,\n                    registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount,\n                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount);\n            }",
+          "after": "                    martialPerformancePublication,\n                    registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount +\n                        favoredClassRegistry.RegisteredCount,\n                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount +\n                        favoredClassRegistry.RegisteredCount);\n            }",
+          "mission": "favored-class-integration"
+        },
+        {
+          "before": "                        elvenBranchedSpears, context.Logger);\n                PlayerFacingPresentation.ApplyArchetypes(",
+          "after": "                        elvenBranchedSpears, context.Logger);\n                // Optional Favored Class integration: owned leaves are always\n                // registered (saved investments resolve with or without the\n                // host) in a contained registry; host publication is a\n                // separate first-update transaction.\n                try\n                {\n                    _favoredClass = KingmakerGunslinger.FavoredClass.FavoredClassBlueprints.Register(\n                        favoredClassRegistry, gunslingerClassBlueprints);\n                    context.Logger.Info(\"favored-class\", \"registration.complete\",\n                        \"leaves=\" + _favoredClass.LeafCount + \";pairs=\" + _favoredClass.Pairs.Count);\n                }\n                catch (Exception favoredClassException)\n                {\n                    _favoredClass = null;\n                    try { favoredClassRegistry.RollbackAll(); }\n                    catch (Exception favoredClassRollbackException) {\n                        context.Logger.Failure(\"favored-class\", \"registration.rollback-failed\",\n                            \"Exact favored-class identity rollback could not complete; the integration stays disabled.\",\n                            favoredClassRollbackException);\n                    }\n                    context.Logger.Failure(\"favored-class\", \"registration.failed\",\n                        \"Favored-class identities failed validation; the integration is disabled and other modules continue.\",\n                        favoredClassException);\n                }\n                PlayerFacingPresentation.ApplyArchetypes(",
+          "mission": "favored-class-integration"
+        },
+        {
+          "before": "            var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);\n            TeleportationSpellBlueprintSet teleportation = null;",
+          "after": "            var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);\n            var favoredClassRegistry = new BlueprintRegistry(library, manifest, context.Logger);\n            TeleportationSpellBlueprintSet teleportation = null;",
+          "mission": "favored-class-integration"
+        },
+        {
+          "before": "        internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }\n        private static MagicCircleBlueprintSet[] _magicCircles;",
+          "after": "        internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }\n        private static KingmakerGunslinger.FavoredClass.FavoredClassBlueprintSet _favoredClass;\n        internal static KingmakerGunslinger.FavoredClass.FavoredClassBlueprintSet FavoredClassLeaves { get { return _favoredClass; } }\n        private static MagicCircleBlueprintSet[] _magicCircles;",
+          "mission": "favored-class-integration"
+        },
+        {
           "before": "        internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }\n        internal static TeleportationScrollVendorPublication TeleportationScrollVendors { get { return _teleportationScrollVendors; } }\n        internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }\n        private static ShieldOtherBlueprintSet _shieldOther;\n        private static ShieldOtherSpellListPublication _shieldOtherPublication;\n        private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;\n",
           "after": "        internal static TeleportationScrollBlueprintSet TeleportationScrolls { get { return _teleportationScrolls; } }\n        internal static TeleportationScrollVendorPublication TeleportationScrollVendors { get { return _teleportationScrollVendors; } }\n        internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }\n        private static MagicCircleBlueprintSet[] _magicCircles;\n        private static MagicCircleSpellListPublication _magicCirclePublication;\n        internal static MagicCircleBlueprintSet[] MagicCircles { get { return _magicCircles; } }\n        internal static MagicCircleSpellListPublication MagicCirclePublication { get { return _magicCirclePublication; } }\n        private static Spells.MagicCircle.MagicCircleScrollVendors _magicCircleVendors;\n        internal static void DisableMagicCirclePublication()\n        {\n            _magicCirclePublication?.Rollback(); _magicCirclePublication = null;\n        }\n        private static ShieldOtherBlueprintSet _shieldOther;\n        private static ShieldOtherSpellListPublication _shieldOtherPublication;\n        private static ElvenBranchedSpearBlueprintSet _elvenBranchedSpears;\n"
         },
@@ -9501,7 +9526,7 @@
           "after": "            internal MagicFirearmBlueprintCatalog MagicFirearms { get; private set; }\n\n            internal ProgressionWeaponBlueprintCatalog ProgressionWeapons\n            { get; private set; }\n\n"
         }
       ],
-      "featureAuthorization": "Magic Circle implementation mission; exact new module registration, publication, rollback and counts only. Reverse these edits before enforcing the original protected icon-mapping insertion."
+      "featureAuthorization": "Magic Circle implementation mission; exact new module registration, publication, rollback and counts only. Reverse these edits before enforcing the original protected icon-mapping insertion. Favored Class integration mission: contained favored-class registry, registration, rollback and totals only; these hunks are reversed first."
     }
   ],
   "artProductionStatus": "complete-main-scope-owner-approved-images",

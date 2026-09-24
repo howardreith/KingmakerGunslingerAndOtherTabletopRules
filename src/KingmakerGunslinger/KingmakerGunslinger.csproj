@@ -216,6 +216,16 @@
     <Compile Include="FavoredClass\FavoredClassEligibility.cs" />
     <Compile Include="FavoredClass\FavoredClassRaceIdentity.cs" />
     <Compile Include="FavoredClass\FavoredClassHostContract.cs" />
+    <Compile Include="FavoredClass\FavoredClassLeafCatalog.cs" />
+    <Compile Include="FavoredClass\FavoredClassIdentityCatalog.cs" />
+    <Compile Include="FavoredClass\FavoredClassIntegrationStatus.cs" />
+    <Compile Include="FavoredClass\FavoredClassRuntime.cs" />
+    <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassGritResourceBonus.cs" />
+    <Compile Include="FavoredClass\FavoredClassBlueprints.cs" />
+    <Compile Include="FavoredClass\FavoredClassHostAdapter.cs" />
+    <Compile Include="FavoredClass\FavoredClassPublication.cs" />
+    <Compile Include="FavoredClass\FavoredClassIntegrationCoordinator.cs" />
     <Compile Include="Acquisition\BetterVendors\BetterVendorsContract.cs" />
     <Compile Include="Acquisition\BetterVendors\BetterVendorsProgressionSchedule.cs" />
     <Compile Include="Acquisition\BetterVendors\BetterVendorsStockPass.cs" />
@@ -1094,6 +1104,9 @@
     <Compile Include="RuntimeTesting\NativeRacialActionIconRules.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmHigherFeatRoots.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.RapidReloadProficiencyGate.cs" />
+    <Compile Include="RuntimeTesting\FavoredClassLevelUpHarness.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassContract.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGrit.cs" />
     <Compile Include="RuntimeTesting\RapidReloadGateEvidenceRules.cs" />
     <Compile Include="RuntimeTesting\RapidReloadVisitCleanupRules.cs" />
     <Compile Include="RuntimeTesting\FirearmHigherFeatRootsRules.cs" />

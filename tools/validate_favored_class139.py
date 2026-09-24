@@ -19,12 +19,15 @@ VERSION = "0.0.139"
 INFORMATIONAL_VERSION = "0.0.139-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1766
+DETERMINISTIC_TEST_COUNT = 1772
 STATIC_KEY = "favoredClassIntegration139"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
 # Better Vendors block.
-APPENDED = ()
+APPENDED = (
+    ("KMG.FavoredClass.Gunslinger.Grit.Partial", "718289fb8ab945e48880961722a344fd"),
+    ("KMG.FavoredClass.Gunslinger.Grit.Full", "cd8674400bea40adbd8489a08b14eeff"),
+)
 
 HOST_SHA256 = "dcd3adf98d1a04c30d772381e7c56ce4beff35a98bcea165aff206a2f0aac26c"
 HOST_MVID = "3efd38e7-8682-4b4d-8d53-e368a3664919"
