@@ -59,6 +59,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { FavoredClassAncestry.Undine, new string[0] },
             };
 
+        // Jon Brazer Enterprises routes added when the optional third-party
+        // profile is on (G16 Dhampir, G17 Drow, G18 Duergar, G21 Tiefling;
+        // G20 Orc has no playable race and adds nothing to Half-orcs, who
+        // already hold the same Pistol-Whip counter through G05).
+        private static readonly Dictionary<string, string[]> FcbThirdPartyGunslingerMenus =
+            new Dictionary<string, string[]>(StringComparer.Ordinal)
+            {
+                { FavoredClassAncestry.Dhampir, new[] { FavoredClassCatalog.EffectFirearmConfirmation } },
+                { FavoredClassAncestry.Drow, new[] { FavoredClassCatalog.EffectDrowNimble } },
+                { FavoredClassAncestry.Duergar, new[] { FavoredClassCatalog.EffectMisfire } },
+                { FavoredClassAncestry.Tiefling, new[] { FavoredClassCatalog.EffectDirtyTrickTrip } },
+            };
+
         private sealed class FcbCounterPlan
         {
             internal FcbCounterPlan(FavoredClassLeafPair pair, int levels)
@@ -284,7 +297,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 row["offeredEffects"] = new JArray(offered);
                 row["offeredLeaves"] = offeredLeaves;
-                string[] expected = FcbExpectedGunslingerMenus[identity.Ancestry];
+                string[] thirdParty;
+                string[] expected = FcbExpectedGunslingerMenus[identity.Ancestry].Concat(
+                    FavoredClassRuntime.Profile.ThirdParty &&
+                        FcbThirdPartyGunslingerMenus.TryGetValue(identity.Ancestry, out thirdParty)
+                        ? thirdParty : new string[0]).Distinct(StringComparer.Ordinal).ToArray();
                 if (!offered.OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(
                         expected.OrderBy(value => value, StringComparer.Ordinal)))
                     failures.Add(identity.Ancestry + ": offered " + string.Join(",", offered.ToArray()) +

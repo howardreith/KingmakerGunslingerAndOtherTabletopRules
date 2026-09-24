@@ -165,6 +165,7 @@ namespace KingmakerGunslinger.FavoredClass
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 { FavoredClassCatalog.Summoner, "0f4c4ada51334b43a802350c5c0b85f5" },
+                { FavoredClassCatalog.Oracle, FavoredClassRevelationManifest.OracleClassGuid },
             };
 
         // O06/O07/O08 helper identities and native features.
@@ -487,6 +488,17 @@ namespace KingmakerGunslinger.FavoredClass
                     owned.Group = Prerequisite.GroupType.All;
                     components.Add(owned);
                 }
+                if (effect.Id == FavoredClassCatalog.EffectSelectedRevelation)
+                {
+                    // Only a revelation the character already has is a target.
+                    FavoredClassRevelationTarget revelation = FavoredClassRevelationManifest.For(targetKey);
+                    var owned = ScriptableObject.CreateInstance<PrerequisiteFavoredClassOwnsAny>();
+                    owned.name = "$" + leaf.name + "_OwnedRevelation";
+                    owned.FeatureGuids = revelation.FeatureGuids.ToArray();
+                    owned.Title = FavoredClassLeafCatalog.TargetTitle(effect.Id, targetKey);
+                    owned.Group = Prerequisite.GroupType.All;
+                    components.Add(owned);
+                }
                 for (int index = 0; index < replacing.Count; index++)
                     components.Add(NoArchetype(leaf, hostClass, replacing[index], index));
                 if (improved.Length > 0)
@@ -738,6 +750,15 @@ namespace KingmakerGunslinger.FavoredClass
                         power.Value, "native bloodline power ability " + targetKey);
                     return level;
                 }
+                case FavoredClassCatalog.EffectSelectedRevelation:
+                {
+                    // The read points are scoped when the publication commits,
+                    // after the optional provider created the revelations.
+                    var revelation = ScriptableObject.CreateInstance<FavoredClassSelectedRevelationLevel>();
+                    revelation.name = "$" + full.name + "_EffectiveLevel";
+                    revelation.TargetKey = targetKey;
+                    return revelation;
+                }
                 case FavoredClassCatalog.EffectCompanionArmor:
                 case FavoredClassCatalog.EffectEidolonArmor:
                 {
@@ -807,6 +828,17 @@ namespace KingmakerGunslinger.FavoredClass
                 (set.AuraStepsProperty == null || set.AuraStepsProperty.ComponentsArray
                     .OfType<FavoredClassEarnedStepsProperty>().Count() != 1))
                 throw new InvalidOperationException("The paladin aura steps property is malformed.");
+            foreach (FavoredClassLeafPair pair in set.Pairs.Where(value =>
+                value.Effect.Id == FavoredClassCatalog.EffectSelectedRevelation))
+            {
+                FavoredClassSelectedRevelationLevel[] level = pair.Full.ComponentsArray
+                    .OfType<FavoredClassSelectedRevelationLevel>().ToArray();
+                string[] guids = FavoredClassRevelationManifest.For(pair.TargetKey).FeatureGuids;
+                if (level.Length != 1 || level[0].TargetKey != pair.TargetKey ||
+                    pair.Leaves.Any(leaf => leaf.ComponentsArray.OfType<PrerequisiteFavoredClassOwnsAny>()
+                        .Count(owned => owned.FeatureGuids.SequenceEqual(guids)) != 1))
+                    throw new InvalidOperationException("Revelation counter graph is malformed: " + pair.TargetKey);
+            }
         }
     }
 }

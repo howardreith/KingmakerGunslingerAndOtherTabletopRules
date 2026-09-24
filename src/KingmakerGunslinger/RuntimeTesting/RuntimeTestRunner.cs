@@ -1296,6 +1296,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    DisposableFavoredClassOracleRevelations)
+                {
+                    Complete(RunFavoredClassOracleRevelations());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableFavoredClassElementalAdvanced)
                 {
                     Complete(RunFavoredClassElementalAdvanced());

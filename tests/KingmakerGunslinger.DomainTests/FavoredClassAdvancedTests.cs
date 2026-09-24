@@ -47,7 +47,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(check > 0 && plan > check && commit > plan && apply > commit,
                 "Validate, plan, commit, then apply the aura read point.");
             Assertions.True(coordinator.Contains("committedAura.Rollback();") &&
-                coordinator.Contains("new[] { FavoredClassCatalog.EffectPaladinAuras }"),
+                coordinator.Contains("unavailable.Add(FavoredClassCatalog.EffectPaladinAuras);") &&
+                coordinator.Contains("FavoredClassRuntime.SetUnavailableEffects(unavailable);"),
                 "A drifted aura contract withholds only O06; a failed publication rolls the aura back.");
             string publication = Source("FavoredClassPublication.cs");
             Assertions.True(publication.Contains("return \"native-contract-unavailable\";"),

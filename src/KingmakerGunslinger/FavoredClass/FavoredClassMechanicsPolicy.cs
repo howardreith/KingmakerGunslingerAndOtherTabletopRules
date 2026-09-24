@@ -3,6 +3,50 @@ using System;
 namespace KingmakerGunslinger.FavoredClass
 {
     /// <summary>
+    /// The amount fields of a native ability resource (its private m_MaxAmount
+    /// with m_UseMax/m_Max), and whether each class-level sum counts the
+    /// oracle class.
+    /// </summary>
+    internal sealed class FavoredClassResourceAmount
+    {
+        internal int BaseValue;
+        internal bool IncreasedByLevel;
+        internal int LevelIncrease;
+        internal bool IncreasedByStat;
+        internal bool IncreasedByLevelStartPlusDivStep;
+        internal int StartingLevel;
+        internal int StartingIncrease;
+        internal int LevelStep = 1;
+        internal int PerStepIncrease;
+        internal int MinClassLevelIncrease;
+        internal float OtherClassesModifier;
+        internal bool UseMax;
+        internal int Max;
+
+        /// <summary>The per-level classes include the oracle class.</summary>
+        internal bool LevelScalesWithOracle;
+
+        /// <summary>The start-plus-step classes include the oracle class.</summary>
+        internal bool DivScalesWithOracle;
+
+        /// <summary>
+        /// Whether a higher effective oracle level raises this maximum by
+        /// scaling rather than by crossing one level threshold. Resources that
+        /// mix in other classes' character levels are never scaled.
+        /// </summary>
+        internal bool ScalesWithOracle
+        {
+            get
+            {
+                bool perLevel = IncreasedByLevel && LevelScalesWithOracle && LevelIncrease > 0;
+                bool perStep = IncreasedByLevelStartPlusDivStep && DivScalesWithOracle &&
+                    PerStepIncrease > 0 && LevelStep > 0 && OtherClassesModifier == 0f;
+                return perLevel || perStep;
+            }
+        }
+    }
+
+    /// <summary>
     /// Pure arithmetic of Gunslinger favored-class mechanics that combine
     /// with an existing rule rather than stand alone.
     /// </summary>
@@ -18,6 +62,53 @@ namespace KingmakerGunslinger.FavoredClass
                 return 0;
             int baseLevel = Math.Max(0, level);
             return (baseLevel + earned) / 2 - baseLevel / 2;
+        }
+
+        /// <summary>
+        /// I06/S04: the native maximum of an ability resource before handler
+        /// bonuses (BlueprintAbilityResource.GetMaxAmount), with the unit's
+        /// counted class-level sums raised by <paramref name="effective"/>
+        /// wherever the amount scales with oracle level. A start-plus-step
+        /// amount without a per-step increase is a single level threshold,
+        /// which never moves. Mirrors the native integer arithmetic exactly.
+        /// </summary>
+        internal static int ResourceMaximum(FavoredClassResourceAmount amount, int levelSum, int divSum,
+            int characterLevel, int statBonus, int effective)
+        {
+            if (amount == null)
+                throw new ArgumentNullException("amount");
+            int shift = Math.Max(0, effective);
+            int result = amount.BaseValue;
+            if (amount.IncreasedByLevel)
+                result += amount.LevelIncrease * (levelSum + (amount.LevelScalesWithOracle ? shift : 0));
+            if (amount.IncreasedByStat)
+                result += statBonus;
+            if (amount.IncreasedByLevelStartPlusDivStep)
+            {
+                bool steps = amount.DivScalesWithOracle && amount.PerStepIncrease != 0 &&
+                    amount.OtherClassesModifier == 0f;
+                int counted = divSum + (steps ? shift : 0) +
+                    (int)((float)(characterLevel - divSum) * amount.OtherClassesModifier);
+                if (amount.StartingLevel <= counted)
+                    result += Math.Max(amount.StartingIncrease +
+                        amount.PerStepIncrease * (counted - amount.StartingLevel) / amount.LevelStep,
+                        amount.MinClassLevelIncrease);
+            }
+            return amount.UseMax ? Math.Min(result, amount.Max) : result;
+        }
+
+        /// <summary>
+        /// I06/S04 Family B: the handler bonus that makes a resource's maximum
+        /// equal its native value at the effective oracle level. Handler
+        /// bonuses are added after the native clamp, so both sides are clamped.
+        /// </summary>
+        internal static int ResourceDelta(FavoredClassResourceAmount amount, int levelSum, int divSum,
+            int characterLevel, int statBonus, int effective)
+        {
+            if (effective <= 0)
+                return 0;
+            return ResourceMaximum(amount, levelSum, divSum, characterLevel, statBonus, effective) -
+                ResourceMaximum(amount, levelSum, divSum, characterLevel, statBonus, 0);
         }
 
         /// <summary>
