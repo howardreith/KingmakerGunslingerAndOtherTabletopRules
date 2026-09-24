@@ -945,6 +945,15 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    # Development-only fallback drill: the mechanical run with the
+    # Pteranodon visual withdrawn on its first cast and faulted after donor
+    # suppression on its second, proving both fallback paths on live units.
+    'disposable-expanded-summoning-pteranodon-fault-drill' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'summon-same-turn-activation' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
