@@ -241,6 +241,8 @@ claimed.
 - Rider runs on `7cc80497`: `20260924T0112361790237Z-disposable-expanded-summoning-pteranodon-fault-drill` 18/18 PASS;
   `20260924T0115460941403Z-disposable-expanded-summoning` 17/17 PASS; `20260924T0118557039123Z-disposable-expanded-summoning-visual-contracts` 15/15 PASS. Live tree restored
   and verified after each batch; live install 0.0.117 / 136 files.
+- Final probe on `523e540b` (the records commit): `20260924T0126332576716Z-observe-summon-pteranodon-view-contracts` 13/13 PASS, `visual:published`, deformation proof
+  `bone=L_Feather_3;degrees=25;ownedMoved=2;ownedStill=0;ownedDrifted=0;worstDrift=0.00000;controlMoved=0;controlStill=100;worstControlMotion=0.00000;largestMotion=0.1446;bakeDisagreement=0.00000`; restored and verified.
 - Material facts recorded live: the donor's `PF/StandardDynamic` declares
   _BumpMap of the probed map slots; cleared <none>.
 
