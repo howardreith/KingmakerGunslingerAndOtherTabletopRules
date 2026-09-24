@@ -1296,6 +1296,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveFavoredClassPerformanceVisuals)
+                {
+                    RuntimeTestResult visuals = PollFavoredClassPerformanceVisuals();
+                    if (visuals != null) Complete(visuals);
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableFavoredClassPerformanceRange)
                 {
                     Complete(RunFavoredClassPerformanceRange());
