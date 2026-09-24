@@ -234,6 +234,23 @@ the game set; the shared prefab, its mesh, material and animator are never
 touched. Eagle, dire bat and roc share this donor and are the negative
 controls.
 
+The material copy has to join the game's own effects as well as its renderer.
+`StandardMaterialController` on the view caches the materials it drives when
+it wakes, and everything the game does to a summon's look - the dissolve-in on
+appearance, hit tints, the death dissolve, the fade-out on expiry - goes
+through that list. A copy made after the cache was taken is outside it: none
+of those effects reach the creature, and a copy taken while the donor was
+fully dissolved stays fully dissolved, which is invisible. The closeout's
+party-camera renders showed exactly that - the party, the summoning effect and
+no creature - while every mechanical observer was satisfied. The patch now
+resets the copy's `_Dissolve` to intact and calls the controller's
+`ReinitMaterials` after the swap (and again after a rollback), so the
+controller instantiates and drives the copy like any material of the
+creature's; the outcome records the dissolve amount the copy was taken with
+and whether the renderer's driven material is listed. Once a unit lives across
+frames the fader takes that instance, which Unity names with an " (Instance)"
+suffix; the observers accept it as the same visual.
+
 Every failure path leaves the donor visual intact, which is the approved
 fallback: a Pteranodon that still looks like a giant eagle is a cosmetic
 shortfall, while an invisible or half-bound one is a defect. A failure after
@@ -252,6 +269,7 @@ mod tree, builds and deploys the candidate, runs, and restores the snapshot:
 | `disposable-expanded-summoning` | every cast Pteranodon reports `visual:attached`; eagle, dire bat and roc on the shared donor are untouched; a 1d3 and a 1d4+1 Pteranodon cast attach on every unit; several casts in one lifecycle each attach exactly once and clean to the exact snapshot |
 | `disposable-expanded-summoning-visual-contracts` | the Pteranodon mesh and material sit on the donor's own renderer, its 46 bones all on the view's skeleton with the root bone kept, the shader carrying the albedo at the catalog view scale, and the same state holds after the native locomotion, attack, hit and death paths |
 | `disposable-expanded-summoning-pteranodon-fault-drill` | development-only: the first Pteranodon cast with the visual withdrawn comes up on the donor's own mesh and material; the second, faulted after the swap, is restored to them in the same frame; later casts attach |
+| `working-save-expanded-summoning-prepare` / `-verify-cleanup` / `-verify-absent` | the Pteranodon rides the persistence fixture: the freshly deserialized unit re-attaches the visual, and each writing stage renders the party camera to file on it - idle, moving twice, attacking - after the load and creature fades complete, for internal review |
 
 Run identities are recorded in `EXPANDED-SUMMONING-PHASE0-AUTONOMOUS-STATE.md`.
 

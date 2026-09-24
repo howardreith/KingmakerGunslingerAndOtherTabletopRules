@@ -143,13 +143,24 @@ Three things are tracked separately here and must not be conflated.
 | Visual contracts | ACCEPTED | 13/13 |
 | Feature boundary | ACCEPTED | census PASS in both module directions |
 | Compatibility coexistence | ACCEPTED | five profiles, mod sets confirmed loaded |
-| Compatibility mechanical | NOT ACCEPTED | both runs timed out in save load inside the transaction |
+| Compatibility mechanical | ACCEPTED (internal) | `gunslinger-only` PASS 17/17 and `gunslinger-high-risk-combined` PASS 17/17 on a fixture derived from the protected baseline; working save restored and verified after each |
 | Rig contract | ACCEPTED | animation ActionSet, clips, events, anchors, 72-bone bind pose |
 | Deformation proof | ACCEPTED | zero drift, control wing unmoved, BakeMesh agrees to zero |
 | Loader and fallback | ACCEPTED | schema 2 loader publishes mesh + albedo or neither; withdrawn-visual and post-swap-fault paths exercised on live summons in the fault drill |
-| Finished creature | ACCEPTED (internal) | tip-apex crest, atlas UVs, painted albedo; attached on every cast Pteranodon; HumanReview: NOT_PERFORMED_NONBLOCKING |
-| Projected menu, live | NOT RUN | no anchorable action-bar slot in the disposable save |
+| Finished creature | ACCEPTED (internal); HumanReview PASSED (revision unspecified) | tip-apex crest, atlas UVs, painted albedo; attached on every cast and every reloaded Pteranodon; the closeout found the clone outside the game's material controller and invisible in the party camera and repaired it (`b7a0b6da`); the repaired build is reviewed internally from the party camera, HumanReview for it NOT_PERFORMED_NONBLOCKING |
+| Projected menu, live | MEASURED | `20260924T1647492722669Z-disposable-expanded-summoning-projected-menu`: PASS 3/3 on `02bc5c47`: Summon Monster at 120 entries and Nature's Ally at 110 both render every entry (120 and 110 slots), first, middle and last reachable, the popup inside the safe area (550 x 550 and 550 x 500 canvas units against a 1910 x 1070 safe rectangle, so no scrolling is needed at this size and none is installed), the first entry visible on open, no slot growth across three cycles; warm toggle 119-120 ms and 103-110 ms, the cold first open 3334 ms (slot instantiation, reported, not gated), this host at 425-1500 ms per frame under the harness. |
 | Live acceptance groups 1, 2, 4, 6, 7 | ACCEPTED (internal) | motion binding and presentation on the visual-contracts run; isolation, crowding, failure recovery and repeated lifecycle on the mechanical and fault-drill runs |
+
+### Closeout, 2026-09-24
+
+The owner's manual review of the Pteranodon candidate passed (recorded in the
+state file; no revision was named, so it is not linked to a deployment). The
+three items in section 4 were then run rather than waived: the live menu was
+measured at 120 and 110 entries, the two compatibility mechanical runs passed
+on a fixture derived from the protected baseline, and the party camera was
+rendered to file on the freshly cast and the freshly deserialized Pteranodon
+for internal review (eight party-camera renders on `00195475` (four per writing stage: idle, twice moving, attacking), each with the creature in frame, the screen lit, the renderer enabled and the material intact (dissolve 0.008 at idle, 0 after); the reloaded creature renders as a pterosaur - brown leather wings spread, red crest, long beak - beside the party at Large scale, moving across the room and biting, with the summoned Wolf and Small Air Elemental in the same frames. Internal review of the images: PASS.). Platform: Windows only; Linux/Proton
+not available, not claimed.
 
 ### What a human still needs to look at
 

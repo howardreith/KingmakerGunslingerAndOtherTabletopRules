@@ -257,3 +257,66 @@ per cast, each attached exactly once. The riders then passed on their final
 commit; every batch restored the live tree to its pre-run fingerprint.
 Details and run identities are in the state file and the implementation
 report.
+
+## Closeout, 2026-09-24
+
+The owner's review of the Pteranodon passed and activated the closeout. The
+branch was first integrated with `master` (`996105ed`, release 0.0.138)
+in this worktree: two textual conflicts in the domain test program and the
+rapid-reload validator, plus the count pins the merge moved.
+
+The compatibility mechanical timeouts had a plain cause once the working save
+was opened: 465 serialized objects typed by TweakOrTreat and 32 by Call of the
+Wild. A profile that stages neither mod cannot resolve those `$type` entries,
+the load coroutine aborts, and the after-load callback never fires. The
+protected baseline predates every foreign mod and carries none, so a driver
+now copies it with only the header name changed, stages the copy under the
+working file name for one transaction, and puts the original back with its
+bytes and timestamps verified. Its first run threw on a helper it had not
+sourced; the second ran both profiles.
+
+The projected menu needed a subject, not a slot. The disposable save's party
+members do have group slots once one of them is selected the way a portrait
+click selects them - the first fixture had counted slots without selecting
+anyone. With a subject the Nature's Ally cycles measured at once; the Monster
+cycles faulted three times over. The screenshots explained it: they showed the
+loading screen at 93 and 96 percent. The action bar exists before the screen
+clears, and the layout runtime dereferences something that does not yet.
+The fixture now waits for the loading process and its screen, and the failure
+record carries the first frames of the stack trace so the next fault names its
+seam. The open time also had to be attributed: 101-120 ms in the toggle call
+against 400-1000 ms per frame on this host, so a frame-inclusive figure would
+have measured the harness. The rubric records the refinement.
+
+The persistence fixture gained the Pteranodon and, with it, the save/reload
+proof the charter asks for: the freshly deserialized unit re-attaches the
+visual. Two observers were wrong before the visual was: the stage's unit-count
+pin still said two, and the attached-state predicate did not expect Unity's
+" (Instance)" suffix on the material the game's fader takes once a unit lives
+across frames. The first party-camera renders were a black screen and a
+half-dissolved blue silhouette - both fades still running after the load - so
+the review waits for the screen fade and fast-forwards the creature's own
+before it renders.
+
+The renders after the fades then showed the party, the summoning effect and
+no creature. Every mechanical observer was satisfied: the mesh, the 46 bones
+and the material were on the donor's component, the renderer enabled, the
+fader reporting visible. What they could not see is that the material clone
+had been taken from the donor's material in the dissolve state the fader had
+left it in, and that the view's `StandardMaterialController` kept driving the
+materials it had cached before the swap. The game's dissolve-in, hit tints,
+death dissolve and fade-out never reached the visual, and a clone taken fully
+dissolved stayed fully dissolved. The clone now starts intact and the
+controller re-reads the renderer's materials after the swap and after a
+rollback; the captures record the dissolve amount and whether the controller
+lists the material. This is the one defect in the mission that no assertion
+could have found and only an image could: it was found by the review the
+order asked for.
+
+The 120-entry menu found a second. At 1280 x 720 it is the first size that
+needs the viewport, and the scrolling installer had added three layout groups
+to one object; Unity allows one, the other two came back null, and the
+install faulted on the first of them. The content now carries one layout
+group of the native layout's own type. Both repairs are within the order's
+allowance: evidence showed a defect, and each fix is bounded to the seam
+that failed.
