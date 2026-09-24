@@ -139,6 +139,56 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        /// <summary>
+        /// Takes the published visual away for the life of the returned scope,
+        /// so a guarded scenario can prove the fallback on a live summon without
+        /// a broken file on disk. Only the runtime-testing fixture calls it;
+        /// disposing the scope puts back exactly what was published.
+        /// </summary>
+        internal static IDisposable WithdrawForTest(string reason)
+        {
+            lock (Sync)
+            {
+                var scope = new Withdrawal(_mesh, _boneNames, _albedo, _status);
+                _mesh = null;
+                _boneNames = null;
+                _albedo = null;
+                _status = "donor-visual:withdrawn-for-test:" + reason;
+                return scope;
+            }
+        }
+
+        private sealed class Withdrawal : IDisposable
+        {
+            private readonly Mesh _mesh;
+            private readonly string[] _boneNames;
+            private readonly Texture2D _albedo;
+            private readonly string _status;
+            private bool _restored;
+
+            internal Withdrawal(Mesh mesh, string[] boneNames, Texture2D albedo,
+                string status)
+            {
+                _mesh = mesh;
+                _boneNames = boneNames;
+                _albedo = albedo;
+                _status = status;
+            }
+
+            public void Dispose()
+            {
+                lock (Sync)
+                {
+                    if (_restored) return;
+                    _restored = true;
+                    PteranodonAssetRuntime._mesh = _mesh;
+                    PteranodonAssetRuntime._boneNames = _boneNames;
+                    PteranodonAssetRuntime._albedo = _albedo;
+                    PteranodonAssetRuntime._status = _status;
+                }
+            }
+        }
+
         internal static void Configure(ModContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
