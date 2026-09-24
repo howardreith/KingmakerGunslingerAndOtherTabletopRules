@@ -4045,6 +4045,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _context.ModEntry.Info.Version == _request.ExpectedModVersion,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            // The phase's own validity chose the status; the assertions added
+            // since (the Pteranodon visual, the motion review) must not be
+            // able to fail underneath a PASS.
+            if (status == RuntimeTestStatuses.Pass && assertions.Any(value =>
+                    value.Status != RuntimeTestStatuses.Pass))
+                status = RuntimeTestStatuses.Fail;
             RuntimeTestResult result = CreateResult(status, assertions, null);
             result.WorkingSaveSmoke = evidence;
             if (!string.IsNullOrWhiteSpace(warning)) result.Warnings.Add(warning);

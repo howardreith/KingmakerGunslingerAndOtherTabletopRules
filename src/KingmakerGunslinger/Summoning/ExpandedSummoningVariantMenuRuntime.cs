@@ -318,9 +318,15 @@ namespace KingmakerGunslinger.Summoning
             Interlocked.Increment(ref _failures);
             lock (StateGate)
             {
+                // The first frames of the trace name the seam that failed;
+                // the message alone did not, in the first live measurement.
+                string trace = exception.StackTrace ?? string.Empty;
+                string[] frames = trace.Split(new[] { '\n' },
+                    StringSplitOptions.RemoveEmptyEntries);
                 _lastResult = string.Format(CultureInfo.InvariantCulture,
-                    "FAULT {0}: {1}", exception.GetType().Name,
-                    exception.Message);
+                    "FAULT {0}: {1} @ {2}", exception.GetType().Name,
+                    exception.Message, string.Join(" <- ", frames.Take(4)
+                        .Select(value => value.Trim()).ToArray()));
             }
 
             ModContext context;

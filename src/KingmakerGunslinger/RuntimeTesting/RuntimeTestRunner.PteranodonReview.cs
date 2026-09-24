@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Persistence;
+using Kingmaker.UI;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.View;
 using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -24,12 +28,15 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// summon across frames, freshly cast in prepare and freshly deserialized
     /// in verify-cleanup, which is exactly the view worth reviewing.
     ///
-    /// The review is bounded: it scrolls the party camera to the creature,
-    /// renders the game camera itself to a file (what the player sees, minus
-    /// the mod manager's overlay), commands one short move and one attack
-    /// animation, renders again at fixed frames, then interrupts everything it
-    /// started. It takes about thirty updates and changes nothing the stage
-    /// goes on to measure.
+    /// The review is bounded: it waits for the screen and the creature to
+    /// have faded in (the first images were a black screen and a half-
+    /// dissolved silhouette, both fades still running after the load), scrolls
+    /// the party camera to the creature, renders the game camera itself to a
+    /// file (what the player sees, minus the mod manager's overlay), commands
+    /// one short move and one attack animation, renders again at fixed
+    /// frames, then interrupts everything it started. It takes about thirty
+    /// updates past the fades and changes nothing the stage goes on to
+    /// measure.
     /// </summary>
     internal sealed partial class RuntimeTestRunner
     {
@@ -37,9 +44,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const int MotionReviewCaptureHeight = 720;
         private const int MotionReviewMoveFrames = 12;
         private const int MotionReviewAttackFrame = 30;
+        /// <summary>Updates the review will wait for the load and screen fades.</summary>
+        private const int MotionReviewFadeBudget = 240;
 
         private int _motionReviewFrame = -1;
+        private int _motionReviewWaited;
         private bool _motionReviewComplete;
+        private bool _motionReviewSubjectResolved;
         private UnitEntityData _motionReviewSubject;
         private UnitAnimationActionHandle _motionReviewAttack;
         private bool _motionReviewOverlayWasOpen;
@@ -63,8 +74,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_motionReviewComplete) return true;
             try
             {
-                if (_motionReviewFrame < 0)
+                if (!_motionReviewSubjectResolved)
                 {
+                    _motionReviewSubjectResolved = true;
                     _motionReviewSubject = (units ?? Array.Empty<UnitEntityData>())
                         .FirstOrDefault(value => value != null &&
                             value.Blueprint != null && value.Blueprint.name ==
@@ -76,29 +88,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _motionReviewComplete = true;
                         return true;
                     }
+                }
+                UnitEntityData unit = _motionReviewSubject;
+
+                if (_motionReviewFrame < 0)
+                {
+                    // After a load the screen fades up from black and every
+                    // unit dissolves in; a fresh summon dissolves in too. The
+                    // camera is parked on the creature meanwhile so the first
+                    // render is framed.
+                    CameraRig rig = TeleportationCastingCamera();
+                    if (rig != null) rig.ScrollToImmediately(unit.Position);
+                    if (_motionReviewWaited < MotionReviewFadeBudget &&
+                        (LoadingOrScreenFadeActive() || !EntityFadedIn(unit)))
+                    {
+                        _motionReviewWaited++;
+                        return false;
+                    }
+                    EntityFader fader = unit.View == null ? null :
+                        unit.View.GetComponent<EntityFader>();
+                    if (fader != null) fader.FastForward();
                     _motionReviewOverlayWasOpen = SetModManagerOverlay(false);
                     _motionReviewFrame = 0;
-                }
-                else
-                {
-                    _motionReviewFrameSeconds.Add(Time.unscaledDeltaTime);
-                    _motionReviewFrame++;
+                    return false;
                 }
 
-                UnitEntityData unit = _motionReviewSubject;
+                _motionReviewFrameSeconds.Add(Time.unscaledDeltaTime);
                 if (_motionReviewFrame == 0)
                 {
                     Capture(unit, stage, "idle");
                     Vector3 across = MotionReviewAcross(unit);
                     unit.Commands.Run(new UnitMoveTo(unit.Position + across * 6f, 0.5f));
+                    _motionReviewFrame++;
                     return false;
                 }
                 if (_motionReviewFrame == MotionReviewMoveFrames)
                 {
                     Capture(unit, stage, "moving-a");
-                    return false;
                 }
-                if (_motionReviewFrame == MotionReviewMoveFrames * 2)
+                else if (_motionReviewFrame == MotionReviewMoveFrames * 2)
                 {
                     Capture(unit, stage, "moving-b");
                     unit.Commands.InterruptMove();
@@ -107,20 +135,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionReviewAttack = manager == null ? null :
                         manager.CreateHandle(UnitAnimationType.MainHandAttack, false);
                     if (_motionReviewAttack != null) manager.Execute(_motionReviewAttack);
-                    return false;
                 }
-                if (_motionReviewFrame < MotionReviewAttackFrame) return false;
-
-                Capture(unit, stage, "attack");
-                if (_motionReviewAttack != null)
+                else if (_motionReviewFrame >= MotionReviewAttackFrame)
                 {
-                    _motionReviewAttack.IsActed = true;
-                    FinishExpandedSummoningAnimation(_motionReviewAttack);
-                    _motionReviewAttack = null;
+                    Capture(unit, stage, "attack");
+                    if (_motionReviewAttack != null)
+                    {
+                        _motionReviewAttack.IsActed = true;
+                        FinishExpandedSummoningAnimation(_motionReviewAttack);
+                        _motionReviewAttack = null;
+                    }
+                    unit.Commands.InterruptMove();
+                    Finish(stage, null);
+                    return true;
                 }
-                unit.Commands.InterruptMove();
-                Finish(stage, null);
-                return true;
+                _motionReviewFrame++;
+                return false;
             }
             catch (Exception error)
             {
@@ -136,15 +166,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionReviewFrameSeconds.Average() * 1000d;
             bool inFrame = _motionReviewCaptures.Count == 4 &&
                 _motionReviewCaptures.All(value =>
-                    value.IndexOf(";inFrame=true", StringComparison.Ordinal) >= 0);
+                    value.IndexOf(";inFrame=true", StringComparison.Ordinal) >= 0 &&
+                    value.IndexOf(";rendererEnabled=true", StringComparison.Ordinal) >= 0 &&
+                    value.IndexOf(";screenLit=true", StringComparison.Ordinal) >= 0);
             _motionReviewValid = error == null && inFrame;
-            _motionReviewSummary = "stage=" + stage + ";frames=" +
-                _motionReviewFrame + ";frameMs=" + frameMs.ToString("0.#",
+            _motionReviewSummary = "stage=" + stage + ";waited=" + _motionReviewWaited +
+                ";frames=" + _motionReviewFrame + ";frameMs=" + frameMs.ToString("0.#",
                     CultureInfo.InvariantCulture) + ";captures=" +
                 _motionReviewCaptures.Count + (error == null ? "" :
                     ";fault=" + error.GetType().Name + ":" + error.Message) +
                 ";" + string.Join("|", _motionReviewCaptures.ToArray());
             _motionReviewComplete = true;
+        }
+
+        /// <summary>
+        /// The loading process, its screen, or the full-screen fade image the
+        /// game brings up from black after a load.
+        /// </summary>
+        private static bool LoadingOrScreenFadeActive()
+        {
+            LoadingProcess loading = LoadingProcess.Instance;
+            if (loading != null && (loading.IsLoadingInProcess ||
+                loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive))
+                return true;
+            return ScreenFadeAlpha() > 0.05f;
+        }
+
+        private static float ScreenFadeAlpha()
+        {
+            try
+            {
+                FadeCanvas canvas = FadeCanvas.Instance;
+                if (canvas == null) return 0f;
+                FieldInfo field = typeof(FadeCanvas).GetField("m_FadeImage",
+                    BindingFlags.Instance | BindingFlags.NonPublic |
+                    BindingFlags.Public);
+                Image image = field == null ? null : field.GetValue(canvas) as Image;
+                if (image == null || !image.gameObject.activeInHierarchy ||
+                    !image.enabled) return 0f;
+                return image.color.a;
+            }
+            catch (Exception)
+            {
+                return 0f;
+            }
+        }
+
+        private static bool EntityFadedIn(UnitEntityData unit)
+        {
+            EntityFader fader = unit == null || unit.View == null ? null :
+                unit.View.GetComponent<EntityFader>();
+            return fader == null || fader.Visible;
         }
 
         /// <summary>
@@ -171,7 +243,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// Renders the game's own camera, scrolled to the unit, into a file:
         /// the party-camera frame the player would see, with the game's
         /// lighting and image effects and without the mod manager's IMGUI
-        /// overlay, which a screen capture would include.
+        /// overlay, which a screen capture would include. The record says
+        /// whether the screen fade was still up and whether the creature's
+        /// renderer was enabled, so a black or half-dissolved frame cannot
+        /// pass as a review image.
         /// </summary>
         private static string WriteExpandedSummoningPartyCameraCapture(
             UnitEntityData unit, string evidenceDirectory, string fileName)
@@ -212,12 +287,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SkinnedMeshRenderer renderer = unit.View
                     .GetComponentsInChildren<SkinnedMeshRenderer>(true)
                     .FirstOrDefault(value => value != null && value.sharedMesh != null);
+                // Mean luminance of a coarse sample of the frame: a screen
+                // still faded to black reads near zero.
+                Color32[] pixels = output.GetPixels32();
+                double luminance = 0d;
+                int sampled = 0;
+                for (int index = 0; index < pixels.Length; index += 997)
+                {
+                    Color32 pixel = pixels[index];
+                    luminance += 0.2126 * pixel.r + 0.7152 * pixel.g + 0.0722 * pixel.b;
+                    sampled++;
+                }
+                luminance = sampled == 0 ? 0d : luminance / sampled;
                 return "png=" + fileName + ";bytes=" + png.Length.ToString(
                         CultureInfo.InvariantCulture) + ";viewport=" +
                     viewport.x.ToString("0.###", CultureInfo.InvariantCulture) + "," +
                     viewport.y.ToString("0.###", CultureInfo.InvariantCulture) +
                     ";inFrame=" + (inFrame ? "true" : "false") +
+                    ";screenFade=" + ScreenFadeAlpha().ToString("0.##",
+                        CultureInfo.InvariantCulture) +
+                    ";luma=" + luminance.ToString("0.#", CultureInfo.InvariantCulture) +
+                    ";screenLit=" + (luminance > 4d ? "true" : "false") +
                     ";rendererEnabled=" + (renderer != null && renderer.enabled ?
+                        "true" : "false") + ";faderVisible=" + (EntityFadedIn(unit) ?
                         "true" : "false") + ";mesh=" + (renderer == null ||
                         renderer.sharedMesh == null ? "<none>" :
                         renderer.sharedMesh.name) + ";visual=" +
