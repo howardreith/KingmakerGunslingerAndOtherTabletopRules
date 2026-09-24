@@ -5,9 +5,9 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "2657089571ab3b6ea2a2fdcab44541eb54b276b766fb1edb18ca308f45bb8f4d",
+    "registrySha256": "60b1be2a909c8c59db4c2d66731f3cb95f7a3ead5d8780ec7d96719f8316e0de",
     "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
-    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes."
+    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes. Expanded Summoning Phase 1 Sprint 3: append exactly 92 summoning identities after the preserved 1956-entry ledger (Pony, Horse, Owlbear and Cyclops units with their 45 logical placements and 34 template executions, three Nature's Ally Frost Giant wrappers and six Cyclops Flash of Insight specials); tools/expanded_summoning_manifest.py preserves the prefix and ExpandedSummoningSprint3Tests pins the appended tail. Their icons are four new project-owned Blender renders delegated to the expanded-summoning manifest."
   },
   "coveragePrefixes": [
     "KMG.ElementalRaces.",
@@ -73,8 +73,8 @@
     },
     {
       "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
-      "sha256": "b135ff1c7e2c109a46c96c7eec760947b7247a876b09d5bc669cc16ca1430674",
-      "scope": "Source/export/consumer authority for all 77 summoning identities."
+      "sha256": "959001815956bb164f06e61e13b2c1ccbd160cc643c476664d545811f07e976c",
+      "scope": "Source/export/consumer authority for all 81 summoning identities (77 roster-mission concepts and the Phase 1 Sprint 3 Pony, Horse, Owlbear and Cyclops)."
     },
     {
       "path": "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-assets.json",
@@ -437,6 +437,26 @@
       "path": "assets/game/icons/expanded-summoning/pteranodon.png",
       "sha256": "fa10dc0bdbfad94319af0b7354a5617593c9cabf649e626ff2d68f1aad305763",
       "reason": "Preserve existing action/item/creature art or non-icon game asset. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/pony.png",
+      "sha256": "9283971ef0e33c5600bcc95ea7f6c53d8f3c236be69531597a5e65cfdab4a212",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/horse.png",
+      "sha256": "c52d920b00a6dfc0f00763df3cc0a03d340d709f69351b8e0adcd4d459a31ea1",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/owlbear.png",
+      "sha256": "3b43da63e97f4f57c1987fe8fea1ffcaecfa78f1068b04caa63c637d6cdbe699",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/cyclops.png",
+      "sha256": "67b2301b61ee0e645717e6801449626850b18b10e4d24a4594f18aeccc9f9ddb",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
     },
     {
       "path": "assets/game/icons/expanded-summoning/redcap.png",

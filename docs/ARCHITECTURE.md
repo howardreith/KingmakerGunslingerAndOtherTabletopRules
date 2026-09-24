@@ -834,7 +834,7 @@ qualification are tracked separately in planning/MAGIC-CIRCLE-FOLLOWUP.md.
 ### Better Vendors progression candidate 0.0.138
 
 Forty-three generic magic weapon variants extend the append-only ledger to
-1956 stable IDs: 1954 active and 2 reserved. They complete an explicit
+2048 stable IDs: 2046 active and 2 reserved. They complete an explicit
 50-entry progression catalog (`Acquisition/ProgressionWeaponCatalog`): Pistol,
 Musket and Blunderbuss ordinary +1..+5 and Reliable +1..+5, and Elven Branched
 Spear, Wakizashi, Katana and Nodachi +1..+5. The seven existing canonical +1

@@ -276,7 +276,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Sprint 2 asset implementation: author an original pterosaur mesh skinned to the recorded 72-bone rig (membrane driven by the Feather_1..6 chains), build the deterministic 2018.4.10f1 bundle, implement instance-local binding with an approved native fallback, and qualify live with Eagle/Dire Bat/Roc as donor-sharing negative controls.",
+  "nextConcreteAction": "Phase 1 Sprint 3 guarded runtime qualification and creature review, then Sprints 4-8; see EXPANDED-SUMMONING-PHASE1-AUTONOMOUS-STATE.md.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
@@ -295,5 +295,28 @@
     },
     "verification": "Post-restore hash equals the pre-run backup hash exactly.",
     "futureRuns": "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1 snapshots the live tree, runs the scenario, and restores its own snapshot on success, failure and interruption, recording before/after fingerprints to runtime-evidence/expanded-summoning-restoration."
+  },
+  "phase1": {
+    "order": "2026-09-24 owner order: finalize Phase 0, then complete Sprints 3-8",
+    "branch": "codex/expanded-summoning-phase1-sprints3-8",
+    "draftPr": 23,
+    "records": [
+      "EXPANDED-SUMMONING-PHASE1-AUTONOMOUS-STATE.md",
+      "EXPANDED-SUMMONING-PHASE1-JOURNAL.md",
+      "EXPANDED-SUMMONING-PHASE1-IMPLEMENTATION-REPORT.md"
+    ],
+    "sprint3": {
+      "name": "Native Publication Pack I - Early Creatures and Giant Reuse",
+      "technicalStatus": "IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS",
+      "internalAcceptance": "PENDING",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "creatures": [
+        "pony",
+        "horse",
+        "owlbear",
+        "cyclops",
+        "frost-giant (SNA VII-IX wrappers, unit reused)"
+      ]
+    }
   }
 }

@@ -17,12 +17,13 @@ namespace KingmakerGunslinger.Summoning
             string creatureKey, string iconKey,
             string displayName, SummonMultiplicity multiplicity,
             string sourceAbilityGuid, string unitGuid,
-            SummonNativeSpawnBranch branch)
+            SummonNativeSpawnBranch branch, bool replacesSpawnUnit = false)
         {
             Family = family; Tier = tier; CreatureKey = creatureKey;
             IconKey = iconKey; DisplayName = displayName;
             Multiplicity = multiplicity; SourceAbilityGuid = sourceAbilityGuid;
             UnitGuid = unitGuid; Branch = branch;
+            ReplacesSpawnUnit = replacesSpawnUnit;
         }
 
         internal SummonFamily Family { get; private set; }
@@ -34,6 +35,13 @@ namespace KingmakerGunslinger.Summoning
         internal string SourceAbilityGuid { get; private set; }
         internal string UnitGuid { get; private set; }
         internal SummonNativeSpawnBranch Branch { get; private set; }
+        /// <summary>
+        /// True when the source umbrella's single direct spawn names another
+        /// creature and the wrapper points that cloned spawn at
+        /// <see cref="UnitGuid"/> instead (Sprint 3: the Frost Giant under
+        /// Summon Nature's Ally VII-IX, carved from the Mastodon options).
+        /// </summary>
+        internal bool ReplacesSpawnUnit { get; private set; }
         internal string Symbol { get { return "KMG.Summoning.NativeOption." +
             (Family == SummonFamily.Monster ? "SM" : "SNA") + ".Tier" +
             Tier + "." + CreatureKey + "." + Multiplicity; } }
@@ -93,7 +101,16 @@ namespace KingmakerGunslinger.Summoning
             A(9,"Nereid","nereid","Nereid",SummonMultiplicity.OneD3,
                 "780cbc629e74c1049b041b2a2f979863","1618961b217a446459c6a91481065d2c"),
             A(9,"Hamadryad","hamadryad","Hamadryad",SummonMultiplicity.One,
-                "f6751c3b22dbd884093e350a37420368","32a7776fb5bb9fa408b97757c04d4247")
+                "f6751c3b22dbd884093e350a37420368","32a7776fb5bb9fa408b97757c04d4247"),
+            // Sprint 3: the retained native Frost Giant unit under Summon
+            // Nature's Ally VII-IX, carved from the native Mastodon options
+            // that the publisher already reconciles to the KMG Mastodon.
+            A(7,"FrostGiant","frost-giant","Frost Giant",SummonMultiplicity.One,
+                "6d8d59aa38713be4fa3be76c19107cc0","590cd3d5e76fdc649a5f97bc984cd3c4",true),
+            A(8,"FrostGiant","frost-giant","Frost Giant",SummonMultiplicity.OneD3,
+                "256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true),
+            A(9,"FrostGiant","frost-giant","Frost Giant",SummonMultiplicity.OneD4PlusOne,
+                "9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true)
         };
 
         internal static IReadOnlyList<SummonNativeExpansionSpec> All
@@ -112,7 +129,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 26 || Values.Any(value => value.Tier < 1 ||
+            if (Values.Length != 29 || Values.Any(value => value.Tier < 1 ||
                 value.Tier > 9 || value.SourceAbilityGuid.Length != 32 ||
                 value.UnitGuid.Length != 32 || string.IsNullOrWhiteSpace(
                     value.IconKey)) || Values.Select(value =>
@@ -122,7 +139,7 @@ namespace KingmakerGunslinger.Summoning
                     "Frozen native summon expansion catalog is malformed.");
             string[] sourceGuids = Values.Select(value => value.SourceAbilityGuid)
                 .Distinct(StringComparer.Ordinal).ToArray();
-            if (sourceGuids.Length != 21 || Values.Where(value =>
+            if (sourceGuids.Length != 24 || Values.Where(value =>
                 value.Family == SummonFamily.Monster).Any(spec =>
                     !SummonNativeOptionCatalog.All.Any(value =>
                         value.Family == spec.Family && value.Guid ==
@@ -139,10 +156,10 @@ namespace KingmakerGunslinger.Summoning
 
         private static SummonNativeExpansionSpec A(int tier, string key,
             string iconKey, string name, SummonMultiplicity multiplicity,
-            string source, string unit)
+            string source, string unit, bool replacesSpawnUnit = false)
         { return new SummonNativeExpansionSpec(SummonFamily.NaturesAlly, tier,
             key, iconKey, name, multiplicity, source, unit,
-            SummonNativeSpawnBranch.Direct); }
+            SummonNativeSpawnBranch.Direct, replacesSpawnUnit); }
 
         private static string ToIconKey(string key)
         {
