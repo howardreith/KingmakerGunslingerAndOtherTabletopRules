@@ -51,6 +51,14 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
             }
         }
 
+        /// <summary>Whether this effect instance currently carries an owner scale.</summary>
+        internal static bool IsScaled(GameObject effect)
+        {
+            if (effect == null) return false;
+            Purge();
+            return Scaled.ContainsKey(effect.GetInstanceID());
+        }
+
         /// <summary>The factor applied to an effect instance, or 1 when it is native.</summary>
         internal static float FactorOf(GameObject effect)
         {
