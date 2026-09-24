@@ -220,6 +220,44 @@ namespace KingmakerGunslinger.DomainTests
             Case("craft-magic-items.tooltip-markers", CraftMagicItemsCompatibilityTests.InternalTooltipMarkersAreExact),
             Case("craft-magic-items.custom-integrity", CraftMagicItemsCompatibilityTests.CustomBlueprintIntegrityBoundaryIsExact),
             Case("craft-magic-items.lifecycle-package", CraftMagicItemsCompatibilityTests.LifecycleAndPackagingRemainOptional),
+            Case("better-vendors.catalog-fifty-entries", BetterVendorsProgressionTests.CatalogHasExactlyTheFiftyAuthorizedEntries),
+            Case("better-vendors.catalog-reused-identities", BetterVendorsProgressionTests.ReusedCanonicalIdentitiesAreUnchanged),
+            Case("better-vendors.catalog-manifest-append", BetterVendorsProgressionTests.ManifestAppendsExactlyTheNewIdentities),
+            Case("better-vendors.catalog-pricing", BetterVendorsProgressionTests.PricingFollowsTheCompleteEnchantmentPackage),
+            Case("better-vendors.catalog-exclusions", BetterVendorsProgressionTests.ExcludedVariantsAndFamiliesAreAbsent),
+            Case("better-vendors.catalog-modules", BetterVendorsProgressionTests.ModuleOwnershipIsExplicit),
+            Case("better-vendors.catalog-visuals", BetterVendorsProgressionTests.VisualMappingsShareTheCanonicalFamilyVariant),
+            Case("better-vendors.catalog-machine-readable", BetterVendorsProgressionTests.MachineReadableCatalogMatchesTheCode),
+            Case("better-vendors.schedule-military-ranks", BetterVendorsProgressionTests.ScheduleMatchesTheVerifiedMilitaryRanks),
+            Case("better-vendors.pass-catch-up", BetterVendorsProgressionTests.CatchUpPassClassifiesEveryCallAsCatchUp),
+            Case("better-vendors.pass-current-tier", BetterVendorsProgressionTests.SingleCurrentRankCallIsBetterVendorsReplenishment),
+            Case("better-vendors.pass-unsupported", BetterVendorsProgressionTests.UnsupportedCallsNeverStock),
+            Case("better-vendors.pass-unwind", BetterVendorsProgressionTests.PassScopeUnwindsAfterAFailedCall),
+            Case("better-vendors.pass-owner-thread", BetterVendorsProgressionTests.PassIsBoundToOneCampaignAndThread),
+            Case("better-vendors.query-shape", BetterVendorsProgressionTests.OnlyTheOrdinaryTierQueryIsObserved),
+            Case("better-vendors.plan-current-tier", BetterVendorsProgressionTests.CurrentTierEventAddsAndReplenishesItsTier),
+            Case("better-vendors.plan-catch-up-call", BetterVendorsProgressionTests.CatchUpCallsNeverRegrantRecordedEntries),
+            Case("better-vendors.plan-native-selection", BetterVendorsProgressionTests.BetterVendorsOwnSelectionIsNeverDuplicated),
+            Case("better-vendors.plan-modules", BetterVendorsProgressionTests.EachContentModuleIsIndependent),
+            Case("better-vendors.plan-milestones", BetterVendorsProgressionTests.CatchUpGrantsOnlyReachedMilestones),
+            Case("better-vendors.plan-expansion-reenable", BetterVendorsProgressionTests.CatalogExpansionAndModuleReenablePreserveBookkeeping),
+            Case("better-vendors.ledger", BetterVendorsProgressionTests.LedgerIsSortedIdempotentAndSaveLocal),
+            Case("better-vendors.applier-partial-failure", BetterVendorsProgressionTests.ApplierRecordsOnlyObservedMutations),
+            Case("better-vendors.catalog-degrades-closed", BetterVendorsProgressionTests.ProgressionContractFailuresDisableOnlyMerchantStock),
+            Case("better-vendors.applier-uncertain-never-repeated", BetterVendorsProgressionTests.UncertainGrantsAreNeverRepeated),
+            Case("better-vendors.reused-fixed-row-reconciliation", BetterVendorsProgressionTests.ModuleOffReconciliationTouchesOnlyReusedFixedRows),
+            Case("better-vendors.lifecycle-fresh", BetterVendorsProgressionTests.FreshCampaignFollowsBetterVendorsEvents),
+            Case("better-vendors.lifecycle-existing", BetterVendorsProgressionTests.ExistingCampaignCatchesUpExactlyOnce),
+            Case("better-vendors.lifecycle-ordering", BetterVendorsProgressionTests.StockEventThenCatchUpAndCatchUpThenStockEvent),
+            Case("better-vendors.lifecycle-native-first-catch-up", BetterVendorsProgressionTests.FirstTimeBetterVendorsCatchUpNeverDuplicatesMigration),
+            Case("better-vendors.lifecycle-disable-switch", BetterVendorsProgressionTests.DisablingAndSwitchingPreserveBookkeeping),
+            Case("better-vendors.contract-verified", BetterVendorsProgressionTests.VerifiedContractIsAccepted),
+            Case("better-vendors.contract-fail-closed", BetterVendorsProgressionTests.UnverifiedContractsFailClosed),
+            Case("better-vendors.status-once", BetterVendorsProgressionTests.StatusChangesAreReportedOnce),
+            Case("better-vendors.hooks-narrow", BetterVendorsProgressionTests.AdapterHooksAreNarrowAndReadOnly),
+            Case("better-vendors.acquisition-unchanged", BetterVendorsProgressionTests.OrdinaryAcquisitionPathsExcludeProgressionVariants),
+            Case("better-vendors.bootstrap-registration", BetterVendorsProgressionTests.BootstrapRegistersUnconditionallyAfterIcons),
+            Case("better-vendors.reliable-mechanics", BetterVendorsProgressionTests.ReliableProgressionVariantsUseCanonicalMechanics),
             Case("compat-attribution.asset-plans", CompatibilityAttributionTests.AssetPlansAreExact),
             Case("compat-attribution.asset-plan-fail-closed", CompatibilityAttributionTests.AssetPlansFailClosed),
             Case("compat-attribution.guarded-runtime-boundary", CompatibilityAttributionTests.GuardedRuntimeBoundaryIsExact),
@@ -739,6 +777,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("rapid-reload-evidence.cleanup-reporting-is-scored", RapidReloadGateEvidenceTests.CleanupReportingBoundaryScoresAndKeepsDiagnostics),
             Case("rapid-reload-evidence.scenario-uses-native-operations", RapidReloadGateEvidenceTests.ScenarioUsesTheNativeOperationsItClaims),
             Case("firearm-proficiency.publication-policy", FirearmProficiencyPublicationTests.PublicationPolicyIsCompatibilityOnly),
+            Case("firearm-proficiency.rapid-reload-combat-feat-classification", FirearmProficiencyPublicationTests.RapidReloadParentIsACombatFeat),
+            Case("rapid-reload-evidence.classification-and-fighter-slot", RapidReloadGateEvidenceTests.CombatFeatClassificationAndFighterSlotAreScored),
             Case("firearm-proficiency.stable-identities", FirearmProficiencyPublicationTests.StableIdentitiesRemainExact),
             Case("firearm-proficiency.runtime-contract", FirearmProficiencyPublicationTests.RuntimeScenariosExerciseRealOwnersAndArchetypes),
             Case("firearm-proficiency.respec-reconciliation", FirearmProficiencyPublicationTests.ScopedRespecReconciliationIsLegacySafe),
@@ -1840,6 +1880,16 @@ namespace KingmakerGunslinger.DomainTests
                         exception);
                     return 1;
                 }
+            }
+
+            if (args.Length == 2 && string.Equals(args[0],
+                "--write-better-vendors-catalog", StringComparison.Ordinal))
+            {
+                File.WriteAllText(args[1],
+                    BetterVendorsProgressionTests.WriteCatalogManifestJson(),
+                    new System.Text.UTF8Encoding(false));
+                Console.WriteLine("Wrote the Better Vendors progression catalog manifest.");
+                return 0;
             }
 
             Console.Error.WriteLine("Unknown domain-test utility arguments.");

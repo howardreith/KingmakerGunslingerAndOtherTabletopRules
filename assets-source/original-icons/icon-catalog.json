@@ -5,9 +5,9 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "236728b1d4a827e691c85bb3a6227c4c1b520ce0b6bb6104ab366d695f433a21",
+    "registrySha256": "2657089571ab3b6ea2a2fdcab44541eb54b276b766fb1edb18ca308f45bb8f4d",
     "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
-    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities."
+    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes."
   },
   "coveragePrefixes": [
     "KMG.ElementalRaces.",
@@ -9467,6 +9467,38 @@
         {
           "before": "                    elementalFeats,\n                    elementalFeatPublication,\n                    martialPerformancePublication,\n                    registry.RegisteredCount + teleportationRegistry.RegisteredCount,\n                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount);\n            }\n            catch (Exception initializationException)\n            {\n                try {\n                    if (teleportationPublication != null) teleportationPublication.Rollback();\n                    teleportationRegistry.RollbackAll();\n",
           "after": "                    elementalFeats,\n                    elementalFeatPublication,\n                    martialPerformancePublication,\n                    registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount,\n                    expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount);\n            }\n            catch (Exception initializationException)\n            {\n                try {\n                    DisableMagicCirclePublication();\n                    _magicCircleVendors?.Rollback(); _magicCircleVendors = null;\n                    _magicCircles = null;\n                    magicCircleRegistry.RollbackAll();\n                }\n                catch (Exception circleRollbackException) {\n                    context.Logger.Failure(\"magic-circle\", \"bootstrap.rollback-failed\",\n                        \"Core initialization failed; exact Magic Circle rollback was refused.\", circleRollbackException);\n                }\n\n                try {\n                    if (teleportationPublication != null) teleportationPublication.Rollback();\n                    teleportationRegistry.RollbackAll();\n"
+        },
+        {
+          "before": "            UrbanBarbarianIdentityCatalog.IdentityCount +\n            ElementalRaceIdentityCatalog.IdentityCount;\n",
+          "after": "            UrbanBarbarianIdentityCatalog.IdentityCount +\n            ElementalRaceIdentityCatalog.IdentityCount +\n            Acquisition.ProgressionWeaponCatalog.NewBlueprintCount;\n"
+        },
+        {
+          "before": "        internal static MagicFirearmBlueprintCatalog MagicFirearms\n        {\n            get { lock (Gate) { return _magicFirearms; } }\n        }\n\n",
+          "after": "        internal static MagicFirearmBlueprintCatalog MagicFirearms\n        {\n            get { lock (Gate) { return _magicFirearms; } }\n        }\n\n        private static ProgressionWeaponBlueprintCatalog _progressionWeapons;\n\n        internal static ProgressionWeaponBlueprintCatalog ProgressionWeapons\n        {\n            get { lock (Gate) { return _progressionWeapons; } }\n        }\n\n"
+        },
+        {
+          "before": "                    _magicFirearms = result.MagicFirearms;\n                    _gunslingerClassBlueprints = result.GunslingerClassBlueprints;\n",
+          "after": "                    _magicFirearms = result.MagicFirearms;\n                    _progressionWeapons = result.ProgressionWeapons;\n                    _gunslingerClassBlueprints = result.GunslingerClassBlueprints;\n"
+        },
+        {
+          "before": "                    overhaulTestMusketAbility);\n                PlayerFacingPresentation.ApplyArchetypes(\n",
+          "after": "                    overhaulTestMusketAbility);\n                // Generic magic variants for optional merchant progression:\n                // registered unconditionally so saved items always resolve,\n                // and never published to any vendor or loot table here.\n                ProgressionWeaponBlueprintCatalog progressionWeapons =\n                    ProgressionWeaponBlueprints.Register(library, registry,\n                        productionFirearms, magicFirearms, easternWeapons,\n                        elvenBranchedSpears, context.Logger);\n                PlayerFacingPresentation.ApplyArchetypes(\n"
+        },
+        {
+          "before": "                    magicFirearms,\n                    firearmStateTokens,\n",
+          "after": "                    magicFirearms,\n                    progressionWeapons,\n                    firearmStateTokens,\n"
+        },
+        {
+          "before": "                MagicFirearmBlueprintCatalog magicFirearms,\n                FirearmStateTokenBlueprintSet firearmStateTokens,\n",
+          "after": "                MagicFirearmBlueprintCatalog magicFirearms,\n                ProgressionWeaponBlueprintCatalog progressionWeapons,\n                FirearmStateTokenBlueprintSet firearmStateTokens,\n"
+        },
+        {
+          "before": "                MagicFirearms = magicFirearms ?? throw new ArgumentNullException(\"magicFirearms\");\n",
+          "after": "                MagicFirearms = magicFirearms ?? throw new ArgumentNullException(\"magicFirearms\");\n                ProgressionWeapons = progressionWeapons ??\n                    throw new ArgumentNullException(\"progressionWeapons\");\n"
+        },
+        {
+          "before": "            internal MagicFirearmBlueprintCatalog MagicFirearms { get; private set; }\n\n",
+          "after": "            internal MagicFirearmBlueprintCatalog MagicFirearms { get; private set; }\n\n            internal ProgressionWeaponBlueprintCatalog ProgressionWeapons\n            { get; private set; }\n\n"
         }
       ],
       "featureAuthorization": "Magic Circle implementation mission; exact new module registration, publication, rollback and counts only. Reverse these edits before enforcing the original protected icon-mapping insertion."

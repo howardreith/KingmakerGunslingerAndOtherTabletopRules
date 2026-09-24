@@ -143,6 +143,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             "childEligibility", "reservation", "slotPresent", "parentOffered",
             "parentCanSelect", "parentSelected" };
 
+        /// <summary>The registered parent's and official children's
+        /// engine-recognized classification (BlueprintFeature.HasGroup), next
+        /// to a native combat feat read through the same call.</summary>
+        internal static readonly string[] ClassificationKeys = {
+            "parentHasFeatGroup", "parentHasCombatFeatGroup",
+            "childrenHaveFeatGroup", "childrenHaveCombatFeatGroup",
+            "nativeReferenceHasFeatGroup", "nativeReferenceHasCombatFeatGroup",
+            "parentHideInUI", "parentHideNotAvailableInUI" };
+
+        /// <summary>A real Gunslinger 1 taking its first Fighter level and
+        /// acquiring Rapid Reload through that level's Fighter bonus combat feat
+        /// slot, as offered by the slot's own native choice generation.</summary>
+        internal static readonly string[] FighterBonusSlotKeys = {
+            "case", "buildCompleteBeforeConfirmation", "buildConfirmationApplied",
+            "builtGunslingerLevel", "reservation", "slotPresent", "fixture",
+            "previewFighterLevel", "ordinaryFeatSlotOpen", "parentOffered",
+            "parentCanSelect", "parentSelected", "childOffered", "childCanSelect",
+            "childSelected", "parentHeldByFighterSlot", "parentHeldByOrdinarySlot",
+            "completeBeforeConfirmation", "confirmationApplied",
+            "confirmedFighterLevel", "acquiredChild" };
+
         internal static bool RequireObservations(JObject row, string label,
             IEnumerable<string> keys, IList<string> failures)
         {
@@ -372,9 +393,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             { failures.Add(label + ":complete-while-empty"); ok = false; }
             if (!(bool)row["targetBlocksCompletion"])
             { failures.Add(label + ":completion-block-not-attributable"); ok = false; }
-            if ((int)row["parentRankWhileEmpty"] != 0 ||
-                (int)row["refusedChildRankWhileEmpty"] != 0)
-            { failures.Add(label + ":empty-selection-granted-a-fact"); ok = false; }
+            // The engine applies a chosen selection's own feature to the preview
+            // at once (observed natively: parentRankWhileEmpty = 1), exactly as
+            // for any selection feat. That is not a firearm grant: the refused
+            // firearm must hold no rank, and the empty choice must still block
+            // completion (checked above). parentRankWhileEmpty stays recorded.
+            if ((int)row["refusedChildRankWhileEmpty"] != 0)
+            { failures.Add(label + ":empty-selection-granted-a-firearm"); ok = false; }
             // Attribution: the same build completes once a legal choice is made.
             if (!(bool)row["legalChildSelected"])
             { failures.Add(label + ":legal-child-refused"); ok = false; }
@@ -413,8 +438,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             // never stand in for a claimed successful confirmation.
             if (!(bool)row["appliedWithoutNativeCompletion"])
             { failures.Add(label + ":defensive-probe-not-declared"); ok = false; }
-            if ((bool)row["acquiredParent"] || (bool)row["acquiredAnyChild"])
-            { failures.Add(label + ":empty-choice-was-banked"); ok = false; }
+            // The probe bypasses the native completion gate, so the engine
+            // applies whatever is selected, including the parent selection
+            // feature (acquiredParent stays recorded). A player cannot reach
+            // this state; what the probe proves is that no firearm is banked.
+            if ((bool)row["acquiredAnyChild"])
+            { failures.Add(label + ":empty-choice-banked-a-firearm"); ok = false; }
             return ok;
         }
 
@@ -637,6 +666,74 @@ namespace KingmakerGunslinger.RuntimeTesting
             { failures.Add(label + ":parent-not-offered"); ok = false; }
             if ((bool)row["parentCanSelect"] || (bool)row["parentSelected"])
             { failures.Add(label + ":parent-selectable-on-class-identity"); ok = false; }
+            return ok;
+        }
+
+        /// <summary>The parent must be a feat and a combat feat by the same
+        /// native call that classifies native combat feats. Catalog membership
+        /// alone never satisfies this.</summary>
+        internal static bool EvaluateClassification(JObject row,
+            IList<string> failures)
+        {
+            const string label = "classification";
+            if (!RequireObservations(row, label, ClassificationKeys, failures))
+                return false;
+            bool ok = true;
+            if (!(bool)row["nativeReferenceHasFeatGroup"] ||
+                !(bool)row["nativeReferenceHasCombatFeatGroup"])
+            { failures.Add(label + ":native-reference-not-a-combat-feat"); ok = false; }
+            if (!(bool)row["parentHasFeatGroup"])
+            { failures.Add(label + ":parent-not-a-feat"); ok = false; }
+            if (!(bool)row["parentHasCombatFeatGroup"])
+            { failures.Add(label + ":parent-not-a-combat-feat"); ok = false; }
+            if (!AllTrue(row["childrenHaveFeatGroup"]))
+            { failures.Add(label + ":child-not-a-feat"); ok = false; }
+            if (!AllTrue(row["childrenHaveCombatFeatGroup"]))
+            { failures.Add(label + ":child-not-a-combat-feat"); ok = false; }
+            if ((bool)row["parentHideInUI"] || (bool)row["parentHideNotAvailableInUI"])
+            { failures.Add(label + ":parent-hidden-from-menus"); ok = false; }
+            return ok;
+        }
+
+        internal static bool EvaluateFighterBonusSlot(JObject row,
+            IList<string> failures)
+        {
+            string label = Label(row, "fighter-bonus-slot");
+            if (!RequireObservations(row, label, FighterBonusSlotKeys, failures))
+                return false;
+            bool ok = EvaluateCleanup(row, label, failures);
+            // The Gunslinger level is itself built and confirmed natively, so
+            // its class package is the only proficiency source.
+            ok &= EvaluateConfirmation(row, label + ".build",
+                "buildCompleteBeforeConfirmation", "buildConfirmationApplied", failures);
+            if ((int)row["builtGunslingerLevel"] != 1)
+            { failures.Add(label + ":gunslinger-level=" + row["builtGunslingerLevel"]); ok = false; }
+            ok &= EvaluateScope(row, label, "fixture",
+                RapidReloadExpectedScope.AnyFirearm, failures);
+            ok &= EvaluateReservation(row, label, failures);
+            if ((int)row["previewFighterLevel"] != 1)
+            { failures.Add(label + ":fighter-level=" + row["previewFighterLevel"]); ok = false; }
+            // Character level two grants no ordinary feat, so the only feat
+            // this visit can consume is the Fighter bonus combat feat.
+            if ((bool)row["ordinaryFeatSlotOpen"])
+            { failures.Add(label + ":ordinary-feat-slot-present"); ok = false; }
+            if (!(bool)row["parentOffered"])
+            { failures.Add(label + ":parent-not-offered-by-combat-menu"); ok = false; }
+            if (!(bool)row["parentCanSelect"] || !(bool)row["parentSelected"])
+            { failures.Add(label + ":parent-refused"); ok = false; }
+            if (!(bool)row["childOffered"] || !(bool)row["childCanSelect"] ||
+                !(bool)row["childSelected"])
+            { failures.Add(label + ":legal-child-refused"); ok = false; }
+            if (!(bool)row["parentHeldByFighterSlot"])
+            { failures.Add(label + ":fighter-slot-not-consumed"); ok = false; }
+            if ((bool)row["parentHeldByOrdinarySlot"])
+            { failures.Add(label + ":ordinary-slot-consumed"); ok = false; }
+            ok &= EvaluateConfirmation(row, label, "completeBeforeConfirmation",
+                "confirmationApplied", failures);
+            if ((int)row["confirmedFighterLevel"] != 1)
+            { failures.Add(label + ":fighter-level-not-applied"); ok = false; }
+            if (!(bool)row["acquiredChild"])
+            { failures.Add(label + ":legal-child-not-acquired"); ok = false; }
             return ok;
         }
 
