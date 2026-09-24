@@ -88,6 +88,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(blueprints.Contains("FavoredClassLeafCatalog.EligibleBloodlines(targetKey);") &&
                 blueprints.Contains("bloodline.FeatureGuids = bloodlines.Value;"),
                 "Bloodline power leaves require an eligible bloodline identity.");
+            Assertions.True(blueprints.Contains("owned.FeatureGuids = new[] { usablePower.AssetGuid };") &&
+                !blueprints.Contains("CreateInstance<PrerequisiteFeature>()"),
+                "The usable power is an owned target like the bloodline and the revelations.");
+            string prerequisites = Source("FavoredClassPrerequisites.cs");
+            string replay = Source(Path.Combine("Hooks", "FavoredClassLevelUpReplayPatch.cs"));
+            Assertions.True(prerequisites.Contains("return FavoredClassPendingPicks.Selects(state, FeatureGuids);") &&
+                prerequisites.Contains("!ReferenceEquals(controller.State, state)") &&
+                replay.Contains("[HarmonyPatch(typeof(LevelUpController), \"ApplyLevelup\")]") &&
+                replay.Contains("FavoredClassPendingPicks.Begin(__instance);") &&
+                replay.Contains("FavoredClassPendingPicks.End();"),
+                "A target chosen in the same level-up counts during the native priority replay only.");
         }
 
         // One chosen power's own ability only; exact DC delta from its own binding.

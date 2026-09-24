@@ -470,10 +470,12 @@ namespace KingmakerGunslinger.FavoredClass
                 };
                 if (usablePower != null)
                 {
-                    // Only a power the character already has is a usable target.
-                    var owned = ScriptableObject.CreateInstance<PrerequisiteFeature>();
+                    // Only a power the character has (or gains in this same
+                    // level-up) is a usable target.
+                    var owned = ScriptableObject.CreateInstance<PrerequisiteFavoredClassOwnsAny>();
                     owned.name = "$" + leaf.name + "_UsablePower";
-                    owned.Feature = usablePower;
+                    owned.FeatureGuids = new[] { usablePower.AssetGuid };
+                    owned.Title = "the power " + FavoredClassLeafCatalog.TargetTitle(effect.Id, targetKey);
                     owned.Group = Prerequisite.GroupType.All;
                     components.Add(owned);
                     // ...and only through an eligible bloodline identity.
