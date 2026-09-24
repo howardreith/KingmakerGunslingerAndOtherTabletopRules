@@ -17,7 +17,8 @@ namespace KingmakerGunslinger.DomainTests
             "disposable-favored-class-elemental-core",
             "disposable-favored-class-mostly-human",
             "disposable-favored-class-elemental-advanced",
-            "disposable-favored-class-oracle-revelations"
+            "disposable-favored-class-oracle-revelations",
+            "disposable-favored-class-performance-range"
         };
 
         private static string Read(params string[] parts)
