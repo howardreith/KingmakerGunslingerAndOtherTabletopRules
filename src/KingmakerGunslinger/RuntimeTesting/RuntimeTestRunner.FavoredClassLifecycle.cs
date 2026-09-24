@@ -530,7 +530,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var reserved = new HashSet<string>(StringComparer.Ordinal) { reward.AssetGuid };
             BlueprintFeature[] picks = { armor.Partial, armor.Partial, armor.Partial, armor.Full };
             UnitEntityData master = SpawnFcbFixture(fixtures, "RespecRanger", fixtures.Origin + fixtures.Direction * 6f);
-            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
+            foreach (object step in WaitFcbUnit(master)) yield return step;
             LevelFcbRespecSubject(master, oread, picks, reserved, failures, "respec-pet", null, ranger, reward,
                 GrantsFcbPet);
             Game.Instance.EntityCreator.Tick();
@@ -791,6 +791,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!unit.Descriptor.IsTurnedOn) unit.Descriptor.TurnOn();
             PlaceFcbUnit(unit, position);
             return unit;
+        }
+
+        /// <summary>Waits (bounded) until one fixture is live in the area.</summary>
+        private static IEnumerable<object> WaitFcbUnit(UnitEntityData unit)
+        {
+            for (int frame = 0; frame < 600 && (!unit.IsInState || unit.View == null); frame++)
+            {
+                Game.Instance.EntityCreator.Tick();
+                yield return null;
+            }
+            if (!unit.IsInState || unit.View == null)
+                throw new InvalidOperationException("The fixture " + unit.Blueprint.name + " did not enter the live area.");
+            PlaceFcbUnit(unit, unit.Position);
         }
 
         /// <summary>Views are created asynchronously: wait (bounded) until every fixture is live.</summary>
