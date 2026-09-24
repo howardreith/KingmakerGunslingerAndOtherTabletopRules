@@ -304,10 +304,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (problem == null)
             {
                 for (int frame = 0; frame < FcbCensusSettle; frame++) yield return null;
-                presenter.SetPhase((int)CharBPhase.Type.Abilities);
-                for (int frame = 0; frame < FcbCensusSettle; frame++) yield return null;
+                foreach (object step in FcbCensusAdvanceTo(presenter, CharBPhase.Type.Abilities, record))
+                    yield return step;
                 if (presenter.CurrentPhase != CharBPhase.Type.Abilities)
+                {
+                    record["phaseTerms"] = FcbCensusPhaseTerms(presenter, backend);
                     problem = "the Abilities phase did not open: " + presenter.CurrentPhase;
+                }
             }
             CharBFeatureSelector selector = null;
             CharBSelectionSwitchItem switchItem = null;
@@ -343,6 +346,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             CloseFcbCensus(presenter, backend, priorBackend, priorUnit);
             for (int frame = 0; frame < 4; frame++) yield return null;
             DestroyFcbCensusUnit(unit);
+        }
+
+        /// <summary>
+        /// Presses the screen's own Next (its button setup, then ToNextPhase),
+        /// as a player does, until the phase opens or Next stops moving.
+        /// </summary>
+        private static IEnumerable<object> FcbCensusAdvanceTo(CharacterBuildController presenter,
+            CharBPhase.Type target, JObject record)
+        {
+            var trail = record["navigation"] as JArray ?? new JArray();
+            record["navigation"] = trail;
+            for (int step = 0; step < 8 && presenter.CurrentPhase != target; step++)
+            {
+                CharBPhase.Type? before = presenter.CurrentPhase;
+                typeof(CharacterBuildController).GetMethod("SetupButton", FcbCensusMembers).Invoke(presenter, null);
+                presenter.ToNextPhase();
+                for (int frame = 0; frame < FcbCensusSettle; frame++) yield return null;
+                trail.Add((before.HasValue ? before.Value.ToString() : "none") + "->" +
+                    (presenter.CurrentPhase.HasValue ? presenter.CurrentPhase.Value.ToString() : "none"));
+                if (presenter.CurrentPhase == before)
+                    yield break;
+            }
+        }
+
+        /// <summary>The terms of the native phase unlock rule, for a phase that did not open.</summary>
+        private static JObject FcbCensusPhaseTerms(CharacterBuildController presenter, LevelUpController backend)
+        {
+            return new JObject
+            {
+                ["current"] = presenter.CurrentPhase.HasValue ? presenter.CurrentPhase.Value.ToString() : "none",
+                ["next"] = presenter.NextPhase.ToString(),
+                ["classSelected"] = presenter.Class.IsSelected() || presenter.ClassInChargen.IsSelected(),
+                ["determinatorsAvailable"] = presenter.Determinators.IsAvailible,
+                ["determinatorsSelected"] = presenter.Determinators.IsSelected(),
+                ["skillsAvailable"] = presenter.Skills.IsAvailible,
+                ["skillsSelected"] = presenter.Skills.IsSelected(),
+                ["abilitiesAvailable"] = presenter.Abilities.IsAvailible,
+                ["abilitiesUnlocked"] = presenter.Abilities.IsUnlocked,
+                ["abilitiesSelected"] = presenter.Abilities.IsSelected(),
+                ["skillPointsRemaining"] = backend == null ? -1 : backend.State.SkillPointsRemaining,
+                ["blockers"] = backend == null ? new JArray() : FavoredClassLevelUpHarness.Blockers(backend),
+            };
         }
 
         /// <summary>Owned targets reveal the leaves that name them (performances, revelations, bloodline powers).</summary>
@@ -520,25 +565,33 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 problem = "open: " + exception.Message;
             }
+            // The creator's own order: Portrait, Race, Class, then Heritage.
             if (problem == null)
             {
                 for (int frame = 0; frame < FcbCensusSettle; frame++) yield return null;
+                try { presenter.SetPortrait(BlueprintRoot.Instance.CharGen.Portraits.First(value => value != null)); }
+                catch (Exception exception) { problem = "portrait: " + exception.Message; }
+            }
+            if (problem == null)
+            {
+                foreach (object step in FcbCensusAdvanceTo(presenter, CharBPhase.Type.Race, record)) yield return step;
                 try
                 {
-                    presenter.SetPortrait(BlueprintRoot.Instance.CharGen.Portraits.First(value => value != null));
                     presenter.SetRace(ancestry.Race);
                     presenter.SetGender(Kingmaker.Blueprints.Gender.Male);
                 }
                 catch (Exception exception)
                 {
-                    problem = "race: " + exception.Message;
+                    problem = "race: " + exception.GetType().Name + ": " + exception.Message;
                 }
             }
             if (problem == null)
             {
                 for (int frame = 0; frame < FcbCensusSettle; frame++) yield return null;
+                foreach (object step in FcbCensusAdvanceTo(presenter, CharBPhase.Type.ClassInChargen, record))
+                    yield return step;
                 try { presenter.SetClass(BlueprintBootstrap.GunslingerClass.CharacterClass); }
-                catch (Exception exception) { problem = "class: " + exception.Message; }
+                catch (Exception exception) { problem = "class: " + exception.GetType().Name + ": " + exception.Message; }
             }
             FeatureSelectionState state = null;
             if (problem == null)
@@ -550,10 +603,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     problem = "the creator offered no Mostly Human selector";
                 else
                 {
-                    presenter.SetPhase((int)CharBPhase.Type.Determinator);
-                    for (int frame = 0; frame < FcbCensusSettle; frame++) yield return null;
+                    foreach (object step in FcbCensusAdvanceTo(presenter, CharBPhase.Type.Determinator, record))
+                        yield return step;
                     if (presenter.CurrentPhase != CharBPhase.Type.Determinator)
+                    {
+                        record["phaseTerms"] = FcbCensusPhaseTerms(presenter, backend);
                         problem = "the Heritage phase did not open: " + presenter.CurrentPhase;
+                    }
                 }
             }
             CharBFeatureSelector selector = null;

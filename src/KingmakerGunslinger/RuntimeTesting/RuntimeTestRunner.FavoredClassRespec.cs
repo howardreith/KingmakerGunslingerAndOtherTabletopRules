@@ -270,55 +270,65 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Elemental (Fire) bloodline earned one effective level for
                 // Elemental Ray through native picks; the committed respec
                 // rebuilds Sorcerer 1 and the ray's arithmetic is native again.
-                BlueprintCharacterClass sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
-                    library, FcbSorcererClassGuid, "Sorcerer");
-                BlueprintFeatureSelection sorcererReward = host.BonusSelectionFor(sorcerer.AssetGuid);
-                FavoredClassLeafPair ray = leaves.Pair(FavoredClassCatalog.EffectSelectedBloodlinePower, "FireRay");
-                FavoredClassSelectedPowerLevel power = ray.Full.GetComponent<FavoredClassSelectedPowerLevel>();
-                if (sorcererReward == null || ray.Partial == null || power == null || power.Ability == null ||
-                    power.PowerFeature == null)
-                    throw new InvalidOperationException("The Sorcerer Fire Ray route is incomplete.");
-                var bloodlines = new HashSet<string>(FavoredClassLeafCatalog.EligibleBloodlines("FireRay").Value,
-                    StringComparer.Ordinal);
-                Func<BlueprintFeature, bool> fireBloodline = feature => bloodlines.Contains(feature.AssetGuid);
-                var sorcererReserved = new HashSet<string>(StringComparer.Ordinal) { sorcererReward.AssetGuid };
-                UnitEntityData caster = BuildFcbRespecSubject(FavoredClassAncestry.Ifrit, null, new[]
-                    { ray.Partial, ray.Partial, ray.Partial, ray.Partial, ray.Partial, ray.Full }, sorcererReserved,
-                    sorcerer, sorcererReward, fireBloodline);
-                disposables.Add(caster);
-                JObject powerBefore = DescribeFcbRespecPower(caster, sorcerer, power, ray);
-                JObject selectedPower = RunFcbRespec(caster, (controller, row) =>
+                try
                 {
-                    FavoredClassLevelUpHarness.Configure(controller, controller.Unit, race(FavoredClassAncestry.Ifrit),
-                        sorcerer, "KMG FCB Respec", null);
-                    if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, sorcerer, row) == null)
-                        throw new InvalidOperationException("the favored Sorcerer progression is unavailable");
-                    var preferred = new JArray();
-                    PreferFcbChoices(controller, sorcererReserved, fireBloodline, preferred);
-                    row["preferred"] = preferred;
-                    FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
-                    FeatureSelectionState state = FavoredClassLevelUpHarness.FindOpenState(controller,
-                        sorcererReward.AssetGuid);
-                    if (state == null || !FavoredClassLevelUpHarness.Select(controller, state, hitPoint))
-                        throw new InvalidOperationException("the Sorcerer respec could not take the hit point");
-                    FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
-                    FillFcbSpells(controller);
-                    FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
-                    return true;
-                }, powerFailures, "selected-power", sorcerer);
-                JObject powerAfter = DescribeFcbRespecPower(caster, sorcerer, power, ray);
-                selectedPower["before"] = powerBefore;
-                selectedPower["after"] = powerAfter;
-                evidence["selectedPower"] = selectedPower;
-                if ((int)powerBefore["level"] != 6 || (int)powerBefore["partial"] != 5 || (int)powerBefore["full"] != 1 ||
-                    !(bool)powerBefore["ownsPower"] || (int)powerBefore["casterLevel"] != 7)
-                    powerFailures.Add("the Sorcerer 6 source did not earn one effective level for its owned Fire Ray");
-                if (!(bool)selectedPower["committed"] || !(bool)selectedPower["callback"])
-                    powerFailures.Add("the Sorcerer respec did not commit through the native callback");
-                if ((int)powerAfter["level"] != 1 || (int)powerAfter["partial"] != 0 || (int)powerAfter["full"] != 0 ||
-                    !(bool)powerAfter["ownsPower"] || (int)powerAfter["casterLevel"] != 1)
-                    powerFailures.Add("after the respec the Fire Ray kept a counter or a raised level: " +
-                        powerAfter.ToString(Newtonsoft.Json.Formatting.None));
+                    BlueprintCharacterClass sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
+                        library, FcbSorcererClassGuid, "Sorcerer");
+                    BlueprintFeatureSelection sorcererReward = host.BonusSelectionFor(sorcerer.AssetGuid);
+                    FavoredClassLeafPair ray = leaves.Pair(FavoredClassCatalog.EffectSelectedBloodlinePower, "FireRay");
+                    FavoredClassSelectedPowerLevel power = ray.Full.GetComponent<FavoredClassSelectedPowerLevel>();
+                    if (sorcererReward == null || ray.Partial == null || power == null || power.Ability == null ||
+                        power.PowerFeature == null)
+                        throw new InvalidOperationException("The Sorcerer Fire Ray route is incomplete.");
+                    var bloodlines = new HashSet<string>(FavoredClassLeafCatalog.EligibleBloodlines("FireRay").Value,
+                        StringComparer.Ordinal);
+                    // The bloodline, then its Fire Ray (Call of the Wild opens a
+                    // selection between the ray and the blast).
+                    Func<BlueprintFeature, bool> fireBloodline = feature => bloodlines.Contains(feature.AssetGuid) ||
+                        ReferenceEquals(feature, power.PowerFeature);
+                    var sorcererReserved = new HashSet<string>(StringComparer.Ordinal) { sorcererReward.AssetGuid };
+                    UnitEntityData caster = BuildFcbRespecSubject(FavoredClassAncestry.Ifrit, null, new[]
+                        { ray.Partial, ray.Partial, ray.Partial, ray.Partial, ray.Partial, ray.Full }, sorcererReserved,
+                        sorcerer, sorcererReward, fireBloodline);
+                    disposables.Add(caster);
+                    JObject powerBefore = DescribeFcbRespecPower(caster, sorcerer, power, ray);
+                    JObject selectedPower = RunFcbRespec(caster, (controller, row) =>
+                    {
+                        FavoredClassLevelUpHarness.Configure(controller, controller.Unit, race(FavoredClassAncestry.Ifrit),
+                            sorcerer, "KMG FCB Respec", null);
+                        if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, sorcerer, row) == null)
+                            throw new InvalidOperationException("the favored Sorcerer progression is unavailable");
+                        var preferred = new JArray();
+                        PreferFcbChoices(controller, sorcererReserved, fireBloodline, preferred);
+                        row["preferred"] = preferred;
+                        FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
+                        FeatureSelectionState state = FavoredClassLevelUpHarness.FindOpenState(controller,
+                            sorcererReward.AssetGuid);
+                        if (state == null || !FavoredClassLevelUpHarness.Select(controller, state, hitPoint))
+                            throw new InvalidOperationException("the Sorcerer respec could not take the hit point");
+                        FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
+                        FillFcbSpells(controller);
+                        FavoredClassLevelUpHarness.FillOthers(controller, sorcererReserved);
+                        return true;
+                    }, powerFailures, "selected-power", sorcerer);
+                    JObject powerAfter = DescribeFcbRespecPower(caster, sorcerer, power, ray);
+                    selectedPower["before"] = powerBefore;
+                    selectedPower["after"] = powerAfter;
+                    evidence["selectedPower"] = selectedPower;
+                    if ((int)powerBefore["level"] != 6 || (int)powerBefore["partial"] != 5 || (int)powerBefore["full"] != 1 ||
+                        !(bool)powerBefore["ownsPower"] || (int)powerBefore["casterLevel"] != 7)
+                        powerFailures.Add("the Sorcerer 6 source did not earn one effective level for its owned Fire Ray");
+                    if (!(bool)selectedPower["committed"] || !(bool)selectedPower["callback"])
+                        powerFailures.Add("the Sorcerer respec did not commit through the native callback");
+                    if ((int)powerAfter["level"] != 1 || (int)powerAfter["partial"] != 0 || (int)powerAfter["full"] != 0 ||
+                        !(bool)powerAfter["ownsPower"] || (int)powerAfter["casterLevel"] != 1)
+                        powerFailures.Add("after the respec the Fire Ray kept a counter or a raised level: " +
+                            powerAfter.ToString(Newtonsoft.Json.Formatting.None));
+                }
+                catch (Exception exception)
+                {
+                    powerFailures.Add("selected power: " + exception.GetType().Name + ": " + exception.Message);
+                }
             }
             catch (Exception exception)
             {
@@ -358,7 +368,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Player.RespecCompanion; Mostly Human selection and identity fact"));
             assertions.Add(Assertion("fcb-respec-selected-power",
                 "a committed native respec of an Ifrit Sorcerer 6 whose native picks raised its Elemental Ray (Fire) by one effective level rebuilds Sorcerer 1 with no counter and the ray's native level-1 arithmetic",
-                Describe(evidence["selectedPower"], powerFailures), powerFailures.Count == 0,
+                Describe(evidence["selectedPower"], powerFailures),
+                powerFailures.Count == 0 && evidence["selectedPower"] != null,
                 "Player.RespecCompanion; the ability's native execution context"));
             assertions.Add(Assertion("external-isolation",
                 "unchanged party, global units, inventory, character list and money after every respec",
@@ -591,7 +602,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Any(value => GrantsFcbPet(value, depth + 1));
         }
 
-        /// <summary>Fills every open spells-known slot with the lowest-identity unknown spell.</summary>
+        /// <summary>
+        /// Fills every open spells-known slot, then every extra (formula or
+        /// spellbook) slot, with the lowest-identity unknown spell.
+        /// </summary>
         private static void FillFcbSpells(LevelUpController controller)
         {
             for (int guard = 0; guard < 128; guard++)
@@ -615,6 +629,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (spell != null)
                             selected = controller.SelectSpell(selection.Spellbook, selection.SpellList, level, spell,
                                 slot);
+                    }
+                    if (!selected && selection.ExtraSelected != null)
+                    {
+                        int extra = Array.FindIndex(selection.ExtraSelected, value => value == null);
+                        for (int level = selection.ExtraMaxLevel; extra >= 0 && level >= 0 && !selected; level--)
+                        {
+                            BlueprintAbility spell = selection.SpellList.GetSpells(level)
+                                .Where(value => value != null && (book == null || !book.IsKnown(value)) &&
+                                    !selection.ExtraSelected.Contains(value))
+                                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+                            if (spell != null)
+                                selected = controller.SelectSpell(selection.Spellbook, selection.SpellList, level,
+                                    spell, extra);
+                        }
                     }
                     if (selected)
                         break;
