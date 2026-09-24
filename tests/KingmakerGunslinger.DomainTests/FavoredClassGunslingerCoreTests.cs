@@ -43,6 +43,11 @@ namespace KingmakerGunslinger.DomainTests
                 Tuple.Create(FavoredClassCatalog.EffectPaladinAuras, (string)null, 5, 15),
                 Tuple.Create(FavoredClassCatalog.EffectCompanionArmor, (string)null, 5, 15),
                 Tuple.Create(FavoredClassCatalog.EffectEidolonArmor, (string)null, 5, 15),
+                // Phase 4: selected bloodline powers (1/6, max +2 per power).
+                Tuple.Create(FavoredClassCatalog.EffectSelectedBloodlinePower, "FireRay", 2, 10),
+                Tuple.Create(FavoredClassCatalog.EffectSelectedBloodlinePower, "FireBlast", 2, 10),
+                Tuple.Create(FavoredClassCatalog.EffectSelectedBloodlinePower, "AirRay", 2, 10),
+                Tuple.Create(FavoredClassCatalog.EffectSelectedBloodlinePower, "AirBlast", 2, 10),
             };
             IList<FavoredClassLeafSpec> leaves = FavoredClassLeafCatalog.AllLeaves();
             Assertions.Equal(expected.Sum(counter => counter.Item4 > 0 ? 2 : 1), leaves.Count,
@@ -65,7 +70,8 @@ namespace KingmakerGunslinger.DomainTests
                         label + " target is part of the stable symbol.");
                     Assertions.True(full.Description.Contains("separate count"),
                         label + " discloses its own counter.");
-                    Assertions.True(full.Name.Contains(counter.Item2), label + " names its target.");
+                    Assertions.True(full.Name.Contains(FavoredClassLeafCatalog.TargetTitle(counter.Item1,
+                        counter.Item2)), label + " names its target.");
                 }
             }
             Assertions.Equal(leaves.Count, leaves.Select(leaf => leaf.Symbol)

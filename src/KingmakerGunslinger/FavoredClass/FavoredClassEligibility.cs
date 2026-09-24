@@ -225,6 +225,18 @@ namespace KingmakerGunslinger.FavoredClass
             Func<FavoredClassProfile, bool> profileEnabled,
             Func<string, bool> ancestryProviderPresent)
         {
+            return EligibleRoutes(effect, permittedAncestries, profileEnabled, ancestryProviderPresent, null);
+        }
+
+        /// <param name="targetRows">
+        /// When not null, only these rows of the effect may open the target
+        /// (e.g. a fire bloodline power only through the Ifrit row).
+        /// </param>
+        internal static IList<FavoredClassSourceRow> EligibleRoutes(
+            FavoredClassEffectSpec effect, ISet<string> permittedAncestries,
+            Func<FavoredClassProfile, bool> profileEnabled,
+            Func<string, bool> ancestryProviderPresent, ICollection<string> targetRows)
+        {
             if (effect == null)
                 throw new ArgumentNullException("effect");
             if (permittedAncestries == null)
@@ -236,6 +248,8 @@ namespace KingmakerGunslinger.FavoredClass
             List<FavoredClassSourceRow> routes = new List<FavoredClassSourceRow>();
             foreach (string id in effect.Rows)
             {
+                if (targetRows != null && !targetRows.Contains(id))
+                    continue;
                 FavoredClassSourceRow row = FavoredClassCatalog.Row(id);
                 if (!row.IsScheduled)
                     continue;
@@ -254,8 +268,15 @@ namespace KingmakerGunslinger.FavoredClass
             ISet<string> permittedAncestries, Func<FavoredClassProfile, bool> profileEnabled,
             Func<string, bool> ancestryProviderPresent)
         {
+            return IsEligible(effect, permittedAncestries, profileEnabled, ancestryProviderPresent, null);
+        }
+
+        internal static bool IsEligible(FavoredClassEffectSpec effect,
+            ISet<string> permittedAncestries, Func<FavoredClassProfile, bool> profileEnabled,
+            Func<string, bool> ancestryProviderPresent, ICollection<string> targetRows)
+        {
             return EligibleRoutes(effect, permittedAncestries, profileEnabled,
-                ancestryProviderPresent).Count > 0;
+                ancestryProviderPresent, targetRows).Count > 0;
         }
     }
 }

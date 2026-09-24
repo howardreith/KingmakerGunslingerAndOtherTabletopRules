@@ -107,10 +107,17 @@ namespace KingmakerGunslinger.FavoredClass
         /// <summary>Whether this unit may take new choices of the effect.</summary>
         internal static bool IsEffectEligible(string effectId, UnitDescriptor unit)
         {
+            return IsEffectEligible(effectId, unit, null);
+        }
+
+        /// <summary>As above, limited to the source rows that open one target.</summary>
+        internal static bool IsEffectEligible(string effectId, UnitDescriptor unit,
+            ICollection<string> targetRows)
+        {
             FavoredClassEffectSpec effect = FavoredClassCatalog.Effect(effectId);
             FavoredClassProfileState profile = Profile;
             return FavoredClassEligibility.IsEligible(effect, PermittedAncestries(unit),
-                profile.Offers, ancestry => true);
+                profile.Offers, ancestry => true, targetRows);
         }
     }
 }
