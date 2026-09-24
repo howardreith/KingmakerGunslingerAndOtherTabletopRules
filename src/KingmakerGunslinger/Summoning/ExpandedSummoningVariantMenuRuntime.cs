@@ -643,9 +643,12 @@ namespace KingmakerGunslinger.Summoning
             private RectTransform _content;
             private ScrollRect _scroll;
             private RectMask2D _mask;
-            private GridLayoutGroup _contentGrid;
-            private HorizontalLayoutGroup _contentHorizontal;
-            private VerticalLayoutGroup _contentVertical;
+            // One layout group, of the native layout's own type. Unity marks
+            // LayoutGroup DisallowMultipleComponent, so the first live
+            // measurement at 120 entries - the first size to need the
+            // viewport - found the second and third AddComponent calls of
+            // the earlier scaffold returning null and the install faulting.
+            private LayoutGroup _contentLayout;
             private ContentSizeFitter _contentFitter;
             private RectTransform _canvasRect;
             private ActionBarSpontaneousConvertedSlot[] _lastSlots =
@@ -945,16 +948,8 @@ namespace KingmakerGunslinger.Summoning
                 _content.anchorMax = new Vector2(0f, 1f);
                 _content.pivot = new Vector2(0f, 1f);
                 _content.anchoredPosition = Vector2.zero;
-                _contentGrid = contentObject.AddComponent<GridLayoutGroup>();
-                _contentHorizontal = contentObject.AddComponent<
-                    HorizontalLayoutGroup>();
-                _contentVertical = contentObject.AddComponent<
-                    VerticalLayoutGroup>();
                 _contentFitter = contentObject.AddComponent<
                     ContentSizeFitter>();
-                _contentGrid.enabled = false;
-                _contentHorizontal.enabled = false;
-                _contentVertical.enabled = false;
                 _contentFitter.enabled = false;
                 _scroll.viewport = _viewport;
                 _scroll.content = _content;
@@ -963,44 +958,50 @@ namespace KingmakerGunslinger.Summoning
 
             private void ConfigureContentLayout(LayoutGroup source)
             {
-                _contentGrid.enabled = false;
-                _contentHorizontal.enabled = false;
-                _contentVertical.enabled = false;
                 GridLayoutGroup grid = source as GridLayoutGroup;
                 HorizontalLayoutGroup horizontal = source as
                     HorizontalLayoutGroup;
                 VerticalLayoutGroup vertical = source as VerticalLayoutGroup;
+                if (grid == null && horizontal == null && vertical == null)
+                    throw new InvalidOperationException(
+                        "Unsupported native variant-menu LayoutGroup: " +
+                        source.GetType().FullName);
+                // The content carries exactly one layout group, matching the
+                // native one's type; a group of another type from an earlier
+                // open is removed at once so the replacement can be added.
+                Type needed = source.GetType();
+                if (_contentLayout != null && _contentLayout.GetType() != needed)
+                {
+                    UnityEngine.Object.DestroyImmediate(_contentLayout);
+                    _contentLayout = null;
+                }
+                if (_contentLayout == null)
+                    _contentLayout = _content.gameObject.AddComponent(needed) as
+                        LayoutGroup;
+                if (_contentLayout == null)
+                    throw new InvalidOperationException(
+                        "The content layout group could not be added: " +
+                        needed.FullName);
                 if (grid != null)
                 {
-                    CopyCommon(grid, _contentGrid);
-                    _contentGrid.cellSize = grid.cellSize;
-                    _contentGrid.spacing = grid.spacing;
-                    _contentGrid.startCorner =
+                    var contentGrid = (GridLayoutGroup)_contentLayout;
+                    CopyCommon(grid, contentGrid);
+                    contentGrid.cellSize = grid.cellSize;
+                    contentGrid.spacing = grid.spacing;
+                    contentGrid.startCorner =
                         grid.startCorner == GridLayoutGroup.Corner.UpperRight ||
                         grid.startCorner == GridLayoutGroup.Corner.LowerRight
                             ? GridLayoutGroup.Corner.UpperRight
                             : GridLayoutGroup.Corner.UpperLeft;
-                    _contentGrid.startAxis = grid.startAxis;
-                    _contentGrid.constraint = grid.constraint;
-                    _contentGrid.constraintCount = grid.constraintCount;
-                    _contentGrid.enabled = true;
+                    contentGrid.startAxis = grid.startAxis;
+                    contentGrid.constraint = grid.constraint;
+                    contentGrid.constraintCount = grid.constraintCount;
                 }
                 else if (horizontal != null)
-                {
-                    CopyLinear(horizontal, _contentHorizontal);
-                    _contentHorizontal.enabled = true;
-                }
-                else if (vertical != null)
-                {
-                    CopyLinear(vertical, _contentVertical);
-                    _contentVertical.enabled = true;
-                }
+                    CopyLinear(horizontal, (HorizontalLayoutGroup)_contentLayout);
                 else
-                {
-                    throw new InvalidOperationException(
-                        "Unsupported native variant-menu LayoutGroup: " +
-                        source.GetType().FullName);
-                }
+                    CopyLinear(vertical, (VerticalLayoutGroup)_contentLayout);
+                _contentLayout.enabled = true;
 
                 if (_nativeFitter != null)
                 {

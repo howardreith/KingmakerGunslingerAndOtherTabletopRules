@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.View;
+using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Assets;
 using UnityEngine;
 
@@ -235,12 +237,21 @@ namespace KingmakerGunslinger.Summoning
                 attachment.Material = material;
                 attachment.Mesh = mesh;
 
+                // The game's material controller cached the donor's materials
+                // before the swap and keeps driving those: the summon's
+                // dissolve-in, hit tint, death dissolve and fade-out would all
+                // pass this material by, and a clone taken while the donor was
+                // fully dissolved stays invisible. So the clone starts intact
+                // and the controller re-reads the renderer's materials.
+                string controller = AdoptByMaterialController(view, material);
+
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
                     albedo.width + "x" + albedo.height + ";rendererEnabled=" +
-                    (donor.enabled ? "true" : "false") + ";" + dressing;
+                    (donor.enabled ? "true" : "false") + ";" + dressing +
+                    ";" + controller;
             }
             catch (Exception error)
             {
@@ -330,6 +341,61 @@ namespace KingmakerGunslinger.Summoning
             donor.sharedMesh = attachment.OriginalMesh;
             donor.bones = attachment.OriginalBones;
             donor.sharedMaterials = attachment.OriginalMaterials;
+            StandardMaterialController controller = donor
+                .GetComponentInParent<StandardMaterialController>();
+            if (controller != null) ReinitMaterials(controller);
+        }
+
+        private const string DissolveProperty = "_Dissolve";
+
+        /// <summary>
+        /// The dissolve amount the clone was taken with, then the clone reset
+        /// to intact and the view's material controller re-reading its
+        /// renderers, so the game's own fades and tints include it.
+        /// </summary>
+        private static string AdoptByMaterialController(UnitEntityView view,
+            Material material)
+        {
+            string dissolve = "<none>";
+            if (material.HasProperty(DissolveProperty))
+            {
+                dissolve = material.GetFloat(DissolveProperty).ToString("0.###",
+                    CultureInfo.InvariantCulture);
+                material.SetFloat(DissolveProperty, 0f);
+            }
+            StandardMaterialController controller =
+                view.GetComponentInChildren<StandardMaterialController>(true);
+            if (controller == null)
+                return "clonedDissolve=" + dissolve + ";materialController=absent";
+            bool reinitialized = ReinitMaterials(controller);
+            IList<Material> materials = ControllerMaterials(controller);
+            int count = materials == null ? -1 : materials.Count;
+            bool adopted = materials != null && materials.Contains(material);
+            return "clonedDissolve=" + dissolve + ";materialController=" +
+                (reinitialized ? "reinitialized" : "reinit-unavailable") +
+                ";controllerMaterials=" + count + ";adopted=" +
+                (adopted ? "true" : "false");
+        }
+
+        /// <summary>The materials the controller currently drives (its private list).</summary>
+        internal static IList<Material> ControllerMaterials(
+            StandardMaterialController controller)
+        {
+            if (controller == null) return null;
+            FieldInfo field = typeof(StandardMaterialController).GetField(
+                "m_Materials", BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            return field == null ? null : field.GetValue(controller) as IList<Material>;
+        }
+
+        private static bool ReinitMaterials(StandardMaterialController controller)
+        {
+            MethodInfo method = typeof(StandardMaterialController).GetMethod(
+                "ReinitMaterials", BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+            if (method == null) return false;
+            method.Invoke(controller, null);
+            return true;
         }
     }
 }
