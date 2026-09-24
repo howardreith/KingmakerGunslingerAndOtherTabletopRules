@@ -113,9 +113,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var disposables = new List<UnitEntityData>();
             try
             {
-                // Human Gunslinger 5: grit complete (3 partial + 1 full) and
+                // Half-elf Gunslinger 5 (grit through the human alias, elf
+                // confirmation): grit complete (3 partial + 1 full) and
                 // confirmation incomplete (1 partial), one grit point spent.
-                UnitEntityData human = BuildFcbRespecSubject(FavoredClassAncestry.Human, null, new[]
+                UnitEntityData human = BuildFcbRespecSubject(FavoredClassAncestry.HalfElf, null, new[]
                     { grit.Partial, grit.Partial, grit.Partial, grit.Full, confirmation.Partial }, reserved);
                 disposables.Add(human);
                 human.Descriptor.Resources.Spend(gunslinger.Grit.Resource, 1);
@@ -126,7 +127,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // ancestry's first choices and cancelled.
                 JObject cancelled = RunFcbRespec(human, (controller, row) =>
                 {
-                    FavoredClassLevelUpHarness.Configure(controller, controller.Unit, race(FavoredClassAncestry.HalfElf),
+                    FavoredClassLevelUpHarness.Configure(controller, controller.Unit, race(FavoredClassAncestry.Human),
                         gunslinger.CharacterClass, "KMG FCB Respec", null);
                     FavoredClassLevelUpHarness.ChooseFavoredClass(controller, gunslinger.CharacterClass, row);
                     return false;
@@ -140,11 +141,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cancelFailures.Add("the cancelled respec changed the character: " +
                         afterCancel.ToString(Newtonsoft.Json.Formatting.None));
 
-                // L03 commit and E16 ancestry change to Half-elf: grit through
-                // the human alias exactly once; the old counters are removed.
+                // L03 commit and E16 ancestry change to Human: grit stays
+                // eligible (one counter), the elf confirmation does not; the
+                // old complete and incomplete counters are removed.
                 JObject halfElf = RunFcbRespec(human, (controller, row) =>
                 {
-                    FavoredClassLevelUpHarness.Configure(controller, controller.Unit, race(FavoredClassAncestry.HalfElf),
+                    FavoredClassLevelUpHarness.Configure(controller, controller.Unit, race(FavoredClassAncestry.Human),
                         gunslinger.CharacterClass, "KMG FCB Respec", null);
                     if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, gunslinger.CharacterClass, row) == null)
                         throw new InvalidOperationException("the favored Gunslinger progression is unavailable");
@@ -155,31 +157,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException("no Gunslinger reward state in the respec");
                     DescribeFcbRespecOffer(controller, state, leaves, grit, confirmation, row);
                     if (!FavoredClassLevelUpHarness.Select(controller, state, grit.Partial))
-                        throw new InvalidOperationException("the Half-elf respec could not take grit");
+                        throw new InvalidOperationException("the Human respec could not take grit");
                     FavoredClassLevelUpHarness.FillOthers(controller, reserved);
                     return true;
-                }, commitFailures, "half-elf");
+                }, commitFailures, "human");
                 JObject afterHalfElf = DescribeFcbRespecState(human);
                 halfElf["after"] = afterHalfElf;
-                evidence["halfElf"] = halfElf;
+                evidence["human"] = halfElf;
                 JObject offer = (JObject)((JObject)halfElf["drive"])["offer"];
                 if (!(bool)halfElf["committed"] || !(bool)halfElf["callback"])
-                    commitFailures.Add("the Half-elf respec did not commit through the native callback");
+                    commitFailures.Add("the Human respec did not commit through the native callback");
                 if (offer == null || (int)offer["gritPairs"] != 1 || (int)offer["confirmationPairs"] != 1 ||
                     !(bool)offer["gritPartialSelectable"] || (bool)offer["gritFullSelectable"] ||
-                    !(bool)offer["confirmationPartialSelectable"])
-                    ancestryFailures.Add("the Half-elf respec offer is not one grit and one confirmation counter at zero: " +
+                    (bool)offer["confirmationPartialSelectable"])
+                    ancestryFailures.Add("the Human respec offer is not one grit counter at zero without the elf confirmation: " +
                         (offer == null ? "none" : offer.ToString(Newtonsoft.Json.Formatting.None)));
-                if ((string)afterHalfElf["race"] != race(FavoredClassAncestry.HalfElf).name ||
+                if ((string)afterHalfElf["race"] != race(FavoredClassAncestry.Human).name ||
                     (int)afterHalfElf["gunslingerLevel"] != 1 || !OnlyCounters(afterHalfElf, grit.Partial, 1) ||
                     (int)afterHalfElf["duplicateFacts"] != 0)
                     commitFailures.Add("the committed respec did not replace the counters exactly: " +
                         afterHalfElf.ToString(Newtonsoft.Json.Formatting.None));
                 // The rebuilt counters keep accumulating (stable counters).
-                LevelFcbRespecSubject(human, race(FavoredClassAncestry.HalfElf), new[] { grit.Partial, grit.Partial },
-                    reserved, commitFailures, "half-elf");
+                LevelFcbRespecSubject(human, race(FavoredClassAncestry.Human), new[] { grit.Partial, grit.Partial },
+                    reserved, commitFailures, "human");
                 JObject leveled = DescribeFcbRespecState(human);
-                evidence["halfElfLeveled"] = leveled;
+                evidence["humanLeveled"] = leveled;
                 if ((int)leveled["gunslingerLevel"] != 3 || !OnlyCounters(leveled, grit.Partial, 3))
                     commitFailures.Add("the rebuilt counter did not keep accumulating: " +
                         leveled.ToString(Newtonsoft.Json.Formatting.None));
@@ -282,10 +284,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Player.RespecCompanion with the level-up controller cancelled"));
             assertions.Add(Assertion("fcb-respec-commit",
                 "a committed native respec removes every old counter exactly once and keeps only the new pick; the rebuilt counter keeps accumulating on later level-ups",
-                Describe(evidence["halfElf"], commitFailures), commitFailures.Count == 0,
+                Describe(evidence["human"], commitFailures), commitFailures.Count == 0,
                 "Player.RespecCompanion commit and its success callback; later native level-ups"));
             assertions.Add(Assertion("fcb-respec-ancestry",
-                "an ancestry change rebuilds eligibility: a Half-elf sees one grit counter through the human alias and one elf confirmation counter, both starting at zero; a Dwarf sees neither and keeps no counter",
+                "an ancestry change rebuilds eligibility: a Half-elf respecced to Human keeps one grit counter (starting at zero) and loses the elf confirmation; a Dwarf sees neither and keeps no counter",
                 Describe(evidence["dwarf"], ancestryFailures), ancestryFailures.Count == 0,
                 "the respec's native Gunslinger reward state (ExtractSelectionItems and CanSelect)"));
             assertions.Add(Assertion("fcb-respec-mostly-human",
