@@ -65,11 +65,11 @@ Favored Class ships nine custom JSON rewards in `ZFavoredClass\Custom\`.
   Build-Local: 1772/1772 domain tests; package `5121e2d8…`, DLL `5e256ab2…`,
   MVID `c65c50f2-f0d3-401c-a591-c644adcad711`.
 - Native PASS on `2cccec68b`:
-  `runtime-evidence60924T0102047921088Z-observe-favored-class-contract`
-  and `runtime-evidence60924T0101128312625Z-disposable-favored-class-grit`.
+  `runtime-evidence\20260924T0102047921088Z-observe-favored-class-contract`
+  and `runtime-evidence\20260924T0101128312625Z-disposable-favored-class-grit`.
 
 Read-only audit reports (private, not committed):
-`C:\Dev\KingmakerGunslingerLab\privateavored-class-missionudits\` A–G.
+`C:\Dev\KingmakerGunslingerLab\private\favored-class-mission\audits\` A–G.
 
 ## Shared-environment change log (restore obligations)
 
@@ -77,13 +77,13 @@ Deployments use `scripts\Deploy-Local.ps1` (backs up the live mod tree,
 preserves `FeatureModules.json` bytes). The owner's pre-mission install
 (0.0.136, DLL `c6cccdac…`, Info `f66de05d…`, FeatureModules `6e24b278…`) is
 held byte-identically in two verified backups:
-`C:\Dev\KingmakerGunslingerLabuntime-backups\live-mod60923T2118026258530Z`
+`C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260923T2118026258530Z`
 (pre-mission lab operation) and
-`C:\Dev\KingmakerGunslingerLabuntime-backups\live-mod60924T0027014050156Z`
+`C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z`
 (first mission deployment). Restore at the end with:
 
 ```powershell
-.\scripts\Restore-Live-Mod.ps1 -BackupDirectory C:\Dev\KingmakerGunslingerLabuntime-backups\live-mod60924T0027014050156Z -Confirm:$false
+.\scripts\Restore-Live-Mod.ps1 -BackupDirectory C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z -Confirm:$false
 ```
 
 then byte-check DLL/Info.json/FeatureModules.json against the table above.
