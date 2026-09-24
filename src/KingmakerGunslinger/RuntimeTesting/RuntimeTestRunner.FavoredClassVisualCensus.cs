@@ -301,22 +301,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 problem = "class: " + exception.Message;
             }
+            // The screen routes a selection by its feature group: the host's
+            // reward selection is shown in the Determinator phase, other
+            // groups in Abilities.
+            CharBPhaseFeatures holder = null;
+            CharBPhase.Type holderType = CharBPhase.Type.Abilities;
             if (problem == null)
             {
                 for (int frame = 0; frame < FcbCensusSettle; frame++) yield return null;
-                foreach (object step in FcbCensusAdvanceTo(presenter, CharBPhase.Type.Abilities, record))
+                if (presenter.Determinators.FeatureCollections != null &&
+                    presenter.Determinators.FeatureCollections.Contains(state))
+                {
+                    holder = presenter.Determinators;
+                    holderType = CharBPhase.Type.Determinator;
+                }
+                else if (presenter.Abilities.FeatureCollections != null &&
+                    presenter.Abilities.FeatureCollections.Contains(state))
+                    holder = presenter.Abilities;
+                record["phase"] = holder == null ? "none" : holderType.ToString();
+                if (holder == null)
+                    problem = "no feature phase holds the reward selector";
+            }
+            if (problem == null)
+            {
+                foreach (object step in FcbCensusAdvanceTo(presenter, holderType, record))
                     yield return step;
-                if (presenter.CurrentPhase != CharBPhase.Type.Abilities)
+                if (presenter.CurrentPhase != holderType)
                 {
                     record["phaseTerms"] = FcbCensusPhaseTerms(presenter, backend);
-                    problem = "the Abilities phase did not open: " + presenter.CurrentPhase;
+                    problem = "the " + holderType + " phase did not open: " + presenter.CurrentPhase;
                 }
             }
             CharBFeatureSelector selector = null;
             CharBSelectionSwitchItem switchItem = null;
             if (problem == null)
             {
-                problem = ShowFcbCensusCollection(presenter.Abilities, state, out selector, out switchItem);
+                problem = ShowFcbCensusCollection(holder, state, out selector, out switchItem);
                 for (int frame = 0; frame < FcbCensusSettle; frame++) yield return null;
             }
             if (problem == null)
