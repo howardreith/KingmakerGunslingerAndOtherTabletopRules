@@ -267,8 +267,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .FirstOrDefault(value => value != null && value.sharedMesh != null);
             if (renderer != null)
             {
-                Transform[] bones = renderer.bones ?? new Transform[0];
+                // The donor's rig is the authoring contract. Once the Pteranodon
+                // visual is swapped onto this renderer its bone array is the
+                // Pteranodon's 46, so the rig is read from the references the
+                // patch kept from before the swap; an unswapped view still
+                // carries the donor rig on the renderer itself.
+                Transform[] bones;
+                Matrix4x4[] donorBindPoses;
+                string rigSource = "renderer";
+                if (ExpandedSummoningPteranodonViewPatch.TryGetDonorRig(view,
+                    out bones, out donorBindPoses))
+                    rigSource = "donor-before-swap";
+                else
+                {
+                    bones = renderer.bones ?? new Transform[0];
+                    donorBindPoses = renderer.sharedMesh.bindposes;
+                }
                 text.Append(";renderer=").Append(renderer.name)
+                    .Append(";rigSource=").Append(rigSource)
                     .Append(";boneCount=").Append(Number(bones.Length))
                     .Append(";rootBone=").Append(renderer.rootBone == null
                         ? "<null>" : renderer.rootBone.name);
@@ -285,8 +301,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // at bind time, so its inverse gives the bone's bind transform
                 // in renderer space. A replacement mesh must be authored here,
                 // not against whatever pose the creature happened to be holding.
-                Matrix4x4[] bindPoses = renderer.sharedMesh.bindposes ??
-                    new Matrix4x4[0];
+                Matrix4x4[] bindPoses = donorBindPoses ?? new Matrix4x4[0];
                 rigLines.Add("  \"bindPoseCount\": " + Number(bindPoses.Length) + ",");
                 rigLines.Add("  \"bones\": [");
                 for (int index = 0; index < bones.Length; index++)
