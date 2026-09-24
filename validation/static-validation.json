@@ -1894,7 +1894,7 @@
         "SNA VIII 1d3",
         "SNA IX 1d4+1"
       ],
-      "flashOfInsight": "bounded: once per summoning, swift action, next attack roll auto-hit and critical threat",
+      "flashOfInsight": "bounded: once per summoning, swift action, next attack is an automatic critical hit (Kingmaker's automatic-hit path grants threat and confirmation together)",
       "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
       "internalAcceptance": "PENDING"
     }
