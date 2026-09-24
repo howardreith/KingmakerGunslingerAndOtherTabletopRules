@@ -44,6 +44,9 @@ namespace KingmakerGunslinger.DomainTests
             IList<FavoredClassLeafSpec> leaves = FavoredClassLeafCatalog.AllLeaves();
             HashSet<string> identities = new HashSet<string>(
                 FavoredClassIdentityCatalog.All.Select(value => value.Symbol), StringComparer.Ordinal);
+            // Helper identities (aura steps property, pet features) are not leaves.
+            foreach (string auxiliary in FavoredClassIdentityCatalog.AuxiliarySymbols)
+                Assertions.True(identities.Remove(auxiliary), "Missing helper identity " + auxiliary);
             foreach (FavoredClassLeafSpec leaf in leaves)
             {
                 Assertions.True(identities.Remove(leaf.Symbol), "Uncommitted leaf identity " + leaf.Symbol);

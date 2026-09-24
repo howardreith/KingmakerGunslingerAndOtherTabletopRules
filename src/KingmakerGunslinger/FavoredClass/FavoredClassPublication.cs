@@ -181,6 +181,8 @@ namespace KingmakerGunslinger.FavoredClass
             }
             if (host.BonusSelectionFor(pair.HostClassGuid) == null)
                 return "class-not-scanned";
+            if (FavoredClassRuntime.IsEffectUnavailable(pair.Effect.Id))
+                return "native-contract-unavailable";
             return null;
         }
 

@@ -465,7 +465,7 @@ and listed with family, module, enhancement, Reliable flag and price in
 
 The optional Favored Class integration appends its owned full/partial leaves
 after the Better Vendors block, for
-2003 stable identifiers: 2001 active and 2 reserved. Every pre-existing GUID is unchanged. The symbols use the
+2012 stable identifiers: 2010 active and 2 reserved. Every pre-existing GUID is unchanged. The symbols use the
 `KMG.FavoredClass.<Class>.<Effect>[.<Target>].{Full|Partial}` pattern. They
 register on every load in a contained registry, independently of the host and
 of the publication profile, so saved investments always resolve. The exact

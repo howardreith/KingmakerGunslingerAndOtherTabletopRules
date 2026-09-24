@@ -1,0 +1,455 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kingmaker;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Root;
+using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Class.LevelUp;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.Utility;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.FavoredClass;
+using KingmakerGunslinger.FavoredClass.Mechanics;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal sealed partial class RuntimeTestRunner
+    {
+        private const string FcbDivineHunterGuid = "fec08c1a3187da549abd6b85f27e4432";
+        private const string FcbDivineGuardianGuid = "5693945afac189a469ef970eac8f71d9";
+        private const string FcbFlamewardenGuid = "300917c3479d27d47b4b4b52b1762e8d";
+        private const string FcbAnimalCompanionRankGuid = "1670990255e4fe948a863bafd5dbda5d";
+        private const string FcbCompanionLeopardGuid = "2ee2ba60850dd064e8b98bf5c2c946ba";
+        private const string FcbCompanionWolfGuid = "67a9dc42b15d0954ca4689b13e8dedea";
+        private const string FcbBarkskinBuffGuid = "533592a86adecda4e9fd5ed37a028432";
+        private const string FcbAngelEidolonProgressionName = "AngelEidolonProgression";
+
+        // Phase 3 advanced rows: O06 paladin auras, O07 companion and O08
+        // eidolon natural armor, with archetype, two-owner, replacement and
+        // negative controls.
+        private RuntimeTestResult RunFavoredClassElementalAdvanced()
+        {
+            var assertions = new List<RuntimeTestAssertion>();
+            FavoredClassIntegrationStatus status = FavoredClassIntegrationStatusRegistry.Current;
+            FavoredClassHostHandles host = FavoredClassIntegrationCoordinator.Host;
+            FavoredClassBlueprintSet leaves = BlueprintBootstrap.FavoredClassLeaves;
+            bool ready = status.Availability == FavoredClassIntegrationAvailability.Published &&
+                host != null && leaves != null && FavoredClassRuntime.MechanicsEnabled &&
+                FavoredClassIntegrationCoordinator.Aura != null;
+            assertions.Add(Assertion("fcb-advanced-ready",
+                "the exact host is published, mechanics are enabled and the native aura read point is committed",
+                status + ";aura=" + (FavoredClassIntegrationCoordinator.Aura == null ? "none" :
+                    string.Join("|", FavoredClassIntegrationCoordinator.Aura.Evidence.ToArray())),
+                ready, "FavoredClassIntegrationStatusRegistry and FavoredClassIntegrationCoordinator.Aura"));
+            if (!ready)
+                return CreateResult(RuntimeTestStatuses.Fail, assertions, null);
+            object player = ReadExactMember(Game.Instance, "Player");
+            object state = ReadExactMember(Game.Instance, "State");
+            object party = ReadExactMember(player, "Party");
+            object allUnits = ReadExactMember(state, "AllUnits");
+            object[] partyBefore = SnapshotReferences(party);
+            object[] unitsBefore = SnapshotReferences(allUnits);
+
+            var evidence = new JObject();
+            var menuFailures = new List<string>();
+            var auraFailures = new List<string>();
+            var companionFailures = new List<string>();
+            var eidolonFailures = new List<string>();
+            bool cleaned = false;
+            try
+            {
+                evidence["menus"] = RunAdvancedMenus(host, leaves, menuFailures);
+                evidence["auras"] = ObserveAuraBonuses(leaves, auraFailures);
+                evidence["pets"] = ObservePetArmor(leaves, companionFailures, eidolonFailures);
+            }
+            catch (Exception exception)
+            {
+                auraFailures.Add("exception=" + exception);
+            }
+            finally
+            {
+                cleaned = SameReferences(partyBefore, SnapshotReferences(party)) &&
+                    SameReferences(unitsBefore, SnapshotReferences(allUnits));
+            }
+            string evidencePath = WriteFavoredClassEvidence("favored-class-elemental-advanced.json", evidence);
+            assertions.Add(Assertion("fcb-advanced-menus",
+                "the Oread Paladin, Ranger and Summoner menus offer their counters; Humans get none; archetypes that replace every improved feature (Divine Hunter, Flamewarden) are not offered them, while Divine Guardian keeps the aura counter",
+                Describe(evidence["menus"], menuFailures), menuFailures.Count == 0,
+                "level-1 native visits per class/archetype; BlueprintFeatureSelection.CanSelect"));
+            assertions.Add(Assertion("fcb-advanced-aura-bonus",
+                "an ally inside each paladin's native ally buff gains exactly 4 + that paladin's earned steps against fear (Courage) and charm (Resolve) in the same Morale modifier; other saves are unchanged",
+                Describe(evidence["auras"], auraFailures), auraFailures.Count == 0,
+                "native Aura of Courage/Resolve ally buffs applied in each paladin's context; RuleSavingThrow.StatValue"));
+            assertions.Add(Assertion("fcb-advanced-companion-armor",
+                "the native companion gains exactly the ranger's earned steps as stacking natural armor (touch AC and the ranger's AC unchanged, Barkskin stacks), follows a replacement companion and leaves the old one",
+                Describe(evidence["pets"] == null ? null : evidence["pets"]["companion"], companionFailures),
+                companionFailures.Count == 0,
+                "native AddPet spawn/level and SetMaster in the save-free fixture scene; Stats.AC"));
+            assertions.Add(Assertion("fcb-advanced-eidolon-armor",
+                "Call of the Wild's eidolon gains exactly the summoner's earned steps as natural armor",
+                Describe(evidence["pets"] == null ? null : evidence["pets"]["eidolon"], eidolonFailures),
+                eidolonFailures.Count == 0,
+                "native AddPet of Call of the Wild's eidolon progression in the save-free fixture scene"));
+            assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
+                "cleaned=" + cleaned, cleaned, "detached entity disposal and exact reference snapshots"));
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            RuntimeTestResult result = CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+            result.EvidenceFiles.Add(evidencePath);
+            return result;
+        }
+
+        private JArray RunAdvancedMenus(FavoredClassHostHandles host, FavoredClassBlueprintSet leaves,
+            IList<string> failures)
+        {
+            var library = BlueprintBootstrap.Library;
+            Func<string, BlueprintArchetype> archetype = guid =>
+                BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(library, guid, guid);
+            var cases = new[]
+            {
+                Tuple.Create(FavoredClassAncestry.Oread, FavoredClassCatalog.Paladin, (string)null,
+                    new[] { FavoredClassCatalog.EffectPaladinAuras }),
+                Tuple.Create(FavoredClassAncestry.Human, FavoredClassCatalog.Paladin, (string)null, new string[0]),
+                Tuple.Create(FavoredClassAncestry.Oread, FavoredClassCatalog.Paladin, FcbDivineHunterGuid, new string[0]),
+                Tuple.Create(FavoredClassAncestry.Oread, FavoredClassCatalog.Paladin, FcbDivineGuardianGuid,
+                    new[] { FavoredClassCatalog.EffectPaladinAuras }),
+                Tuple.Create(FavoredClassAncestry.Oread, FavoredClassCatalog.Ranger, (string)null,
+                    new[] { FavoredClassCatalog.EffectCompanionArmor }),
+                Tuple.Create(FavoredClassAncestry.Human, FavoredClassCatalog.Ranger, (string)null, new string[0]),
+                Tuple.Create(FavoredClassAncestry.Oread, FavoredClassCatalog.Ranger, FcbFlamewardenGuid, new string[0]),
+                Tuple.Create(FavoredClassAncestry.Oread, FavoredClassCatalog.Summoner, (string)null,
+                    new[] { FavoredClassCatalog.EffectEidolonArmor }),
+                Tuple.Create(FavoredClassAncestry.Human, FavoredClassCatalog.Summoner, (string)null, new string[0]),
+            };
+            var rows = new JArray();
+            foreach (var entry in cases)
+            {
+                var row = new JObject { ["ancestry"] = entry.Item1, ["class"] = entry.Item2,
+                    ["archetype"] = entry.Item3 };
+                UnitEntityData unit = null;
+                LevelUpController controller = null;
+                try
+                {
+                    FavoredClassLeafPair[] classPairs = leaves.Pairs.Where(pair =>
+                        pair.Effect.ClassFamily == entry.Item2).ToArray();
+                    BlueprintScriptableObject classBlueprint;
+                    library.BlueprintsByAssetId.TryGetValue(classPairs[0].HostClassGuid, out classBlueprint);
+                    var characterClass = classBlueprint as BlueprintCharacterClass;
+                    BlueprintFeatureSelection selection = characterClass == null ? null :
+                        host.BonusSelectionFor(characterClass.AssetGuid);
+                    if (characterClass == null || selection == null)
+                    {
+                        row["provider"] = "absent";
+                        failures.Add(entry.Item2 + ": class or host bonus selection unavailable");
+                        rows.Add(row);
+                        continue;
+                    }
+                    BlueprintRace race = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
+                        FavoredClassRaceIdentities.ForAncestry(entry.Item1).RaceGuid, entry.Item1);
+                    unit = FavoredClassLevelUpHarness.CreateUnit(14);
+                    controller = FavoredClassLevelUpHarness.Open(unit.Descriptor, race, characterClass,
+                        "KMG FCB Advanced Menu", entry.Item3 == null ? null : archetype(entry.Item3));
+                    if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, characterClass, row) == null)
+                    {
+                        failures.Add(entry.Item1 + "/" + entry.Item2 + ": favored class progression unavailable");
+                        rows.Add(row);
+                        continue;
+                    }
+                    FavoredClassLevelUpHarness.FillOthers(controller,
+                        new HashSet<string>(StringComparer.Ordinal) { selection.AssetGuid });
+                    FeatureSelectionState fcb = FavoredClassLevelUpHarness.FindOpenState(controller,
+                        selection.AssetGuid);
+                    string[] offered = fcb == null ? new string[0] : classPairs.Where(pair =>
+                        FavoredClassLevelUpHarness.CanSelect(controller, fcb, pair.Full) ||
+                        (pair.Partial != null && FavoredClassLevelUpHarness.CanSelect(controller, fcb, pair.Partial)))
+                        .Select(pair => pair.Effect.Id).Distinct().ToArray();
+                    row["offered"] = new JArray(offered);
+                    if (!offered.OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(
+                            entry.Item4.OrderBy(value => value, StringComparer.Ordinal)))
+                        failures.Add(entry.Item1 + "/" + entry.Item2 + (entry.Item3 == null ? "" : "/" +
+                            entry.Item3) + ": offered " + string.Join(",", offered) + " expected " +
+                            string.Join(",", entry.Item4));
+                }
+                catch (Exception exception)
+                {
+                    failures.Add(entry.Item1 + "/" + entry.Item2 + ": " + exception.GetType().Name + ": " +
+                        exception.Message);
+                }
+                finally
+                {
+                    FavoredClassLevelUpHarness.Close(controller);
+                    if (unit != null) unit.Dispose();
+                }
+                rows.Add(row);
+            }
+            return rows;
+        }
+
+        private static JObject ObserveAuraBonuses(FavoredClassBlueprintSet leaves, IList<string> failures)
+        {
+            var library = BlueprintBootstrap.Library;
+            var row = new JObject();
+            BlueprintBuff courage = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                FavoredClassAuraPublication.CourageEffectBuffGuid, "Aura of Courage ally buff");
+            BlueprintBuff resolve = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                FavoredClassAuraPublication.ResolveEffectBuffGuid, "Aura of Resolve ally buff");
+            BlueprintFeature full = leaves.Pair(FavoredClassCatalog.EffectPaladinAuras, null).Full;
+            var disposables = new List<UnitEntityData>();
+            Func<UnitEntityData> create = () =>
+            {
+                UnitEntityData unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                disposables.Add(unit);
+                return unit;
+            };
+            try
+            {
+                UnitEntityData paladinTwo = create();
+                UnitEntityData paladinOne = create();
+                UnitEntityData paladinZero = create();
+                UnitEntityData ally = create();
+                UnitEntityData source = create();
+                GrantFavoredClassRanks(paladinTwo, full, 2);
+                GrantFavoredClassRanks(paladinOne, full, 1);
+                // A neutral (force) reason context; only the added descriptor varies.
+                var neutral = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
+                    library, FcbMagicMissileGuid, "MagicMissile");
+                Func<SpellDescriptor, int> save = descriptor =>
+                {
+                    var context = new MechanicsContext(source, source.Descriptor, neutral);
+                    if (descriptor != SpellDescriptor.None)
+                        context.AddSpellDescriptor(descriptor);
+                    using (context.GetDataScope(new TargetWrapper(ally)))
+                        return context.TriggerRule(new RuleSavingThrow(ally, SavingThrowType.Will, 10)).StatValue;
+                };
+                Func<UnitEntityData, BlueprintBuff, SpellDescriptor, int> within = (paladin, buff, descriptor) =>
+                {
+                    var parent = new MechanicsContext(paladin, paladin.Descriptor, buff);
+                    Buff applied = ally.Descriptor.AddBuff(buff, parent);
+                    try { return save(descriptor); }
+                    finally { if (applied != null) applied.Remove(); }
+                };
+                int plainFear = save(SpellDescriptor.Fear);
+                int plainCharm = save(SpellDescriptor.Charm);
+                row["noAuraFear"] = plainFear;
+                row["courageZeroFear"] = within(paladinZero, courage, SpellDescriptor.Fear) - plainFear;
+                row["courageOneFear"] = within(paladinOne, courage, SpellDescriptor.Fear) - plainFear;
+                row["courageTwoFear"] = within(paladinTwo, courage, SpellDescriptor.Fear) - plainFear;
+                row["courageTwoPlain"] = within(paladinTwo, courage, SpellDescriptor.None) - save(SpellDescriptor.None);
+                row["resolveZeroCharm"] = within(paladinZero, resolve, SpellDescriptor.Charm) - plainCharm;
+                row["resolveTwoCharm"] = within(paladinTwo, resolve, SpellDescriptor.Charm) - plainCharm;
+                row["resolveTwoFear"] = within(paladinTwo, resolve, SpellDescriptor.Fear) - plainFear;
+                row["paladinOwnFearWithoutAura"] = save(SpellDescriptor.Fear) - plainFear;
+                if ((int)row["courageZeroFear"] != FavoredClassAuraPublication.NativeMoraleValue)
+                    failures.Add("the native Courage bonus is not +4 without investment");
+                if ((int)row["courageOneFear"] != 5 || (int)row["courageTwoFear"] != 6)
+                    failures.Add("Courage does not add each paladin's own earned steps");
+                if ((int)row["courageTwoPlain"] != 0)
+                    failures.Add("Courage changed a save without the fear descriptor");
+                if ((int)row["resolveZeroCharm"] != 4 || (int)row["resolveTwoCharm"] != 6)
+                    failures.Add("Resolve does not add the earned steps against charm");
+                if ((int)row["resolveTwoFear"] != 0)
+                    failures.Add("Resolve changed a fear save");
+            }
+            finally
+            {
+                foreach (UnitEntityData unit in disposables)
+                    try { unit.Dispose(); } catch (Exception) { }
+            }
+            return row;
+        }
+
+        private JObject ObservePetArmor(FavoredClassBlueprintSet leaves, IList<string> companionFailures,
+            IList<string> eidolonFailures)
+        {
+            var result = new JObject();
+            var diagnostics = new List<string>();
+            var library = BlueprintBootstrap.Library;
+            var scene = new ElementalUndineFeatScenario.PortalHarness(diagnostics);
+            var pets = new List<UnitEntityData>();
+            try
+            {
+                BlueprintRace human = BlueprintRoot.Instance.Progression.CharacterRaces.Single(race =>
+                    race.AssetGuid == FcbHumanRace);
+                UnitEntityData anchor = scene.Initialize(human);
+                BlueprintFeature rank = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                    FcbAnimalCompanionRankGuid, "AnimalCompanionRank");
+                result["companion"] = ObserveCompanion(scene, anchor, human, rank, leaves, pets, companionFailures);
+                result["eidolon"] = ObserveEidolon(scene, anchor, human, leaves, pets, eidolonFailures);
+                result["diagnostics"] = new JArray(diagnostics);
+            }
+            finally
+            {
+                foreach (UnitEntityData pet in pets.Where(value => value != null).Distinct())
+                    try
+                    {
+                        if (pet.Descriptor.Master.Value != null) pet.Descriptor.SetMaster(null);
+                        pet.Destroy();
+                    }
+                    catch (Exception) { }
+                try
+                {
+                    Game.Instance.EntityDestroyer.Tick();
+                    Game.Instance.EntityDestroyer.Tick();
+                }
+                catch (Exception) { }
+                scene.Dispose();
+            }
+            return result;
+        }
+
+        private static JObject ObserveCompanion(ElementalUndineFeatScenario.PortalHarness scene,
+            UnitEntityData anchor, BlueprintRace race, BlueprintFeature rank, FavoredClassBlueprintSet leaves,
+            List<UnitEntityData> pets, IList<string> failures)
+        {
+            var row = new JObject();
+            var library = BlueprintBootstrap.Library;
+            BlueprintFeature leopard = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                FcbCompanionLeopardGuid, "AnimalCompanionFeatureLeopard");
+            BlueprintFeature wolf = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                FcbCompanionWolfGuid, "AnimalCompanionFeatureWolf");
+            BlueprintBuff barkskin = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                FcbBarkskinBuffGuid, "BarkskinBuff");
+            FavoredClassLeafPair pair = leaves.Pair(FavoredClassCatalog.EffectCompanionArmor, null);
+            UnitEntityData ranger = scene.SpawnFixtureUnit(race, anchor.Blueprint.Faction,
+                new Vector3(2, 0, 0), "FavoredClassRanger");
+            GrantFavoredClassRanks(ranger, rank, 4);
+            ranger.Descriptor.AddFact(leopard);
+            Game.Instance.EntityCreator.Tick();
+            UnitEntityData first = ranger.Descriptor.Pet;
+            if (first == null)
+            {
+                failures.Add("native AddPet spawned no companion in the fixture scene");
+                return row;
+            }
+            pets.Add(first);
+            string companionClass = BlueprintRoot.Instance.Progression.AnimalCompanion.AssetGuid;
+            row["petQualified"] = FavoredClassPets.IsQualified(first, companionClass);
+            row["petLevel"] = first.Descriptor.Progression.CharacterLevel;
+            int ac0 = first.Stats.AC.ModifiedValue, touch0 = first.Stats.AC.Touch,
+                flat0 = first.Stats.AC.FlatFooted, rangerAc0 = ranger.Stats.AC.ModifiedValue;
+            GrantFavoredClassRanks(ranger, pair.Full, 2);
+            row["acDelta"] = first.Stats.AC.ModifiedValue - ac0;
+            row["touchDelta"] = first.Stats.AC.Touch - touch0;
+            row["flatFootedDelta"] = first.Stats.AC.FlatFooted - flat0;
+            row["rangerAcDelta"] = ranger.Stats.AC.ModifiedValue - rangerAc0;
+            if (!(bool)row["petQualified"])
+                failures.Add("the native companion is not recognized as an animal companion");
+            if ((int)row["acDelta"] != 2 || (int)row["flatFootedDelta"] != 2)
+                failures.Add("two earned steps did not add +2 natural armor to the companion");
+            if ((int)row["touchDelta"] != 0)
+                failures.Add("the companion's touch AC changed");
+            if ((int)row["rangerAcDelta"] != 0)
+                failures.Add("the ranger's own AC changed");
+            // Barkskin (enhancement to natural armor) stacks.
+            var context = new MechanicsContext(ranger, ranger.Descriptor, barkskin);
+            Buff bark = first.Descriptor.AddBuff(barkskin, context);
+            int withBark = first.Stats.AC.ModifiedValue;
+            row["barkskinApplied"] = bark != null;
+            row["acWithBarkskinDelta"] = withBark - ac0;
+            if (bark != null) bark.Remove();
+            if (bark == null || withBark - ac0 <= 2)
+                failures.Add("Barkskin did not stack with the favored-class natural armor");
+            // A further investment refreshes the current companion.
+            GrantFavoredClassRanks(ranger, pair.Full, 3);
+            row["acDeltaAtThree"] = first.Stats.AC.ModifiedValue - ac0;
+            if ((int)row["acDeltaAtThree"] != 3)
+                failures.Add("three earned steps did not refresh to +3");
+            // Replacement: the old companion keeps nothing, the new one gains it once.
+            ranger.Descriptor.RemoveFact(leopard);
+            ranger.Descriptor.AddFact(wolf);
+            Game.Instance.EntityCreator.Tick();
+            UnitEntityData second = ranger.Descriptor.Pet;
+            if (second == null || ReferenceEquals(second, first))
+            {
+                failures.Add("native AddPet did not spawn a replacement companion");
+                return row;
+            }
+            pets.Add(second);
+            BlueprintFeature petFeature = leaves.PetFeature(pair.Effect.Id);
+            row["oldCompanionAcDelta"] = first.Stats.AC.ModifiedValue - ac0;
+            row["oldCompanionHasPetFeature"] = first.Descriptor.HasFact(petFeature);
+            row["newCompanionFavoredArmor"] = SumNaturalArmorFrom(second, petFeature);
+            row["newCompanionPetFeatureCopies"] = second.Descriptor.Progression.Features.Enumerable
+                .Count(fact => ReferenceEquals(fact.Blueprint, petFeature));
+            if ((int)row["oldCompanionAcDelta"] != 0 || (bool)row["oldCompanionHasPetFeature"])
+                failures.Add("the replaced companion kept an orphaned bonus");
+            if ((int)row["newCompanionFavoredArmor"] != 3 || (int)row["newCompanionPetFeatureCopies"] != 1)
+                failures.Add("the replacement companion did not gain the bonus exactly once");
+            // Removing the investment (a respec) removes the projected bonus exactly.
+            int withInvestment = second.Stats.AC.ModifiedValue;
+            ranger.Descriptor.RemoveFact(pair.Full);
+            row["removedInvestmentAcDelta"] = second.Stats.AC.ModifiedValue - withInvestment;
+            row["removedInvestmentPetFeature"] = second.Descriptor.HasFact(petFeature);
+            if ((int)row["removedInvestmentAcDelta"] != -3 || (bool)row["removedInvestmentPetFeature"])
+                failures.Add("removing the investment did not remove exactly the projected +3");
+            return row;
+        }
+
+        private static int SumNaturalArmorFrom(UnitEntityData unit, BlueprintFeature petFeature)
+        {
+            var fact = unit.Descriptor.Progression.Features.GetFact(petFeature);
+            int value = 0;
+            if (fact != null)
+                fact.CallComponents<FavoredClassPetNaturalArmor>(component => value += component.AppliedValue);
+            return value;
+        }
+
+        private static JObject ObserveEidolon(ElementalUndineFeatScenario.PortalHarness scene,
+            UnitEntityData anchor, BlueprintRace race, FavoredClassBlueprintSet leaves,
+            List<UnitEntityData> pets, IList<string> failures)
+        {
+            var row = new JObject();
+            var library = BlueprintBootstrap.Library;
+            BlueprintFeature progression = library.GetAllBlueprints().OfType<BlueprintFeature>()
+                .Where(value => value != null && value.name == FcbAngelEidolonProgressionName)
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).FirstOrDefault();
+            row["eidolonProgression"] = progression == null ? null : progression.AssetGuid;
+            if (progression == null)
+            {
+                failures.Add("Call of the Wild's eidolon progression is absent");
+                return row;
+            }
+            FavoredClassLeafPair pair = leaves.Pair(FavoredClassCatalog.EffectEidolonArmor, null);
+            UnitEntityData summoner = scene.SpawnFixtureUnit(race, anchor.Blueprint.Faction,
+                new Vector3(-2, 0, 0), "FavoredClassSummoner");
+            summoner.Descriptor.AddFact(progression);
+            Game.Instance.EntityCreator.Tick();
+            UnitEntityData eidolon = summoner.Descriptor.Pet;
+            if (eidolon == null)
+            {
+                failures.Add("the eidolon progression spawned no pet in the fixture scene");
+                return row;
+            }
+            pets.Add(eidolon);
+            row["petQualified"] = FavoredClassPets.IsQualified(eidolon, FavoredClassBlueprints.EidolonClassGuid);
+            int ac0 = eidolon.Stats.AC.ModifiedValue, touch0 = eidolon.Stats.AC.Touch;
+            int summonerAc0 = summoner.Stats.AC.ModifiedValue;
+            GrantFavoredClassRanks(summoner, pair.Full, 2);
+            row["acDelta"] = eidolon.Stats.AC.ModifiedValue - ac0;
+            row["touchDelta"] = eidolon.Stats.AC.Touch - touch0;
+            row["summonerAcDelta"] = summoner.Stats.AC.ModifiedValue - summonerAc0;
+            if (!(bool)row["petQualified"])
+                failures.Add("the eidolon is not recognized as an eidolon");
+            if ((int)row["acDelta"] != 2 || (int)row["touchDelta"] != 0 || (int)row["summonerAcDelta"] != 0)
+                failures.Add("two earned steps did not add exactly +2 natural armor to the eidolon only");
+            return row;
+        }
+    }
+}
