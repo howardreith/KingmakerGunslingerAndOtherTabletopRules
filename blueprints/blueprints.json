@@ -16897,6 +16897,126 @@
       "notes": "Favored class completing investment: +1 effective oracle level for Undead Servitude per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
     },
     {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.InspireCourage.Full",
+      "guid": "16205a81e0d04f68b55282e6a13cc97d",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Inspire Courage per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.InspireCompetence.Full",
+      "guid": "ea9809fdf1a944c3a442028a07d8862c",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Inspire Competence per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.Fascinate.Full",
+      "guid": "4cd2b01519d946db9c6bf65efaf244cf",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Fascinate per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.DirgeOfDoom.Full",
+      "guid": "613f8dc6bc3c4ec6a8c9e4274de90ca2",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Dirge of Doom per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.InspireGreatness.Full",
+      "guid": "639a9524faf9421482c5e1cbeadc79f2",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Inspire Greatness per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.FrighteningTune.Full",
+      "guid": "40da51168d684fc4ae303cd89daa1280",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Frightening Tune per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.InspireHeroics.Full",
+      "guid": "aad05815f7eb44f98521ad7abb18743f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Inspire Heroics per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.InciteRage.Full",
+      "guid": "07a4a190ac4e4a3980578bc37a38d0a5",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Incite Rage per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.StormCall.Full",
+      "guid": "43753f2f0c5641ec838fb3f38009c617",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Storm Call per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.FireDance.Full",
+      "guid": "a4709cf1ef224d2ca624715d549b4de8",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Fire Dance per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.SongOfFieryGaze.Full",
+      "guid": "5abb7971618c4164a2a0f60e796d0ee0",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Song of Fiery Gaze per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.Satire.Full",
+      "guid": "6d06672bc4d84a34837620e1135320b4",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Satire per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.Mockery.Full",
+      "guid": "a29d90d2b0e64569b64e92aac02a61b2",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Mockery per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.GloriousEpic.Full",
+      "guid": "0f8cf9ae1c874e089bf9b875384ed706",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Glorious Epic per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Bard.PerformanceRange.Scandal.Full",
+      "guid": "485193cfb5254e21ad30db05f1d2cdaa",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class investment: +5 feet to the radius of Scandal per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
+    },
+    {
       "symbol": "KMG.MostlyHuman.Identity",
       "guid": "d71a4b4250914a7aa6d4bec53dfc768f",
       "plannedType": "BlueprintFeature",
