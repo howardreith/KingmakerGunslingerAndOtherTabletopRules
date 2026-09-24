@@ -143,3 +143,44 @@ holds one target at a time because the initiator part does. The worm is
 rebuilt on the natural builder from the native summoned worm's own bite,
 sting and poison, without the burrowing kit the charter told us not to
 chase.
+
+## Sprint 5 - Mephit Family Expansion
+
+Six mephits on four bodies. The charter's own phrase for it - the proven
+mephit rig and shared spell-like-ability infrastructure - turned out to be
+exactly right: the native summoned mephits are one chassis with an
+element's worth of facts bolted on, so a variant is the same sanitized
+clone with the donor's element unbolted and its own bolted on. What made it
+more than a palette swap was reading the tabletop family honestly. Every
+breath sickens except the magma's; the ooze's save negates everything or
+nothing; dust and salt breathe grit, not energy; the ice mephit is an air
+creature that happens to be cold. Those are data in a profile now, and the
+breath builder reads them off the donor's own cone.
+
+The one design rule that reached into the breath itself was the charter's
+ally-safety line. The native mephit cones hurt whoever stands in them,
+which is fine for an enemy and a menace for a summon that the AI will
+point wherever it likes. The variant breaths run their whole effect inside
+an enemies-of-the-caster conditional, and the two project bursts reach
+only enemies by targeting, so no new mephit can harm a party member no
+matter how it is aimed. The mechanical fixture proves both live: the
+steam breath sickens the hostile and leaves the caster alone; the salt
+dehydrate damages the hostile and touches neither the caster nor the other
+summons.
+
+Visual distinctness had to be earned within the bounded view family. A
+material tint can only darken or shift, never brighten, which is why the
+pale salt and steam mephits sit on the pale air and water rigs with their
+earth and fire subtypes restored as facts, and why magma and steam carry an
+emission glow. The tint is applied to a private clone of the view's
+materials when the view attaches, so the donor's shared material - and every
+native mephit that uses it - is never written. The creature review records
+what was applied on each reviewed view, so the render check and the
+mechanism check are the same run.
+
+One correction fell out of the round-3 mechanical evidence rather than out
+of Sprint 5: the Sprint 4 grapple case's holder-free and safeguard checks
+had been reading the mound's CantAct while the native appearance buff was
+still holding the freshly summoned mound still. Every link step had passed;
+only the witness was looking at the wrong thing. The fixture now strips the
+appearance buff and records the baseline before it grabs.

@@ -4,12 +4,121 @@ using System.Linq;
 
 namespace KingmakerGunslinger.Summoning
 {
+    /// <summary>
+    /// A bounded visual variant on a shared native rig: a tint multiplier on
+    /// the rig's colour slot and an optional emission colour, all channels in
+    /// [0, 1]. Domain-testable without the engine.
+    /// </summary>
+    internal sealed class SummonVisualTintProfile
+    {
+        internal SummonVisualTintProfile(string key, float tintRed, float tintGreen,
+            float tintBlue, float? emissionRed, float? emissionGreen,
+            float? emissionBlue)
+        {
+            Key = key; TintRed = tintRed; TintGreen = tintGreen; TintBlue = tintBlue;
+            HasEmission = emissionRed.HasValue && emissionGreen.HasValue &&
+                emissionBlue.HasValue;
+            EmissionRed = emissionRed ?? 0f; EmissionGreen = emissionGreen ?? 0f;
+            EmissionBlue = emissionBlue ?? 0f;
+        }
+        internal string Key { get; private set; }
+        internal float TintRed { get; private set; }
+        internal float TintGreen { get; private set; }
+        internal float TintBlue { get; private set; }
+        internal bool HasEmission { get; private set; }
+        internal float EmissionRed { get; private set; }
+        internal float EmissionGreen { get; private set; }
+        internal float EmissionBlue { get; private set; }
+        internal bool IsBounded
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Key) &&
+                    new[] { TintRed, TintGreen, TintBlue, EmissionRed, EmissionGreen,
+                        EmissionBlue }.All(value => value >= 0f && value <= 1f);
+            }
+        }
+    }
+
+    internal sealed class MephitVariantProfile
+    {
+        internal MephitVariantProfile(string key, string donorKey, string breathEnergy,
+            int breathDice, int breathDieSides, bool breathSickens,
+            string spellLikeOne, string spellLikeTwo)
+        {
+            Key = key; DonorKey = donorKey; BreathEnergy = breathEnergy;
+            BreathDice = breathDice; BreathDieSides = breathDieSides;
+            BreathSickens = breathSickens; SpellLikeOne = spellLikeOne;
+            SpellLikeTwo = spellLikeTwo;
+        }
+        internal string Key { get; private set; }
+        internal string DonorKey { get; private set; }
+        /// <summary>Slashing (a physical breath), Cold, Fire or Acid.</summary>
+        internal string BreathEnergy { get; private set; }
+        internal int BreathDice { get; private set; }
+        internal int BreathDieSides { get; private set; }
+        internal bool BreathSickens { get; private set; }
+        internal string SpellLikeOne { get; private set; }
+        internal string SpellLikeTwo { get; private set; }
+    }
+
     internal static class ExpandedSummoningSpecialProfiles
     {
         private static readonly string[] ElementalKeys = BuildElementalKeys();
         private static readonly string[] MephitKeys = {
             "air-mephit", "earth-mephit", "fire-mephit", "water-mephit"
         };
+        /// <summary>
+        /// Sprint 5 mephits, each on the nearest native summoned mephit as its
+        /// donor: (key, donor key, breath energy, breath dice, breath sickens,
+        /// first spell-like ability, second spell-like ability). Breath is a
+        /// 15-foot cone, Reflex DC 10 + 2 + Constitution as the native mephit
+        /// breaths are; a failed save also sickens for three rounds where the
+        /// tabletop breath does. Each spell-like ability is one use per
+        /// summoning (the tabletop once per hour or per day both exceed a
+        /// summoning). Wind wall, chill metal, pyrotechnics and magma form have
+        /// no native spell and are omitted; dehydrate and boiling rain are
+        /// project bursts. The pale salt and steam mephits sit on the pale
+        /// air and water rigs (a tint can only darken) with the earth and fire
+        /// subtypes restored.
+        /// </summary>
+        internal static readonly MephitVariantProfile[] MephitVariants = {
+            new MephitVariantProfile("dust-mephit", "air-mephit", "Slashing", 1, 4, true, "Blur", null),
+            new MephitVariantProfile("ice-mephit", "water-mephit", "Cold", 1, 4, true, "MagicMissile", null),
+            new MephitVariantProfile("magma-mephit", "fire-mephit", "Fire", 1, 8, false, null, null),
+            new MephitVariantProfile("ooze-mephit", "water-mephit", "Acid", 1, 4, true, "AcidArrow", "StinkingCloud"),
+            new MephitVariantProfile("salt-mephit", "air-mephit", "Slashing", 1, 4, true, "Glitterdust", "Dehydrate"),
+            new MephitVariantProfile("steam-mephit", "water-mephit", "Fire", 1, 4, true, "Blur", "BoilingRain")
+        };
+        internal const int MephitSickenedRounds = 3;
+        internal const int MephitSpellLikeUses = 1;
+        internal const int MephitBreathAiCooldownRounds = 4;
+        internal const int MephitBurstRadiusFeet = 20;
+        internal const int DehydrateDice = 2;
+        internal const int DehydrateDieSides = 8;
+        internal const int BoilingRainDice = 2;
+        internal const int BoilingRainDieSides = 6;
+
+        internal static MephitVariantProfile MephitVariant(string key)
+        { return MephitVariants.Single(value => value.Key == key); }
+
+        /// <summary>
+        /// The tint (a multiplier on the native rig's colour slot, so it can
+        /// only darken or shift, never brighten) and optional inner glow that
+        /// make each variant read as its element on the shared mephit body.
+        /// Plain numbers here; the view patch turns them into colours.
+        /// </summary>
+        internal static readonly SummonVisualTintProfile[] MephitVisualTints = {
+            new SummonVisualTintProfile("dust-mephit", 0.85f, 0.75f, 0.50f, null, null, null),
+            new SummonVisualTintProfile("ice-mephit", 0.70f, 0.85f, 1.00f, null, null, null),
+            new SummonVisualTintProfile("magma-mephit", 0.45f, 0.25f, 0.20f, 0.70f, 0.22f, 0.04f),
+            new SummonVisualTintProfile("ooze-mephit", 0.55f, 0.75f, 0.35f, null, null, null),
+            new SummonVisualTintProfile("salt-mephit", 0.95f, 0.95f, 0.90f, null, null, null),
+            new SummonVisualTintProfile("steam-mephit", 0.85f, 0.88f, 0.92f, 0.25f, 0.12f, 0.06f)
+        };
+
+        internal static SummonVisualTintProfile MephitVisualTint(string key)
+        { return MephitVisualTints.Single(value => value.Key == key); }
 
         internal static IReadOnlyList<string> NativeElementalKeys
         { get { return Array.AsReadOnly(ElementalKeys); } }
@@ -202,6 +311,19 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
+            if (MephitVisualTints.Length != 6 ||
+                !MephitVisualTints.Select(value => value.Key).SequenceEqual(
+                    MephitVariants.Select(value => value.Key)) ||
+                MephitVisualTints.Any(value => !value.IsBounded))
+                throw new InvalidOperationException(
+                    "Sprint 5 mephit visual tint profile changed.");
+            if (MephitVariants.Length != 6 || MephitVariants.Select(value => value.Key)
+                    .Distinct(StringComparer.Ordinal).Count() != 6 ||
+                MephitVariants.Any(value => !MephitKeys.Contains(value.DonorKey)) ||
+                MephitSickenedRounds != 3 || MephitSpellLikeUses != 1 ||
+                MephitBreathAiCooldownRounds != 4)
+                throw new InvalidOperationException(
+                    "Sprint 5 mephit variant profile changed.");
             if (ElementalKeys.Length != 24 || MephitKeys.Length != 4)
                 throw new InvalidOperationException(
                     "Native elemental/mephit profile count changed.");

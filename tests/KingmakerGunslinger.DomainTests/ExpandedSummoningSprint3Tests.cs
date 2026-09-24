@@ -271,7 +271,8 @@ namespace KingmakerGunslinger.DomainTests
             // Append-only: the Sprint 3 block sits directly before the Sprint 4
             // block at the ledger's tail.
             Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
-                    ExpandedSummoningSprint4Tests.AppendedLedgerIdentities)
+                    ExpandedSummoningSprint4Tests.AppendedLedgerIdentities -
+                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities)
                 .Take(AppendedLedgerIdentities)
                 .All(value => appended.Contains(value)),
                 "The ledger is append-only: Sprint 3 identities sit directly before Sprint 4's.");
