@@ -1,5 +1,96 @@
 # Changelog
 
+## 0.0.138-better-vendors-progression
+
+- Published under explicit owner authorization. The five merchant and
+  persistence acceptance areas were NOT RUN (no kingdom-stage test save was
+  authorized), and the owner waived them. Save/load compatibility is
+  unverified.
+
+- Optional Better Vendors 2.0.8 compatibility for magic-weapon progression.
+  Better Vendors' Military query keeps only weapons whose flavour text and
+  description are empty, and every weapon type of this mod carries a magic
+  description. So its generic progression never offered this mod's weapons,
+  and +2 to +5 variants of them did not exist.
+- 50 explicitly authorized catalog entries:
+  - Pistol, Musket and Blunderbuss ordinary and Reliable +1 to +5;
+  - Elven Branched Spear, Wakizashi, Katana and Nodachi +1 to +5.
+
+  The seven existing +1 items are reused unchanged, and 43 new blueprints are
+  appended to the identity manifest. Each carries one native enhancement
+  enchantment and the canonical family type, model, icon and weight. Price is
+  base + 300 + 2000 × (equivalent)². Reliable variants reuse the canonical
+  Reliable enchantment, unlock by actual enhancement and are priced as N + 1.
+- A reflection-only adapter accepts only the exact approved Better Vendors
+  binary: the whole-file SHA-256 and loaded-module MVID must match. It also
+  checks the structure, Military destination, enhancement tiers and lifecycle
+  targets, with method-body fingerprints as a consistency check. Only if all
+  match does it patch `AddStock` (postfix), `AddMilitaryStock` (prefix and
+  postfix) and `GetFilterWeapons` (read-only postfix). It adds a `BeginTrading`
+  postfix for the one-time catch-up. Absent, disabled, progression-off,
+  unapproved or faulted Better Vendors leaves only this integration inactive.
+- The capital blacksmith's shared table receives each tier's entries at Better
+  Vendors' own ranks and quantities: 5, 5, 5, 2 and 2 copies at Military I, III,
+  V, VII and IX. Better Vendors' current-tier restocking is mirrored. Existing
+  saves catch up once, on first trade with that merchant. The save-local
+  `UnitPartBetterVendorsProgressionGrants` ledger claims each initial grant
+  before its stock changes. It releases the claim only when nothing was
+  added, so a stock change with failed or uncertain bookkeeping is never
+  repeated automatically. It never reads or writes Better Vendors'
+  `stockUpToDate` flag. Module settings apply independently at every event.
+  The integration never removes merchandise. Turning a module off can still
+  reduce a reused +1 weapon's stock by one through the existing vendor-row
+  reconciliation.
+- The 43 variants register on every load, with or without Better Vendors.
+  The integration's own contract checks (native enhancement data, Reliable
+  cost, each entry's mechanics, price and presentation) run after registration
+  and never throw. A failure disables only merchant progression, with one
+  `progression-catalog.degraded` warning. Data changed by another mod cannot
+  stop the rest of this mod.
+- Ordinary vendor publication, BTSL, campaign loot, named placement, retired
+  stock cleanup and Craft Magic Items registration are unchanged.
+- 38 new `better-vendors.*` domain cases; 1,742 in total.
+- The real merchant, purchase, event-coordination, settings and save/load
+  paths remain NOT RUN, waived by the owner for this release. They still need
+  an owner-authorized disposable kingdom-stage save. Craft Magic Items
+  handling of the new variants is not tested. See
+  `docs/BETTER-VENDORS-COMPATIBILITY.md`.
+
+## 0.0.137-rapid-reload-combat-feat
+
+- Published under explicit owner authorization. The guarded native scenario
+  passed all eleven assertions on the candidate; save/load compatibility is
+  unverified.
+- The Rapid Reload parent selection is now classified as both a feat and a
+  combat feat. Its own `BlueprintFeature.Groups` was never assigned, so it
+  stayed empty. The selection's `Group`/`Group2` only name the category the
+  selection offers (the native `GetGroup` phase label). The engine's
+  `HasGroup`, the character-sheet feat list and compatibility catalog scans all
+  read `Groups`. The parent now carries `Feat` and `CombatFeat`, the same as its
+  official firearm children and native combat feats.
+- Nothing else changed: the proficiency gate, child prerequisites, ranks,
+  catalog publication, the generic selection helper, icons and localization are
+  untouched. Rifle/Revolver choices and the legacy wrapper stay unpublished.
+- The guarded `disposable-rapid-reload-proficiency-gate` scenario gains:
+  - a `rapid-reload-combat-feat-classification` assertion, which reads native
+    `HasGroup` on the registered parent and children beside native Combat
+    Reflexes;
+  - scoped refusal and acquisition rows through the Fighter combat-feat slot;
+  - a natively built Gunslinger 1 taking its first Fighter level. It must find
+    Rapid Reload in that level's own bonus-feat choice generation and acquire it
+    with the Fighter bonus slot, not an ordinary feat.
+- The scenario's disposable fixtures now register their test-only proficiency
+  sources for the request. Character-creation visits also settle race, name,
+  portrait, gender and voice through the native setters. Without both, the
+  first native runs could not complete any level.
+- At the owner's direction, three pre-existing scenario expectations were
+  corrected to match native behaviour. A chosen selection appears on the
+  preview at once, so the checks now require that no firearm is granted.
+  The forced-level probe only has to show no firearm is banked. The
+  class-change fixture refunds overspent skill points through native
+  `UnspendSkillPoint`.
+- Native run on the candidate: all eleven assertions PASS.
+
 ## 0.0.136-rapid-reload-proficiency-gate
 
 - Published under explicit owner authorization with native runtime

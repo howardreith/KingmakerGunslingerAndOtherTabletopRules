@@ -16,6 +16,9 @@ VERSION = "0.0.132"
 INFORMATIONAL_VERSION = "0.0.132-icon-art-overhaul"
 PACKAGE = "KingmakerGunslinger-0.0.132-local-runtime.zip"
 PACKAGE_SUFFIX = "icon-art-overhaul"
+# Later candidates that append exact identities override these totals.
+MANIFEST_TOTAL = 1913
+MANIFEST_ACTIVE = 1911
 
 
 def validate(root: Path) -> None:
@@ -31,8 +34,8 @@ def validate(root: Path) -> None:
     validate_magic_circle(root)
     if VERSION == "0.0.132":
         baseline.DETERMINISTIC_TEST_COUNT = 1660
-    baseline.MANIFEST_TOTAL = 1913
-    baseline.MANIFEST_ACTIVE = 1911
+    baseline.MANIFEST_TOTAL = MANIFEST_TOTAL
+    baseline.MANIFEST_ACTIVE = MANIFEST_ACTIVE
     # The assigned Magic Circle feature fixes a proven shared source bug.
     # Its gate validates the two exact edits and retains the original digest
     # for every other Protection control/publication file.

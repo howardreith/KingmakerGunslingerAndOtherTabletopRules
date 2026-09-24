@@ -27,9 +27,15 @@ namespace KingmakerGunslinger.DomainTests
         {
             JObject manifest = JObject.Parse(Read("blueprints", "blueprints.json"));
             JToken[] entries = manifest["entries"].ToArray();
-            Assertions.Equal(1913, entries.Length,
+            // 1913 preserved identities plus exactly the appended Better Vendors
+            // progression variants (their exact identities are asserted by
+            // BetterVendorsProgressionTests.ManifestAppendsExactlyTheNewIdentities).
+            Assertions.Equal(1913 + KingmakerGunslinger.Acquisition
+                    .ProgressionWeaponCatalog.NewBlueprintCount, entries.Length,
                 "Current blueprint ledger count changed.");
-            Assertions.Equal(1911, entries.Count(value => string.Equals(
+            Assertions.Equal(1911 + KingmakerGunslinger.Acquisition
+                    .ProgressionWeaponCatalog.NewBlueprintCount,
+                entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Current active identity count changed.");
             Assertions.Equal(entries.Length, entries.Select(value =>
