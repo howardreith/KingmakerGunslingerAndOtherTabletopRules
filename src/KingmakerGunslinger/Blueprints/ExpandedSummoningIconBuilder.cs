@@ -14,7 +14,8 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (bySymbol == null) throw new ArgumentNullException("bySymbol");
             SummonIconCatalog.Validate();
-            if (ExpandedSummoningProjectIcons.LoadedCount != 77 ||
+            if (ExpandedSummoningProjectIcons.LoadedCount !=
+                    SummonIconCatalog.All.Count ||
                 ExpandedSummoningProjectIcons.FallbackCount != 0)
                 throw new InvalidOperationException(
                     "Project summon icons were not loaded exactly once.");
@@ -40,6 +41,10 @@ namespace KingmakerGunslinger.Blueprints
                 SummonNativeExpansionCatalog.All)
                 Set(bySymbol, native.Symbol,
                     ExpandedSummoningProjectIcons.Require(native.IconKey));
+            // The Cyclops's own summon icon marks its Flash of Insight on the
+            // action bar; the ability has no separate art of its own.
+            Set(bySymbol, "KMG.Summoning.Special.Cyclops.FlashOfInsight",
+                ExpandedSummoningProjectIcons.Require("cyclops"));
         }
 
         private static void Set(IDictionary<string, BlueprintScriptableObject>

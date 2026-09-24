@@ -297,6 +297,7 @@ $expected = @(
     'working-save-expanded-summoning-prepare',
     'working-save-expanded-summoning-verify-cleanup',
     'working-save-expanded-summoning-verify-absent',
+    'working-save-expanded-summoning-creature-review',
     'generic-firearm-actions',
     'production-firearm-catalog',
     'advanced-capacity',

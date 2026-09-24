@@ -109,6 +109,12 @@ if ($scenarioMetadata.RequiresSaveName) {
             throw 'The deferred-marker probe requires typed -SaveName and only fixtureCase.'
         }
         $Parameters = @{saveName=$SaveName;fixtureCase=$Parameters.fixtureCase}
+    } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
+        if ($Parameters.Count -ne 1 -or -not $Parameters.ContainsKey('creatures') -or
+            [string]::IsNullOrWhiteSpace([string]$Parameters.creatures)) {
+            throw 'The creature review requires typed -SaveName plus exactly creatures (comma-separated creature keys).'
+        }
+        $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
     } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
         if (Test-KmgTreacherousEffectScope $Scenario $Parameters) {
             $sceneRoundtrip = Test-KmgCompletionSceneScope $Scenario $Parameters

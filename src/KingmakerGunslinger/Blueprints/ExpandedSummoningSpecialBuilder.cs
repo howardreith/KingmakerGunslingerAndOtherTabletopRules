@@ -105,6 +105,20 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.Pixie.IrresistibleDanceAi";
         private const string PixieBrainSymbol =
             "KMG.Summoning.Special.Pixie.Brain";
+        private const string CyclopsUnitSymbol =
+            "KMG.Summoning.Unit.Cyclops";
+        private const string CyclopsFlashSymbol =
+            "KMG.Summoning.Special.Cyclops.FlashOfInsight";
+        private const string CyclopsFlashStateSymbol =
+            "KMG.Summoning.Special.Cyclops.FlashOfInsightState";
+        private const string CyclopsFlashResourceSymbol =
+            "KMG.Summoning.Special.Cyclops.FlashOfInsightResource";
+        private const string CyclopsCombatTraitsSymbol =
+            "KMG.Summoning.Special.Cyclops.CombatTraits";
+        private const string CyclopsFlashAiSymbol =
+            "KMG.Summoning.Special.Cyclops.FlashOfInsightAi";
+        private const string CyclopsBrainSymbol =
+            "KMG.Summoning.Special.Cyclops.Brain";
 
         private const string NativeRayGuid = "33e8997912cf76b4c99dca0445082804";
         private const string NativeRayAiGuid = "dcfc5e9aec5bea540b36caf754989164";
@@ -278,6 +292,155 @@ namespace KingmakerGunslinger.Blueprints
             ConfigurePixie(library, Require<BlueprintUnit>(bySymbol,
                 PixieUnitSymbol), pixieSleepBow, pixieDance, pixieBrain,
                 pixieTraits);
+            ConfigureCyclops(bySymbol);
+        }
+
+        /// <summary>
+        /// Cyclops Flash of Insight, bounded (Sprint 3). The natural builder
+        /// owns the chassis; this adds one once-per-summoning swift ability
+        /// whose one-round state makes the next attack roll an automatic hit
+        /// and critical threat, the resource that limits it, and a brain that
+        /// spends it when the cyclops fights. It runs after the natural
+        /// builder and only appends to what that builder configured.
+        /// </summary>
+        private static void ConfigureCyclops(
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, CyclopsUnitSymbol);
+            BlueprintAbility flash = Require<BlueprintAbility>(bySymbol,
+                CyclopsFlashSymbol);
+            BlueprintBuff state = Require<BlueprintBuff>(bySymbol,
+                CyclopsFlashStateSymbol);
+            BlueprintAbilityResource resource = Require<BlueprintAbilityResource>(
+                bySymbol, CyclopsFlashResourceSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
+                CyclopsCombatTraitsSymbol);
+            BlueprintAiCastSpell ai = Require<BlueprintAiCastSpell>(bySymbol,
+                CyclopsFlashAiSymbol);
+            BlueprintBrain brain = Require<BlueprintBrain>(bySymbol,
+                CyclopsBrainSymbol);
+            if (unit.ComponentsArray == null ||
+                unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
+                throw new InvalidOperationException(
+                    "The Cyclops chassis must be configured before its special traits.");
+            ConfigureNamedResource(resource, CyclopsFlashResourceSymbol,
+                "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.Resource",
+                "Flash of Insight", "Uses remaining for this summoned Cyclops.",
+                ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightUses);
+            ConfigureCyclopsFlashState(state);
+            ConfigureCyclopsFlash(flash, state, resource);
+            ConfigureCyclopsCombatTraits(traits, resource);
+            ai.name = InternalName(CyclopsFlashAiSymbol);
+            ai.Ability = flash;
+            ai.Variant = null;
+            ai.BaseScore = 3;
+            ai.CooldownRounds = 0;
+            ai.StartCooldownRounds = 0;
+            ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.Locators = Array.Empty<EntityReference>();
+            brain.name = InternalName(CyclopsBrainSymbol);
+            brain.Actions = new BlueprintAiAction[] { ai };
+            var grant = ScriptableObject.CreateInstance<
+                AddAbilityToCharacterComponent>();
+            grant.Abilities = new[] { flash };
+            unit.ComponentsArray = unit.ComponentsArray.Concat(
+                new BlueprintComponent[] { grant }).ToArray();
+            unit.Brain = brain;
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { traits }).ToArray();
+        }
+
+        private static void ConfigureCyclopsFlashState(BlueprintBuff buff)
+        {
+            var insight = ScriptableObject.CreateInstance<
+                CyclopsFlashOfInsightComponent>();
+            var oneAttack = ScriptableObject.CreateInstance<RemoveBuffOnAttack>();
+            buff.name = InternalName(CyclopsFlashStateSymbol);
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = false;
+            buff.ComponentsArray = new BlueprintComponent[] { insight, oneAttack };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.State.Name",
+                    "Flash of Insight"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.State.Description",
+                    "This cyclops's next attack roll is an automatic hit and threatens a critical hit."),
+                null);
+        }
+
+        private static void ConfigureCyclopsFlash(BlueprintAbility ability,
+            BlueprintBuff state, BlueprintAbilityResource resource)
+        {
+            ability.name = InternalName(CyclopsFlashSymbol);
+            ability.Type = AbilityType.Supernatural;
+            ability.Parent = null;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.Range = AbilityRange.Personal;
+            ability.CanTargetEnemies = false;
+            ability.CanTargetSelf = true;
+            ability.CanTargetFriends = false;
+            ability.CanTargetPoint = false;
+            ability.SpellResistance = false;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.None;
+            ability.EffectOnAlly = AbilityEffectOnUnit.Helpful;
+            ability.ActionType = UnitCommand.CommandType.Swift;
+            ability.Animation = UnitAnimationActionCastSpell.CastAnimationStyle
+                .Immediate;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            ContextActionApplyBuff arm = ScriptableObject.CreateInstance<
+                ContextActionApplyBuff>();
+            arm.Buff = state;
+            arm.ToCaster = true;
+            arm.DurationValue = new ContextDurationValue {
+                    Rate = DurationRate.Rounds,
+                    DiceType = DiceType.Zero,
+                    DiceCountValue = Simple(0),
+                    BonusValue = Simple(ExpandedSummoningSpecialProfiles
+                        .CyclopsFlashOfInsightRounds)
+                };
+            arm.IsFromSpell = false;
+            arm.IsNotDispelable = true;
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.Actions = new ActionList { Actions = new GameAction[] { arm } };
+            var cost = ScriptableObject.CreateInstance<AbilityResourceLogic>();
+            cost.RequiredResource = resource;
+            cost.IsSpendResource = true;
+            cost.CostIsCustom = false;
+            cost.Amount = 1;
+            ability.ComponentsArray = new BlueprintComponent[] { cost, effect };
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.Name",
+                    "Flash of Insight"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.Description",
+                    "Once per summoning, as a swift action, the cyclops's next attack roll this round is an automatic hit and threatens a critical hit."),
+                null);
+        }
+
+        private static void ConfigureCyclopsCombatTraits(BlueprintBuff buff,
+            BlueprintAbilityResource resource)
+        {
+            buff.name = InternalName(CyclopsCombatTraitsSymbol);
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = true;
+            buff.ComponentsArray = new BlueprintComponent[] {
+                AddResource(resource) };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cyclops.CombatTraits.Name",
+                    "Cyclops Combat Traits"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cyclops.CombatTraits.Description",
+                    "One use of Flash of Insight for this summoning."),
+                null);
         }
 
         private static AddClassLevels OutsiderLevels(
@@ -1002,18 +1165,23 @@ namespace KingmakerGunslinger.Blueprints
         private static void ConfigureResource(BlueprintAbilityResource resource,
             string displayName, int maximum)
         {
-            resource.name = displayName == "Sleep Arrows" ?
-                InternalName(PixieSleepResourceSymbol) :
-                InternalName(PixieDanceResourceSymbol);
+            ConfigureNamedResource(resource, displayName == "Sleep Arrows" ?
+                PixieSleepResourceSymbol : PixieDanceResourceSymbol,
+                "KMG.ExpandedSummoning.Pixie." +
+                    displayName.Replace(" ", string.Empty) + ".Resource",
+                displayName, "Uses remaining for this summoned Pixie.", maximum);
+        }
+
+        private static void ConfigureNamedResource(
+            BlueprintAbilityResource resource, string symbol,
+            string localizationPrefix, string displayName, string description,
+            int maximum)
+        {
+            resource.name = InternalName(symbol);
             resource.LocalizedName = LocalizationService.Create(
-                "KMG.ExpandedSummoning.Pixie." +
-                    displayName.Replace(" ", string.Empty) + ".Resource.Name",
-                displayName);
+                localizationPrefix + ".Name", displayName);
             resource.LocalizedDescription = LocalizationService.Create(
-                "KMG.ExpandedSummoning.Pixie." +
-                    displayName.Replace(" ", string.Empty) +
-                    ".Resource.Description",
-                "Uses remaining for this summoned Pixie.");
+                localizationPrefix + ".Description", description);
             FieldInfo amountField = Fields(typeof(BlueprintAbilityResource))
                 .SingleOrDefault(value => value.Name == "m_MaxAmount");
             if (amountField == null || !amountField.FieldType.IsValueType)

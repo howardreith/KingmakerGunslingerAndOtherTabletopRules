@@ -61,6 +61,16 @@ namespace KingmakerGunslinger.Blueprints
             "4cd1757a0eea7694ba5c933729a53920";
         private const string VerminClassGuid =
             "d1a15612d1a96334d94edf5f1d3b8d29";
+        private const string MagicalBeastClassGuid =
+            "b9e97f47cb86f2d45a0784a096ff8037";
+        private const string HumanoidClassGuid =
+            "6ab4526f94d2e3e439af0599a29b6675";
+        private const string NativeSmallHoof1d3Guid =
+            "085547b82eded104ba7e1870dd0563bf";
+        private const string NativeHoof1d4Guid =
+            "b0e472a49ff2a294f93faa3ab757a4a5";
+        private const string NativeStandardGreataxeGuid =
+            "6efea466862f014469cec6c3f2b85cb7";
         private const string DumbBrainGuid =
             "5abc8884c6f15204c8604cb01a2efbab";
         private static readonly IDictionary<int, string> NaturalArmorGuids =
@@ -69,7 +79,9 @@ namespace KingmakerGunslinger.Blueprints
                 { 2, "45a52ce762f637f4c80cc741c91f58b7" },
                 { 3, "f6e106931f95fec4eb995f0d0629fb84" },
                 { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
+                { 5, "7661741dbb9604842a642457456fd0e4" },
                 { 6, "987ba44303e88054c9504cb3083ba0c9" },
+                { 7, "e73864391ccf0894997928443a29d755" },
                 { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
                 { 9, "da6417809bdedfa468dd2fd0cc74be92" },
                 { 12, "0b2d92c6aac8093489dfdadf1e448280" },
@@ -103,7 +115,8 @@ namespace KingmakerGunslinger.Blueprints
                 { "ImprovedCriticalClaw", "76a335b7d69691c4e8376f9379338778" },
                 { "PowerAttack", "9972f33f977fc724c838e59641b2fca5" },
                 { "IronWill", "175d1577bb6c9a04baf88eec99c66334" },
-                { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" }
+                { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" },
+                { "Cleave", "d809b6c4ff2aaff4fa70d712a70f7d7b" }
             };
         private static readonly ISet<string> BaseUnitFactKeys =
             new HashSet<string>(new[] { "ReducedReach", "Ferocity" },
@@ -176,8 +189,7 @@ namespace KingmakerGunslinger.Blueprints
                 AddClassLevels>();
             levels.CharacterClass = BlueprintLibraryLookup.RequireExact<
                 BlueprintCharacterClass>(library,
-                    profile.HitDieClass == "Animal" ? AnimalClassGuid :
-                        VerminClassGuid,
+                    HitDieClassGuid(profile.HitDieClass),
                     profile.HitDieClass + " racial hit dice");
             levels.Levels = profile.HitDice;
             levels.RaceStat = StatType.Constitution;
@@ -250,9 +262,29 @@ namespace KingmakerGunslinger.Blueprints
             unit.AddFacts = facts.ToArray();
         }
 
+        internal static string HitDieClassGuid(string hitDieClass)
+        {
+            switch (hitDieClass)
+            {
+                case "Animal": return AnimalClassGuid;
+                case "Vermin": return VerminClassGuid;
+                case "MagicalBeast": return MagicalBeastClassGuid;
+                case "Humanoid": return HumanoidClassGuid;
+            }
+            throw new InvalidOperationException("Unsupported natural hit-die class " +
+                hitDieClass + ".");
+        }
+
         private static BlueprintItemWeapon Weapon(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol, string key)
         {
+            if (key == "Hoof1d3") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeSmallHoof1d3Guid, "1d3 hoof");
+            if (key == "Hoof1d4") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeHoof1d4Guid, "1d4 hoof");
+            if (key == "Greataxe") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeStandardGreataxeGuid,
+                    "standard greataxe");
             if (key == "Bite1d4") return Require<BlueprintItemWeapon>(bySymbol,
                 Bite1d4Symbol);
             if (key == "Bite1d3") return Require<BlueprintItemWeapon>(bySymbol,

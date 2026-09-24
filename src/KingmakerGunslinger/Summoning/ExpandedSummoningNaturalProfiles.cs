@@ -50,6 +50,14 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningNaturalProfiles
     {
+        /// <summary>
+        /// Racial hit-die classes the natural builder can bind. Sprint 3 added
+        /// the magical beast (Owlbear) and humanoid (Cyclops) classes to the
+        /// animal and vermin classes of the earlier tiers.
+        /// </summary>
+        internal static readonly string[] SupportedHitDieClasses = {
+            "Animal", "Vermin", "MagicalBeast", "Humanoid"
+        };
         private static readonly NaturalSummonProfile[] Values = Build();
         internal static IReadOnlyList<NaturalSummonProfile> All
         { get { return Array.AsReadOnly(Values); } }
@@ -59,16 +67,15 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 26 || Values.Select(value => value.Key)
+            if (Values.Length != 30 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
-                    "The tier I-VII natural reconstruction catalog is incomplete or duplicated.");
+                    "The natural reconstruction catalog is incomplete or duplicated.");
             foreach (NaturalSummonProfile value in Values)
             {
                 if (!ExpandedSummoningCatalog.All.Any(creature =>
                         creature.Key == value.Key) ||
-                    (value.HitDieClass != "Animal" &&
-                        value.HitDieClass != "Vermin") ||
+                    !SupportedHitDieClasses.Contains(value.HitDieClass) ||
                     value.HitDice < 1 || value.SpeedFeet < 1 ||
                     value.NaturalArmor < 0 ||
                     string.IsNullOrEmpty(value.PrimaryWeapon))
@@ -244,7 +251,30 @@ namespace KingmakerGunslinger.Summoning
                         "IronWill", "LightningReflexes", "PowerAttack",
                         "SkillFocusPerception", "WeaponFocusClaw"),
                     "Kingmaker exposes one movement speed; 80-foot fly speed is used with airborne navigation and the 20-foot ground speed is omitted.",
-                    "Talon grab and Flyby Attack are omitted because no summon-safe exact final-live contracts were proven.")
+                    "Talon grab and Flyby Attack are omitted because no summon-safe exact final-live contracts were proven."),
+                // Sprint 3 (Phase 1): native publication pack I.
+                P("pony", "Pony", "Animal", 2, "Medium",
+                    13, 13, 14, 2, 11, 4, 40, 0, "Hoof1d3",
+                    A("Hoof1d3"), A("TripDefenseFourLegs"),
+                    "Both hooves are carried as primary limbs, as Kingmaker's own summoned pony carries them; the tabletop secondary (docile) hoof cadence has no bounded native representation.",
+                    "Endurance and Run are omitted because exact final-live feature identities were not proven."),
+                P("horse", "Horse", "Animal", 2, "Large",
+                    16, 14, 17, 2, 13, 7, 50, 0, "Hoof1d4",
+                    A("Hoof1d4"), A("ReducedReach", "TripDefenseFourLegs"),
+                    "Both hooves are carried as primary limbs, as Kingmaker's own summoned horse carries them; the tabletop secondary (docile) hoof cadence has no bounded native representation.",
+                    "Endurance and Run are omitted because exact final-live feature identities were not proven."),
+                P("owlbear", "Owlbear", "MagicalBeast", 5, "Large",
+                    19, 12, 18, 2, 12, 10, 30, 5, "Bite1d6",
+                    A("Claw1d6", "Claw1d6"),
+                    A("ReducedReach", "ImprovedInitiative", "GreatFortitude",
+                        "SkillFocusPerception"),
+                    "Claw grab is deferred to the shared summon grapple lifecycle that Sprint 4 introduces; the installed generic Grab feature carries unrelated Shambling Mound constrict and target-state behavior."),
+                P("cyclops", "Cyclops", "Humanoid", 10, "Large",
+                    21, 8, 15, 10, 13, 8, 30, 7, "Greataxe",
+                    Array.Empty<string>(),
+                    A("Ferocity", "PowerAttack", "Cleave"),
+                    "Flash of Insight is bounded to one use per summoning: a swift action after which the next attack roll in the round is an automatic hit and critical threat, in place of choosing an exact die result.",
+                    "The +4 hide armor bonus and the heavy crossbow are omitted because the summon carries no equipment beyond its greataxe; Alertness, Great Cleave and Improved Bull Rush are omitted because exact final-live feature identities were not proven.")
             };
         }
 

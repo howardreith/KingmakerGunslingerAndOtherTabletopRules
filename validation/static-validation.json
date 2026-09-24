@@ -1768,7 +1768,7 @@
   "betterVendorsProgression138": {
     "baselineCommit": "202a41815f7ca80303e33c2f694804e7926efd8b",
     "branch": "codex/better-vendors-progression",
-    "deterministicTestCount": 1774,
+    "deterministicTestCount": 1779,
     "publicReleaseAuthorized": true,
     "ownerAuthorizedRelease": true,
     "ownerReleaseInstruction": "Run the final tests. IF they have issues, please address them. If not, please proceeding with committing, merging, pushing to remote, incrementing the version number and cutting a new release.",
@@ -1856,5 +1856,47 @@
     "publishedDllSha256": "1fa29d08ceb09552a07c4dd7c5a79500d1c5809d7989b85ca549d38a0301dede",
     "publishedDllMvid": "ffaada2b-a792-4045-804b-b5dafe4a3713",
     "publishedArtifactNote": "Publish-Release.ps1 produced two identical deterministic exact-reference builds from master at a0cae195. The downloaded public asset matches packageSha256 and passes strict package validation. The guarded smoke ran on the same commit built in the feature worktree, so it exercised identical source, not these exact bytes."
+  },
+  "expandedSummoningPhase1": {
+    "charter": "Kingmaker Expanded Summoning Implementation Charter v1.0, Phase 1 (Sprints 3-8)",
+    "order": "2026-09-24 owner order: finalize Phase 0, then complete Sprints 3-8 on one draft PR",
+    "branch": "codex/expanded-summoning-phase1-sprints3-8",
+    "baseCommit": "b0641a58",
+    "releaseAuthorized": false,
+    "draftOnly": true,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "ownerDelegationGranted": true,
+    "sprintsComplete": [],
+    "deterministicTestCount": 1779,
+    "uniqueCreatures": 71,
+    "summonMonsterEntries": 68,
+    "summonMonsterPlacements": 378,
+    "summonNaturesAllyEntries": 61,
+    "summonNaturesAllyPlacements": 348,
+    "registeredLogicalPlacements": 726,
+    "publishedLogicalPlacements": 712,
+    "templatedPlacements": 199,
+    "nativeExpansionWrappers": 29,
+    "naturalProfiles": 30,
+    "projectIcons": 81,
+    "foundationIdentities": 1276,
+    "appendedLedgerIdentities": 92,
+    "packageFileCountWithSoundBank": 241,
+    "sprint3": {
+      "creatures": [
+        "pony",
+        "horse",
+        "owlbear",
+        "cyclops"
+      ],
+      "frostGiantNaturesAllyWrappers": [
+        "SNA VII One",
+        "SNA VIII 1d3",
+        "SNA IX 1d4+1"
+      ],
+      "flashOfInsight": "bounded: once per summoning, swift action, next attack roll auto-hit and critical threat",
+      "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
+      "internalAcceptance": "PENDING"
+    }
   }
 }

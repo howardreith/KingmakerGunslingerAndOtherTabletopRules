@@ -125,12 +125,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(240, elemental.Length,
                 "Production elemental identity count changed.");
             // 1913 preserved identities plus exactly the appended Better Vendors
-            // progression variants.
+            // progression variants and the Expanded Summoning Phase 1 appends.
             Assertions.Equal(1913 + KingmakerGunslinger.Acquisition
-                    .ProgressionWeaponCatalog.NewBlueprintCount, all.Length,
+                    .ProgressionWeaponCatalog.NewBlueprintCount +
+                    ExpandedSummoningSprint3Tests.AppendedLedgerIdentities, all.Length,
                 "Manifest total must include 240 production elemental identities.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition
-                    .ProgressionWeaponCatalog.NewBlueprintCount,
+                    .ProgressionWeaponCatalog.NewBlueprintCount +
+                    ExpandedSummoningSprint3Tests.AppendedLedgerIdentities,
                 all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
