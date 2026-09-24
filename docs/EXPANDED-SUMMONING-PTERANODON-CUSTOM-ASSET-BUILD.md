@@ -213,23 +213,32 @@ is not the reviewed creature and is not shown.
 `SkinnedMeshRenderer`, maps each declared bone name to that renderer's bone
 array, takes the matching bind pose, builds a private mesh and a private copy
 of the donor's material, puts the albedo in that copy's `_MainTex`, clears
-whichever of the eagle's own normal, specular, occlusion, emission and detail
-maps the copy carries (they are indexed by the eagle's texture coordinates and
-mean nothing on this mesh), resets the tint to white, adds a sibling
-`SkinnedMeshRenderer`, and only then disables the donor's renderer component.
-The outcome string records the shader, the slots cleared and the tint the donor
-carried, so the evidence shows exactly what was done to the copy.
+whichever of a probed list of map slots the copy declares and carries (they are
+indexed by the eagle's texture coordinates and mean nothing on this mesh),
+resets the tint to white, and then swaps the mesh, the 46-bone array and the
+material onto the donor's own `SkinnedMeshRenderer` component - on that one
+instance. The outcome string records the shader, the slots declared and
+cleared and the tint the donor carried, so the evidence shows exactly what was
+done to the copy.
 
-Only the component's `enabled` flag is changed, and only on that one instance.
-The donor GameObject stays active so anything parented under it - effects
-anchors, colliders, the hit-FX locator - keeps working, and the shared prefab,
-mesh, material and animator are never touched. Eagle, dire bat and roc share
-this donor and are the negative controls.
+The swap rides the game's own component on purpose. Kingmaker drives a unit's
+renderers by reference: `EntityFader` hides a fresh summon and fades it in,
+`UnitFxVisibilityManager` and the occlusion highlighter cache the renderer
+list, hit flashes and the death dissolve write to the renderer's materials. A
+renderer added beside the donor's would sit outside all of that - visible
+through fog, opaque during the fade, untouched by a hit - and the first live
+isolation check showed exactly that: the fader had already disabled every fresh
+summon's donor renderer, while a sibling would have stayed on. Root bone,
+bounds, shadow modes, quality and the component's enabled state stay whatever
+the game set; the shared prefab, its mesh, material and animator are never
+touched. Eagle, dire bat and roc share this donor and are the negative
+controls.
 
 Every failure path leaves the donor visual intact, which is the approved
 fallback: a Pteranodon that still looks like a giant eagle is a cosmetic
-shortfall, while an invisible or half-bound one is a defect. A failure after the
-donor renderer is disabled re-enables it and destroys what was added.
+shortfall, while an invisible or half-bound one is a defect. A failure after
+the swap puts the original mesh, bones and materials back on the same
+component in the same frame and destroys what was made.
 
 ## Scope
 
