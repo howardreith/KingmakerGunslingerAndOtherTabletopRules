@@ -77,6 +77,8 @@ namespace KingmakerGunslinger.Bootstrap
         internal static TeleportationSpellListPublication TeleportationPublication { get { return _teleportationPublication; } }
         private static KingmakerGunslinger.FavoredClass.FavoredClassBlueprintSet _favoredClass;
         internal static KingmakerGunslinger.FavoredClass.FavoredClassBlueprintSet FavoredClassLeaves { get { return _favoredClass; } }
+        private static ElementalMostlyHumanBlueprintSet _mostlyHuman;
+        internal static ElementalMostlyHumanBlueprintSet MostlyHuman { get { return _mostlyHuman; } }
         private static MagicCircleBlueprintSet[] _magicCircles;
         private static MagicCircleSpellListPublication _magicCirclePublication;
         internal static MagicCircleBlueprintSet[] MagicCircles { get { return _magicCircles; } }
@@ -746,6 +748,7 @@ namespace KingmakerGunslinger.Bootstrap
             var magicCircleRegistry = new BlueprintRegistry(library, manifest, context.Logger);
             var teleportationRegistry = new BlueprintRegistry(library, manifest, context.Logger);
             var favoredClassRegistry = new BlueprintRegistry(library, manifest, context.Logger);
+            var mostlyHumanRegistry = new BlueprintRegistry(library, manifest, context.Logger);
             TeleportationSpellBlueprintSet teleportation = null;
             TeleportationSpellListPublication teleportationPublication = null;
             ShieldOtherSpellListPublication shieldOtherPublication = null;
@@ -1157,6 +1160,44 @@ namespace KingmakerGunslinger.Bootstrap
                         "Favored-class identities failed validation; the integration is disabled and other modules continue.",
                         favoredClassException);
                 }
+                // Mostly Human companion racial trait (four parent races):
+                // always registered in its own contained registry so a saved
+                // choice resolves; offered only when the elemental races are
+                // published and the restart-required control is on.
+                try
+                {
+                    _mostlyHuman = ElementalMostlyHumanBlueprints.Register(mostlyHumanRegistry,
+                        elementalRaces);
+                    KingmakerGunslinger.FavoredClass.FavoredClassRuntime.ConfigureMostlyHumanIdentity(
+                        _mostlyHuman.Identity);
+                    bool offerMostlyHuman = publicationPlan.ElementalRaceSelectors &&
+                        KingmakerGunslinger.FavoredClass.FavoredClassIntegrationCoordinator
+                            .ResolveSettings(modDirectory).Profile.MostlyHuman;
+                    if (offerMostlyHuman)
+                        _mostlyHuman.Publication = ElementalMostlyHumanPublication.Apply(_mostlyHuman);
+                    context.Logger.Info("elemental-races", "mostly-human.registered",
+                        "identities=" + _mostlyHuman.Count + ";published=" + offerMostlyHuman);
+                }
+                catch (Exception mostlyHumanException)
+                {
+                    if (_mostlyHuman != null && _mostlyHuman.Publication != null)
+                        try { _mostlyHuman.Publication.Rollback(); }
+                        catch (Exception publicationRollbackException) {
+                            context.Logger.Failure("elemental-races", "mostly-human.rollback-failed",
+                                "Mostly Human race-feature rollback was refused.", publicationRollbackException);
+                        }
+                    _mostlyHuman = null;
+                    KingmakerGunslinger.FavoredClass.FavoredClassRuntime.ConfigureMostlyHumanIdentity(null);
+                    try { mostlyHumanRegistry.RollbackAll(); }
+                    catch (Exception mostlyHumanRollbackException) {
+                        context.Logger.Failure("elemental-races", "mostly-human.registry-rollback-failed",
+                            "Exact Mostly Human identity rollback could not complete.",
+                            mostlyHumanRollbackException);
+                    }
+                    context.Logger.Failure("elemental-races", "mostly-human.failed",
+                        "The Mostly Human trait failed validation and is not offered; other modules continue.",
+                        mostlyHumanException);
+                }
                 PlayerFacingPresentation.ApplyArchetypes(
                     gunslingerClassBlueprints.CharacterClass,
                     gunslingerClassBlueprints.CharacterClass.Icon);
@@ -1293,6 +1334,18 @@ namespace KingmakerGunslinger.Bootstrap
                 catch (Exception favoredClassRollbackException) {
                     context.Logger.Failure("favored-class", "bootstrap.rollback-failed",
                         "Core initialization failed; favored-class exact rollback was refused.", favoredClassRollbackException);
+                }
+
+                try {
+                    if (_mostlyHuman != null && _mostlyHuman.Publication != null)
+                        _mostlyHuman.Publication.Rollback();
+                    _mostlyHuman = null;
+                    KingmakerGunslinger.FavoredClass.FavoredClassRuntime.ConfigureMostlyHumanIdentity(null);
+                    mostlyHumanRegistry.RollbackAll();
+                }
+                catch (Exception mostlyHumanRollbackException) {
+                    context.Logger.Failure("elemental-races", "bootstrap.mostly-human-rollback-failed",
+                        "Core initialization failed; Mostly Human exact rollback was refused.", mostlyHumanRollbackException);
                 }
 
                 try {

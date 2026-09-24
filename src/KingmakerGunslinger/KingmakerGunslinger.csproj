@@ -220,6 +220,9 @@
     <Compile Include="FavoredClass\FavoredClassIdentityCatalog.cs" />
     <Compile Include="FavoredClass\FavoredClassIntegrationStatus.cs" />
     <Compile Include="FavoredClass\FavoredClassSettings.cs" />
+    <Compile Include="FavoredClass\Hooks\FavoredClassHostRaceBridge.cs" />
+    <Compile Include="ElementalRaces\ElementalMostlyHumanPolicy.cs" />
+    <Compile Include="ElementalRaces\ElementalMostlyHumanBlueprints.cs" />
     <Compile Include="FavoredClass\FavoredClassRuntime.cs" />
     <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassGritResourceBonus.cs" />
@@ -1128,6 +1131,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassHostState.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassElemental.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassMostlyHuman.cs" />
     <Compile Include="RuntimeTesting\RapidReloadGateEvidenceRules.cs" />
     <Compile Include="RuntimeTesting\RapidReloadVisitCleanupRules.cs" />
     <Compile Include="RuntimeTesting\FirearmHigherFeatRootsRules.cs" />

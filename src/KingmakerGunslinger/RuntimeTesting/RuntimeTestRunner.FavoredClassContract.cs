@@ -62,6 +62,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (settingsFilePresent ? settings.Source != FavoredClassSettingsSource.Defaults
                         : settings.Source == FavoredClassSettingsSource.Defaults),
                 "FavoredClassIntegrationCoordinator.Settings and FavoredClassRuntime.Profile"));
+            // E05: the Mostly Human companion trait is offered exactly when its
+            // control is on (and the elemental races are published); a saved
+            // choice resolves either way.
+            var mostlyHuman = KingmakerGunslinger.Bootstrap.BlueprintBootstrap.MostlyHuman;
+            var mostlyHumanRows = new JArray();
+            bool mostlyHumanExact = mostlyHuman != null;
+            if (mostlyHuman != null)
+                foreach (var race in mostlyHuman.Races)
+                {
+                    int listed = (race.Race.Features ?? new Kingmaker.Blueprints.Classes.BlueprintFeatureBase[0])
+                        .Count(value => ReferenceEquals(value, race.Selection));
+                    bool expectedListed = effective.MostlyHuman &&
+                        _context.FeatureModules.Active.ElementalRaces;
+                    mostlyHumanRows.Add(race.Definition.RaceName + "=" + listed);
+                    mostlyHumanExact &= listed == (expectedListed ? 1 : 0);
+                }
+            evidence["mostlyHuman"] = mostlyHumanRows;
+            assertions.Add(Assertion("fcb-mostly-human-publication",
+                "each parent race lists its Mostly Human selection exactly once when the control is on and never when it is off; the identities stay registered",
+                "registered=" + (mostlyHuman != null) + ";profileMostlyHuman=" + effective.MostlyHuman +
+                    ";listed=" + string.Join(",", mostlyHumanRows.Select(value => (string)value).ToArray()),
+                mostlyHumanExact, "BlueprintBootstrap.MostlyHuman and live race Features"));
             var readinessFailures = new List<string>();
             JObject readiness = DescribeFcbReadiness(host, readinessFailures);
             evidence["readiness"] = readiness;

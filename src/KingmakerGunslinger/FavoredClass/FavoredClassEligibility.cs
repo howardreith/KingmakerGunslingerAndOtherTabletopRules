@@ -199,6 +199,22 @@ namespace KingmakerGunslinger.FavoredClass
     internal static class FavoredClassEligibility
     {
         /// <summary>
+        /// The only permission the scoped host ancestry bridge adds to the
+        /// host's exact-race human prerequisite: a geniekin parent that owns
+        /// the verified Mostly Human fact. Half-elf, Half-orc, Aasimar,
+        /// Tiefling and every other race keep exactly the host's own policy,
+        /// and an unrecognized race or unverified fact grants nothing.
+        /// </summary>
+        internal static bool GrantsHostHumanAccess(FavoredClassAncestryEvidence evidence,
+            string mostlyHumanFactId)
+        {
+            return evidence != null && !string.IsNullOrEmpty(mostlyHumanFactId) &&
+                evidence.NativeAncestry != null &&
+                FavoredClassAncestry.ElementalParents.Contains(evidence.NativeAncestry) &&
+                evidence.VerifiedFacts.Contains(mostlyHumanFactId);
+        }
+
+        /// <summary>
         /// The eligible routes of one canonical effect for this unit. The
         /// effect is offered once whenever the list is non-empty, regardless
         /// of how many routes qualify, so duplicate ancestry routes can never
