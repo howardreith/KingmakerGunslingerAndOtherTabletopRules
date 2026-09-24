@@ -559,6 +559,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         EventBus.Unsubscribe(presenter);
                         detached = true;
                     }
+                    // E13: a respec driven to its first choices and cancelled
+                    // leaves the counters, the projection and the same
+                    // companion untouched.
+                    JObject cancelled = RunFcbRespec(master, (controller, row) =>
+                    {
+                        FavoredClassLevelUpHarness.Configure(controller, controller.Unit, oread, ranger,
+                            "KMG FCB Respec", null);
+                        FavoredClassLevelUpHarness.ChooseFavoredClass(controller, ranger, row);
+                        return false;
+                    }, failures, "pet-cancel", ranger);
+                    Game.Instance.EntityCreator.Tick();
+                    Game.Instance.EntityDestroyer.Tick();
+                    JObject afterCancel = FcbCensus(master);
+                    evidence["cancel"] = cancelled;
+                    evidence["afterCancel"] = afterCancel;
+                    if (!(bool)cancelled["invoked"] || (bool)cancelled["committed"] || (bool)cancelled["callback"] ||
+                        !JToken.DeepEquals(before, afterCancel) || !ReferenceEquals(master.Descriptor.Pet, first) ||
+                        first.Destroyed || projections() != 1)
+                        failures.Add("the cancelled respec changed the counters, the projection or the companion");
                     respec = RunFcbRespec(master, (controller, row) =>
                     {
                         FavoredClassLevelUpHarness.Configure(controller, controller.Unit, oread, ranger,
@@ -612,7 +631,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     failures.Add("the counters earned again did not project exactly once onto the new companion");
             }
             RecordFcbLifecycle("fcb-lifecycle-respec-pet",
-                "a committed native respec of an Oread Ranger 4 with +1 projected companion armor rebuilds Ranger 1 without counters, destroys the old companion and leaves no projection; re-earning the counters projects +1 exactly once onto the new companion",
+                "a cancelled native respec of an Oread Ranger 4 with +1 projected companion armor leaves its counters, projection and companion unchanged; a committed one rebuilds Ranger 1 without counters, destroys the old companion and leaves no projection; re-earning the counters projects +1 exactly once onto the new companion",
                 evidence, failures);
             yield return null;
         }
