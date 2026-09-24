@@ -149,11 +149,15 @@ namespace KingmakerGunslinger.Summoning
 
     /// <summary>
     /// Cyclops Flash of Insight, bounded (Sprint 3). Lives on the one-round
-    /// armed state the ability applies: the owner's next attack roll is an
-    /// automatic hit and critical threat. The native RemoveBuffOnAttack on the
-    /// same state ends it after that one attack, so a full attack never
-    /// carries the insight into its later swings. No per-unit state is kept
-    /// on this shared blueprint component.
+    /// armed state the ability applies: the owner's next attack is an
+    /// automatic critical hit. Kingmaker's automatic-hit path in
+    /// RuleAttackRoll never rolls the d20 and decides the critical solely
+    /// from AutoCriticalThreat and AutoCriticalConfirmation together, so a
+    /// threat with an ordinary confirmation cannot be expressed there; the
+    /// live round-2 mechanical run showed the armed natural 1 hitting with no
+    /// threat. The native RemoveBuffOnAttack on the same state ends it after
+    /// that one attack, so a full attack never carries the insight into its
+    /// later swings. No per-unit state is kept on this shared component.
     /// </summary>
     [Serializable]
     public sealed class CyclopsFlashOfInsightComponent :
@@ -167,6 +171,7 @@ namespace KingmakerGunslinger.Summoning
                 return;
             evt.AutoHit = true;
             evt.AutoCriticalThreat = true;
+            evt.AutoCriticalConfirmation = true;
         }
 
         public override void OnEventDidTrigger(RuleAttackRoll evt) { }

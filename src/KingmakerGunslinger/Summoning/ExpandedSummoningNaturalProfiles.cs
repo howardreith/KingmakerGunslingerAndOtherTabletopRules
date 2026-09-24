@@ -273,7 +273,7 @@ namespace KingmakerGunslinger.Summoning
                     21, 8, 15, 10, 13, 8, 30, 7, "Greataxe",
                     Array.Empty<string>(),
                     A("Ferocity", "PowerAttack", "Cleave"),
-                    "Flash of Insight is bounded to one use per summoning: a swift action after which the next attack roll in the round is an automatic hit and critical threat, in place of choosing an exact die result.",
+                    "Flash of Insight is bounded to one use per summoning: a swift action after which the next attack in the round is an automatic critical hit, in place of choosing an exact die result; Kingmaker's automatic-hit path grants the threat and its confirmation together.",
                     "The +4 hide armor bonus and the heavy crossbow are omitted because the summon carries no equipment beyond its greataxe; Alertness, Great Cleave and Improved Bull Rush are omitted because exact final-live feature identities were not proven.")
             };
         }

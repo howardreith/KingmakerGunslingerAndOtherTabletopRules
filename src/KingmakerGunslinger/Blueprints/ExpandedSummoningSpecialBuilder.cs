@@ -298,8 +298,8 @@ namespace KingmakerGunslinger.Blueprints
         /// <summary>
         /// Cyclops Flash of Insight, bounded (Sprint 3). The natural builder
         /// owns the chassis; this adds one once-per-summoning swift ability
-        /// whose one-round state makes the next attack roll an automatic hit
-        /// and critical threat, the resource that limits it, and a brain that
+        /// whose one-round state makes the next attack an automatic critical
+        /// hit, the resource that limits it, and a brain that
         /// spends it when the cyclops fights. It runs after the natural
         /// builder and only appends to what that builder configured.
         /// </summary>
@@ -368,7 +368,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Flash of Insight"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.State.Description",
-                    "This cyclops's next attack roll is an automatic hit and threatens a critical hit."),
+                    "This cyclops's next attack is an automatic critical hit."),
                 null);
         }
 
@@ -421,7 +421,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Flash of Insight"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.Description",
-                    "Once per summoning, as a swift action, the cyclops's next attack roll this round is an automatic hit and threatens a critical hit."),
+                    "Once per summoning, as a swift action, the cyclops's next attack this round is an automatic critical hit."),
                 null);
         }
 

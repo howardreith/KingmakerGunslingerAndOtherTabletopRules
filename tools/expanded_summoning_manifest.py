@@ -87,7 +87,7 @@ SPECIAL_NOTES = {
     "succubus": "Bounded domination and one-round temporary energy drain; profane gift omitted.",
     "bebelith": "Demon hunting and DC 25 bounded one-round armor dismantle; rot and permanent item damage omitted.",
     "pixie": "Sixteen no-damage sleep arrows and one bounded irresistible dance; no ammunition or loot.",
-    "cyclops": "Greataxe, ferocity, Power Attack and Cleave on a humanoid chassis; Flash of Insight bounded to one swift-action automatic hit and critical threat per summoning; armor and crossbow omitted.",
+    "cyclops": "Greataxe, ferocity, Power Attack and Cleave on a humanoid chassis; Flash of Insight bounded to one swift-action automatic critical hit per summoning; armor and crossbow omitted.",
     "owlbear": "Magical-beast chassis with bite and two claws; claw grab deferred to the shared grapple lifecycle of Sprint 4.",
 }
 
