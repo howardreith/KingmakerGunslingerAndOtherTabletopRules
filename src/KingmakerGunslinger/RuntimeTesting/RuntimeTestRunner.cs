@@ -15381,7 +15381,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     lowTierNaturalsExact,
                     "tabletop dog, eagle, poisonous frog, centipede, giant spider, goblin dog, and hyena chassis with visual-only proxy donors"),
                 Assertion("expanded-summoning-tier-three-four-naturals", "exact",
-                    tierThreeFourNaturalsExact ? "exact" : "mismatch",
+                    tierThreeFourNaturalsExact ? "exact" : "mismatch;" +
+                        ExpandedSummoningNaturalDiagnosticsText(),
                     tierThreeFourNaturalsExact,
                     "twelve exact animal-HD chassis with native pounce, ferocity, trip, poison, armor, natural attacks, and bounded documented deviations"),
                 Assertion("expanded-summoning-tier-five-seven-naturals", "exact",
@@ -15389,7 +15390,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     tierFiveSevenNaturalsExact,
                     "seven exact animal-HD chassis with proxy-only views, frozen large-die weapons, native pounce and feats, and bounded documented deviations"),
                 Assertion("expanded-summoning-sprint-three-naturals", "exact",
-                    sprintThreeNaturalsExact ? "exact" : "mismatch",
+                    sprintThreeNaturalsExact ? "exact" : "mismatch;" +
+                        ExpandedSummoningNaturalDiagnosticsText(),
                     sprintThreeNaturalsExact,
                     "pony and horse on their native summoned donors with hoof limbs, the magical-beast owlbear and the humanoid cyclops chassis against the checked-in profiles"),
                 Assertion("expanded-summoning-cyclops-flash-of-insight",
@@ -15397,7 +15399,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cyclopsObserved, cyclopsExact,
                     "Cyclops special surface beside the natural chassis"),
                 Assertion("expanded-summoning-sprint-four-plants", "exact",
-                    sprintFourNaturalsExact ? "exact" : "mismatch",
+                    sprintFourNaturalsExact ? "exact" : "mismatch;" +
+                        ExpandedSummoningNaturalDiagnosticsText(),
                     sprintFourNaturalsExact,
                     "plant-class shambling mound and giant flytrap and the gargantuan magical-beast purple worm against the checked-in profiles"),
                 Assertion("expanded-summoning-grapple-lifecycle",
@@ -19715,8 +19718,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "AcidResistance20", "416386972c8de2e42953533c4946599a" },
                     { "Blindsight", "236ec7f226d3d784884f066aa4be1570" },
                     { "PurpleWormPoison", "728446b9d0bf47144a1b621169299c2a" },
-                    { "CriticalFocus", "8ac59959b1b23c347a0361dc97cc786d" }
+                    { "CriticalFocus", "8ac59959b1b23c347a0361dc97cc786d" },
+                    { "TripImmune", "c1b26f97b974aec469613f968439e7bb" },
+                    { "TripDefenseEightLegs", "a60900c666b2b37478a2bf4bb005973d" },
+                    { "PoisonFrog", "1a3f2f384bbef804d8f52db1f9aa62d3" },
+                    { "CentipedePoison", "6fed981bf0ef27a499969f369f35b5e8" },
+                    { "GiantSpiderPoison", "094714bb08f4e1943a8e9d2384ebe573" }
                 };
+            // A profile fact the map does not know is a mismatch to report,
+            // never an exception that ends the whole inventory.
+            string[] unknownFacts = profile.Facts.Where(value =>
+                !factGuids.ContainsKey(value)).ToArray();
+            if (unknownFacts.Length != 0)
+            {
+                ExpandedSummoningNaturalUnitDiagnostics[profile.Key] =
+                    "unknown-facts=" + string.Join(",", unknownFacts);
+                return false;
+            }
             string[] expectedFacts = profile.Facts.Select(value =>
                 factGuids[value]).Concat(profile.NaturalArmor == 0
                     ? Enumerable.Empty<string>()
@@ -19733,28 +19751,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                         StringComparison.Ordinal))
                 .Select(value => value.AssetGuid).OrderBy(value => value,
                     StringComparer.Ordinal).ToArray();
-            return levels.Length == 1 && levels[0].Levels == profile.HitDice &&
+            // Each field is named in the diagnostics when it disagrees, so a
+            // mismatch reads as "purple-worm:facts,speed" in the result
+            // rather than a bare "mismatch".
+            var mismatches = new List<string>();
+            if (!(levels.Length == 1 && levels[0].Levels == profile.HitDice &&
                 levels[0].CharacterClass != null &&
                 levels[0].CharacterClass.AssetGuid ==
                     ExpandedSummoningNaturalBuilder.HitDieClassGuid(
-                        profile.HitDieClass) &&
-                unit.Size == expectedSize && unit.Alignment == Alignment.TrueNeutral &&
-                unit.Strength == profile.Strength &&
+                        profile.HitDieClass))) mismatches.Add("class-levels");
+            if (unit.Size != expectedSize) mismatches.Add("size");
+            if (unit.Alignment != Alignment.TrueNeutral) mismatches.Add("alignment");
+            if (!(unit.Strength == profile.Strength &&
                 unit.Dexterity == profile.Dexterity &&
                 unit.Constitution == profile.Constitution &&
                 unit.Intelligence == profile.Intelligence &&
-                unit.Wisdom == profile.Wisdom && unit.Charisma == profile.Charisma &&
-                unit.Speed.Value == profile.SpeedFeet &&
-                unit.Body.PrimaryHand != null &&
-                unit.Body.PrimaryHand.AssetGuid == weaponGuids[profile.PrimaryWeapon] &&
-                unit.Body.AdditionalLimbs.Select(value => value.AssetGuid)
+                unit.Wisdom == profile.Wisdom && unit.Charisma == profile.Charisma))
+                mismatches.Add("ability-scores");
+            if (unit.Speed.Value != profile.SpeedFeet) mismatches.Add("speed");
+            if (!(unit.Body.PrimaryHand != null &&
+                unit.Body.PrimaryHand.AssetGuid == weaponGuids[profile.PrimaryWeapon]))
+                mismatches.Add("primary-weapon");
+            if (!unit.Body.AdditionalLimbs.Select(value => value.AssetGuid)
                     .SequenceEqual(profile.AdditionalWeapons.Select(value =>
-                        weaponGuids[value])) &&
-                unit.Body.AdditionalSecondaryLimbs.Select(value => value.AssetGuid)
+                        weaponGuids[value]))) mismatches.Add("additional-limbs");
+            if (!unit.Body.AdditionalSecondaryLimbs.Select(value => value.AssetGuid)
                     .SequenceEqual(profile.AdditionalSecondaryWeapons.Select(value =>
-                        weaponGuids[value])) &&
-                actualFacts.SequenceEqual(expectedFacts) &&
-                unit.StartingInventory.Length == 0;
+                        weaponGuids[value]))) mismatches.Add("secondary-limbs");
+            if (!actualFacts.SequenceEqual(expectedFacts))
+                mismatches.Add("facts(expected=" + string.Join("/", expectedFacts) +
+                    ";actual=" + string.Join("/", actualFacts) + ")");
+            if (unit.StartingInventory.Length != 0) mismatches.Add("inventory");
+            if (mismatches.Count == 0)
+            {
+                ExpandedSummoningNaturalUnitDiagnostics.Remove(profile.Key);
+                return true;
+            }
+            ExpandedSummoningNaturalUnitDiagnostics[profile.Key] =
+                string.Join(",", mismatches.ToArray());
+            return false;
         }
 
         private static bool ExpandedSummoningCyclopsSpecialExact(
@@ -19815,6 +19850,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";resourceGrant=" + resourceGrant + ";icon=" + icon;
             return granted && traitsOnUnit && brain && ability && armed &&
                 resourceGrant && icon;
+        }
+
+        private static readonly Dictionary<string, string>
+            ExpandedSummoningNaturalUnitDiagnostics =
+                new Dictionary<string, string>(StringComparer.Ordinal);
+
+        private static string ExpandedSummoningNaturalDiagnosticsText()
+        {
+            return string.Join(";", ExpandedSummoningNaturalUnitDiagnostics
+                .OrderBy(pair => pair.Key, StringComparer.Ordinal)
+                .Select(pair => pair.Key + ":" + pair.Value).ToArray());
         }
 
         private static bool ExpandedSummoningGrappleSpecialExact(
