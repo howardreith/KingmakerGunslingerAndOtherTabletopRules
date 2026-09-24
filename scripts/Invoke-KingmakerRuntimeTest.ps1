@@ -630,6 +630,7 @@ try {
         'disposable-brown-fur-native-cast',
         'observe-teleportation-world-map',
         'disposable-teleportation-familiarity',
+        'working-save-favored-class-visual-census',
         'working-save-favored-class-lifecycle',
         'disposable-teleportation-resources',
         'disposable-teleportation-context',

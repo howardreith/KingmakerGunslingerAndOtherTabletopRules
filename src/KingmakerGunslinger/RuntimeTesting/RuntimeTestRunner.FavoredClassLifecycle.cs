@@ -6,10 +6,13 @@ using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers;
 using Kingmaker.Controllers.Units;
+using Kingmaker.PubSubSystem;
+using Kingmaker.UI.LevelUp;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.EntitySystem.Persistence;
@@ -47,6 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FcbBeastShapeBuffGuid = "8dc6510d31614345a8c718208fbac1f8";
         private const string FcbMonkClassGuid = "e8f21e5b58e0569468e420ebea456124";
         private const string FcbPaladinClassGuid = "bfa11238e7ae3544bbeb4d0b92e897ec";
+        private const string FcbRangerClassGuid = "cda0615668a6df14eb36ba19ee881af6";
         private const int FcbSettleUpdates = 4;
 
         private IEnumerator<object> _fcbLifecycleSteps;
@@ -121,6 +125,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (object step in FcbAuraOverlap(fixtures, leaves)) yield return step;
                 foreach (object step in FcbPerformanceMembership(fixtures, leaves)) yield return step;
                 foreach (object step in FcbFamilyLifecycle(fixtures, leaves)) yield return step;
+                foreach (object step in FcbRespecPet(fixtures, leaves)) yield return step;
             }
             finally
             {
@@ -283,10 +288,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failures.Add("the live areas do not carry their own owners' radii");
             if (!insideWidened || afterLeaving || !afterReturning || afterBardMoved)
                 failures.Add("membership did not follow the widened, moving boundary");
-            // Interruption: ending the performer buff ends the area and the effect.
+            // Interruption: ending the performer buff ends the area and the
+            // effect. The native controller's next tick of the ended area runs
+            // its exits and destruction; the paused lane runs that tick itself.
             buffA.Remove();
             yield return null;
-            if (areaA != null && !areaA.IsEnded) areaA.Tick();
+            areaA.Tick();
             evidence["afterInterruption"] = new JObject { ["areaEnded"] = areaA.IsEnded, ["allyHasEffect"] = has() };
             if (!areaA.IsEnded || has())
                 failures.Add("interrupting the performance left its area or an orphaned effect");
@@ -498,6 +505,126 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence, failures);
         }
 
+        // L03 with a pet: an Oread Ranger whose companion armor was earned
+        // through native picks. The committed native respec rebuilds Ranger 1
+        // and destroys the old companion with no orphaned projection; the
+        // counters earned again project exactly once onto the new companion.
+        private IEnumerable<object> FcbRespecPet(FcbLifecycleFixtures fixtures, FavoredClassBlueprintSet leaves)
+        {
+            var failures = new List<string>();
+            var evidence = new JObject();
+            _fcbLifecycleEvidence["respecPet"] = evidence;
+            var library = BlueprintBootstrap.Library;
+            FavoredClassHostHandles host = FavoredClassIntegrationCoordinator.Host;
+            BlueprintCharacterClass ranger = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library,
+                FcbRangerClassGuid, "Ranger");
+            BlueprintFeatureSelection reward = host.BonusSelectionFor(ranger.AssetGuid);
+            BlueprintRace oread = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
+                FavoredClassRaceIdentities.ForAncestry(FavoredClassAncestry.Oread).RaceGuid, "Oread");
+            BlueprintFeature hitPoint = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                FcbHostHitPointRewardGuid, "host favored-class hit point");
+            FavoredClassLeafPair armor = leaves.Pair(FavoredClassCatalog.EffectCompanionArmor, null);
+            BlueprintFeature petFeature = leaves.PetFeature(FavoredClassCatalog.EffectCompanionArmor);
+            if (reward == null || armor.Partial == null || petFeature == null)
+                throw new InvalidOperationException("The Ranger companion-armor route is incomplete.");
+            var reserved = new HashSet<string>(StringComparer.Ordinal) { reward.AssetGuid };
+            BlueprintFeature[] picks = { armor.Partial, armor.Partial, armor.Partial, armor.Full };
+            UnitEntityData master = SpawnFcbFixture(fixtures, "RespecRanger", fixtures.Origin + fixtures.Direction * 6f);
+            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
+            LevelFcbRespecSubject(master, oread, picks, reserved, failures, "respec-pet", null, ranger, reward,
+                GrantsFcbPet);
+            Game.Instance.EntityCreator.Tick();
+            UnitEntityData first = master.Descriptor.Pet;
+            if (first != null) fixtures.Units.Add(first);
+            Func<int> projections = () => Game.Instance.State.Units.Count(unit => unit != null && !unit.Destroyed &&
+                unit.Descriptor.HasFact(petFeature) && (ReferenceEquals(unit, first) ||
+                    ReferenceEquals(unit.Descriptor.Master.Value, master)));
+            JObject before = FcbCensus(master);
+            evidence["before"] = before;
+            evidence["sourceLevel"] = master.Descriptor.Progression.GetClassLevel(ranger);
+            if (failures.Count == 0 && (first == null || !FcbArmor(before, 1) || projections() != 1))
+                failures.Add("the source Ranger 4 has no companion carrying exactly one +1 projection");
+            if (failures.Count == 0)
+            {
+                // The loaded game's level-up screen also answers the native
+                // respec's level-up start; this backend drive detaches it for
+                // the one call and subscribes it again.
+                CharacterBuildController presenter = Game.Instance.UI.CharacterBuildController;
+                bool detached = false;
+                JObject respec;
+                try
+                {
+                    if (presenter != null)
+                    {
+                        EventBus.Unsubscribe(presenter);
+                        detached = true;
+                    }
+                    respec = RunFcbRespec(master, (controller, row) =>
+                    {
+                        FavoredClassLevelUpHarness.Configure(controller, controller.Unit, oread, ranger,
+                            "KMG FCB Respec", null);
+                        if (FavoredClassLevelUpHarness.ChooseFavoredClass(controller, ranger, row) == null)
+                            throw new InvalidOperationException("the favored Ranger progression is unavailable");
+                        FavoredClassLevelUpHarness.FillOthers(controller, reserved);
+                        FeatureSelectionState state = FavoredClassLevelUpHarness.FindOpenState(controller,
+                            reward.AssetGuid);
+                        if (state == null || !FavoredClassLevelUpHarness.Select(controller, state, hitPoint))
+                            throw new InvalidOperationException("the Ranger respec could not take the hit point");
+                        FavoredClassLevelUpHarness.FillOthers(controller, reserved);
+                        return true;
+                    }, failures, "pet", ranger);
+                }
+                finally
+                {
+                    if (detached) EventBus.Subscribe(presenter);
+                }
+                Game.Instance.EntityDestroyer.Tick();
+                JObject afterRespec = FcbCensus(master);
+                evidence["respec"] = respec;
+                evidence["afterRespec"] = afterRespec;
+                evidence["oldCompanion"] = new JObject
+                {
+                    ["destroyed"] = first == null || first.Destroyed,
+                    ["liveProjections"] = projections(),
+                    ["masterHasPet"] = master.Descriptor.Pet != null,
+                };
+                if (!(bool)respec["committed"] || !(bool)respec["callback"])
+                    failures.Add("the Ranger respec did not commit through the native callback");
+                if (((JObject)afterRespec["counters"]).Count != 0 || master.Descriptor.Pet != null ||
+                    projections() != 0 || (first != null && !first.Destroyed))
+                    failures.Add("the committed respec left a counter, a companion or an orphaned projection");
+                // Earned again through native picks on levels 2 to 5.
+                LevelFcbRespecSubject(master, oread, picks, reserved, failures, "respec-pet-again", null, ranger,
+                    reward, GrantsFcbPet);
+                Game.Instance.EntityCreator.Tick();
+                UnitEntityData second = master.Descriptor.Pet;
+                if (second != null) fixtures.Units.Add(second);
+                JObject after = FcbCensus(master);
+                evidence["earnedAgain"] = after;
+                evidence["earnedAgainLevel"] = master.Descriptor.Progression.GetClassLevel(ranger);
+                evidence["newCompanion"] = new JObject
+                {
+                    ["present"] = second != null,
+                    ["distinct"] = second != null && !ReferenceEquals(first, second),
+                    ["liveProjections"] = projections(),
+                };
+                if (second == null || ReferenceEquals(first, second) || !FcbArmor(after, 1) || projections() != 1)
+                    failures.Add("the counters earned again did not project exactly once onto the new companion");
+            }
+            RecordFcbLifecycle("fcb-lifecycle-respec-pet",
+                "a committed native respec of an Oread Ranger 4 with +1 projected companion armor rebuilds Ranger 1 without counters, destroys the old companion and leaves no projection; re-earning the counters projects +1 exactly once onto the new companion",
+                evidence, failures);
+            yield return null;
+        }
+
+        private static bool FcbArmor(JObject census, int value)
+        {
+            var pet = census["pet"] as JObject;
+            return pet != null && (int)pet["petFeatureFacts"] == 1 &&
+                ((JArray)pet["ownedModifiers"]).Select(item => (string)item)
+                    .SequenceEqual(new[] { "AC|NaturalArmor|" + value });
+        }
+
         private IEnumerable<object> KillAndResurrect(UnitEntityData unit, JObject evidence, string label)
         {
             int immortality = unit.Descriptor.State.Immortality.Count;
@@ -620,8 +747,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GetField("m_SpawnedFx", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(area.View) as GameObject;
                 result[area.Context.MaybeCaster.UniqueId + "|" + area.Blueprint.name] = new JObject
                 {
-                    ["radius"] = cylinder == null ? -1f : (float)Math.Round(cylinder.Radius, 3),
-                    ["ringFactor"] = ring == null ? 1f : (float)Math.Round(FavoredClassPerformanceRing.FactorOf(ring), 3),
+                    ["radius"] = cylinder == null ? -1d : Math.Round((double)cylinder.Radius, 3),
+                    ["ringFactor"] = ring == null ? 1d : Math.Round((double)FavoredClassPerformanceRing.FactorOf(ring), 3),
                 };
             }
             return result;
