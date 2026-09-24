@@ -1,3 +1,4 @@
+using System;
 using Harmony12;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -25,15 +26,23 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
             if (__instance == null || context == null || blueprint == null ||
                 blueprint.Shape != AreaEffectShape.Cylinder)
                 return;
-            string key = FavoredClassPerformanceManifest.KeyForArea(blueprint.AssetGuid);
-            UnitEntityData caster = key == null ? null : context.MaybeCaster;
-            if (caster == null)
-                return;
-            int steps = FavoredClassEarnedSteps.For(caster.Descriptor, FavoredClassCatalog.EffectPerformanceRange, key);
-            var cylinder = __instance.Shape as ScriptZoneCylinder;
-            if (steps <= 0 || cylinder == null)
-                return;
-            cylinder.Radius = FavoredClassMechanicsPolicy.PerformanceRadiusMeters(blueprint.Size.Meters, steps);
+            try
+            {
+                string key = FavoredClassPerformanceManifest.KeyForArea(blueprint.AssetGuid);
+                UnitEntityData caster = key == null ? null : context.MaybeCaster;
+                if (caster == null)
+                    return;
+                int steps = FavoredClassEarnedSteps.For(caster.Descriptor, FavoredClassCatalog.EffectPerformanceRange,
+                    key);
+                var cylinder = __instance.Shape as ScriptZoneCylinder;
+                if (steps <= 0 || cylinder == null)
+                    return;
+                cylinder.Radius = FavoredClassMechanicsPolicy.PerformanceRadiusMeters(blueprint.Size.Meters, steps);
+            }
+            catch (Exception)
+            {
+                // Fail safe: the area keeps its native radius and is never broken.
+            }
         }
     }
 }
