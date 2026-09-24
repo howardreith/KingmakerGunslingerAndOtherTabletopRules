@@ -9,38 +9,56 @@
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
   "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
-  "currentPhase": "phase-2",
+  "currentPhase": "phase-5",
   "phases": {
     "phase-0": {
       "status": "COMPLETE",
       "gate": "every row has a capability disposition; exact binary identities recorded; load-order and advanced-target discovery supported by source/IL evidence"
     },
     "phase-1": {
-      "status": "IN PROGRESS",
+      "status": "NATIVE TESTED (CotW profiles BLOCKED)",
       "gate": "H01-H10, basic E/M/L vertical slice for Human G07, actual artifact identity",
       "evidence": {
-        "candidateCommit": "2cccec68bd1651cda4ccadf01829441564db2b64",
-        "dllSha256": "5e256ab23f92cf8663859b410276659e1a6121b0c81cec835b84062c38a77d0c",
-        "dllMvid": "c65c50f2-f0d3-401c-a591-c644adcad711",
-        "packageSha256": "5121e2d8b9c4ce0173d6e5599ee19adcbece27523c4706e28f6dd548147335e3",
+        "candidateCommit": "f2db844c212b313618a950a939e891d0b41d27b9",
+        "dllSha256": "5a278b754b24f75bddce3d5258f4e88b6d88dd3781874c6f14134c72c985f9b0",
+        "dllMvid": "04b7fb78-5fd9-4080-ae7c-36ae87b727fe",
+        "packageSha256": "f3dac054aa99d6a1d990958e78d1443ae4948eef8bfe6ea09777d281061064b4",
         "nativeRuns": {
-          "observe-favored-class-contract": "20260924T0102047921088Z PASS",
-          "disposable-favored-class-grit": "20260924T0101128312625Z PASS"
+          "observe-favored-class-contract": "20260924T0348360182600Z PASS",
+          "disposable-favored-class-grit": "20260924T0351081263683Z PASS",
+          "observe-favored-class-host-state (full install)": "20260924T0139052668193Z PASS (cf8a66d21)",
+          "observe-favored-class-host-state (gunslinger-only, H01)": "20260924T0140349022134Z PASS (cf8a66d21)",
+          "disposable-word-of-recall-favored-class-persistence (L01)": "20260924T0352059750938Z + 20260924T0353099892035Z PASS"
         },
         "remaining": [
-          "H01 host-absent clean launch",
-          "H02/H04 negative host states",
-          "L01 fresh-process save/load"
+          "CotW-only and CotW+FCB compatibility profiles (B2: reference root missing)",
+          "H02/H04 negative host states natively (domain tested)"
         ]
       }
     },
     "phase-2": {
-      "status": "IN PROGRESS",
-      "gate": "every available first-party Gunslinger target: positive, negative, fraction/cap, native event, preview, persistence"
+      "status": "NATIVE TESTED",
+      "gate": "every available first-party Gunslinger target: positive, negative, fraction/cap, native event, preview, persistence",
+      "evidence": {
+        "mechanics": "20260924T0349220382365Z PASS (f2db844c2)",
+        "menus": "20260924T0129112635200Z PASS (fba7516d3); 20260924T0350079201836Z FAIL only on a stale publication check (fixed in 4c9409ba4, re-run pending)",
+        "initiativeTiming": "20260924T0154493048526Z PASS (732cddae3)",
+        "sprint38Initiative": "20260924T0155347348333Z PASS (732cddae3)",
+        "persistence": "L01 PASS (grit and confirmation counters)"
+      }
     },
     "phase-3": {
-      "status": "NOT STARTED",
-      "gate": "no broad leakage; usable target menus; two-owner and negative-target runtime controls"
+      "status": "IN PROGRESS",
+      "gate": "no broad leakage; usable target menus; two-owner and negative-target runtime controls",
+      "evidence": {
+        "elementalCore": "20260924T0347450150348Z: menus PASS, progressions PASS, mechanics PASS except the bomb probe floor (probe fixed in 4c9409ba4, re-run pending)"
+      },
+      "remaining": [
+        "O01 performance range",
+        "O06 paladin auras",
+        "O07 companion natural armor",
+        "O08 eidolon natural armor"
+      ]
     },
     "phase-4": {
       "status": "NOT STARTED",
@@ -51,7 +69,7 @@
       "gate": "human access neither missing nor overbroad; prerequisites survive; no multiplied rewards; real Mostly Human"
     },
     "phase-6": {
-      "status": "NOT STARTED",
+      "status": "IN PROGRESS (settings file DOMAIN TESTED; profile-ON/OFF runs pending)",
       "gate": "third-party profile toggles across restarts without corruption; G19/G22 unpublished"
     },
     "phase-7": {
@@ -106,11 +124,23 @@
     "raceCheck": "ZFavoredClass.NewMechanics.PrerequisiteRace.Check: race == unit.Progression.Race; Group=Any",
     "customJsonParseOutsideTry": true
   },
-  "candidates": [],
-  "blockers": [],
+  "candidates": [
+    {
+      "commit": "f2db844c212b313618a950a939e891d0b41d27b9",
+      "packageSha256": "f3dac054aa99d6a1d990958e78d1443ae4948eef8bfe6ea09777d281061064b4",
+      "dllSha256": "5a278b754b24f75bddce3d5258f4e88b6d88dd3781874c6f14134c72c985f9b0",
+      "dllMvid": "04b7fb78-5fd9-4080-ae7c-36ae87b727fe",
+      "deployment": "runtime-evidence\\deployments\\20260924T0347379474215Z",
+      "note": "intermediate candidate; not the final artifact"
+    }
+  ],
+  "blockers": [
+    "B1 shared installation used by another automation (mitigated)",
+    "B2 CotW-only / CotW+FCB compatibility profiles: reference root missing"
+  ],
   "preExistingDefects": [
     "D1 Gun Training level-17 dead end",
     "D2 Dead Shot confirmation unreachable",
-    "D3 Gunslinger Initiative timing (suspected)"
+    "D3 Gunslinger Initiative timing (FIXED in 732cddae3; native PASS)"
   ]
 }
