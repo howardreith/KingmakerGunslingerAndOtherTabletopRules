@@ -27,6 +27,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FcbHoldPersonGuid = "c7104f7526c4c524f91474614054547e";
         private const string FcbOutsiderTypeGuid = "9054d3988d491d944ac144e27b6bc318";
         private const string FcbAuspiciousTattooGuid = "ed4e37343e774304af0d286b9454bcdb";
+        private const string FcbCharmPersonGuid = "1af9d5995090e5a4185a30decf0959ad";
+        private const string FcbEnlargePersonGuid = "c60969e7f264e6d4b84a1499fdcf9039";
+        private const string FcbReducePersonGuid = "4e0e9aba6447d514f88eff1464cc4763";
+        // Races Unleashed's Suli and its own "Mostly Human" (an unverified
+        // provider: it only removes OutsiderType), which must fail closed.
+        private const string FcbSuliRaceGuid = "f78db38a553f4f91a10a8e68c91019ad";
+        private const string FcbSuliMostlyHumanGuid = "98b6fbb937b8456bb588d3aae4a0d6a6";
 
         // Phase 5: the four-race Mostly Human companion trait (E05-E08) and
         // the scoped host ancestry bridge, through native character creation.
@@ -38,13 +45,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             FavoredClassBlueprintSet leaves = BlueprintBootstrap.FavoredClassLeaves;
             ElementalMostlyHumanBlueprintSet mostlyHuman = BlueprintBootstrap.MostlyHuman;
             ElementalRaceBlueprintSet races = BlueprintBootstrap.ElementalRaces;
-            bool ready = status.Availability == FavoredClassIntegrationAvailability.Published &&
-                host != null && leaves != null && mostlyHuman != null && races != null &&
-                FavoredClassRuntime.Profile.MostlyHuman;
+            bool integration = FavoredClassRuntime.Profile.IntegrationEnabled;
+            FavoredClassBridgeScope bridgeScope = FavoredClassHostRaceBridge.Scope;
+            // The racial trait works with the favored-class integration off;
+            // only the KMG favored-class leaves depend on the integration.
+            bool ready = (integration ? status.Availability == FavoredClassIntegrationAvailability.Published :
+                    status.Availability == FavoredClassIntegrationAvailability.IntegrationDisabled) &&
+                host != null && host.Decision.IsReady && leaves != null && mostlyHuman != null && races != null &&
+                FavoredClassRuntime.Profile.MostlyHuman && bridgeScope != null;
             assertions.Add(Assertion("fcb-mostly-human-ready",
-                "the exact host is published, the Mostly Human trait is registered and its control is on",
-                status + ";mostlyHuman=" + (mostlyHuman != null) + ";profile=" + FavoredClassRuntime.Profile,
-                ready, "FavoredClassIntegrationStatusRegistry, BlueprintBootstrap.MostlyHuman, FavoredClassRuntime.Profile"));
+                "the exact host is ready, the Mostly Human trait is registered with its control on, and its ancestry bridge is scoped (with the favored-class integration on or off)",
+                status + ";mostlyHuman=" + (mostlyHuman != null) + ";profile=" + FavoredClassRuntime.Profile +
+                    ";bridge=" + (bridgeScope == null ? "none" : bridgeScope.FavoredClassLeafPrerequisites + "+" +
+                        bridgeScope.OtherHumanPrerequisites.Count),
+                ready, "FavoredClassIntegrationStatusRegistry, FavoredClassHostRaceBridge.Scope, FavoredClassRuntime.Profile"));
             if (!ready)
                 return CreateResult(RuntimeTestStatuses.Fail, assertions, null);
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
@@ -68,8 +82,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var context = new FcbMostlyHumanContext(host, leaves, mostlyHuman, races);
                 evidence["identity"] = RunMostlyHumanIdentity(context, committed, identityFailures,
                     bridgeFailures, evidence);
-                evidence["gunslingerMenus"] = RunMostlyHumanGunslingerMenus(context, menuFailures);
-                evidence["heritages"] = RunMostlyHumanHeritages(context, heritageFailures);
+                evidence["gunslingerMenus"] = RunMostlyHumanGunslingerMenus(context, menuFailures, integration);
+                evidence["heritages"] = RunMostlyHumanHeritages(context, heritageFailures, integration);
             }
             catch (Exception exception)
             {
@@ -88,15 +102,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["graph"], graphFailures), graphFailures.Count == 0,
                 "live race Features, selection AllFeatures, BlueprintsByAssetId"));
             assertions.Add(Assertion("fcb-mostly-human-dual-identity",
-                "a committed Mostly Human geniekin differs from its standard control only by the trait and the hidden identity: same race and RaceId, same six ability scores, no creature-type or HumanRace fact, and native Hold Person target checks unchanged",
+                "a committed Mostly Human geniekin differs from its standard control only by the trait and the hidden identity (same race and RaceId, native geniekin traits and scores, no OutsiderType removed or added, no HumanRace fact); native Hold, Charm, Enlarge and Reduce Person can target it (humanoid), and the same checks reject a unit that carries OutsiderType",
                 Describe(evidence["identity"], identityFailures), identityFailures.Count == 0,
                 "native chargen visits committed with LevelUpController.ApplyLevelup; Progression.Features; IAbilityTargetChecker"));
             assertions.Add(Assertion("fcb-mostly-human-host-bridge",
-                "the host's human favored-class leaves open to a Mostly Human geniekin and stay closed to its standard control; Human, Half-elf and Aasimar keep host access, a Dwarf gets none; an untracked host human race trait stays closed; one reward selection per level",
+                "every host race-related Human prerequisite (its human favored-class leaves and its human race traits) opens to a Mostly Human geniekin and stays closed to its standard control, to a human-looking standard geniekin and to Races Unleashed's own Suli Mostly Human; Human keeps both, Half-elf and Aasimar keep the host's favored-class policy only, a Dwarf gets none; one reward selection per level",
                 Describe(evidence["bridge"], bridgeFailures), bridgeFailures.Count == 0,
                 "level-1 native Rogue visits; BlueprintFeatureSelection.CanSelect; Prerequisite.Check"));
             assertions.Add(Assertion("fcb-mostly-human-gunslinger-menus",
-                "a Mostly Human geniekin Gunslinger is offered the human grit counter in addition to its native counters; its standard control is not",
+                "with the integration on, a Mostly Human geniekin Gunslinger is offered the human grit counter in addition to its native counters and its standard control is not; with the integration off, no KMG favored-class leaf is offered to either",
                 Describe(evidence["gunslingerMenus"], menuFailures), menuFailures.Count == 0,
                 "level-1 native Gunslinger visits; BlueprintFeatureSelection.CanSelect"));
             assertions.Add(Assertion("fcb-mostly-human-heritages",
@@ -243,26 +257,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FcbHoldPersonGuid, "Hold Person");
             IAbilityTargetChecker[] personCheckers = (hold.ComponentsArray ?? new BlueprintComponent[0])
                 .OfType<IAbilityTargetChecker>().ToArray();
-            BlueprintScriptableObject tattooBlueprint;
-            library.BlueprintsByAssetId.TryGetValue(FcbAuspiciousTattooGuid, out tattooBlueprint);
-            var tattoo = tattooBlueprint as BlueprintFeature;
-            Prerequisite[] tattooHumanChecks = tattoo == null ? new Prerequisite[0] :
-                (tattoo.ComponentsArray ?? new BlueprintComponent[0]).OfType<Prerequisite>()
-                    .Where(value => context.Host.PrerequisiteRaceType != null &&
-                        value.GetType() == context.Host.PrerequisiteRaceType &&
-                        ReferenceEquals(context.Host.PrerequisiteRaceField.GetValue(value), humanRace))
-                    .ToArray();
+            // Every host human race trait prerequisite in the bridge scope.
+            FavoredClassBridgeScope scope = FavoredClassHostRaceBridge.Scope;
+            var traitChecks = new List<KeyValuePair<string, Prerequisite>>();
+            foreach (string owner in scope == null ? new string[0] : scope.OtherHumanPrerequisites.ToArray())
+            {
+                BlueprintScriptableObject traitBlueprint;
+                string guid = owner.Substring(owner.LastIndexOf(':') + 1);
+                library.BlueprintsByAssetId.TryGetValue(guid, out traitBlueprint);
+                foreach (Prerequisite check in (traitBlueprint == null ? new BlueprintComponent[0] :
+                    traitBlueprint.ComponentsArray ?? new BlueprintComponent[0]).OfType<Prerequisite>())
+                    if (FavoredClassHostRaceBridge.IsTracked(check))
+                        traitChecks.Add(new KeyValuePair<string, Prerequisite>(traitBlueprint.name, check));
+            }
+            Func<UnitDescriptor, LevelUpState, JObject> humanTraits = (unit, levelState) =>
+            {
+                var open = new JObject();
+                foreach (KeyValuePair<string, Prerequisite> check in traitChecks)
+                    open[check.Key] = check.Value.Check(null, unit, levelState);
+                return open;
+            };
+            Func<JObject, bool> allOpen = open => open.Count > 0 && open.Properties().All(value => (bool)value.Value);
+            Func<JObject, bool> allClosed = open => open.Properties().All(value => !(bool)value.Value);
+            var personSpells = new[] { FcbHoldPersonGuid, FcbCharmPersonGuid, FcbEnlargePersonGuid,
+                FcbReducePersonGuid }.Select(guid => BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                    library, guid, guid)).ToArray();
+            IAbilityTargetChecker[] allPersonCheckers = personSpells.SelectMany(spell =>
+                (spell.ComponentsArray ?? new BlueprintComponent[0]).OfType<IAbilityTargetChecker>()).ToArray();
             var bridge = new JObject
             {
                 ["rogueHumanLeaves"] = new JArray(humanLeaves.Select(value => value.name)),
-                ["auspiciousTattooPresent"] = tattoo != null,
-                ["auspiciousTattooHumanChecks"] = tattooHumanChecks.Length
+                ["hostHumanRaceTraits"] = new JArray(traitChecks.Select(value => value.Key).Distinct()),
+                ["scopeFavoredClassLeafPrerequisites"] = scope == null ? 0 : scope.FavoredClassLeafPrerequisites,
+                ["scopeOtherHumanPrerequisites"] = scope == null ? new JArray() :
+                    new JArray(scope.OtherHumanPrerequisites.ToArray()),
+                ["personSpellCheckers"] = allPersonCheckers.Length
             };
             evidence["bridge"] = bridge;
             if (humanLeaves.Count == 0)
                 bridgeFailures.Add("the host Rogue selection has no tracked human leaf");
-            if (personCheckers.Length == 0)
-                identityFailures.Add("Hold Person exposes no native target checker");
+            if (traitChecks.Count == 0)
+                bridgeFailures.Add("no host human race trait prerequisite is in the bridge scope");
+            if (personCheckers.Length == 0 || allPersonCheckers.Length < personSpells.Length)
+                identityFailures.Add("a native person spell exposes no target checker");
 
             // Rogue visits: controls first, then Standard/Mostly Human per parent.
             var controls = new[] { FavoredClassAncestry.Human, FavoredClassAncestry.HalfElf,
@@ -290,14 +327,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool expected = ancestry != FavoredClassAncestry.Dwarf;
                     if (offered != expected)
                         bridgeFailures.Add(ancestry + " host human access " + offered + " expected " + expected);
-                    if (ancestry == FavoredClassAncestry.Human)
-                    {
-                        bool tattooOpen = tattooHumanChecks.Length > 0 && tattooHumanChecks.All(check =>
-                            check.Check(null, controller.Preview, controller.State));
-                        row["auspiciousTattooRaceCheck"] = tattooOpen;
-                        if (tattooHumanChecks.Length > 0 && !tattooOpen)
-                            bridgeFailures.Add("the untracked host human trait is closed even to a Human");
-                    }
+                    // The host's human race traits are Human-only (its own
+                    // favored-class policy for Half-elf and Aasimar is separate).
+                    JObject traits = humanTraits(controller.Preview, controller.State);
+                    row["humanRaceTraits"] = traits;
+                    bool traitsExpected = ancestry == FavoredClassAncestry.Human;
+                    if (traitsExpected ? !allOpen(traits) : !allClosed(traits))
+                        bridgeFailures.Add(ancestry + " human race traits " + traits.ToString(
+                            Newtonsoft.Json.Formatting.None) + " expected open=" + traitsExpected);
                 }
                 catch (Exception exception)
                 {
@@ -342,15 +379,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if ((int)row["openRewardSelections"] != 1)
                             bridgeFailures.Add(ancestry.Definition.RaceName + " open reward selections " +
                                 row["openRewardSelections"]);
-                        if (tattooHumanChecks.Length > 0)
-                        {
-                            bool tattooOpen = tattooHumanChecks.All(check =>
-                                check.Check(null, controller.Preview, controller.State));
-                            row["auspiciousTattooRaceCheck"] = tattooOpen;
-                            if (tattooOpen)
-                                bridgeFailures.Add(ancestry.Definition.RaceName +
-                                    " opened an untracked host human race trait");
-                        }
+                        JObject traits = humanTraits(controller.Preview, controller.State);
+                        row["humanRaceTraits"] = traits;
+                        if (isTrait ? !allOpen(traits) : !allClosed(traits))
+                            bridgeFailures.Add(ancestry.Definition.RaceName + (isTrait ? " Mostly Human" :
+                                " standard") + " human race traits " + traits.ToString(Newtonsoft.Json.Formatting.None));
                         if (!(row["mostlyHumanSelectionOpen"] != null && (bool)row["mostlyHumanSelectionOpen"] &&
                             (bool)row["standardSelectable"] && (bool)row["traitSelectable"] &&
                             (bool)row["ancestrySelected"]))
@@ -385,11 +418,140 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData standardUnit, traitUnit;
                 if (committedUnits.TryGetValue("standard", out standardUnit) &&
                     committedUnits.TryGetValue("trait", out traitUnit))
+                {
                     pair["comparison"] = CompareMostlyHuman(ancestry, context.MostlyHuman.Identity,
-                        standardUnit, traitUnit, humanRace, outsider, personCheckers, identityFailures);
+                        standardUnit, traitUnit, humanRace, outsider, allPersonCheckers, identityFailures);
+                    // Appearance is never an eligibility signal: a standard
+                    // geniekin wearing a Human appearance stays ineligible.
+                    pair["humanAppearance"] = ObserveHumanAppearance(standardUnit, humanRace, humanLeaves,
+                        humanTraits, allClosed, bridgeFailures);
+                }
                 rows.Add(pair);
             }
+            bridge["racesUnleashedSuli"] = ObserveSuliMostlyHuman(library, rogue, rogueBonus, humanLeaves,
+                humanTraits, allClosed, committed, bridgeFailures);
             return rows;
+        }
+
+        /// <summary>A standard geniekin given a native Human appearance keeps its own eligibility.</summary>
+        private static JObject ObserveHumanAppearance(UnitEntityData standard, BlueprintRace humanRace,
+            IList<BlueprintFeature> humanLeaves, Func<UnitDescriptor, LevelUpState, JObject> humanTraits,
+            Func<JObject, bool> allClosed, IList<string> failures)
+        {
+            var result = new JObject();
+            Kingmaker.UnitLogic.DollData original = standard.Descriptor.Doll;
+            try
+            {
+                Kingmaker.UnitLogic.Class.LevelUp.DollState state;
+                standard.Descriptor.Doll = CreateHumanDoll(humanRace, standard.Descriptor.Gender,
+                    standard.Descriptor.Progression.Classes.First().CharacterClass, out state);
+                result["dollRacePreset"] = standard.Descriptor.Doll == null || standard.Descriptor.Doll.RacePreset == null
+                    ? null : standard.Descriptor.Doll.RacePreset.name;
+                JObject traits = humanTraits(standard.Descriptor, null);
+                bool leaves = humanLeaves.Any(leaf => (leaf.ComponentsArray ?? new BlueprintComponent[0])
+                    .OfType<Prerequisite>().Where(FavoredClassHostRaceBridge.IsTracked)
+                    .Any(check => check.Check(null, standard.Descriptor, null)));
+                bool graphHuman = FavoredClassRuntime.PermittedAncestries(standard.Descriptor)
+                    .Contains(FavoredClassAncestry.Human);
+                result["humanRaceTraits"] = traits;
+                result["hostHumanLeafPrerequisite"] = leaves;
+                result["kmgHumanAncestry"] = graphHuman;
+                if (!allClosed(traits) || leaves || graphHuman)
+                    failures.Add(standard.Descriptor.Progression.Race.name + " gained human access from appearance");
+            }
+            catch (Exception exception)
+            {
+                failures.Add("human appearance: " + exception.GetType().Name + ": " + exception.Message);
+            }
+            finally
+            {
+                standard.Descriptor.Doll = original;
+            }
+            return result;
+        }
+
+        private static Kingmaker.UnitLogic.DollData CreateHumanDoll(BlueprintRace race, Kingmaker.Blueprints.Gender gender,
+            BlueprintCharacterClass characterClass, out Kingmaker.UnitLogic.Class.LevelUp.DollState state)
+        {
+            Kingmaker.Blueprints.CharGen.BlueprintRaceVisualPreset preset = race.Presets == null || race.Presets.Length == 0
+                ? null : race.Presets[0];
+            if (preset == null)
+                throw new InvalidOperationException("The native Human race has no visual preset.");
+            state = new Kingmaker.UnitLogic.Class.LevelUp.DollState();
+            state.SetGender(gender);
+            state.SetRace(race);
+            state.SetRacePreset(preset);
+            state.SetClass(characterClass);
+            Kingmaker.UnitLogic.DollData data = state.CreateData();
+            if (data == null || !ReferenceEquals(data.RacePreset, preset))
+                throw new InvalidOperationException("The native Human DollData is incomplete.");
+            return data;
+        }
+
+        /// <summary>
+        /// Races Unleashed's Suli "Mostly Human" is an unverified provider
+        /// (it only removes OutsiderType): it must grant no human access.
+        /// </summary>
+        private JObject ObserveSuliMostlyHuman(LibraryScriptableObject library, BlueprintCharacterClass rogue,
+            BlueprintFeatureSelection rogueBonus, IList<BlueprintFeature> humanLeaves,
+            Func<UnitDescriptor, LevelUpState, JObject> humanTraits, Func<JObject, bool> allClosed,
+            List<UnitEntityData> committed, IList<string> failures)
+        {
+            var result = new JObject();
+            BlueprintScriptableObject raceBlueprint, traitBlueprint;
+            library.BlueprintsByAssetId.TryGetValue(FcbSuliRaceGuid, out raceBlueprint);
+            library.BlueprintsByAssetId.TryGetValue(FcbSuliMostlyHumanGuid, out traitBlueprint);
+            var suli = raceBlueprint as BlueprintRace;
+            var ruMostlyHuman = traitBlueprint as BlueprintFeature;
+            if (suli == null || ruMostlyHuman == null)
+            {
+                result["provider"] = "absent (EXPECTED PROVIDER ABSENCE)";
+                return result;
+            }
+            UnitEntityData unit = FavoredClassLevelUpHarness.CreateUnit(14);
+            LevelUpController controller = null;
+            bool keep = false;
+            try
+            {
+                controller = FavoredClassLevelUpHarness.Open(unit.Descriptor, suli, rogue, "KMG FCB Suli Control");
+                FavoredClassLevelUpHarness.ChooseFavoredClass(controller, rogue, result);
+                FavoredClassLevelUpHarness.FillOthers(controller,
+                    new HashSet<string>(StringComparer.Ordinal) { rogueBonus.AssetGuid });
+                FeatureSelectionState fcb = FavoredClassLevelUpHarness.FindOpenState(controller, rogueBonus.AssetGuid);
+                bool rewarded = fcb != null && FavoredClassIntegrationCoordinator.Host.GenericHitPoint != null &&
+                    FavoredClassLevelUpHarness.Select(controller, fcb, FavoredClassIntegrationCoordinator.Host.GenericHitPoint);
+                result["committed"] = rewarded && FavoredClassLevelUpHarness.Confirm(controller, unit.Descriptor, result);
+                if (!(bool)result["committed"])
+                {
+                    failures.Add("the Suli control visit did not commit");
+                    return result;
+                }
+                committed.Add(unit);
+                keep = true;
+                unit.Descriptor.AddFact(ruMostlyHuman);
+                result["ruMostlyHumanFact"] = unit.Descriptor.HasFact(ruMostlyHuman);
+                JObject traits = humanTraits(unit.Descriptor, null);
+                bool leaves = humanLeaves.Any(leaf => (leaf.ComponentsArray ?? new BlueprintComponent[0])
+                    .OfType<Prerequisite>().Where(FavoredClassHostRaceBridge.IsTracked)
+                    .Any(check => check.Check(null, unit.Descriptor, null)));
+                bool graphHuman = FavoredClassRuntime.PermittedAncestries(unit.Descriptor)
+                    .Contains(FavoredClassAncestry.Human);
+                result["humanRaceTraits"] = traits;
+                result["hostHumanLeafPrerequisite"] = leaves;
+                result["kmgHumanAncestry"] = graphHuman;
+                if (!(bool)result["ruMostlyHumanFact"] || !allClosed(traits) || leaves || graphHuman)
+                    failures.Add("Races Unleashed's Suli Mostly Human was treated as human");
+            }
+            catch (Exception exception)
+            {
+                failures.Add("Suli control: " + exception.GetType().Name + ": " + exception.Message);
+            }
+            finally
+            {
+                FavoredClassLevelUpHarness.Close(controller);
+                if (!keep) unit.Dispose();
+            }
+            return result;
         }
 
         private static JObject CompareMostlyHuman(ElementalMostlyHumanRaceBlueprints ancestry,
@@ -446,6 +608,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failures.Add(race + " Mostly Human identity missing");
             if ((string)result["standardPersonChecks"] != (string)result["traitPersonChecks"])
                 failures.Add(race + " person-spell target checks differ");
+            if (((string)result["traitPersonChecks"]).Contains("0"))
+                failures.Add(race + " Mostly Human is not a humanoid target of every person spell");
+            // Negative control: the same checkers reject a unit carrying OutsiderType.
+            trait.Descriptor.AddFact(outsider);
+            try
+            {
+                result["outsiderControlPersonChecks"] = person(standard, trait);
+                if (!((string)result["outsiderControlPersonChecks"]).Contains("0"))
+                    failures.Add(race + " person-spell checkers accept an OutsiderType unit");
+            }
+            finally
+            {
+                trait.Descriptor.RemoveFact(outsider);
+            }
+            if (trait.Descriptor.HasFact(outsider))
+                failures.Add(race + " OutsiderType control was not removed");
             return result;
         }
 
@@ -459,7 +637,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        private JArray RunMostlyHumanGunslingerMenus(FcbMostlyHumanContext context, IList<string> failures)
+        private JArray RunMostlyHumanGunslingerMenus(FcbMostlyHumanContext context, IList<string> failures,
+            bool integration)
         {
             FavoredClassLeafPair grit = context.Leaves.Pair(FavoredClassCatalog.EffectGrit, null);
             FavoredClassLeafPair initiative = context.Leaves.Pair(FavoredClassCatalog.EffectInitiative, null);
@@ -492,8 +671,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .ToArray();
                         row["offered"] = new JArray(offered);
                         var expected = new List<string>();
-                        if (isTrait) expected.Add(grit.Effect.Id);
-                        if (ancestry.Definition.Race == ElementalHeritageRace.Ifrit) expected.Add(initiative.Effect.Id);
+                        if (integration && isTrait) expected.Add(grit.Effect.Id);
+                        if (integration && ancestry.Definition.Race == ElementalHeritageRace.Ifrit)
+                            expected.Add(initiative.Effect.Id);
                         string[] ordered = expected.Distinct().OrderBy(value => value, StringComparer.Ordinal).ToArray();
                         if (!offered.SequenceEqual(ordered))
                             failures.Add(ancestry.Definition.RaceName + (isTrait ? " Mostly Human" : " standard") +
@@ -514,7 +694,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return rows;
         }
 
-        private JArray RunMostlyHumanHeritages(FcbMostlyHumanContext context, IList<string> failures)
+        private JArray RunMostlyHumanHeritages(FcbMostlyHumanContext context, IList<string> failures,
+            bool integration)
         {
             var rows = new JArray();
             foreach (ElementalMostlyHumanRaceBlueprints ancestry in context.MostlyHuman.Races)
@@ -578,6 +759,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         row["heritageFact"] = controller.Preview.HasFact(heritage.Marker);
                         if (!(bool)row["heritageSelected"] || !(bool)row["heritageFact"])
                             failures.Add(heritage.Definition.Id + " heritage was not applied");
+                        if (!integration)
+                            expected = new string[0];
                         if (!offered.SequenceEqual(expected.OrderBy(value => value, StringComparer.Ordinal)))
                             failures.Add(heritage.Definition.Id + " offered " + string.Join(",", offered) +
                                 " expected " + string.Join(",", expected));

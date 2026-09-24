@@ -39,6 +39,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FcbGiftBiteAbilityGuid = "32ed966b5d5e45c090bd4c042ec0b999";
         private const string FcbSpiritShieldAbilityGuid = "59f5b1a736a1461e9a464f4993b6243a";
         private const string FcbBattlecryEffectBuffGuid = "bbc83bf7650b4eb5891fce8ddf7cfe53";
+        private const string FcbEraseFromTimeResourceGuid = "d4b9a6296d964bb787728bb0a40a828d";
 
         // I06/S04: the scoped revelation read points, native Oracle menus and
         // level-9 effective-level probes (with neighbor, held-back and removal
@@ -90,7 +91,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string evidencePath = WriteFavoredClassEvidence("favored-class-oracle-revelations.json", evidence);
             assertions.Add(Assertion("fcb-oracle-scopes",
-                "every revelation target has read points in the live provider graph, each includes every adapter family the audit implements, and no breakpoint table, held-back tier or explicitly held-back read is scaled",
+                "every revelation target has read points in the live provider graph and includes every adapter family the audit implements; its breakpoint tables and tiers are scaled, and only the charter-excluded possession BAB read is not",
                 Describe(evidence["scopes"] == null ? null : evidence["scopes"]["summary"], scopeFailures),
                 scopeFailures.Count == 0, "FavoredClassRevelationScopes (walk of the live blueprint graph)"));
             assertions.Add(Assertion("fcb-oracle-menus",
@@ -98,7 +99,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["menus"], menuFailures), menuFailures.Count == 0,
                 "level-1 native Oracle visits with the chosen mystery and revelation; BlueprintFeatureSelection.CanSelect"));
             assertions.Add(Assertion("fcb-oracle-mechanics",
-                "two Fire Breath steps give exactly the native values at oracle level 11 (dice, caster level, DC, uses) while Heat Aura, Fireball and other revelations stay at level 9; per-level uses, buff and area ranks and the audited tiers follow their own counters; held-back tiers and reads never move; a feature context refreshes on gain and removal",
+                "two Fire Breath steps give exactly the native values at oracle level 11 (dice, caster level, DC, uses) while Heat Aura, Fireball and other revelations stay at level 9; per-level uses, buff and area ranks, tiers, steps and single-level uses of the owned revelation follow its own counter; the possession BAB read is excluded; a feature context refreshes on gain and removal",
                 Describe(evidence["mechanics"], mechanicsFailures), mechanicsFailures.Count == 0,
                 "AddClassLevel fixtures; AbilityData.CreateExecutionContext, MechanicsContext ranks and GetMaxAmount"));
             assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
@@ -160,16 +161,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     source.Value.AssetGuid + "|" + source.Key.Type == read);
                 foreach (string held in target.ExcludedRanks)
                     if (scaled(held))
-                        failures.Add(target.Key + ": held-back read scaled " + held);
-                foreach (string tier in target.IncludedTiers)
-                    if (!scaled(tier))
-                        failures.Add(target.Key + ": audited tier not scaled " + tier);
+                        failures.Add(target.Key + ": the charter-excluded read was scaled " + held);
+                // Charter 8.10: the owned revelation's own steps, tiers and
+                // breakpoint tables are level-dependent values and scale.
                 if (target.Key == "TimeSight" && !scope.Evidence.Any(value =>
-                        value.StartsWith("held-breakpoint-table:", StringComparison.Ordinal)))
-                    failures.Add(target.Key + ": the 18th-level breakpoint table was not held back");
-                if (new[] { "SpiritShield", "AirBarrier", "IceArmor", "ArmorOfBones" }.Contains(target.Key) &&
-                    !scope.Evidence.Any(value => value.StartsWith("held-tier:", StringComparison.Ordinal)))
-                    failures.Add(target.Key + ": the 13th-level tier was not held back");
+                        value.StartsWith("breakpoint-table:", StringComparison.Ordinal)))
+                    failures.Add(target.Key + ": its breakpoint table was not scaled");
+                if (new[] { "SpiritShield", "AirBarrier", "IceArmor", "ArmorOfBones", "GiftOfClawAndHorn",
+                        "RaiseTheDead" }.Contains(target.Key) &&
+                    !scope.Evidence.Any(value => value.StartsWith("tier:", StringComparison.Ordinal)))
+                    failures.Add(target.Key + ": its tier rank was not scaled");
+                if (target.Key == "SpiritOfTheWarrior" && !scope.Evidence.Any(value =>
+                        value.StartsWith("excluded-read:", StringComparison.Ordinal)))
+                    failures.Add(target.Key + ": the possession BAB read was not excluded");
             }
             return new JObject
             {
@@ -320,6 +324,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData twelve = oracleAt(12, new string[0]);
                 UnitEntityData twelveInvested = oracleAt(12, new string[0]);
                 GrantFavoredClassRanks(twelveInvested, full("SpiritShield"), 1);
+                UnitEntityData tenth = oracleAt(10, new string[0]);
+                UnitEntityData tenthInvested = oracleAt(10, new string[0]);
+                GrantFavoredClassRanks(tenthInvested, full("EraseFromTime"), 1);
                 result["oracleLevel"] = control.Descriptor.Progression.GetClassLevel(oracle);
 
                 Func<UnitEntityData, string, JObject> ability = (caster, guid) =>
@@ -396,11 +403,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["firestormAreaInvested"] = rank(spread, FcbFirestormAreaGuid, AbilityRankType.DamageDice),
                     ["giftTierControl"] = rank(control, FcbGiftBiteAbilityGuid, AbilityRankType.StatBonus),
                     ["giftTierInvested"] = rank(spread, FcbGiftBiteAbilityGuid, AbilityRankType.StatBonus),
-                    ["battlecryHeldControl"] = rank(control, FcbBattlecryEffectBuffGuid, AbilityRankType.StatBonus),
-                    ["battlecryHeldInvested"] = rank(spread, FcbBattlecryEffectBuffGuid, AbilityRankType.StatBonus),
+                    ["battlecryStepControl"] = rank(control, FcbBattlecryEffectBuffGuid, AbilityRankType.StatBonus),
+                    ["battlecryStepInvested"] = rank(spread, FcbBattlecryEffectBuffGuid, AbilityRankType.StatBonus),
                     ["spiritShieldTierAt12"] = rank(twelve, FcbSpiritShieldAbilityGuid, AbilityRankType.StatBonus),
                     ["spiritShieldTierAt12Invested"] = rank(twelveInvested, FcbSpiritShieldAbilityGuid,
-                        AbilityRankType.StatBonus)
+                        AbilityRankType.StatBonus),
+                    ["eraseFromTimeUsesAt10"] = uses(tenth, FcbEraseFromTimeResourceGuid),
+                    ["eraseFromTimeUsesAt10Invested"] = uses(tenthInvested, FcbEraseFromTimeResourceGuid)
                 };
                 result["contexts"] = contexts;
                 Func<string, int> value = key => (int)contexts[key];
@@ -413,10 +422,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     failures.Add("the Firestorm area dice did not rise by exactly 2");
                 if (value("giftTierControl") != 1 + level / 5 || value("giftTierInvested") != 1 + (level + 2) / 5)
                     failures.Add("the audited Gift of Claw and Horn tier did not follow its counter");
-                if (value("battlecryHeldInvested") != value("battlecryHeldControl"))
-                    failures.Add("the held-back Battlecry +2 breakpoint moved");
-                if (value("spiritShieldTierAt12Invested") != value("spiritShieldTierAt12"))
-                    failures.Add("the held-back 13th-level Spirit Shield tier moved");
+                // Owned-power thresholds move with the effective level:
+                // Battlecry's +2 step (1 + L/10, max 2), Spirit Shield's
+                // 13th-level tier (1 + L/13) and Erase From Time's 11th-level use.
+                if (value("battlecryStepControl") != 1 + level / 10 ||
+                    value("battlecryStepInvested") != Math.Min(2, 1 + (level + 2) / 10))
+                    failures.Add("the Battlecry step did not follow the effective level");
+                if (value("spiritShieldTierAt12") != 1 || value("spiritShieldTierAt12Invested") != 2)
+                    failures.Add("the 13th-level Spirit Shield tier did not follow the effective level");
+                if (value("eraseFromTimeUsesAt10") != 1 || value("eraseFromTimeUsesAt10Invested") != 2)
+                    failures.Add("Erase From Time's 11th-level use did not follow the effective level");
 
                 // A persistent feature context refreshes when the leaf is gained and removed.
                 BlueprintFeature boost = revelation("SpiritBoost");

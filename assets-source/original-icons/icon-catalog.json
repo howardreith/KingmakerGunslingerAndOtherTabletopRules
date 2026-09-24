@@ -1311,16 +1311,37 @@
       "evidenceClass": "source-inspection",
       "liveStatus": "not-yet-captured"
     },
-    "fcb-null": {
-      "source": "src/KingmakerGunslinger/FavoredClass/FavoredClassBlueprints.cs",
-      "assignment": "IconFor returns null: Kingmaker shows its null-icon text placeholder.",
+    "fcb-native-CriticalFocus": {
+      "source": "src/KingmakerGunslinger/FavoredClass/FavoredClassIconPolicy.cs",
+      "assignment": "IconFor: NativeIconSource(exact identity).Icon of the native Critical Focus feat, whose critical-confirmation theme it shares.",
+      "nativeDonorGuid": "8ac59959b1b23c347a0361dc97cc786d",
+      "evidenceClass": "source-inspection",
+      "liveStatus": "not-yet-captured"
+    },
+    "fcb-native-ImprovedDirtyTrick": {
+      "source": "src/KingmakerGunslinger/FavoredClass/FavoredClassIconPolicy.cs",
+      "assignment": "IconFor: NativeIconSource(exact identity).Icon of the native Improved Dirty Trick feat, one of the two maneuvers it improves.",
+      "nativeDonorGuid": "ed699d64870044b43bb5a7fbe3f29494",
+      "evidenceClass": "source-inspection",
+      "liveStatus": "not-yet-captured"
+    },
+    "fcb-provider-donor": {
+      "source": "src/KingmakerGunslinger/FavoredClass/FavoredClassLeafIcons.cs",
+      "assignment": "FavoredClassLeafIcons.Complete: the first donor candidate (FavoredClassIconPolicy) with a non-null Icon, read by exact identity when the publication commits; withheld from publication when none has art.",
       "nativeDonorGuid": null,
       "evidenceClass": "source-inspection",
       "liveStatus": "not-yet-captured"
     },
-    "mostly-human-null": {
-      "source": "src/KingmakerGunslinger/ElementalRaces/ElementalMostlyHumanBlueprints.cs",
-      "assignment": "Configure(..., null): Kingmaker shows its null-icon text placeholder.",
+    "mostly-human-parent-race": {
+      "source": "src/KingmakerGunslinger/ElementalRaces/ElementalMostlyHumanIcons.cs",
+      "assignment": "ElementalMostlyHumanIcons.Complete: the parent race's own Icon, read after the project icon stage.",
+      "nativeDonorGuid": null,
+      "evidenceClass": "source-inspection",
+      "liveStatus": "not-yet-captured"
+    },
+    "mostly-human-human-ancestry": {
+      "source": "src/KingmakerGunslinger/ElementalRaces/ElementalMostlyHumanIcons.cs",
+      "assignment": "ElementalMostlyHumanIcons.Complete: the native Human race's Icon (0a5d473ead98b0646b94495af250fdc4), or the parent race's Icon when the Human race has none; the trait is unpublished if a choice stays blank.",
       "nativeDonorGuid": null,
       "evidenceClass": "source-inspection",
       "liveStatus": "not-yet-captured"
@@ -4194,13 +4215,13 @@
       }
     },
     {
-      "key": "favored-class-pending-art",
-      "name": "Favored-class counter awaiting art",
-      "family": "pending-original",
-      "sharingReason": "Null-icon placeholder only; original or provider-derived identities are an owner decision.",
+      "key": "favored-class-improved-provider",
+      "name": "Favored-class counter (improved provider feature art)",
+      "family": "provider-existing",
+      "sharingReason": "Each counter shows the exact optional-provider revelation, performance or eidolon feature it improves.",
       "exportProfile": "none",
       "assetAuthority": null,
-      "technicalStatus": "null-icon-placeholder; art not produced",
+      "technicalStatus": "inventory-only",
       "visualReview": {
         "status": "not-reviewed",
         "reviewedExportSha256": null,
@@ -4208,13 +4229,13 @@
       }
     },
     {
-      "key": "mostly-human-pending-art",
-      "name": "Mostly Human trait awaiting art",
-      "family": "pending-original",
-      "sharingReason": "Null-icon placeholder only; an original racial-trait identity is an owner decision.",
+      "key": "mostly-human-ancestry",
+      "name": "Mostly Human choice (ancestry art)",
+      "family": "ancestry-share",
+      "sharingReason": "Standard keeps its parent race's art; the Mostly Human choice and selector show the Human ancestry.",
       "exportProfile": "none",
       "assetAuthority": null,
-      "technicalStatus": "null-icon-placeholder; art not produced",
+      "technicalStatus": "inventory-only",
       "visualReview": {
         "status": "not-reviewed",
         "reviewedExportSha256": null,
@@ -9377,10 +9398,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is a counter identity. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-native-CriticalFocus",
+      "concept": "favored-class-improved-native",
+      "disposition": "native-semantic-reuse",
+      "reason": "Shows the exact art of the native Critical Focus feat, whose critical-confirmation theme it shares, so the counter names what it improves; no new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Gunslinger.FirearmConfirmation.Full",
@@ -9390,10 +9411,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is a counter identity. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-native-CriticalFocus",
+      "concept": "favored-class-improved-native",
+      "disposition": "native-semantic-reuse",
+      "reason": "Shows the exact art of the native Critical Focus feat, whose critical-confirmation theme it shares, so the counter names what it improves; no new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Gunslinger.PistolWhip.Partial",
@@ -9533,10 +9554,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is a counter identity. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-native-ImprovedDirtyTrick",
+      "concept": "favored-class-improved-native",
+      "disposition": "native-semantic-reuse",
+      "reason": "Shows the exact art of the native Improved Dirty Trick feat, one of the two maneuvers it improves, so the counter names what it improves; no new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Full",
@@ -9546,10 +9567,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is a counter identity. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-native-ImprovedDirtyTrick",
+      "concept": "favored-class-improved-native",
+      "disposition": "native-semantic-reuse",
+      "reason": "Shows the exact art of the native Improved Dirty Trick feat, one of the two maneuvers it improves, so the counter names what it improves; no new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Alchemist.BombDamage.Partial",
@@ -9793,10 +9814,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is a counter identity. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of Call of the Wild's eidolon natural armor feature (or its eidolon feature selection), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Summoner.EidolonNaturalArmor.Full",
@@ -9806,10 +9827,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is a counter identity. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of Call of the Wild's eidolon natural armor feature (or its eidolon feature selection), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Summoner.EidolonNaturalArmor.PetFeature",
@@ -9936,10 +9957,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.AgingTouch.Full",
@@ -9949,10 +9970,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.RewindTime.Partial",
@@ -9962,10 +9983,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.RewindTime.Full",
@@ -9975,10 +9996,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpeedOrSlowTime.Partial",
@@ -9988,10 +10009,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpeedOrSlowTime.Full",
@@ -10001,10 +10022,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TimeFlicker.Partial",
@@ -10014,10 +10035,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TimeFlicker.Full",
@@ -10027,10 +10048,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TimeHop.Partial",
@@ -10040,10 +10061,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TimeHop.Full",
@@ -10053,10 +10074,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TimeSight.Partial",
@@ -10066,10 +10087,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TimeSight.Full",
@@ -10079,10 +10100,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.EraseFromTime.Partial",
@@ -10092,10 +10113,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.EraseFromTime.Full",
@@ -10105,10 +10126,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.BloodOfHeroes.Partial",
@@ -10118,10 +10139,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.BloodOfHeroes.Full",
@@ -10131,10 +10152,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.PhantomTouch.Partial",
@@ -10144,10 +10165,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.PhantomTouch.Full",
@@ -10157,10 +10178,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritOfTheWarrior.Partial",
@@ -10170,10 +10191,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritOfTheWarrior.Full",
@@ -10183,10 +10204,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritShield.Partial",
@@ -10196,10 +10217,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritShield.Full",
@@ -10209,10 +10230,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.StormOfSouls.Partial",
@@ -10222,10 +10243,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.StormOfSouls.Full",
@@ -10235,10 +10256,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritWalk.Partial",
@@ -10248,10 +10269,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritWalk.Full",
@@ -10261,10 +10282,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.AncestralWeapon.Partial",
@@ -10274,10 +10295,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.AncestralWeapon.Full",
@@ -10287,10 +10308,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.FireBreath.Partial",
@@ -10300,10 +10321,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.FireBreath.Full",
@@ -10313,10 +10334,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Firestorm.Partial",
@@ -10326,10 +10347,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Firestorm.Full",
@@ -10339,10 +10360,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.FormOfFlame.Partial",
@@ -10352,10 +10373,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.FormOfFlame.Full",
@@ -10365,10 +10386,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.HeatAura.Partial",
@@ -10378,10 +10399,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.HeatAura.Full",
@@ -10391,10 +10412,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TouchOfFlame.Partial",
@@ -10404,10 +10425,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TouchOfFlame.Full",
@@ -10417,10 +10438,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Battlecry.Partial",
@@ -10430,10 +10451,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Battlecry.Full",
@@ -10443,10 +10464,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.BattleCombatHealer.Partial",
@@ -10456,10 +10477,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.BattleCombatHealer.Full",
@@ -10469,10 +10490,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.IronSkin.Partial",
@@ -10482,10 +10503,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.IronSkin.Full",
@@ -10495,10 +10516,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SurprisingCharge.Partial",
@@ -10508,10 +10529,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SurprisingCharge.Full",
@@ -10521,10 +10542,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Channel.Partial",
@@ -10534,10 +10555,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Channel.Full",
@@ -10547,10 +10568,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.LifeCombatHealer.Partial",
@@ -10560,10 +10581,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.LifeCombatHealer.Full",
@@ -10573,10 +10594,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.EnergyBody.Partial",
@@ -10586,10 +10607,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.EnergyBody.Full",
@@ -10599,10 +10620,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.LifeLink.Partial",
@@ -10612,10 +10633,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.LifeLink.Full",
@@ -10625,10 +10646,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritBoost.Partial",
@@ -10638,10 +10659,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritBoost.Full",
@@ -10651,10 +10672,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.AirBarrier.Partial",
@@ -10664,10 +10685,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.AirBarrier.Full",
@@ -10677,10 +10698,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Invisibility.Partial",
@@ -10690,10 +10711,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Invisibility.Full",
@@ -10703,10 +10724,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.LightningBreath.Partial",
@@ -10716,10 +10737,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.LightningBreath.Full",
@@ -10729,10 +10750,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Thunderburst.Partial",
@@ -10742,10 +10763,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Thunderburst.Full",
@@ -10755,10 +10776,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TouchOfElectricity.Partial",
@@ -10768,10 +10789,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.TouchOfElectricity.Full",
@@ -10781,10 +10802,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.PresenceOfDragons.Partial",
@@ -10794,10 +10815,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.PresenceOfDragons.Full",
@@ -10807,10 +10828,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.ScaledToughness.Partial",
@@ -10820,10 +10841,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.ScaledToughness.Full",
@@ -10833,10 +10854,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.BreathWeapon.Partial",
@@ -10846,10 +10867,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.BreathWeapon.Full",
@@ -10859,10 +10880,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.FormOfTheDragon.Partial",
@@ -10872,10 +10893,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.FormOfTheDragon.Full",
@@ -10885,10 +10906,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Blizzard.Partial",
@@ -10898,10 +10919,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.Blizzard.Full",
@@ -10911,10 +10932,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.IceArmor.Partial",
@@ -10924,10 +10945,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.IceArmor.Full",
@@ -10937,10 +10958,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.WaterForm.Partial",
@@ -10950,10 +10971,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.WaterForm.Full",
@@ -10963,10 +10984,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.WintryTouch.Partial",
@@ -10976,10 +10997,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.WintryTouch.Full",
@@ -10989,10 +11010,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.PunitiveTransformation.Partial",
@@ -11002,10 +11023,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.PunitiveTransformation.Full",
@@ -11015,10 +11036,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.ErosionTouch.Partial",
@@ -11028,10 +11049,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.ErosionTouch.Full",
@@ -11041,10 +11062,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.LifeLich.Partial",
@@ -11054,10 +11075,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.LifeLich.Full",
@@ -11067,10 +11088,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.FormOfTheBeast.Partial",
@@ -11080,10 +11101,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.FormOfTheBeast.Full",
@@ -11093,10 +11114,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.GiftOfClawAndHorn.Partial",
@@ -11106,10 +11127,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.GiftOfClawAndHorn.Full",
@@ -11119,10 +11140,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.ArmorOfBones.Partial",
@@ -11132,10 +11153,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.ArmorOfBones.Full",
@@ -11145,10 +11166,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.BleedingWounds.Partial",
@@ -11158,10 +11179,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.BleedingWounds.Full",
@@ -11171,10 +11192,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.DeathsTouch.Partial",
@@ -11184,10 +11205,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.DeathsTouch.Full",
@@ -11197,10 +11218,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.RaiseTheDead.Partial",
@@ -11210,10 +11231,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.RaiseTheDead.Full",
@@ -11223,10 +11244,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SoulSiphon.Partial",
@@ -11236,10 +11257,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.SoulSiphon.Full",
@@ -11249,10 +11270,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.UndeadServitude.Partial",
@@ -11262,10 +11283,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Oracle.Revelation.UndeadServitude.Full",
@@ -11275,10 +11296,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen revelation's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the chosen revelation's own feature (for a Dragon revelation, the first colour feature with art), read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Bard.PerformanceRange.InspireCourage.Full",
@@ -11418,10 +11439,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen provider performance's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the Call of the Wild performance feature it improves, read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Bard.PerformanceRange.Satire.Full",
@@ -11431,10 +11452,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen provider performance's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the Call of the Wild performance feature it improves, read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Bard.PerformanceRange.Mockery.Full",
@@ -11444,10 +11465,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen provider performance's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the Call of the Wild performance feature it improves, read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Bard.PerformanceRange.GloriousEpic.Full",
@@ -11457,10 +11478,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen provider performance's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the Call of the Wild performance feature it improves, read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.FavoredClass.Bard.PerformanceRange.Scandal.Full",
@@ -11470,10 +11491,10 @@
       "module": "FavoredClass",
       "publication": "published into the Favored Class host's class bonus selection when its route and profile allow",
       "surface": "favored-class bonus selection / character-sheet feature / tooltip",
-      "currentArt": "fcb-null",
-      "concept": "favored-class-pending-art",
-      "disposition": "original-required",
-      "reason": "Visible counter without an assigned icon (Kingmaker's null-icon text placeholder); its intended identity is the chosen provider performance's own art, which the optional provider creates after KMG registers. Art is pending owner direction; not produced by this mission."
+      "currentArt": "fcb-provider-donor",
+      "concept": "favored-class-improved-provider",
+      "disposition": "intentional-family-share",
+      "reason": "Shares the art of the Call of the Wild performance feature it improves, read by exact identity when the publication commits; a counter whose donor has no art is withheld, never published blank. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Identity",
@@ -11496,10 +11517,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-human-ancestry",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Ifrit.Standard",
@@ -11509,10 +11530,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-parent-race",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Standard (no Mostly Human) entry keeps its parent race's own ancestry art; no new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Ifrit.Trait",
@@ -11522,10 +11543,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-human-ancestry",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Oread.Selection",
@@ -11535,10 +11556,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-human-ancestry",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Oread.Standard",
@@ -11548,10 +11569,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-parent-race",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Standard (no Mostly Human) entry keeps its parent race's own ancestry art; no new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Oread.Trait",
@@ -11561,10 +11582,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-human-ancestry",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Sylph.Selection",
@@ -11574,10 +11595,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-human-ancestry",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Sylph.Standard",
@@ -11587,10 +11608,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-parent-race",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Standard (no Mostly Human) entry keeps its parent race's own ancestry art; no new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Sylph.Trait",
@@ -11600,10 +11621,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-human-ancestry",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Undine.Selection",
@@ -11613,10 +11634,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-human-ancestry",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Undine.Standard",
@@ -11626,10 +11647,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-parent-race",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Standard (no Mostly Human) entry keeps its parent race's own ancestry art; no new painting."
     },
     {
       "symbol": "KMG.MostlyHuman.Undine.Trait",
@@ -11639,10 +11660,10 @@
       "module": "ElementalRaces",
       "publication": "published when the Mostly Human control is on",
       "surface": "Heritage-phase selection / character-sheet feature / tooltip",
-      "currentArt": "mostly-human-null",
-      "concept": "mostly-human-pending-art",
-      "disposition": "original-required",
-      "reason": "New visible racial trait choice; it currently shows Kingmaker's null-icon text placeholder. Original art is required and pending owner direction; not produced by this mission."
+      "currentArt": "mostly-human-human-ancestry",
+      "concept": "mostly-human-ancestry",
+      "disposition": "intentional-family-share",
+      "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the parent race's art when the Human race has none); a choice that would stay blank unpublishes the trait. No new painting."
     }
   ],
   "uiEntries": [

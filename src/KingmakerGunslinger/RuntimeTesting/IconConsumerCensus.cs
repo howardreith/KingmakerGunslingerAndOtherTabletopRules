@@ -129,6 +129,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspDeliveryAbility", "17451c1327c571641a1345bd31155209" },
             new[] { "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.EnlargePerson", "c60969e7f264e6d4b84a1499fdcf9039" },
             new[] { "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson", "4e0e9aba6447d514f88eff1464cc4763" },
+            new[] { "KMG.FavoredClass.Gunslinger.FirearmConfirmation.Partial", "8ac59959b1b23c347a0361dc97cc786d" },
+            new[] { "KMG.FavoredClass.Gunslinger.FirearmConfirmation.Full", "8ac59959b1b23c347a0361dc97cc786d" },
+            new[] { "KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Partial", "ed699d64870044b43bb5a7fbe3f29494" },
+            new[] { "KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Full", "ed699d64870044b43bb5a7fbe3f29494" },
             new[] { "KMG.FavoredClass.Alchemist.BombDamage.Partial", "c59b2f256f5a70a4d896568658315b7d" },
             new[] { "KMG.FavoredClass.Alchemist.BombDamage.Full", "c59b2f256f5a70a4d896568658315b7d" },
             new[] { "KMG.FavoredClass.Inquisitor.FireIntimidate.Partial", "7d2233c3b7a0b984ba058a83b736e6ac" },
@@ -217,8 +221,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .ToDictionary(entry => (string)entry["guid"], entry => (string)entry["symbol"],
                 StringComparer.Ordinal);
             var failures = new List<string>();
-            if (inventory.Count != 255 || resourceEntries.Length != 28)
-                failures.Add("Expected 255 blueprint and 28 resource-cache identities.");
+            if (inventory.Count != 465 || resourceEntries.Length != 28)
+                failures.Add("Expected 465 blueprint and 28 resource-cache identities.");
             foreach (var pair in inventory)
             {
                 try
@@ -341,7 +345,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "donorIcon", DescribeIcon(expected) }
                 });
             }
-            bool reuseExact = reuse.Count == 21 && reuse.Count == NativeReuse.Length && reuse.All(row => (bool)row["sameSpriteReference"]);
+            bool reuseExact = reuse.Count == 59 && reuse.Count == NativeReuse.Length && reuse.All(row => (bool)row["sameSpriteReference"]);
             var exports = new JArray(OwnedIconAssignments.IconKeys.Concat(new[] { "rapid-reload" }).Distinct(StringComparer.Ordinal).Select(key => {
                 Sprite icon = ProjectAssetIcons.RequireIcon(key);
                 string path = Path.Combine(context.ModEntry.Path, "assets", "icons", key + ".png");
@@ -364,9 +368,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             RuntimeTestResultWriter.WriteAtomic(evidencePath, evidence.ToString(Formatting.Indented));
             files.Add(evidencePath);
-            Add(assertions, "icon-census-complete-inventory", inventory.Count == 284 &&
-                _before.Count(value => value.Symbol != null) == 255 && _resources.Count == 28,
-                "284 catalog identities: 255 blueprints, 28 appearance resources and one reserved diagnostic absence", inventory.Count.ToString(), evidencePath);
+            Add(assertions, "icon-census-complete-inventory", inventory.Count == 494 &&
+                _before.Count(value => value.Symbol != null) == 465 && _resources.Count == 28,
+                "494 catalog identities: 465 blueprints, 28 appearance resources and one reserved diagnostic absence", inventory.Count.ToString(), evidencePath);
             Add(assertions, "icon-reserved-diagnostic-absent", (bool)_immediate["reservedAbsent"] && (bool)late["reservedAbsent"],
                 "the request-local race probe stays absent before/after ordinary initialization",
                 inventory.Last.ToString(Formatting.None), evidencePath);
@@ -383,7 +387,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)observation["protectedExact"], "all other observed sprite references are unchanged across icon mapping",
                         observation["protectedFailures"].ToString(Formatting.None), evidencePath);
                     Add(assertions, "icon-owned-graphs-" + stage,
-                        (bool)observation["graphsExact"], "all 255 graphs/components are unchanged across icon mapping",
+                        (bool)observation["graphsExact"], "all 465 graphs/components are unchanged across icon mapping",
                         observation["graphFailures"].ToString(Formatting.None), evidencePath);
                 }
                 else
@@ -400,7 +404,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation["resourceFailures"].ToString(Formatting.None), evidencePath);
             }
             Add(assertions, "icon-native-semantic-reuse", reuseExact,
-                "21 native-equivalent feature/ability/delivery consumers retain exact donor sprites",
+                "59 native-equivalent feature/ability/delivery consumers retain exact donor sprites",
                 reuse.ToString(Formatting.None), evidencePath);
         }
 

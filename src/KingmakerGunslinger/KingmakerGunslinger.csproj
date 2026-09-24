@@ -229,10 +229,13 @@
     <Compile Include="FavoredClass\Mechanics\FavoredClassSelectedRevelationLevel.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassRevelationRankPatch.cs" />
     <Compile Include="FavoredClass\FavoredClassPerformanceManifest.cs" />
+    <Compile Include="FavoredClass\FavoredClassIconPolicy.cs" />
+    <Compile Include="FavoredClass\FavoredClassLeafIcons.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassPerformanceRangePatch.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassHostRaceBridge.cs" />
     <Compile Include="ElementalRaces\ElementalMostlyHumanPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalMostlyHumanBlueprints.cs" />
+    <Compile Include="ElementalRaces\ElementalMostlyHumanIcons.cs" />
     <Compile Include="FavoredClass\FavoredClassRuntime.cs" />
     <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassGritResourceBonus.cs" />
