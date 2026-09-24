@@ -2093,6 +2093,8 @@ function New-KmgRuntimeRequest {
             }
         } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
             [ordered]@{ saveName = [string]$Parameters.saveName; fixtureCase = [string]$Parameters.fixtureCase }
+        } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
+            [ordered]@{ saveName = [string]$Parameters.saveName; creatures = [string]$Parameters.creatures }
         } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
             $scopeArgs = [ordered]@{ saveName = [string]$Parameters.saveName; qualificationTrait = 'NereidFascination' }
             if (Test-KmgTreacherousEffectScope $Scenario $Parameters) { $scopeArgs.qualificationEffect = 'TreacherousEarth' }
