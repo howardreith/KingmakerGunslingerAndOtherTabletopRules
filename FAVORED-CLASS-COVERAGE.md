@@ -20,14 +20,14 @@ X excluded, ALIAS repeated appearance.
 | --- | --- | --- | --- | --- | --- | --- |
 | G01 | Dwarf → Gunslinger | I | gunslinger.misfire-by-firearm-type (per type) | 1/4, floor 1 | NOT STARTED | — |
 | G02 | Elf → Gunslinger | I | gunslinger.firearm-confirmation | 1/3, cap +5, nonstacking CF | NOT STARTED | — |
-| G04 | Half-elf → Gunslinger | I | gunslinger.grit (shared with G07) | 1/4 | NOT STARTED | — |
+| G04 | Half-elf → Gunslinger | I | gunslinger.grit (shared with G07) | 1/4 | NATIVE TESTED (menu route; shared G07 counter) | native `20260924T0101128312625Z-disposable-favored-class-grit` (candidate `2cccec68b`, DLL `5e256ab2…`) race matrix: Half-elf offered grit once |
 | G05 | Half-orc → Gunslinger | I | gunslinger.pistol-whip-attack | 1/3 | NOT STARTED | — |
 | G06 | Halfling → Gunslinger | I | gunslinger.nimble-halfling + gunslinger.dodge-halfling (two counters) | 1/4 cap +2; 1/4 | NOT STARTED | — |
-| G07 | Human → Gunslinger | I | gunslinger.grit | 1/4 | NOT STARTED | — |
+| G07 | Human → Gunslinger | I | gunslinger.grit | 1/4 | NATIVE TESTED (20 native level-ups; save/load pending) | native `20260924T0101128312625Z-disposable-favored-class-grit` (candidate `2cccec68b`, DLL `5e256ab2…`): ranks (floor(N/4), N-floor(N/4)), +floor(N/4) max grit, no refill, cancel no-leak, closed at 20, Mysterious Stranger +1 at N=4 |
 | G08 | Goblin → Gunslinger | I | gunslinger.firearm-confirmation | 1/3, cap +5 | NOT STARTED | — |
-| G10 | Hobgoblin → Gunslinger | I | gunslinger.grit | 1/4 | NOT STARTED | — |
+| G10 | Hobgoblin → Gunslinger | I | gunslinger.grit | 1/4 | NATIVE TESTED (menu route) | native `20260924T0101128312625Z-disposable-favored-class-grit` (candidate `2cccec68b`, DLL `5e256ab2…`) race matrix (Races Unleashed Hobgoblin) |
 | G11 | Ifrit → Gunslinger | I | gunslinger.initiative-deed | 1/2 | NOT STARTED | — |
-| G14 | Fetchling → Gunslinger | I | gunslinger.grit | 1/4 | NOT STARTED | — |
+| G14 | Fetchling → Gunslinger | I | gunslinger.grit | 1/4 | NATIVE TESTED (menu route) | native `20260924T0101128312625Z-disposable-favored-class-grit` (candidate `2cccec68b`, DLL `5e256ab2…`) race matrix (Races Unleashed Fetchling) |
 | G16 | Dhampir → Gunslinger (JBE) | O | gunslinger.firearm-confirmation | 1/3, cap +5 | NOT STARTED | — |
 | G17 | Drow → Gunslinger (JBE) | O | gunslinger.nimble-drow | 1/6, cap +2 | NOT STARTED | — |
 | G18 | Duergar → Gunslinger (JBE) | O | gunslinger.misfire-by-firearm-type | 1/4, floor 1 | NOT STARTED | — |
@@ -90,9 +90,9 @@ X excluded, ALIAS repeated appearance.
 | Pure rank policy (N = full + partial, ceilings, mixed rates) | DOMAIN TESTED | `favored-class.rank-*` (7 cases) |
 | Source catalog (54 appearances, 53 options, 22 effects) | DOMAIN TESTED | `favored-class.catalog-*` (6 cases) |
 | Ancestry permission graph (FAQ, host policy, Mostly Human, bounded) | DOMAIN TESTED | `favored-class.eligibility-*` (5 cases) |
-| Optional host adapter (exact binary + readiness) | NOT STARTED | — |
-| Native host progression (Gunslinger in host scan) | NOT STARTED (static evidence only: host dump lists `FavoredClassKMG_Gunslinger_ClassProgression`) | — |
-| Atomic, idempotent publication with owned rollback | NOT STARTED | — |
+| Optional host adapter (exact binary + readiness) | NATIVE TESTED (host present); host-absent profile pending | native `20260924T0102047921088Z-observe-favored-class-contract`: exact SHA-256/MVID/six IL fingerprints, `Core.load` completion marker, readiness |
+| Native host progression (Gunslinger in host scan) | NATIVE TESTED | same run: one progression `cbe4e194…` and one bonus selection `5ffbec50…` (MergeIds identities), 20 levels, generic HP/skill rewards unchanged |
+| Atomic, idempotent publication with owned rollback | NATIVE TESTED | same run: exact foreign prefix, repeat publication no-op (H06), injected mid-transaction fault rolls back exactly (H08) |
 | Scoped ancestry bridge for the 20 host human families | NOT STARTED | — |
 | Mostly Human companion racial trait (four parents) | NOT STARTED | — |
 | Configuration profiles and lifecycle policy | NOT STARTED | — |
