@@ -402,7 +402,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 measurement.FirstStartsVisible =
                     snapshot.FirstSlotRect.YMax <= visible.YMax + 0.5f &&
                     snapshot.FirstSlotRect.YMax > visible.YMin;
-                measurement.Reason = "measured";
+                // The rectangles behind the verdict, in canvas units: what the
+                // native fill produced, what the policy asked for, what was
+                // rendered, and the viewport if one was installed. Containment
+                // alone cannot tell a popup that hugs its entries from one
+                // that was sized to the whole safe area.
+                measurement.Reason = "measured;native=" + Rect(snapshot.NativePopupRect) +
+                    ";entries=" + Rect(snapshot.SlotContentRect) +
+                    ";desired=" + Dimension(snapshot.DesiredWidth) + "x" +
+                    Dimension(snapshot.DesiredHeight) +
+                    ";final=" + Rect(snapshot.FinalRect) +
+                    ";rendered=" + Rect(snapshot.RenderedPopupRect) +
+                    ";viewport=" + (snapshot.HasViewportRect ?
+                        Rect(snapshot.ViewportRect) : "<none>") +
+                    ";safe=" + Rect(snapshot.SafeRect) +
+                    ";anchor=" + Rect(snapshot.AnchorRect) +
+                    ";direction=" + snapshot.OpeningDirection +
+                    ";topClamped=" + snapshot.TopClamped +
+                    ";bottomClamped=" + snapshot.BottomClamped +
+                    ";firstSlot=" + Rect(snapshot.FirstSlotRect) +
+                    ";lastSlot=" + Rect(snapshot.FinalSlotRect);
             }
 
             group.Hide(true);
@@ -595,6 +614,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Resources.FindObjectsOfTypeAll<ActionBarGroupSlot>();
             return slots == null ? 0 : slots.Length;
         }
+
+        private static string Rect(SummonVariantMenuRect rect)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "[{0:0.#},{1:0.#} {2:0.#}x{3:0.#}]", rect.X, rect.Y, rect.Width,
+                rect.Height);
+        }
+
+        private static string Dimension(float value)
+        { return value.ToString("0.#", CultureInfo.InvariantCulture); }
 
         private static int CountNativeSlots(ActionBarSpellsGroup group)
         {

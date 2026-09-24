@@ -44,8 +44,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const int MotionReviewCaptureHeight = 720;
         private const int MotionReviewMoveFrames = 12;
         private const int MotionReviewAttackFrame = 30;
-        /// <summary>Updates the review will wait for the load and screen fades.</summary>
-        private const int MotionReviewFadeBudget = 240;
+        /// <summary>
+        /// Updates the review will wait for the load and screen fades and for
+        /// the creature's own dissolve-in to reach intact; the first captures
+        /// after the material joined the game's fades showed it at 1.0 to
+        /// 0.83, a flat silhouette in the dissolve colour.
+        /// </summary>
+        private const int MotionReviewFadeBudget = 600;
+        private const float MotionReviewIntactDissolve = 0.02f;
 
         private int _motionReviewFrame = -1;
         private int _motionReviewWaited;
@@ -100,14 +106,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CameraRig rig = TeleportationCastingCamera();
                     if (rig != null) rig.ScrollToImmediately(unit.Position);
                     if (_motionReviewWaited < MotionReviewFadeBudget &&
-                        (LoadingOrScreenFadeActive() || !EntityFadedIn(unit)))
+                        (LoadingOrScreenFadeActive() || !EntityFadedIn(unit) ||
+                            DissolveAmount(unit) > MotionReviewIntactDissolve))
                     {
                         _motionReviewWaited++;
                         return false;
                     }
-                    EntityFader fader = unit.View == null ? null :
-                        unit.View.GetComponent<EntityFader>();
-                    if (fader != null) fader.FastForward();
                     _motionReviewOverlayWasOpen = SetModManagerOverlay(false);
                     _motionReviewFrame = 0;
                     return false;
@@ -168,7 +172,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionReviewCaptures.All(value =>
                     value.IndexOf(";inFrame=true", StringComparison.Ordinal) >= 0 &&
                     value.IndexOf(";rendererEnabled=true", StringComparison.Ordinal) >= 0 &&
-                    value.IndexOf(";screenLit=true", StringComparison.Ordinal) >= 0);
+                    value.IndexOf(";screenLit=true", StringComparison.Ordinal) >= 0 &&
+                    value.IndexOf(";intact=true", StringComparison.Ordinal) >= 0);
             _motionReviewValid = error == null && inFrame;
             _motionReviewSummary = "stage=" + stage + ";waited=" + _motionReviewWaited +
                 ";frames=" + _motionReviewFrame + ";frameMs=" + frameMs.ToString("0.#",
@@ -210,6 +215,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 return 0f;
             }
+        }
+
+        /// <summary>The renderer material's dissolve amount; 0 when the property is absent.</summary>
+        private static float DissolveAmount(UnitEntityData unit)
+        {
+            SkinnedMeshRenderer renderer = unit == null || unit.View == null ? null :
+                unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .FirstOrDefault(value => value != null && value.sharedMesh != null);
+            Material material = renderer == null ? null : renderer.sharedMaterial;
+            return material != null && material.HasProperty("_Dissolve")
+                ? material.GetFloat("_Dissolve") : 0f;
         }
 
         private static bool EntityFadedIn(UnitEntityData unit)
@@ -313,7 +329,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "true" : "false") + ";mesh=" + (renderer == null ||
                         renderer.sharedMesh == null ? "<none>" :
                         renderer.sharedMesh.name) + ";dissolve=" +
-                    DescribeDissolve(renderer) + ";visual=" +
+                    DescribeDissolve(renderer) + ";intact=" +
+                    (DissolveAmount(unit) <= MotionReviewIntactDissolve ? "true" : "false") +
+                    ";visual=" +
                     ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View)
                         .Split(';')[0];
             }
