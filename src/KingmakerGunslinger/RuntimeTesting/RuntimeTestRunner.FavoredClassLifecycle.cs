@@ -149,6 +149,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData paladinB = SpawnFcbFixture(fixtures, "PaladinB", fixtures.Origin + fixtures.Direction * 8f);
             UnitEntityData allyC = SpawnFcbFixture(fixtures, "AllyC", overlap);
             UnitEntityData allyD = SpawnFcbFixture(fixtures, "AllyD", overlap + right * 12f);
+            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
             int plainC = FearSaveBonus(allyC), plainD = FearSaveBonus(allyD);
             GrantFavoredClassRanks(paladinA, leaf, 2);
             paladinA.Descriptor.AddFact(courage);
@@ -238,6 +239,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData bardA = SpawnFcbFixture(fixtures, "BardA", bardAt);
             UnitEntityData bardB = SpawnFcbFixture(fixtures, "BardB", bardAt + side * 0.5f);
             UnitEntityData ally = SpawnFcbFixture(fixtures, "AllyE", bardAt + ray * (native + 1.2f));
+            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
             GrantFavoredClassRanks(bardA, leaf, 2);
             Buff buffA = bardA.Descriptor.AddBuff(performer, new MechanicsContext(bardA, bardA.Descriptor, performer));
             yield return null;
@@ -333,6 +335,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Dodge, Initiative and confirmation, earned through native picks
             // and the remaining counters as ranks.
             UnitEntityData gunslingerUnit = SpawnFcbFixture(fixtures, "Gunslinger", fixtures.Origin + fixtures.Direction * 11f);
+            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
             BlueprintRace halfElf = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
                 FavoredClassRaceIdentities.ForAncestry(FavoredClassAncestry.HalfElf).RaceGuid, "Half-elf");
             FavoredClassLeafPair grit = leaves.Pair(FavoredClassCatalog.EffectGrit, null);
@@ -351,6 +354,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             gunslingerUnit.Descriptor.Resources.Spend(gunslinger.Grit.Resource, 1);
             // Monk: grapple CMD and the stunning-use maximum (mixed rates).
             UnitEntityData monk = SpawnFcbFixture(fixtures, "Monk", fixtures.Origin + fixtures.Direction * 12f);
+            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
             BlueprintCharacterClass monkClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library,
                 FcbMonkClassGuid, "Monk");
             BlueprintRace undine = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
@@ -361,12 +365,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             GrantFavoredClassRanks(monk, full(FavoredClassCatalog.EffectBullRushDragDefense), 1);
             // Mostly Human Ifrit: the human identity and its human grit.
             UnitEntityData ifrit = SpawnFcbFixture(fixtures, "MostlyHuman", fixtures.Origin + fixtures.Direction * 13f);
+            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
             ElementalMostlyHumanRaceBlueprints ifritAncestry = BlueprintBootstrap.MostlyHuman.Races.Single(value =>
                 value.Definition.RaceName == "Ifrit");
             LevelFcbRespecSubject(ifrit, ifritAncestry.Race, new[] { grit.Partial }, reserved, levelFailures, "mostly-human",
                 ifritAncestry.Trait);
             // Ranger companion: the projected pet armor.
             UnitEntityData ranger = SpawnFcbFixture(fixtures, "Ranger", fixtures.Origin + fixtures.Direction * 14f);
+            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
             GrantFavoredClassRanks(ranger, BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
                 FcbAnimalCompanionRankGuid, "AnimalCompanionRank"), 4);
             ranger.Descriptor.AddFact(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
@@ -600,14 +606,33 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData unit = Game.Instance.EntityCreator.SpawnUnit(blueprint, position, Quaternion.identity,
                 fixtures.Anchor.HoldingState);
             Game.Instance.EntityCreator.Tick();
-            if (unit == null || !unit.IsInState || unit.View == null)
-                throw new InvalidOperationException("The lifecycle fixture " + label + " did not enter the live area.");
+            if (unit == null)
+                throw new InvalidOperationException("The lifecycle fixture " + label + " was not created.");
             fixtures.Units.Add(unit);
             unit.Descriptor.State.Immortality.Retain();
             unit.Descriptor.Stats.HitPoints.BaseValue = 200;
             if (!unit.Descriptor.IsTurnedOn) unit.Descriptor.TurnOn();
             PlaceFcbUnit(unit, position);
             return unit;
+        }
+
+        /// <summary>Views are created asynchronously: wait (bounded) until every fixture is live.</summary>
+        private static IEnumerable<object> WaitFcbFixtures(FcbLifecycleFixtures fixtures)
+        {
+            for (int frame = 0; frame < 600; frame++)
+            {
+                if (fixtures.Units.All(unit => unit != null && unit.IsInState && unit.View != null))
+                {
+                    foreach (UnitEntityData unit in fixtures.Units)
+                        PlaceFcbUnit(unit, unit.Position);
+                    yield break;
+                }
+                Game.Instance.EntityCreator.Tick();
+                yield return null;
+            }
+            throw new InvalidOperationException("Lifecycle fixtures did not enter the live area: " + string.Join(",",
+                fixtures.Units.Where(unit => unit == null || !unit.IsInState || unit.View == null)
+                    .Select(unit => unit == null ? "<null>" : unit.Blueprint.name).ToArray()));
         }
 
         private void LevelFcbClass(UnitEntityData unit, BlueprintRace race, BlueprintCharacterClass characterClass,

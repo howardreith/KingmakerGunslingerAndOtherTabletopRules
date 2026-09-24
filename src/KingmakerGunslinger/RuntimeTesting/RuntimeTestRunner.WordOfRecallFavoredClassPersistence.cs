@@ -230,8 +230,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     JObject gunslingerExpected;
                     gunslingerUnit = PrepareGunslingerFcbPersistence(anchor, player,
                         out gunslingerExpected);
+                    // The favored-class families share the same guarded save.
+                    JObject familiesExpected = PrepareFcbFamilySubjects(anchor, player);
                     _fcbPersistenceExpected = new JObject {
                         ["gunslinger"] = gunslingerExpected,
+                        ["families"] = familiesExpected,
                         ["unitId"] = unit.UniqueId,
                         ["unitName"] = "KMG FCB Persistence Oracle",
                         ["classId"] = oracle.AssetGuid,
@@ -256,6 +259,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         unit.HoldingState.AllEntityData.Contains(unit))
                         unit.HoldingState.RemoveEntityData(unit);
                     DetachGunslingerFcbPersistence(player, ref gunslingerUnit);
+                    DetachFcbFamilySubjects(player, true);
                     player.InvalidateCharacterLists(); player.UpdateCharacterLists();
                     captureStarterItems("persistence-prepare-starter-items");
                     foreach (var entry in starterDeltas)
@@ -342,6 +346,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new { knownSixth, expectedKnown, expectedNew, expectedOrdinaryNew });
                     gunslingerUnit = VerifyGunslingerFcbPersistence(
                         (JObject)plan.Expected["gunslinger"], player);
+                    VerifyFcbFamilySubjects((JObject)plan.Expected["families"], player);
                     // Strategic cast from the reloaded save: exactly one
                     // sixth-level spontaneous slot, no scroll substitution.
                     game.LoadArea(game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint,
@@ -380,6 +385,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.UniqueId == gunslingerUnit.UniqueId);
                 else if (gunslingerUnit != null)
                     DetachGunslingerFcbPersistence(player, ref gunslingerUnit);
+                DetachFcbFamilySubjects(player, plan.Phase != "verify");
                 if (unit != null && plan.Phase == "verify")
                 {
                     // The verify process leaves the loaded save untouched; the
