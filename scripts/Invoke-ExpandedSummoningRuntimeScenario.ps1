@@ -89,6 +89,27 @@ try {
                 [DateTime]::UtcNow -lt $nextDeadline) {
                 Start-Sleep -Milliseconds 500
             }
+            # A scenario whose harness timed out waiting for the result, while
+            # the game went on to finish and exit by itself, leaves its lease
+            # lock behind and every later scenario refuses on it. Once the
+            # game is gone that lock is stale, and it is released here under
+            # the same ownership rule the restoration below applies - never a
+            # lock this batch did not create, never while the game runs.
+            $betweenLock = 'C:\Dev\KingmakerGunslingerLab\compatibility-state\compatibility.lock'
+            if (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -eq 0 -and
+                (Test-Path -LiteralPath $betweenLock -PathType Leaf)) {
+                $betweenOwner = (Get-Content -LiteralPath $betweenLock -Raw).Trim()
+                if (Test-KmgCompatibilityLockOwned -LockOwner $betweenOwner `
+                    -BatchStartedUtc ([DateTime]$record.startedAtUtc)) {
+                    . (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1')
+                    Remove-KmgCompatibilityOwnedLock -LockPath $betweenLock -RunId $betweenOwner
+                    if (-not $record.Contains('releasedStaleCompatibilityLocksBetweenScenarios')) {
+                        $record.releasedStaleCompatibilityLocksBetweenScenarios = @()
+                    }
+                    $record.releasedStaleCompatibilityLocksBetweenScenarios += $betweenOwner
+                    Write-Host "Released this batch's stale compatibility lock before $name`: $betweenOwner"
+                }
+            }
         }
         Write-Host "=== scenario: $name ==="
         $run = [ordered]@{ scenario = $name; startedAtUtc = [DateTime]::UtcNow.ToString('o') }
